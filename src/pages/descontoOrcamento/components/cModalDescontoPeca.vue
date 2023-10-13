@@ -25,11 +25,12 @@ const upPercent = (e) => {
   //|| e.key == "Backspace" || e.key == "Delete"
   if ((e.key >= 0 && e.key <= 9) || e.key == "Backspace" || e.key == "Delete") {
     let valor =
-      (state.produtoSelected.VALOR * formatValorUSA(state.descontoPercent)) /
+      (state.produtoSelected.SUB_TOTAL *
+        formatValorUSA(state.descontoPercent)) /
       100;
     state.descontoValor = formatValor(valor);
     state.valorItem =
-      state.produtoSelected.VALOR - formatValorUSA(state.descontoValor);
+      state.produtoSelected.SUB_TOTAL - formatValorUSA(state.descontoValor);
 
     state.animate__shakeX = "";
     state.descontoPermitido = false;
@@ -143,11 +144,7 @@ let imgSrc = () => {
       <!-- <div>Percentual de Desconto {{ utils.formatValor(percenter) }}%</div> -->
       <div class="text-right mr-2 text-h5">
         <!-- <b>{{ utils.formatValor(state.produtoSelected.VALOR) }}</b> -->
-        <b>{{
-          utils.formatValor(
-            state.valorItem + state.produtoSelected.DESCONTO_GERENTE
-          )
-        }}</b>
+        <b>{{ utils.formatValor(state.valorItem) }}</b>
       </div>
       <div class="text-right mt-2">
         <v-btn
