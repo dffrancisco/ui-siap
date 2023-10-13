@@ -1,0 +1,28 @@
+1202-Devolução de revenda dentro do estado
+2202-Devolucao de revenda fora do estado
+1201-Devolução de venda de produção dentro do estado
+2201-Devolução de venda de produção fora do estado
+
+CFOPs no Nível Anterior
+1201 - Devolução de venda de produção do estabelecimento
+1202 - Devolução de venda de mercadoria adquirida ou recebida de terceiros
+1203 - Devolução de venda de produção do estabelecimento, destinada à Zona Franca de Manaus ou Áreas de Livre Comércio
+1204 - Devolução de venda de mercadoria adquirida ou recebida de terceiros, destinada à Zona Franca de Manaus ou Áreas de Livre Comércio
+1205 - Anulação de valor relativo à prestação de serviço de comunicação
+1206 - Anulação de valor relativo à prestação de serviço de transporte
+1207 - Anulação de valor relativo à venda de energia elétrica
+1208 - Devolução de produção do estabelecimento, remetida em transferência
+1209 - Devolução de mercadoria adquirida ou recebida de terceiros, remetida em transferência
+
+CFOP : 1202 – Devolução de venda de mercadoria adquirida ou recebida de terceiros.
+Produtos Tributados com:
+CST: 000, 020, 040, 041,
+CSOSN: 101, 102
+CFOP : 1411 – Devolução de venda de mercadoria adquirida ou recebida de terceiros sujeita ao regime de substituição tributaria.
+Produto Substituição Tributaria “ST”:
+CST: 010, 030, 060, 070
+CSOSN: 201, 202, 500
+No Campo Informações Complementares da NF-e deverá ser informado:
+
+Motivo da Devolução: XXXXXXXXXXXXXX
+Devolução Total ou Parcial Referente a NF / Cupom Fiscal COO nº. - YYYYYY - Data DD/MM/AAAA
