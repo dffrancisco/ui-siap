@@ -668,7 +668,10 @@ export default {
   SomenteNumero,
 };
 
-// height: 100%;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
+export const sleep = async (timeMs: number) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, timeMs);
+  })
+}
