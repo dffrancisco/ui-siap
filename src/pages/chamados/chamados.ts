@@ -41,11 +41,17 @@ export const actions = {
                 call: 'insert',
                 param
             });
+            Swal.fire({
+                icon: 'success',
+                text: 'Chamado cadastrado com sucesso'
+            })
 
-            show('Chamado cadastrado com sucesso');
             actions.resetForm()
         } catch (error) {
-            console.error('Erro ao enviar os dados:', error);
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao enviar os dados'
+            })
         }
 
     },

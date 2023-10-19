@@ -19,16 +19,6 @@ import { actions, state } from "./chamados";
       <v-form>
         <v-row>
           <v-col cols="12" sm="6" md="4">
-            <input
-              v-model="state.solicitante"
-              id="solicitante"
-              placeholder="SOLICITANTE"
-              class="obr ss"
-              label="SOLICITANTE"
-              required
-            />
-          </v-col>
-          <v-col cols="12" sm="6" md="4">
             <select v-model="state.loja" id="loja" class="obr ss" required>
               <option value="">Selecionar Loja</option>
               <option value="SHN LATAS">SHN LATAS</option>
@@ -63,6 +53,16 @@ import { actions, state } from "./chamados";
               <option value="Erro no Sistema">Erro no Sistema</option>
               <option value="Outros">Outros</option>
             </select>
+          </v-col>
+          <v-col cols="12" sm="6" md="4">
+            <input
+              v-model="state.solicitante"
+              id="solicitante"
+              placeholder="SOLICITANTE"
+              class="obr ss"
+              label="SOLICITANTE"
+              required
+            />
           </v-col>
           <v-col cols="12">
             <v-textarea
