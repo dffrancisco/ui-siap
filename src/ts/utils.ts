@@ -549,7 +549,7 @@ export const validaOBR = (elementFather = '') => {
 
       Swal.fire({
         icon: 'error',
-        text: $(this).prev().html() + ' dever ser preenchido',
+        text: $(this).prev().html() + ' deve ser preenchido',
       }).then(() => {
 
         setTimeout(() => {
