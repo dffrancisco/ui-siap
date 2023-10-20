@@ -8,6 +8,7 @@ export const state = reactive(({
     assunto: (""),
     descricao: (""),
     anexos: ([]),
+    loading: false,
 }))
 
 export const actions = {
@@ -35,6 +36,8 @@ export const actions = {
         };
 
         try {
+            state.loading = true;
+
             await axios.post('siap/chamados', {
                 call: 'insert',
                 param
@@ -50,6 +53,8 @@ export const actions = {
                 icon: 'error',
                 text: 'Erro ao enviar os dados'
             })
+        } finally {
+            state.loading = false;
         }
 
     },

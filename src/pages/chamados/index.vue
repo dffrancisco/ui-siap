@@ -96,6 +96,7 @@ import { actions, state } from "./chamados";
                 @click="actions.submitForm"
                 class="btnEnviar"
                 color="primary"
+                :loading="state.loading"
                 >Salvar</v-btn
               >
             </v-col>
