@@ -54,6 +54,28 @@ export const actions = {
 
     },
 
+    async getChamados() {
+        console.log('Teste');
+        try {
+            await axios.post('siap/chamados', {
+                call: 'getChamados',
+            });
+            // Swal.fire({
+            //     icon: 'success',
+            //     text: 'Chamado cadastrado com sucesso'
+            // })
+
+            // actions.resetForm()
+
+
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao buscar os chamados'
+            })
+        }
+    }
+
 }
 
 function showValidationError(message: string) {

@@ -12,7 +12,7 @@ import { actions, state } from "./chamados";
         um chamado:</span
       >
 
-      <div id="pnCampos">
+      <div id="pnCampos" class="pnCampos">
         <v-form>
           <v-row>
             <v-col cols="12" sm="6" md="4">
@@ -69,7 +69,7 @@ import { actions, state } from "./chamados";
                 v-model="state.descricao"
                 id="descricao"
                 class="obr ss"
-                label="DESCRIÇÃO"
+                label="DESCREVA COM DETALHES O MOTIVO DO CHAMADO"
                 required
                 @input="state.descricao = state.descricao.toUpperCase()"
               ></v-textarea>
@@ -98,6 +98,12 @@ import { actions, state } from "./chamados";
                 color="primary"
                 >Salvar</v-btn
               >
+              <v-btn
+                @click="actions.getChamados"
+                class="btnBuscarChamados"
+                color="primary"
+                >Buscar Chamados</v-btn
+              >
             </v-col>
           </v-row>
         </v-form>
@@ -117,9 +123,8 @@ import { actions, state } from "./chamados";
   margin: 0 auto;
   margin-top: 30px;
 }
-
-#pnCampos {
-  margin-top: 60px;
+.pnCampos {
+  margin-top: 25px;
 }
 
 .tituloChamados {
@@ -134,7 +139,10 @@ import { actions, state } from "./chamados";
   text-align: center;
   align-items: center;
   display: flex;
-  margin-bottom: -50px;
+}
+
+.btnBuscarChamados {
+  margin-left: 10px;
 }
 
 @media (max-width: 768px) {
