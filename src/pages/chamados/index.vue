@@ -5,11 +5,8 @@ import { actions, state } from "./chamados";
 <template>
   <v-container>
     <title>Cadastro de Chamados</title>
-    <img
-      class="imgLogoReal"
-      src="../../../public/icons/Logo-Real-Shop-Car-menor.png"
-    />
-    <h1>Abertura de Chamados - CPD</h1>
+    <img class="imgLogoReal" src="../../assets/Logo-Real-Shop-Car-menor.png" />
+    <h1 class="tituloChamados">Abertura de Chamados - CPD</h1>
     <span class="subtitle"
       >Preencha o formulário com as informações solicitadas para abertura de um
       chamado:</span
@@ -48,10 +45,10 @@ import { actions, state } from "./chamados";
               required
             >
               <option value="">Selecionar Assunto</option>
-              <option value="Manutenção">Manutenção</option>
-              <option value="Design / Marketing">Design / Marketing</option>
-              <option value="Erro no Sistema">Erro no Sistema</option>
-              <option value="Outros">Outros</option>
+              <option value="MANUTENCAO">Manutenção</option>
+              <option value="DESIGN MARKETING">Design / Marketing</option>
+              <option value="ERRO NO SISTEMA">Erro no Sistema</option>
+              <option value="OUTROS">Outros</option>
             </select>
           </v-col>
           <v-col cols="12" sm="6" md="4">
@@ -86,7 +83,7 @@ import { actions, state } from "./chamados";
 
         <v-row>
           <v-col cols="12">
-            <v-btn @click="actions.submitForm" class="btnEnviar" color="primary"
+            <v-btn @click="actions.submitForm" class="btnEnviar" color="success"
               >Enviar</v-btn
             >
             <v-btn @click="actions.resetForm" color="error">Limpar</v-btn>
@@ -107,9 +104,8 @@ import { actions, state } from "./chamados";
   margin-top: 60px;
 }
 
-h1 {
+.tituloChamados {
   margin-top: 20px;
-  /* margin-left: 20px; */
   text-align: center;
   align-items: center;
   display: flex;

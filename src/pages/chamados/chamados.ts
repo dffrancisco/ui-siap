@@ -1,8 +1,6 @@
 import { reactive } from "vue";
 import axios from 'axios';
 import Swal from "sweetalert2";
-import { show } from "@/ts/utils";
-
 
 export const state = reactive(({
     solicitante: (""),
@@ -37,7 +35,7 @@ export const actions = {
         };
 
         try {
-            const response = await axios.post('siap/chamados', {
+            await axios.post('siap/chamados', {
                 call: 'insert',
                 param
             });
@@ -58,6 +56,14 @@ export const actions = {
 
 }
 
+function showValidationError(message: string) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Preencha os campos obrigatórios',
+        text: message,
+    });
+}
+
 function validateForm() {
     if (!state.solicitante || !state.loja || !state.assunto || !state.descricao) {
         showValidationError('Verifique os campos obrigatórios');
@@ -66,12 +72,5 @@ function validateForm() {
     return true;
 }
 
-function showValidationError(message: string) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Preencha os campos obrigatórios',
-        text: message,
-    });
-}
 
 export default { state, actions }
