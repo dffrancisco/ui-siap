@@ -179,6 +179,10 @@ export const dataBrasil = (data: string): string => {
       separador = ".";
     }
 
+    if (data.length > 10) {
+      data = data.substring(0, 10);
+    }
+
     //2014/12/01
     let rt = data.split(separador);
     let dt = rt[2] + "/" + rt[1] + "/" + rt[0];
