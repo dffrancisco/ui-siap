@@ -7,7 +7,7 @@ import { formatValorUSA } from "@/ts/utils";
 export const state = reactive({
   tab: 'valesAPagar',
   loading: false,
-  valesAPagar: [],
+  valesAPagar: <iValeAPagar[]>[],
   valorDisponivel: 0,
 
 })
@@ -76,15 +76,23 @@ export const alterarVale = async (item: iValeAPagarAlteracao) => {
   try {
     state.loading = true;
 
+    const valor = formatValorUSA(item.novoValor);
+
     await serviceValeDinheiro.alterarVale({
       COD_FUNCIONARIO: item.COD_FUNCIONARIO,
       DATA: item.DATA,
-      VALOR: formatValorUSA(item.novoValor),
+      VALOR: valor,
     });
 
-    const vales = await serviceValeDinheiro.getValesAPagar();
+    const valeEncontrado = state.valesAPagar.find(vale => {
+      if ((vale.COD_FUNCIONARIO === item.COD_FUNCIONARIO) && (vale.DATA === item.DATA)) {
+        return true;
+      }
 
-    state.valesAPagar = vales;
+      return false;
+    })
+
+    valeEncontrado.VALOR = valor;
 
   } catch (error) {
     state.valesAPagar = [];

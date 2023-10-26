@@ -250,6 +250,7 @@ nextTick(() => {
           'text-red': !loading && pagamentoIndisponivel,
         }"
       >
+        {{ codFuncionariosSelecionados }}
         <span> Total Dinheiro </span>
         <span class="text-h6"> R$ {{ formatValor(valorTotalDinheiro) }} </span>
       </div>
