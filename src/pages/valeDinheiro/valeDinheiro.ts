@@ -23,7 +23,7 @@ const getValesAPagar = async () => {
   } catch (error) {
     state.valesAPagar = [];
     Swal.fire({
-      text: 'Ocorreu um erro ao buscar vales',
+      text: error?.response?.data?.msg || 'Ocorreu um erro ao buscar vales',
       icon: "error"
     })
   } finally {
@@ -62,9 +62,8 @@ export const negarVale = async (item: iValeAPagar) => {
     state.valesAPagar = vales;
 
   } catch (error) {
-    state.valesAPagar = [];
     Swal.fire({
-      text: 'Ocorreu um erro ao negar vale',
+      text: error?.response?.data?.msg || 'Ocorreu um erro ao negar vale',
       icon: "error"
     })
   } finally {
@@ -95,9 +94,8 @@ export const alterarVale = async (item: iValeAPagarAlteracao) => {
     valeEncontrado.VALOR = valor;
 
   } catch (error) {
-    state.valesAPagar = [];
     Swal.fire({
-      text: 'Ocorreu um erro ao alterar vale',
+      text: error?.response?.data?.msg || 'Ocorreu um erro ao alterar vale',
       icon: "error"
     })
   } finally {
@@ -130,9 +128,8 @@ export const pagarVale = async (
     });
 
   } catch (error) {
-    state.valesAPagar = [];
     Swal.fire({
-      text: 'Ocorreu um erro ao alterar vale',
+      text: error?.response?.data?.msg || 'Ocorreu um erro ao pagar vale',
       icon: "error"
     })
   } finally {
