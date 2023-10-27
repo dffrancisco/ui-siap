@@ -95,7 +95,7 @@ const valorTotalPix = computed(() => {
 });
 
 const pagamentoIndisponivel = computed(() => {
-  if (props.valorDisponivel == 0) {
+  if (props.valorDisponivel == 0 && valorTotalDinheiro.value > 0) {
     return true;
   }
 
@@ -250,7 +250,6 @@ nextTick(() => {
           'text-red': !loading && pagamentoIndisponivel,
         }"
       >
-        {{ codFuncionariosSelecionados }}
         <span> Total Dinheiro </span>
         <span class="text-h6"> R$ {{ formatValor(valorTotalDinheiro) }} </span>
       </div>

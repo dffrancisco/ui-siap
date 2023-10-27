@@ -51,9 +51,9 @@ const print = async () => {
   printJS({
     printable: "vales-pagos__print",
     type: "html",
-    style: "@media print { .vales-pagos__print { visibility: visible } }",
-    header: "<h1>Recibo de Pagamento</h1>",
+    header: "<h2>Recibo de Pagamento</h2>",
     headerStyle: "text-align: center; font-size: 20px;",
+    scanStyles: false,
   });
 };
 
@@ -150,42 +150,42 @@ getValesPagos();
       <div
         v-for="vale in state.valesImpressao"
         style="
-          padding: 20px 0 46px;
+          padding: 20px 0 35px;
           border-bottom: 1px solid;
           font-weight: bold;
           font-size: 13px;
         "
       >
-        <div style="display: flex">
-          <div style="width: 50%">
-            <span>{{ globalState.empresa.RAZAO_SOCIAL }}</span>
-            <br />
-            <label style="font-size: 10px"> Solicitação de Dinheiro</label>
+        <div>
+          <div style="width: 100%; display: flex">
+            <div style="width: 50%">
+              <span>{{ globalState.empresa.RAZAO_SOCIAL }}</span>
+              <br />
+              <label style="font-size: 10px">
+                Solicitação de
+                {{ vale.FORMA_PAGAMENTO === "D" ? "Dinheiro" : "Pix" }}</label
+              >
+            </div>
+            <div style="width: 50%; text-align: right">
+              <span style="text-align: right; width: 100%"
+                >{{ globalState.DATA }} {{ globalState.HORA }}</span
+              >
+              <br />
+              <label style="font-size: 10px; text-align: right"
+                >Pagador.: {{ vale.PAGADOR }}</label
+              >
+              <br />
+              <h2>R$ {{ formatValor(vale.VALOR) }}</h2>
+            </div>
           </div>
-          <div style="width: 50%; text-align: right">
-            <span style="text-align: right; width: 100%; background-color: red"
-              >{{ globalState.DATA }} {{ globalState.HORA }}</span
-            >
-            <br />
-            <label style="font-size: 10px; text-align: right"
-              >Pagador.: {{ vale.PAGADOR }}</label
-            >
-            <br />
-            <h2 style="font-size: 18px; font-weight: 700">
-              R$ {{ formatValor(vale.VALOR) }}
-            </h2>
+          <br />
+          <div
+            style="display: flex; flex-direction: column; align-items: center"
+          >
+            <label> ____________________________________________________</label>
+            <span>{{ vale.NOME }}</span>
           </div>
         </div>
-
-        <!-- <div>
-          <v-col class="d-flex flex-column align-center">
-            <div class="right-align" style="padding-bottom: 2px"></div>
-            <div class="center-align" style="padding: 15px 0 3px 0">
-              _________________________________________________________________________
-            </div>
-            <div class="center-align">{{ vale.NOME }}</div>
-          </v-col>
-        </div> -->
       </div>
     </div>
   </div>
@@ -199,7 +199,8 @@ getValesPagos();
   }
 
   &__print {
-    // visibility: hidden;
+    visibility: hidden;
+    display: none;
   }
 }
 .icone-forma-pagamento {
