@@ -141,6 +141,7 @@ const installApp = () => {
 @import "sweetalert2/src/sweetalert2.scss";
 @import "@/assets/index.scss";
 @import "animate.css";
+@import "@/styles/global.scss";
 
 #pnCalk .xModal-modal-content {
   margin: 0 !important;

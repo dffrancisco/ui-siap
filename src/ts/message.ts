@@ -63,7 +63,8 @@ export const msgConfirm = async (title: string, text: string): Promise<boolean> 
     icon: "question",
     inputPlaceholder: "Código",
     showCancelButton: true,
-    confirmButtonText: "Confirma",
+    confirmButtonText: "Confirmar",
+    cancelButtonText: 'Cancelar',
     showLoaderOnConfirm: true,
     inputValidator: (result) => {
       if (result != codigo) return "O código não confere";

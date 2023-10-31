@@ -179,6 +179,10 @@ export const dataBrasil = (data: string): string => {
       separador = ".";
     }
 
+    if (data.length > 10) {
+      data = data.substring(0, 10);
+    }
+
     //2014/12/01
     let rt = data.split(separador);
     let dt = rt[2] + "/" + rt[1] + "/" + rt[0];
@@ -668,7 +672,10 @@ export default {
   SomenteNumero,
 };
 
-// height: 100%;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
+export const sleep = async (timeMs: number) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, timeMs);
+  })
+}
