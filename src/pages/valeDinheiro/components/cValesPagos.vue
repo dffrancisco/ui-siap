@@ -6,6 +6,7 @@ import serviceValeDinheiro from "../services/valeDinheiro.service";
 import Swal from "sweetalert2";
 import globalState from "@/store/globalState";
 import printJS from "print-js";
+import { computed } from "vue";
 
 const emit = defineEmits(["negarVale", "alterarVale", "pagarVale"]);
 
@@ -33,14 +34,28 @@ const getValesPagos = async () => {
   }
 };
 
+const valesPorDataPagamento = computed(() => {
+  const valesPorData = {};
+
+  state.valesPagos.forEach((vale) => {
+    if (!valesPorData[vale.DATA_PG]) {
+      valesPorData[vale.DATA_PG] = [];
+    }
+
+    valesPorData[vale.DATA_PG].push(vale);
+  });
+
+  return valesPorData;
+});
+
 const onClickImprimir = async (item: iValePago) => {
   state.valesImpressao = [item];
 
   print();
 };
 
-const onClickImprimirTodos = async () => {
-  state.valesImpressao = state.valesPagos;
+const onClickImprimirTodos = async (data: string) => {
+  state.valesImpressao = valesPorDataPagamento.value[data];
 
   print();
 };
@@ -63,87 +78,89 @@ getValesPagos();
 <template>
   <div>
     <div class="vales-pagos__table">
-      <v-data-table
-        :headers="[
-          {
-            title: 'Nome',
-            key: 'NOME',
-          },
-          {
-            title: 'Cargo',
-            key: 'CARGO',
-          },
-          {
-            title: 'Data Pgto',
-            key: 'DATA_PG',
-            align: 'center',
-          },
-          {
-            title: 'Valor',
-            key: 'VALOR',
-            align: 'center',
-          },
-          {
-            title: 'Forma de Pagamento',
-            key: 'FORMA_PAGAMENTO',
-            align: 'center',
-            sortable: false,
-          },
-          {
-            title: 'Ações',
-            key: 'ACOES',
-            align: 'center',
-            sortable: false,
-          },
-        ]"
-        :items="state.valesPagos"
-        :items-per-page="-1"
-        :hide-default-footer="true"
-        :loading="state.loading"
-        no-data-text="Nenhum vale pago encontrado"
-        loading-text="aguarde..."
-        class="elevation-1"
-        color="primary"
-      >
-        <template v-slot:item.VALOR="{ value }">
-          {{ formatValor(value) }}
-        </template>
-        <template v-slot:item.DATA_PG="{ value }">
-          {{ dataBrasil(value) }}
-        </template>
-        <template v-slot:item.FORMA_PAGAMENTO="{ item, value }">
-          <div class="d-flex align-center justify-center">
-            <img
-              v-if="value === 'D'"
-              class="icone-forma-pagamento"
-              src="../assets/money.svg"
-            />
-            <img
-              v-if="value === 'P'"
-              class="icone-forma-pagamento"
-              src="../assets/pix.svg"
-            />
-          </div>
-        </template>
-        <template v-slot:item.ACOES="{ item }">
-          <v-icon
-            @click="onClickImprimir(item)"
-            icon="mdi-printer"
-            title="Imprimir"
-            class="click"
-          />
-        </template>
-        <template v-slot:bottom></template>
-      </v-data-table>
-    </div>
-    <div class="d-flex align-center justify-space-between mt-4">
-      <div class="d-flex align-center justify-end flex-grow-1">
-        <v-btn
-          v-if="state.valesPagos.length > 0"
-          @click="onClickImprimirTodos"
+      <div v-for="dataVale in Object.keys(valesPorDataPagamento)" class="pa-2">
+        <v-data-table
+          :headers="[
+            {
+              title: 'Nome',
+              key: 'NOME',
+            },
+            {
+              title: 'Cargo',
+              key: 'CARGO',
+            },
+            {
+              title: 'Data Pgto',
+              key: 'DATA_PG',
+              align: 'center',
+            },
+            {
+              title: 'Valor',
+              key: 'VALOR',
+              align: 'center',
+            },
+            {
+              title: 'Forma de Pagamento',
+              key: 'FORMA_PAGAMENTO',
+              align: 'center',
+              sortable: false,
+            },
+            {
+              title: 'Ações',
+              key: 'ACOES',
+              align: 'center',
+              sortable: false,
+            },
+          ]"
+          :items="valesPorDataPagamento[dataVale]"
+          :items-per-page="-1"
+          :hide-default-footer="true"
+          :loading="state.loading"
+          no-data-text="Nenhum vale pago encontrado"
+          loading-text="aguarde..."
+          class="elevation-1"
           color="primary"
-          >IMPRIMIR TODOS</v-btn
         >
+          <template v-slot:item.VALOR="{ value }">
+            {{ formatValor(value) }}
+          </template>
+          <template v-slot:item.DATA_PG="{ value }">
+            {{ dataBrasil(value) }}
+          </template>
+          <template v-slot:item.FORMA_PAGAMENTO="{ item, value }">
+            <div class="d-flex align-center justify-center">
+              <img
+                v-if="value === 'D'"
+                class="icone-forma-pagamento"
+                src="../assets/money.svg"
+              />
+              <img
+                v-if="value === 'P'"
+                class="icone-forma-pagamento"
+                src="../assets/pix.svg"
+              />
+            </div>
+          </template>
+          <template v-slot:item.ACOES="{ item }">
+            <v-icon
+              @click="onClickImprimir(item)"
+              icon="mdi-printer"
+              title="Imprimir"
+              class="click"
+            />
+          </template>
+          <template v-slot:bottom></template>
+        </v-data-table>
+        <div class="d-flex align-center justify-space-between mt-4">
+          <div class="d-flex align-center justify-end flex-grow-1">
+            <v-btn
+              v-if="valesPorDataPagamento[dataVale].length > 0"
+              @click="onClickImprimirTodos(dataVale)"
+              color="primary"
+              >IMPRIMIR TODOS</v-btn
+            >
+          </div>
+        </div>
       </div>
     </div>
     <div id="vales-pagos__print" class="vales-pagos__print">
