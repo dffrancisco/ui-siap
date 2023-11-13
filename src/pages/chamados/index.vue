@@ -93,6 +93,9 @@ actions.begin();
           >
             <template #item.ACAO="{ item }">
               <v-btn
+                title="Ver detalhes"
+                color="primary"
+                variant="text"
                 density="compact"
                 icon="mdi-eye"
                 @click="

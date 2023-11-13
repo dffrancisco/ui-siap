@@ -47,41 +47,52 @@ function getStatusIcon(status: string) {
   <div class="detalhes-chamado">
     <div class="detalhes-container">
       <div class="detalhe">
-        <span>Solicitante: {{ state.detalhes.solicitante }}</span>
+        <span>Solicitante: </span>
+        <span>{{ state.detalhes.solicitante }}</span>
       </div>
 
       <v-divider vertical class="divider"></v-divider>
 
       <div class="detalhe">
-        <span>Data: {{ state.detalhes.dataFormatada }}</span>
+        <span>Data: </span>
+        <span>{{ state.detalhes.dataFormatada }}</span>
       </div>
 
       <v-divider vertical class="divider"></v-divider>
 
       <div class="detalhe">
         <span>Prioridade:</span>
-        <v-icon :color="getPrioridadeIconColor(state.detalhes.prioridade)">
-          {{ getPrioridadeIcon(state.detalhes.prioridade) }}
-        </v-icon>
-        {{ getTraducaoPrioridade(state.detalhes.prioridade) }}
+        <span
+          ><v-icon :color="getPrioridadeIconColor(state.detalhes.prioridade)">
+            {{ getPrioridadeIcon(state.detalhes.prioridade) }}
+          </v-icon>
+          {{ getTraducaoPrioridade(state.detalhes.prioridade) }}
+        </span>
       </div>
 
       <v-divider vertical class="divider"></v-divider>
 
       <div class="detalhe">
-        <span>Status: {{ state.detalhes.statusJira }}</span>
-        <v-icon>{{ getStatusIcon(state.detalhes.statusJira) }}</v-icon>
+        <span>Status: </span>
+        <span
+          >{{ state.detalhes.statusJira
+          }}<v-icon class="ml-2">{{
+            getStatusIcon(state.detalhes.statusJira)
+          }}</v-icon>
+        </span>
       </div>
     </div>
     <v-divider></v-divider>
 
     <div class="detalhes-responsavel">
       <div class="detalhe-descricao">
-        <span><u>Descrição:</u> {{ state.detalhes.descricao }}</span>
+        <span><u>Descrição:</u> </span>
+        <span>{{ state.detalhes.descricao }}</span>
       </div>
 
       <div class="detalhe">
-        <span><u>Responsável:</u> {{ state.detalhes.responsavel }}</span>
+        <span><u>Responsável:</u></span>
+        <span>{{ state.detalhes.responsavel }}</span>
       </div>
     </div>
     <v-divider></v-divider>
@@ -115,6 +126,8 @@ function getStatusIcon(status: string) {
   margin-right: 20px;
   margin-bottom: 10px;
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
 }
 .divider {
   margin-right: 20px;
@@ -124,18 +137,15 @@ function getStatusIcon(status: string) {
   justify-content: space-between;
 }
 .detalhes-chamado {
-  width: 90%;
-  margin-top: 10px;
-  margin-left: 20px;
+  width: 100%;
   padding: 20px;
-  border: 1px solid #878686;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .detalhe {
   margin-right: 20px;
   margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .comentarios {

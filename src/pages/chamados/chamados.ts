@@ -127,7 +127,7 @@ export const actions = {
 
         state.pnModalDetalhes = new xModal.create({
             height: 500,
-            width: 500,
+            width: 600,
             el: '#pnModalDetalhes',
             onOpen: () => {
             },
