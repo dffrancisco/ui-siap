@@ -47,12 +47,19 @@ export const actions = {
             return;
         }
 
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const dataAtual = `${year}-${month}-${day}`;
+
         const param = {
             solicitante: state.solicitante,
             loja: state.loja,
             assunto: state.assunto,
             descricao: state.descricao,
             anexos: state.anexos,
+            dataAtual: dataAtual
         };
 
         try {
