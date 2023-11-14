@@ -121,7 +121,9 @@ export const actions = {
 
     let percent =
       (formatValorUSA(state.descontoValor) / state.produtoSelected.SUB_TOTAL) * 100;
+
     state.descontoPercent = formatValor(percent);
+
     state.valorItem =
       state.produtoSelected.SUB_TOTAL - formatValorUSA(state.descontoValor);
 
@@ -256,7 +258,7 @@ export const actions = {
           let color = 'rgb(32 156 238 / 72%)';
 
           return `<div style="width: 100%; text-align: right;">
-                      <div> ${utils.formatValor(r.SUB_TOTAL)}</div>
+                      <div> ${utils.formatValor(r.SUB_TOTAL - r.DESCONTO)}</div>
                       <div style="color:${color}">${utils.formatValor(r.DESCONTO / (r.VALOR_REAL * r.QTO) * 100)}%</div>
                     </div>`
         },

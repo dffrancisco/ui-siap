@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dialog --title 'Update Siap' --yesno "\n Gostaria de fazer upload do Siap para a nuvem" 8 60
+dialog --title 'Update Siap' --yesno "\n Gostaria de fazer upload do Siap para o 60?" 8 60
 if [ $? = 0 ]; then
 
   zip -r ./ui-siap.zip ./ui-siap
