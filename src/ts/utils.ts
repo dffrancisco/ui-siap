@@ -214,7 +214,7 @@ export const show = function (arg: iShowModal | string) {
     arg = {
       msg: arg,
       title: "Mensagem do Sistema",
-      theme: "xModal-dark",
+      theme: "xModal-bublue",
       onClose: false,
     };
   } else {

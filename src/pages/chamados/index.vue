@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { actions, state } from "./chamados";
-import { ref } from "vue";
 import { VDataTableServer } from "vuetify/labs/VDataTable";
 import CModalDetalhes from "./components/cModalDetalhes.vue";
 
-const headers = ref([
+const headers = [
   {
     title: "Assunto",
     key: "ASSUNTO",
@@ -25,7 +24,7 @@ const headers = ref([
     key: "ACAO",
     sortable: false,
   },
-]);
+];
 
 actions.begin();
 </script>
@@ -64,7 +63,7 @@ actions.begin();
                 id="descricao"
                 class="obr ss"
                 rows="3"
-                label="DESCREVA COM DETALHES O MOTIVO DO CHAMADO"
+                label="DESCREVA COM O MÁXIMO DE DETALHES O MOTIVO DO CHAMADO"
                 required
                 @input="state.descricao = state.descricao.toUpperCase()"
               ></v-textarea>
@@ -83,13 +82,12 @@ actions.begin();
             v-model:itemsPerPage="state.itemsPerPage"
             :headers="headers"
             :items-length="state.totalItems"
-            :items="state.dsChamados"
+            :items="state.chamados"
             :loading="state.loading"
             :search="state.search"
             class="elevation-1"
             item-value="ID_CHAMADO"
             @update:options="actions.getChamados"
-            :server-items-length="state.dbChamados"
           >
             <template #item.ACAO="{ item }">
               <v-btn
@@ -111,7 +109,7 @@ actions.begin();
           </v-data-table-server>
 
           <v-row>
-            <v-col cols="12" class="d-flex justify-end botoes">
+            <v-col cols="12" class="d-flex justify-end mt-2">
               <v-btn
                 @click="actions.resetForm"
                 color="primary"
@@ -149,9 +147,6 @@ actions.begin();
 </template>
 
 <style scoped>
-.botoes {
-  margin-top: 20px;
-}
 .btnEnviar {
   margin-right: 10px;
   margin-left: 10px;

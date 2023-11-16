@@ -1,9 +1,10 @@
 import { nextTick, reactive } from "vue";
 import axios from 'axios';
 import Swal from "sweetalert2";
+import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import { iChamados, iDetalhes } from "./interfaces";
-import { dataBrasil, show } from "@/ts/utils";
+import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados } from "./interfaces";
+import { dataBrasil } from "@/ts/utils";
 
 export const state = reactive(({
     solicitante: (""),
@@ -11,25 +12,22 @@ export const state = reactive(({
     assunto: (""),
     descricao: (""),
     anexos: ([]),
-    dsChamados: <iChamados[]>[],
+    chamados: <iChamados[]>[],
     loadingSalvar: false,
     loadingBuscarDetalhes: false,
     loading: false,
-    dbChamados: 0,
     totalItems: 0,
     itemsPerPage: 5,
     search: (""),
-    detalhes: <iDetalhes>{},
+    detalhes: <iVerDetalhesChamadoResponse>{},
     pnModalDetalhes: <iModalCreate>(<unknown>null),
 }))
-
 
 export const actions = {
 
     begin() {
         nextTick(() => {
             actions.modal();
-
         });
     },
 
@@ -82,37 +80,32 @@ export const actions = {
         } finally {
             state.loadingSalvar = false;
         }
-
     },
 
-    async getChamados({ page, itemsPerPage, sortBy, search }: any) {
+    async getChamados({ page, itemsPerPage, sortBy, search }: iParamGetChamados) {
         try {
-            const { data } = await axios.post('siap/chamados', {
-                call: 'getChamados',
-                page,
-                itemsPerPage,
-                sortBy,
-                search,
-            });
-            state.dsChamados = data.chamados.map((chamado: iChamados) => ({
+            const data = await serviceChamados.getChamados({ page, itemsPerPage, sortBy, search });
+
+            state.chamados = data.chamados.map((chamado: iChamados) => ({
                 ...chamado,
                 dataFormatada: dataBrasil(chamado.DATA_CRIACAO),
             }));
             state.totalItems = data.total
         } catch (error) {
-            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao exibir os dados'
+            })
         }
     },
 
     async verDetalhesChamado(keyJira: string, descricao: string, solicitante: string, dataFormatada: string) {
-        state.loadingBuscarDetalhes = true
+
         try {
-            let { data } = await axios.post('siap/chamados', {
-                call: 'verDetalhesChamado',
-                param: {
-                    keyJira,
-                },
-            });
+            state.loadingBuscarDetalhes = true
+
+            const data = await serviceChamados.verDetalhesChamado(keyJira)
+
             state.detalhes.responsavel = data.responsavel;
             state.detalhes.descricao = descricao;
             state.detalhes.solicitante = solicitante;
@@ -123,8 +116,10 @@ export const actions = {
 
             state.pnModalDetalhes.open();
         } catch (error) {
-            show("Não existem informações sobre esse chamado")
-            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao buscar os dados do chamado.'
+            })
         } finally {
             state.loadingBuscarDetalhes = false
         }
@@ -135,11 +130,7 @@ export const actions = {
         state.pnModalDetalhes = new xModal.create({
             height: 500,
             width: 600,
-            el: '#pnModalDetalhes',
-            onOpen: () => {
-            },
-            onClose() {
-            },
+            el: '#pnModalDetalhes'
         })
     }
 

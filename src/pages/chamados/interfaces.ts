@@ -14,7 +14,7 @@ export interface iDetalhesComentario {
     texto: string;
 }
 
-export interface iDetalhes {
+export interface iVerDetalhesChamadoResponse {
     responsavel: string;
     comentarios: iDetalhesComentario[];
     prioridade: string;
@@ -22,4 +22,16 @@ export interface iDetalhes {
     descricao: string;
     solicitante: string;
     dataFormatada: string;
+}
+
+export interface iParamGetChamados {
+    page: number;
+    itemsPerPage: number;
+    sortBy: string;
+    search: string;
+}
+
+export interface iGetChamadosResponse {
+    chamados: iChamados[];
+    total: number;
 }
