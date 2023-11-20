@@ -1,5 +1,32 @@
 <script setup lang="ts">
 import { actions, state } from "./chamados";
+import { VDataTableServer } from "vuetify/labs/VDataTable";
+import CModalDetalhes from "./components/cModalDetalhes.vue";
+
+const headers = [
+  {
+    title: "Assunto",
+    key: "ASSUNTO",
+    sortable: true,
+  },
+  {
+    title: "Solicitante",
+    key: "SOLICITANTE",
+    sortable: true,
+  },
+  {
+    title: "Data",
+    key: "dataFormatada",
+    sortable: true,
+  },
+  {
+    title: "Ação",
+    key: "ACAO",
+    sortable: false,
+  },
+];
+
+actions.begin();
 </script>
 
 <template>
@@ -7,37 +34,14 @@ import { actions, state } from "./chamados";
     <title>Cadastro de Chamados</title>
     <v-card class="pa-5 cardChamado">
       <h1 class="tituloChamados">Abertura de Chamados - CPD</h1>
-      <span class="subtitle"
-        >Preencha o formulário com as informações solicitadas para abertura de
-        um chamado:</span
-      >
+      <span class="subtitle">
+        Preencha o formulário com as informações solicitadas para abertura de um
+        chamado:
+      </span>
 
-      <div id="pnCampos">
+      <div id="pnCampos" class="pnCampos">
         <v-form>
           <v-row>
-            <v-col cols="12" sm="6" md="4">
-              <span>Loja</span>
-              <select v-model="state.loja" id="loja" class="obr ss" required>
-                <option value="">Selecionar Loja</option>
-                <option value="SHN LATAS">SHN LATAS</option>
-                <option value="CAPA">CAPA</option>
-                <option value="CASA DA LATA">CASA DA LATA</option>
-                <option value="CENTRO LATAS">CENTRO LATAS</option>
-                <option value="DF ACESSORIOS">DF ACESSORIOS</option>
-                <option value="FEDERAL">FEDERAL</option>
-                <option value="MULTIMARCAS">MULTIMARCAS</option>
-                <option value="CENTRAL PECAS">CENTRAL PECAS</option>
-                <option value="REAL ACESSORIOS (SOBRADINHO)">
-                  REAL ACESSORIOS (SOBRADINHO)
-                </option>
-                <option value="LATAS LESTE">LATAS LESTE</option>
-                <option value="REAL PARAISO">REAL PARAISO</option>
-                <option value="REAL GOIANIA">REAL GOIANIA</option>
-                <option value="REAL FORMOSA">REAL FORMOSA</option>
-                <option value="AGUAS LINDAS">AGUAS LINDAS</option>
-                <option value="H CENTRAL PECAS">H CENTRAL PECAS</option>
-              </select>
-            </v-col>
             <v-col cols="12" sm="6" md="4">
               <span>Assunto</span>
               <select
@@ -53,23 +57,13 @@ import { actions, state } from "./chamados";
                 <option value="OUTROS">Outros</option>
               </select>
             </v-col>
-            <v-col cols="12" sm="6" md="4">
-              <span>Solicitante</span>
-              <input
-                v-model="state.solicitante"
-                id="solicitante"
-                placeholder="SOLICITANTE"
-                class="obr ss"
-                label="SOLICITANTE"
-                required
-              />
-            </v-col>
             <v-col cols="12">
               <v-textarea
                 v-model="state.descricao"
                 id="descricao"
                 class="obr ss"
-                label="DESCRIÇÃO"
+                rows="3"
+                label="DESCREVA COM O MÁXIMO DE DETALHES O MOTIVO DO CHAMADO"
                 required
                 @input="state.descricao = state.descricao.toUpperCase()"
               ></v-textarea>
@@ -84,8 +78,38 @@ import { actions, state } from "./chamados";
             </v-col>
           </v-row>
 
+          <v-data-table-server
+            v-model:itemsPerPage="state.itemsPerPage"
+            :headers="headers"
+            :items-length="state.totalItems"
+            :items="state.chamados"
+            :loading="state.loading"
+            :search="state.search"
+            class="elevation-1"
+            item-value="ID_CHAMADO"
+            @update:options="actions.getChamados"
+          >
+            <template #item.ACAO="{ item }">
+              <v-btn
+                title="Ver detalhes"
+                color="primary"
+                variant="text"
+                density="compact"
+                icon="mdi-eye"
+                @click="
+                  actions.verDetalhesChamado(
+                    item.KEY_JIRA,
+                    item.DESCRICAO,
+                    item.SOLICITANTE,
+                    item.dataFormatada
+                  )
+                "
+              ></v-btn>
+            </template>
+          </v-data-table-server>
+
           <v-row>
-            <v-col cols="12" class="d-flex justify-end">
+            <v-col cols="12" class="d-flex justify-end mt-2">
               <v-btn
                 @click="actions.resetForm"
                 color="primary"
@@ -96,7 +120,7 @@ import { actions, state } from "./chamados";
                 @click="actions.submitForm"
                 class="btnEnviar"
                 color="primary"
-                :loading="state.loading"
+                :loading="state.loadingSalvar"
                 >Salvar</v-btn
               >
             </v-col>
@@ -105,6 +129,21 @@ import { actions, state } from "./chamados";
       </div>
     </v-card>
   </v-container>
+
+  <div id="pnModalDetalhes" title="Detalhes do Chamado">
+    <c-modal-detalhes />
+  </div>
+
+  <v-overlay
+    :model-value="state.loadingBuscarDetalhes"
+    class="align-center justify-center"
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
 
 <style scoped>
@@ -118,9 +157,8 @@ import { actions, state } from "./chamados";
   margin: 0 auto;
   margin-top: 30px;
 }
-
-#pnCampos {
-  margin-top: 60px;
+.pnCampos {
+  margin-top: 25px;
 }
 
 .tituloChamados {
@@ -135,7 +173,6 @@ import { actions, state } from "./chamados";
   text-align: center;
   align-items: center;
   display: flex;
-  margin-bottom: -50px;
 }
 
 @media (max-width: 768px) {

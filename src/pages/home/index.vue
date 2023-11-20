@@ -18,6 +18,8 @@ import login from "../login/login";
               >Entregar e Receber</v-btn
             >
             <v-btn @click="router.push('/valeDinheiro')">Vale dinheiro</v-btn>
+            <v-btn @click="router.push('/chamados')">Chamados</v-btn>
+
             <v-btn @click="login.actions.confirmarSaida()">Logout </v-btn>
           </v-col>
         </v-row>
