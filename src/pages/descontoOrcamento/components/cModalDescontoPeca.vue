@@ -105,7 +105,12 @@ let imgSrc = () => {
 
   <v-row>
     <v-col cols="8">
-      <v-textarea label="Observação" variant="outlined"></v-textarea>
+      <v-textarea
+        label="Observação"
+        variant="outlined"
+        v-model="state.obs"
+        @keydown.enter.prevent="actions.setDescontoOrcamento()"
+      ></v-textarea>
     </v-col>
     <v-col cols="4">
       <!-- @keyup="calcDesconto" -->
