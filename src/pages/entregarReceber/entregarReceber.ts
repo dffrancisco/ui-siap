@@ -1,79 +1,116 @@
-import $ from 'jquery'
-import axios from 'axios';
 import { reactive } from 'vue'
-import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import Swal from 'sweetalert2';
-
-import globalState from '@/store/globalState'
-import { msgConfirm } from '@/ts/message';
-
-import { iEntregarReceber } from './interfaces';
-import utils from '@/ts/utils';
-
-
-
-interface _ixGridCreate extends ixGridCreate {
-    dataSource: (obj?: object) => iEntregarReceber
-}
-
-const caminho = "siap/entregarReceber"
+import { iCliente, iMotorista, iTotalizador } from './interface';
+import entregarReceberService from './services/entregarReceber.service';
+import router from '@/router';
 
 export const state = reactive(({
-    gridPrincipal: <_ixGridCreate>{},
-    pnSearch: false,
-    edtSearch: <HTMLInputElement>{},
-    dbEntReb: <iEntregarReceber>{},
+    motoristas: <iMotorista[]>[],
+    clientes: <iCliente[]>[],
+    qtdTotalPendenciasMotoristas: 0,
+    totalizadores: <iTotalizador>{},
+    loading: false,
 }))
 
 
 export const actions = {
 
-    grids() {
+    async getMotoristasPendentes() {
 
-        state.gridPrincipal = new xGridV2.create({
-            el: "#gridPrincipal",
-            height: 200,
-            count: true,
-            columns: {
-                'Orçamento': { dataField: 'NUM_ORCAMENTO', width: '10%', right: true },
-                'Cliente': { dataField: 'NOME' },
-                'Vendedor': { dataField: 'LOGIN', width: '15%' },
-                'Data': { dataField: 'DATA', width: '12%', center: true, render: utils.dataBrasil },
-                'Valor': { dataField: 'VALOR', width: '12%', right: true, render: utils.formatValor },
-            },
-            query: {
-                async execute(rs) {
-                    let data = await actions.getEntregarReceberPendente(rs)
-                    state.gridPrincipal.querySourceAdd(data)
+        try {
+            state.qtdTotalPendenciasMotoristas = 0;
+            state.motoristas = [];
+
+            const motoristas = await entregarReceberService.getMotoristasPendentes();
+
+            motoristas.forEach(motorista => {
+                state.qtdTotalPendenciasMotoristas += motorista.QTD
+
+                if (motorista.COD_FUNCIONARIO != -1) {
+                    state.motoristas.push(motorista)
                 }
-            },
+            })
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Ocorreu um erro ao buscar os motoristas pendentes'
+            })
+        }
+    },
 
-            // sideBySide: {
-            //     el: '#pnCampos',
-            //     vModel(r) { state.dbEntReb = r },
-            // },
-            enter: function () {
-                document.getElementById('btnUpdate').click()
+    async getClientesPendentes() {
+
+        try {
+            state.clientes = await entregarReceberService.getClientesPendentes()
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Ocorreu um erro ao buscar os clientes pendentes'
+            })
+        }
+    },
+
+    async getTotalizadores() {
+
+        try {
+            state.totalizadores = await entregarReceberService.getTotalizadores()
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Ocorreu um erro ao buscar os totalizadores'
+            })
+        }
+    },
+
+    getFotoMontadorURL(cpf: string) {
+        if (!cpf) {
+            return "";
+        }
+
+        const cpfSanitizado = cpf.replaceAll('.', '').replaceAll('-', '');
+        return `http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`
+    },
+
+    onClickMotorista(codFuncionario: number | null) {
+        let query = {}
+
+        if (codFuncionario) {
+            query = {
+                id_motorista: codFuncionario
             }
-        });
+        }
 
-    },
-
-    async getEntregarReceberPendente(param: any) {
-
-        let { data } = await axios.post(caminho, {
-            call: 'getEntregarReceberPendente',
-            param
+        router.push({
+            name: 'entregarReceberDetalhes',
+            query,
         })
-        return data;
     },
 
-    search() {
-        state.gridPrincipal.queryOpen({});
+    onClickCliente(idCliente: number | null) {
+        let query = {}
+
+        if (idCliente) {
+            query = {
+                id_cliente: idCliente
+            }
+        }
+
+        router.push({
+            name: 'entregarReceberDetalhes',
+            query,
+        })
     },
 
+    async init() {
+        state.loading = true;
+
+        await actions.getMotoristasPendentes();
+        await actions.getClientesPendentes();
+        await actions.getTotalizadores();
+
+        state.loading = false;
+    }
 
 }
-
 
 export default { state, actions }
