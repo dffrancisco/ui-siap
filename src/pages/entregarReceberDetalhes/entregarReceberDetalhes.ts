@@ -28,6 +28,14 @@ export const horaFormatada = computed(() => {
     return state.entregarReceber?.HORA?.substring(11, 16)
 })
 
+export const motoristaAtual = computed((): iMotorista => {
+    return {
+        COD_FUNCIONARIO: state.entregarReceber.COD_FUNCIONARIO_MOTORISTA,
+        CPF: state.entregarReceber.CPF,
+        NOME_MOTORISTA: state.entregarReceber.NOME_MOTORISTA
+    }
+})
+
 export const disableBotaoEditarObservacao = computed(() => {
     if (!state.entregarReceber.NUM_ORCAMENTO || state.editandoObservacao) {
         return true
@@ -135,6 +143,8 @@ export const actions = {
     init(route: RouteLocationNormalizedLoaded) {
         nextTick(async () => {
             state.loading = true;
+
+            state.entregarReceber = {} as iEntregarReceber;
 
             await actions.getMotoristas();
 

@@ -12,8 +12,8 @@ const state = reactive({
 });
 
 const props = defineProps({
-  idMotoristaAtual: {
-    type: Number,
+  motoristaAtual: {
+    type: Object as () => iMotorista,
     default: undefined,
   },
   motoristas: {
@@ -24,22 +24,12 @@ const props = defineProps({
 
 const emit = defineEmits(["trocarMotorista"]);
 
-const motoristaAtual = computed(() => {
-  if (!props.idMotoristaAtual) {
-    return {} as iMotorista;
-  }
-
-  return props.motoristas.find(
-    (motorista) => motorista.COD_FUNCIONARIO === props.idMotoristaAtual
-  );
-});
-
 const urlAvatarMotorista = computed(() => {
-  if (!motoristaAtual.value.CPF) {
+  if (!props.motoristaAtual.CPF) {
     return "";
   }
 
-  const cpf = motoristaAtual.value.CPF.replaceAll(".", "").replaceAll("-", "");
+  const cpf = props.motoristaAtual.CPF.replaceAll(".", "").replaceAll("-", "");
   return `http://www.reallatas.com.br/foto_funcionarios/${cpf}.jpg`;
 });
 
@@ -53,7 +43,9 @@ const urlAvatarNovoMotorista = computed(() => {
 });
 
 const onClickTrocarMotorista = () => {
-  if (props.idMotoristaAtual == state.novoMotorista.COD_FUNCIONARIO) {
+  if (
+    props.motoristaAtual.COD_FUNCIONARIO == state.novoMotorista.COD_FUNCIONARIO
+  ) {
     Swal.fire({
       text: "O novo motorista não poder ser o mesmo do atual",
       icon: "warning",

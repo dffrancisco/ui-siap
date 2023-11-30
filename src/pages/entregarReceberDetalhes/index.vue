@@ -6,6 +6,7 @@ import {
   horaFormatada,
   disableEdtObservacao,
   disableBotaoEditarObservacao,
+  motoristaAtual,
 } from "./entregarReceberDetalhes";
 
 import { useRoute } from "vue-router";
@@ -226,7 +227,7 @@ actions.init(route);
     >
       <modal-troca-motorista
         :motoristas="state.motoristas"
-        :idMotoristaAtual="state.entregarReceber.COD_FUNCIONARIO_MOTORISTA"
+        :motoristaAtual="motoristaAtual"
         @trocarMotorista="actions.trocarMotorista"
       />
     </div>
