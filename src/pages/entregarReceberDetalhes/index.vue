@@ -11,6 +11,7 @@ import {
 
 import { useRoute } from "vue-router";
 import ModalTrocaMotorista from "./components/modalTrocaMotorista.vue";
+import ModalEscolherOrcamento from "./components/modalEscolherOrcamento.vue";
 const route = useRoute();
 
 actions.init(route);
@@ -184,21 +185,26 @@ actions.init(route);
                 icon="mdi-printer"
                 size="small"
                 title="Imprimir"
+                @click="actions.onClickImprimir"
               ></v-btn>
             </v-col>
             <v-col cols="3">
               <div class="d-flex">
                 <v-text-field
+                  id="edtNumOrcamentoPendencia"
                   hide-details
                   label="Nº Orçamento"
                   class="mr-2"
                   autofocus
+                  v-model="state.edtNumOrcamentoPendencia"
+                  @keypress.enter="actions.validarOrcamento(undefined)"
                 ></v-text-field>
                 <v-btn
                   icon="mdi-account-arrow-right"
                   color="primary"
                   title="Remover pendência motorista"
                   size="small"
+                  @click="actions.validarOrcamento(undefined)"
                 >
                 </v-btn>
               </div>
@@ -229,6 +235,18 @@ actions.init(route);
         :motoristas="state.motoristas"
         :motoristaAtual="motoristaAtual"
         @trocarMotorista="actions.trocarMotorista"
+      />
+    </div>
+
+    <div
+      id="modalEscolherOrcamento"
+      title="Escolher orçamento"
+      style="display: none"
+    >
+      <modal-escolher-orcamento
+        :orcamentos="state.orcamentosParaEscolher"
+        @cancelar="actions.cancelarEscolhaOrcamento"
+        @orcamentoEscolhido="actions.escolherOrcamento"
       />
     </div>
   </v-main>

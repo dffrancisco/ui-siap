@@ -29,6 +29,16 @@ export interface iMotorista {
     NOME_MOTORISTA: string,
 }
 
+export interface iOrcamentoBaixa {
+    NUM_ORCAMENTO: number,
+    DATA: string,
+    TIPO_PAGAMENTO: string,
+    DESCRICAO_PAGAMENTO: string | undefined,
+    VALOR: number,
+    CLIENTE: string | undefined,
+    NOME_MOTORISTA: string | undefined,
+}
+
 export interface iTrocarMotoristaFunctionParam {
     codFuncionario: number,
     numOrcamento: number,
@@ -45,4 +55,9 @@ export interface iUpdateDescPendenciaMotoristaFunctionParam {
     numOrcamento: number,
     data: string,
     descPendencia: string,
+}
+
+export interface iGetOrcamentosBaixaFunctionParam {
+    numOrcamento: number,
+    data: string | undefined,
 }

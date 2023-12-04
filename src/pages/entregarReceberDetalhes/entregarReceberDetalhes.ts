@@ -3,10 +3,11 @@ import xGrid, { ixGridCreate } from '@/plugins/xGridV2'
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import entregarReceberDetalhesService from "./services/entregarReceberDetalhes.service";
 import utils, { sleep } from "@/ts/utils";
-import { iEntregarReceber, iMotorista } from "./interface";
+import { iEntregarReceber, iMotorista, iOrcamentoBaixa } from "./interface";
 import router from "@/router";
 import Swal from "sweetalert2";
 import { RouteLocationNormalizedLoaded } from 'vue-router'
+import printJS from "print-js";
 
 export const state = reactive({
     loading: false,
@@ -21,7 +22,9 @@ export const state = reactive({
     idCliente: <number | undefined>undefined,
     motoristasComPendencia: <iMotorista[]>[],
     motoristas: <iMotorista[]>[],
-    modalTrocaMotorista: <iModalCreate>(<unknown>null)
+    orcamentosParaEscolher: <iOrcamentoBaixa[]>[],
+    modalTrocaMotorista: <iModalCreate>(<unknown>null),
+    modalEscolherOrcamento: <iModalCreate>(<unknown>null)
 })
 
 export const horaFormatada = computed(() => {
@@ -109,7 +112,7 @@ export const actions = {
                 limparObservacao();
                 state.entregarReceber = entregarReceber
                 state.edtObservacao = entregarReceber.OBSERVACAO
-            }
+            },
         })
 
         state.gridEntregarReceber.queryOpen({});
@@ -121,6 +124,12 @@ export const actions = {
             height: 300,
             width: 400,
             el: '#modalTrocaMotorista'
+        })
+
+        state.modalEscolherOrcamento = new xModal.create({
+            height: 354,
+            width: 750,
+            el: '#modalEscolherOrcamento'
         })
     },
 
@@ -160,6 +169,104 @@ export const actions = {
 
     onClickVoltar() {
         router.push('entregarReceber')
+    },
+
+    cancelarEscolhaOrcamento() {
+        state.modalEscolherOrcamento.close()
+    },
+
+    escolherOrcamento(orcamento: iOrcamentoBaixa) {
+        state.modalEscolherOrcamento.close()
+        actions.validarOrcamento(orcamento.DATA);
+    },
+
+    async validarOrcamento(data: string | undefined = undefined) {
+        if (!state.edtNumOrcamentoPendencia) {
+            await Swal.fire({
+                text: 'Informe o Nº do orçamento',
+                icon: 'warning',
+            })
+
+            await sleep(500);
+            //@ts-ignore
+            document.querySelector('#edtNumOrcamentoPendencia').focus();
+            return;
+        }
+
+        state.loading = true;
+
+        try {
+            const orcamentos = await entregarReceberDetalhesService.getOrcamentosBaixa({
+                numOrcamento: state.edtNumOrcamentoPendencia,
+                data,
+            });
+
+            state.loading = false;
+
+            if (orcamentos.length > 1) {
+                state.orcamentosParaEscolher = orcamentos
+                state.modalEscolherOrcamento.open()
+            } else {
+                actions.iniciarBaixa(orcamentos[0])
+            }
+        } catch (error) {
+            state.loading = false;
+
+            await Swal.fire({
+                text: error?.response?.data?.msg || 'Ocorreu um erro ao validar orçamento',
+                icon: "error"
+            })
+
+            await sleep(500);
+            //@ts-ignore
+            document.querySelector('#edtNumOrcamentoPendencia').focus();
+        } finally {
+            state.loading = false
+        }
+
+    },
+
+    async iniciarBaixa(orcamento: iOrcamentoBaixa) {
+        if (orcamento.TIPO_PAGAMENTO == '6') {
+            actions.baixarEntregarReceber();
+        } else {
+            actions.baixarPendencia();
+        }
+    },
+
+    async baixarEntregarReceber() {
+
+    },
+
+    async baixarPendencia() {
+
+    },
+
+    async onClickImprimir() {
+        const entregarReceberImpressao = state.gridEntregarReceber.data() as unknown as iEntregarReceber[];
+
+        entregarReceberImpressao.forEach(entregarReceber => {
+            entregarReceber.DATA = utils.dataBrasil(entregarReceber.DATA)
+            //@ts-ignore
+            entregarReceber.VALOR = utils.formatValor(entregarReceber.VALOR)
+            entregarReceber.NOME_MOTORISTA = entregarReceber.NOME_MOTORISTA || '-'
+        })
+
+        printJS({
+            documentTitle: 'Entregar e Receber / Pendências',
+            printable: state.gridEntregarReceber.data(),
+            properties: [
+                { field: 'NUM_ORCAMENTO', displayName: 'Nº Orç.' },
+                { field: 'DATA', displayName: 'Data' },
+                { field: 'CLIENTE', displayName: 'Cliente' },
+                { field: 'NOME_CLIENTE', displayName: 'Nome Cliente' },
+                { field: 'VENDEDOR', displayName: 'Vendedor' },
+                { field: 'VALOR', displayName: 'Valor' },
+                { field: 'TIPO_PAGAMENTO', displayName: 'Tipo Pgto' },
+                { field: 'NOME_MOTORISTA', displayName: 'Motorista' },
+            ],
+            type: 'json'
+        })
     },
 
     async onClickEditarObservacao() {

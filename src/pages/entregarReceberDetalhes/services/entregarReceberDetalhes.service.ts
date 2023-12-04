@@ -2,8 +2,10 @@ import axios from "axios";
 import {
     iEntregarReceber,
     iGetEntregarReceberPendenteParam,
+    iGetOrcamentosBaixaFunctionParam,
     iInsertUpdateObsEntregarReceberFunctionParam,
     iMotorista,
+    iOrcamentoBaixa,
     iTrocarMotoristaFunctionParam,
     iUpdateDescPendenciaMotoristaFunctionParam,
 } from "../interface";
@@ -16,6 +18,7 @@ type iGetEntregarReceberPendente = (param: iGetEntregarReceberPendenteParam) => 
 type iTrocarMotoristaFunction = (param: iTrocarMotoristaFunctionParam) => Promise<void>
 type iInsertUpdateObsEntregarReceberFunction = (param: iInsertUpdateObsEntregarReceberFunctionParam) => Promise<void>
 type iUpdateDescPendenciaMotoristaFunction = (param: iUpdateDescPendenciaMotoristaFunctionParam) => Promise<void>
+type iGetOrcamentosBaixaFunction = (param: iGetOrcamentosBaixaFunctionParam) => Promise<iOrcamentoBaixa[]>
 
 const getMotoristas: iGetMotoristas = async () => {
     let { data } = await axios.post(caminho, {
@@ -75,6 +78,17 @@ const updateDescPendenciaMotorista: iUpdateDescPendenciaMotoristaFunction = asyn
     return data;
 }
 
+const getOrcamentosBaixa: iGetOrcamentosBaixaFunction = async (param) => {
+    console.log(param);
+    let { data } = await axios.post(caminho, {
+        call: 'getOrcamentosBaixa',
+        numOrcamento: param.numOrcamento,
+        data: param.data,
+    })
+
+    return data;
+}
+
 export default {
     getMotoristas,
     getMotoristasPendentes,
@@ -82,4 +96,5 @@ export default {
     trocarMotorista,
     insertUpdateObsEntregarReceber,
     updateDescPendenciaMotorista,
+    getOrcamentosBaixa,
 }
