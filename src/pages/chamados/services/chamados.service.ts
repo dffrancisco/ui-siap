@@ -1,8 +1,9 @@
 import axios from "axios";
-import { iGetChamadosResponse, iParamGetChamados, iVerDetalhesChamadoResponse } from "../interfaces";
+import { iGetChamadosResponse, iInsertChamado, iInsertChamadoResponse, iParamGetChamados, iVerDetalhesChamadoResponse } from "../interfaces";
 
 type iGetChamadosFunction = (param: iParamGetChamados) => Promise<iGetChamadosResponse>
 type iVerDetalhesChamadoFunction = (keyJira: string) => Promise<iVerDetalhesChamadoResponse>
+type iInsertChamadoFunction = (param: iInsertChamado) => Promise<iInsertChamadoResponse>
 
 const getChamados: iGetChamadosFunction = async ({ page, itemsPerPage, sortBy, search }) => {
     let { data } = await axios.post('siap/chamados', {
@@ -28,7 +29,17 @@ const verDetalhesChamado: iVerDetalhesChamadoFunction = async (keyJira) => {
     return data;
 }
 
+const insertChamado: iInsertChamadoFunction = async (param) => {
+    let { data } = await axios.post('siap/chamados', {
+        call: 'insert',
+        param
+    });
+    return data;
+}
+
+
 export default {
     getChamados,
-    verDetalhesChamado
+    verDetalhesChamado,
+    insertChamado
 }
