@@ -208,6 +208,7 @@ nextTick(() => {
           >
             <div
               class="btnMenus"
+              :class="{ 'btnMenu-disabled': valorRestante == 0 }"
               :tabindex="index + 1"
               @click.prevent="opcaoPagamento.click"
               @keypress.enter.prevent="
@@ -366,5 +367,9 @@ nextTick(() => {
 .pagamentos {
   display: flex;
   flex-grow: 1;
+}
+
+.btnMenu-disabled {
+  opacity: 0.6;
 }
 </style>
