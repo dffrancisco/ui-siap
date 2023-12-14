@@ -61,3 +61,65 @@ export interface iGetOrcamentosBaixaFunctionParam {
     numOrcamento: number,
     data: string | undefined,
 }
+
+interface iCartoes {
+    tipo: "D" | "C";
+    valor: number;
+    numCartaoAut: string;
+    codBandeira: string;
+    divide: number;
+}
+export interface iDeposito {
+    valor: number;
+    conta: string;
+    controle: string;
+    autorizado: string;
+}
+
+export interface iPix {
+    valor: number;
+    controle: string;
+    autorizado: string;
+}
+
+export interface iTipos {
+    "1": { valor: number }
+    "2": { valor: number; cartoes: iCartoes[] };
+    "8": { valor: number; depositos: iDeposito[] };
+    "P": { valor: number; pix: iPix[] };
+}
+
+export interface iTipos {
+    "1": { valor: number }
+    "2": { valor: number; cartoes: iCartoes[] };
+    "8": { valor: number; depositos: iDeposito[] };
+    "P": { valor: number; pix: iPix[] };
+}
+
+export type iTipoPagamento = '1' | '2' | '8' | 'P';
+
+export interface iPagamento {
+    tipoPagamento: iTipoPagamento,
+    descricaoTipoPagamento: string,
+    valor: number,
+    bandeiraCartao?: string,
+    autorizacao?: string
+}
+
+export interface iPagamentoTotal {
+    tipoPagamento: string
+    valorRecebido: number
+    tipos: iTipos
+}
+
+export interface iBaixarEntregarReceberFunctionParam {
+    numOrcamento: number
+    data: string
+    tipoPagamento: iTipoPagamento
+    pagamento: iPagamentoTotal
+}
+
+export interface iBaixarPendenciaFunctionParam {
+    numOrcamento: number
+    data: string
+}

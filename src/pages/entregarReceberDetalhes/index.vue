@@ -12,6 +12,7 @@ import {
 import { useRoute } from "vue-router";
 import ModalTrocaMotorista from "./components/modalTrocaMotorista.vue";
 import ModalEscolherOrcamento from "./components/modalEscolherOrcamento.vue";
+import ModalOpcoesPagamento from "./components/modalOpcoesPagamento.vue";
 const route = useRoute();
 
 actions.init(route);
@@ -248,6 +249,14 @@ actions.init(route);
         @cancelar="actions.cancelarEscolhaOrcamento"
         @orcamentoEscolhido="actions.escolherOrcamento"
       />
+    </div>
+
+    <div
+      id="modalOpcoesPagamento"
+      title="Opções de pagamento"
+      style="display: none"
+    >
+      <modal-opcoes-pagamento :orcamento="state.orcamentoBaixa" />
     </div>
   </v-main>
 
