@@ -23,8 +23,10 @@ export const state = reactive({
     motoristasComPendencia: <iMotorista[]>[],
     motoristas: <iMotorista[]>[],
     orcamentosParaEscolher: <iOrcamentoBaixa[]>[],
+    orcamentoBaixa: <iOrcamentoBaixa>{},
     modalTrocaMotorista: <iModalCreate>(<unknown>null),
-    modalEscolherOrcamento: <iModalCreate>(<unknown>null)
+    modalEscolherOrcamento: <iModalCreate>(<unknown>null),
+    modalOpcoesPagamento: <iModalCreate>(<unknown>null),
 })
 
 export const horaFormatada = computed(() => {
@@ -131,6 +133,12 @@ export const actions = {
             width: 750,
             el: '#modalEscolherOrcamento'
         })
+
+        state.modalOpcoesPagamento = new xModal.create({
+            height: 474,
+            width: 750,
+            el: '#modalOpcoesPagamento'
+        })
     },
 
     async getEntregarReceber() {
@@ -154,6 +162,8 @@ export const actions = {
             state.loading = true;
 
             state.entregarReceber = {} as iEntregarReceber;
+
+            state.edtNumOrcamentoPendencia = ""
 
             await actions.getMotoristas();
 
@@ -203,6 +213,7 @@ export const actions = {
 
             state.loading = false;
 
+
             if (orcamentos.length > 1) {
                 state.orcamentosParaEscolher = orcamentos
                 state.modalEscolherOrcamento.open()
@@ -228,9 +239,10 @@ export const actions = {
 
     async iniciarBaixa(orcamento: iOrcamentoBaixa) {
         if (orcamento.TIPO_PAGAMENTO == '6') {
-            actions.baixarEntregarReceber();
+            state.orcamentoBaixa = orcamento;
+            state.modalOpcoesPagamento.open();
         } else {
-            actions.baixarPendencia();
+            actions.baixarPendencia(orcamento.NUM_ORCAMENTO, orcamento.DATA);
         }
     },
 
@@ -238,8 +250,28 @@ export const actions = {
 
     },
 
-    async baixarPendencia() {
+    async baixarPendencia(numOrcamento: number, data: string) {
+        try {
+            state.loading = true;
 
+            await entregarReceberDetalhesService.baixarPendencia({
+                numOrcamento,
+                data
+            })
+
+            state.edtNumOrcamentoPendencia = ''
+
+            //@ts-ignore
+            document.querySelector('#edtNumOrcamentoPendencia').focus();
+
+        } catch (error) {
+            Swal.fire({
+                text: error?.response?.data?.msg || 'Ocorreu um erro ao remover pendência',
+                icon: "error"
+            })
+        } finally {
+            state.loading = false
+        }
     },
 
     async onClickImprimir() {

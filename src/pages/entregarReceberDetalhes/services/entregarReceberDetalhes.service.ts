@@ -1,5 +1,7 @@
 import axios from "axios";
 import {
+    iBaixarEntregarReceberFunctionParam,
+    iBaixarPendenciaFunctionParam,
     iEntregarReceber,
     iGetEntregarReceberPendenteParam,
     iGetOrcamentosBaixaFunctionParam,
@@ -19,6 +21,8 @@ type iTrocarMotoristaFunction = (param: iTrocarMotoristaFunctionParam) => Promis
 type iInsertUpdateObsEntregarReceberFunction = (param: iInsertUpdateObsEntregarReceberFunctionParam) => Promise<void>
 type iUpdateDescPendenciaMotoristaFunction = (param: iUpdateDescPendenciaMotoristaFunctionParam) => Promise<void>
 type iGetOrcamentosBaixaFunction = (param: iGetOrcamentosBaixaFunctionParam) => Promise<iOrcamentoBaixa[]>
+type iBaixarPendenciaFunction = (param: iBaixarPendenciaFunctionParam) => Promise<void>
+type iBaixarEntregarReceberFunction = (param: iBaixarEntregarReceberFunctionParam) => Promise<void>
 
 const getMotoristas: iGetMotoristas = async () => {
     let { data } = await axios.post(caminho, {
@@ -79,11 +83,32 @@ const updateDescPendenciaMotorista: iUpdateDescPendenciaMotoristaFunction = asyn
 }
 
 const getOrcamentosBaixa: iGetOrcamentosBaixaFunction = async (param) => {
-    console.log(param);
     let { data } = await axios.post(caminho, {
         call: 'getOrcamentosBaixa',
         numOrcamento: param.numOrcamento,
         data: param.data,
+    })
+
+    return data;
+}
+
+const baixarPendencia: iBaixarPendenciaFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: 'baixarEntregarReceberPendencia',
+        numOrcamento: param.numOrcamento,
+        data: param.data,
+    })
+
+    return data;
+}
+
+const baixarEntregarReceber: iBaixarEntregarReceberFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: 'baixarEntregarReceberPendencia',
+        numOrcamento: param.numOrcamento,
+        data: param.data,
+        tipoPagamento: param.tipoPagamento,
+        pagamento: param.pagamento
     })
 
     return data;
@@ -97,4 +122,6 @@ export default {
     insertUpdateObsEntregarReceber,
     updateDescPendenciaMotorista,
     getOrcamentosBaixa,
+    baixarPendencia,
+    baixarEntregarReceber,
 }
