@@ -3,7 +3,7 @@ import xGrid, { ixGridCreate } from '@/plugins/xGridV2'
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import entregarReceberDetalhesService from "./services/entregarReceberDetalhes.service";
 import utils, { sleep } from "@/ts/utils";
-import { iEntregarReceber, iMotorista, iOrcamentoBaixa } from "./interface";
+import { iEntregarReceber, iMotorista, iOrcamentoBaixa, iPagamento } from "./interface";
 import router from "@/router";
 import Swal from "sweetalert2";
 import { RouteLocationNormalizedLoaded } from 'vue-router'
@@ -246,8 +246,12 @@ export const actions = {
         }
     },
 
-    async baixarEntregarReceber() {
+    async baixarEntregarReceber(pagamentos: iPagamento[]) {
+        console.log('baixarEntregarReceber');
+    },
 
+    fecharModalPagamento() {
+        state.modalOpcoesPagamento.close();
     },
 
     async baixarPendencia(numOrcamento: number, data: string) {

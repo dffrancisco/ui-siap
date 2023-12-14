@@ -36,7 +36,7 @@ const props = defineProps({
   },
   valorOrcamento: {
     type: Number,
-    required: true,
+    default: 0,
   },
 });
 

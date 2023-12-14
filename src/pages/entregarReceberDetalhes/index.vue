@@ -256,7 +256,11 @@ actions.init(route);
       title="Opções de pagamento"
       style="display: none"
     >
-      <modal-opcoes-pagamento :orcamento="state.orcamentoBaixa" />
+      <modal-opcoes-pagamento
+        :orcamento="state.orcamentoBaixa"
+        @cancelar="actions.fecharModalPagamento"
+        @finalizar="actions.baixarEntregarReceber"
+      />
     </div>
   </v-main>
 

@@ -2,7 +2,7 @@
 import { reactive, computed, nextTick } from "vue";
 import cardPagamento from "./cardPagamento.vue";
 import { iOrcamentoBaixa, iPagamento, iTipoPagamento } from "../interface";
-import utils, { formatValor } from "@/ts/utils";
+import utils, { formatValor, sleep } from "@/ts/utils";
 import modalPgtoDinheiroPixDeposito from "./modalPgtoDinheiroPixDeposito.vue";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import {
@@ -14,6 +14,8 @@ import {
 } from "../entregarReceberDetalhes.constants";
 
 const props = defineProps<{ orcamento: iOrcamentoBaixa }>();
+
+const emit = defineEmits(["cancelar", "finalizar"]);
 
 const openModalPixDepositoDinheiro = (tipoPagamento: iTipoPagamento): void => {
   if (valorRestante.value == 0) return;
@@ -82,7 +84,7 @@ const totalPagamentoDinheiro = computed(() => {
   return soma;
 });
 
-const salvarPagamento = (
+const salvarPagamento = async (
   tipoPagamento: iTipoPagamento,
   valor: number,
   autorizacao?: string,
@@ -110,6 +112,13 @@ const salvarPagamento = (
   }
 
   state.modalPgtoDinheiroPixDeposito.close();
+
+  if (valorRestante.value == 0) {
+    await sleep(200);
+
+    //@ts-ignore
+    document.querySelector("#btnFinalizar").focus();
+  }
 };
 
 const cancelarPagamento = () => {
@@ -118,6 +127,16 @@ const cancelarPagamento = () => {
 
 const deletarPagamento = (index: number) => {
   state.pagamentos.splice(index, 1);
+};
+
+const onClickCancelar = () => {
+  emit("cancelar");
+};
+
+const onClickFinalizar = () => {
+  if (valorRestante.value > 0) return;
+
+  emit("finalizar", state.pagamentos);
 };
 
 const criarModais = () => {
@@ -239,8 +258,21 @@ nextTick(() => {
       </div>
     </div>
     <div class="d-flex justify-end">
-      <v-btn color="primary" variant="outlined" class="mr-2">Cancelar</v-btn>
-      <v-btn color="primary">Finalizar</v-btn>
+      <v-btn
+        @click="onClickCancelar"
+        color="primary"
+        variant="outlined"
+        class="mr-2"
+        >Cancelar</v-btn
+      >
+      <v-btn
+        id="btnFinalizar"
+        @click="onClickFinalizar"
+        color="primary"
+        :disabled="valorRestante > 0"
+      >
+        Finalizar
+      </v-btn>
     </div>
 
     <div id="modalPgtoDinheiroPixDeposito" style="display: none">
