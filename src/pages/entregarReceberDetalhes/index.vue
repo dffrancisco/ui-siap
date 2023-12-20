@@ -13,6 +13,8 @@ import { useRoute } from "vue-router";
 import ModalTrocaMotorista from "./components/modalTrocaMotorista.vue";
 import ModalEscolherOrcamento from "./components/modalEscolherOrcamento.vue";
 import ModalOpcoesPagamento from "./components/modalOpcoesPagamento.vue";
+import xAuthUser from "@/plugins/xAuthUser/index.vue";
+
 const route = useRoute();
 
 actions.init(route);
@@ -176,6 +178,11 @@ actions.init(route);
           </v-row>
           <v-row>
             <v-col cols="12">
+              <v-progress-linear
+                color="primary"
+                v-model="state.timeAuth"
+                max="6000"
+              ></v-progress-linear>
               <div id="gridEntregarReceber"></div>
             </v-col>
           </v-row>
@@ -258,10 +265,14 @@ actions.init(route);
     >
       <modal-opcoes-pagamento
         :orcamento="state.orcamentoBaixa"
+        :opened="state.modalOpcoesPagamentoOpened"
+        :cartoesDisponiveis="state.cartoesDisponiveis"
         @cancelar="actions.fecharModalPagamento"
         @finalizar="actions.baixarEntregarReceber"
       />
     </div>
+
+    <x-auth-user />
   </v-main>
 
   <div id="pnCodigoTela">entregarReceberDetalhes</div>

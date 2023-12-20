@@ -3,13 +3,15 @@ import xGrid, { ixGridCreate } from '@/plugins/xGridV2'
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import entregarReceberDetalhesService from "./services/entregarReceberDetalhes.service";
 import utils, { sleep } from "@/ts/utils";
-import { iEntregarReceber, iMotorista, iOrcamentoBaixa, iPagamento } from "./interface";
+import { iCartaoDisponivel, iEntregarReceber, iMotorista, iOrcamentoBaixa, iPagamento, iTipoPagamento, iTipos } from "./interface";
 import router from "@/router";
 import Swal from "sweetalert2";
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import printJS from "print-js";
+import xAuthUser from "@/plugins/xAuthUser";
 
 export const state = reactive({
+    timeAuth: 0,
     loading: false,
     loadingGrid: false,
     gridEntregarReceber: <ixGridCreate>{},
@@ -22,11 +24,13 @@ export const state = reactive({
     idCliente: <number | undefined>undefined,
     motoristasComPendencia: <iMotorista[]>[],
     motoristas: <iMotorista[]>[],
+    cartoesDisponiveis: <iCartaoDisponivel[]>[],
     orcamentosParaEscolher: <iOrcamentoBaixa[]>[],
     orcamentoBaixa: <iOrcamentoBaixa>{},
     modalTrocaMotorista: <iModalCreate>(<unknown>null),
     modalEscolherOrcamento: <iModalCreate>(<unknown>null),
     modalOpcoesPagamento: <iModalCreate>(<unknown>null),
+    modalOpcoesPagamentoOpened: false,
 })
 
 export const horaFormatada = computed(() => {
@@ -115,6 +119,12 @@ export const actions = {
                 state.entregarReceber = entregarReceber
                 state.edtObservacao = entregarReceber.OBSERVACAO
             },
+            onKeyDown: {
+                13: (orcamento: iEntregarReceber) => {
+                    state.edtNumOrcamentoPendencia = orcamento.NUM_ORCAMENTO
+                    actions.validarOrcamento();
+                }
+            }
         })
 
         state.gridEntregarReceber.queryOpen({});
@@ -137,7 +147,13 @@ export const actions = {
         state.modalOpcoesPagamento = new xModal.create({
             height: 474,
             width: 750,
-            el: '#modalOpcoesPagamento'
+            el: '#modalOpcoesPagamento',
+            onOpen: () => {
+                state.modalOpcoesPagamentoOpened = true;
+            },
+            onClose: () => {
+                state.modalOpcoesPagamentoOpened = false;
+            },
         })
     },
 
@@ -157,6 +173,17 @@ export const actions = {
         }
     },
 
+    async getCartoesDisponiveis() {
+        try {
+            state.cartoesDisponiveis = await entregarReceberDetalhesService.getCartoesDisponiveis();
+        } catch (error) {
+            Swal.fire({
+                text: error?.response?.data?.msg || 'Ocorreu um erro ao buscar os tipos de cartões',
+                icon: "error"
+            })
+        }
+    },
+
     init(route: RouteLocationNormalizedLoaded) {
         nextTick(async () => {
             state.loading = true;
@@ -166,6 +193,7 @@ export const actions = {
             state.edtNumOrcamentoPendencia = ""
 
             await actions.getMotoristas();
+            await actions.getCartoesDisponiveis();
 
             state.edtMotorista = route?.query?.id_motorista ? parseInt(route.query.id_motorista as string) : undefined
             state.idCliente = route?.query?.id_cliente ? parseInt(route?.query?.id_cliente as string) : undefined
@@ -191,6 +219,7 @@ export const actions = {
     },
 
     async validarOrcamento(data: string | undefined = undefined) {
+
         if (!state.edtNumOrcamentoPendencia) {
             await Swal.fire({
                 text: 'Informe o Nº do orçamento',
@@ -203,6 +232,32 @@ export const actions = {
             return;
         }
 
+        let stopTime;
+
+        if (state.timeAuth == 0) {
+            xAuthUser("Confirmação de usuário", async () => {
+                state.timeAuth = 6000;
+
+                await actions.validarOrcamentoAutenticado(data)
+
+                stopTime = setInterval(() => {
+
+                    state.timeAuth--
+
+                    if (state.timeAuth == 0)
+                        clearInterval(stopTime)
+
+                }, 100);
+
+            });
+
+        } else {
+            actions.validarOrcamentoAutenticado(data);
+        }
+
+    },
+
+    async validarOrcamentoAutenticado(data: string | undefined = undefined) {
         state.loading = true;
 
         try {
@@ -234,7 +289,6 @@ export const actions = {
         } finally {
             state.loading = false
         }
-
     },
 
     async iniciarBaixa(orcamento: iOrcamentoBaixa) {
@@ -247,7 +301,106 @@ export const actions = {
     },
 
     async baixarEntregarReceber(pagamentos: iPagamento[]) {
-        console.log('baixarEntregarReceber');
+        try {
+            state.loading = true;
+
+            let tipoPagamento = '';
+            let tipos = <iTipos>{};
+            let valorTotalRecebido = 0;
+            let pagamentoDinheiro = pagamentos.filter(pagamento => pagamento.tipoPagamento == '1');
+            let pagamentosCartao = pagamentos.filter(pagamento => pagamento.tipoPagamento == '2');
+            let pagamentosDeposito = pagamentos.filter(pagamento => pagamento.tipoPagamento == '8');
+            let pagamentosPix = pagamentos.filter(pagamento => pagamento.tipoPagamento == 'P');
+
+            pagamentos.forEach(pagamento => {
+                tipoPagamento += pagamento.tipoPagamento
+                valorTotalRecebido += pagamento.valor;
+            })
+
+            if (pagamentoDinheiro.length > 0) {
+                tipos[1] = {
+                    valor: pagamentoDinheiro[0].valor
+                }
+            }
+
+            if (pagamentosCartao.length > 0) {
+                tipos[2] = {
+                    valor: 0,
+                    cartoes: []
+                }
+
+                pagamentosCartao.forEach(cartao => {
+                    tipos[2].valor += cartao.valor
+                    tipos[2].cartoes.push({
+                        codBandeira: cartao.codigoBandeiraCartao.toString(),
+                        divide: cartao.divisaoCartao,
+                        numCartaoAut: cartao.autorizacao,
+                        tipo: cartao.tipoCartao,
+                        valor: cartao.valor
+                    })
+                })
+            }
+
+            if (pagamentosDeposito.length > 0) {
+                tipos[8] = {
+                    valor: 0,
+                    depositos: []
+                }
+
+                pagamentosDeposito.forEach(deposito => {
+                    tipos[8].valor += deposito.valor
+                    tipos[8].depositos.push({
+                        valor: deposito.valor,
+                        controle: deposito.autorizacao,
+                        autorizado: '-',
+                    })
+                })
+            }
+
+            if (pagamentosPix.length > 0) {
+                tipos['P'] = {
+                    valor: 0,
+                    pix: []
+                }
+
+                pagamentosPix.forEach(pix => {
+                    tipos['P'].valor += pix.valor
+                    tipos['P'].pix.push({
+                        valor: pix.valor,
+                        controle: pix.autorizacao,
+                        autorizado: '-',
+                    })
+                })
+            }
+
+            await entregarReceberDetalhesService.baixarEntregarReceber({
+                data: state.orcamentoBaixa.DATA,
+                numOrcamento: state.orcamentoBaixa.NUM_ORCAMENTO,
+                tipoPagamento: tipoPagamento as iTipoPagamento,
+                pagamento: {
+                    tipoPagamento: tipoPagamento,
+                    valorRecebido: valorTotalRecebido,
+                    tipos
+                }
+            })
+
+            state.modalOpcoesPagamento.close();
+
+            await actions.getEntregarReceber();
+
+            state.edtNumOrcamentoPendencia = ''
+
+            //@ts-ignore
+            document.querySelector('#edtNumOrcamentoPendencia').focus();
+
+        } catch (error) {
+            Swal.fire({
+                text: error?.response?.data?.msg || 'Ocorreu um erro ao baixar entregar e receber',
+                icon: "error"
+            })
+        } finally {
+            state.loading = false;
+        }
     },
 
     fecharModalPagamento() {
