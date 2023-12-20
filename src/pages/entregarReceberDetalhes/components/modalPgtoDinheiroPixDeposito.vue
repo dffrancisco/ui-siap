@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatValorUSA, sleep } from "@/ts/utils";
+import utils, { formatValorUSA, sleep } from "@/ts/utils";
 import { reactive, watch, nextTick, computed } from "vue";
 import {
   TIPO_PAGAMENTO_DEPOSITO,
@@ -52,17 +52,27 @@ const exibirEdtAutorizacao = computed(() => {
   return false;
 });
 
+const valorDisponivel = computed(() => {
+  let vlrDisponivel = props.valorOrcamento - props.totalPagamentos;
+  if (props.tipoPagamento === TIPO_PAGAMENTO_DINHEIRO) {
+    vlrDisponivel += props.totalPagamentoDinheiro;
+  }
+
+  return parseFloat(vlrDisponivel.toFixed(2));
+});
+
 watch(
   () => props.opened,
   (newValue) => {
     nextTick(async () => {
       if (newValue) {
-        console.log(props.tipoPagamento);
-        if (props.tipoPagamento == TIPO_PAGAMENTO_DINHEIRO) {
-          console.log("aaa");
+        if (
+          props.tipoPagamento == TIPO_PAGAMENTO_DINHEIRO &&
+          props.totalPagamentoDinheiro != 0
+        ) {
           state.edtValor = props.totalPagamentoDinheiro.toFixed(2);
         } else {
-          state.edtValor = "0";
+          state.edtValor = utils.formatValor(valorDisponivel.value);
         }
 
         state.edtAutorizacao = props.autorizacaoInicial;
@@ -104,12 +114,7 @@ const salvar = async () => {
     return;
   }
 
-  let valorDisponivel = props.valorOrcamento - props.totalPagamentos;
-  if (props.tipoPagamento === TIPO_PAGAMENTO_DINHEIRO) {
-    valorDisponivel += props.totalPagamentoDinheiro;
-  }
-
-  if (valor > valorDisponivel) {
+  if (valor > valorDisponivel.value) {
     Swal.fire({
       text: "Valor informado maior que o valor restante para pagamento",
       icon: "warning",
@@ -129,7 +134,11 @@ const salvar = async () => {
     return;
   }
 
-  emit("salvar", props.tipoPagamento, valor, state.edtAutorizacao);
+  emit("salvar", {
+    tipoPagamento: props.tipoPagamento,
+    valor,
+    autorizacao: state.edtAutorizacao,
+  });
 };
 </script>
 
