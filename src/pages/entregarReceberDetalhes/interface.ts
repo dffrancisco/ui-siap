@@ -29,6 +29,12 @@ export interface iMotorista {
     NOME_MOTORISTA: string,
 }
 
+export interface iCartaoDisponivel {
+    COD_BANDEIRA_CARTAO: number,
+    DESCRICAO: string,
+    DIVISAO: number,
+}
+
 export interface iOrcamentoBaixa {
     NUM_ORCAMENTO: number,
     DATA: string,
@@ -71,7 +77,6 @@ interface iCartoes {
 }
 export interface iDeposito {
     valor: number;
-    conta: string;
     controle: string;
     autorizado: string;
 }
@@ -102,8 +107,10 @@ export interface iPagamento {
     tipoPagamento: iTipoPagamento,
     descricaoTipoPagamento: string,
     valor: number,
-    bandeiraCartao?: string,
-    autorizacao?: string
+    codigoBandeiraCartao?: number,
+    autorizacao?: string,
+    tipoCartao?: 'D' | 'C',
+    divisaoCartao?: number
 }
 
 export interface iPagamentoTotal {
