@@ -1,5 +1,14 @@
 <script setup lang="ts">
 import { formatValor } from "@/ts/utils";
+import iconeAura from "../assets/cartoes/aura.svg";
+import iconeAmex from "../assets/cartoes/american_express.svg";
+import iconeCabal from "../assets/cartoes/cabal.svg";
+import iconeDinersClub from "../assets/cartoes/diners_club.svg";
+import iconeElo from "../assets/cartoes/elo.svg";
+import iconeHipercard from "../assets/cartoes/hipercard.svg";
+import iconeMasterCard from "../assets/cartoes/master_card.svg";
+import iconeSorocred from "../assets/cartoes/sorocred.svg";
+import iconeVisa from "../assets/cartoes/visa.svg";
 
 const props = defineProps({
   index: {
@@ -14,11 +23,24 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  bandeiraCartao: {
-    type: String,
+  codigoBandeiraCartao: {
+    type: Number,
     default: undefined,
   },
 });
+
+const imgBandeiraCartoes = {
+  1: iconeVisa,
+  2: iconeMasterCard,
+  3: iconeAmex,
+  4: iconeSorocred,
+  5: iconeDinersClub,
+  6: iconeElo,
+  7: iconeHipercard,
+  8: iconeAura,
+  9: iconeCabal,
+  99: "",
+};
 
 const emit = defineEmits(["deletar"]);
 
@@ -30,10 +52,13 @@ const deletar = () => {
 <template>
   <div class="cc">
     <div class="cc__front cc__part">
-      <div class="">
-        <span class=""> {{ props.descricaoTipoPagamento }}</span>
-        <p class="">{{ formatValor(props.valor) }}</p>
+      <div>
+        <span> {{ props.descricaoTipoPagamento }}</span>
+        <p>{{ formatValor(props.valor) }}</p>
       </div>
+    </div>
+    <div v-if="imgBandeiraCartoes[codigoBandeiraCartao]" class="icone-cartao">
+      <img :src="imgBandeiraCartoes[codigoBandeiraCartao]" />
     </div>
     <div class="icone-lixeira">
       <v-icon @click="deletar" title="deletar pagamento" color="#fff"
@@ -89,5 +114,16 @@ const deletar = () => {
   position: absolute;
   top: 50px;
   left: 110px;
+}
+
+.icone-cartao {
+  position: absolute;
+  top: 4px;
+  left: 90px;
+
+  img {
+    width: 28px;
+    height: 28px;
+  }
 }
 </style>
