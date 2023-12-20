@@ -1,9 +1,15 @@
 <script lang="ts" setup>
-import { reactive, computed, nextTick } from "vue";
+import { reactive, computed, nextTick, watch } from "vue";
 import cardPagamento from "./cardPagamento.vue";
-import { iOrcamentoBaixa, iPagamento, iTipoPagamento } from "../interface";
+import {
+  iCartaoDisponivel,
+  iOrcamentoBaixa,
+  iPagamento,
+  iTipoPagamento,
+} from "../interface";
 import utils, { formatValor, sleep } from "@/ts/utils";
 import modalPgtoDinheiroPixDeposito from "./modalPgtoDinheiroPixDeposito.vue";
+import modalPgtoCartao from "./modalPgtoCartao.vue";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import {
   TIPO_PAGAMENTO_DINHEIRO,
@@ -12,8 +18,13 @@ import {
   TIPO_PAGAMENTO_PIX,
   TIPO_PAGAMENTO_DESCRICAO,
 } from "../entregarReceberDetalhes.constants";
+import { onKeyStroke } from "@vueuse/core";
 
-const props = defineProps<{ orcamento: iOrcamentoBaixa }>();
+const props = defineProps<{
+  orcamento: iOrcamentoBaixa;
+  opened: boolean;
+  cartoesDisponiveis: iCartaoDisponivel[];
+}>();
 
 const emit = defineEmits(["cancelar", "finalizar"]);
 
@@ -25,8 +36,17 @@ const openModalPixDepositoDinheiro = (tipoPagamento: iTipoPagamento): void => {
   state.modalPgtoDinheiroPixDeposito.open();
 };
 
+const openModalCartao = (tipoPagamento: iTipoPagamento): void => {
+  if (valorRestante.value == 0) return;
+
+  state.tipoPagamentoSelecionado = tipoPagamento;
+  state.modalPgtoCartaoOpened = true;
+  state.modalPgtoCartao.open();
+};
+
 const state = reactive({
   modalPgtoDinheiroPixDepositoOpened: false,
+  modalPgtoCartaoOpened: false,
   opcoesPagamento: [
     {
       codigo: TIPO_PAGAMENTO_DINHEIRO,
@@ -38,7 +58,7 @@ const state = reactive({
       codigo: TIPO_PAGAMENTO_CARTAO,
       icon: "mdi-credit-card",
       nome: "Cartão",
-      click: () => {},
+      click: () => openModalCartao(TIPO_PAGAMENTO_CARTAO),
     },
     {
       codigo: TIPO_PAGAMENTO_DEPOSITO,
@@ -55,6 +75,7 @@ const state = reactive({
   ],
   pagamentos: <iPagamento[]>[],
   modalPgtoDinheiroPixDeposito: <iModalCreate>(<unknown>null),
+  modalPgtoCartao: <iModalCreate>(<unknown>null),
   tipoPagamentoSelecionado: "",
 });
 
@@ -84,26 +105,23 @@ const totalPagamentoDinheiro = computed(() => {
   return soma;
 });
 
-const salvarPagamento = async (
-  tipoPagamento: iTipoPagamento,
-  valor: number,
-  autorizacao?: string,
-  bandeiraCartao?: string
-) => {
-  const pagamento: iPagamento = {
-    tipoPagamento,
-    valor,
-    descricaoTipoPagamento: TIPO_PAGAMENTO_DESCRICAO[tipoPagamento],
-    autorizacao: autorizacao || "",
-    bandeiraCartao: bandeiraCartao || "",
-  };
+const existeModalAberta = computed(() => {
+  return (
+    state.modalPgtoCartaoOpened || state.modalPgtoDinheiroPixDepositoOpened
+  );
+});
+
+const salvarPagamento = async (pagamento: iPagamento) => {
+  pagamento.descricaoTipoPagamento =
+    TIPO_PAGAMENTO_DESCRICAO[pagamento.tipoPagamento];
+  pagamento.autorizacao = pagamento.autorizacao || "";
 
   let indexPagamentoDinheiro = state.pagamentos.findIndex(
     (pagamento) => pagamento.tipoPagamento == TIPO_PAGAMENTO_DINHEIRO
   );
 
   if (
-    tipoPagamento == TIPO_PAGAMENTO_DINHEIRO &&
+    pagamento.tipoPagamento == TIPO_PAGAMENTO_DINHEIRO &&
     indexPagamentoDinheiro != -1
   ) {
     state.pagamentos[indexPagamentoDinheiro] = pagamento;
@@ -111,7 +129,10 @@ const salvarPagamento = async (
     state.pagamentos.push(pagamento);
   }
 
-  state.modalPgtoDinheiroPixDeposito.close();
+  if (state.modalPgtoCartaoOpened) state.modalPgtoCartao.close();
+
+  if (state.modalPgtoDinheiroPixDepositoOpened)
+    state.modalPgtoDinheiroPixDeposito.close();
 
   if (valorRestante.value == 0) {
     await sleep(200);
@@ -146,11 +167,99 @@ const criarModais = () => {
     width: 282,
     title: "Informe o valor",
     onClose: () => {
-      state.tipoPagamentoSelecionado = "";
+      state.tipoPagamentoSelecionado = TIPO_PAGAMENTO_DINHEIRO;
       state.modalPgtoDinheiroPixDepositoOpened = false;
     },
   });
+
+  state.modalPgtoCartao = new xModal.create({
+    el: "#modalPgtoCartao",
+    height: 700,
+    width: 480,
+    title: "Informe o valor",
+    onClose: () => {
+      state.tipoPagamentoSelecionado = TIPO_PAGAMENTO_CARTAO;
+      state.modalPgtoCartaoOpened = false;
+    },
+  });
 };
+
+onKeyStroke("ArrowRight", (e) => {
+  if (existeModalAberta.value) return;
+
+  const indexAtual = state.opcoesPagamento.findIndex(
+    (opcaoPagamento) => opcaoPagamento.codigo == state.tipoPagamentoSelecionado
+  );
+  const ultimoIndice = state.opcoesPagamento.length - 1;
+
+  const proximaOpcaoPgto = state.opcoesPagamento[indexAtual + 1];
+
+  state.tipoPagamentoSelecionado = proximaOpcaoPgto
+    ? proximaOpcaoPgto.codigo
+    : state.opcoesPagamento[ultimoIndice].codigo;
+
+  e.preventDefault();
+});
+
+onKeyStroke("ArrowLeft", (e) => {
+  if (existeModalAberta.value) return;
+
+  const indexAtual = state.opcoesPagamento.findIndex(
+    (opcaoPagamento) => opcaoPagamento.codigo == state.tipoPagamentoSelecionado
+  );
+
+  const opcaoPgtoAnterior = state.opcoesPagamento[indexAtual - 1];
+
+  state.tipoPagamentoSelecionado = opcaoPgtoAnterior
+    ? opcaoPgtoAnterior.codigo
+    : state.opcoesPagamento[0].codigo;
+
+  e.preventDefault();
+});
+
+onKeyStroke("Enter", (e) => {
+  if (!props.opened) return;
+
+  if (existeModalAberta.value) return;
+
+  if (valorRestante.value == 0) return;
+
+  if (
+    [
+      TIPO_PAGAMENTO_DINHEIRO,
+      TIPO_PAGAMENTO_DEPOSITO,
+      TIPO_PAGAMENTO_PIX,
+    ].includes(state.tipoPagamentoSelecionado)
+  ) {
+    openModalPixDepositoDinheiro(
+      state.tipoPagamentoSelecionado as iTipoPagamento
+    );
+
+    e.preventDefault();
+    return;
+  }
+
+  if (state.tipoPagamentoSelecionado == TIPO_PAGAMENTO_CARTAO) {
+    openModalCartao(state.tipoPagamentoSelecionado);
+
+    e.preventDefault();
+    return;
+  }
+
+  e.preventDefault();
+});
+
+watch(
+  () => props.opened,
+  (newValue) => {
+    nextTick(async () => {
+      if (newValue) {
+        state.pagamentos = [];
+        state.tipoPagamentoSelecionado = TIPO_PAGAMENTO_DINHEIRO;
+      }
+    });
+  }
+);
 
 nextTick(() => {
   criarModais();
@@ -208,7 +317,11 @@ nextTick(() => {
           >
             <div
               class="btnMenus"
-              :class="{ 'btnMenu-disabled': valorRestante == 0 }"
+              :class="{
+                'btnMenu-disabled': valorRestante == 0,
+                'btnMenu-selecionado':
+                  opcaoPagamento.codigo == state.tipoPagamentoSelecionado,
+              }"
               :tabindex="index + 1"
               @click.prevent="opcaoPagamento.click"
               @keypress.enter.prevent="
@@ -232,7 +345,7 @@ nextTick(() => {
             :index="i"
             :valor="pagamento.valor"
             :descricao-tipo-pagamento="pagamento.descricaoTipoPagamento"
-            :bandeira-cartao="pagamento.bandeiraCartao"
+            :codigoBandeiraCartao="pagamento.codigoBandeiraCartao"
             @deletar="deletarPagamento"
           />
         </div>
@@ -287,6 +400,17 @@ nextTick(() => {
         @cancelar="cancelarPagamento"
       />
     </div>
+
+    <div id="modalPgtoCartao" style="display: none">
+      <modalPgtoCartao
+        :opened="state.modalPgtoCartaoOpened"
+        :tipoPagamento="state.tipoPagamentoSelecionado"
+        :total-pagamentos="totalPagamentos"
+        :valor-orcamento="props.orcamento.VALOR"
+        :cartoes-disponiveis="props.cartoesDisponiveis"
+        @salvar="salvarPagamento"
+      />
+    </div>
   </div>
 </template>
 
@@ -329,7 +453,8 @@ nextTick(() => {
   padding-top: 3px;
 }
 
-.btnMenus:focus {
+.btnMenus:focus,
+.btnMenu-selecionado {
   background-image: radial-gradient(
     circle farthest-corner at -40.6% 20.7%,
     #0da0bf 0,
