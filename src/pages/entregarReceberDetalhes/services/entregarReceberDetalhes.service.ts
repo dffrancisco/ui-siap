@@ -2,6 +2,7 @@ import axios from "axios";
 import {
     iBaixarEntregarReceberFunctionParam,
     iBaixarPendenciaFunctionParam,
+    iCartaoDisponivel,
     iEntregarReceber,
     iGetEntregarReceberPendenteParam,
     iGetOrcamentosBaixaFunctionParam,
@@ -16,6 +17,7 @@ const caminho = 'siap/entregarReceber'
 
 type iGetMotoristas = () => Promise<iMotorista[]>
 type iGetMotoristasPendentes = () => Promise<iMotorista[]>
+type iGetCartoesDisponiveisFunction = () => Promise<iCartaoDisponivel[]>
 type iGetEntregarReceberPendente = (param: iGetEntregarReceberPendenteParam) => Promise<iEntregarReceber[]>
 type iTrocarMotoristaFunction = (param: iTrocarMotoristaFunctionParam) => Promise<void>
 type iInsertUpdateObsEntregarReceberFunction = (param: iInsertUpdateObsEntregarReceberFunctionParam) => Promise<void>
@@ -35,6 +37,14 @@ const getMotoristas: iGetMotoristas = async () => {
 const getMotoristasPendentes: iGetMotoristasPendentes = async () => {
     let { data } = await axios.post(caminho, {
         call: 'getMotoristasPendentes',
+    })
+
+    return data;
+}
+
+const getCartoesDisponiveis: iGetCartoesDisponiveisFunction = async () => {
+    let { data } = await axios.post(caminho, {
+        call: 'getCartoesDisponiveis',
     })
 
     return data;
@@ -118,6 +128,7 @@ export default {
     getMotoristas,
     getMotoristasPendentes,
     getEntregarReceberPendente,
+    getCartoesDisponiveis,
     trocarMotorista,
     insertUpdateObsEntregarReceber,
     updateDescPendenciaMotorista,
