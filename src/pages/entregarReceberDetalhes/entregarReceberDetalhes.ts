@@ -421,6 +421,7 @@ export const actions = {
             //@ts-ignore
             document.querySelector('#edtNumOrcamentoPendencia').focus();
 
+            await actions.getEntregarReceber();
         } catch (error) {
             Swal.fire({
                 text: error?.response?.data?.msg || 'Ocorreu um erro ao remover pendência',

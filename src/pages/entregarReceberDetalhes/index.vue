@@ -29,11 +29,10 @@ actions.init(route);
             color="primary"
             variant="text"
             density="compact"
-            class="mb-4 justify-start pa-0"
+            class="mb-4 pa-0"
+            icon="mdi-arrow-left"
             @click="actions.onClickVoltar"
-          >
-            <v-icon>mdi-arrow-left</v-icon>
-          </v-btn>
+          />
           <v-row>
             <v-col cols="3">
               <v-text-field
