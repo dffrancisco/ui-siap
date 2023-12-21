@@ -27,6 +27,7 @@ export const state = reactive({
   edtEstoque: <any>{},
   fotoVendedor: '',
   fotoMontador: '',
+  obs: '',
   gdItensOrcamento: <ixGridCreate>{},
   dataDescontoMarca: <iDescontoMarca[]>{},
   dataOrcamento: <iOrcamento>{},
@@ -330,6 +331,7 @@ export const actions = {
       call: "getItensOrcamento",
       numOrcamento: state.edtNumOrcamento
     });
+    actions.getObs()
 
     state.load = false;
 
@@ -345,6 +347,15 @@ export const actions = {
 
     state.gdItensOrcamento.focus();
 
+  },
+
+  async getObs() {
+
+    let { data } = await axios.post(caminho, {
+      call: "getObs",
+      numOrcamento: state.edtNumOrcamento
+    });
+    state.obs = data[0].OBS;
   },
 
   async getDescontoMarca(idCliente: number) {
@@ -426,7 +437,7 @@ export const actions = {
         valorDesconto: formatValorUSA(state.descontoValor),
         valorOrcamento: state.dataOrcamento.VALOR,
         valorProduto: state.produtoSelected.VALOR,
-        obs: '',
+        obs: state.obs,
         codProduto: state.produtoSelected.COD_PRODUTO
 
       })
