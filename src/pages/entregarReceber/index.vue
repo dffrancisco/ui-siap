@@ -18,7 +18,7 @@ onMounted(async () => {
           <div class="totais">
             <strong>TOTALIZADORES</strong>
             <div class="cards-totalizadores">
-              <v-card class="card-total">
+              <v-card class="card-total" @click="actions.onClickCliente(null)">
                 <strong class="card-total__valor"
                   >R$ {{ utils.formatValor(state.totalizadores.VALOR) }}</strong
                 >
@@ -53,7 +53,7 @@ onMounted(async () => {
                     <v-avatar
                       size="50px"
                       color="primary"
-                      title="Todos motoristas"
+                      title="Todas pendências"
                       class="motoristas__lista__avatar"
                       @click="actions.onClickMotorista(null)"
                     >
@@ -91,7 +91,7 @@ onMounted(async () => {
                 <strong>CLIENTES ENTREGAR / RECEBER</strong>
                 <div class="clientes__lista">
                   <v-card
-                    class="clientes__lista__card"
+                    class="clientes__lista__card clientes__lista__card--blue"
                     @click="actions.onClickCliente(null)"
                   >
                     <div class="clientes__lista__card__contador">
@@ -226,6 +226,10 @@ onMounted(async () => {
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+
+      &--blue {
+        border: 2px solid #3c8dbc;
       }
     }
   }
