@@ -106,10 +106,15 @@ actions.begin();
                 "
               ></v-btn>
             </template>
+            <template #no-data>
+              <v-alert :value="true" icon="mdi-information">
+                Não há chamados disponíveis.
+              </v-alert>
+            </template>
           </v-data-table-server>
 
           <v-row>
-            <v-col cols="12" class="d-flex justify-end mt-2">
+            <v-col cols="12" class="d-flex justify-end mt-5">
               <v-btn
                 @click="actions.resetForm"
                 color="primary"
@@ -142,6 +147,7 @@ actions.begin();
       color="primary"
       indeterminate
       size="64"
+      persistent
     ></v-progress-circular>
   </v-overlay>
 </template>

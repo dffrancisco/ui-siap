@@ -1,5 +1,4 @@
 import { nextTick, reactive } from "vue";
-import axios from 'axios';
 import Swal from "sweetalert2";
 import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -62,16 +61,16 @@ export const actions = {
 
         try {
             state.loadingSalvar = true;
-            await axios.post('siap/chamados', {
-                call: 'insert',
-                param
-            });
+
+            await serviceChamados.insertChamado(param)
+
             Swal.fire({
                 icon: 'success',
                 text: 'Chamado cadastrado com sucesso'
             })
 
             actions.resetForm()
+            actions.getChamados({ page: 1, itemsPerPage: state.itemsPerPage, sortBy: null, search: state.search });
         } catch (error) {
             Swal.fire({
                 icon: 'error',

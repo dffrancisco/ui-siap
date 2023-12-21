@@ -35,3 +35,21 @@ export interface iGetChamadosResponse {
     chamados: iChamados[];
     total: number;
 }
+
+export interface iInsertChamado {
+    solicitante: string;
+    loja: string;
+    assunto: string;
+    descricao: string;
+    anexos: any[];
+    dataAtual: string;
+}
+
+export interface iInsertChamadoResponse {
+    solicitante: string;
+    loja: string;
+    assunto: string;
+    descricao: string;
+    anexos: any[];
+    dataAtual: string;
+}
