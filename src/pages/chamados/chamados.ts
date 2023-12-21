@@ -89,7 +89,7 @@ export const actions = {
                 ...chamado,
                 dataFormatada: dataBrasil(chamado.DATA_CRIACAO),
             }));
-            state.totalItems = data.total
+            state.totalItems = data.chamados.length
         } catch (error) {
             Swal.fire({
                 icon: 'error',
