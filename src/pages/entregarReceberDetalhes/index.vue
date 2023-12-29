@@ -34,7 +34,7 @@ actions.init(route);
             @click="actions.onClickVoltar"
           />
           <v-row>
-            <v-col cols="3">
+            <v-col cols="2">
               <v-text-field
                 type="number"
                 hide-details
@@ -54,6 +54,20 @@ actions.init(route);
                 item-title="NOME_MOTORISTA"
                 item-value="COD_FUNCIONARIO"
                 v-model="state.edtMotorista"
+                @update:model-value="actions.getEntregarReceber"
+                clearable
+              ></v-select>
+            </v-col>
+            <v-col cols="4">
+              <v-select
+                hide-details
+                variant="outlined"
+                density="compact"
+                label="Tipo Pagamento"
+                :items="state.itensTipoPagamento"
+                item-title="DESCRICAO_TIPO_PAGAMENTO"
+                item-value="ID_TIPO_PAGAMENTO"
+                v-model="state.edtTipoPagamento"
                 @update:model-value="actions.getEntregarReceber"
                 clearable
               ></v-select>

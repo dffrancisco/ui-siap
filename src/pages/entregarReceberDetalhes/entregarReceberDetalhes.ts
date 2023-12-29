@@ -18,6 +18,7 @@ export const state = reactive({
     entregarReceber: <iEntregarReceber>{},
     edtNumOrcamento: undefined,
     edtMotorista: undefined,
+    edtTipoPagamento: undefined,
     edtObservacao: undefined,
     edtNumOrcamentoPendencia: undefined,
     editandoObservacao: false,
@@ -31,6 +32,10 @@ export const state = reactive({
     modalEscolherOrcamento: <iModalCreate>(<unknown>null),
     modalOpcoesPagamento: <iModalCreate>(<unknown>null),
     modalOpcoesPagamentoOpened: false,
+    itensTipoPagamento: [
+        { ID_TIPO_PAGAMENTO: '6', DESCRICAO_TIPO_PAGAMENTO: '6 - Entregar Receber' },
+        { ID_TIPO_PAGAMENTO: '4', DESCRICAO_TIPO_PAGAMENTO: '4 - Faturado' }
+    ]
 })
 
 export const horaFormatada = computed(() => {
@@ -105,6 +110,7 @@ export const actions = {
                             offset: rs.offset,
                             codFuncionario: state.edtMotorista,
                             idCliente: state.idCliente,
+                            tipoPagamento: state.edtTipoPagamento,
                             numOrcamento: state.edtNumOrcamento
                         })
                         state.gridEntregarReceber.querySourceAdd(data)
