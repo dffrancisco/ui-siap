@@ -3,6 +3,7 @@ export interface iGetEntregarReceberPendenteParam {
     codFuncionario: number | undefined,
     idCliente: number | undefined,
     numOrcamento: number | undefined,
+    tipoPagamento: string | undefined,
 }
 
 export interface iEntregarReceber {
