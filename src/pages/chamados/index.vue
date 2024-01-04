@@ -51,10 +51,14 @@ actions.begin();
                 required
               >
                 <option value="">Selecionar Assunto</option>
-                <option value="MANUTENCAO">Manutenção</option>
+                <option value="SISTEMA">Sistema</option>
+                <option value="EQUIPAMENTO">Equipamento</option>
+                <option value="REDE">Rede</option>
+                <option value="TELEFONIA">Telefonia</option>
+                <option value="ALARME">Alarme</option>
+                <option value="CAMERA">Câmera</option>
+                <option value="ELETRICA">Elétrica</option>
                 <option value="DESIGN MARKETING">Design / Marketing</option>
-                <option value="ERRO NO SISTEMA">Erro no Sistema</option>
-                <option value="OUTROS">Outros</option>
               </select>
             </v-col>
             <v-col cols="12">
