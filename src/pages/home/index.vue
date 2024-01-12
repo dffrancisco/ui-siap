@@ -14,6 +14,7 @@ import login from "../login/login";
               >Desconto Orçamento</v-btn
             >
             <v-btn @click="router.push('/carros')">Carros</v-btn>
+            <v-btn @click="router.push('/cidades')">Cidades</v-btn>
             <v-btn @click="router.push('/entregarReceber')"
               >Entregar e Receber</v-btn
             >
