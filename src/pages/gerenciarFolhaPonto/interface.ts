@@ -4,7 +4,7 @@ export interface iFuncionario {
     CARGO: string;
     LOGIN: string;
     NOME_COMP: string;
-    AUSENCIAS: number;
+    QTD_PONTOS_INCOMPLETOS: number;
 }
 
 export interface iGetMesEAno {

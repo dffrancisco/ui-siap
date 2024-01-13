@@ -1,12 +1,26 @@
-import { reactive } from 'vue';
+import { reactive, computed } from 'vue';
 import { iFuncionario, iGetMesEAno } from './interface';
 import gerenciarFolhaPontoService from './services/gerenciarFolhaPonto.service';
 import Swal from 'sweetalert2';
 
 export const state = reactive(({
-    funcionarios: <iFuncionario[]>[],
+    funcionarios: {},
     loading: false,
 }))
+
+export const funcionariosOrdenados = computed(() => {
+    let funcionariosArray = <iFuncionario[]>[]
+
+    for (let indexFuncionario in state.funcionarios){
+        funcionariosArray.push(state.funcionarios[indexFuncionario])
+    }
+
+    funcionariosArray.sort((funcionario1, funcionario2) => {
+        return funcionario1.NOME_COMP > funcionario2.NOME_COMP
+    })
+
+    return funcionariosArray
+})  
 
 export const actions = {
 

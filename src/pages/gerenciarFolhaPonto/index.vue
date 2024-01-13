@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { actions, state } from "./gerenciarFolhaPonto";
+import { actions, state, funcionariosOrdenados } from "./gerenciarFolhaPonto";
 
 const selectedFuncionario = ref<string | null>(null);
 
@@ -48,11 +48,7 @@ onMounted(async () => {
                   <v-autocomplete
                     label="Funcionário"
                     v-model="selectedFuncionario"
-                    :items="
-                      state.funcionarios.map(
-                        (funcionario) => funcionario.NOME_COMP
-                      )
-                    "
+                    :items="funcionariosOrdenados"
                   ></v-autocomplete>
                 </v-col>
                 <v-col cols="2">
@@ -74,7 +70,12 @@ onMounted(async () => {
                   ></v-autocomplete>
                 </v-col>
                 <v-col cols="2"
-                  ><v-btn icon color="primary" size="small">
+                  ><v-btn
+                    icon
+                    color="primary"
+                    size="small"
+                    @click="actions.getFuncionarios(mesSelect, anoSelect)"
+                  >
                     <v-icon> mdi-magnify</v-icon>
                   </v-btn></v-col
                 >
@@ -90,7 +91,7 @@ onMounted(async () => {
 
             <div class="funcionarios__lista">
               <v-card
-                v-for="funcionario in state.funcionarios"
+                v-for="funcionario in funcionariosOrdenados"
                 class="funcionarios__lista__card"
               >
                 <div class="funcionarios__lista__card__contador">
@@ -119,6 +120,7 @@ onMounted(async () => {
                 </span>
                 <span class="funcionarios__lista__card__faltas">
                   Pontos incompletos:
+                  <b>{{ funcionario.QTD_PONTOS_INCOMPLETOS || 0 }}</b>
                 </span>
                 <span class="funcionarios__lista__card__faltas">
                   Quantidade de justificativas:
