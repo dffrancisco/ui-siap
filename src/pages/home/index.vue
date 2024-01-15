@@ -7,17 +7,20 @@ import login from "../login/login";
 <template>
   <v-main>
     <v-container>
-      <v-card max-width="1000" class="mx-auto pa-3">
+      <v-card
+        max-width="1000"
+        class="mx-auto pa-3"
+      >
         <v-row style="height: 80px">
-          <v-col cols="12" class="d-flex justify-space-around align-center">
-            <v-btn @click="router.push('/descontoOrcamento')"
-              >Desconto Orçamento</v-btn
-            >
+          <v-col
+            cols="12"
+            class="d-flex justify-space-around align-center"
+          >
+            <v-btn @click="router.push('/descontoOrcamento')">Desconto Orçamento</v-btn>
             <v-btn @click="router.push('/carros')">Carros</v-btn>
             <v-btn @click="router.push('/cidades')">Cidades</v-btn>
-            <v-btn @click="router.push('/entregarReceber')"
-              >Entregar e Receber</v-btn
-            >
+            <v-btn @click="router.push('/carroCliente')">Carro Cliente</v-btn>
+            <v-btn @click="router.push('/entregarReceber')">Entregar e Receber</v-btn>
             <v-btn @click="router.push('/valeDinheiro')">Vale dinheiro</v-btn>
             <v-btn @click="router.push('/chamados')">Chamados</v-btn>
 
