@@ -117,6 +117,7 @@ onMounted(async () => {
                 </span>
                 <span class="funcionarios__lista__card__faltas">
                   Pontos não batidos:
+                  <b>{{ funcionario.QTD_PONTOS_NAO_BATIDOS || 0 }}</b>
                 </span>
                 <span class="funcionarios__lista__card__faltas">
                   Pontos incompletos:
@@ -124,6 +125,11 @@ onMounted(async () => {
                 </span>
                 <span class="funcionarios__lista__card__faltas">
                   Quantidade de justificativas:
+                  <b>{{ funcionario.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
+                </span>
+                <span class="funcionarios__lista__card__faltas">
+                  Pontos à justificar:
+                  <b>{{ funcionario.QTD_A_JUSTIFICAR || 0 }}</b>
                 </span>
               </v-card>
             </div>
@@ -158,6 +164,7 @@ onMounted(async () => {
   }
 
   .funcionarios__lista__avatar {
+    margin-left: 5px;
     cursor: pointer;
     opacity: 1;
     border: 1px solid #0000002f;
@@ -181,7 +188,7 @@ onMounted(async () => {
 
     .funcionarios__lista__card__info {
       margin-left: 90px;
-      margin-bottom: 40px;
+      margin-bottom: 25px;
       font-size: 12px;
       white-space: nowrap;
       overflow: hidden;
@@ -191,7 +198,7 @@ onMounted(async () => {
 
     .funcionarios__lista__card__nome {
       margin-left: 90px;
-      font-size: 12px;
+      font-size: 15px;
       color: #2a2a2a;
       display: flex;
       align-items: left;
@@ -199,8 +206,8 @@ onMounted(async () => {
     }
 
     .funcionarios__lista__card__faltas {
-      margin-left: 15px;
-      font-size: 13px;
+      margin-left: 20px;
+      font-size: 14px;
       font-style: bold;
       white-space: nowrap;
       overflow: hidden;

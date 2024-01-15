@@ -11,7 +11,7 @@ export const state = reactive(({
 export const funcionariosOrdenados = computed(() => {
     let funcionariosArray = <iFuncionario[]>[]
 
-    for (let indexFuncionario in state.funcionarios){
+    for (let indexFuncionario in state.funcionarios) {
         funcionariosArray.push(state.funcionarios[indexFuncionario])
     }
 
@@ -20,7 +20,7 @@ export const funcionariosOrdenados = computed(() => {
     })
 
     return funcionariosArray
-})  
+})
 
 export const actions = {
 
