@@ -94,7 +94,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
                             name="COR"
                             required
                             class="obr ss"
-                            maxlength="20"
+                            maxlength="15"
                             autocomplete="off"
                         />
                     </v-col>
