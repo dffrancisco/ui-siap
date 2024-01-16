@@ -1,0 +1,61 @@
+<script setup lang="ts">
+import { nextTick, onUnmounted } from "vue";
+import { useEventListener } from "@vueuse/core";
+import cSearch from "../carros/components/cSearch.vue";
+import $ from "jquery";
+import { actions, state } from "./corredores";
+
+nextTick(async () => {
+    actions.grids();
+    actions.getLocalidades();
+
+    state.gridPrincipal.queryOpen({DESCRICAO: ""}, () => {
+        state.gridPrincipal.focus()
+    })
+})
+
+</script>
+<template>
+    <V-container>
+        <title>Corredores</title>
+        <v-card class="pa-5" style="width: 700px; margin: 0 auto">
+            <div id="pnCampos">
+                <v-row>
+                    <v-col cols="6">
+                        <span>Descrição</span>
+                        <input
+                            v-model.lazy="state.dbCorredor.DESCRICAO" 
+                            id="DESCRICAO"
+                            name="DESCRICAO" 
+                            type="text" 
+                            class="obr ss">
+                    </v-col>
+                    <v-col cols="6">
+                        <span>Localidade</span>
+                        <select
+                            v-model="state.dbCorredor.LOCALIDADE" 
+                            name="LOCALIDADE" 
+                            id="LOCALIDADE"
+                            class="obr ss"    
+                        >
+                            
+                        <option
+                           v-for="loc in state.dsLocalidades"
+                        >
+                            {{ loc.LOCALIDADE }}
+                        </option></select>
+                    </v-col>
+                </v-row>
+            </div>
+
+
+            <cSearch />
+
+            <div id="gridPrincipal"></div>
+            <div id="pnBotoes" class="mt-3" style="text-align: center;"></div>
+
+            <div id="relatorio" class="print" style="display: none; width: 99% !important;"></div>
+        </v-card>
+    </V-container>
+</template>
+<style></style>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { state, actions } from "../carros";
+import { state, actions } from "../corredores";
 </script>
 
 <template>
-  <div class="d-flex justify-end my-2">
+  <div class="d-flex justify-end my-4">
     <input
       type="text"
-      style="margin: 5px 0 5px"
+      style="margin: 5px 0 5px; "
       autofocus
       placeholder="F1 - Localizar"
       :disabled="state.pnSearch"
@@ -26,3 +26,9 @@ import { state, actions } from "../carros";
     </v-btn>
   </div>
 </template>
+
+<style scoped>
+div {
+  padding-top: 10px;
+}
+</style>
