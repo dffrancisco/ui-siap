@@ -1,12 +1,42 @@
 import { reactive, computed } from 'vue';
-import { iFuncionario, iGetMesEAno } from './interface';
+import { iFuncionario, iGetMesEAno, iTotalizador } from './interface';
 import gerenciarFolhaPontoService from './services/gerenciarFolhaPonto.service';
 import Swal from 'sweetalert2';
 
 export const state = reactive(({
     funcionarios: {},
+    mes: new Date().getMonth() + 1,
+    ano: new Date().getFullYear(),
+    selectedFuncionario: <string | null>(null),
     loading: false,
 }))
+
+export const meses = computed(() => [
+    { text: "Janeiro", value: 1 },
+    { text: "Fevereiro", value: 2 },
+    { text: "Março", value: 3 },
+    { text: "Abril", value: 4 },
+    { text: "Maio", value: 5 },
+    { text: "Junho", value: 6 },
+    { text: "Julho", value: 7 },
+    { text: "Agosto", value: 8 },
+    { text: "Setembro", value: 9 },
+    { text: "Outubro", value: 10 },
+    { text: "Novembro", value: 11 },
+    { text: "Dezembro", value: 12 },
+]);
+
+export const anos = computed(() => {
+    const anosArray: number[] = [];
+    const anoAtual = new Date().getFullYear();
+
+    for (let i = 0; i < 20; i++) {
+        const ano = anoAtual - 10 + i;
+        anosArray.push(ano);
+    }
+
+    return anosArray;
+});
 
 export const funcionariosOrdenados = computed(() => {
     let funcionariosArray = <iFuncionario[]>[]
@@ -16,19 +46,26 @@ export const funcionariosOrdenados = computed(() => {
     }
 
     funcionariosArray.sort((funcionario1, funcionario2) => {
-        return funcionario1.NOME_COMP > funcionario2.NOME_COMP
+        return funcionario1.NOME_COMP > funcionario2.NOME_COMP ? 1 : -1
     })
+
+    console.log(state.funcionarios);
 
     return funcionariosArray
 })
 
+
+export const totalizador = computed(() => {
+    let totalizadorArray;
+})
+
 export const actions = {
 
-    async getFuncionarios(mesSelect: number, anoSelect: number) {
+    async getFuncionarios(mes: number, ano: number) {
 
         const param: iGetMesEAno = {
-            mesSelect: mesSelect,
-            anoSelect: anoSelect
+            mes: mes,
+            ano: ano
         }
 
         try {
@@ -52,13 +89,16 @@ export const actions = {
     },
 
 
-    // async init() {
-    //     state.loading = true;
-    //     await actions.getFuncionarios();
-    //     // await actions.getPontosNaoBatidos()
+    async init(mes: number, ano: number) {
+        state.loading = true;
 
-    //     state.loading = false;
-    // }
+        await actions.getFuncionarios(mes, ano);
+
+        setTimeout(() => {
+            state.loading = false;
+        }, 100);
+
+    }
 }
 
-export default { state, actions }
+export default { state, actions, meses, anos }

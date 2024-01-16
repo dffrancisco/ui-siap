@@ -1,5 +1,5 @@
 import axios from "axios";
-import { iFuncionario, iGetMesEAno } from "../interface";
+import { iGetMesEAno } from "../interface";
 
 const caminho = 'siap/gerenciarFolhaPonto'
 

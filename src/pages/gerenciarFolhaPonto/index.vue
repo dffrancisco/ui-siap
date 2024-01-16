@@ -1,36 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { actions, state, funcionariosOrdenados } from "./gerenciarFolhaPonto";
-
-const selectedFuncionario = ref<string | null>(null);
-
-const meses = [
-  { text: "Janeiro", value: 1 },
-  { text: "Fevereiro", value: 2 },
-  { text: "Março", value: 3 },
-  { text: "Abril", value: 4 },
-  { text: "Maio", value: 5 },
-  { text: "Junho", value: 6 },
-  { text: "Julho", value: 7 },
-  { text: "Agosto", value: 8 },
-  { text: "Setembro", value: 9 },
-  { text: "Outubro", value: 10 },
-  { text: "Novembro", value: 11 },
-  { text: "Dezembro", value: 12 },
-];
-
-const anos: number[] = [];
-
-const mesSelect = ref(new Date().getMonth() + 1);
-const anoSelect = ref(new Date().getFullYear());
-
-for (let i = 0; i < 20; i++) {
-  const anoAtual = 2024 - 10 + i;
-  anos.push(anoAtual);
-}
+import { onMounted } from "vue";
+import {
+  actions,
+  state,
+  funcionariosOrdenados,
+  meses,
+  anos,
+} from "./gerenciarFolhaPonto";
 
 onMounted(async () => {
-  actions.getFuncionarios(mesSelect.value, anoSelect.value);
+  actions.init(state.mes, state.ano);
 });
 </script>
 
@@ -47,15 +26,17 @@ onMounted(async () => {
                 <v-col cols="5">
                   <v-autocomplete
                     label="Funcionário"
-                    v-model="selectedFuncionario"
+                    v-model="state.selectedFuncionario"
                     :items="funcionariosOrdenados"
+                    item-title="NOME_COMP"
+                    item-value="COD_FUNCIONARIO"
                   ></v-autocomplete>
                 </v-col>
                 <v-col cols="2">
                   <v-autocomplete
                     label="Mês"
                     id="mes"
-                    v-model="mesSelect"
+                    v-model="state.mes"
                     item-title="text"
                     item-value="value"
                     :items="meses"
@@ -65,7 +46,7 @@ onMounted(async () => {
                   <v-autocomplete
                     label="Ano"
                     id="ano"
-                    v-model="anoSelect"
+                    v-model="state.ano"
                     :items="anos"
                   ></v-autocomplete>
                 </v-col>
@@ -74,7 +55,7 @@ onMounted(async () => {
                     icon
                     color="primary"
                     size="small"
-                    @click="actions.getFuncionarios(mesSelect, anoSelect)"
+                    @click="actions.getFuncionarios(state.mes, state.ano)"
                   >
                     <v-icon> mdi-magnify</v-icon>
                   </v-btn></v-col
@@ -90,15 +71,48 @@ onMounted(async () => {
             <strong>FUNCIONÁRIOS</strong>
 
             <div class="funcionarios__lista">
+              <v-card variant="outlined" class="funcionarios__lista__card">
+                <v-img
+                  src="./src/assets/pessoas.png"
+                  class="imgIconTodos"
+                  width="50px"
+                ></v-img>
+
+                <span class="funcionarios__lista__card__faltas"
+                  >TOTALIZADOR:</span
+                >
+                <span class="funcionarios__lista__card__faltas">
+                  Pontos não batidos:
+                  <b></b>
+                </span>
+                <span class="funcionarios__lista__card__faltas">
+                  Pontos incompletos:
+                  <b></b>
+                </span>
+                <span class="funcionarios__lista__card__faltas">
+                  Quantidade de justificativas:
+                  <b></b>
+                </span>
+                <span class="funcionarios__lista__card__faltas">
+                  Pontos à justificar:
+                  <b></b>
+                </span>
+              </v-card>
               <v-card
                 v-for="funcionario in funcionariosOrdenados"
+                :key="funcionario.COD_FUNCIONARIO"
+                :class="{ pendencia: funcionario.QTD_A_JUSTIFICAR > 0 }"
                 class="funcionarios__lista__card"
               >
-                <div class="funcionarios__lista__card__contador">
+                <div class="funcionarios__lista__card__usuario">
                   <v-avatar
                     size="60px"
                     color="primary"
                     :title="funcionario.LOGIN"
+                    :class="{
+                      'funcionario-com-pendencia':
+                        funcionario.QTD_A_JUSTIFICAR > 0,
+                    }"
                     class="funcionarios__lista__avatar"
                   >
                     <v-img
@@ -107,14 +121,16 @@ onMounted(async () => {
                       cover
                     ></v-img>
                   </v-avatar>
+                  <div>
+                    <strong class="funcionarios__lista__card__nome">
+                      {{ funcionario.NOME_COMP }}
+                    </strong>
+                    <span class="funcionarios__lista__card__cargo">
+                      {{ funcionario.CARGO }}
+                    </span>
+                  </div>
                 </div>
 
-                <strong class="funcionarios__lista__card__nome">
-                  {{ funcionario.NOME_COMP }}
-                </strong>
-                <span class="funcionarios__lista__card__info">
-                  {{ funcionario.CARGO }}
-                </span>
                 <span class="funcionarios__lista__card__faltas">
                   Pontos não batidos:
                   <b>{{ funcionario.QTD_PONTOS_NAO_BATIDOS || 0 }}</b>
@@ -124,10 +140,16 @@ onMounted(async () => {
                   <b>{{ funcionario.QTD_PONTOS_INCOMPLETOS || 0 }}</b>
                 </span>
                 <span class="funcionarios__lista__card__faltas">
-                  Quantidade de justificativas:
+                  Qtd de justificativas:
                   <b>{{ funcionario.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
                 </span>
-                <span class="funcionarios__lista__card__faltas">
+                <span
+                  class="funcionarios__lista__card__faltas"
+                  :class="{
+                    'funcionario-com-pendencia':
+                      funcionario.QTD_A_JUSTIFICAR > 0,
+                  }"
+                >
                   Pontos à justificar:
                   <b>{{ funcionario.QTD_A_JUSTIFICAR || 0 }}</b>
                 </span>
@@ -180,15 +202,15 @@ onMounted(async () => {
     cursor: pointer;
     position: relative;
 
-    .funcionarios__lista__card__contador {
-      position: absolute;
-      top: 20px;
-      left: 25px;
+    .funcionarios__lista__card__usuario {
+      padding-left: 12px;
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
     }
 
-    .funcionarios__lista__card__info {
-      margin-left: 90px;
-      margin-bottom: 25px;
+    .funcionarios__lista__card__cargo {
+      margin-bottom: 30px;
       font-size: 12px;
       white-space: nowrap;
       overflow: hidden;
@@ -197,7 +219,6 @@ onMounted(async () => {
     }
 
     .funcionarios__lista__card__nome {
-      margin-left: 90px;
       font-size: 15px;
       color: #2a2a2a;
       display: flex;
@@ -207,13 +228,30 @@ onMounted(async () => {
 
     .funcionarios__lista__card__faltas {
       margin-left: 20px;
-      font-size: 14px;
+      font-size: 15px;
       font-style: bold;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       color: #5a6069;
     }
+
+    .funcionarios__lista__card__faltas.funcionario-com-pendencia {
+      color: red;
+    }
+
+    .funcionarios__lista__avatar.funcionario-com-pendencia {
+      border: 2px solid red;
+    }
   }
+}
+
+.pendencia {
+  background-color: #fbc8c868;
+  border: 1px solid rgb(254, 91, 91);
+}
+
+.imgIconTodos {
+  margin-left: 30px;
 }
 </style>

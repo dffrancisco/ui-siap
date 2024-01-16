@@ -11,6 +11,10 @@ export interface iFuncionario {
 }
 
 export interface iGetMesEAno {
-    mesSelect: number;
-    anoSelect: number;
+    mes: number;
+    ano: number;
+}
+
+export interface iTotalizador {
+
 }
