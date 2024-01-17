@@ -20,6 +20,7 @@ import login from "../login/login";
             <v-btn @click="router.push('/carros')">Carros</v-btn>
             <v-btn @click="router.push('/cidades')">Cidades</v-btn>
             <v-btn @click="router.push('/carroCliente')">Carro Cliente</v-btn>
+            <v-btn @click="router.push('/documentosFuncionarios')">Documentos Funcionarios</v-btn>
             <v-btn @click="router.push('/entregarReceber')">Entregar e Receber</v-btn>
             <v-btn @click="router.push('/valeDinheiro')">Vale dinheiro</v-btn>
             <v-btn @click="router.push('/chamados')">Chamados</v-btn>
