@@ -14,8 +14,6 @@ export interface iParamGetCidades {
     param: object;
 }
 
-export interface iCidadeResponse extends iCidade { }
-
 export interface iGetDuplicityResponse {
     COD_IBGE?: string;
     DESCRICAO?: string;
@@ -26,14 +24,6 @@ export interface iFieldDuplicity {
     field: string
 }
 
-export interface iParamToInsert {
-    param: any
-}
-
-export interface iDiffToUpdate {
-    diff: {
-        old: object;
-        new: object;
-        diff: boolean
-    }
-}
+export interface iCidadeResponse extends iCidade { }
+export interface iParamToInsert extends iCidade { }
+export interface iParamToUpdate extends iCidade { }

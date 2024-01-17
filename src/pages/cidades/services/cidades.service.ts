@@ -4,7 +4,7 @@ import {
     iCidadeResponse,
     iFieldDuplicity,
     iParamToInsert,
-    iDiffToUpdate,
+    iParamToUpdate,
     iGetDuplicityResponse
 } from "../interfaces";
 import { state } from "../cidades";
@@ -14,7 +14,7 @@ const caminho = "siap/cidades";
 type iGetCidadesFunction = (param: iParamGetCidades) => Promise<iCidadeResponse[]>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<void>
-type iToUpdateFunction = (diff: iDiffToUpdate) => Promise<void>
+type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>
 
 const getCidades: iGetCidadesFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -45,10 +45,10 @@ const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {
     return data;
 };
 
-const toDelete = async () => {
+const toDelete = async (cod_cidade) => {
     return axios.post(caminho, {
         call: "delete",
-        cod_cidade: state.gridPrincipal.dataSource().COD_CIDADE,
+        cod_cidade: cod_cidade,
     });
 };
 
@@ -61,11 +61,10 @@ const toInsert: iToInsertFunction = async (newFields) => {
     return data
 };
 
-const toUpdate: iToUpdateFunction = async ({ diff }) => {
+const toUpdate: iToUpdateFunction = async (param:any) => {
     let { data } = await axios.post(caminho, {
         call: "update",
-        cod_cidade: state.gridPrincipal.dataSource().COD_CIDADE,
-        diff,
+        param
     });
 
     return data

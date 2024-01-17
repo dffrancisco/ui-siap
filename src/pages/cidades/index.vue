@@ -48,7 +48,7 @@ onUnmounted(() => {
               name="DESCRICAO"
               required
               class="obr ss"
-              maxlength="20"
+              maxlength="40"
               autocomplete="off"
             />
           </v-col>
@@ -108,7 +108,7 @@ onUnmounted(() => {
       ></div>
 
     </v-card>
-    <div id="pnCodigoTela">CAD_CIDADES</div>
+    <div id="pnCodigoTela">CADASTRO_CIDADES</div>
   </v-container>
 </template>
 

@@ -231,8 +231,10 @@ export const actions = {
 
     async toDelete() {
         try {
+            let cod_cidade = state.dbCidade.COD_CIDADE
+
             state.loading = true
-            await serviceCidades.toDelete();
+            await serviceCidades.toDelete(cod_cidade);
             state.loading = false
             state.gridPrincipal.deleteLine();
         } catch (error) {
@@ -266,22 +268,26 @@ export const actions = {
     },
 
     async toUpdate() {
+
         try {
 
-            let diff = state.gridPrincipal.getDiffTwoJson(true, false);
+            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
-            if (diff.diff) {
-                delete diff.diff;
+            if (dadosDiff.diff == false) {
+                return
+            }
+
+            let dadosAtualizados = {
+                ...state.dbCidade,
+                ...dadosDiff.new
             }
 
             state.loading = true
-            await serviceCidades.toUpdate({ diff });
+            await serviceCidades.toUpdate(dadosAtualizados);
             state.loading = false
 
-            state.dbCidade = { ...state.dbCidade, ...diff.new } as iCidade;
-            state.gridPrincipal.dataSource(diff.new);
-
-
+            state.dbCidade = dadosAtualizados as iCidade;
+            state.gridPrincipal.dataSource(dadosAtualizados);
 
         } catch (error) {
             state.loading = false
