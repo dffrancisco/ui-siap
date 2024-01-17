@@ -2,7 +2,6 @@ export interface iCorredor {
     ID: number;
     DESCRICAO: string;
     LOCALIDADE: string;
-    ID_EMPRESA: number
 }
 
 export interface iLocalidade {

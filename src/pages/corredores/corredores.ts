@@ -1,8 +1,6 @@
-import $ from 'jquery'
 import  { reactive } from 'vue';
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import Swal from 'sweetalert2';
-import globalState from '@/store/globalState'
 import { iCorredor, iFieldDuplicity, iLocalidade, iParamGetCorredores } from './interfaces';
 import { msgConfirm } from "@/ts/message";
 
@@ -16,7 +14,7 @@ interface _ixGridCreate extends ixGridCreate {
 
 export const state = reactive({
     gridPrincipal: <_ixGridCreate>{},
-    pnSearch: false,
+    disableSearch: false,
     dsLocalidades: <iLocalidade[]>[],
     edtSearch: '',
     dbCorredor: <iCorredor>{},
@@ -97,12 +95,77 @@ export const actions = {
         })
     },
 
+    btnInsert() {
+        state.disableSearch = true
+        state.gridPrincipal.disable();
+        state.gridPrincipal.focusField()
+        state.gridPrincipal.clearElementSideBySide();
+    },
+
+    btnEdit() {
+        //@ts-ignore
+        if (state.gridPrincipal.dataSource() === false) {
+            Swal.fire({
+                icon: "info",
+                text: "Nenhum registro selecionado para alteração, operação cancelada!",
+            });
+            return false;
+        }
+        state.disableSearch = true
+        state.gridPrincipal.disable();
+        state.gridPrincipal.focusField();
+    },
+
+    async btnDelete() {
+        console.log('deletar');
+         //@ts-ignore
+         if (state.gridPrincipal.dataSource() === false) {
+          Swal.fire({
+              icon: "info",
+              text: "Nenhum registro selecionado para alteração, operação cancelada!",
+          });
+          return false;
+      }
+  
+      if (await msgConfirm("Confirmação", "Confirma exclusão deste registro?")) {
+          await actions.toDelete();
+          state.gridPrincipal.focus();
+      }
+    },
+
+    async btnSave() {
+        if (utils.validaOBR()) return false;
+
+        if (await state.gridPrincipal.getDuplicityAll() == true) return false;
+
+        //@ts-ignore
+        if (state.gridPrincipal.dataSource() == false) {
+            actions.toInsert();
+        }
+        else {
+            actions.toUpdate();            
+        }
+
+        state.gridPrincipal.enable();
+
+        state.disableSearch = false;
+        state.gridPrincipal.focus();
+    },
+
+    btnCancel(){ 
+        state.disableSearch = false;
+        state.gridPrincipal.enable();
+        state.gridPrincipal.focus();
+    },
+
     async getCorredores({ offset, param }: iParamGetCorredores) {
         try {
             state.loading = true;
             const data = await serviceCorredores.getCorredores({ offset, param })
 
             state.loading = false
+
+            console.log('getCorredores', data)
             return data
         }catch(error) {
             state.loading = false
@@ -122,7 +185,6 @@ export const actions = {
     async getLocalidades() {
         try{
             const data = serviceCorredores.getLocalidades();
-
             return data;
         }catch (error){
             Swal.fire({
@@ -144,50 +206,6 @@ export const actions = {
             });
         }
     },
-    btnInsert() {
-        state.pnSearch = true
-
-        state.gridPrincipal.disable();
-        state.gridPrincipal.focusField()
-        state.gridPrincipal.clearElementSideBySide();
-    },
-
-    btnEdit() {
-        //@ts-ignore
-        if (state.gridPrincipal.dataSource() === false) {
-            Swal.fire({
-                icon: "info",
-                text: "Nenhum registro selecionado para alteração, operação cancelada!",
-            });
-            return false;
-        }
-        state.gridPrincipal.disable();
-        state.gridPrincipal.focusField();
-    },
-
-    async btnSave() {
-        if (utils.validaOBR()) return false;
-
-        if (await state.gridPrincipal.getDuplicityAll() == true) return false;
-
-        //@ts-ignore
-        if (state.gridPrincipal.dataSource() == false) {
-            actions.toInsert();
-        }
-        else {
-            actions.toUpdate();            
-        }
-
-        state.gridPrincipal.enable();
-
-        state.pnSearch = false;
-        state.gridPrincipal.focus();
-    },
-    btnCancel(){ 
-        state.pnSearch = false;
-        state.gridPrincipal.enable();
-        state.gridPrincipal.focus();
-    },
     
     async toInsert() {
         try {
@@ -195,6 +213,7 @@ export const actions = {
                 state.gridPrincipal.getElementSideBySideJson(true, false)
             );
 
+            console.log('newFileds', newFields)
 
             state.loading = true
             await serviceCorredores.toInsert(newFields);
@@ -238,8 +257,9 @@ export const actions = {
 
     async toDelete() {
         try {
+            let cod_corredor = state.dbCorredor.ID
             state.loading = true
-            await serviceCorredores.toDelete();
+            await serviceCorredores.toDelete(cod_corredor);
             state.loading = false
             state.gridPrincipal.deleteLine();
         } catch (error) {
@@ -250,25 +270,6 @@ export const actions = {
             });
         }
     },
-
-
-    async btnDelete() {
-      console.log('deletar');
-       //@ts-ignore
-       if (state.gridPrincipal.dataSource() === false) {
-        Swal.fire({
-            icon: "info",
-            text: "Nenhum registro selecionado para alteração, operação cancelada!",
-        });
-        return false;
-    }
-
-    if (await msgConfirm("Confirmação", "Confirma exclusão deste registro?")) {
-        await actions.toDelete();
-        state.gridPrincipal.focus();
-    }
-    },
-
 }
 
 export default { state, actions }

@@ -32,9 +32,7 @@ const getLocalidades = async () => {
         call: "getLocalidades"
     });
 
-    state.dsLocalidades = data;
-
-    return state;
+    return data;
 }
 
 const getDuplicidade: iGetDuplicityFunction = async ({ field, value }) => {
@@ -56,10 +54,10 @@ const toInsert: iToInsertFunction = async (newFields) => {
     return data
 }
 
-const toDelete = async () => {
+const toDelete = async (cod_corredor: any) => {
     return axios.post(caminho, {
         call: "delete",
-        cod_corredor: state.gridPrincipal.dataSource().ID,
+        cod_corredor: cod_corredor
     });
 };
 

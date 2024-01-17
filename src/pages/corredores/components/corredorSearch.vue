@@ -9,7 +9,7 @@ import { state, actions } from "../corredores";
       style="margin: 5px 0 5px; "
       autofocus
       placeholder="F1 - Localizar"
-      :disabled="state.pnSearch"
+      :disabled="state.disableSearch"
       @keydown.enter="actions.search()"
       @keyup.arrow-down="state.gridPrincipal.focus(0)"
       id="edtSearch"
@@ -17,7 +17,7 @@ import { state, actions } from "../corredores";
       v-model="state.edtSearch"
     />
     <v-btn
-      :disabled="state.pnSearch"
+      :disabled="state.disableSearch"
       size="small"
       class="ml-2 mt-1 elevation-0"
       color="primary"
