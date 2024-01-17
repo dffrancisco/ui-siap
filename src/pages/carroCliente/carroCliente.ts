@@ -310,8 +310,6 @@ export const actions = {
 
             let dadosAntigos = <any>dadosDiff.old
 
-            console.log(dadosAntigos)
-
             state.loading = true
             await serviceCarroCliente.toUpdate(dadosAtualizados, dadosAntigos.PLACA);
             state.loading = false
