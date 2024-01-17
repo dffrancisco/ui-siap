@@ -181,9 +181,11 @@ export const actions = {
 
     async getLocalidades() {
         try{
-            const data = serviceCorredores.getLocalidades();
+            const data = await serviceCorredores.getLocalidades();
 
-            return data;
+            state.dsLocalidades = data;
+
+            return data
         }catch (error){
             Swal.fire({
                 icon: 'error',

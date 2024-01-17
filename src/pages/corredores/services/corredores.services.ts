@@ -33,8 +33,9 @@ const getLocalidades = async () => {
     let { data } = await axios.post(caminho, {
         call: "getLocalidades"
     });
-    state.dsLocalidades = data
-    return state;
+    
+    // state.dsLocalidades = data
+    return data;
 }
 
 const getDuplicidade: iGetDuplicityFunction = async ({ field, value }) => {
