@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onUnmounted } from "vue";
-import { useEventListener } from "@vueuse/core";
-import cSearch from "../carros/components/cSearch.vue";
-import $ from "jquery";
+import corredorSearch from "./components/corredorSearch.vue";
 import { actions, state } from "./corredores";
 
 nextTick(async () => {
@@ -41,6 +39,7 @@ nextTick(async () => {
                             
                         <option
                            v-for="loc in state.dsLocalidades"
+                           :value="loc.LOCALIDADE"
                         >
                             {{ loc.LOCALIDADE }}
                         </option></select>
@@ -48,8 +47,19 @@ nextTick(async () => {
                 </v-row>
             </div>
 
+            <corredorSearch />
 
-            <cSearch />
+            <v-overlay
+                :model-value="state.loading"
+                class="align-center justify-center"
+                persistent
+            >
+                <v-progress-circular
+                    color="primary"
+                    indeterminate
+                    size="64"
+                ></v-progress-circular>
+            </v-overlay>
 
             <div id="gridPrincipal"></div>
             <div id="pnBotoes" class="mt-3" style="text-align: center;"></div>

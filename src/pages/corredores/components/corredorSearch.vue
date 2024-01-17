@@ -6,9 +6,9 @@ import { state, actions } from "../corredores";
   <div class="d-flex justify-end my-4">
     <input
       type="text"
-      style="margin: 5px 0 5px; "
+      style="margin: 5px 0 5px;"
       autofocus
-      placeholder="F1 - Localizar"
+      placeholder="F-1 Localizar"
       :disabled="state.pnSearch"
       @keydown.enter="actions.search()"
       @keyup.arrow-down="state.gridPrincipal.focus(0)"
