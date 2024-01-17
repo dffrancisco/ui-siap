@@ -6,6 +6,7 @@ import {
   funcionariosOrdenados,
   meses,
   anos,
+  totalizador,
 } from "./gerenciarFolhaPonto";
 
 onMounted(async () => {
@@ -71,31 +72,34 @@ onMounted(async () => {
             <strong>FUNCIONÁRIOS</strong>
 
             <div class="funcionarios__lista">
-              <v-card variant="outlined" class="funcionarios__lista__card">
+              <v-card
+                variant="outlined"
+                class="funcionarios__lista__totalizador"
+              >
                 <v-img
                   src="./src/assets/pessoas.png"
                   class="imgIconTodos"
                   width="50px"
                 ></v-img>
 
-                <span class="funcionarios__lista__card__faltas"
-                  >TOTALIZADOR:</span
-                >
-                <span class="funcionarios__lista__card__faltas">
+                <span class="funcionarios__lista__card__totalizador"
+                  >TOTALIZADOR
+                </span>
+                <span class="funcionarios__lista__card__totalizador">
                   Pontos não batidos:
-                  <b></b>
+                  <b>{{ totalizador.QTD_PONTOS_NAO_BATIDOS || 0 }}</b>
                 </span>
-                <span class="funcionarios__lista__card__faltas">
+                <span class="funcionarios__lista__card__totalizador">
                   Pontos incompletos:
-                  <b></b>
+                  <b>{{ totalizador.QTD_PONTOS_INCOMPLETOS || 0 }}</b>
                 </span>
-                <span class="funcionarios__lista__card__faltas">
+                <span class="funcionarios__lista__card__totalizador">
                   Quantidade de justificativas:
-                  <b></b>
+                  <b>{{ totalizador.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
                 </span>
-                <span class="funcionarios__lista__card__faltas">
+                <span class="funcionarios__lista__card__totalizador">
                   Pontos à justificar:
-                  <b></b>
+                  <b>{{ totalizador.QTD_A_JUSTIFICAR || 0 }}</b>
                 </span>
               </v-card>
               <v-card
@@ -192,6 +196,17 @@ onMounted(async () => {
     border: 1px solid #0000002f;
   }
 
+  .funcionarios__lista__totalizador {
+    width: 330px;
+    height: 190px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 12px;
+    cursor: pointer;
+    position: relative;
+  }
+
   .funcionarios__lista__card {
     width: 330px;
     height: 190px;
@@ -246,12 +261,22 @@ onMounted(async () => {
   }
 }
 
+.funcionarios__lista__card__totalizador {
+  margin-left: 40px;
+  font-size: 15px;
+  font-style: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #5a6069;
+}
+
 .pendencia {
   background-color: #fbc8c868;
   border: 1px solid rgb(254, 91, 91);
 }
 
 .imgIconTodos {
-  margin-left: 30px;
+  margin-left: 40px;
 }
 </style>

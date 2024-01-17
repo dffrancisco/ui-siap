@@ -49,14 +49,26 @@ export const funcionariosOrdenados = computed(() => {
         return funcionario1.NOME_COMP > funcionario2.NOME_COMP ? 1 : -1
     })
 
-    console.log(state.funcionarios);
-
     return funcionariosArray
 })
 
 
 export const totalizador = computed(() => {
-    let totalizadorArray;
+    const total: iTotalizador = {
+        QTD_A_JUSTIFICAR: 0,
+        QTD_FALTAS_JUSTIFICADAS: 0,
+        QTD_PONTOS_INCOMPLETOS: 0,
+        QTD_PONTOS_NAO_BATIDOS: 0,
+      };
+    
+      for (const func of Object.values(state.funcionarios) as iFuncionario[]) {
+        if (func.QTD_A_JUSTIFICAR) total.QTD_A_JUSTIFICAR += func.QTD_A_JUSTIFICAR;
+        if (func.QTD_FALTAS_JUSTIFICADAS) total.QTD_FALTAS_JUSTIFICADAS += func.QTD_FALTAS_JUSTIFICADAS;
+        if (func.QTD_PONTOS_INCOMPLETOS) total.QTD_PONTOS_INCOMPLETOS += func.QTD_PONTOS_INCOMPLETOS;
+        if (func.QTD_PONTOS_NAO_BATIDOS) total.QTD_PONTOS_NAO_BATIDOS += func.QTD_PONTOS_NAO_BATIDOS;
+      }
+    
+      return total;
 })
 
 export const actions = {
@@ -101,4 +113,4 @@ export const actions = {
     }
 }
 
-export default { state, actions, meses, anos }
+export default { state, actions, meses, anos, totalizador }
