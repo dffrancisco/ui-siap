@@ -1,5 +1,5 @@
 import axios from "axios";
-import { iCarroCliente, iParamGetCarroCliente, iFieldDuplicity, iGetDuplicityResponse, iParamToInsert, iDiffToUpdate} from "../interfaces";
+import { iCarroCliente, iParamGetCarroCliente, iFieldDuplicity, iGetDuplicityResponse, iParamToInsert, iParamToUpdate} from "../interfaces";
 import { state } from "../carroCliente";
 
 const caminho = "siap/carroCliente";
@@ -7,7 +7,7 @@ const caminho = "siap/carroCliente";
 type iGetCarroClienteFunction = (param: iParamGetCarroCliente) => Promise<iCarroCliente[]>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<void>
-type iToUpdateFunction = (diff: iDiffToUpdate) => Promise<void>
+type iToUpdateFunction = (param: iParamToUpdate, id: any) => Promise<void>
 
 const getCarroCliente: iGetCarroClienteFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -38,10 +38,10 @@ const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {
     return data;
 };
 
-const toDelete = async () => {
+const toDelete = async (placa) => {
     return axios.post(caminho, {
         call: "delete",
-        placa: state.gridPrincipal.dataSource().PLACA,
+        placa: placa
     });
 };
 
@@ -54,11 +54,11 @@ const toInsert: iToInsertFunction = async (newFields) => {
     return data
 };
 
-const toUpdate: iToUpdateFunction = async ({ diff }) => {
+const toUpdate: iToUpdateFunction = async (param:any, id: any) => {
     let { data } = await axios.post(caminho, {
         call: "update",
-        placa: state.gridPrincipal.dataSource().PLACA,
-        diff,
+        param,
+        id
     });
 
     return data

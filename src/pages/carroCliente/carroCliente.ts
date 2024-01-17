@@ -256,8 +256,10 @@ export const actions = {
 
     async toDelete() {
         try {
+            let placa = state.dbCarroCliente.PLACA
+
             state.loading = true
-            await serviceCarroCliente.toDelete();
+            await serviceCarroCliente.toDelete(placa);
             state.loading = false
             state.gridPrincipal.deleteLine();
         }
@@ -293,20 +295,29 @@ export const actions = {
     },
 
     async toUpdate() {
+        
         try {
+            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
-            let diff = state.gridPrincipal.getDiffTwoJson(true, false);
-
-            if (diff.diff) {
-                delete diff.diff;
+            if (dadosDiff.diff == false) {
+                return
             }
 
+            let dadosAtualizados = {
+                ...state.dbCarroCliente,
+                ...dadosDiff.new,
+            }
+
+            let dadosAntigos = <any>dadosDiff.old
+
+            console.log(dadosAntigos)
+
             state.loading = true
-            await serviceCarroCliente.toUpdate({ diff });
+            await serviceCarroCliente.toUpdate(dadosAtualizados, dadosAntigos.PLACA);
             state.loading = false
 
-            state.dbCarroCliente = { ...state.dbCarroCliente, ...diff.new } as iCarroCliente;
-            state.gridPrincipal.dataSource(diff.new);
+            state.dbCarroCliente = dadosAtualizados as iCarroCliente;
+            state.gridPrincipal.dataSource(dadosAtualizados);
 
         } catch (error) {
             state.loading = false

@@ -3,7 +3,7 @@ export interface iCarroCliente {
     MODELO: string,
     ANO: any,
     DATA: string,
-    COR: string
+    COR: string,
 }
 
 export interface iModelos {
@@ -24,16 +24,6 @@ export interface iFieldDuplicity {
     field: string
 }
 
-export interface iParamToInsert {
-    param: any
-}
-
-export interface iDiffToUpdate {
-    diff: {
-        old: object;
-        new: object;
-        diff: boolean
-    }
-}
-
+export interface iParamToInsert extends iCarroCliente { }
+export interface iParamToUpdate extends iCarroCliente { }
 export interface iCarroClienteResponse extends iCarroCliente { }
