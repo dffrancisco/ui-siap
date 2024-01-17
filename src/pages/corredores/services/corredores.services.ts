@@ -27,12 +27,14 @@ const getCorredores: iGetCorredoresFunction =  async ({ offset, param }) => {
     return data;
 }
 
+
+
 const getLocalidades = async () => {
     let { data } = await axios.post(caminho, {
         call: "getLocalidades"
     });
-
-    return data;
+    state.dsLocalidades = data
+    return state;
 }
 
 const getDuplicidade: iGetDuplicityFunction = async ({ field, value }) => {
@@ -48,9 +50,8 @@ const getDuplicidade: iGetDuplicityFunction = async ({ field, value }) => {
 const toInsert: iToInsertFunction = async (newFields) => {
     let { data } = await axios.post(caminho, {
         call: "insert",
-        param: newFields
-    })
-
+        param: newFields,
+    })    
     return data
 }
 

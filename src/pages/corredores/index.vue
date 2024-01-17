@@ -31,6 +31,7 @@ nextTick(async () => {
           </v-col>
           <v-col cols="6">
             <span>Localidade</span>
+            <button @click="console.log(state.dsLocalidades)">teste </button>
             <select
               v-model="state.dbCorredor.LOCALIDADE"
               name="LOCALIDADE"

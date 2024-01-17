@@ -117,7 +117,6 @@ export const actions = {
     },
 
     async btnDelete() {
-        console.log('deletar');
          //@ts-ignore
          if (state.gridPrincipal.dataSource() === false) {
           Swal.fire({
@@ -147,7 +146,6 @@ export const actions = {
         }
 
         state.gridPrincipal.enable();
-
         state.disableSearch = false;
         state.gridPrincipal.focus();
     },
@@ -161,11 +159,10 @@ export const actions = {
     async getCorredores({ offset, param }: iParamGetCorredores) {
         try {
             state.loading = true;
-            const data = await serviceCorredores.getCorredores({ offset, param })
+            let data = await serviceCorredores.getCorredores({ offset, param })
 
             state.loading = false
 
-            console.log('getCorredores', data)
             return data
         }catch(error) {
             state.loading = false
@@ -185,6 +182,7 @@ export const actions = {
     async getLocalidades() {
         try{
             const data = serviceCorredores.getLocalidades();
+
             return data;
         }catch (error){
             Swal.fire({
@@ -208,19 +206,20 @@ export const actions = {
     },
     
     async toInsert() {
+        
         try {
-            let newFields = <any>(
+            let newFields = (
                 state.gridPrincipal.getElementSideBySideJson(true, false)
-            );
+            )
+            
 
-            console.log('newFileds', newFields)
 
             state.loading = true
-            await serviceCorredores.toInsert(newFields);
+            let data = await serviceCorredores.toInsert(newFields);
+
             state.loading = false
-
-            state.gridPrincipal.insertLine(newFields)
-
+            
+            state.gridPrincipal.insertLine({...newFields, ...data})
         } catch (error) {
             state.loading = false
             Swal.fire({
@@ -238,7 +237,6 @@ export const actions = {
                 ...state.dbCorredor,
                 ...diff.new
             }
-            console.log(state.dbCorredor, diff.new)
 
             await serviceCorredores.toUpdate(dadosAlterados)
 

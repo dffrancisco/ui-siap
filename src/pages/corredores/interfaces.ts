@@ -27,7 +27,7 @@ export interface iGetDuplicityResponse{
     DESCRICAO: string
 }
 
-export interface iCorredorResponse {}
+export interface iCorredorResponse extends iCorredor {}
 
 export interface iParamToUpdate{
         ID: number
