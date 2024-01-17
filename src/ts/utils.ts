@@ -159,6 +159,61 @@ export const validaCPF_CNPJ = (CPF_CNPJ: string): boolean => {
 
 };
 
+export const toLowerCase = (text: string) => {
+    return text.toLowerCase()
+};
+
+export const toCapitalize = (text: string) => {
+    var palavras = text.split(" ");
+
+    var palavrasCapitalizadas = palavras.map(function(palavra) {
+        return palavra.charAt(0).toUpperCase() + palavra.slice(1)
+    });
+
+    var result = palavrasCapitalizadas.join(' ');
+
+    return result
+};
+
+// function valida_cpf(cpf) {
+//     var cpf_farmatado;
+//     if (cpf.substring(3, 4) == '.') {
+//       cpf_farmatado = cpf.substring(0, 3);
+//       cpf_farmatado += cpf.substring(4, 7);
+//       cpf_farmatado += cpf.substring(8, 11);
+//       cpf_farmatado += cpf.substring(12, 14);
+//       cpf = cpf_farmatado;
+//     }
+//     var numeros, digitos, soma, i, resultado, digitos_iguais;
+//     digitos_iguais = 1;
+//     if (cpf.length < 11)
+//       return false;
+//     for (i = 0; i < cpf.length - 1; i++)
+//       if (cpf.charAt(i) != cpf.charAt(i + 1)) {
+//         digitos_iguais = 0;
+//         break;
+//       }
+//     if (!digitos_iguais) {
+//       numeros = cpf.substring(0, 9);
+//       digitos = cpf.substring(9);
+//       soma = 0;
+//       for (i = 10; i > 1; i--)
+//         soma += numeros.charAt(10 - i) * i;
+//       resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+//       if (resultado != digitos.charAt(0))
+//         return false;
+//       numeros = cpf.substring(0, 10);
+//       soma = 0;
+//       for (i = 11; i > 1; i--)
+//         soma += numeros.charAt(11 - i) * i;
+//       resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+//       if (resultado != digitos.charAt(1))
+//         return false;
+//       return true;
+//     } else
+//       return false;
+//   }
+
 export const formatValorUSA = (num: string): number => {
   return parseFloat(num.replace(/\./g, "").replace(/\,/g, "."));
 };
@@ -658,6 +713,8 @@ export default {
   validMail,
   formatValor,
   formatValorUSA,
+  toLowerCase,
+  toCapitalize,
   dataBrasil,
   aguarde,
   confirma,
