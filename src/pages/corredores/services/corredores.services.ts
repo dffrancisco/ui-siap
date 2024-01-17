@@ -8,7 +8,7 @@ import {
     iCorredorResponse,
     iParamToInsert, 
     iGetDuplicityResponse,
-    iDiffToUpdate
+    iParamToUpdate
 } from '../interfaces';
 
 const caminho = 'siap/corredores'
@@ -16,7 +16,7 @@ const caminho = 'siap/corredores'
 type iGetCorredoresFunction = (param: iParamGetCorredores) => Promise<iCorredorResponse[]>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>
 type iToInsertFunction = (param: iParamToInsert) => Promise<void>
-type iToUpdateFunction = (diff: iDiffToUpdate) => Promise<void>
+type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>
 
 const getCorredores: iGetCorredoresFunction =  async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -63,12 +63,11 @@ const toDelete = async () => {
     });
 };
 
-const toUpdate: iDiffToUpdate = async ({ diff }) => {
-    console.log(diff)
+const toUpdate: iToUpdateFunction = async (param: any) => {
+    console.log(param)
     let { data } = await axios.post(caminho, {
         call: 'update',
-        cod_corredor: state.gridPrincipal.dataSource().ID,
-        diff
+        param
     })
 
     return data

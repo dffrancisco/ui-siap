@@ -44,7 +44,7 @@ export const actions = {
                 vModel(r){ state.dbCorredor = r },
                 //evitar duplicidade
                 duplicity: {
-                    dataField: ['DESCRICAO', 'ID'],
+                    dataField: ['DESCRICAO'],
                     async execute(rs) {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),
@@ -168,7 +168,7 @@ export const actions = {
     async btnSave() {
         if (utils.validaOBR()) return false;
 
-        if (await state.gridPrincipal.getDuplicityAll()) return false;
+        if (await state.gridPrincipal.getDuplicityAll() == true) return false;
 
         //@ts-ignore
         if (state.gridPrincipal.dataSource() == false) {
@@ -195,7 +195,6 @@ export const actions = {
                 state.gridPrincipal.getElementSideBySideJson(true, false)
             );
 
-            console.log(newFields)
 
             state.loading = true
             await serviceCorredores.toInsert(newFields);
@@ -213,18 +212,19 @@ export const actions = {
     },
 
     async toUpdate() {
+
         try{
-            console.log(state.dbCorredor)
             let diff = state.gridPrincipal.getDiffTwoJson(true, false)
-
-            if(diff.diff){
-                delete diff.diff;
+            let dadosAlterados = {
+                ...state.dbCorredor,
+                ...diff.new
             }
+            console.log(state.dbCorredor, diff.new)
 
-            await serviceCorredores.toUpdate({ diff })
+            await serviceCorredores.toUpdate(dadosAlterados)
 
-            state.dbCorredor = { ...state.dbCorredor, ...diff } as iCorredor;
-            state.gridPrincipal.dataSource(diff.new)
+            state.dbCorredor = { ...state.dbCorredor, ...diff} as iCorredor;
+            state.gridPrincipal.dataSource(dadosAlterados)
 
         }catch(error){
             state.loading = false

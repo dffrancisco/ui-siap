@@ -30,10 +30,8 @@ export interface iGetDuplicityResponse{
 
 export interface iCorredorResponse {}
 
-export interface iDiffToUpdate{
-    diff:{
-        old: object;
-        new: object;
-        diff: boolean
-    }
+export interface iParamToUpdate{
+        ID: number
+        DESCRICAO: string
+        LOCALIDADE: string
 }
