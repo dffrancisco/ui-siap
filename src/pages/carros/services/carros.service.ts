@@ -11,7 +11,7 @@ import {
 const caminho = "siap/carros"
 
 type iGetCarrosFunction = (param: iParamGetCarros) => Promise<iCarroResponse[]>;
-type iGetDuplicityFunction = (field: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>;
+type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<void>;
 type iToUpdateFuntion = (param: iParamToUpdate) => Promise<void>;
 
