@@ -1,6 +1,5 @@
 import axios from "axios";
 import { iCarroCliente, iParamGetCarroCliente, iFieldDuplicity, iGetDuplicityResponse, iParamToInsert, iParamToUpdate} from "../interfaces";
-import { state } from "../carroCliente";
 
 const caminho = "siap/carroCliente";
 
@@ -23,9 +22,7 @@ const getModelos = async () => {
         call: "getModelos",
     });
 
-    state.listaModelos = data
-
-    return state;
+    return data;
 };
 
 const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {

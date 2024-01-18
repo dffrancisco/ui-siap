@@ -137,8 +137,9 @@ export const actions = {
 
     async getModelos() {
         try {
-            const data = serviceCarroCliente.getModelos();
-            return data;
+            const data = await serviceCarroCliente.getModelos();
+            state.listaModelos = data
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -295,8 +296,9 @@ export const actions = {
     },
 
     async toUpdate() {
-        
+
         try {
+
             let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
             if (dadosDiff.diff == false) {
@@ -308,10 +310,11 @@ export const actions = {
                 ...dadosDiff.new,
             }
 
-            let dadosAntigos = <any>dadosDiff.old
+            //@ts-ignore
+            let placaAntiga = dadosDiff?.old?.PLACA || state.dbCarroCliente.PLACA
 
             state.loading = true
-            await serviceCarroCliente.toUpdate(dadosAtualizados, dadosAntigos.PLACA);
+            await serviceCarroCliente.toUpdate(dadosAtualizados, placaAntiga);
             state.loading = false
 
             state.dbCarroCliente = dadosAtualizados as iCarroCliente;
