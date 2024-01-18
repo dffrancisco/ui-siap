@@ -7,7 +7,6 @@ import {
     iParamToUpdate,
     iGetDuplicityResponse
 } from "../interfaces";
-import { state } from "../cidades";
 
 const caminho = "siap/cidades";
 
@@ -30,9 +29,7 @@ const getUF = async () => {
         call: "getUF",
     });
 
-    state.listaUF = data;
-
-    return state;
+    return data
 };
 
 const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {

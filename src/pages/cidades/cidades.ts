@@ -134,9 +134,9 @@ export const actions = {
 
     async getUF() {
         try {
-            const data = serviceCidades.getUF();
-
-            return data;
+            const data = await serviceCidades.getUF();
+            state.listaUF = data;
+            
         } catch (error) {
             Swal.fire({
                 icon: "error",
