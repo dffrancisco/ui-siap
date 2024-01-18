@@ -8,20 +8,37 @@ import login from "../login/login";
   <v-main>
     <v-container>
       <v-card max-width="1000" class="mx-auto pa-3">
-        <v-row style="height: 80px">
-          <v-col cols="12" class="d-flex justify-space-around align-center">
-            <v-btn @click="router.push('/descontoOrcamento')"
+        <v-row>
+          <div class="d-flex flex-wrap pa-6">
+            <v-btn class="mr-4 mb-4" @click="router.push('/descontoOrcamento')"
               >Desconto Orçamento</v-btn
             >
-            <v-btn @click="router.push('/carros')">Carros</v-btn>
-            <v-btn @click="router.push('/entregarReceber')"
+            <v-btn class="mr-4 mb-4" @click="router.push('/carros')"
+              >Carros</v-btn
+            >
+            <v-btn class="mr-4 mb-4" @click="router.push('/entregarReceber')"
               >Entregar e Receber</v-btn
             >
+       
             <v-btn @click="router.push('/valeDinheiro')">Vale dinheiro</v-btn>
+            
             <v-btn @click="router.push('/corredores')">Corredores</v-btn>
 
-            <v-btn @click="login.actions.confirmarSaida()">Logout </v-btn>
-          </v-col>
+            <v-btn class="mr-4 mb-4" @click="router.push('/valeDinheiro')"
+              >Vale dinheiro</v-btn
+            >
+            <v-btn class="mr-4 mb-4" @click="router.push('/chamados')"
+              >Chamados</v-btn
+            >
+
+            <v-btn class="mr-4 mb-4" @click="router.push('/aniversariantes')"
+              >Aniversariantes</v-btn
+            >
+
+            <v-btn class="mr-4 mb-4" @click="login.actions.confirmarSaida()"
+              >Logout
+            </v-btn>
+          </div>
         </v-row>
       </v-card>
     </v-container>

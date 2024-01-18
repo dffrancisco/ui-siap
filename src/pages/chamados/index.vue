@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { actions, state } from "./chamados";
-import { VDataTableServer } from "vuetify/labs/VDataTable";
 import CModalDetalhes from "./components/cModalDetalhes.vue";
 
 const headers = [
