@@ -11,6 +11,7 @@ export interface iFuncionario {
 }
 
 export interface iGetMesEAno {
+    cod_funcionario: number;
     mes: number;
     ano: number;
 }

@@ -10,7 +10,7 @@ import {
 } from "./gerenciarFolhaPonto";
 
 onMounted(async () => {
-  actions.init(state.mes, state.ano);
+  actions.init(state.selectedFuncionario, state.mes, state.ano);
 });
 </script>
 
@@ -26,11 +26,13 @@ onMounted(async () => {
               <v-row>
                 <v-col cols="5">
                   <v-autocomplete
+                    :clearable="true"
                     label="Funcionário"
                     v-model="state.selectedFuncionario"
                     :items="funcionariosOrdenados"
                     item-title="NOME_COMP"
                     item-value="COD_FUNCIONARIO"
+                    @update:model-value="actions.handleFuncionarioChange"
                   ></v-autocomplete>
                 </v-col>
                 <v-col cols="2">
@@ -56,7 +58,14 @@ onMounted(async () => {
                     icon
                     color="primary"
                     size="small"
-                    @click="actions.getFuncionarios(state.mes, state.ano)"
+                    class="btnSearch"
+                    @click="
+                      actions.getFuncionarios(
+                        state.selectedFuncionario,
+                        state.mes,
+                        state.ano
+                      )
+                    "
                   >
                     <v-icon> mdi-magnify</v-icon>
                   </v-btn></v-col
@@ -77,13 +86,13 @@ onMounted(async () => {
                 class="funcionarios__lista__totalizador"
               >
                 <v-img
-                  src="./src/assets/pessoas.png"
+                  src="./src/assets/pessoas.svg"
                   class="imgIconTodos"
                   width="50px"
                 ></v-img>
 
                 <span class="funcionarios__lista__card__totalizador"
-                  >TOTALIZADOR
+                  ><u>TOTALIZADOR</u>
                 </span>
                 <span class="funcionarios__lista__card__totalizador">
                   Pontos não batidos:
@@ -97,7 +106,12 @@ onMounted(async () => {
                   Quantidade de justificativas:
                   <b>{{ totalizador.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
                 </span>
-                <span class="funcionarios__lista__card__totalizador">
+                <span
+                  class="funcionarios__lista__card__totalizador"
+                  :class="{
+                    'com-pendencia': totalizador.QTD_A_JUSTIFICAR > 0,
+                  }"
+                >
                   Pontos à justificar:
                   <b>{{ totalizador.QTD_A_JUSTIFICAR || 0 }}</b>
                 </span>
@@ -196,7 +210,8 @@ onMounted(async () => {
     border: 1px solid #0000002f;
   }
 
-  .funcionarios__lista__totalizador {
+  .funcionarios__lista__totalizador,
+  .funcionarios__lista__card {
     width: 330px;
     height: 190px;
     display: flex;
@@ -207,57 +222,46 @@ onMounted(async () => {
     position: relative;
   }
 
-  .funcionarios__lista__card {
-    width: 330px;
-    height: 190px;
+  .funcionarios__lista__card__usuario {
+    padding-left: 12px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 12px;
-    cursor: pointer;
-    position: relative;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
 
-    .funcionarios__lista__card__usuario {
-      padding-left: 12px;
-      display: flex;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
+  .funcionarios__lista__card__cargo {
+    margin-bottom: 30px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #5a6069;
+  }
 
-    .funcionarios__lista__card__cargo {
-      margin-bottom: 30px;
-      font-size: 12px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: #5a6069;
-    }
+  .funcionarios__lista__card__nome {
+    font-size: 15px;
+    color: #2a2a2a;
+    display: flex;
+    align-items: left;
+    justify-content: left;
+  }
 
-    .funcionarios__lista__card__nome {
-      font-size: 15px;
-      color: #2a2a2a;
-      display: flex;
-      align-items: left;
-      justify-content: left;
-    }
+  .funcionarios__lista__card__faltas {
+    margin-left: 20px;
+    font-size: 15px;
+    font-style: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #5a6069;
+  }
 
-    .funcionarios__lista__card__faltas {
-      margin-left: 20px;
-      font-size: 15px;
-      font-style: bold;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: #5a6069;
-    }
+  .funcionarios__lista__card__faltas.funcionario-com-pendencia {
+    color: red;
+  }
 
-    .funcionarios__lista__card__faltas.funcionario-com-pendencia {
-      color: red;
-    }
-
-    .funcionarios__lista__avatar.funcionario-com-pendencia {
-      border: 2px solid red;
-    }
+  .funcionarios__lista__avatar.funcionario-com-pendencia {
+    border: 2px solid red;
   }
 }
 
@@ -271,6 +275,10 @@ onMounted(async () => {
   color: #5a6069;
 }
 
+.funcionarios__lista__card__totalizador.com-pendencia {
+  color: red;
+}
+
 .pendencia {
   background-color: #fbc8c868;
   border: 1px solid rgb(254, 91, 91);
@@ -278,5 +286,9 @@ onMounted(async () => {
 
 .imgIconTodos {
   margin-left: 40px;
+}
+
+.btnSearch {
+  margin-top: 10px;
 }
 </style>

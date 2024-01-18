@@ -7,7 +7,7 @@ export const state = reactive(({
     funcionarios: {},
     mes: new Date().getMonth() + 1,
     ano: new Date().getFullYear(),
-    selectedFuncionario: <string | null>(null),
+    selectedFuncionario: <number | null>(null),
     loading: false,
 }))
 
@@ -59,23 +59,28 @@ export const totalizador = computed(() => {
         QTD_FALTAS_JUSTIFICADAS: 0,
         QTD_PONTOS_INCOMPLETOS: 0,
         QTD_PONTOS_NAO_BATIDOS: 0,
-      };
-    
-      for (const func of Object.values(state.funcionarios) as iFuncionario[]) {
+    };
+
+    for (const func of Object.values(state.funcionarios) as iFuncionario[]) {
         if (func.QTD_A_JUSTIFICAR) total.QTD_A_JUSTIFICAR += func.QTD_A_JUSTIFICAR;
         if (func.QTD_FALTAS_JUSTIFICADAS) total.QTD_FALTAS_JUSTIFICADAS += func.QTD_FALTAS_JUSTIFICADAS;
         if (func.QTD_PONTOS_INCOMPLETOS) total.QTD_PONTOS_INCOMPLETOS += func.QTD_PONTOS_INCOMPLETOS;
         if (func.QTD_PONTOS_NAO_BATIDOS) total.QTD_PONTOS_NAO_BATIDOS += func.QTD_PONTOS_NAO_BATIDOS;
-      }
-    
-      return total;
+    }
+
+    return total;
 })
 
 export const actions = {
 
-    async getFuncionarios(mes: number, ano: number) {
+    handleFuncionarioChange() {
+        actions.getFuncionarios(state.selectedFuncionario, state.mes, state.ano);
+    },
+
+    async getFuncionarios(cod_funcionario: number, mes: number, ano: number) {
 
         const param: iGetMesEAno = {
+            cod_funcionario: cod_funcionario,
             mes: mes,
             ano: ano
         }
@@ -101,10 +106,10 @@ export const actions = {
     },
 
 
-    async init(mes: number, ano: number) {
+    async init(cod_funcionario: number, mes: number, ano: number) {
         state.loading = true;
 
-        await actions.getFuncionarios(mes, ano);
+        await actions.getFuncionarios(cod_funcionario, mes, ano);
 
         setTimeout(() => {
             state.loading = false;
