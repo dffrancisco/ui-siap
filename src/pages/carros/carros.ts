@@ -1,19 +1,10 @@
-import $ from 'jquery'
-import axios from 'axios';
 import { reactive } from 'vue'
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import Swal from 'sweetalert2';
-const caminho = "siap/carros"
-import globalState from '@/store/globalState'
 import { msgConfirm } from '@/ts/message';
+import { iCarro, iMontadora, iParamGetCarros, iFieldDuplicity } from './interfaces'
+import serviceCarros from "./services/carros.service";
 import utils from '@/ts/utils';
-
-interface iCarro {
-    DESCRICAO: string;
-    ID_CARRO: number;
-    ID_MONTADORA: number;
-    MONTADORA: string;
-}
 
 interface _ixGridCreate extends ixGridCreate {
     dataSource: (obj?: object) => iCarro
@@ -22,9 +13,10 @@ interface _ixGridCreate extends ixGridCreate {
 export const state = reactive(({
     gridPrincipal: <_ixGridCreate>{},
     pnSearch: false,
-    dsMontadoras: <{ ID_MONTADORA: number, DESCRICAO: string }[]>{},
+    listaMontadoras: <iMontadora[]>[],
     edtSearch: <HTMLInputElement>{},
     dbCarro: <iCarro>{},
+    loading: false
 }))
 
 
@@ -42,7 +34,10 @@ export const actions = {
             },
             query: {
                 async execute(rs) {
-                    let data = await actions.getCarros(rs)
+                    let data = await actions.getCarros({
+                        offset: rs.offset,
+                        param: rs.param
+                    });
                     state.gridPrincipal.querySourceAdd(data)
                 }
             },
@@ -53,10 +48,15 @@ export const actions = {
                 duplicity: {
                     dataField: ['DESCRICAO'],
                     async execute(rs) {
-                        let dup = await actions.getDuplicidade(rs.value.toUpperCase(), rs.field)
+                        let dup = await actions.getDuplicidade({
+                            value: rs.value.toUpperCase(),
+                            field: rs.field,
+                        });
 
                         if (Object.keys(dup).length > 0) {
-                            state.gridPrincipal.showMessageDuplicity(rs.text + ' já está cadastrada')
+                            state.gridPrincipal.showMessageDuplicity(
+                                rs.text + ' já está cadastrada'
+                            );
                             return true;
                         }
 
@@ -77,16 +77,16 @@ export const actions = {
                             click: actions.btnEdit,
                             id: 'btnUpdate'
                         },
+                        excluir: {
+                            html: 'Excluir',
+                            state: 'delete',
+                            click: actions.btnDelete
+                        },
                         salvar: {
                             html: 'Salvar',
                             state: 'save',
                             click: actions.btnSave,
                             preLoad: 'Salvando',
-                        },
-                        excluir: {
-                            html: 'Excluir',
-                            state: 'delete',
-                            click: actions.btnDelete
                         },
                         cancela: {
                             html: 'Cancelar',
@@ -104,36 +104,67 @@ export const actions = {
 
     },
 
-    async getCarros(param: any) {
+    async getCarros({ param, offset }: iParamGetCarros) {
+        try {
+            state.loading = true
+            const data = await serviceCarros.getCarros({ param, offset });
+            state.loading = false
 
-        let { data } = await axios.post(caminho, {
-            call: 'getCarros',
-            param
-        })
-        return data;
+            return data;
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao exibir os carros!"
+            });
+        }
     },
 
     search() {
-        state.gridPrincipal.queryOpen({ DESCRICAO: state.edtSearch.value.toUpperCase() });
+        state.gridPrincipal.queryOpen({
+            DESCRICAO: state.edtSearch.value.toUpperCase()
+        });
+    },
+
+    encontrarMontadoras(ID_MONTADORA) {
+        const montadoraEncontrada = state.listaMontadoras.find(montadora => {
+            if ((montadora.ID_MONTADORA == ID_MONTADORA)) {
+                return true;
+            }
+
+            return false;
+        })
+
+        let montadora = montadoraEncontrada.DESCRICAO
+
+        return montadora
     },
 
     async getMontadoras() {
-        let { data } = await axios.post(caminho, {
-            call: 'getMontadoras'
-        })
-
-        state.dsMontadoras = data
+        try {
+            const data = await serviceCarros.getMontadoras();
+            state.listaMontadoras = data;
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao exibir as montadoras!"
+            });
+        }
     },
 
-    async getDuplicidade(value: string, field: string) {
+    async getDuplicidade({ value, field }: iFieldDuplicity) {
+        try {
+            const data = await serviceCarros.getDuplicidade({ value, field });
 
-        let { data } = await axios.post(caminho, {
-            call: 'getDuplicidade',
-            value,
-            field
-        })
-
-        return data
+            return data
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Carro já cadastrado!"
+            });
+        }
     },
 
     btnInsert() {
@@ -174,8 +205,6 @@ export const actions = {
             await actions.toDelete()
             state.gridPrincipal.focus();
         }
-
-
     },
 
     async btnSave() {
@@ -208,79 +237,80 @@ export const actions = {
     },
 
     async toDelete() {
+        try {
+            let id_carro = state.dbCarro.ID_CARRO
 
-        let { data } = await axios.post(caminho, {
-            call: 'delete',
-            id_carro: state.gridPrincipal.dataSource().ID_CARRO
-        })
-
-        if (data.error) {
-            await Swal.fire({
-                icon: 'error',
-                text: data.msg
-            })
-            return false
+            state.loading = true
+            await serviceCarros.toDelete(id_carro);
+            state.loading = false
+            state.gridPrincipal.deleteLine();
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao excluir o carro! Talvez ele esteja sendo utilizado em outro local.",
+            });
         }
-
-        state.gridPrincipal.deleteLine()
-
     },
 
     async toInsert() {
-        let newFields = <any>state.gridPrincipal.getElementSideBySideJson(true, false)
+        try {
+            let newFields = <any>(
+                state.gridPrincipal.getElementSideBySideJson(true, false)
+            );
 
-        let { data } = await axios.post(caminho, {
-            call: 'insert',
-            param: newFields
-        })
+            state.loading = true;
+            await serviceCarros.toInsert(newFields)
+            state.loading = false;
 
-        if (data.error) {
+            let montadora = actions.encontrarMontadoras(newFields.ID_MONTADORA)
+            state.gridPrincipal.insertLine({
+                ...newFields,
+                MONTADORA: montadora
+            });
+
+        } catch (error) {
+            state.loading = false
             Swal.fire({
-                icon: 'error',
-                text: data.msg
-            })
-            return false
+                icon: "error",
+                text: "Erro ao inserir carro!",
+            });
         }
-
-        newFields['ID_CARRO'] = data.id_carro
-        newFields['MONTADORA'] = $('#ID_MONTADORA option:selected').text();
-
-        // console.log(newFields);
-
-        state.gridPrincipal.insertLine(newFields);
-
     },
 
     async toUpdate() {
-        let diff = state.gridPrincipal.getDiffTwoJson(true, false);
+        try {
+            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
-        if (diff.diff) {
-
-            delete diff.diff;
-
-            let { data } = await axios.post(caminho, {
-                call: 'update',
-                id_carro: state.gridPrincipal.dataSource().ID_CARRO,
-                diff
-            })
-
-
-            if (data.error) {
-                Swal.fire({
-                    icon: 'error',
-                    text: data.msg
-                })
-                return false
+            if (dadosDiff.diff == false) {
+                return
             }
 
+            let dadosAtualizados = {
+                ...state.dbCarro,
+                ...dadosDiff.new
+            }
 
-            diff.new['MONTADORA'] = $('#ID_MONTADORA option:selected').text();
-            state.gridPrincipal.dataSource(diff.new)
+            state.loading = true
+            await serviceCarros.toUpdate(dadosAtualizados)
+            state.loading = false
 
+            state.dbCarro = dadosAtualizados as iCarro;
+
+            let montadora = actions.encontrarMontadoras(dadosAtualizados.ID_MONTADORA)
+            state.gridPrincipal.dataSource({
+                ...dadosAtualizados,
+                MONTADORA: montadora
+            })
+
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao atualizar carro!",
+            });
         }
-
     }
 }
-
 
 export default { state, actions }
