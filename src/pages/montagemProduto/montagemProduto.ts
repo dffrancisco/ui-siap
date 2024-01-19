@@ -216,6 +216,7 @@ export const actions = {
             });
 
         } catch (error) {
+            state.loading = false;
             Swal.fire({
                 icon: "error",
                 text: error?.response?.data?.msg || "Erro ao inserir a montagem!"
@@ -249,6 +250,7 @@ export const actions = {
             });
 
         } catch (error) {
+            state.loading = false;
             Swal.fire({
                 icon: "error",
                 text: error?.response?.data?.msg || "Erro ao atualizar a montagem!"
@@ -257,7 +259,20 @@ export const actions = {
     },
 
     async toDelete() {
+        try {
+            let id_produto_montagem = state.dbProdutoMontagem.ID_PRODUTO_MONTAGEM
 
+            state.loading = true;
+            await serviceMontagemProdutos.toDelete(id_produto_montagem);
+            state.loading = false;
+            state.gridPrincipal.deleteLine();
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao excluir a montagem!"
+            })
+        }
     },
 }
 

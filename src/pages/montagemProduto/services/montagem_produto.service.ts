@@ -43,9 +43,17 @@ const toUpdate: iToUpdateFuntion = async (param: any) => {
     return data;
 }
 
+const toDelete = async (id_produto_montagem) => {
+    return axios.post(caminho, {
+        call: "delete",
+        id_produto_montagem: id_produto_montagem
+    });
+};
+
 export default {
     getProdutos,
     getCarros,
     toInsert,
-    toUpdate
+    toUpdate,
+    toDelete
 }
