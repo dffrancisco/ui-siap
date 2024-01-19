@@ -15,6 +15,15 @@ const getProdutos: iGetProdutosFunction = async ({ param, offset }) => {
     return data;
 }
 
+const getCarros = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getCarros"
+    });
+
+    return data;
+}
+
 export default {
-    getProdutos
+    getProdutos,
+    getCarros
 }

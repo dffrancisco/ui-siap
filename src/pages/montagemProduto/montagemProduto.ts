@@ -92,7 +92,7 @@ export const actions = {
 
     search() {
         state.gridPrincipal.queryOpen({
-            DESCRICAO: state.edtSearch.value.toUpperCase()
+            DESC_MONTAGEN: state.edtSearch.value.toUpperCase()
         });
     },
 
@@ -187,7 +187,15 @@ export const actions = {
     },
 
     async getCarros () {
-
+        try {
+            const data = await serviceMontagemProdutos.getCarros();
+            state.listaCarros = data;
+        } catch(error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao exibir os carros!"
+            })
+        }
     },
 
     async toInsert() {
