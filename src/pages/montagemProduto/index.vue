@@ -20,7 +20,7 @@ nextTick(async () => {
 
     actions.grids();
     actions.getCarros();
-    state.gridPrincipal.queryOpen({DESC_MONTAGEN: ""}, () => {
+    state.gridPrincipal.queryOpen({ DESC_MONTAGEN: "" }, () => {
         state.gridPrincipal.focus();
     });
 });
@@ -59,7 +59,7 @@ onUnmounted(() => {
                             v-model="state.dbProdutoMontagem.ID_CARRO"
                             name="ID_CARRO"
                             id="ID_CARRO"
-                            class="obr ss"    
+                            class="obr ss"
                         >
                             <option
                                 v-for="carro in state.listaCarros"
@@ -87,12 +87,25 @@ onUnmounted(() => {
 
             <produtosSearch />
 
+            <v-overlay
+                :model-value="state.loading"
+                class="align-center justify-center"
+                persistent
+            >
+                <v-progress-circular
+                    color="primary"
+                    indeterminate
+                    size="64"
+                ></v-progress-circular>
+            </v-overlay>
+
             <div id="gridPrincipal"></div>
             <div
                 id="pnBotoes"
                 class="mt-3"
                 style="text-align: center"
             ></div>
+            
         </v-card>
         <div id="pnCodigoTela">MONTAGEM_PRODUTO</div>
     </v-container>
