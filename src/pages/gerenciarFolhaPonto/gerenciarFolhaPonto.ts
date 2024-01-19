@@ -2,6 +2,7 @@ import { reactive, computed } from 'vue';
 import { iFuncionario, iGetMesEAno, iTotalizador } from './interface';
 import gerenciarFolhaPontoService from './services/gerenciarFolhaPonto.service';
 import Swal from 'sweetalert2';
+import router from '@/router';
 
 export const state = reactive(({
     funcionarios: {},
@@ -105,11 +106,26 @@ export const actions = {
 
     },
 
+    onClickFuncionario(codFuncionario: number, cpf: string, mes: number, ano: number) {
 
-    async init(cod_funcionario: number, mes: number, ano: number) {
+        let query = {
+            cod_funcionario: codFuncionario,
+            cpf: cpf,
+            mes: mes,
+            ano: ano
+        }
+
+        router.push({
+            name: 'gerenciarFolhaPontoDetalhes',
+            query
+        })
+    },
+
+
+    async init(codFuncionario: number, mes: number, ano: number) {
         state.loading = true;
 
-        await actions.getFuncionarios(cod_funcionario, mes, ano);
+        await actions.getFuncionarios(codFuncionario, mes, ano);
 
         setTimeout(() => {
             state.loading = false;
