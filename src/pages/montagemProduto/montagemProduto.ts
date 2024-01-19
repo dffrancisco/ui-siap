@@ -2,7 +2,8 @@ import { reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
-import { iCarros, iProdutoMontagem } from "./interfaces";
+import { iCarros, iProdutoMontagem, iParamGetProdutos } from "./interfaces";
+import serviceMontagemProdutos from "./services/montagem_produto.service"
 import utils from "@/ts/utils";
 
 interface _ixGridCreate extends ixGridCreate {
@@ -26,8 +27,8 @@ export const actions = {
             count: true,
             columns: {
                 "Descrição Montagem": { dataField: "DESC_MONTAGEN"},
-                "Carro": { dataField: "ID_CARRO" },
-                "Valor": { dataField: "VALOR" }
+                "Carro": { dataField: "CARRO", width: "30%"},
+                "Valor": { dataField: "VALOR", width: "15%", center: true, compare: "valorFormatado"}
             },
             query: {
                 async execute(rs) {
@@ -37,6 +38,9 @@ export const actions = {
                     });
                     state.gridPrincipal.querySourceAdd(data);
                 }
+            },
+            compare: {
+                valorFormatado: (r) => utils.formatValor(r.VALOR)
             },
             sideBySide: {
                 el: '#pnCampos',
@@ -90,6 +94,20 @@ export const actions = {
         state.gridPrincipal.queryOpen({
             DESCRICAO: state.edtSearch.value.toUpperCase()
         });
+    },
+
+    encontrarCarros(ID_CARRO) {
+        const carroEncontrado = state.listaCarros.find(carro => {
+            if ((carro.ID_CARRO == ID_CARRO)) {
+                return true;
+            }
+
+            return false;
+        })
+
+        let carro = carroEncontrado.DESCRICAO
+
+        return carro
     },
 
     btnInsert() {
@@ -152,8 +170,20 @@ export const actions = {
         state.gridPrincipal.focus();
     },
 
-    async getProdutos ({param, offset}) {
+    async getProdutos ({param, offset}: iParamGetProdutos) {
+        try {
+            state.loading = true;
+            const data = await serviceMontagemProdutos.getProdutos({param, offset});
+            state.loading = false;
 
+            return data;
+        } catch(error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao exibir os produtos!"
+            })
+        }
     },
 
     async getCarros () {
