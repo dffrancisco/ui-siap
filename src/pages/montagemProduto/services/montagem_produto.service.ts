@@ -1,10 +1,11 @@
 import axios from "axios";
-import { iParamGetProdutos, iGetProdutosResponse, iParamToInsert } from "../interfaces"
+import { iParamGetProdutos, iGetProdutosResponse, iParamToInsert, iParamToUpdate } from "../interfaces"
 
 const caminho = "siap/montagemProduto";
 
 type iGetProdutosFunction = (param: iParamGetProdutos) => Promise<iGetProdutosResponse>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<void>;
+type iToUpdateFuntion = (param: iParamToUpdate) => Promise<void>;
 
 const getProdutos: iGetProdutosFunction = async ({ param, offset }) => {
     let { data } = await axios.post(caminho, {
@@ -33,8 +34,18 @@ const toInsert: iToInsertFunction = async (newFields) => {
     return data;
 }
 
+const toUpdate: iToUpdateFuntion = async (param: any) => {
+    let { data } = await axios.post(caminho, {
+        call: "update",
+        param
+    });
+
+    return data;
+}
+
 export default {
     getProdutos,
     getCarros,
-    toInsert
+    toInsert,
+    toUpdate
 }

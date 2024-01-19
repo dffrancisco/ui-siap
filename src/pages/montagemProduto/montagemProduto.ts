@@ -224,7 +224,36 @@ export const actions = {
     },
 
     async toUpdate() {
+        try {
+            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
+            if (dadosDiff.diff == false) {
+                return
+            }
+
+            let dadosAtualizados = {
+                ...state.dbProdutoMontagem,
+                ...dadosDiff.new
+            }
+
+            state.loading = true;
+            await serviceMontagemProdutos.toUpdate(dadosAtualizados)
+            state.loading = false;
+
+            state.dbProdutoMontagem = dadosAtualizados as iProdutoMontagem;
+
+            let carro = actions.encontrarCarros(dadosAtualizados.ID_CARRO)
+            state.gridPrincipal.dataSource({
+                ...dadosAtualizados,
+                CARRO: carro
+            });
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.msg || "Erro ao atualizar a montagem!"
+            })
+        }
     },
 
     async toDelete() {
