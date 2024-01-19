@@ -30,6 +30,10 @@ import login from "../login/login";
               >Aniversariantes</v-btn
             >
 
+            <v-btn class="mr-4 mb-4" @click="router.push('/impressorasTermicas')"
+              >Impressoras Térmicas</v-btn
+            >
+
             <v-btn class="mr-4 mb-4" @click="login.actions.confirmarSaida()"
               >Logout
             </v-btn>
