@@ -26,9 +26,9 @@ export const actions = {
             height: 200,
             count: true,
             columns: {
-                "Descrição Montagem": { dataField: "DESC_MONTAGEN"},
-                "Carro": { dataField: "CARRO", width: "30%"},
-                "Valor": { dataField: "VALOR", width: "15%", center: true, compare: "valorFormatado"}
+                "Descrição Montagem": { dataField: "DESC_MONTAGEN" },
+                "Carro": { dataField: "CARRO", width: "30%" },
+                "Valor": { dataField: "VALOR", width: "15%", center: true, compare: "valorFormatado" }
             },
             query: {
                 async execute(rs) {
@@ -170,27 +170,28 @@ export const actions = {
         state.gridPrincipal.focus();
     },
 
-    async getProdutos ({param, offset}: iParamGetProdutos) {
+    async getProdutos({ param, offset }: iParamGetProdutos) {
         try {
             state.loading = true;
-            const data = await serviceMontagemProdutos.getProdutos({param, offset});
+            const data = await serviceMontagemProdutos.getProdutos({ param, offset });
             state.loading = false;
 
             return data;
-        } catch(error) {
+        } catch (error) {
             state.loading = false;
             Swal.fire({
                 icon: "error",
-                text: "Erro ao exibir os produtos!"
+                text: "Erro ao exibir as montagem!"
             })
         }
     },
 
-    async getCarros () {
+    async getCarros() {
         try {
             const data = await serviceMontagemProdutos.getCarros();
             state.listaCarros = data;
-        } catch(error) {
+
+        } catch (error) {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao exibir os carros!"
@@ -199,7 +200,27 @@ export const actions = {
     },
 
     async toInsert() {
+        try {
+            let newFields = <any>(
+                state.gridPrincipal.getElementSideBySideJson(true, false)
+            );
 
+            state.loading = true;
+            await serviceMontagemProdutos.toInsert(newFields);
+            state.loading = false;
+
+            let carro = actions.encontrarCarros(newFields.ID_CARRO)
+            state.gridPrincipal.insertLine({
+                ...newFields,
+                CARRO: carro
+            });
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.msg || "Erro ao inserir a montagem!"
+            })
+        }
     },
 
     async toUpdate() {
