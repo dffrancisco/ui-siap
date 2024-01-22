@@ -210,6 +210,8 @@ export const actions = {
                 state.gridPrincipal.getElementSideBySideJson(true, false)
             );
 
+            console.log(newFields)
+
             state.loading = true;
             await serviceMontagemProdutos.toInsert(newFields);
             state.loading = false;
@@ -236,9 +238,10 @@ export const actions = {
             if (dadosDiff.diff == false) {
                 return
             }
-
+        
             let dadosAtualizados = {
                 ...state.dbProdutoMontagem,
+                VALOR: utils.formatValorUSA(state.dbProdutoMontagem.VALOR),
                 ...dadosDiff.new
             }
 

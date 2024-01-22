@@ -1,6 +1,6 @@
 export interface iProdutoMontagem {
     DESC_MONTAGEN: string;
-    VALOR: number;
+    VALOR: any;
     ID_CARRO: number;
     ID_PRODUTO_MONTAGEM: number;
 }
