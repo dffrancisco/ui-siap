@@ -83,11 +83,11 @@ export const actions = {
                             click: actions.btnSave,
                             preLoad: 'Salvando',
                         },
-                        // excluir: {
-                        //     html: 'Excluir',
-                        //     state: 'delete',
-                        //     click: actions.btnDelete
-                        // },
+                        excluir: {
+                            html: 'Excluir',
+                            state: 'delete',
+                            click: actions.btnDelete
+                        },
                         cancela: {
                             html: 'Cancelar',
                             state: 'cancel',
@@ -137,14 +137,6 @@ export const actions = {
     },
 
     btnInsert() {
-        if (globalState.empresa.CGC_EMPRESA !== globalState.CNPJMatriz) {
-            Swal.fire({
-                icon: 'info',
-                text: 'Sua loja não tem permissão para cadastrar. Favor conecte na Matriz para cadastrar.'
-            })
-
-            return false;
-        }
 
         state.pnSearch = true
 
@@ -154,13 +146,6 @@ export const actions = {
     },
 
     btnEdit() {
-        if (globalState.empresa.CGC_EMPRESA !== globalState.CNPJMatriz) {
-            Swal.fire({
-                icon: 'info',
-                text: 'Sua loja não tem permissão para cadastrar. Favor conecte na Matriz para cadastrar.'
-            })
-            return false;
-        }
 
         //@ts-ignore
         if (state.gridPrincipal.dataSource() === false) {
