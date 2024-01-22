@@ -4,13 +4,8 @@ import * as directives from 'vuetify/directives'
 import themes from './theme'
 import globalStage from '@/store/globalState'
 
-import {
-  VDataTable,
-  VDataTableServer,
-  VDataTableVirtual,
-} from "vuetify/labs/VDataTable";
+import { VCalendar } from 'vuetify/labs/VCalendar'
 
-import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader'
 
 // import { aliases, mdi } from 'vuetify/iconsets/mdi'
 // import { aliases, fa } from 'vuetify/iconsets/fa'
@@ -59,10 +54,7 @@ export default createVuetify({
   },
   components: {
     ...components,
-    VDataTable,
-    VDataTableServer,
-    VDataTableVirtual,
-    VSkeletonLoader,
+    VCalendar,
   },
   directives,
   defaults: defaultConfig,
