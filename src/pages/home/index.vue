@@ -16,40 +16,44 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/descontoOrcamento')"
-              >Desconto Orçamento</v-btn
-            >
+              >Desconto Orçamento
+            </v-btn>
+
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/cidades')"
-              >Cidades</v-btn
-            >
+              >Cidades
+            </v-btn>
 
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/carros')"
-              >Carros</v-btn
-            >
+              >Carros
+            </v-btn>
+
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/entregarReceber')"
-              >Entregar e Receber</v-btn
-            >
+              >Entregar e Receber
+            </v-btn>
+
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/valeDinheiro')"
-              >Vale dinheiro</v-btn
-            >
+              >Vale dinheiro
+            </v-btn>
+
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/chamados')"
-              >Chamados</v-btn
-            >
+              >Chamados
+            </v-btn>
 
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/aniversariantes')"
-              >Aniversariantes</v-btn
-            >
+              >Aniversariantes
+            </v-btn>
 
             <v-btn
               class="mr-4 mb-4"
