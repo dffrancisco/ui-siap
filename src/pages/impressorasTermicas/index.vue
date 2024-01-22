@@ -131,7 +131,7 @@ nextTick(async () => {
     </v-card>
   </v-container>
 
-  <div id="iInfoModelo" style="display: none;" title="Trocar motorista">
+  <div id="iInfoModelo" style="display: none;" title="Descrição dos Modelos">
     <iInfoModelo :opened="state.modalInfoModeloOpened"/>
   </div>
 
