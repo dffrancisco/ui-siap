@@ -12,7 +12,13 @@ export default defineConfig({
       '@': '/src/',
     },
   },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: ['es2020', 'safari14'],
+    },
+  },
   build: {
+    target: ['es2020', 'safari14'],
     outDir: './ui-siap'
   },
   plugins: [
