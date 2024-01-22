@@ -16,7 +16,12 @@ export const state = reactive(({
     listaCarros: <iCarros[]>[],
     edtSearch: <HTMLInputElement>{},
     dbProdutoMontagem: <iProdutoMontagem>{},
-    loading: false
+    loading: false,
+    config: {
+        thousands: '.',
+        decimal: ',',
+        precision: 2,
+      }
 }))
 
 export const actions = {
@@ -28,7 +33,7 @@ export const actions = {
             columns: {
                 "Descrição Montagem": { dataField: "DESC_MONTAGEN" },
                 "Carro": { dataField: "CARRO", width: "30%" },
-                "Valor": { dataField: "VALOR", width: "15%", center: true, compare: "valorFormatado" }
+                "Valor (R$)": { dataField: "VALOR", width: "15%", center: true, render: utils.formatValor }
             },
             query: {
                 async execute(rs) {
@@ -39,12 +44,12 @@ export const actions = {
                     state.gridPrincipal.querySourceAdd(data);
                 }
             },
-            compare: {
-                valorFormatado: (r) => utils.formatValor(r.VALOR)
-            },
             sideBySide: {
                 el: '#pnCampos',
-                vModel(r) { state.dbProdutoMontagem = r },
+                vModel(r) { 
+                    r.VALOR = r.VALOR * 100
+                    state.dbProdutoMontagem = r
+                },
                 frame: {
                     el: '#pnBotoes',
                     buttons: {
@@ -95,7 +100,7 @@ export const actions = {
             DESC_MONTAGEN: state.edtSearch.value.toUpperCase()
         });
     },
-
+    
     encontrarCarros(ID_CARRO) {
         const carroEncontrado = state.listaCarros.find(carro => {
             if ((carro.ID_CARRO == ID_CARRO)) {
@@ -212,7 +217,7 @@ export const actions = {
             let carro = actions.encontrarCarros(newFields.ID_CARRO)
             state.gridPrincipal.insertLine({
                 ...newFields,
-                CARRO: carro
+                CARRO: carro,
             });
 
         } catch (error) {
@@ -246,8 +251,9 @@ export const actions = {
             let carro = actions.encontrarCarros(dadosAtualizados.ID_CARRO)
             state.gridPrincipal.dataSource({
                 ...dadosAtualizados,
-                CARRO: carro
+                CARRO: carro,
             });
+            state.dbProdutoMontagem.VALOR = dadosAtualizados.VALOR * 100; 
 
         } catch (error) {
             state.loading = false;
@@ -275,9 +281,5 @@ export const actions = {
         }
     },
 }
-
-
-
-
 
 export default { state, actions }

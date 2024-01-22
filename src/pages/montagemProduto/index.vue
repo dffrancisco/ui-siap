@@ -72,7 +72,7 @@ onUnmounted(() => {
                     <v-col cols="3">
                         <span>Valor</span>
                         <input
-                            v-model="state.dbProdutoMontagem.VALOR"
+                            v-model.lazy="state.dbProdutoMontagem.VALOR"
                             type="text"
                             id="VALOR"
                             name="VALOR"
@@ -80,6 +80,7 @@ onUnmounted(() => {
                             class="obr ss"
                             maxlength="15"
                             autocomplete="off"
+                            v-money3="state.config"
                         >
                     </v-col>
                 </v-row>
@@ -105,7 +106,7 @@ onUnmounted(() => {
                 class="mt-3"
                 style="text-align: center"
             ></div>
-            
+
         </v-card>
         <div id="pnCodigoTela">MONTAGEM_PRODUTO</div>
     </v-container>
