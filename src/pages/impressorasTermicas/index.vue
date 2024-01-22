@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { nextTick } from "vue";
 import impressorasSearch from "./components/impressorasSearch.vue";
+import iInfoModelo from './components/iInfoModelo.vue'
 import { state, actions } from "./impressorasTermicas";
+
+
 
 nextTick(async () => {
   actions.getDrivers();
@@ -11,6 +14,7 @@ nextTick(async () => {
     state.gridPrincipal.focus();
   });
 });
+
 </script>
 
 <template>
@@ -22,18 +26,20 @@ nextTick(async () => {
     >
       <div id="pnCampos">
         <v-row>
-          <v-col cols="4">
+          <v-col cols="4"> <!--IP-->
             <span>IP</span>
             <input
               v-model="state.dbImpressorasTermicas.IP"
+              maxlength="14"
               id="IP"
               name="IP"
               type="text"
               class="obr ss"
+              v-mask="'###.###.###.##'"
             />
           </v-col>
-          <v-col cols="4">
-            <span>Local de Instalação</span>
+          <v-col cols="4"> <!--LOCAL-->
+            <span>Local de Instalação</span> 
             <input
               v-model="state.dbImpressorasTermicas.LOCAL"
               id="LOCAL"
@@ -42,23 +48,19 @@ nextTick(async () => {
               class="obr ss"
             />
           </v-col>
-          <v-col cols="4">
-            <span>Carrossel</span>
+          <v-col cols="4"> <!--CARROSSEL-->
+            <span>Carrossel</span> 
             <select
               v-model="state.dbImpressorasTermicas.CARROSSEL"
               class="obr ss"
               name="CARROSSEL"
               id="CARROSSEL"
             >
-              <option
-                v-for="car in state.dsDriver"
-                :value="car.CARROSSEL"
-              >
-                {{ car.CARROSSEL.trim() == 'S' ? 'Sim' : 'Não'}}
-              </option>
+            <option value="S">SIM</option>
+            <option value="N">NÃO</option>
             </select>
           </v-col>
-          <v-col cols="3">
+          <v-col cols="3"> <!--SITUAÇÃO-->
             <span>Situação</span>
             <select
               v-model="state.dbImpressorasTermicas.STATUS"
@@ -66,44 +68,43 @@ nextTick(async () => {
               name="STATUS"
               id="STATUS"
             >
-              <option
-                v-for="statu in state.dsDriver"
-                :value="statu.STATUS"
-                >{{ statu.STATUS.trim() == 'AT' ? 'ATIVA' : 'INATIVA' }}</option
-              >
+            <option value="AT">ATIVA</option>
+            <option value="IN">INATIVA</option>
             </select>
           </v-col>
-          <v-col cols="3">
+          <v-col cols="3"> <!--PORTA-->
             <span>Porta</span>
             <input
               v-model="state.dbImpressorasTermicas.PORTA"
               name="PORTA"
               id="PORTA"
+              v-mask="'####'"
+              maxlength="4"
               type="text"
               class="obr ss"
             />
           </v-col>
-          <v-col cols="3">
-            <span>Modelo</span>
+          <v-col cols="3"> <!--MODELO-->
+            <span style="margin-right: 0;">
+              Modelo
+              <v-icon class="mb-1" size="" @click="actions.onClickModelo">mdi-information</v-icon> 
+            </span>
             <select
               class="obr ss"
               v-model="state.dbImpressorasTermicas.DRIVER"
               name="DRIVER"
               id="DRIVER"
             >
-              <option
-                v-for="drive in state.dsDriver"
-                :value="drive.DRIVER"
-                >{{ drive.DRIVER }}</option
-              >
+            <option value="BEMA28">BEMA28</option>
+            <option value="BEMA24">BEMA24</option>
+            <option value="DARUMA">DARUMA</option>
             </select>
           </v-col>
-          <v-col cols="3">
+          <v-col cols="3"> <!--QTDE IMP-->
             <span>Qtde. Impressões</span>
             <input
+            style="background-color: #85858554;"
               v-model="state.dbImpressorasTermicas.QTO_IMP"
-              name="QTO_IMP"
-              id="QTO_IMP"
               disabled
               type="text"
               class="ss"
@@ -134,4 +135,9 @@ nextTick(async () => {
       </v-overlay>
     </v-card>
   </v-container>
+
+  <div id="iInfoModelo" style="display: none;">
+    <iInfoModelo :opened="state.modalInfoModeloOpened"/>
+  </div>
+
 </template>

@@ -10,8 +10,8 @@ import { state, actions } from '../impressorasTermicas'
             autofocus
             placeholder="F1 - Localizar"
             :disabled="state.disableSearch"
-            @keydown.enter=""
-            @keyup.arrow-down=""
+            @keydown.enter="actions.search()"
+            @keyup.arrow-down="state.gridPrincipal.focus(0)"
             id="edtSearch"
             class="ss"
             v-model="state.edtSearch"

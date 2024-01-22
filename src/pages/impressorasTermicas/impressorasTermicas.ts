@@ -7,6 +7,8 @@ import servicesImpressorasTermicas from './services/services.impressorasTermicas
 import { iImpressorasTermicas } from './intefaces';
 import utils from '@/ts/utils';
 import { msgConfirm } from '@/ts/message';
+import xModal, { iModalCreate } from '@/plugins/xModal/xModal';
+import { RouteLocationNormalizedLoaded } from 'vue-router';
 
 
 interface _ixGridCreate extends ixGridCreate {
@@ -19,31 +21,28 @@ export const state = reactive({
     edtSearch: '',
     dbImpressorasTermicas: <iImpressorasTermicas>{},
     dsDriver: <iDrivers[]>[],
-    loading: false
+    loading: false,
+    modalInfoModelo: <iModalCreate>(<unknown>null),
+    modalInfoModeloOpened: false
 })
 
-const lowerCase = (value: any) => {
-    value = value.toLowerCase();
-
-    return value;
-    
-}
 
 export const actions = {
     grids() {
+        
         state.gridPrincipal = new xGridV2.create({
             el: '#gridPrincipal',
             height: 200,
             count: true,
             columns: {
-                'IP': { dataField: 'IP' },
+                'IP': { dataField: 'IP'},
                 'Local': { dataField: 'LOCAL' },
-                'Carrossel': { dataField: 'CARROSSEL', compare:'xico' },
+                'Carrossel': { dataField: 'CARROSSEL', compare:'carrossel' },
                 'Situação': { dataField: 'STATUS', compare: 'status' },
                 'Qtd. Imp.': { dataField: 'QTO_IMP' }
             },
             compare: {
-                xico(r) {
+                carrossel(r) {
                     if(r.CARROSSEL.trim() == 'N')
                     return 'NÃO'
                 
@@ -60,7 +59,7 @@ export const actions = {
                     return 'INATIVA'
 
                     return r.value
-                }
+                },
             },
             query: {
                 async execute(rs) {
@@ -74,12 +73,6 @@ export const actions = {
             sideBySide: {
                 el: '#pnCampos',
                 vModel(r) { state.dbImpressorasTermicas = r },
-                // compare:{
-                //     // LOCAL(r){
-                //     //     console.log(r);
-                        
-                //     // }
-                // },
                 duplicity: {
                     dataField: ['IP'],
                     async execute(rs) {
@@ -135,17 +128,42 @@ export const actions = {
         })
     },
 
+    criarModais() {
+        state.modalInfoModelo = new xModal.create({
+            height: 500,
+            width: 500,
+            el: '#iInfoModelo',
+            onOpen: () => {
+                state.modalInfoModeloOpened = true;
+            },
+            onClose: () => {
+                state.modalInfoModeloOpened = false;
+            }
+        })
+    },
+
+    init(route: RouteLocationNormalizedLoaded) {
+        state.loading = true;
+        actions.criarModais();
+        state.loading = false;
+    },
+
     btnInsert() {
         state.disableSearch = true;
         state.gridPrincipal.focusField();
-        state.gridPrincipal.clearElementSideBySide()
-
+        state.gridPrincipal.disable();
+        state.gridPrincipal.clearElementSideBySide();
     },
 
     btnEdit() {
         state.disableSearch = true;
+        state.gridPrincipal.disable();
         console.log('Editar');
 
+    },
+
+    onClickModelo() {
+        state.modalInfoModelo.open()
     },
 
     async btnDelete() {
@@ -181,9 +199,7 @@ export const actions = {
     },
 
     btnCancel() {
-        console.log('Cancelar');
         state.disableSearch = false;
-        console.log(state.disableSearch)
         state.gridPrincipal.enable();
         state.gridPrincipal.focus();
 
@@ -219,12 +235,6 @@ export const actions = {
 
             state.dsDriver = data
 
-
-            console.log('dsDriver', data);
-
-
-            //aqui eu monto o array com as mascaras dos nomes e armazeno ele em um state para fazer o v-for
-
             return data
         } catch (error) {
             Swal.fire({ icon: 'error', text: 'Erro ao carregar modelos!' })
@@ -242,25 +252,25 @@ export const actions = {
     },
 
     async toInsert() {
-
+        
         try {
-            let newFilds = (
+            let newFields: any = (
                 state.gridPrincipal.getElementSideBySideJson(true, false)
             )
-            console.log('newFilds', newFilds)        
-            
+
+            console.log('SOU EU', newFields)            
+        
             state.loading = true
-            let data = servicesImpressorasTermicas.toInsert(newFilds)
+            let data: any = await servicesImpressorasTermicas.toInsert(newFields);
+
             state.loading = false
-            console.log('data', data);
-
-            state.gridPrincipal.insertLine({ ...newFilds, ...data })
-
+            
+            state.gridPrincipal.insertLine({...newFields, ...data})
         } catch (error) {
             state.loading = false
             Swal.fire({
                 icon: "error",
-                text: "Erro ao inserir corredor!",
+                text: "Erro ao inserir impressora!",
             });
         }
     },
@@ -290,6 +300,8 @@ export const actions = {
                 ...state.dbImpressorasTermicas,
                 ...alterarImpressora.new
             }
+
+            console.log(dadosAlterados)
 
             await servicesImpressorasTermicas.toUpdate(dadosAlterados)
 
