@@ -8,8 +8,6 @@ import { iImpressorasTermicas } from './intefaces';
 import utils from '@/ts/utils';
 import { msgConfirm } from '@/ts/message';
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal';
-import { RouteLocationNormalizedLoaded } from 'vue-router';
-
 
 interface _ixGridCreate extends ixGridCreate {
     dataSource: (obj?: object) => iImpressorasTermicas
@@ -25,7 +23,6 @@ export const state = reactive({
     modalInfoModelo: <iModalCreate>(<unknown>null),
     modalInfoModeloOpened: false
 })
-
 
 export const actions = {
     grids() {
@@ -49,7 +46,7 @@ export const actions = {
                     if(r.CARROSSEL.trim() == 'S')
                     return 'SIM'
             
-                    return r.value
+                    return r.value;
                 },
                 status(r){
                     if(r.STATUS.trim() == 'AT')
@@ -58,17 +55,15 @@ export const actions = {
                     if(r.STATUS.trim() == 'IN')
                     return 'INATIVA'
 
-                    return r.value
+                    return r.value;
                 },
             },
             query: {
                 async execute(rs) {
-                    let data = await actions.getImpressorasTermicas(rs)
+                    let data = await actions.getImpressorasTermicas(rs);
 
-                    state.gridPrincipal.querySourceAdd(data)
-                }
-
-                
+                    state.gridPrincipal.querySourceAdd(data);
+                } 
             },
             sideBySide: {
                 el: '#pnCampos',
@@ -81,15 +76,13 @@ export const actions = {
                             field: rs.field
                         });
 
-                        console.log(dup)
-
                         if (Object.keys(dup).length > 0) {
                             state.gridPrincipal.showMessageDuplicity(
                                 rs.text + ' já cadastrado'
-                            )
-                            return true
+                            );
+                            return true;
                         }
-                        return false
+                        return false;
                     },
                 },
                 frame: {
@@ -128,24 +121,26 @@ export const actions = {
         })
     },
 
-    criarModais() {
+    criarModais() {        
         state.modalInfoModelo = new xModal.create({
-            height: 500,
-            width: 500,
+            height: 195,
+            width: 300,
             el: '#iInfoModelo',
-            onOpen: () => {
-                state.modalInfoModeloOpened = true;
-            },
-            onClose: () => {
-                state.modalInfoModeloOpened = false;
-            }
         })
     },
 
-    init(route: RouteLocationNormalizedLoaded) {
+    init() {        
         state.loading = true;
         actions.criarModais();
+        actions.grids();
+
+        actions.getDrivers();
+
+        state.gridPrincipal.queryOpen({ IP: "", LOCAL: "" }, () => {
+          state.gridPrincipal.focus();
+        });
         state.loading = false;
+        
     },
 
     btnInsert() {
@@ -158,8 +153,6 @@ export const actions = {
     btnEdit() {
         state.disableSearch = true;
         state.gridPrincipal.disable();
-        console.log('Editar');
-
     },
 
     onClickModelo() {
@@ -202,7 +195,6 @@ export const actions = {
         state.disableSearch = false;
         state.gridPrincipal.enable();
         state.gridPrincipal.focus();
-
     },
 
     async getImpressorasTermicas({ offset, param }: iParamGetImpressorasTermicas) {
@@ -226,7 +218,7 @@ export const actions = {
         state.gridPrincipal.queryOpen({
             IP: state.edtSearch.toUpperCase(),
             LOCAL: state.edtSearch.toUpperCase()
-        })
+        });
     },
 
     async getDrivers() {
@@ -252,20 +244,18 @@ export const actions = {
     },
 
     async toInsert() {
-        
+
         try {
             let newFields: any = (
                 state.gridPrincipal.getElementSideBySideJson(true, false)
             )
 
-            console.log('SOU EU', newFields)            
-        
             state.loading = true
             let data: any = await servicesImpressorasTermicas.toInsert(newFields);
 
             state.loading = false
-            
-            state.gridPrincipal.insertLine({...newFields, ...data})
+
+            state.gridPrincipal.insertLine({ ...newFields, ...data })
         } catch (error) {
             state.loading = false
             Swal.fire({
@@ -300,8 +290,6 @@ export const actions = {
                 ...state.dbImpressorasTermicas,
                 ...alterarImpressora.new
             }
-
-            console.log(dadosAlterados)
 
             await servicesImpressorasTermicas.toUpdate(dadosAlterados)
 

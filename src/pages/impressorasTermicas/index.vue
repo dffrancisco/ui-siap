@@ -5,14 +5,8 @@ import iInfoModelo from './components/iInfoModelo.vue'
 import { state, actions } from "./impressorasTermicas";
 
 
-
 nextTick(async () => {
-  actions.getDrivers();
-  actions.grids();
-
-  state.gridPrincipal.queryOpen({ IP: "", LOCAL: "" }, () => {
-    state.gridPrincipal.focus();
-  });
+  actions.init()
 });
 
 </script>
@@ -26,7 +20,7 @@ nextTick(async () => {
     >
       <div id="pnCampos">
         <v-row>
-          <v-col cols="4"> <!--IP-->
+          <v-col cols="4"> 
             <span>IP</span>
             <input
               v-model="state.dbImpressorasTermicas.IP"
@@ -38,7 +32,7 @@ nextTick(async () => {
               v-mask="'###.###.###.##'"
             />
           </v-col>
-          <v-col cols="4"> <!--LOCAL-->
+          <v-col cols="4"> 
             <span>Local de Instalação</span> 
             <input
               v-model="state.dbImpressorasTermicas.LOCAL"
@@ -48,7 +42,7 @@ nextTick(async () => {
               class="obr ss"
             />
           </v-col>
-          <v-col cols="4"> <!--CARROSSEL-->
+          <v-col cols="4"> 
             <span>Carrossel</span> 
             <select
               v-model="state.dbImpressorasTermicas.CARROSSEL"
@@ -60,7 +54,7 @@ nextTick(async () => {
             <option value="N">NÃO</option>
             </select>
           </v-col>
-          <v-col cols="3"> <!--SITUAÇÃO-->
+          <v-col cols="3"> 
             <span>Situação</span>
             <select
               v-model="state.dbImpressorasTermicas.STATUS"
@@ -72,7 +66,7 @@ nextTick(async () => {
             <option value="IN">INATIVA</option>
             </select>
           </v-col>
-          <v-col cols="3"> <!--PORTA-->
+          <v-col cols="3"> 
             <span>Porta</span>
             <input
               v-model="state.dbImpressorasTermicas.PORTA"
@@ -84,11 +78,11 @@ nextTick(async () => {
               class="obr ss"
             />
           </v-col>
-          <v-col cols="3"> <!--MODELO-->
-            <span style="margin-right: 0;">
-              Modelo
+          <v-col cols="3">
               <v-icon class="mb-1" size="" @click="actions.onClickModelo">mdi-information</v-icon> 
-            </span>
+              <span style="margin-right: 0;">
+                Modelo
+              </span>
             <select
               class="obr ss"
               v-model="state.dbImpressorasTermicas.DRIVER"
@@ -96,16 +90,17 @@ nextTick(async () => {
               id="DRIVER"
             >
             <option value="BEMA28">BEMA28</option>
-            <option value="BEMA24">BEMA24</option>
+            <option value="BEMA24">BEMA42</option>
             <option value="DARUMA">DARUMA</option>
             </select>
           </v-col>
-          <v-col cols="3"> <!--QTDE IMP-->
+          <v-col cols="3"> 
             <span>Qtde. Impressões</span>
             <input
             style="background-color: #85858554;"
               v-model="state.dbImpressorasTermicas.QTO_IMP"
               disabled
+              name="QTO_IMP"
               type="text"
               class="ss"
             />
@@ -136,7 +131,9 @@ nextTick(async () => {
     </v-card>
   </v-container>
 
-  <div id="iInfoModelo" style="display: none;">
+
+  <!-- style="display: none;" -->
+  <div id="iInfoModelo" style="display: none;" title="Trocar motorista">
     <iInfoModelo :opened="state.modalInfoModeloOpened"/>
   </div>
 
