@@ -6,6 +6,8 @@ import { Buffer } from "buffer";
 import vuetify from "./plugins/vuetify";
 import Maska from "maska";
 import VueMask from "@devindex/vue-mask";
+import money from 'v-money3'
+import { Money3Directive } from 'v-money3'
 
 
 import config from "./ts/config";
@@ -21,9 +23,13 @@ axios.defaults.baseURL = config.SERVER + ":" + config.PORT
 window.Buffer = Buffer;
 
 app.use(vuetify)
-app.use(VueMask);
-app.use(Maska);
+app.use(VueMask)
+app.use(Maska)
+app.use(money)
 app.use(router)
+
+app.directive('money3', Money3Directive)
+
 app.config.globalProperties.axios = axios;
 app.mount('#app')
 
