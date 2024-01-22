@@ -31,7 +31,7 @@ export const actions = {
                 Modelo: { dataField: "MODELO" },
                 Ano: { dataField: "ANO", center: true, width: "12%" },
                 Cor: { dataField: "COR" },
-                Data: { dataField: "DATA", compare: "dataBrasil", center: true }
+                "Data Cadastro": { dataField: "DATA", compare: "dataBrasil", center: true }
             },
             compare: {
                 dataBrasil: (r) => utils.dataBrasil(r.DATA)
