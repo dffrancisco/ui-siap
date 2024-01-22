@@ -210,8 +210,6 @@ export const actions = {
                 state.gridPrincipal.getElementSideBySideJson(true, false)
             );
 
-            console.log(newFields)
-
             state.loading = true;
             await serviceMontagemProdutos.toInsert(newFields);
             state.loading = false;
