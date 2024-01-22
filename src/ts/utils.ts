@@ -159,6 +159,22 @@ export const validaCPF_CNPJ = (CPF_CNPJ: string): boolean => {
 
 };
 
+export const toLowerCase = (text: string) => {
+    return text.toLowerCase()
+};
+
+export const toCapitalize = (text: string) => {
+    var palavras = text.split(" ");
+
+    var palavrasCapitalizadas = palavras.map(function(palavra) {
+        return palavra.charAt(0).toUpperCase() + palavra.slice(1)
+    });
+
+    var result = palavrasCapitalizadas.join(' ');
+
+    return result
+};
+
 export const formatValorUSA = (num: string): number => {
   return parseFloat(num.replace(/\./g, "").replace(/\,/g, "."));
 };
@@ -658,6 +674,8 @@ export default {
   validMail,
   formatValor,
   formatValorUSA,
+  toLowerCase,
+  toCapitalize,
   dataBrasil,
   aguarde,
   confirma,
