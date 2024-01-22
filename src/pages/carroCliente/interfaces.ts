@@ -19,6 +19,10 @@ export interface iGetDuplicityResponse {
     PLACA?: string;
 }
 
+export interface iGetInsertResponse {
+    DATA: string;
+}
+
 export interface iFieldDuplicity {
     value: string,
     field: string

@@ -1,11 +1,14 @@
 import axios from "axios";
-import { iCarroCliente, iParamGetCarroCliente, iFieldDuplicity, iGetDuplicityResponse, iParamToInsert, iParamToUpdate} from "../interfaces";
+import {
+    iCarroClienteResponse, iParamGetCarroCliente, iFieldDuplicity, iGetDuplicityResponse, iParamToInsert
+    , iParamToUpdate, iGetInsertResponse
+} from "../interfaces";
 
 const caminho = "siap/carroCliente";
 
-type iGetCarroClienteFunction = (param: iParamGetCarroCliente) => Promise<iCarroCliente[]>;
-type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>;
-type iToInsertFunction = (param: iParamToInsert) => Promise<void>
+type iGetCarroClienteFunction = (param: iParamGetCarroCliente) => Promise<iCarroClienteResponse>;
+type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
+type iToInsertFunction = (param: iParamToInsert) => Promise<iGetInsertResponse>
 type iToUpdateFunction = (param: iParamToUpdate, id: any) => Promise<void>
 
 const getCarroCliente: iGetCarroClienteFunction = async ({ offset, param }) => {
@@ -51,7 +54,7 @@ const toInsert: iToInsertFunction = async (newFields) => {
     return data
 };
 
-const toUpdate: iToUpdateFunction = async (param:any, id: any) => {
+const toUpdate: iToUpdateFunction = async (param: any, id: any) => {
     let { data } = await axios.post(caminho, {
         call: "update",
         param,

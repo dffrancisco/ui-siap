@@ -280,10 +280,19 @@ export const actions = {
             );
 
             state.loading = true
-            await serviceCarroCliente.toInsert(newFields);
+            let data = await serviceCarroCliente.toInsert(newFields);
             state.loading = false
+            
 
-            state.gridPrincipal.insertLine(newFields);
+            let dadosAtualizados = {
+                ...newFields,
+                DATA: data.DATA
+            }
+
+            console.log(dadosAtualizados);
+            
+
+            state.gridPrincipal.insertLine(dadosAtualizados);
 
         }
         catch (error) {
