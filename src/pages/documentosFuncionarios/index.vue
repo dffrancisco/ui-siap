@@ -40,7 +40,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
         >
             <div id="pnCampos">
                 <v-row>
-                    <v-col cols="4">
+                    <v-col cols="5">
                         <span>Descrição</span>
                         <input
                             v-model="state.dbDocumentosFuncionarios.descricao"
@@ -53,7 +53,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
                             autocomplete="off"
                         />
                     </v-col>
-                    <v-col cols="5">
+                    <v-col cols="4">
                         <span>Pasta</span>
                         <input
                             type="text"
