@@ -10,6 +10,10 @@ export interface iCarros {
     DESCRICAO: string;
 }
 
+export interface iGetInsertResponse {
+    ID_PRODUTO_MONTAGEM: number;
+}
+
 export interface iParamGetProdutos {
     param: object;
     offset: number;

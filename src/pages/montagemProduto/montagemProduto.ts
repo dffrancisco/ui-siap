@@ -211,13 +211,14 @@ export const actions = {
             );
 
             state.loading = true;
-            await serviceMontagemProdutos.toInsert(newFields);
+            let data = await serviceMontagemProdutos.toInsert(newFields);
             state.loading = false;
 
             let carro = actions.encontrarCarros(newFields.ID_CARRO)
             state.gridPrincipal.insertLine({
                 ...newFields,
                 CARRO: carro,
+                ID_PRODUTO_MONTAGEM: data.ID_PRODUTO_MONTAGEM
             });
 
         } catch (error) {
