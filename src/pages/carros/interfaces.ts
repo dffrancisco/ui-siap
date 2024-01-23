@@ -15,6 +15,10 @@ export interface iParamGetCarros {
     offset: number;
 }
 
+export interface iGetInsertResponse {
+    ID_CARRO: number;
+}
+
 export interface iGetDuplicityResponse {
     DESCRICAO?: string;
 }

@@ -5,14 +5,15 @@ import {
     iGetDuplicityResponse,
     iParamGetCarros,
     iParamToInsert,
-    iParamToUpdate
+    iParamToUpdate,
+    iGetInsertResponse
 } from '../interfaces'
 
 const caminho = "siap/carros"
 
-type iGetCarrosFunction = (param: iParamGetCarros) => Promise<iCarroResponse[]>;
-type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>;
-type iToInsertFunction = (param: iParamToInsert) => Promise<void>;
+type iGetCarrosFunction = (param: iParamGetCarros) => Promise<iCarroResponse>;
+type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
+type iToInsertFunction = (param: iParamToInsert) => Promise<iGetInsertResponse>;
 type iToUpdateFuntion = (param: iParamToUpdate) => Promise<void>;
 
 const getCarros: iGetCarrosFunction = async ({ param, offset }) => {

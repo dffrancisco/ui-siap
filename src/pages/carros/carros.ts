@@ -260,13 +260,14 @@ export const actions = {
             );
 
             state.loading = true;
-            await serviceCarros.toInsert(newFields)
+            let data = await serviceCarros.toInsert(newFields)
             state.loading = false;
 
             let montadora = actions.encontrarMontadoras(newFields.ID_MONTADORA)
             state.gridPrincipal.insertLine({
                 ...newFields,
-                MONTADORA: montadora
+                MONTADORA: montadora,
+                ID_CARRO: data.ID_CARRO
             });
 
         } catch (error) {
