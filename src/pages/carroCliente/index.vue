@@ -88,7 +88,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
                     <v-col cols="3">
                         <span>Cor</span>
                         <input
-                            v-model.lazy="state.dbCarroCliente.COR"
+                            v-model="state.dbCarroCliente.COR"
                             type="text"
                             id="COR"
                             name="COR"

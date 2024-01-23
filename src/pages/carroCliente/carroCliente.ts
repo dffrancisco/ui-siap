@@ -30,7 +30,7 @@ export const actions = {
                 Placa: { dataField: "PLACA" },
                 Modelo: { dataField: "MODELO" },
                 Ano: { dataField: "ANO", center: true, width: "12%" },
-                Cor: { dataField: "COR" },
+                Cor: { dataField: "COR", center: true, },
                 "Data Cadastro": { dataField: "DATA", compare: "dataBrasil", center: true }
             },
             compare: {
@@ -282,15 +282,12 @@ export const actions = {
             state.loading = true
             let data = await serviceCarroCliente.toInsert(newFields);
             state.loading = false
-            
+
 
             let dadosAtualizados = {
                 ...newFields,
                 DATA: data.DATA
             }
-
-            console.log(dadosAtualizados);
-            
 
             state.gridPrincipal.insertLine(dadosAtualizados);
 
@@ -314,19 +311,21 @@ export const actions = {
                 return
             }
 
+            //@ts-ignore
+            let placaAntiga = dadosDiff?.old?.PLACA || state.dbCarroCliente.PLACA
+
             let dadosAtualizados = {
                 ...state.dbCarroCliente,
                 ...dadosDiff.new,
             }
 
-            //@ts-ignore
-            let placaAntiga = dadosDiff?.old?.PLACA || state.dbCarroCliente.PLACA
-
             state.loading = true
             await serviceCarroCliente.toUpdate(dadosAtualizados, placaAntiga);
             state.loading = false
-
+            
             state.dbCarroCliente = dadosAtualizados as iCarroCliente;
+            console.log(dadosAtualizados);
+        
             state.gridPrincipal.dataSource(dadosAtualizados);
 
         } catch (error) {
