@@ -5,14 +5,15 @@ import {
     iFieldDuplicity,
     iParamToInsert,
     iParamToUpdate,
-    iGetDuplicityResponse
+    iGetDuplicityResponse,
+    iInsertResponse
 } from "../interfaces";
 
 const caminho = "siap/cidades";
 
-type iGetCidadesFunction = (param: iParamGetCidades) => Promise<iCidadeResponse[]>;
-type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>;
-type iToInsertFunction = (param: iParamToInsert) => Promise<void>
+type iGetCidadesFunction = (param: iParamGetCidades) => Promise<iCidadeResponse>;
+type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
+type iToInsertFunction = (param: iParamToInsert) => Promise<iInsertResponse>
 type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>
 
 const getCidades: iGetCidadesFunction = async ({ offset, param }) => {

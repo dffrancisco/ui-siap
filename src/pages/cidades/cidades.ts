@@ -253,10 +253,15 @@ export const actions = {
             );
 
             state.loading = true
-            await serviceCidades.toInsert(newFields);
+            let data = await serviceCidades.toInsert(newFields);
             state.loading = false
 
-            state.gridPrincipal.insertLine(newFields);
+            let dadosAtualizados = {
+                ...newFields,
+                COD_CIDADE: data.COD_CIDADE
+            }
+
+            state.gridPrincipal.insertLine(dadosAtualizados);
 
         } catch (error) {
             state.loading = false

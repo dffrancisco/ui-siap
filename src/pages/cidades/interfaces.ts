@@ -14,6 +14,10 @@ export interface iParamGetCidades {
     param: object;
 }
 
+export interface iInsertResponse {
+    COD_CIDADE: number;
+}
+
 export interface iGetDuplicityResponse {
     COD_IBGE?: string;
     DESCRICAO?: string;
