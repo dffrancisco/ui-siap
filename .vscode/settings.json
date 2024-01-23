@@ -1,0 +1,85 @@
+{
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#c974f0",
+    "activityBar.background": "#c974f0",
+    "activityBar.foreground": "#15202b",
+    "activityBar.activeBorder": "#f6dda9",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#f6dda9",
+    "activityBarBadge.foreground": "#15202b",
+    "sash.hoverBorder": "#c974f0",
+    "statusBar.background": "#b746eb",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#c974f0",
+    "statusBarItem.remoteBackground": "#b746eb",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#b746eb",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#b746eb99",
+    "titleBar.inactiveForeground": "#e7e7e799",
+    "commandCenter.border": "#e7e7e799"
+  },
+  "editor.fontFamily": "'Fira Code'",
+  "editor.fontLigatures": true,
+  "peacock.color": "#b746eb",
+  "cSpell.words": [
+    "animatetop",
+    "conteudo",
+    "devindex",
+    "keydown",
+    "keypress",
+    "mdicon",
+    "notyf",
+    "Reempressao",
+    "rgba",
+    "vant",
+    "vcaixa",
+    "vueuse"
+  ],
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+  },
+  "[dockercompose]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+  },
+  "volar.inlayHints.eventArgumentInInlineHandlers": false,
+  "editor.rulers": [115],
+  "json.schemas": [],
+  "material-icon-theme.files.associations": {
+    "filename.ts": "typescript"
+  },
+  "material-icon-theme.folders.associations": {
+    "_template": "template",
+    "rest": "Views",
+    "store": "Vuex-store"
+  },
+  "editor.suggestSelection": "first"
+  // "peacock.color": "#42b883",
+  // "git.ignoreLimitWarning": true
+}
