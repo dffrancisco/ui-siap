@@ -1,138 +1,125 @@
+import { horaFormatada } from "./../entregarReceberDetalhes/entregarReceberDetalhes";
 import { computed, nextTick, reactive } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
-// import { useDate } from "vuetify/lib/framework.mjs";
-
+import { iParam, iPonto } from "./interface";
+import Swal from "sweetalert2";
+import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDetalhes.service";
 
 export const state = reactive({
-    loading: false,
-    codFuncionario: 0,
-    cpf: <string | null>null,
-    mes: 1,
-    ano: 2024
-})
-
-export const meses = computed(() => [
-    { text: "Janeiro", value: 1 },
-    { text: "Fevereiro", value: 2 },
-    { text: "Março", value: 3 },
-    { text: "Abril", value: 4 },
-    { text: "Maio", value: 5 },
-    { text: "Junho", value: 6 },
-    { text: "Julho", value: 7 },
-    { text: "Agosto", value: 8 },
-    { text: "Setembro", value: 9 },
-    { text: "Outubro", value: 10 },
-    { text: "Novembro", value: 11 },
-    { text: "Dezembro", value: 12 },
-]);
-
-export const anos = computed(() => {
-    const anosArray: number[] = [];
-    const anoAtual = new Date().getFullYear();
-
-    for (let i = 0; i < 20; i++) {
-        const ano = anoAtual - 10 + i;
-        anosArray.push(ano);
-    }
-
-    return anosArray;
+  pontos: {},
+  loading: false,
+  codFuncionario: 0,
+  cpf: <string | null>null,
+  mes: 1,
+  ano: 2024,
+  today: <any>new Date(),
 });
 
 export const actions = {
-
-    getFotoFuncionarioURL(cpf: string) {
-        if (!cpf) {
-            return "";
-        }
-
-        const cpfSanitizado = cpf.replaceAll('.', '').replaceAll('-', '');
-        return `http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`
-
-    },
-
-
-    init(route: RouteLocationNormalizedLoaded) {
-        nextTick(async () => {
-            state.loading = true;
-
-            state.codFuncionario = Number(route.query.cod_funcionario)
-            state.cpf = String(route.query.cpf)
-            state.mes = Number(route.query.mes)
-            state.ano = Number(route.query.ano)
-
-            console.log(state.codFuncionario, state.cpf, state.mes, state.ano);
-
-
-            state.loading = false;
-        })
+  getFotoFuncionarioURL(cpf: string) {
+    if (!cpf) {
+      return "";
     }
-}
 
-// export const calendario = {
-//     data: () => ({
-//         focus: '',
-//         events: [],
-//         colors: [
-//             'blue',
-//             'indigo',
-//             'deep-purple',
-//             'cyan',
-//             'green',
-//             'orange',
-//             'grey darken-1',
-//         ],
-//         names: [
-//             'Meeting',
-//             'Holiday',
-//             'PTO',
-//             'Travel',
-//             'Event',
-//             'Birthday',
-//             'Conference',
-//             'Party',
-//         ],
-//     }),
-//     mounted() {
-//         const adapter = useDate()
-//         this.fetchEvents({
-//             start: adapter.startOfDay(adapter.startOfMonth(new Date())),
-//             end: adapter.endOfDay(adapter.endOfMonth(new Date())),
-//         })
-//     },
-//     methods: {
-//         getEventColor(event) {
-//             return event.color
-//         },
-//         fetchEvents({ start, end }) {
-//             const events = []
+    const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
+    return `http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
+  },
 
-//             const min = start
-//             const max = end
-//             const days = (max.getTime() - min.getTime()) / 86400000
-//             const eventCount = this.rnd(days, days + 20)
+  async getPontos(cod_funcionario: number, mes: number, ano: number) {
+    const param: iParam = {
+      cod_funcionario: cod_funcionario,
+      mes: mes,
+      ano: ano,
+    };
 
-//             for (let i = 0; i < eventCount; i++) {
-//                 const allDay = this.rnd(0, 3) === 0
-//                 const firstTimestamp = this.rnd(min.getTime(), max.getTime())
-//                 const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-//                 const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-//                 const second = new Date(first.getTime() + secondTimestamp)
+    try {
+      state.pontos = await gerenciarFolhaPontoDetalhesService.getPontos(param);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Ocorreu um erro ao buscar os pontos do funcionário.",
+      });
+    }
+  },
 
-//                 events.push({
-//                     title: this.names[this.rnd(0, this.names.length - 1)],
-//                     start: first,
-//                     end: second,
-//                     color: this.colors[this.rnd(0, this.colors.length - 1)],
-//                     allDay: !allDay,
-//                 })
-//             }
+  formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, cor = "blue") {
+    return {
+      title: titulo,
+      start: dataInicio,
+      end: dataFim,
+      color: cor,
+      allDay: true,
+    };
+  },
 
-//             this.events = events
-//         },
-//         rnd(a, b) {
-//             return Math.floor((b - a + 1) * Math.random()) + a
-//         },
-//     },
-// }
+  formatarHora(hora) {
+    if (hora) {
+      return new Date(hora).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } else {
+      return null;
+    }
+  },
 
-export default { state, actions, meses, anos }
+  init(route: RouteLocationNormalizedLoaded) {
+    nextTick(async () => {
+      state.loading = true;
+
+      state.codFuncionario = Number(route.query.cod_funcionario);
+      state.cpf = String(route.query.cpf);
+      state.mes = Number(route.query.mes);
+      state.ano = Number(route.query.ano);
+
+      await actions.getPontos(state.codFuncionario, state.mes, state.ano);
+      // state.today = new Date(`${state.ano}-${state.mes-1}-01`)
+      state.loading = false;
+    });
+  },
+};
+
+export const pontosCalendario = computed(() => {
+  let eventos = [];
+  for (let key of Object.keys(state.pontos)) {
+    let ponto: iPonto = state.pontos[key];
+    let dataInicio = new Date(ponto.DATA);
+    let dataFim = new Date(ponto.DATA);
+
+    if (ponto.HORA_CHEGADA || ponto.HORA_ALMOCO_INICIAL || ponto.HORA_ALMOCO_FINAL || ponto.HORA_SAIDA) {
+      let horaFormatada = actions.formatarHora(ponto.HORA_CHEGADA);
+      let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim);
+
+      eventos.push(eventoFormatado);
+
+      horaFormatada = actions.formatarHora(ponto.HORA_ALMOCO_INICIAL);
+      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "blue");
+
+      eventos.push(eventoFormatado);
+
+      horaFormatada = actions.formatarHora(ponto.HORA_ALMOCO_FINAL);
+      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "blue");
+
+      eventos.push(eventoFormatado);
+
+      horaFormatada = actions.formatarHora(ponto.HORA_SAIDA);
+      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim);
+
+      eventos.push(eventoFormatado);
+    }
+
+    if (ponto.STATUS) {
+      let eventoFormatado = actions.formatarEvento(ponto.STATUS, dataInicio, dataFim, "green");
+
+      eventos.push(eventoFormatado);
+    }
+  }
+
+  return eventos;
+});
+
+export const onDataClicada = (event) => {
+  const ponto = event.ponto;
+  if (ponto) {
+    console.log("Informações do ponto:", ponto);
+  }
+};
+
+export default { state, actions, onDataClicada };

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { actions, state, meses, anos } from "./gerenciarFolhaPontoDetalhes";
+import { actions, state, pontosCalendario, onDataClicada } from "./gerenciarFolhaPontoDetalhes";
+import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 
 const route = useRoute();
 
@@ -20,7 +21,7 @@ actions.init(route);
             <strong>Detalhes dos pontos</strong>
             <v-card class="pa-5 cardFolhaPontoDetalhes">
               <v-row>
-                <v-col cols="2">
+                <v-col cols="5">
                   <v-autocomplete
                     label="Mês"
                     id="mes"
@@ -30,7 +31,7 @@ actions.init(route);
                     :items="meses"
                   ></v-autocomplete>
                 </v-col>
-                <v-col cols="3">
+                <v-col cols="5">
                   <v-autocomplete
                     label="Ano"
                     id="ano"
@@ -44,6 +45,7 @@ actions.init(route);
                     color="primary"
                     size="small"
                     class="btnSearch"
+                    @click="actions.getPontos(state.codFuncionario, state.mes, state.ano)"
                   >
                     <v-icon> mdi-magnify</v-icon>
                   </v-btn></v-col
@@ -74,75 +76,82 @@ actions.init(route);
                     >
                     </v-img>
                   </v-avatar>
-                  <div>
-                    <strong class="funcionario__card__nome"> </strong>
-                    <span class="funcionario__card__cargo"> </span>
+
+                  <div class="nomeCargo">
+                    <strong class="funcionario__card__nome">Nome</strong>
+                    <span class="funcionario__card__cargo">Cargo</span>
                   </div>
                 </div>
-                <v-col class="col2">
-                  <span class="funcionario__card__faltas">
+
+                <v-col>
+                  <span class="funcionario__card__infos">
                     Pontos não batidos:
                     <b></b>
                   </span>
-                  <span class="funcionario__card__faltas">
+                  <span class="funcionario__card__infos">
                     Pontos incompletos:
                     <b></b>
                   </span>
                 </v-col>
 
-                <v-col class="col2">
-                  <span class="funcionario__card__faltas">
+                <v-col>
+                  <span class="funcionario__card__infos">
                     Qtd de justificativas:
                     <b></b>
                   </span>
-                  <span class="funcionario__card__faltas">
+                  <span class="funcionario__card__infos">
                     Pontos à justificar:
                     <b></b>
                   </span>
                 </v-col>
               </v-card>
-              <!-- <v-card class="funcionario__card">
-                <div class="funcionario__card__usuario">
-                  <v-avatar
-                    size="50px"
-                    color="primary"
-                    class="funcionario__avatar"
-                  >
-                    <v-img
-                      :src="actions.getFotoFuncionarioURL(state.cpf)"
-                      aspect-ratio="1"
-                      cover
-                    >
-                    </v-img>
-                  </v-avatar>
-                  <div>
-                    <strong class="funcionario__card__nome"> </strong>
-                    <span class="funcionario__card__cargo"> </span>
-                  </div>
-                </div>
 
+              <v-card class="funcionario__card">
                 <v-col>
                   <span class="funcionario__card__faltas">
-                    Pontos não batidos:
+                    Faltas:
                     <b></b>
                   </span>
                   <span class="funcionario__card__faltas">
-                    Pontos incompletos:
+                    Faltas Justificadas:
+                    <b></b>
+                  </span>
+                  <span class="funcionario__card__faltas">
+                    Falta Abonada:
                     <b></b>
                   </span>
                 </v-col>
 
                 <v-col>
                   <span class="funcionario__card__faltas">
-                    Qtd de justificativas:
+                    Atestado:
                     <b></b>
                   </span>
                   <span class="funcionario__card__faltas">
-                    Pontos à justificar:
+                    Licença Maternidade:
+                    <b></b>
+                  </span>
+                  <span class="funcionario__card__faltas">
+                    Licença Paternidade:
                     <b></b>
                   </span>
                 </v-col>
-              </v-card> -->
+
+                <v-col>
+                  <span class="funcionario__card__faltas">
+                    Dia de Folga:
+                    <b></b>
+                  </span>
+                  <span class="funcionario__card__faltas">
+                    Suspenso:
+                    <b></b>
+                  </span>
+                  <span class="funcionario__card__faltas">
+                    Feriado:
+                    <b></b>
+                  </span>
+                </v-col>
+              </v-card>
             </div>
           </div>
         </v-col>
@@ -157,8 +166,12 @@ actions.init(route);
             >
               <v-calendar
                 ref="calendario"
+                v-model="state.today"
                 color="primary"
                 type="month"
+                :events="pontosCalendario"
+                @click:event="onDataClicada"
+                @update:model-value=""
               ></v-calendar>
             </v-sheet>
           </v-col>
@@ -166,8 +179,8 @@ actions.init(route);
       </div>
     </div>
 
-    <!-- <div id="pnCodigoTela">folhaPontoDetalhes</div> -->
-    <!-- <v-overlay
+    <div id="pnCodigoTela">folhaPontoDetalhes</div>
+    <v-overlay
       :model-value="state.loading"
       class="align-center justify-center"
       persistent
@@ -177,7 +190,7 @@ actions.init(route);
         indeterminate
         size="64"
       ></v-progress-circular>
-    </v-overlay> -->
+    </v-overlay>
   </v-container>
 </template>
 
@@ -191,7 +204,6 @@ actions.init(route);
   gap: 12px;
   flex-wrap: wrap;
   max-height: 650px;
-  margin-top: 8px;
 }
 
 .funcionario__card {
@@ -209,11 +221,10 @@ actions.init(route);
   padding-left: 12px;
   display: flex;
   gap: 12px;
-  margin-bottom: 10px;
 }
 
 .funcionario__avatar {
-  margin-top: 20px;
+  margin-top: 30px;
   margin-left: 20px;
   cursor: pointer;
   opacity: 1;
@@ -223,15 +234,12 @@ actions.init(route);
 .funcionario__card__faltas {
   margin-left: 20px;
   font-size: 15px;
-  font-style: bold;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   color: #5a6069;
 }
-
-.col2 {
-  margin-top: -10px;
+.funcionario__card__infos {
+  margin-left: 20px;
+  font-size: 15px;
+  color: #5a6069;
 }
 
 .funcionario__card__nome {
@@ -243,11 +251,15 @@ actions.init(route);
 }
 
 .funcionario__card__cargo {
-  margin-bottom: 30px;
   font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: #5a6069;
+}
+
+.nomeCargo {
+  margin-top: 30px;
+  margin-left: 20px;
 }
 </style>

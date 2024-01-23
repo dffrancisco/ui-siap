@@ -53,7 +53,6 @@ export const funcionariosOrdenados = computed(() => {
     return funcionariosArray
 })
 
-
 export const totalizador = computed(() => {
     const total: iTotalizador = {
         QTD_A_JUSTIFICAR: 0,
