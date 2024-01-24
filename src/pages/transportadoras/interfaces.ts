@@ -41,3 +41,4 @@ export interface iGetInsertResponse {
 
 export interface iGetTransportadorasResponse extends iTranspordadoras{}
 export interface iParamToInsert extends iTranspordadoras{}
+export interface iParamToUpdate extends iTranspordadoras{}

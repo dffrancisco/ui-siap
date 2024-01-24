@@ -264,6 +264,38 @@ export const actions = {
                 text: 'Erro ao inserir transportadora'
             })
         }
+    },
+
+    async toUpdate () {
+        try {
+            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
+
+            if(dadosDiff.diff == false) {
+                return
+            }
+
+            let dadosAtualizados = {
+                ...state.dbTransportadora,
+                ...dadosDiff.new
+            }
+
+            state.loading = true
+            await serviceTransportadoras.toUpdate(dadosAtualizados)
+            state.loading = false
+
+            state.dbTransportadora = dadosAtualizados as iTranspordadoras;
+
+            state.gridPrincipal.dataSource({
+                ...dadosAtualizados,
+            })
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao atualizar transportadora'
+            })
+        }
     }
 
 }

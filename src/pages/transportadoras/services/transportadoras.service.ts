@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
     iParamGetTransportadoras, iGetTransportadorasResponse, iFieldDuplicity, iGetDuplicityResponse,
-    iGetInsertResponse, iParamToInsert
+    iGetInsertResponse, iParamToInsert, iParamToUpdate
 } from "../interfaces";
 
 const caminho = 'siap/transportadoras';
@@ -9,6 +9,7 @@ const caminho = 'siap/transportadoras';
 type iGetTransportadorasFunction = (param: iParamGetTransportadoras) => Promise<iGetTransportadorasResponse>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<iGetInsertResponse>;
+type iToUpdateFuntion = (param: iParamToUpdate) => Promise<void>;
 
 const getTransportadoras: iGetTransportadorasFunction = async ({ param, offset }) => {
     let { data } = await axios.post(caminho, {
@@ -47,9 +48,19 @@ const toInsert: iToInsertFunction = async (newFields) => {
     return data;
 }
 
+const toUpdate: iToUpdateFuntion = async (param: object) => {
+    let { data } = await axios.post(caminho, {
+        call: "update",
+        param
+    });
+
+    return data;
+}
+
 export default {
     getTransportadoras,
     getCidades,
     getDuplicidade,
-    toInsert
+    toInsert,
+    toUpdate
 }
