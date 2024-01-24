@@ -285,8 +285,10 @@ export const actions = {
 
             state.dbTransportadora = dadosAtualizados as iTranspordadoras;
 
+            let cidade = actions.encontrarCidades(dadosAtualizados.COD_CIDADE)
             state.gridPrincipal.dataSource({
                 ...dadosAtualizados,
+                CIDADE: cidade
             })
 
         } catch (error) {
