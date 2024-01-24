@@ -1430,7 +1430,7 @@ export default (function () {
                                 text = this.elementSideBySide[field].previousSibling.innerText
                             else
                                 if (this.elementSideBySide[field].getAttribute('placeholder'))
-                                    text = this.elementSideBySide[field].getAttribute('placeholder')
+                                    text = this.elementSideBySide[field].previousSibling.innerText
                                 else
                                     if (this.elementSideBySide[field].getAttribute('label'))
                                         text = this.elementSideBySide[field].getAttribute('label')
@@ -1442,8 +1442,9 @@ export default (function () {
                                 text: text
                             })
 
-
-                            return res(r)
+                            if (r) {
+                                return res(r)
+                            }
                         }
                     }
 
