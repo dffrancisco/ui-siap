@@ -7,30 +7,57 @@ import login from "../login/login";
 <template>
   <v-main>
     <v-container>
-      <v-card max-width="1000" class="mx-auto pa-3">
+      <v-card
+        max-width="1000"
+        class="mx-auto pa-3"
+      >
         <v-row>
           <div class="d-flex flex-wrap pa-6">
-            <v-btn class="mr-4 mb-4" @click="router.push('/descontoOrcamento')"
-              >Desconto Orçamento</v-btn
-            >
-            <v-btn class="mr-4 mb-4" @click="router.push('/carros')"
-              >Carros</v-btn
-            >
-            <v-btn class="mr-4 mb-4" @click="router.push('/entregarReceber')"
-              >Entregar e Receber</v-btn
-            >
-            <v-btn class="mr-4 mb-4" @click="router.push('/valeDinheiro')"
-              >Vale dinheiro</v-btn
-            >
-            <v-btn class="mr-4 mb-4" @click="router.push('/chamados')"
-              >Chamados</v-btn
-            >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/descontoOrcamento')"
+              >Desconto Orçamento
+            </v-btn>
 
-            <v-btn class="mr-4 mb-4" @click="router.push('/aniversariantes')"
-              >Aniversariantes</v-btn
-            >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/cidades')"
+              >Cidades
+            </v-btn>
 
-            <v-btn class="mr-4 mb-4" @click="login.actions.confirmarSaida()"
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/carros')"
+              >Carros
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/entregarReceber')"
+              >Entregar e Receber
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/valeDinheiro')"
+              >Vale dinheiro
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/chamados')"
+              >Chamados
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/aniversariantes')"
+              >Aniversariantes
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="login.actions.confirmarSaida()"
               >Logout
             </v-btn>
           </div>
