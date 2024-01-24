@@ -57,10 +57,19 @@ const toUpdate: iToUpdateFuntion = async (param: object) => {
     return data;
 }
 
+const toInativar = async (ID_TRANSPORTADORA, DELETADO) => {
+    return axios.post(caminho, {
+        call: "inativar",
+        ID_TRANSPORTADORA: ID_TRANSPORTADORA,
+        DELETADO: DELETADO
+    })
+}
+
 export default {
     getTransportadoras,
     getCidades,
     getDuplicidade,
     toInsert,
-    toUpdate
+    toUpdate,
+    toInativar
 }

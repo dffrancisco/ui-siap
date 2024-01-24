@@ -3,7 +3,7 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import serviceTransportadoras from "./services/transportadoras.service"
-import { iTranspordadoras, iCidades, iParamGetTransportadoras,iFieldDuplicity } from "./interfaces";
+import { iTranspordadoras, iCidades, iParamGetTransportadoras, iFieldDuplicity } from "./interfaces";
 import utils from "@/ts/utils";
 
 interface _ixGridCreate extends ixGridCreate {
@@ -28,9 +28,9 @@ export const actions = {
             height: 250,
             count: true,
             columns: {
-                'CNPJ': { dataField: 'CGC_TRANSPORTADORA', width:"20%"},
+                'CNPJ': { dataField: 'CGC_TRANSPORTADORA', width: "20%" },
                 'Razão Social': { dataField: 'RAZAO_SOCIAL' },
-                'Cidade': { dataField: 'CIDADE', width:"22%" },
+                'Cidade': { dataField: 'CIDADE', width: "22%" },
             },
             query: {
                 async execute(rs) {
@@ -199,10 +199,10 @@ export const actions = {
         state.gridPrincipal.focus();
     },
 
-    async getTransportadoras({param, offset}:iParamGetTransportadoras) {
+    async getTransportadoras({ param, offset }: iParamGetTransportadoras) {
         try {
             state.loading = true;
-            const data = await serviceTransportadoras.getTransportadoras({param, offset});
+            const data = await serviceTransportadoras.getTransportadoras({ param, offset });
             state.loading = false;
 
             return data;
@@ -227,9 +227,9 @@ export const actions = {
         }
     },
 
-    async getDuplicidade({value, field}: iFieldDuplicity) {
+    async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
-            const data = await serviceTransportadoras.getDuplicidade({value, field});
+            const data = await serviceTransportadoras.getDuplicidade({ value, field });
 
             return data;
         } catch (error) {
@@ -256,7 +256,7 @@ export const actions = {
                 CIDADE: cidade,
                 ID_TRANSPORTADORA: data.ID_TRANSPORTADORA
             });
-            
+
         } catch (error) {
             state.loading = false;
             Swal.fire({
@@ -266,11 +266,11 @@ export const actions = {
         }
     },
 
-    async toUpdate () {
+    async toUpdate() {
         try {
             let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
-            if(dadosDiff.diff == false) {
+            if (dadosDiff.diff == false) {
                 return
             }
 
@@ -296,6 +296,25 @@ export const actions = {
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao atualizar transportadora'
+            })
+        }
+    },
+
+    async toInativar() {
+        try {
+            let ID_TRANSPORTADORA = state.dbTransportadora.ID_TRANSPORTADORA
+            let DELETADO = state.dbTransportadora.DELETADO
+
+            state.loading = true
+            await serviceTransportadoras.toInativar(ID_TRANSPORTADORA, DELETADO);
+            state.loading = false
+
+            state.gridPrincipal.deleteLine();
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao inativar transportadora'
             })
         }
     }
