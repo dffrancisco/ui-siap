@@ -1,0 +1,271 @@
+import { reactive } from "vue";
+import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
+import Swal from "sweetalert2";
+import { msgConfirm } from "@/ts/message";
+import serviceTransportadoras from "./services/transportadoras.service"
+import { iTranspordadoras, iCidades, iParamGetTransportadoras,iFieldDuplicity } from "./interfaces";
+import utils from "@/ts/utils";
+
+interface _ixGridCreate extends ixGridCreate {
+    dataSource: (obj?: object) => iTranspordadoras
+}
+
+export const state = reactive(({
+    gridPrincipal: <_ixGridCreate>{},
+    pnSearch: false,
+    toggleDisabled: false,
+    listaCidades: <iCidades[]>[],
+    edtSearch: <HTMLInputElement>{},
+    dbTransportadora: <iTranspordadoras>{},
+    loading: false,
+}))
+
+export const actions = {
+
+    grids() {
+        state.gridPrincipal = new xGridV2.create({
+            el: "#gridPrincipal",
+            height: 250,
+            count: true,
+            columns: {
+                'CNPJ': { dataField: 'CGC_TRANSPORTADORA', width:"20%"},
+                'Razão Social': { dataField: 'RAZAO_SOCIAL' },
+                'Cidade': { dataField: 'CIDADE', width:"22%" },
+            },
+            query: {
+                async execute(rs) {
+                    let data = await actions.getTransportadoras({
+                        offset: rs.offset,
+                        param: rs.param
+                    });
+                    state.gridPrincipal.querySourceAdd(data)
+                }
+            },
+            sideBySide: {
+                el: "#pnCampos",
+                vModel(r) { state.dbTransportadora = r },
+                duplicity: {
+                    dataField: ['CGC_TRANSPORTADORA'],
+                    async execute(rs) {
+                        let dup = await actions.getDuplicidade({
+                            value: rs.value.toUpperCase(),
+                            field: rs.field,
+                        });
+
+                        if (Object.keys(dup).length > 0) {
+                            state.gridPrincipal.showMessageDuplicity(
+                                rs.text + ' já está cadastrada'
+                            );
+                            return true;
+                        }
+
+                        return false
+                    }
+                },
+                frame: {
+                    el: '#pnBotoes',
+                    buttons: {
+                        novo: {
+                            html: 'Novo',
+                            state: 'insert',
+                            click: actions.btnInsert
+                        },
+                        update: {
+                            html: 'Alterar',
+                            state: 'update',
+                            click: actions.btnEdit,
+                            id: 'btnUpdate'
+                        },
+                        excluir: {
+                            html: 'Inativar',
+                            state: 'delete',
+                            click: actions.btnDelete
+                        },
+                        salvar: {
+                            html: 'Salvar',
+                            state: 'save',
+                            click: actions.btnSave,
+                            preLoad: 'Salvando',
+                        },
+                        cancela: {
+                            html: 'Cancelar',
+                            state: 'cancel',
+                            click: actions.btnCancel
+                        }
+                    }
+                }
+            },
+            enter: function () {
+                document.getElementById('btnUpdate').click()
+            }
+        })
+    },
+
+    search() {
+        state.gridPrincipal.queryOpen({
+            RAZAO_SOCIAL: state.edtSearch.value.toUpperCase()
+        });
+    },
+
+    encontrarCidades(COD_CIDADE) {
+        const cidadeEncontrada = state.listaCidades.find(cidade => {
+            if ((cidade.COD_CIDADE == COD_CIDADE)) {
+                return true;
+            }
+
+            return false;
+        })
+
+        let cidade = cidadeEncontrada.DESCRICAO
+
+        return cidade
+    },
+
+    btnInsert() {
+
+        state.pnSearch = true
+        state.toggleDisabled = true
+
+        state.gridPrincipal.disable();
+        state.gridPrincipal.focusField()
+        state.gridPrincipal.clearElementSideBySide();
+    },
+
+    btnEdit() {
+
+        //@ts-ignore
+        if (state.gridPrincipal.dataSource() === false) {
+            Swal.fire({
+                icon: 'info',
+                text: 'Nenhum registro selecionado para alteração, operação cancelada!'
+            })
+            return false;
+        }
+
+        state.pnSearch = true
+        state.toggleDisabled = true
+
+        state.gridPrincipal.disable();
+        state.gridPrincipal.focusField();
+    },
+
+    async btnDelete() {
+
+        //@ts-ignore
+        if (state.gridPrincipal.dataSource() === false) {
+            Swal.fire({
+                icon: 'info',
+                text: 'Nenhum registro selecionado para alteração, operação cancelada!'
+            })
+            return false;
+        }
+
+        if (await msgConfirm("Confirmação", "Confirma a inativação deste registro?")) {
+            await actions.toInativar()
+            state.gridPrincipal.focus();
+        }
+    },
+
+    async btnSave() {
+
+
+        if (utils.validaOBR())
+            return false
+
+        if (await state.gridPrincipal.getDuplicityAll())
+            return false;
+
+        //@ts-ignore
+        if (state.gridPrincipal.dataSource() == false)
+            actions.toInsert();
+        else {
+            actions.toUpdate();
+        }
+
+        state.gridPrincipal.enable();
+
+        state.toggleDisabled = false
+        state.pnSearch = false
+
+        state.gridPrincipal.focus();
+    },
+
+    btnCancel() {
+
+        state.pnSearch = false;
+        state.toggleDisabled = false;
+
+        state.gridPrincipal.enable();
+        state.gridPrincipal.focus();
+    },
+
+    async getTransportadoras({param, offset}:iParamGetTransportadoras) {
+        try {
+            state.loading = true;
+            const data = await serviceTransportadoras.getTransportadoras({param, offset});
+            state.loading = false;
+
+            return data;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao exibir as transportadoras'
+            })
+        }
+    },
+
+    async getCidades() {
+        try {
+            const data = await serviceTransportadoras.getCidades();
+            state.listaCidades = data;
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao exibir as cidades'
+            })
+        }
+    },
+
+    async getDuplicidade({value, field}: iFieldDuplicity) {
+        try {
+            const data = await serviceTransportadoras.getDuplicidade({value, field});
+
+            return data;
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Cidade já Cadastrada'
+            })
+        }
+    },
+
+    async toInsert() {
+        try {
+            let newFields = <any>(
+                state.gridPrincipal.getElementSideBySideJson(true, false)
+            )
+
+            state.loading = true
+            let data = await serviceTransportadoras.toInsert(newFields)
+            state.loading = false
+
+            let cidade = actions.encontrarCidades(newFields.COD_CIDADE)
+            state.gridPrincipal.insertLine({
+                ...newFields,
+                CIDADE: cidade,
+                ID_TRANSPORTADORA: data.ID_TRANSPORTADORA
+            });
+            
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao inserir transportadora'
+            })
+        }
+    }
+
+}
+
+export default { state, actions }
