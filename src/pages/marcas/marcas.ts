@@ -15,7 +15,7 @@ export const state = reactive({
     dsMarca: <iGruposMarcas[]>[],
     loading: false,
     disabledSearch: false,
-    edtSearch: '',
+    edtSearch: <HTMLInputElement>{},
     gridPrincipal: <_ixGridCreate>{}
 })
 
@@ -32,7 +32,6 @@ export const actions = {
             query:{
                 async execute(rs) {
                     let data = await actions.getMarcas(rs);
-
                     state.gridPrincipal.querySourceAdd(data);
                 }
             },
@@ -59,37 +58,43 @@ export const actions = {
                 frame: {
                     el: '#pnBotoes',
                     buttons: {
-                        novo:{
+                        novo: {
                             html: 'Novo',
                             state: 'insert',
-                            click: actions.btnInsert 
+                            click: actions.btnInsert
                         },
                         update: {
                             html: 'Alterar',
                             state: 'update',
                             click: actions.btnEdit,
                             id: 'btnUpdate'
-                        },
+                        }, 
                         excluir: {
-                            html: "Excluir",
-                            state: "delete",
-                            click: actions.btnDelete,
+                            html: 'Excluir',
+                            state: 'delete',
+                            click: actions.btnDelete
                         },
                         salvar: {
                             html: 'Salvar',
                             state: 'save',
                             click: actions.btnSave,
-                            preLoad: 'Salvando'
+                            preLoad: 'Salvando',
                         },
+                       
                         cancela: {
                             html: 'Cancelar',
                             state: 'cancel',
                             click: actions.btnCancel
-                        },
+                        }
                     }
+
                 }
             },
-        })        
+            enter: function () {
+                document.getElementById('btnUpdate').click()
+            }
+        });
+
     },
     init() {
         state.loading = true
@@ -100,12 +105,14 @@ export const actions = {
         state.gridPrincipal.focus()
         state.loading = false
     },
+
     btnInsert() {
         state.disabledSearch = true;
         state.gridPrincipal.focusField();
         state.gridPrincipal.disable();
         state.gridPrincipal.clearElementSideBySide();
     },
+
     async btnSave(){
 
         if (utils.validaOBR()) return false;
@@ -119,8 +126,7 @@ export const actions = {
         if (state.gridPrincipal.dataSource() == false){
             actions.toInsert(idMarcaGrupo);
         }else{
-            console.log('update');
-            
+            actions.toUpdate(idMarcaGrupo);
         }
 
         state.disabledSearch = false
@@ -128,9 +134,17 @@ export const actions = {
         state.gridPrincipal.focus();
         
     },
-    btnEdit(){
+
+    btnEdit(){ 
+        //@ts-ignore
+        if(state.gridPrincipal.dataSource() == false) {
+            Swal.fire({icon: 'info', text: 'Nenhum registro selecionado para alteração, operação cancelada!'})
+            return false
+        }
         state.disabledSearch = true
-        console.log('Edit');
+        state.gridPrincipal.focusField();
+        state.gridPrincipal.disable();
+        
     },
 
     async btnDelete() {
@@ -186,22 +200,20 @@ export const actions = {
 
     search() {
         state.gridPrincipal.queryOpen({
-            DESCRICAO: state.edtSearch.toUpperCase(),
-            GRUPO: state.edtSearch.toUpperCase()
+            DESCRICAO: state.edtSearch.value.toUpperCase(),
+            GRUPO: state.edtSearch.value.toUpperCase()
         });
     },
 
     async toInsert(idMarcaGrupo: any) {
         try{
-            console.log('show te achei', idMarcaGrupo);
             
-            let newFields = (
+            let newFields: any = (
                 state.gridPrincipal.getElementSideBySideJson(true, false)
             );    
-            console.log('vem comigo newFields', newFields);
             
             state.loading = true;
-            let data = await serviceMarcas.toInsert(newFields, idMarcaGrupo)
+            let data: any = await serviceMarcas.toInsert(newFields, idMarcaGrupo)
             state.loading = false;   
 
             state.gridPrincipal.insertLine({...newFields, ...data})
@@ -242,6 +254,34 @@ export const actions = {
                 icon: "error",
                 text: "Erro ao excluir Marca!"
             });
+        }
+    },
+
+    async toUpdate(idMarcaGrupo: any) {
+
+        try{
+            let diff = state.gridPrincipal.getDiffTwoJson(true, false)
+            let dadosAlterados = {
+                ...state.dbMarca,
+                ...diff.new
+            }
+
+            dadosAlterados['ID_MARCA_GRUPO'] = idMarcaGrupo;
+            
+            state.loading = true
+            await serviceMarcas.toUpdate(dadosAlterados)
+            state.loading = false
+
+            state.dbMarca = { ...state.dbMarca, ...diff} as iMarcas;
+            state.gridPrincipal.dataSource(dadosAlterados)
+
+        }catch(error){
+            state.loading = false
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao atualizar corredor!'
+            })
+            
         }
     },
 

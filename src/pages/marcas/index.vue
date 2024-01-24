@@ -1,10 +1,25 @@
 <script setup lang="ts">
-import { nextTick } from "vue";
+import { nextTick, onUnmounted } from "vue";
 import { actions, state } from "./marcas";
 import marcaSearch from './components/marcaSearch.vue'
+import { useEventListener } from "@vueuse/core";
+
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F1") {
+    state.edtSearch.select();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
 
 nextTick(async () => {
  actions.init();
+
+ state.edtSearch = <any>document.getElementById("edtSearch");
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
 });
 </script>
 
@@ -17,6 +32,7 @@ nextTick(async () => {
           <v-col cols="6">
             <span>Descrição</span>
             <input
+              maxlength="20"
               v-model="state.dbMarca.DESCRICAO"
               id="DESCRICAO"
               name="DESCRICAO"
