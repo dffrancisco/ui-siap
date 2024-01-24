@@ -1,4 +1,3 @@
-import { horaFormatada } from "./../entregarReceberDetalhes/entregarReceberDetalhes";
 import { computed, nextTick, reactive } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import { iParam, iPonto } from "./interface";
@@ -43,6 +42,11 @@ export const actions = {
   },
 
   formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, cor = "blue") {
+    if (titulo == null) {
+      titulo = "---------";
+      cor = "red";
+    }
+
     return {
       title: titulo,
       start: dataInicio,
@@ -70,7 +74,7 @@ export const actions = {
       state.ano = Number(route.query.ano);
 
       await actions.getPontos(state.codFuncionario, state.mes, state.ano);
-      // state.today = new Date(`${state.ano}-${state.mes-1}-01`)
+      // state.today = new Date(`${state.ano}-${state.mes - 1}-01`);
       state.loading = false;
     });
   },
@@ -113,6 +117,10 @@ export const pontosCalendario = computed(() => {
   }
 
   return eventos;
+});
+
+export const dadosPontosTratados = computed(() => {
+  console.log("teste");
 });
 
 export const onDataClicada = (event) => {

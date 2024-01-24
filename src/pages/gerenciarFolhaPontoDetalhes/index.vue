@@ -148,7 +148,7 @@ actions.init(route);
                   </span>
                   <span class="funcionario__card__faltas">
                     Feriado:
-                    <b></b>
+                    <!-- <b>{{ state.pontos || 0 }}</b> -->
                   </span>
                 </v-col>
               </v-card>
