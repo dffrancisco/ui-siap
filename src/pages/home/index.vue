@@ -33,6 +33,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/carroCliente')"
+              >Carro Cliente
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/entregarReceber')"
               >Entregar e Receber
             </v-btn>
@@ -54,11 +60,17 @@ import login from "../login/login";
               @click="router.push('/aniversariantes')"
               >Aniversariantes
             </v-btn>
-
+            
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/montagemProduto')"
               >Montagem Produto
+            </v-btn>
+            
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/documentosFuncionarios')"
+              >Documentos Funcionarios
             </v-btn>
 
             <v-btn

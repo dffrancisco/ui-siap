@@ -652,7 +652,23 @@ export const SomenteNumero = (e) => {
     else
       return false;
   }
-}
+};
+
+export const toLowerCase = (text: string) => {
+    return text.toLowerCase()
+};
+
+export const toCapitalize = (text: string) => {
+    var palavras = text.split(" ");
+
+    var palavrasCapitalizadas = palavras.map(function(palavra) {
+        return palavra.charAt(0).toUpperCase() + palavra.slice(1)
+    });
+
+    var result = palavrasCapitalizadas.join(' ');
+
+    return result
+};
 
 export default {
   validMail,
@@ -670,6 +686,8 @@ export default {
   base64_decode,
   base64_encode,
   SomenteNumero,
+  toLowerCase,
+  toCapitalize
 };
 
 export const sleep = async (timeMs: number) => {
