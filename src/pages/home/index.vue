@@ -26,6 +26,10 @@ import login from "../login/login";
               >Chamados</v-btn
             >
 
+            <v-btn class="mr-4 mb-4" @click="router.push('/marcas')"
+              >Marcas</v-btn
+            >
+
             <v-btn class="mr-4 mb-4" @click="router.push('/aniversariantes')"
               >Aniversariantes</v-btn
             >
