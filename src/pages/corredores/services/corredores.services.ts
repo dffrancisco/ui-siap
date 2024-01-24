@@ -24,15 +24,6 @@ const getCorredores: iGetCorredoresFunction =  async ({ offset, param }) => {
     return data;
 }
 
-const getLocalidades = async () => {
-    let { data } = await axios.post(caminho, {
-        call: "getLocalidades"
-    });
-    
-    // state.dsLocalidades = data
-    return data;
-}
-
 const getDuplicidade: iGetDuplicityFunction = async ({ field, value }) => {
     let { data } = await axios.post(caminho, {
         call: "getDuplicidade",
@@ -70,7 +61,6 @@ const toUpdate: iToUpdateFunction = async (param: any) => {
 
 export default { 
     getCorredores, 
-    getLocalidades, 
     toInsert,
     getDuplicidade,
     toUpdate,

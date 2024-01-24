@@ -15,7 +15,6 @@ interface _ixGridCreate extends ixGridCreate {
 export const state = reactive({
     gridPrincipal: <_ixGridCreate>{},
     disableSearch: false,
-    dsLocalidades: <iLocalidade[]>[],
     edtSearch: '',
     dbCorredor: <iCorredor>{},
     loading: false
@@ -93,6 +92,14 @@ export const actions = {
                 }
             },
         })
+    },
+
+    init() {
+        actions.grids();
+
+        state.gridPrincipal.queryOpen({ DESCRICAO: "" }, () => {
+          state.gridPrincipal.focus();
+        });
     },
 
     btnInsert() {
@@ -179,21 +186,6 @@ export const actions = {
         });
     },
 
-    async getLocalidades() {
-        try{
-            const data = await serviceCorredores.getLocalidades();
-
-            state.dsLocalidades = data;
-
-            return data
-        }catch (error){
-            Swal.fire({
-                icon: 'error',
-                text: 'Erro ao exibir as localidades'
-            })
-        }
-    },
-
     async getDuplicidade({ field, value }: iFieldDuplicity) {
         try {
             const data = serviceCorredores.getDuplicidade({ field, value });
@@ -202,7 +194,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Cidade já cadastrada!",
+                text: "Corredor já cadastrado!",
             });
         }
     },
@@ -214,8 +206,6 @@ export const actions = {
                 state.gridPrincipal.getElementSideBySideJson(true, false)
             )
             
-
-
             state.loading = true
             let data: any = await serviceCorredores.toInsert(newFields);
 
@@ -266,7 +256,7 @@ export const actions = {
             state.loading = false
             Swal.fire({
                 icon: "error",
-                text: "Erro ao excluir cidade! Talvez ela esteja sendo utilizada em outro local.",
+                text: "Erro ao excluir Corredor! Talvez ela esteja sendo utilizada em outro local.",
             });
         }
     },

@@ -4,12 +4,7 @@ import corredorSearch from './components/corredorSearch.vue'
 import { actions, state } from "./corredores";
 
 nextTick(async () => {
-  actions.getLocalidades();
-  actions.grids();
-
-  state.gridPrincipal.queryOpen({ DESCRICAO: "" }, () => {
-    state.gridPrincipal.focus();
-  });
+ actions.init()
 });
 </script>
 
@@ -31,19 +26,13 @@ nextTick(async () => {
           </v-col>
           <v-col cols="6">
             <span>Localidade</span>
-            <select
+            <input
               v-model="state.dbCorredor.LOCALIDADE"
-              name="LOCALIDADE"
               id="LOCALIDADE"
+              name="LOCALIDADE"
+              type="text"
               class="obr ss"
-            >
-              <option
-                v-for="loc in state.dsLocalidades"
-                :value="loc.LOCALIDADE"
-              >
-                {{ loc.LOCALIDADE }}
-              </option>
-            </select>
+            />
           </v-col>
         </v-row>
       </div>
