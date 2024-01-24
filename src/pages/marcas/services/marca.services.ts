@@ -25,13 +25,15 @@ const getGrupoMarcas = async () => {
     return data
 } ;
 
-const toInsert: iToInsertFuction = async ({newFields}) => {
-    console.log(newFields);
+const toInsert: iToInsertFuction = async (newFields, idMarcaGrupo = undefined) => {
+    console.log('vai para o service mano newFields', newFields);
+    console.log('vem comigo mano idMarcaGrupo', idMarcaGrupo);
+    
     
     let { data } = await axios.post(caminho, {
         call: 'insert',
         param: newFields,
-        // ID_MARCA_GRUPO: ID_MARCA_GRUPO,
+        idMarcaGrupo: idMarcaGrupo,
     })
 
     return data

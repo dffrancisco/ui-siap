@@ -22,6 +22,7 @@ export interface iGruposMarcas{
 
 export interface iParamToInsert{
     param: any;
+    idMarcaGrupo: number
 };
 
 export interface iGetDuplicityResponse{

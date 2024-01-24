@@ -111,12 +111,13 @@ export const actions = {
         if (utils.validaOBR()) return false;
 
         if(await state.gridPrincipal.getDuplicityAll() == true) return false;
-        
+
+        let selectedOption = state.dsMarca.find(group => group.GRUPO === state.dbMarca.GRUPO);
+        let idMarcaGrupo = selectedOption ? selectedOption.ID_MARCA_GRUPO : null;
 
         //@ts-ignore
         if (state.gridPrincipal.dataSource() == false){
-            console.log("log do insert")
-            actions.toInsert();
+            actions.toInsert(idMarcaGrupo);
         }else{
             console.log('update');
             
@@ -157,10 +158,7 @@ export const actions = {
         try{
             state.loading = true
             let data = await serviceMarcas.getMarcas({offset, param})            
-            state.loading = false
-
-            console.log('getMarcas', data);
-            
+            state.loading = false            
 
             return data
         }catch(error){
@@ -173,10 +171,7 @@ export const actions = {
 
     async getGrupoMarcas() {
         try{
-            let data = await serviceMarcas.getGrupoMarcas()
-
-            console.log('getGrupoMarcas', data);
-            
+            let data = await serviceMarcas.getGrupoMarcas()            
             
             state.dsMarca = data            
 
@@ -196,20 +191,18 @@ export const actions = {
         });
     },
 
-    async toInsert() {
+    async toInsert(idMarcaGrupo: any) {
         try{
-
-
+            console.log('show te achei', idMarcaGrupo);
+            
             let newFields = (
                 state.gridPrincipal.getElementSideBySideJson(true, false)
-            );            
-
+            );    
+            console.log('vem comigo newFields', newFields);
+            
             state.loading = true;
-            const data = await serviceMarcas.toInsert(newFields);
-            state.loading = false;              
-            
-            console.log('data', data);
-            
+            let data = await serviceMarcas.toInsert(newFields, idMarcaGrupo)
+            state.loading = false;   
 
             state.gridPrincipal.insertLine({...newFields, ...data})
         }catch(error){
