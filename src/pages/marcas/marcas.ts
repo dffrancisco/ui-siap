@@ -201,7 +201,6 @@ export const actions = {
     search() {
         state.gridPrincipal.queryOpen({
             DESCRICAO: state.edtSearch.value.toUpperCase(),
-            GRUPO: state.edtSearch.value.toUpperCase()
         });
     },
 
