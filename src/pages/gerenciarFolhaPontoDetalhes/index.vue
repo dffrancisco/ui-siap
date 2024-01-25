@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { actions, state, pontosCalendario, onDataClicada } from "./gerenciarFolhaPontoDetalhes";
+import { actions, state, pontosCalendario, onDataClicada, statusPontos } from "./gerenciarFolhaPontoDetalhes";
 import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 
 const route = useRoute();
@@ -47,9 +47,16 @@ actions.init(route);
                     class="btnSearch"
                     @click="actions.getPontos(state.codFuncionario, state.mes, state.ano)"
                   >
-                    <v-icon> mdi-magnify</v-icon>
-                  </v-btn></v-col
-                >
+                    <v-icon> mdi-magnify</v-icon> </v-btn
+                  ><v-btn
+                    icon
+                    color="primary"
+                    size="small"
+                    class="btnPrint"
+                  >
+                    <v-icon>mdi-printer</v-icon>
+                  </v-btn>
+                </v-col>
               </v-row>
             </v-card>
           </div>
@@ -78,30 +85,32 @@ actions.init(route);
                   </v-avatar>
 
                   <div class="nomeCargo">
-                    <strong class="funcionario__card__nome">Nome</strong>
-                    <span class="funcionario__card__cargo">Cargo</span>
+                    <strong class="funcionario__card__nome"
+                      ><b>{{ state.nome }}</b></strong
+                    >
+                    <span class="funcionario__card__cargo">{{ state.cargo }}</span>
                   </div>
                 </div>
 
                 <v-col>
                   <span class="funcionario__card__infos">
                     Pontos não batidos:
-                    <b></b>
+                    <b>{{ state.qtd_pontos_nao_batidos || 0 }}</b>
                   </span>
                   <span class="funcionario__card__infos">
                     Pontos incompletos:
-                    <b></b>
+                    <b>{{ state.qtd_pontos_incompletos || 0 }}</b>
                   </span>
                 </v-col>
 
-                <v-col>
+                <v-col class="infoPontosFunc">
                   <span class="funcionario__card__infos">
                     Qtd de justificativas:
-                    <b></b>
+                    <b>{{ state.qtd_faltas_justificadas || 0 }}</b>
                   </span>
                   <span class="funcionario__card__infos">
                     Pontos à justificar:
-                    <b></b>
+                    <b>{{ state.qtd_a_justificar || 0 }}</b>
                   </span>
                 </v-col>
               </v-card>
@@ -148,7 +157,7 @@ actions.init(route);
                   </span>
                   <span class="funcionario__card__faltas">
                     Feriado:
-                    <!-- <b>{{ state.pontos || 0 }}</b> -->
+                    <b></b>
                   </span>
                 </v-col>
               </v-card>
@@ -195,7 +204,12 @@ actions.init(route);
 </template>
 
 <style scoped>
+.btnPrint {
+  margin-top: 10px;
+  margin-left: 20px;
+}
 .btnSearch {
+  margin-left: 10px;
   margin-top: 10px;
 }
 
@@ -261,5 +275,9 @@ actions.init(route);
 .nomeCargo {
   margin-top: 30px;
   margin-left: 20px;
+}
+
+.infoPontosFunc {
+  margin-top: -15px;
 }
 </style>

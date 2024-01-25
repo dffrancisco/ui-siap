@@ -113,7 +113,14 @@ onMounted(async () => {
                 :class="{ pendencia: funcionario.QTD_A_JUSTIFICAR > 0 }"
                 class="funcionarios__lista__card"
                 @click="
-                  actions.onClickFuncionario(funcionario.COD_FUNCIONARIO, funcionario.CPF, state.mes, state.ano)
+                  actions.onClickFuncionario(
+                    funcionario.NOME_COMP,
+                    funcionario.CARGO,
+                    funcionario.COD_FUNCIONARIO,
+                    funcionario.CPF,
+                    state.mes,
+                    state.ano
+                  )
                 "
               >
                 <div class="funcionarios__lista__card__usuario">

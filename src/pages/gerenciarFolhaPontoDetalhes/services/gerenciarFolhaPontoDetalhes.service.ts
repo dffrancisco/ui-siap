@@ -1,19 +1,29 @@
 import axios from "axios";
 import { iParam } from "../interface";
-const caminho = 'siap/gerenciarFolhaPonto'
+const caminho = "siap/gerenciarFolhaPonto";
 
-type iGetFaltasFunction = (param: iParam) => Promise<object>
+type iGetFaltasFunction = (param: iParam) => Promise<object>;
+type iGetResumoPontosFuncionario = (param: iParam) => Promise<object>;
 
 const getPontos: iGetFaltasFunction = async (param) => {
-    let { data } = await axios.post(caminho, {
-        call: 'getPontos',
-        param
-    })
+  let { data } = await axios.post(caminho, {
+    call: "getPontos",
+    param,
+  });
 
-    return data;
-}
+  return data;
+};
 
+const getResumoPontosFuncionario: iGetResumoPontosFuncionario = async (param) => {
+  let { data } = await axios.post(caminho, {
+    call: "getResumoPontosFuncionario",
+    param,
+  });
+
+  return data;
+};
 
 export default {
-    getPontos
-}
+  getPontos,
+  getResumoPontosFuncionario,
+};

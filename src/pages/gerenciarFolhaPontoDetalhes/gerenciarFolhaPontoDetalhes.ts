@@ -6,8 +6,15 @@ import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDe
 
 export const state = reactive({
   pontos: {},
+  resumoPontosFuncionario: {},
   loading: false,
+  nome: <string | null>null,
+  cargo: <string | null>null,
   codFuncionario: 0,
+  qtd_a_justificar: 0,
+  qtd_faltas_justificadas: 0,
+  qtd_pontos_incompletos: 0,
+  qtd_pontos_nao_batidos: 0,
   cpf: <string | null>null,
   mes: 1,
   ano: 2024,
@@ -33,10 +40,29 @@ export const actions = {
 
     try {
       state.pontos = await gerenciarFolhaPontoDetalhesService.getPontos(param);
+      console.log(state.pontos);
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Ocorreu um erro ao buscar os pontos do funcionário.",
+      });
+    }
+  },
+
+  async getResumoPontosFuncionario(cod_funcionario: number, mes: number, ano: number) {
+    const param: iParam = {
+      cod_funcionario: cod_funcionario,
+      mes: mes,
+      ano: ano,
+    };
+
+    try {
+      state.resumoPontosFuncionario = await gerenciarFolhaPontoDetalhesService.getResumoPontosFuncionario(param);
+      console.log(state.resumoPontosFuncionario);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Ocorreu um erro ao buscar o resumo dos pontos do funcionário.",
       });
     }
   },
@@ -68,12 +94,16 @@ export const actions = {
     nextTick(async () => {
       state.loading = true;
 
+      state.nome = String(route.query.nome);
+      state.cargo = String(route.query.cargo);
       state.codFuncionario = Number(route.query.cod_funcionario);
       state.cpf = String(route.query.cpf);
       state.mes = Number(route.query.mes);
       state.ano = Number(route.query.ano);
 
       await actions.getPontos(state.codFuncionario, state.mes, state.ano);
+      await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
+
       // state.today = new Date(`${state.ano}-${state.mes - 1}-01`);
       state.loading = false;
     });
@@ -119,8 +149,15 @@ export const pontosCalendario = computed(() => {
   return eventos;
 });
 
-export const dadosPontosTratados = computed(() => {
-  console.log("teste");
+export const statusPontos = computed(() => {
+  let status = {
+    FALTA: 0,
+    FERIADO: 0,
+  };
+
+  console.log(status);
+
+  return status;
 });
 
 export const onDataClicada = (event) => {
