@@ -2,10 +2,26 @@
 import { nextTick } from "vue";
 import corredorSearch from './components/corredorSearch.vue'
 import { actions, state } from "./corredores";
+import { useEventListener } from "@vueuse/core";
+import { onUnmounted } from "vue";
+
+const eventListener = useEventListener(document, "keydown", async (e) => {
+  if (e.key === "F1") {
+    state.edtSearch.select();
+    e.preventDefault();
+    e.stopPropagation();
+  }
+})
 
 nextTick(async () => {
- actions.init()
+ actions.init();
+
+ state.edtSearch = <any>document.getElementById('edtSearch')
 });
+
+onUnmounted(() => {
+  removeEventListener('keydown', eventListener)
+})
 </script>
 
 <template>

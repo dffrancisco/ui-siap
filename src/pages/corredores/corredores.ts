@@ -15,7 +15,7 @@ interface _ixGridCreate extends ixGridCreate {
 export const state = reactive({
     gridPrincipal: <_ixGridCreate>{},
     disableSearch: false,
-    edtSearch: '',
+    edtSearch: <HTMLInputElement>{},
     dbCorredor: <iCorredor>{},
     loading: false
 })
@@ -182,7 +182,7 @@ export const actions = {
 
     search() {
         state.gridPrincipal.queryOpen({
-            DESCRICAO: state.edtSearch.toUpperCase(),
+            DESCRICAO: state.edtSearch.value.toUpperCase(),
         });
     },
 
