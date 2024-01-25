@@ -104,7 +104,7 @@ export const actions = {
     },
 
     search() {
-        if(state.isChecked) {
+        if (state.isChecked) {
             document.querySelector('button[state="delete"]').textContent = 'Reativar';
         } else {
             document.querySelector('button[state="delete"]').textContent = 'Inativar';
@@ -167,168 +167,175 @@ export const actions = {
             })
             return false;
         }
+        if (!state.isChecked) {
+            if (await msgConfirm("Confirmação", "Confirma a inativação deste registro?")) {
+                await actions.toInativar()
+                state.gridPrincipal.focus();
+            }
+        } else {
+            if (await msgConfirm("Confirmação", "Confirma a reativação deste registro?")) {
+                await actions.toInativar()
+                state.gridPrincipal.focus();
+            }
 
-        if (await msgConfirm("Confirmação", "Confirma a inativação deste registro?")) {
-            await actions.toInativar()
-            state.gridPrincipal.focus();
         }
     },
 
     async btnSave() {
 
 
-        if (utils.validaOBR())
-            return false
+            if (utils.validaOBR())
+                return false
 
-        if (await state.gridPrincipal.getDuplicityAll())
-            return false;
+            if (await state.gridPrincipal.getDuplicityAll())
+                return false;
 
-        //@ts-ignore
-        if (state.gridPrincipal.dataSource() == false)
-            actions.toInsert();
-        else {
-            actions.toUpdate();
-        }
+            //@ts-ignore
+            if (state.gridPrincipal.dataSource() == false)
+                actions.toInsert();
+            else {
+                actions.toUpdate();
+            }
 
-        state.gridPrincipal.enable();
+            state.gridPrincipal.enable();
 
-        state.toggleDisabled = false
-        state.pnSearch = false
+            state.toggleDisabled = false
+            state.pnSearch = false
 
-        state.gridPrincipal.focus();
-    },
+            state.gridPrincipal.focus();
+        },
 
-    btnCancel() {
+        btnCancel() {
 
-        state.pnSearch = false;
-        state.toggleDisabled = false;
+            state.pnSearch = false;
+            state.toggleDisabled = false;
 
-        state.gridPrincipal.enable();
-        state.gridPrincipal.focus();
-    },
+            state.gridPrincipal.enable();
+            state.gridPrincipal.focus();
+        },
 
     async getTransportadoras({ param, offset, checkboxAtiva }: iParamGetTransportadoras) {
-        try {
-            console.log(state.isChecked);
-    
-            state.loading = true;
-            const data = await serviceTransportadoras.getTransportadoras({ param, offset, checkboxAtiva });
-            state.loading = false;
+            try {
+                console.log(state.isChecked);
 
-            return data;
-        } catch (error) {
-            state.loading = false;
-            Swal.fire({
-                icon: 'error',
-                text: 'Erro ao exibir as transportadoras'
-            })
-        }
-    },
+                state.loading = true;
+                const data = await serviceTransportadoras.getTransportadoras({ param, offset, checkboxAtiva });
+                state.loading = false;
+
+                return data;
+            } catch (error) {
+                state.loading = false;
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Erro ao exibir as transportadoras'
+                })
+            }
+        },
 
     async getCidades() {
-        try {
-            const data = await serviceTransportadoras.getCidades();
-            state.listaCidades = data;
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                text: 'Erro ao exibir as cidades'
-            })
-        }
-    },
+            try {
+                const data = await serviceTransportadoras.getCidades();
+                state.listaCidades = data;
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Erro ao exibir as cidades'
+                })
+            }
+        },
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
-        try {
-            const data = await serviceTransportadoras.getDuplicidade({ value, field });
+            try {
+                const data = await serviceTransportadoras.getDuplicidade({ value, field });
 
-            return data;
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                text: 'Cidade já Cadastrada'
-            })
-        }
-    },
+                return data;
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Cidade já Cadastrada'
+                })
+            }
+        },
 
     async toInsert() {
-        try {
-            let newFields = <any>(
-                state.gridPrincipal.getElementSideBySideJson(true, false)
-            )
+            try {
+                let newFields = <any>(
+                    state.gridPrincipal.getElementSideBySideJson(true, false)
+                )
 
-            state.loading = true
-            let data = await serviceTransportadoras.toInsert(newFields)
-            state.loading = false
+                state.loading = true
+                let data = await serviceTransportadoras.toInsert(newFields)
+                state.loading = false
 
-            let cidade = actions.encontrarCidades(newFields.COD_CIDADE)
-            state.gridPrincipal.insertLine({
-                ...newFields,
-                CIDADE: cidade,
-                ID_TRANSPORTADORA: data.ID_TRANSPORTADORA
-            });
+                let cidade = actions.encontrarCidades(newFields.COD_CIDADE)
+                state.gridPrincipal.insertLine({
+                    ...newFields,
+                    CIDADE: cidade,
+                    ID_TRANSPORTADORA: data.ID_TRANSPORTADORA
+                });
 
-        } catch (error) {
-            state.loading = false;
-            Swal.fire({
-                icon: 'error',
-                text: 'Erro ao inserir transportadora'
-            })
-        }
-    },
+            } catch (error) {
+                state.loading = false;
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Erro ao inserir transportadora'
+                })
+            }
+        },
 
     async toUpdate() {
-        try {
-            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
+            try {
+                let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
-            if (dadosDiff.diff == false) {
-                return
+                if (dadosDiff.diff == false) {
+                    return
+                }
+
+                let dadosAtualizados = {
+                    ...state.dbTransportadora,
+                    ...dadosDiff.new
+                }
+
+                state.loading = true
+                await serviceTransportadoras.toUpdate(dadosAtualizados)
+                state.loading = false
+
+                state.dbTransportadora = dadosAtualizados as iTranspordadoras;
+
+                let cidade = actions.encontrarCidades(dadosAtualizados.COD_CIDADE)
+                state.gridPrincipal.dataSource({
+                    ...dadosAtualizados,
+                    CIDADE: cidade
+                })
+
+            } catch (error) {
+                state.loading = false;
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Erro ao atualizar transportadora'
+                })
             }
-
-            let dadosAtualizados = {
-                ...state.dbTransportadora,
-                ...dadosDiff.new
-            }
-
-            state.loading = true
-            await serviceTransportadoras.toUpdate(dadosAtualizados)
-            state.loading = false
-
-            state.dbTransportadora = dadosAtualizados as iTranspordadoras;
-
-            let cidade = actions.encontrarCidades(dadosAtualizados.COD_CIDADE)
-            state.gridPrincipal.dataSource({
-                ...dadosAtualizados,
-                CIDADE: cidade
-            })
-
-        } catch (error) {
-            state.loading = false;
-            Swal.fire({
-                icon: 'error',
-                text: 'Erro ao atualizar transportadora'
-            })
-        }
-    },
+        },
 
     async toInativar() {
-        try {
-            let ID_TRANSPORTADORA = state.dbTransportadora.ID_TRANSPORTADORA
-            let DELETADO = state.dbTransportadora.DELETADO
+            try {
+                let ID_TRANSPORTADORA = state.dbTransportadora.ID_TRANSPORTADORA
+                let DELETADO = state.dbTransportadora.DELETADO
 
-            state.loading = true
-            await serviceTransportadoras.toInativar(ID_TRANSPORTADORA, DELETADO);
-            state.loading = false
+                state.loading = true
+                await serviceTransportadoras.toInativar(ID_TRANSPORTADORA, DELETADO);
+                state.loading = false
 
-            state.gridPrincipal.deleteLine();
-        } catch (error) {
-            state.loading = false;
-            Swal.fire({
-                icon: 'error',
-                text: 'Erro ao inativar transportadora'
-            })
+                state.gridPrincipal.deleteLine();
+            } catch (error) {
+                state.loading = false;
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Erro ao inativar transportadora'
+                })
+            }
         }
-    }
 
-}
+    }
 
 export default { state, actions }
