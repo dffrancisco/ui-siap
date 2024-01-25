@@ -14,6 +14,7 @@ export const state = reactive(({
     gridPrincipal: <_ixGridCreate>{},
     pnSearch: false,
     toggleDisabled: false,
+    cnpjDisabled: false,
     listaCidades: <iCidades[]>[],
     edtSearch: <HTMLInputElement>{},
     dbTransportadora: <iTranspordadoras>{},
@@ -152,6 +153,7 @@ export const actions = {
 
         state.pnSearch = true
         state.toggleDisabled = true
+        state.cnpjDisabled = true
 
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
@@ -200,6 +202,7 @@ export const actions = {
             state.gridPrincipal.enable();
 
             state.toggleDisabled = false
+            state.cnpjDisabled = false
             state.pnSearch = false
 
             state.gridPrincipal.focus();
@@ -209,6 +212,7 @@ export const actions = {
 
             state.pnSearch = false;
             state.toggleDisabled = false;
+            state.cnpjDisabled = false;
 
             state.gridPrincipal.enable();
             state.gridPrincipal.focus();

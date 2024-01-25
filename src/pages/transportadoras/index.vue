@@ -51,6 +51,7 @@ onUnmounted(() => {
               maxlength="18"
               autocomplete="off"
               v-mask="'##.###.###/####-##'"
+              :disabled="state.cnpjDisabled"
             />
           </v-col>
           <v-col cols="6">
