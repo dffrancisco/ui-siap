@@ -192,6 +192,14 @@ export const actions = {
             if (await state.gridPrincipal.getDuplicityAll())
                 return false;
 
+            if (state.dbTransportadora.CGC_TRANSPORTADORA.length < 18) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'CNPJ inválido!'
+                })
+                return false;
+            }
+
             //@ts-ignore
             if (state.gridPrincipal.dataSource() == false)
                 actions.toInsert();
