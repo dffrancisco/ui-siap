@@ -66,11 +66,18 @@ const toInativar = async (ID_TRANSPORTADORA:number, DELETADO: string | null) => 
     })
 }
 
+const buscarCEP = async (cep: string) => {
+    let data = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+
+    return data;
+}
+
 export default {
     getTransportadoras,
     getCidades,
     getDuplicidade,
     toInsert,
     toUpdate,
-    toInativar
+    toInativar,
+    buscarCEP
 }

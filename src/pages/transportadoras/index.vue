@@ -121,7 +121,7 @@ onUnmounted(() => {
 
           <v-col cols="6">
             <v-row>
-              <v-col cols="4">
+              <v-col cols="3">
                 <span>CEP</span>
                 <input
                   type="text"
@@ -132,9 +132,11 @@ onUnmounted(() => {
                   maxlength="9"
                   autocomplete="off"
                   v-mask="'#####-###'"
+                  @keydown.enter="actions.buscaEndereco"
+                  v-on:focusout="actions.buscaEndereco"
                 />
               </v-col>
-              <v-col cols="8">
+              <v-col cols="9">
                 <span>Endereço</span>
                 <input
                   type="text"
@@ -148,7 +150,7 @@ onUnmounted(() => {
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="6">
+              <v-col cols="7">
                 <span>Bairro</span>
                 <input
                   type="text"
@@ -160,7 +162,7 @@ onUnmounted(() => {
                   autocomplete="off"
                 />
               </v-col>
-              <v-col cols="6">
+              <v-col cols="5">
                 <span>Cidade</span>
                 <select
                   v-model="state.dbTransportadora.COD_CIDADE"
