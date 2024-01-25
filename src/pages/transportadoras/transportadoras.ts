@@ -200,6 +200,14 @@ export const actions = {
                 return false;
             }
 
+            if (state.dbTransportadora.TELEFONE1.length < 14) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Telefone inválido!'
+                })
+                return false;
+            }
+
             //@ts-ignore
             if (state.gridPrincipal.dataSource() == false)
                 actions.toInsert();
