@@ -11,11 +11,12 @@ type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityRe
 type iToInsertFunction = (param: iParamToInsert) => Promise<iGetInsertResponse>;
 type iToUpdateFuntion = (param: iParamToUpdate) => Promise<void>;
 
-const getTransportadoras: iGetTransportadorasFunction = async ({ param, offset }) => {
+const getTransportadoras: iGetTransportadorasFunction = async ({ param, offset, checkboxAtiva }) => {
     let { data } = await axios.post(caminho, {
         call: "getTransportadoras",
         offset,
-        param
+        param,
+        checkboxAtiva
     });
 
     return data;
@@ -57,7 +58,7 @@ const toUpdate: iToUpdateFuntion = async (param: object) => {
     return data;
 }
 
-const toInativar = async (ID_TRANSPORTADORA, DELETADO) => {
+const toInativar = async (ID_TRANSPORTADORA:number, DELETADO: string | null) => {
     return axios.post(caminho, {
         call: "inativar",
         ID_TRANSPORTADORA: ID_TRANSPORTADORA,

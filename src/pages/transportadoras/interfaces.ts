@@ -24,6 +24,7 @@ export interface iCidades {
 export interface iParamGetTransportadoras {
     param: object;
     offset: number;
+    checkboxAtiva: boolean;
 }
 
 export interface iFieldDuplicity {

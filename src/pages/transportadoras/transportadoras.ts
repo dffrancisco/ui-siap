@@ -18,6 +18,7 @@ export const state = reactive(({
     edtSearch: <HTMLInputElement>{},
     dbTransportadora: <iTranspordadoras>{},
     loading: false,
+    isChecked: false,
 }))
 
 export const actions = {
@@ -36,7 +37,8 @@ export const actions = {
                 async execute(rs) {
                     let data = await actions.getTransportadoras({
                         offset: rs.offset,
-                        param: rs.param
+                        param: rs.param,
+                        checkboxAtiva: state.isChecked
                     });
                     state.gridPrincipal.querySourceAdd(data)
                 }
@@ -102,12 +104,18 @@ export const actions = {
     },
 
     search() {
+        if(state.isChecked) {
+            document.querySelector('button[state="delete"]').textContent = 'Reativar';
+        } else {
+            document.querySelector('button[state="delete"]').textContent = 'Inativar';
+        }
+
         state.gridPrincipal.queryOpen({
             RAZAO_SOCIAL: state.edtSearch.value.toUpperCase()
         });
     },
 
-    encontrarCidades(COD_CIDADE) {
+    encontrarCidades(COD_CIDADE: number) {
         const cidadeEncontrada = state.listaCidades.find(cidade => {
             if ((cidade.COD_CIDADE == COD_CIDADE)) {
                 return true;
@@ -199,10 +207,12 @@ export const actions = {
         state.gridPrincipal.focus();
     },
 
-    async getTransportadoras({ param, offset }: iParamGetTransportadoras) {
+    async getTransportadoras({ param, offset, checkboxAtiva }: iParamGetTransportadoras) {
         try {
+            console.log(state.isChecked);
+    
             state.loading = true;
-            const data = await serviceTransportadoras.getTransportadoras({ param, offset });
+            const data = await serviceTransportadoras.getTransportadoras({ param, offset, checkboxAtiva });
             state.loading = false;
 
             return data;

@@ -201,9 +201,12 @@ onUnmounted(() => {
             <v-row>
               <v-col class="pt-5">
                 <v-checkbox
+                  v-model="state.isChecked"
                   label="Exibir Inativos"
                   color="blue"
                   :disabled="state.toggleDisabled"
+                  @change="state.isChecked != state.isChecked"
+                  @update:model-value="actions.search"
                 >
                 </v-checkbox>
               </v-col>
