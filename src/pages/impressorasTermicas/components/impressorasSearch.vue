@@ -14,7 +14,6 @@ import { state, actions } from '../impressorasTermicas'
             @keyup.arrow-down="state.gridPrincipal.focus(0)"
             id="edtSearch"
             class="ss"
-            v-model="state.edtSearch"
         />
         <v-btn
             :disabled="state.disableSearch"

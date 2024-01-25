@@ -3,10 +3,25 @@ import { nextTick } from "vue";
 import impressorasSearch from "./components/impressorasSearch.vue";
 import iInfoModelo from './components/iInfoModelo.vue'
 import { state, actions } from "./impressorasTermicas";
+import { useEventListener } from "@vueuse/core";
+import { onUnmounted } from "vue";
 
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F1") {
+    state.edtSearch.select();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
 
 nextTick(async () => {
   actions.init()
+
+  state.edtSearch = <any>document.getElementById("edtSearch");
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
 });
 
 </script>
