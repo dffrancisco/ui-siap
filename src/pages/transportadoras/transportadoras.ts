@@ -403,7 +403,7 @@ export const actions = {
     async buscaCEP() {
         try {
 
-            if (state.dbTransportadora.CEP == "") {
+            if (!state.dbTransportadora.CEP) {
                 return false
             }
 
@@ -436,7 +436,11 @@ export const actions = {
     async buscarCNPJ() {
         try {
 
-            if (state.dbTransportadora.CGC_TRANSPORTADORA == "") {
+            if (!state.dbTransportadora.CGC_TRANSPORTADORA) {
+                return false
+            }
+
+            if (state.cnpjDisabled == true) {
                 return false
             }
 
@@ -450,7 +454,7 @@ export const actions = {
 
             let razao_social = data.nome.substring(0, 50)
             let email = data.email
-            let telefone = data.telefone
+            let telefone = data.telefone.substring(0, 15)
             let cep = data.cep
             let endereco = data.logradouro.substring(0, 40)
             let bairro = data.bairro.substring(0, 20)
