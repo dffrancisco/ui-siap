@@ -117,6 +117,15 @@ export const actions = {
         });
     },
 
+    validarEmail() {
+        let email = state.dbTransportadora.EMAIL;
+
+        let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        return regexEmail.test(email);
+
+    },
+
     encontrarCidades(COD_CIDADE: number) {
         const cidadeEncontrada = state.listaCidades.find(cidade => {
             if ((cidade.COD_CIDADE == COD_CIDADE)) {
@@ -126,9 +135,13 @@ export const actions = {
             return false;
         })
 
-        let cidade = cidadeEncontrada.DESCRICAO
-
-        return cidade
+        if (cidadeEncontrada) {
+            let cidade = cidadeEncontrada.DESCRICAO
+            return cidade
+        } else {
+            let cidade = null
+            return cidade
+        }
     },
 
     encontrarCodCidade(COD_IBGE: string) {
@@ -254,11 +267,21 @@ export const actions = {
             return false;
         }
 
-        if (state.dbTransportadora.CEP){
+        if (state.dbTransportadora.CEP) {
             if (state.dbTransportadora.CEP.length < 9) {
                 Swal.fire({
                     icon: 'error',
                     text: 'CEP inválido!'
+                })
+                return false;
+            }
+        }
+
+        if (state.dbTransportadora.EMAIL) {
+            if (!actions.validarEmail()) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'E-mail inválido!'
                 })
                 return false;
             }
@@ -344,7 +367,12 @@ export const actions = {
             let data = await serviceTransportadoras.toInsert(newFields)
             state.loading = false
 
-            let cidade = actions.encontrarCidades(newFields.COD_CIDADE)
+            let cidade = null
+
+            if (newFields.COD_CIDADE) {
+                cidade = actions.encontrarCidades(newFields.COD_CIDADE)
+            }
+
             state.gridPrincipal.insertLine({
                 ...newFields,
                 CIDADE: cidade,
@@ -479,7 +507,7 @@ export const actions = {
             state.dbTransportadora.BAIRRO = bairro
             state.dbTransportadora.COD_CIDADE = cod_cidade
 
-            if(state.dbTransportadora.ENDERECO) {
+            if (state.dbTransportadora.ENDERECO) {
                 state.cepInserido = true
             }
 

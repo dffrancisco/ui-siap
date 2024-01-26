@@ -211,6 +211,7 @@ onUnmounted(() => {
                   :disabled="state.toggleDisabled"
                   @change="state.isChecked != state.isChecked"
                   @update:model-value="actions.search"
+                  @click="state.edtSearch.value = null"
                 >
                 </v-checkbox>
               </v-col>
