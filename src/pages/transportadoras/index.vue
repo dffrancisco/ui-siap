@@ -81,18 +81,6 @@ onUnmounted(() => {
             />
           </v-col>
 
-          <v-col cols="6">
-            <span>E-mail</span>
-            <input
-              type="text"
-              v-model="state.dbTransportadora.EMAIL"
-              id="EMAIL"
-              name="EMAIL"
-              class="ss"
-              maxlength="100"
-              autocomplete="off"
-            />
-          </v-col>
           <v-col cols="3">
             <span>Telefone</span>
             <input
@@ -117,6 +105,19 @@ onUnmounted(() => {
               maxlength="15"
               autocomplete="off"
               v-mask="'(##) ####-####'"
+            />
+          </v-col>
+
+          <v-col cols="6">
+            <span>E-mail</span>
+            <input
+              type="text"
+              v-model="state.dbTransportadora.EMAIL"
+              id="EMAIL"
+              name="EMAIL"
+              class="ss"
+              maxlength="100"
+              autocomplete="off"
             />
           </v-col>
 

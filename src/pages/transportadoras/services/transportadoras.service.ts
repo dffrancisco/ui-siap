@@ -1,12 +1,12 @@
 import axios from "axios";
 import {
-    iParamGetTransportadoras, iGetTransportadorasResponse, iFieldDuplicity, iGetDuplicityResponse,
+    iParamGetTransportadora, iGetTransportadorasResponse, iFieldDuplicity, iGetDuplicityResponse,
     iGetInsertResponse, iParamToInsert, iParamToUpdate
 } from "../interfaces";
 
 const caminho = 'siap/transportadoras';
 
-type iGetTransportadorasFunction = (param: iParamGetTransportadoras) => Promise<iGetTransportadorasResponse>;
+type iGetTransportadorasFunction = (param: iParamGetTransportadora) => Promise<iGetTransportadorasResponse>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<iGetInsertResponse>;
 type iToUpdateFuntion = (param: iParamToUpdate) => Promise<void>;

@@ -3,11 +3,11 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import serviceTransportadoras from "./services/transportadoras.service"
-import { iTranspordadoras, iCidades, iParamGetTransportadoras, iFieldDuplicity } from "./interfaces";
+import { iTranspordadora, iCidades, iParamGetTransportadora, iFieldDuplicity } from "./interfaces";
 import utils from "@/ts/utils";
 
 interface _ixGridCreate extends ixGridCreate {
-    dataSource: (obj?: object) => iTranspordadoras
+    dataSource: (obj?: object) => iTranspordadora
 }
 
 export const state = reactive(({
@@ -17,7 +17,7 @@ export const state = reactive(({
     cnpjDisabled: false,
     listaCidades: <iCidades[]>[],
     edtSearch: <HTMLInputElement>{},
-    dbTransportadora: <iTranspordadoras>{},
+    dbTransportadora: <iTranspordadora>{},
     loading: false,
     isChecked: false,
     cepInserido: false
@@ -28,7 +28,7 @@ export const actions = {
     grids() {
         state.gridPrincipal = new xGridV2.create({
             el: "#gridPrincipal",
-            height: 250,
+            height: 230,
             count: true,
             columns: {
                 'CNPJ': { dataField: 'CGC_TRANSPORTADORA', width: "20%" },
@@ -177,7 +177,7 @@ export const actions = {
 
         state.pnSearch = true
         state.toggleDisabled = true
-        state.dbTransportadora = {} as iTranspordadoras
+        state.dbTransportadora = {} as iTranspordadora
 
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField()
@@ -254,6 +254,16 @@ export const actions = {
             return false;
         }
 
+        if (state.dbTransportadora.CEP){
+            if (state.dbTransportadora.CEP.length < 9) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'CEP inválido!'
+                })
+                return false;
+            }
+        }
+
         //@ts-ignore
         if (state.gridPrincipal.dataSource() == false)
             actions.toInsert();
@@ -282,7 +292,7 @@ export const actions = {
         state.gridPrincipal.focus();
     },
 
-    async getTransportadoras({ param, offset, checkboxAtiva }: iParamGetTransportadoras) {
+    async getTransportadoras({ param, offset, checkboxAtiva }: iParamGetTransportadora) {
         try {
 
             state.loading = true;
@@ -367,7 +377,7 @@ export const actions = {
             await serviceTransportadoras.toUpdate(dadosAtualizados)
             state.loading = false
 
-            state.dbTransportadora = dadosAtualizados as iTranspordadoras;
+            state.dbTransportadora = dadosAtualizados as iTranspordadora;
 
             let cidade = actions.encontrarCidades(dadosAtualizados.COD_CIDADE)
             state.gridPrincipal.dataSource({
@@ -433,10 +443,6 @@ export const actions = {
 
         } catch (error) {
             state.loading = false;
-            Swal.fire({
-                icon: 'error',
-                text: 'CEP não existente!'
-            })
         }
     },
 
@@ -482,10 +488,6 @@ export const actions = {
 
         } catch (error) {
             state.loading = false;
-            Swal.fire({
-                icon: 'error',
-                text: 'CNPJ não existe! Talvez seja necessário aguardar ou ajustar sua abordagem.'
-            })
         }
     },
 

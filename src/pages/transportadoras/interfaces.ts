@@ -1,4 +1,4 @@
-export interface iTranspordadoras{
+export interface iTranspordadora{
     ID_TRANSPORTADORA: number;
     RAZAO_SOCIAL: string;
     CGC_TRANSPORTADORA: string;
@@ -22,7 +22,7 @@ export interface iCidades {
     COD_IBGE: string
 }
 
-export interface iParamGetTransportadoras {
+export interface iParamGetTransportadora {
     param: object;
     offset: number;
     checkboxAtiva: boolean;
@@ -41,6 +41,6 @@ export interface iGetInsertResponse {
     ID_TRANSPORTADORA: number;
 }
 
-export interface iGetTransportadorasResponse extends iTranspordadoras{}
-export interface iParamToInsert extends iTranspordadoras{}
-export interface iParamToUpdate extends iTranspordadoras{}
+export interface iGetTransportadorasResponse extends iTranspordadora{}
+export interface iParamToInsert extends iTranspordadora{}
+export interface iParamToUpdate extends iTranspordadora{}
