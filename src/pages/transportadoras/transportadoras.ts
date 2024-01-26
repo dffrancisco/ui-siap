@@ -151,6 +151,27 @@ export const actions = {
 
     },
 
+    encontrarCodCidade2(DESCRICAO: string) {
+        const cidadeEncontrada = state.listaCidades.find(cidade => {
+            if ((cidade.DESCRICAO == DESCRICAO)) {
+                return true;
+            }
+
+            return false;
+
+        })
+
+        if (cidadeEncontrada) {
+            let cidade = cidadeEncontrada.COD_CIDADE
+            return cidade
+        } else {
+            let cidade = null
+            return cidade
+        }
+
+
+    },
+
     btnInsert() {
 
         state.pnSearch = true
@@ -393,7 +414,7 @@ export const actions = {
             let request = await serviceTransportadoras.buscarCEP(cep)
             let dataJSON = await request.data;
 
-            let cod_cidade = actions.encontrarCodCidade(dataJSON.ibge.toUpperCase())
+            let cod_cidade = actions.encontrarCodCidade(dataJSON.ibge)
             let bairro = dataJSON.bairro
             let endereco = dataJSON.logradouro
 
@@ -408,6 +429,49 @@ export const actions = {
             Swal.fire({
                 icon: 'error',
                 text: 'CEP não existente!'
+            })
+        }
+    },
+
+    async buscarCNPJ() {
+        try {
+
+            if (state.dbTransportadora.CGC_TRANSPORTADORA == "") {
+                return false
+            }
+
+            let cnpj = state.dbTransportadora.CGC_TRANSPORTADORA.replace(/[^\d]/g, '')
+
+            state.loading = true
+
+            let data = await serviceTransportadoras.getDadosCnpj(cnpj)
+
+            console.log(data)
+
+            let razao_social = data.nome.substring(0, 50)
+            let email = data.email
+            let telefone = data.telefone
+            let cep = data.cep
+            let endereco = data.logradouro.substring(0, 40)
+            let bairro = data.bairro.substring(0, 20)
+            let cod_cidade = actions.encontrarCodCidade2(data.municipio.toUpperCase())
+
+            state.dbTransportadora.RAZAO_SOCIAL = razao_social
+            state.dbTransportadora.EMAIL = email
+            state.dbTransportadora.TELEFONE1 = telefone
+            state.dbTransportadora.CEP = cep
+            state.dbTransportadora.ENDERECO = endereco
+            state.dbTransportadora.BAIRRO = bairro
+            state.dbTransportadora.COD_CIDADE = cod_cidade
+
+
+            state.loading = false
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'CNPJ não existente!'
             })
         }
     },

@@ -52,6 +52,7 @@ onUnmounted(() => {
               autocomplete="off"
               v-mask="'##.###.###/####-##'"
               :disabled="state.cnpjDisabled"
+              v-on:focusout="actions.buscarCNPJ"
             />
           </v-col>
           <v-col cols="6">
@@ -132,7 +133,6 @@ onUnmounted(() => {
                   maxlength="9"
                   autocomplete="off"
                   v-mask="'#####-###'"
-                  @keydown.enter="actions.buscaCEP"
                   v-on:focusout="actions.buscaCEP"
                 />
               </v-col>
