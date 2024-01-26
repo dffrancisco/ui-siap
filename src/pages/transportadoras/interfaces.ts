@@ -19,6 +19,7 @@ export interface iTranspordadoras{
 export interface iCidades {
     COD_CIDADE: number;
     DESCRICAO: string;
+    COD_IBGE: string
 }
 
 export interface iParamGetTransportadoras {

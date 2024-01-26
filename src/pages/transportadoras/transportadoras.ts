@@ -130,9 +130,9 @@ export const actions = {
         return cidade
     },
 
-    encontrarCodCidade(DESCRICAO: string) {
+    encontrarCodCidade(COD_IBGE: string) {
         const cidadeEncontrada = state.listaCidades.find(cidade => {
-            if ((cidade.DESCRICAO == DESCRICAO)) {
+            if ((cidade.COD_IBGE == COD_IBGE)) {
                 return true;
             }
 
@@ -155,6 +155,7 @@ export const actions = {
 
         state.pnSearch = true
         state.toggleDisabled = true
+        state.dbTransportadora = {} as iTranspordadoras
 
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField()
@@ -202,6 +203,8 @@ export const actions = {
             }
 
         }
+
+        state.gridPrincipal.clearElementSideBySide();
     },
 
     async btnSave() {
@@ -376,7 +379,7 @@ export const actions = {
         }
     },
 
-    async buscaEndereco() {
+    async buscaCEP() {
         try {
 
             if (state.dbTransportadora.CEP == "") {
@@ -385,27 +388,29 @@ export const actions = {
 
             let cep = state.dbTransportadora.CEP
 
-            let data = await serviceTransportadoras.buscarCEP(cep)
-            let dataJSON = await data.json();
+            state.loading = true
 
-            let cod_cidade = actions.encontrarCodCidade(dataJSON.localidade.toUpperCase())
+            let request = await serviceTransportadoras.buscarCEP(cep)
+            let dataJSON = await request.data;
+
+            let cod_cidade = actions.encontrarCodCidade(dataJSON.ibge.toUpperCase())
             let bairro = dataJSON.bairro
             let endereco = dataJSON.logradouro
 
             state.dbTransportadora.ENDERECO = endereco
-            state.dbTransportadora.BAIRRO = bairro.substring(0,20)
+            state.dbTransportadora.BAIRRO = bairro.substring(0, 20)
             state.dbTransportadora.COD_CIDADE = cod_cidade
 
+            state.loading = false
+
         } catch (error) {
-            console.log(error)
-
+            state.loading = false;
             Swal.fire({
-
                 icon: 'error',
                 text: 'CEP não existente!'
             })
         }
-    }
+    },
 
 }
 

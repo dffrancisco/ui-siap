@@ -132,8 +132,8 @@ onUnmounted(() => {
                   maxlength="9"
                   autocomplete="off"
                   v-mask="'#####-###'"
-                  @keydown.enter="actions.buscaEndereco"
-                  v-on:focusout="actions.buscaEndereco"
+                  @keydown.enter="actions.buscaCEP"
+                  v-on:focusout="actions.buscaCEP"
                 />
               </v-col>
               <v-col cols="9">
