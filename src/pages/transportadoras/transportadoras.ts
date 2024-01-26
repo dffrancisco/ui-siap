@@ -20,6 +20,7 @@ export const state = reactive(({
     dbTransportadora: <iTranspordadoras>{},
     loading: false,
     isChecked: false,
+    cepInserido: false
 }))
 
 export const actions = {
@@ -265,6 +266,7 @@ export const actions = {
         state.toggleDisabled = false
         state.cnpjDisabled = false
         state.pnSearch = false
+        state.cepInserido = false
 
         state.gridPrincipal.focus();
     },
@@ -274,6 +276,7 @@ export const actions = {
         state.pnSearch = false;
         state.toggleDisabled = false;
         state.cnpjDisabled = false;
+        state.cepInserido = false
 
         state.gridPrincipal.enable();
         state.gridPrincipal.focus();
@@ -403,6 +406,10 @@ export const actions = {
     async buscaCEP() {
         try {
 
+            if (state.cepInserido == true) {
+                return false
+            }
+
             if (!state.dbTransportadora.CEP) {
                 return false
             }
@@ -450,8 +457,6 @@ export const actions = {
 
             let data = await serviceTransportadoras.getDadosCnpj(cnpj)
 
-            console.log(data)
-
             let razao_social = data.nome.substring(0, 50)
             let email = data.email
             let telefone = data.telefone.substring(0, 15)
@@ -468,6 +473,10 @@ export const actions = {
             state.dbTransportadora.BAIRRO = bairro
             state.dbTransportadora.COD_CIDADE = cod_cidade
 
+            if(state.dbTransportadora.ENDERECO) {
+                state.cepInserido = true
+            }
+
 
             state.loading = false
 
@@ -475,7 +484,7 @@ export const actions = {
             state.loading = false;
             Swal.fire({
                 icon: 'error',
-                text: 'CNPJ não existente!'
+                text: 'CNPJ não existe! Talvez seja necessário aguardar ou ajustar sua abordagem.'
             })
         }
     },
