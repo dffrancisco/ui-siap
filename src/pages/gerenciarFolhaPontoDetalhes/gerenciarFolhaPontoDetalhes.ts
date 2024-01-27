@@ -130,7 +130,7 @@ export const actions = {
       await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
       await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
 
-      // state.today = new Date(`${state.ano}-${state.mes - 1}-01`);
+      //state.today = new Date(`${state.ano}-${state.mes - 1}-01`);
       state.loading = false;
     });
   },
@@ -175,11 +175,13 @@ export const pontosCalendario = computed(() => {
   return eventos;
 });
 
-export const onDataClicada = (event) => {
-  const ponto = event.ponto;
-  if (ponto) {
-    console.log("Informações do ponto:", ponto);
-  }
-};
+// export const handleClickCalendario = (event: any) => {
+//   console.log("TESTE");
+//   const mes = event.detail.month;
+//   const ano = event.detail.year;
 
-export default { state, actions, onDataClicada };
+//   state.mes = mes;
+//   state.ano = ano;
+// };
+
+export default { state, actions };

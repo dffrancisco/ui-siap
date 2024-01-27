@@ -1,24 +1,39 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { actions, state, pontosCalendario, onDataClicada } from "./gerenciarFolhaPontoDetalhes";
+import { actions, state, pontosCalendario } from "./gerenciarFolhaPontoDetalhes";
 import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 import { nextTick, ref, watch } from "vue";
 
 const route = useRoute();
+const calendarioRef = ref(null);
 
 actions.init(route);
-
-const calendarioRef = ref(null);
 
 watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
   await actions.getPontos(state.codFuncionario, novoMes, novoAno);
   await actions.getResumoPontosFuncionario(state.codFuncionario, novoMes, novoAno);
   await actions.getTipoFaltas(state.codFuncionario, novoMes, novoAno);
-
   await nextTick();
 
   calendarioRef.value?.$refs.calendario.update();
 });
+
+function handleClickCalendario(event: any) {
+  console.log("TESTE");
+  const mes = event.detail.month;
+  const ano = event.detail.year;
+
+  state.mes = mes;
+  state.ano = ano;
+}
+
+function handleDayclickCalendario(event: any) {
+  const data = event.detail.date;
+  if (data.dayOfWeek !== 0) {
+    // Chama a função desejada
+    console.log(data);
+  }
+}
 </script>
 
 <template>
@@ -38,6 +53,7 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
                   <v-autocomplete
                     label="Mês"
                     id="mes"
+                    dense
                     v-model="state.mes"
                     item-title="text"
                     item-value="value"
@@ -48,6 +64,7 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
                   <v-autocomplete
                     label="Ano"
                     id="ano"
+                    dense
                     v-model="state.ano"
                     :items="anos"
                   ></v-autocomplete>
@@ -133,8 +150,9 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
                   v-for="tipoFalta in state.tipoFaltas"
                   :key="tipoFalta.ID_TIPO_FALTA"
                 >
-                  <span class="funcionario__card__faltas__info">
-                    {{ tipoFalta.DESCRICAO }}: <b>{{ tipoFalta.COUNT_TIPO }}</b>
+                  <span class="funcionario__card__faltas__info"
+                    >{{ tipoFalta.DESCRICAO }}:
+                    <b> {{ tipoFalta.COUNT_TIPO }}</b>
                   </span>
                 </v-col>
               </v-card>
@@ -156,8 +174,8 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
                 color="primary"
                 :type="`month:${state.mes}-${state.ano}`"
                 :events="pontosCalendario"
-                @click:event="onDataClicada"
-                @update:model-value=""
+                @click="handleClickCalendario"
+                @dayclick="handleDayclickCalendario"
               ></v-calendar>
             </v-sheet>
           </v-col>
@@ -231,9 +249,8 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
 }
 
 .funcionario__card__faltas__info {
-  margin-top: 55px;
-  margin-left: 20px;
   font-size: 15px;
+  white-space: nowrap;
   color: #5a6069;
 }
 .funcionario__card__infos {
