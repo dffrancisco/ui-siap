@@ -1,20 +1,22 @@
 import { computed, nextTick, reactive } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
-import { iParam, iPonto } from "./interface";
+import { iParam, iPonto, iTipoFaltasCount } from "./interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDetalhes.service";
 
 export const state = reactive({
   pontos: {},
   resumoPontosFuncionario: {},
+  tipoFaltas: <iTipoFaltasCount[]>[],
+  contadorDeFaltas: {},
   loading: false,
   nome: <string | null>null,
   cargo: <string | null>null,
   codFuncionario: 0,
-  qtd_a_justificar: 0,
-  qtd_faltas_justificadas: 0,
-  qtd_pontos_incompletos: 0,
-  qtd_pontos_nao_batidos: 0,
+  QTD_A_JUSTIFICAR: 0,
+  QTD_FALTAS_JUSTIFICADAS: 0,
+  QTD_PONTOS_INCOMPLETOS: 0,
+  QTD_PONTOS_NAO_BATIDOS: 0,
   cpf: <string | null>null,
   mes: 1,
   ano: 2024,
@@ -40,11 +42,27 @@ export const actions = {
 
     try {
       state.pontos = await gerenciarFolhaPontoDetalhesService.getPontos(param);
-      console.log(state.pontos);
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Ocorreu um erro ao buscar os pontos do funcionário.",
+      });
+    }
+  },
+
+  async getTipoFaltas(cod_funcionario: number, mes: number, ano: number) {
+    const param: iParam = {
+      cod_funcionario: cod_funcionario,
+      mes: mes,
+      ano: ano,
+    };
+    try {
+      //@ts-ignore
+      state.tipoFaltas = await gerenciarFolhaPontoDetalhesService.getTipoFaltas(param);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Ocorreu um erro ao buscar os tipos de faltas.",
       });
     }
   },
@@ -58,7 +76,14 @@ export const actions = {
 
     try {
       state.resumoPontosFuncionario = await gerenciarFolhaPontoDetalhesService.getResumoPontosFuncionario(param);
-      console.log(state.resumoPontosFuncionario);
+
+      for (const value of Object.values(state.resumoPontosFuncionario)) {
+        for (const [prop, val] of Object.entries(value)) {
+          if (state.hasOwnProperty(prop)) {
+            state[prop] = val;
+          }
+        }
+      }
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -103,6 +128,7 @@ export const actions = {
 
       await actions.getPontos(state.codFuncionario, state.mes, state.ano);
       await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
+      await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
 
       // state.today = new Date(`${state.ano}-${state.mes - 1}-01`);
       state.loading = false;
@@ -147,17 +173,6 @@ export const pontosCalendario = computed(() => {
   }
 
   return eventos;
-});
-
-export const statusPontos = computed(() => {
-  let status = {
-    FALTA: 0,
-    FERIADO: 0,
-  };
-
-  console.log(status);
-
-  return status;
 });
 
 export const onDataClicada = (event) => {

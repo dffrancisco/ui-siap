@@ -1,11 +1,24 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { actions, state, pontosCalendario, onDataClicada, statusPontos } from "./gerenciarFolhaPontoDetalhes";
+import { actions, state, pontosCalendario, onDataClicada } from "./gerenciarFolhaPontoDetalhes";
 import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
+import { nextTick, ref, watch } from "vue";
 
 const route = useRoute();
 
 actions.init(route);
+
+const calendarioRef = ref(null);
+
+watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
+  await actions.getPontos(state.codFuncionario, novoMes, novoAno);
+  await actions.getResumoPontosFuncionario(state.codFuncionario, novoMes, novoAno);
+  await actions.getTipoFaltas(state.codFuncionario, novoMes, novoAno);
+
+  await nextTick();
+
+  calendarioRef.value?.$refs.calendario.update();
+});
 </script>
 
 <template>
@@ -95,69 +108,33 @@ actions.init(route);
                 <v-col>
                   <span class="funcionario__card__infos">
                     Pontos não batidos:
-                    <b>{{ state.qtd_pontos_nao_batidos || 0 }}</b>
+                    <b>{{ state.QTD_PONTOS_NAO_BATIDOS || 0 }}</b>
                   </span>
                   <span class="funcionario__card__infos">
                     Pontos incompletos:
-                    <b>{{ state.qtd_pontos_incompletos || 0 }}</b>
+                    <b>{{ state.QTD_PONTOS_INCOMPLETOS || 0 }}</b>
                   </span>
                 </v-col>
 
                 <v-col class="infoPontosFunc">
                   <span class="funcionario__card__infos">
                     Qtd de justificativas:
-                    <b>{{ state.qtd_faltas_justificadas || 0 }}</b>
+                    <b>{{ state.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
                   </span>
                   <span class="funcionario__card__infos">
                     Pontos à justificar:
-                    <b>{{ state.qtd_a_justificar || 0 }}</b>
+                    <b>{{ state.QTD_A_JUSTIFICAR || 0 }}</b>
                   </span>
                 </v-col>
               </v-card>
 
-              <v-card class="funcionario__card">
-                <v-col>
-                  <span class="funcionario__card__faltas">
-                    Faltas:
-                    <b></b>
-                  </span>
-                  <span class="funcionario__card__faltas">
-                    Faltas Justificadas:
-                    <b></b>
-                  </span>
-                  <span class="funcionario__card__faltas">
-                    Falta Abonada:
-                    <b></b>
-                  </span>
-                </v-col>
-
-                <v-col>
-                  <span class="funcionario__card__faltas">
-                    Atestado:
-                    <b></b>
-                  </span>
-                  <span class="funcionario__card__faltas">
-                    Licença Maternidade:
-                    <b></b>
-                  </span>
-                  <span class="funcionario__card__faltas">
-                    Licença Paternidade:
-                    <b></b>
-                  </span>
-                </v-col>
-
-                <v-col>
-                  <span class="funcionario__card__faltas">
-                    Dia de Folga:
-                    <b></b>
-                  </span>
-                  <span class="funcionario__card__faltas">
-                    Suspenso:
-                    <b></b>
-                  </span>
-                  <span class="funcionario__card__faltas">
-                    Feriado:
-                    <b></b>
+              <v-card class="funcionario__card__faltas">
+                <v-col
+                  v-for="tipoFalta in state.tipoFaltas"
+                  :key="tipoFalta.ID_TIPO_FALTA"
+                >
+                  <span class="funcionario__card__faltas__info">
+                    {{ tipoFalta.DESCRICAO }}: <b>{{ tipoFalta.COUNT_TIPO }}</b>
                   </span>
                 </v-col>
               </v-card>
@@ -177,7 +154,7 @@ actions.init(route);
                 ref="calendario"
                 v-model="state.today"
                 color="primary"
-                type="month"
+                :type="`month:${state.mes}-${state.ano}`"
                 :events="pontosCalendario"
                 @click:event="onDataClicada"
                 @update:model-value=""
@@ -231,6 +208,14 @@ actions.init(route);
   position: relative;
 }
 
+.funcionario__card__faltas {
+  width: 520px;
+  height: 150px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .funcionario__card__usuario {
   padding-left: 12px;
   display: flex;
@@ -245,7 +230,8 @@ actions.init(route);
   border: 1px solid #0000002f;
 }
 
-.funcionario__card__faltas {
+.funcionario__card__faltas__info {
+  margin-top: 55px;
   margin-left: 20px;
   font-size: 15px;
   color: #5a6069;
