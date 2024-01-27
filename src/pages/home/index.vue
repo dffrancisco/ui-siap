@@ -75,6 +75,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/descontoCliente')"
+              >Desconto Cliente
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="login.actions.confirmarSaida()"
               >Logout
             </v-btn>
