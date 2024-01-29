@@ -34,9 +34,8 @@ export const actions = {
             el: "#pnMarcas",
             height: 400,
             count: true,
-            theme:"x-grayV2",
             columns: {
-                "Marcas": {dataField: "DESCRICAO"}
+                "Marca": {dataField: "DESCRICAO"}
             },
         }),
 
@@ -44,9 +43,11 @@ export const actions = {
             el: "#pnMarcasAdicionadas",
             height: 400,
             count: true,
-            theme:"x-grayV2",
             columns: {
-                "Marcas": {dataField: "DESCRICAO"}
+                "Marca": {dataField: "DESCRICAO"},
+                "Desconto %": {dataField: "DESCONTO"},
+                "Data Inicial": {dataField: "DATA_INICIAL"},
+                "Data Final": {dataField: "DATA_FINAL"},
             },
         })
     }
