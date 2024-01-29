@@ -23,14 +23,22 @@ export const state = reactive({
     gridMarca: <_iMarcaxGridCreate>{},
     gridMarcaAdicionada: <_iMarcaAdicionadaxGridCreate>{},
     modalCliente: <iModalCreate>{},
-    modalMarca: <iModalCreate>{},
+    modalAdicionarMarca: <iModalCreate>{},
     dbCliente: <iCliente>{},
     dbMarca: <iMarca>{}, 
     dbMarcaAdicionada: <iMarcaAdicionada>{},
+
     pnSearch: false,
     loading: false,
     modalClienteOpened: false,
-    modalMarcaOpened: false
+    modalAdicionarMarcaOpened: false,
+    clienteDisabled: false,
+
+    configVMoney: {
+        thousands: '.',
+        decimal: ',',
+        precision: 2,
+      }
 })
 
 export const actions = {
@@ -54,6 +62,26 @@ export const actions = {
                 "Data Inicial": {dataField: "DATA_INICIAL"},
                 "Data Final": {dataField: "DATA_FINAL"},
             },
+            sideBySide: {
+                el: "#marcasAdicionadasCampos",
+                frame: {
+                    el:"#btnMarcasAdicionadas",
+                    buttons: {
+                        Cancel: {
+                            html: "Cancelar",
+                            state: "select",
+                            click: actions.btnCancelAdicionarMarca,
+                            preLoad: "Cancelando o cliente",
+                        },
+                        Ok: {
+                            html: "OK",
+                            state: "select",
+                            click: actions.btnSelectAdicionarMarca,
+                            preLoad: "Selecionando o cliente",
+                        },
+                    }
+                }
+            }
         }),
 
         state.gridCliente = new xGridV2.create({
@@ -94,15 +122,20 @@ export const actions = {
             theme: "xModal-blue",
             el: '#mdCliente',
         }),
-        state.modalMarca = new xModal.create({
-            height: 195,
-            width: 300,
-            el: '#mdMarca',
+        state.modalAdicionarMarca = new xModal.create({
+            height: 215,
+            width: 340,
+            el: '#mdAdicionarMarca',
+            theme: "xModal-blue",
         })
     },
 
     onClickClienteModal() {
         state.modalCliente.open()
+    },
+
+    onClickAdicionarMarcaModal() {
+        state.modalAdicionarMarca.open()
     },
 }
 
