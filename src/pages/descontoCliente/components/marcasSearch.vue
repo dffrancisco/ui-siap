@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { state, actions } from "../../carros/carros";
+import { state, actions } from "../descontoCliente";
 </script>
 
 <template>

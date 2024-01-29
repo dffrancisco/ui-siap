@@ -2,8 +2,9 @@
 import $ from "jquery";
 import { nextTick, onUnmounted } from "vue";
 import { useEventListener } from "@vueuse/core";
-import descontoClienteSearch from "./components/descontoClienteSearch.vue";
-import { actions } from "../descontoCliente/descontoCliente";
+import marcasClienteSearch from "./components/marcasSearch.vue";
+import clientesModal from "./components/clientesModal.vue";
+import { actions, state } from "../descontoCliente/descontoCliente";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (event.key === "F1") {
@@ -19,6 +20,7 @@ nextTick(async () => {
     // state.edtSearch = <any>document.getElementById("edtSearch");
 
     actions.grids();
+    actions.criarModais();
   //   state.gridPrincipal.queryOpen({ NOME: "" }, () => {
   //     state.gridPrincipal.focus();
   //   });
@@ -43,6 +45,7 @@ onUnmounted(() => {
             <input
               type="text"
               class="ss"
+              @click="actions.onClickClienteModal"
             />
           </v-col>
           <v-col cols="7">
@@ -50,6 +53,7 @@ onUnmounted(() => {
             <input
               type="text"
               class="ss"
+              @click="actions.onClickClienteModal"
             />
           </v-col>
 
@@ -58,6 +62,7 @@ onUnmounted(() => {
             icon="mdi-magnify"
             color="blue"
             size="small"
+            @click="actions.onClickClienteModal"
           >
           </v-btn>
         </v-row>
@@ -66,7 +71,7 @@ onUnmounted(() => {
         <v-row>
           <v-col cols="4">
             <v-row style="margin-left: 7px; padding-top: 10px">
-              <descontoClienteSearch style="width: 300px" />
+              <marcasClienteSearch style="width: 300px" />
             </v-row>
             <v-row style="margin-left: 7px;">
               <div id="pnMarcas"></div>
@@ -81,14 +86,14 @@ onUnmounted(() => {
               style="margin-top: 200px"
               icon="mdi-chevron-left mdi-24px"
               color="blue"
-              size="small"
+              size="x-small"
             >
             </v-btn>
             <v-btn
               style="margin-top: 10px"
               icon="mdi-chevron-right mdi-24px"
               color="blue"
-              size="small"
+              size="x-small"
             >
             </v-btn>
           </v-col>
@@ -108,6 +113,11 @@ onUnmounted(() => {
       <div id="pnCodigoTela">DESCONTO_CLIENTE</div>
     </v-card>
   </v-container>
+
+  <div id="mdCliente" style="display: none;" title="Clientes">
+    <clientesModal :opened="state.modalClienteOpened"/>
+  </div>
+
 </template>
 
 <style scoped>
