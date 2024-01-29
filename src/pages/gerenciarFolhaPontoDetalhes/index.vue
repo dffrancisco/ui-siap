@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { actions, state, pontosCalendario } from "./gerenciarFolhaPontoDetalhes";
+import { actions, state, pontosCalendario, infoParaAusencia } from "./gerenciarFolhaPontoDetalhes";
 import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 import { nextTick, ref, watch } from "vue";
+import FullCalendar from "@fullcalendar/vue3";
+import dayGridPlugin from "@fullcalendar/daygrid";
+//@ts-ignore
+import interactionPlugin from "@fullcalendar/interaction";
+import ModalJustificarFalta from "./components/modalJustificarFalta.vue";
 
 const route = useRoute();
 const calendarioRef = ref(null);
@@ -17,23 +22,6 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
 
   calendarioRef.value?.$refs.calendario.update();
 });
-
-function handleClickCalendario(event: any) {
-  console.log("TESTE");
-  const mes = event.detail.month;
-  const ano = event.detail.year;
-
-  state.mes = mes;
-  state.ano = ano;
-}
-
-function handleDayclickCalendario(event: any) {
-  const data = event.detail.date;
-  if (data.dayOfWeek !== 0) {
-    // Chama a função desejada
-    console.log(data);
-  }
-}
 </script>
 
 <template>
@@ -165,22 +153,49 @@ function handleDayclickCalendario(event: any) {
         <v-row class="fill-height">
           <v-col>
             <v-sheet
-              height="1000"
+              height="900"
               width="1050"
             >
-              <v-calendar
+              <FullCalendar
+                :options="{
+                  plugins: [dayGridPlugin, interactionPlugin],
+                  initialView: 'dayGridMonth',
+                  weekends: true,
+                  events: pontosCalendario,
+                  dateClick: actions.clickModalJustificarAusencia,
+                  locale: 'pt-br',
+                  // navLinks: true,
+                  datesSet: actions.alternandoMesEAno,
+                }"
+              >
+                <template v-slot:eventContent="arg">
+                  <div class="calendario__horario">
+                    <span>{{ arg.event.title }}</span>
+                  </div>
+                </template>
+              </FullCalendar>
+
+              <!-- <v-calendar
                 ref="calendario"
                 v-model="state.today"
                 color="primary"
                 :type="`month:${state.mes}-${state.ano}`"
                 :events="pontosCalendario"
-                @click="handleClickCalendario"
-                @dayclick="handleDayclickCalendario"
-              ></v-calendar>
+                @update:modelValue="handleClickCalendario"
+                @click="handleDayclickCalendario"
+              >
+              </v-calendar> -->
             </v-sheet>
           </v-col>
         </v-row>
       </div>
+    </div>
+
+    <div
+      id="modalJustificarFalta"
+      title="Justificar Ausência"
+      style="display: none"
+      ><modal-justificar-falta />
     </div>
 
     <div id="pnCodigoTela">folhaPontoDetalhes</div>
@@ -197,6 +212,22 @@ function handleDayclickCalendario(event: any) {
     </v-overlay>
   </v-container>
 </template>
+
+<style>
+.fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
+  height: 150px;
+}
+
+.fc-daygrid-event-harness {
+  width: 100px;
+  margin-left: 15px;
+}
+
+.fc-toolbar-title {
+  margin-left: 25px !important;
+  margin-top: 10px !important;
+}
+</style>
 
 <style scoped>
 .btnPrint {
@@ -282,5 +313,11 @@ function handleDayclickCalendario(event: any) {
 
 .infoPontosFunc {
   margin-top: -15px;
+}
+
+.calendario__horario {
+  padding: 2px;
+  font-size: 14px;
+  text-align: center;
 }
 </style>

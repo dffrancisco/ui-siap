@@ -1,8 +1,9 @@
 import { computed, nextTick, reactive } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
-import { iParam, iPonto, iTipoFaltasCount } from "./interface";
+import { iAusencias, iParam, iPonto, iTipoFaltasCount } from "./interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDetalhes.service";
+import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 
 export const state = reactive({
   pontos: {},
@@ -21,9 +22,27 @@ export const state = reactive({
   mes: 1,
   ano: 2024,
   today: <any>new Date(),
+  modalJustificarFalta: <iModalCreate>(<unknown>null),
+  ausencias: <iAusencias[]>[],
+  dataAusencia: <any>new Date(),
+});
+
+export const infoParaAusencia = computed((): iAusencias => {
+  return {
+    COD_FUNCIONARIO: state.codFuncionario,
+    CPF: state.cpf,
+    NOME_FUNCIONARIO: state.nome,
+    DATA_AUSENCIA: state.dataAusencia,
+  };
 });
 
 export const actions = {
+  begin() {
+    nextTick(() => {
+      actions.modal();
+    });
+  },
+
   getFotoFuncionarioURL(cpf: string) {
     if (!cpf) {
       return "";
@@ -92,7 +111,7 @@ export const actions = {
     }
   },
 
-  formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, cor = "blue") {
+  formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, cor = "3c8dbc00") {
     if (titulo == null) {
       titulo = "---------";
       cor = "red";
@@ -113,6 +132,49 @@ export const actions = {
     } else {
       return null;
     }
+  },
+
+  alternandoMesEAno(info: any) {
+    const mes = info.view.currentStart.getMonth() + 1;
+    const ano = info.view.currentStart.getFullYear();
+
+    state.mes = mes;
+    state.ano = ano;
+  },
+
+  clickModalJustificarAusencia(event: any) {
+    const data = event.date;
+    if (data.getDay() != 0) {
+      let dia = data.getDate();
+      let mes = data.getMonth() + 1;
+      let ano = data.getFullYear();
+      let diaFormatado = dia < 10 ? "0" + dia : dia;
+      let mesFormatado = mes < 10 ? "0" + mes : mes;
+      let dataFormatada = `${diaFormatado}.${mesFormatado}.${ano}`;
+
+      state.dataAusencia = dataFormatada;
+
+      actions.justificarAusencia(state.dataAusencia);
+    } else {
+      return;
+    }
+  },
+
+  modal() {
+    state.modalJustificarFalta = new xModal.create({
+      height: 500,
+      width: 600,
+      el: "#modalJustificarFalta",
+    });
+  },
+
+  justificarAusencia(dataAusencia) {
+    // state.loading = true;
+    // console.log(infoParaAusencia, dataAusencia);
+
+    state.modalJustificarFalta.open();
+
+    // state.loading = false;
   },
 
   init(route: RouteLocationNormalizedLoaded) {
@@ -150,12 +212,12 @@ export const pontosCalendario = computed(() => {
       eventos.push(eventoFormatado);
 
       horaFormatada = actions.formatarHora(ponto.HORA_ALMOCO_INICIAL);
-      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "blue");
+      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "3c8dbc00");
 
       eventos.push(eventoFormatado);
 
       horaFormatada = actions.formatarHora(ponto.HORA_ALMOCO_FINAL);
-      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "blue");
+      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "3c8dbc00");
 
       eventos.push(eventoFormatado);
 
@@ -174,14 +236,5 @@ export const pontosCalendario = computed(() => {
 
   return eventos;
 });
-
-// export const handleClickCalendario = (event: any) => {
-//   console.log("TESTE");
-//   const mes = event.detail.month;
-//   const ano = event.detail.year;
-
-//   state.mes = mes;
-//   state.ano = ano;
-// };
 
 export default { state, actions };
