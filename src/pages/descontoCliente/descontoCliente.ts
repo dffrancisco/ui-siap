@@ -58,18 +58,38 @@ export const actions = {
 
         state.gridCliente = new xGridV2.create({
             el: "#pnClientes",
-            height: 300,
+            height: 175,
             count: true,
             columns: {
                 "CNPJ": {dataField: "CGC_CLIENTE"},
                 "Cliente": {dataField: "NOME"},
             },
+            sideBySide: {
+                el: "#clienteCampos",
+                frame: {
+                    el: "#btnClientes",
+                    buttons: {
+                        Cancel: {
+                            html: "Cancelar",
+                            state: "select",
+                            click: actions.btnCancelCliente,
+                            preLoad: "Cancelando o cliente",
+                        },
+                        Ok: {
+                            html: "OK",
+                            state: "select",
+                            click: actions.btnSelectCliente,
+                            preLoad: "Selecionando o cliente",
+                        },
+                    }
+                }
+            }
         })
     },
 
     criarModais() {
         state.modalCliente = new xModal.create({
-            height: 450,
+            height: 341,
             width: 600,
             theme: "xModal-blue",
             el: '#mdCliente',

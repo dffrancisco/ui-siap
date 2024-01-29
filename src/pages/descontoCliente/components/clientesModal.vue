@@ -5,13 +5,22 @@ import clientesSearch from "./clientesSearch.vue";
 <template>
   <v-container class="pa-1 pt-0">
     <title>Clientes</title>
-    <clientesSearch />
-    <div id="pnClientes">
-
+    <div id="clienteCampos">
+      <clientesSearch />
+      <div id="pnClientes"></div>
+      <div
+        id="btnClientes"
+        class="mt-3"
+        style="text-align: center"
+      >
+      </div>
     </div>
   </v-container>
 </template>
 
 <style scoped>
-
+  #btnClientes {
+    display: flex;
+    justify-content: space-between;
+  }
 </style>
