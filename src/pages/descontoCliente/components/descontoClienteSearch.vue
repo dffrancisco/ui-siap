@@ -6,7 +6,7 @@ import { state, actions } from "../../carros/carros";
   <div class="d-flex justify-end my-2">
     <v-row>
       <v-col>
-        <span>Localizar Marca</span>
+        <span >LOCALIZAR MARCA</span>
         <input
           type="text"
           style="margin: 5px 0 5px"

@@ -3,6 +3,7 @@ import $ from "jquery";
 import { nextTick, onUnmounted } from "vue";
 import { useEventListener } from "@vueuse/core";
 import descontoClienteSearch from "./components/descontoClienteSearch.vue";
+import { actions } from "../descontoCliente/descontoCliente";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (event.key === "F1") {
@@ -15,9 +16,9 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
 nextTick(async () => {
   $(".ss").attr("autocomplete", "off");
 
-  //   state.edtSearch = <any>document.getElementById("edtSearch");
+    // state.edtSearch = <any>document.getElementById("edtSearch");
 
-  //   actions.grids();
+    actions.grids();
   //   state.gridPrincipal.queryOpen({ NOME: "" }, () => {
   //     state.gridPrincipal.focus();
   //   });
@@ -33,7 +34,7 @@ onUnmounted(() => {
     <title>Desconto Cliente</title>
     <v-card
       class="pa-5"
-      style="width: 800px; margin: 0 auto"
+      style="width: 800px; margin: 0 auto;"
     >
       <div style="padding-bottom: 15px">
         <v-row>
@@ -61,44 +62,44 @@ onUnmounted(() => {
           </v-btn>
         </v-row>
       </div>
-      <div class="ss">
+      <div class="ss" style="height: 500px; text-transform: none;">
         <v-row>
           <v-col cols="4">
             <v-row style="margin-left: 7px; padding-top: 10px">
               <descontoClienteSearch style="width: 300px" />
             </v-row>
-            <v-row>
+            <v-row style="margin-left: 7px;">
               <div id="pnMarcas"></div>
             </v-row>
           </v-col>
           <v-col
             cols="1"
             justify="center"
-            style="margin-left: 50px"
+            style="margin-left: 0px"
           >
             <v-btn
               style="margin-top: 200px"
-              icon="mdi-chevron-left"
+              icon="mdi-chevron-left mdi-24px"
               color="blue"
               size="small"
             >
             </v-btn>
             <v-btn
               style="margin-top: 10px"
-              icon="mdi-chevron-right"
+              icon="mdi-chevron-right mdi-24px"
               color="blue"
               size="small"
             >
             </v-btn>
           </v-col>
-          <v-col cols="6">
+          <v-col cols="7">
             <v-row
-              style="margin-top: 17px"
+              style="margin-top: 30px"
               justify="center"
             >
               <h2>Marcas Adicionadas</h2>
             </v-row>
-            <v-row>
+            <v-row style="margin-top: 24px; width: 430px;"> 
               <div id="pnMarcasAdicionadas"> </div>
             </v-row>
           </v-col>
@@ -109,4 +110,5 @@ onUnmounted(() => {
   </v-container>
 </template>
 
-<style scoped></style>
+<style scoped>
+</style>
