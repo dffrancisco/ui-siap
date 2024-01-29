@@ -171,7 +171,7 @@ export const actions = {
   justificarAusencia(dataAusencia) {
     // state.loading = true;
     // console.log(infoParaAusencia, dataAusencia);
-
+    actions.modal();
     state.modalJustificarFalta.open();
 
     // state.loading = false;
