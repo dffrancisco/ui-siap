@@ -30,7 +30,7 @@ jobs:
           git push origin HEAD --follow-tags
 
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Install dependencies
         run: npm install
