@@ -6,7 +6,8 @@ import { msgConfirm } from "@/ts/message";
 
 import serviceDescontoCliente from "./services/descontoCliente.service"
 
-import { iCliente, iMarca, iMarcaAdicionada, iParamGetClientes, iParamGetMarcas } from "./interfaces";
+import { iCliente, iMarca, iMarcaAdicionada, iParamGetMarcas, iParamGetMarcasAdicionadas } from "./interfaces";
+import utils from "@/ts/utils";
 
 interface _iMarcaxGridCreate extends ixGridCreate {
     dataSource: (obj?: object) => iMarca;
@@ -63,37 +64,45 @@ export const actions = {
             },
         }),
 
-            state.gridMarcaAdicionada = new xGridV2.create({
-                el: "#pnMarcasAdicionadas",
-                height: 400,
-                count: true,
-                columns: {
-                    "Marca": { dataField: "DESCRICAO" },
-                    "Desconto %": { dataField: "DESCONTO" },
-                    "Data Inicial": { dataField: "DATA_INICIAL" },
-                    "Data Final": { dataField: "DATA_FINAL" },
-                },
-                sideBySide: {
-                    el: "#marcasAdicionadasCampos",
-                    frame: {
-                        el: "#btnMarcasAdicionadas",
-                        buttons: {
-                            Cancel: {
-                                html: "Cancelar",
-                                state: "select",
-                                click: actions.btnCancelAdicionarMarca,
-                                preLoad: "Cancelando o cliente",
-                            },
-                            Ok: {
-                                html: "OK",
-                                state: "select",
-                                click: actions.btnSelectAdicionarMarca,
-                                preLoad: "Selecionando o cliente",
-                            },
-                        }
+        state.gridMarcaAdicionada = new xGridV2.create({
+            el: "#pnMarcasAdicionadas",
+            height: 400,
+            columns: {
+                "Marca": { dataField: "DESCRICAO",width: "45%" },
+                "Desconto %": { dataField: "DESCONTO", render: utils.formatValor, width: "16%", center: true },
+                "Data Inicial": { dataField: "DATA_INICIAL", render: utils.dataBrasil, center: true },
+                "Data Final": { dataField: "DATA_FINAL", render: utils.dataBrasil, center: true },
+            },
+            query: {
+                async execute(rs) {
+                    let data = await actions.getMarcasAdicionadas({
+                        offset: rs.offset,
+                        param: rs.param
+                    })
+                    state.gridMarcaAdicionada.querySourceAdd(data)
+                }
+            },
+            sideBySide: {
+                el: "#marcasAdicionadasCampos",
+                frame: {
+                    el: "#btnMarcasAdicionadas",
+                    buttons: {
+                        Cancel: {
+                            html: "Cancelar",
+                            state: "select",
+                            click: actions.btnCancelAdicionarMarca,
+                            preLoad: "Cancelando o cliente",
+                        },
+                        Ok: {
+                            html: "OK",
+                            state: "select",
+                            click: actions.btnSelectAdicionarMarca,
+                            preLoad: "Selecionando o cliente",
+                        },
                     }
                 }
-            })
+            }
+        })
     },
 
     criarModais() {
@@ -103,12 +112,13 @@ export const actions = {
             theme: "xModal-blue",
             el: '#modalCliente',
         }),
-            state.modalAdicionarMarca = new xModal.create({
-                height: 215,
-                width: 340,
-                el: '#mdAdicionarMarca',
-                theme: "xModal-blue",
-            })
+
+        state.modalAdicionarMarca = new xModal.create({
+            height: 215,
+            width: 340,
+            el: '#mdAdicionarMarca',
+            theme: "xModal-blue",
+        })
     },
 
     onClickClienteModal() {
@@ -137,8 +147,12 @@ export const actions = {
             QTD: cliente.QTD
         }
 
-        state.gridMarca.queryOpen({ DESCRICAO: "", ID_CLIENTE: state.dbClienteSelecionado.ID_CLIENTE}, () => {
+        state.gridMarca.queryOpen({ DESCRICAO: "", ID_CLIENTE: state.dbClienteSelecionado.ID_CLIENTE }, () => {
             state.gridMarca.focus();
+        });
+
+        state.gridMarcaAdicionada.queryOpen({ ID_CLIENTE: state.dbClienteSelecionado.ID_CLIENTE }, () => {
+            state.gridMarcaAdicionada.focus();
         });
 
         state.modalCliente.close()
@@ -146,20 +160,36 @@ export const actions = {
 
     async getMarcas({ offset, param }: iParamGetMarcas) {
         try {
-            state.loading = true
 
+            state.loading = true
             const data = await serviceDescontoCliente.getMarcas({ offset, param });
             state.loading = false
 
             return data
-
-            state.loading = false
 
         } catch (error) {
             state.loading = false
             Swal.fire({
                 icon: "error",
                 text: "Erro ao carregar as marcas!"
+            })
+        }
+    },
+
+    async getMarcasAdicionadas({ offset, param }: iParamGetMarcasAdicionadas) {
+        try {
+
+            state.loading = true
+            const data = await serviceDescontoCliente.getMarcasAdicionadas({ offset, param });
+            state.loading = false
+
+            return data
+
+        }catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao carregar as marcas adicionadas!"
             })
         }
     }

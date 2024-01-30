@@ -29,5 +29,11 @@ export interface iParamGetMarcas {
     param: object;
 }
 
+export interface iParamGetMarcasAdicionadas {
+    offset: number;
+    param: object;
+}
+
 export interface iGetClienteResponse extends iCliente { }
 export interface iGetMarcaResponse extends iMarca { }
+export interface iGetMarcaAdicionadaResponse extends iMarcaAdicionada { }
