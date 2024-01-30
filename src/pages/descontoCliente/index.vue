@@ -7,28 +7,20 @@ import clientesModal from "./components/clientesModal.vue";
 import adicionarMarcaModal from "./components/adicionarMarcaModal.vue";
 import { actions, state } from "../descontoCliente/descontoCliente";
 
-const eventListener = useEventListener(document, "keydown", async (event) => {
-  if (event.key === "F1") {
-    // state.edtSearch.select();
-    event.preventDefault();
-    event.stopPropagation();
-  }
-});
-
 nextTick(async () => {
   $(".ss").attr("autocomplete", "off");
 
-  // state.edtSearch = <any>document.getElementById("edtSearch");
+  state.edtClienteSearch = <any>document.getElementById("edtClienteSearch");
 
   actions.grids();
   actions.criarModais();
+
+  state.gridCliente.queryOpen({ NOME: "" }, () => {
+    state.gridCliente.focus();
+  });
   //   state.gridPrincipal.queryOpen({ NOME: "" }, () => {
   //     state.gridPrincipal.focus();
   //   });
-});
-
-onUnmounted(() => {
-  removeEventListener("keydown", eventListener);
 });
 </script>
 
@@ -41,20 +33,28 @@ onUnmounted(() => {
     >
       <div style="padding-bottom: 15px">
         <v-row>
-          <v-col cols="4">
+          <v-col cols="3">
             <span>CNPJ</span>
             <input
+              style="text-align: start"
+              v-model="state.clienteSelecionado.CGC_CLIENTE"
               type="button"
               class="ss"
+              name="CGC_CLIENTE"
+              id="CGC_CLIENTE"
               @click="actions.onClickClienteModal"
               :disabled="state.clienteDisabled"
             />
           </v-col>
-          <v-col cols="7">
+          <v-col cols="8">
             <span>Razão Social</span>
             <input
+              style="text-align: start"
+              v-model="state.clienteSelecionado.NOME"
               type="button"
               class="ss"
+              name="NAME"
+              id="NAME"
               @click="actions.onClickClienteModal"
               :disabled="state.clienteDisabled"
             />
@@ -117,6 +117,19 @@ onUnmounted(() => {
           </v-col>
         </v-row>
       </div>
+
+      <v-overlay
+        :model-value="state.loading"
+        class="align-center justify-center"
+        persistent
+      >
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-overlay>
+
       <div id="pnCodigoTela">DESCONTO_CLIENTE</div>
     </v-card>
   </v-container>

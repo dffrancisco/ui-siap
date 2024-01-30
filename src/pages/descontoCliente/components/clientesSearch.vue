@@ -10,9 +10,9 @@ import { state, actions } from "../descontoCliente";
       autofocus
       placeholder="F1 - Localizar"
       :disabled="state.pnSearch"
-      @keydown.enter="actions.search()"
-      @keyup.arrow-down="state.gridPrincipal.focus(0)"
-      id="edtSearch"
+      @keydown.enter="actions.searchClientes()"
+      @keyup.arrow-down="state.gridCliente.focus(0)"
+      id="edtClienteSearch"
       class="ss"
     />
     <v-btn
@@ -20,7 +20,7 @@ import { state, actions } from "../descontoCliente";
       size="small"
       class="ml-2 mt-1 elevation-0"
       color="primary"
-      @click="actions.search()"
+      @click="actions.searchClientes()"
     >
       Localizar
     </v-btn>
