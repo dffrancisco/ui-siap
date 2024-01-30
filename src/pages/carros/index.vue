@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { actions, state } from "./carros";
 import { nextTick, onUnmounted } from "vue";
-import cSearch from "./components/cSearch.vue";
+import carrosSearch from "./components/carrosSearch.vue";
 import { useEventListener } from "@vueuse/core";
 import $ from "jquery";
-import globalActions from "@/store/globalActions";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (event.key === "F1") {
@@ -23,7 +22,6 @@ nextTick(async () => {
   actions.getMontadoras();
   state.gridPrincipal.queryOpen({ DESCRICAO: "" }, () => {
     state.gridPrincipal.focus();
-    // validaOBR();
   });
 });
 
@@ -35,13 +33,16 @@ onUnmounted(() => {
 <template>
   <v-container>
     <title>Cadastro de Carros</title>
-    <v-card class="pa-5" style="width: 700px; margin: 0 auto">
+    <v-card
+      class="pa-5"
+      style="width: 700px; margin: 0 auto"
+    >
       <div id="pnCampos">
         <v-row>
           <v-col cols="6">
             <span>Descrição</span>
             <input
-              v-model.lazy="state.dbCarro.DESCRICAO"
+              v-model="state.dbCarro.DESCRICAO"
               type="text"
               id="DESCRICAO"
               name="DESCRICAO"
@@ -60,7 +61,7 @@ onUnmounted(() => {
               class="obr ss"
             >
               <option
-                v-for="montadora in state.dsMontadoras"
+                v-for="montadora in state.listaMontadoras"
                 :value="montadora.ID_MONTADORA"
               >
                 {{ montadora.DESCRICAO }}
@@ -70,10 +71,26 @@ onUnmounted(() => {
         </v-row>
       </div>
 
-      <cSearch />
+      <carrosSearch />
+
+      <v-overlay
+        :model-value="state.loading"
+        class="align-center justify-center"
+        persistent
+      >
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-overlay>
 
       <div id="gridPrincipal"></div>
-      <div id="pnBotoes" class="mt-3" style="text-align: center"></div>
+      <div
+        id="pnBotoes"
+        class="mt-3"
+        style="text-align: center"
+      ></div>
 
       <div
         id="relatorio"
@@ -81,8 +98,10 @@ onUnmounted(() => {
         style="display: none; width: 99% !important"
       ></div>
     </v-card>
-    <div id="pnCodigoTela">CAD_CARROS</div>
+    <div id="pnCodigoTela">CADASTRO_CARROS</div>
   </v-container>
 </template>
 
-<style></style>
+<style scoped>.v-col {
+  padding-bottom: 4px;
+}</style>

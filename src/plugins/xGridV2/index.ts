@@ -1423,7 +1423,6 @@ export default (function () {
                         let field = this.arg.sideBySide.duplicity.dataField[i]
                         let text = ''
                         if (this.sourceSelect[field] != this.elementSideBySide[field].value) {
-
                             // if (this.elementSideBySide[field].previousSibling.previousElementSibling)
                             //     text = this.elementSideBySide[field].previousSibling.previousElementSibling.innerText
                             if (this.elementSideBySide[field].previousSibling)
@@ -1441,9 +1440,10 @@ export default (function () {
                                 value: this.elementSideBySide[field].value.trim(),
                                 text: text
                             })
-
-
-                            return res(r)
+                            
+                            if(r){
+                                return res(r)
+                            }
                         }
                     }
 
