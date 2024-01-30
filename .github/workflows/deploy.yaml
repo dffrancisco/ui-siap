@@ -1,0 +1,46 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Bump version
+        run: |
+          npm version patch
+          git push --follow-tags
+
+      - name: Zip files
+        run: |
+          cp package.json ./ui-siap
+          zip -r ./ui-siap.zip ./ui-siap
+
+      - name: Deploy to Server60
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            # Replace 'path/to/destination' with the actual path on your server
+            scp ui-siap.zip ${{ secrets.SERVER_DESTINATION_PATH }}
+            ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SERVER_DESTINATION_PATH }}"
