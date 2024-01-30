@@ -63,37 +63,37 @@ export const actions = {
             },
         }),
 
-        state.gridMarcaAdicionada = new xGridV2.create({
-            el: "#pnMarcasAdicionadas",
-            height: 400,
-            count: true,
-            columns: {
-                "Marca": { dataField: "DESCRICAO" },
-                "Desconto %": { dataField: "DESCONTO" },
-                "Data Inicial": { dataField: "DATA_INICIAL" },
-                "Data Final": { dataField: "DATA_FINAL" },
-            },
-            sideBySide: {
-                el: "#marcasAdicionadasCampos",
-                frame: {
-                    el: "#btnMarcasAdicionadas",
-                    buttons: {
-                        Cancel: {
-                            html: "Cancelar",
-                            state: "select",
-                            click: actions.btnCancelAdicionarMarca,
-                            preLoad: "Cancelando o cliente",
-                        },
-                        Ok: {
-                            html: "OK",
-                            state: "select",
-                            click: actions.btnSelectAdicionarMarca,
-                            preLoad: "Selecionando o cliente",
-                        },
+            state.gridMarcaAdicionada = new xGridV2.create({
+                el: "#pnMarcasAdicionadas",
+                height: 400,
+                count: true,
+                columns: {
+                    "Marca": { dataField: "DESCRICAO" },
+                    "Desconto %": { dataField: "DESCONTO" },
+                    "Data Inicial": { dataField: "DATA_INICIAL" },
+                    "Data Final": { dataField: "DATA_FINAL" },
+                },
+                sideBySide: {
+                    el: "#marcasAdicionadasCampos",
+                    frame: {
+                        el: "#btnMarcasAdicionadas",
+                        buttons: {
+                            Cancel: {
+                                html: "Cancelar",
+                                state: "select",
+                                click: actions.btnCancelAdicionarMarca,
+                                preLoad: "Cancelando o cliente",
+                            },
+                            Ok: {
+                                html: "OK",
+                                state: "select",
+                                click: actions.btnSelectAdicionarMarca,
+                                preLoad: "Selecionando o cliente",
+                            },
+                        }
                     }
                 }
-            }
-        })
+            })
     },
 
     criarModais() {
@@ -103,12 +103,12 @@ export const actions = {
             theme: "xModal-blue",
             el: '#modalCliente',
         }),
-        state.modalAdicionarMarca = new xModal.create({
-            height: 215,
-            width: 340,
-            el: '#mdAdicionarMarca',
-            theme: "xModal-blue",
-        })
+            state.modalAdicionarMarca = new xModal.create({
+                height: 215,
+                width: 340,
+                el: '#mdAdicionarMarca',
+                theme: "xModal-blue",
+            })
     },
 
     onClickClienteModal() {
@@ -130,22 +130,31 @@ export const actions = {
     },
 
     setarCliente(cliente: iCliente) {
-        state.modalCliente.close()
         state.dbClienteSelecionado = {
             ID_CLIENTE: cliente.ID_CLIENTE,
             NOME: cliente.NOME,
             CGC_CLIENTE: cliente.CGC_CLIENTE,
             QTD: cliente.QTD
         }
+
+        state.gridMarca.queryOpen({ DESCRICAO: "", ID_CLIENTE: state.dbClienteSelecionado.ID_CLIENTE}, () => {
+            state.gridMarca.focus();
+        });
+
+        state.modalCliente.close()
     },
 
     async getMarcas({ offset, param }: iParamGetMarcas) {
         try {
             state.loading = true
+
             const data = await serviceDescontoCliente.getMarcas({ offset, param });
             state.loading = false
 
             return data
+
+            state.loading = false
+
         } catch (error) {
             state.loading = false
             Swal.fire({

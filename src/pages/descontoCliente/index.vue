@@ -2,22 +2,17 @@
 import $ from "jquery";
 import { nextTick, onUnmounted } from "vue";
 import { useEventListener } from "@vueuse/core";
-import marcasClienteSearch from "./components/marcasSearch.vue";
 import modalCliente from "./components/modalCliente.vue";
 import adicionarMarcaModal from "./components/adicionarMarcaModal.vue";
 import { actions, state } from "../descontoCliente/descontoCliente";
 
 nextTick(async () => {
   $(".ss").attr("autocomplete", "off");
-  
+
   state.edtMarcaSearch = <any>document.getElementById("edtMarcaSearch");
 
   actions.grids();
   actions.criarModais();
-
-  state.gridMarca.queryOpen({ DESCRICAO: "" }, () => {
-    state.gridMarca.focus();
-  });
 });
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -84,7 +79,34 @@ onUnmounted(() => {
         <v-row>
           <v-col cols="4">
             <v-row style="margin-left: 7px; padding-top: 10px">
-              <marcasClienteSearch style="width: 300px" />
+              <div class="d-flex justify-end my-2">
+                <v-row>
+                  <v-col>
+                    <span>LOCALIZAR MARCA</span>
+                    <input
+                      type="text"
+                      style="margin: 5px 0 5px"
+                      autofocus
+                      placeholder="F1 - Localizar"
+                      :disabled="state.pnSearch"
+                      @keydown.enter="actions.searchMarcas()"
+                      @keyup.arrow-down="state.gridMarca.focus(0)"
+                      id="edtMarcaSearch"
+                      class="ss"
+                    />
+                  </v-col>
+                </v-row>
+                <v-btn
+                  style="margin-top: 20px"
+                  :disabled="state.pnSearch"
+                  size="x-small"
+                  class="ml-2 elevation-0"
+                  color="primary"
+                  icon="mdi-magnify"
+                  @click="actions.searchMarcas()"
+                >
+                </v-btn>
+              </div>
             </v-row>
             <v-row style="margin-left: 7px">
               <div id="pnMarcas"></div>
