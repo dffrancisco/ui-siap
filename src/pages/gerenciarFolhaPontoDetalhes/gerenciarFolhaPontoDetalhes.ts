@@ -1,4 +1,4 @@
-import { computed, nextTick, reactive } from "vue";
+import { computed, nextTick, reactive, ref } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import { iAusencias, iParam, iPonto, iTipoFaltasCount } from "./interface";
 import Swal from "sweetalert2";
@@ -11,6 +11,7 @@ export const state = reactive({
   tipoFaltas: <iTipoFaltasCount[]>[],
   contadorDeFaltas: {},
   loading: false,
+  loadingCalendar: false,
   nome: <string | null>null,
   cargo: <string | null>null,
   codFuncionario: 0,
@@ -21,7 +22,7 @@ export const state = reactive({
   cpf: <string | null>null,
   mes: 1,
   ano: 2024,
-  today: <any>new Date(),
+  initialDate: <any>new Date(),
   modalJustificarFalta: <iModalCreate>(<unknown>null),
   ausencias: <iAusencias[]>[],
   dataAusencia: <any>new Date(),
@@ -111,10 +112,10 @@ export const actions = {
     }
   },
 
-  formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, cor = "3c8dbc00") {
+  formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, cor = "#6495ED") {
     if (titulo == null) {
       titulo = "---------";
-      cor = "red";
+      cor = "#FF6347";
     }
 
     return {
@@ -197,7 +198,6 @@ export const actions = {
       await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
       await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
 
-      //state.today = new Date(`${state.ano}-${state.mes - 1}-01`);
       state.loading = false;
     });
   },
@@ -217,12 +217,12 @@ export const pontosCalendario = computed(() => {
       eventos.push(eventoFormatado);
 
       horaFormatada = actions.formatarHora(ponto.HORA_ALMOCO_INICIAL);
-      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "3c8dbc00");
+      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "#6495ED");
 
       eventos.push(eventoFormatado);
 
       horaFormatada = actions.formatarHora(ponto.HORA_ALMOCO_FINAL);
-      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "3c8dbc00");
+      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "#6495ED");
 
       eventos.push(eventoFormatado);
 
@@ -233,7 +233,7 @@ export const pontosCalendario = computed(() => {
     }
 
     if (ponto.STATUS) {
-      let eventoFormatado = actions.formatarEvento(ponto.STATUS, dataInicio, dataFim, "green");
+      let eventoFormatado = actions.formatarEvento(ponto.STATUS, dataInicio, dataFim, "#3CB371");
 
       eventos.push(eventoFormatado);
     }

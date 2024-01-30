@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { actions, state, pontosCalendario, infoParaAusencia } from "./gerenciarFolhaPontoDetalhes";
+import { actions, state, pontosCalendario } from "./gerenciarFolhaPontoDetalhes";
 import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 import { nextTick, ref, watch } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
@@ -10,17 +10,18 @@ import interactionPlugin from "@fullcalendar/interaction";
 import ModalJustificarFalta from "./components/modalJustificarFalta.vue";
 
 const route = useRoute();
-const calendarioRef = ref(null);
 
 actions.init(route);
 
 watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
+  state.loadingCalendar = true;
   await actions.getPontos(state.codFuncionario, novoMes, novoAno);
   await actions.getResumoPontosFuncionario(state.codFuncionario, novoMes, novoAno);
   await actions.getTipoFaltas(state.codFuncionario, novoMes, novoAno);
   await nextTick();
 
-  calendarioRef.value?.$refs.calendario.update();
+  state.initialDate = new Date(novoAno, novoMes - 1, 1);
+  state.loadingCalendar = false;
 });
 </script>
 
@@ -157,15 +158,21 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
               width="1050"
             >
               <FullCalendar
+                v-if="state.loadingCalendar == false"
+                ref="calendario"
                 :options="{
+                  buttonText: {
+                    today: 'Hoje',
+                  },
                   plugins: [dayGridPlugin, interactionPlugin],
                   initialView: 'dayGridMonth',
                   weekends: true,
                   events: pontosCalendario,
                   dateClick: actions.clickModalJustificarAusencia,
                   locale: 'pt-br',
-                  // navLinks: true,
                   datesSet: actions.alternandoMesEAno,
+                  eventOrder: 'defId',
+                  initialDate: state.initialDate,
                 }"
               >
                 <template v-slot:eventContent="arg">
@@ -174,17 +181,6 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
                   </div>
                 </template>
               </FullCalendar>
-
-              <!-- <v-calendar
-                ref="calendario"
-                v-model="state.today"
-                color="primary"
-                :type="`month:${state.mes}-${state.ano}`"
-                :events="pontosCalendario"
-                @update:modelValue="handleClickCalendario"
-                @click="handleDayclickCalendario"
-              >
-              </v-calendar> -->
             </v-sheet>
           </v-col>
         </v-row>
@@ -200,7 +196,7 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
 
     <div id="pnCodigoTela">folhaPontoDetalhes</div>
     <v-overlay
-      :model-value="state.loading"
+      :model-value="state.loading || state.loadingCalendar"
       class="align-center justify-center"
       persistent
     >
