@@ -18,10 +18,16 @@ jobs:
         with:
           node-version: 16
 
-      - name: Configure Git
+      - name: Bump version and push changes
         run: |
           git config --global user.email "realacessoriosdev@gmail.com"
           git config --global user.name "realacessorios-dev"
+
+          npm version patch
+
+          git add .
+          git commit -m "Bump version"
+          git push origin HEAD --follow-tags
 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
