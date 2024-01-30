@@ -141,10 +141,7 @@ export const actions = {
 
     setarCliente(cliente: iCliente) {
         state.dbClienteSelecionado = {
-            ID_CLIENTE: cliente.ID_CLIENTE,
-            NOME: cliente.NOME,
-            CGC_CLIENTE: cliente.CGC_CLIENTE,
-            QTD: cliente.QTD
+            ...cliente
         }
 
         state.gridMarca.queryOpen({ DESCRICAO: "", ID_CLIENTE: state.dbClienteSelecionado.ID_CLIENTE }, () => {
