@@ -12,12 +12,18 @@ import login from "../login/login";
         class="mx-auto pa-3"
       >
         <v-row>
-          <div class="d-flex flex-wrap pa-6"
+          <div class="d-flex flex-wrap pa-6">
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/descontoOrcamento')"
               >Desconto Orçamento
             </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/impressorasTermicas')"
+              >Impressoras Térmicas</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
@@ -48,9 +54,9 @@ import login from "../login/login";
               @click="router.push('/valeDinheiro')"
               >Vale dinheiro
             </v-btn>
-            
-            <v-btn 
-              class="mr-4 mb-4" 
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/corredores')"
               >Corredores
             </v-btn>
@@ -66,13 +72,13 @@ import login from "../login/login";
               @click="router.push('/aniversariantes')"
               >Aniversariantes
             </v-btn>
-            
+
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/montagemProduto')"
               >Montagem Produto
             </v-btn>
-            
+
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/documentosFuncionarios')"
