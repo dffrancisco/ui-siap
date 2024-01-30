@@ -2,7 +2,6 @@
 import { useRoute } from "vue-router";
 import { actions, state, pontosCalendario } from "./gerenciarFolhaPontoDetalhes";
 import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
-import { nextTick, ref, watch } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 //@ts-ignore
@@ -12,17 +11,6 @@ import ModalJustificarFalta from "./components/modalJustificarFalta.vue";
 const route = useRoute();
 
 actions.init(route);
-
-watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
-  state.loadingCalendar = true;
-  await actions.getPontos(state.codFuncionario, novoMes, novoAno);
-  await actions.getResumoPontosFuncionario(state.codFuncionario, novoMes, novoAno);
-  await actions.getTipoFaltas(state.codFuncionario, novoMes, novoAno);
-  await nextTick();
-
-  state.initialDate = new Date(novoAno, novoMes - 1, 1);
-  state.loadingCalendar = false;
-});
 </script>
 
 <template>
@@ -166,7 +154,7 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
                   },
                   plugins: [dayGridPlugin, interactionPlugin],
                   initialView: 'dayGridMonth',
-                  weekends: true,
+                  // hiddenDays: [0],
                   events: pontosCalendario,
                   dateClick: actions.clickModalJustificarAusencia,
                   locale: 'pt-br',
@@ -222,6 +210,18 @@ watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
 .fc-toolbar-title {
   margin-left: 25px !important;
   margin-top: 10px !important;
+}
+
+.fc-prev-button.fc-button.fc-button-primary {
+  background-color: #6495ed;
+}
+
+.fc-next-button.fc-button.fc-button-primary {
+  background-color: #6495ed;
+}
+
+.fc-today-button.fc-button.fc-button-primary {
+  background-color: #6495ed;
 }
 </style>
 

@@ -1,4 +1,4 @@
-import { computed, nextTick, reactive, ref } from "vue";
+import { computed, nextTick, reactive, ref, watch } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import { iAusencias, iParam, iPonto, iTipoFaltasCount } from "./interface";
 import Swal from "sweetalert2";
@@ -240,6 +240,17 @@ export const pontosCalendario = computed(() => {
   }
 
   return eventos;
+});
+
+export const selecionandoData = watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
+  state.loadingCalendar = true;
+  await actions.getPontos(state.codFuncionario, novoMes, novoAno);
+  await actions.getResumoPontosFuncionario(state.codFuncionario, novoMes, novoAno);
+  await actions.getTipoFaltas(state.codFuncionario, novoMes, novoAno);
+  await nextTick();
+
+  state.initialDate = new Date(novoAno, novoMes - 1, 1);
+  state.loadingCalendar = false;
 });
 
 export default { state, actions };
