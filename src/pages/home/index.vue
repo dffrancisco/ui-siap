@@ -86,8 +86,8 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/montagemProduto')"
-              >Montagem Produto
+              @click="router.push('/transportadoras')"
+              >Transportadoras @click="router.push('/montagemProduto')" >Montagem Produto
             </v-btn>
 
             <v-btn
