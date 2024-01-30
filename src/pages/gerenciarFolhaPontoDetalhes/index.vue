@@ -213,14 +213,19 @@ actions.init(route);
 }
 
 .fc-prev-button.fc-button.fc-button-primary {
+  border: none;
+  margin-right: 5px;
   background-color: #6495ed;
 }
 
 .fc-next-button.fc-button.fc-button-primary {
+  border: none;
+  margin-right: 5px;
   background-color: #6495ed;
 }
 
 .fc-today-button.fc-button.fc-button-primary {
+  border: none;
   background-color: #6495ed;
 }
 </style>
