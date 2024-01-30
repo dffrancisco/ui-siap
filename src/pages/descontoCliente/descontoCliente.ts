@@ -68,7 +68,7 @@ export const actions = {
             el: "#pnMarcasAdicionadas",
             height: 400,
             columns: {
-                "Marca": { dataField: "DESCRICAO",width: "45%" },
+                "Marca": { dataField: "DESCRICAO", width: "45%" },
                 "Desconto %": { dataField: "DESCONTO", render: utils.formatValor, width: "16%", center: true },
                 "Data Inicial": { dataField: "DATA_INICIAL", render: utils.dataBrasil, center: true },
                 "Data Final": { dataField: "DATA_FINAL", render: utils.dataBrasil, center: true },
@@ -113,12 +113,12 @@ export const actions = {
             el: '#modalCliente',
         }),
 
-        state.modalAdicionarMarca = new xModal.create({
-            height: 215,
-            width: 340,
-            el: '#mdAdicionarMarca',
-            theme: "xModal-blue",
-        })
+            state.modalAdicionarMarca = new xModal.create({
+                height: 215,
+                width: 340,
+                el: '#mdAdicionarMarca',
+                theme: "xModal-blue",
+            })
     },
 
     onClickClienteModal() {
@@ -185,11 +185,44 @@ export const actions = {
 
             return data
 
-        }catch (error) {
+        } catch (error) {
             state.loading = false
             Swal.fire({
                 icon: "error",
                 text: "Erro ao carregar as marcas adicionadas!"
+            })
+        }
+    },
+
+    async removerMarca() {
+        try {
+
+            const marcaAdicionada = state.gridMarcaAdicionada.dataSource();
+
+            if (!marcaAdicionada) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Selecione uma marca",
+                });
+                return;
+            }
+
+            let idMarca = marcaAdicionada.ID_MARCA
+            let idCliente = state.dbClienteSelecionado.ID_CLIENTE
+
+            state.loading = true
+            const data = await serviceDescontoCliente.removerMarca(idMarca, idCliente)
+            state.loading = false
+
+            state.gridMarcaAdicionada.deleteLine();
+            state.gridMarca.insertLine(marcaAdicionada);
+
+            return data
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao remover a marca!"
             })
         }
     }

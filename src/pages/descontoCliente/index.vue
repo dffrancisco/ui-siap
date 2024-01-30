@@ -130,6 +130,7 @@ onUnmounted(() => {
               icon="mdi-chevron-left mdi-24px"
               color="blue"
               size="x-small"
+              @click="actions.removerMarca"
             >
             </v-btn>
           </v-col>

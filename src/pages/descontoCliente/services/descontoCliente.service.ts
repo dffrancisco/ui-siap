@@ -42,8 +42,20 @@ const getMarcasAdicionadas: iGetMarcasAdicionadas = async ({ offset, param }) =>
     return data;
 }
 
+const removerMarca = async (idMarca: number, idCliente: number) => {
+    let { data } = await axios.post(caminho, {
+        call: "removerMarca",
+        param: {
+            ID_MARCA: idMarca,
+            ID_CLIENTE: idCliente
+        }
+    })
+    return data;
+}
+
 export default {
     getClientes,
     getMarcas,
-    getMarcasAdicionadas
+    getMarcasAdicionadas,
+    removerMarca
 }
