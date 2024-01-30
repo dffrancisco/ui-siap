@@ -27,6 +27,17 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/marcas')"
+              >Marcas</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/aniversariantes')"
+              >Aniversariantes</v-btn
+            >
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/cidades')"
               >Cidades
             </v-btn>
