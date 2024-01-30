@@ -1,6 +1,6 @@
 import { computed, nextTick, reactive, ref, watch } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
-import { iAusencias, iParam, iPonto, iTipoFaltasCount } from "./interface";
+import { iAusencias, iParam, iParamComCPF, iPonto, iTipoFaltasCount } from "./interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDetalhes.service";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -53,9 +53,10 @@ export const actions = {
     return `http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
   },
 
-  async getPontos(cod_funcionario: number, mes: number, ano: number) {
-    const param: iParam = {
+  async getPontos(cod_funcionario: number, cpf: string, mes: number, ano: number) {
+    const param: iParamComCPF = {
       cod_funcionario: cod_funcionario,
+      cpf: cpf,
       mes: mes,
       ano: ano,
     };
@@ -176,7 +177,6 @@ export const actions = {
 
   justificarAusencia(dataAusencia) {
     state.loading = true;
-    // console.log(infoParaAusencia, dataAusencia);
     actions.modal();
     state.modalJustificarFalta.open();
 
@@ -194,7 +194,7 @@ export const actions = {
       state.mes = Number(route.query.mes);
       state.ano = Number(route.query.ano);
 
-      await actions.getPontos(state.codFuncionario, state.mes, state.ano);
+      await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
       await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
       await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
 
@@ -244,7 +244,7 @@ export const pontosCalendario = computed(() => {
 
 export const selecionandoData = watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
   state.loadingCalendar = true;
-  await actions.getPontos(state.codFuncionario, novoMes, novoAno);
+  await actions.getPontos(state.codFuncionario, state.cpf, novoMes, novoAno);
   await actions.getResumoPontosFuncionario(state.codFuncionario, novoMes, novoAno);
   await actions.getTipoFaltas(state.codFuncionario, novoMes, novoAno);
   await nextTick();

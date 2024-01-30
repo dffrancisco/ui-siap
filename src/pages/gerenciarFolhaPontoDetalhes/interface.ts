@@ -4,6 +4,13 @@ export interface iParam {
   ano: number;
 }
 
+export interface iParamComCPF {
+  cod_funcionario: number;
+  cpf: string;
+  mes: number;
+  ano: number;
+}
+
 export interface iPonto {
   TIPO: number;
   STATUS: string;

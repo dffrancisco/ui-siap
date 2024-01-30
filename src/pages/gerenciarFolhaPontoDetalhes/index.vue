@@ -52,7 +52,7 @@ actions.init(route);
                     color="primary"
                     size="small"
                     class="btnSearch"
-                    @click="actions.getPontos(state.codFuncionario, state.mes, state.ano)"
+                    @click="actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano)"
                   >
                     <v-icon> mdi-magnify</v-icon> </v-btn
                   ><v-btn
