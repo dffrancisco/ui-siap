@@ -28,22 +28,17 @@ export const state = reactive({
   dataAusencia: <any>new Date(),
 });
 
-export const infoParaAusencia = computed((): iAusencias => {
-  return {
-    COD_FUNCIONARIO: state.codFuncionario,
-    CPF: state.cpf,
-    NOME_FUNCIONARIO: state.nome,
-    DATA_AUSENCIA: state.dataAusencia,
-  };
-});
+// export const infoParaAusencia = computed((): iAusencias => {
+//   return {
+//     COD_FUNCIONARIO: state.codFuncionario,
+//     CPF: state.cpf,
+//     NOME_FUNCIONARIO: state.nome,
+//     DATA_AUSENCIA: state.dataAusencia,
+//   };
+// });
 
 export const actions = {
-  begin() {
-    nextTick(() => {
-      actions.modal();
-    });
-  },
-
+  
   getFotoFuncionarioURL(cpf: string) {
     if (!cpf) {
       return "";
@@ -155,11 +150,10 @@ export const actions = {
       let dataFormatada = `${diaFormatado}.${mesFormatado}.${ano}`;
 
       state.dataAusencia = dataFormatada;
-
-      // state.codFuncionario,
-      // state.cpf,
-      // state.nome,
-      // state.dataAusencia,
+      state.codFuncionario,
+      state.cpf,
+      state.nome,
+      state.dataAusencia,
 
       actions.justificarAusencia(state.dataAusencia);
     } else {

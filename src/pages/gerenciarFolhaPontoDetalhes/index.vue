@@ -178,7 +178,6 @@ actions.init(route);
     <div
       id="modalJustificarFalta"
       title="Justificar Ausência"
-      style="display: none"
       ><modal-justificar-falta />
     </div>
 

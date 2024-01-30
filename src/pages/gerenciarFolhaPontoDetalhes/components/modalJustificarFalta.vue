@@ -7,6 +7,7 @@ const emit = defineEmits(["justificarAusencia"]);
   <div class="modal-justificar-falta">
     <v-row>
       <span>Hello Modal</span>
+      <b>dataAusencia</b>
     </v-row>
   </div>
 </template>
