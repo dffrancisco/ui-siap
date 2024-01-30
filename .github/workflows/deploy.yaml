@@ -37,6 +37,9 @@ jobs:
           npm version patch
           git push --follow-tags
 
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Zip files
         run: |
           cp package.json ./ui-siap
