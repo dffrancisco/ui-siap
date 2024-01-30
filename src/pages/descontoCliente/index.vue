@@ -3,24 +3,33 @@ import $ from "jquery";
 import { nextTick, onUnmounted } from "vue";
 import { useEventListener } from "@vueuse/core";
 import marcasClienteSearch from "./components/marcasSearch.vue";
-import clientesModal from "./components/clientesModal.vue";
+import modalCliente from "./components/modalCliente.vue";
 import adicionarMarcaModal from "./components/adicionarMarcaModal.vue";
 import { actions, state } from "../descontoCliente/descontoCliente";
 
 nextTick(async () => {
   $(".ss").attr("autocomplete", "off");
-
-  state.edtClienteSearch = <any>document.getElementById("edtClienteSearch");
+  
+  state.edtMarcaSearch = <any>document.getElementById("edtMarcaSearch");
 
   actions.grids();
   actions.criarModais();
 
-  state.gridCliente.queryOpen({ NOME: "" }, () => {
-    state.gridCliente.focus();
+  state.gridMarca.queryOpen({ DESCRICAO: "" }, () => {
+    state.gridMarca.focus();
   });
-  //   state.gridPrincipal.queryOpen({ NOME: "" }, () => {
-  //     state.gridPrincipal.focus();
-  //   });
+});
+
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F1") {
+    state.edtMarcaSearch.select();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
 });
 </script>
 
@@ -37,26 +46,24 @@ nextTick(async () => {
             <span>CNPJ</span>
             <input
               style="text-align: start"
-              v-model="state.clienteSelecionado.CGC_CLIENTE"
+              v-model="state.dbClienteSelecionado.CGC_CLIENTE"
               type="button"
               class="ss"
               name="CGC_CLIENTE"
               id="CGC_CLIENTE"
               @click="actions.onClickClienteModal"
-              :disabled="state.clienteDisabled"
             />
           </v-col>
           <v-col cols="8">
             <span>Razão Social</span>
             <input
               style="text-align: start"
-              v-model="state.clienteSelecionado.NOME"
+              v-model="state.dbClienteSelecionado.NOME"
               type="button"
               class="ss"
               name="NAME"
               id="NAME"
               @click="actions.onClickClienteModal"
-              :disabled="state.clienteDisabled"
             />
           </v-col>
 
@@ -135,11 +142,14 @@ nextTick(async () => {
   </v-container>
 
   <div
-    id="mdCliente"
+    id="modalCliente"
     style="display: none"
     title="Clientes"
   >
-    <clientesModal :opened="state.modalClienteOpened" />
+    <modalCliente
+      @cancelar="actions.onClickCloseClienteModal"
+      @clienteSelecionado="actions.setarCliente"
+    />
   </div>
 
   <div

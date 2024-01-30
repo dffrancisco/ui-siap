@@ -13,9 +13,9 @@ import { state, actions } from "../descontoCliente";
           autofocus
           placeholder="F1 - Localizar"
           :disabled="state.pnSearch"
-          @keydown.enter="actions.search()"
-          @keyup.arrow-down="state.gridPrincipal.focus(0)"
-          id="edtSearch"
+          @keydown.enter="actions.searchMarcas()"
+          @keyup.arrow-down="state.gridMarca.focus(0)"
+          id="edtMarcaSearch"
           class="ss"
         />
       </v-col>
@@ -27,7 +27,7 @@ import { state, actions } from "../descontoCliente";
       class="ml-2 elevation-0"
       color="primary"
       icon="mdi-magnify"
-      @click="actions.search()"
+      @click="actions.searchMarcas()"
     >
     </v-btn>
   </div>

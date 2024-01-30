@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import { state, actions } from "../descontoCliente";
+
+const emit = defineEmits(["search"]);
+
+function searchClientes() {
+  emit("search");
+}
 </script>
 
 <template>
@@ -10,7 +16,7 @@ import { state, actions } from "../descontoCliente";
       autofocus
       placeholder="F1 - Localizar"
       :disabled="state.pnSearch"
-      @keydown.enter="actions.searchClientes()"
+      @keydown.enter="searchClientes"
       @keyup.arrow-down="state.gridCliente.focus(0)"
       id="edtClienteSearch"
       class="ss"
@@ -20,12 +26,11 @@ import { state, actions } from "../descontoCliente";
       size="small"
       class="ml-2 mt-1 elevation-0"
       color="primary"
-      @click="actions.searchClientes()"
+      @click="searchClientes"
     >
       Localizar
     </v-btn>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

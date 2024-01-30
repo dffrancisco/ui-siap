@@ -6,11 +6,7 @@ import { msgConfirm } from "@/ts/message";
 
 import serviceDescontoCliente from "./services/descontoCliente.service"
 
-import { iCliente, iMarca, iMarcaAdicionada, iParamGetClientes } from "./interfaces";
-
-interface _iClientexGridCreate extends ixGridCreate {
-    dataSource: (obj?: object) => iCliente;
-}
+import { iCliente, iMarca, iMarcaAdicionada, iParamGetClientes, iParamGetMarcas } from "./interfaces";
 
 interface _iMarcaxGridCreate extends ixGridCreate {
     dataSource: (obj?: object) => iMarca;
@@ -21,26 +17,25 @@ interface _iMarcaAdicionadaxGridCreate extends ixGridCreate {
 }
 
 export const state = reactive({
-    gridCliente: <_iClientexGridCreate>{},
+    gridCliente: <ixGridCreate>{},
     gridMarca: <_iMarcaxGridCreate>{},
     gridMarcaAdicionada: <_iMarcaAdicionadaxGridCreate>{},
-
-    edtClienteSearch: <HTMLInputElement>{},
+    edtMarcaSearch: <HTMLInputElement>{},
 
     modalCliente: <iModalCreate>{},
     modalAdicionarMarca: <iModalCreate>{},
 
     dbCliente: <iCliente>{},
-    clienteSelecionado: <iCliente>{},
+    dbClienteSelecionado: <iCliente>{},
 
     dbMarca: <iMarca>{},
+
     dbMarcaAdicionada: <iMarcaAdicionada>{},
 
-    pnSearch: false,
     loading: false,
     modalClienteOpened: false,
     modalAdicionarMarcaOpened: false,
-    clienteDisabled: false,
+    pnSearch: false,
 
     configVMoney: {
         thousands: '.',
@@ -54,95 +49,51 @@ export const actions = {
         state.gridMarca = new xGridV2.create({
             el: "#pnMarcas",
             height: 400,
-            count: true,
             columns: {
                 "Marca": { dataField: "DESCRICAO" }
             },
+            query: {
+                async execute(rs) {
+                    let data = await actions.getMarcas({
+                        offset: rs.offset,
+                        param: rs.param
+                    })
+                    state.gridMarca.querySourceAdd(data)
+                }
+            },
         }),
 
-            state.gridMarcaAdicionada = new xGridV2.create({
-                el: "#pnMarcasAdicionadas",
-                height: 400,
-                count: true,
-                columns: {
-                    "Marca": { dataField: "DESCRICAO" },
-                    "Desconto %": { dataField: "DESCONTO" },
-                    "Data Inicial": { dataField: "DATA_INICIAL" },
-                    "Data Final": { dataField: "DATA_FINAL" },
-                },
-                sideBySide: {
-                    el: "#marcasAdicionadasCampos",
-                    frame: {
-                        el: "#btnMarcasAdicionadas",
-                        buttons: {
-                            Cancel: {
-                                html: "Cancelar",
-                                state: "select",
-                                click: actions.btnCancelAdicionarMarca,
-                                preLoad: "Cancelando o cliente",
-                            },
-                            Ok: {
-                                html: "OK",
-                                state: "select",
-                                click: actions.btnSelectAdicionarMarca,
-                                preLoad: "Selecionando o cliente",
-                            },
-                        }
+        state.gridMarcaAdicionada = new xGridV2.create({
+            el: "#pnMarcasAdicionadas",
+            height: 400,
+            count: true,
+            columns: {
+                "Marca": { dataField: "DESCRICAO" },
+                "Desconto %": { dataField: "DESCONTO" },
+                "Data Inicial": { dataField: "DATA_INICIAL" },
+                "Data Final": { dataField: "DATA_FINAL" },
+            },
+            sideBySide: {
+                el: "#marcasAdicionadasCampos",
+                frame: {
+                    el: "#btnMarcasAdicionadas",
+                    buttons: {
+                        Cancel: {
+                            html: "Cancelar",
+                            state: "select",
+                            click: actions.btnCancelAdicionarMarca,
+                            preLoad: "Cancelando o cliente",
+                        },
+                        Ok: {
+                            html: "OK",
+                            state: "select",
+                            click: actions.btnSelectAdicionarMarca,
+                            preLoad: "Selecionando o cliente",
+                        },
                     }
                 }
-            }),
-
-            state.gridCliente = new xGridV2.create({
-                el: "#gridCliente",
-                height: 175,
-                count: true,
-                columns: {
-                    "CNPJ": { dataField: "CGC_CLIENTE", width: "30%" },
-                    "Cliente": { dataField: "NOME", compare: "colorir" },
-                },
-                compare: {
-                    'colorir': (r) => {
-                        if (r.QTD > 0)
-                            return '<span style="color: blue">' + r.value + '<span>';
-                        else
-                            return r.value;
-                    }
-                },
-                query: {
-                    async execute(rs) {
-                        let data = await actions.getClientes({
-                            offset: rs.offset,
-                            param: rs.param
-                        })
-                        state.gridCliente.querySourceAdd(data)
-                    }
-                },
-                sideBySide: {
-                    el: "#clienteCampos",
-                    vModel(r) {
-                        state.dbCliente = r
-                    },
-                    frame: {
-                        el: "#btnClientes",
-                        buttons: {
-                            Cancel: {
-                                html: "Cancelar",
-                                state: "select",
-                                click: actions.onClickCloseClienteModal,
-                                preLoad: "Cancelando o cliente",
-                            },
-                            Ok: {
-                                html: "OK",
-                                state: "select",
-                                click: actions.setarCliente,
-                                preLoad: "Selecionando o cliente",
-                            },
-                        }
-                    }
-                },
-                enter: actions.setarCliente,
-                dblClick: actions.setarCliente
-            })
+            }
+        })
     },
 
     criarModais() {
@@ -150,14 +101,14 @@ export const actions = {
             height: 341,
             width: 600,
             theme: "xModal-blue",
-            el: '#mdCliente',
+            el: '#modalCliente',
         }),
-            state.modalAdicionarMarca = new xModal.create({
-                height: 215,
-                width: 340,
-                el: '#mdAdicionarMarca',
-                theme: "xModal-blue",
-            })
+        state.modalAdicionarMarca = new xModal.create({
+            height: 215,
+            width: 340,
+            el: '#mdAdicionarMarca',
+            theme: "xModal-blue",
+        })
     },
 
     onClickClienteModal() {
@@ -172,36 +123,37 @@ export const actions = {
         state.modalAdicionarMarca.open()
     },
 
-    searchClientes() {
-        state.gridCliente.queryOpen({
-            NOME: state.edtClienteSearch.value.toUpperCase(),
+    searchMarcas() {
+        state.gridMarca.queryOpen({
+            DESCRICAO: state.edtMarcaSearch.value.toUpperCase(),
         });
     },
 
-    setarCliente() {
+    setarCliente(cliente: iCliente) {
         state.modalCliente.close()
-        state.clienteSelecionado = {
-            ID_CLIENTE: state.dbCliente.ID_CLIENTE,
-            NOME: state.dbCliente.NOME,
-            CGC_CLIENTE: state.dbCliente.CGC_CLIENTE,
-            QTD: state.dbCliente.QTD
+        state.dbClienteSelecionado = {
+            ID_CLIENTE: cliente.ID_CLIENTE,
+            NOME: cliente.NOME,
+            CGC_CLIENTE: cliente.CGC_CLIENTE,
+            QTD: cliente.QTD
         }
     },
 
-    async getClientes({ offset, param }: iParamGetClientes) {
+    async getMarcas({ offset, param }: iParamGetMarcas) {
         try {
             state.loading = true
-            const data = await serviceDescontoCliente.getClientes({ offset, param });
+            const data = await serviceDescontoCliente.getMarcas({ offset, param });
             state.loading = false
+
             return data
         } catch (error) {
             state.loading = false
             Swal.fire({
                 icon: "error",
-                text: "Erro ao carregar os clientes!"
+                text: "Erro ao carregar as marcas!"
             })
         }
-    },
+    }
 
 }
 
