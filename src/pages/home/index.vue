@@ -12,7 +12,7 @@ import login from "../login/login";
         class="mx-auto pa-3"
       >
         <v-row>
-          <div class="d-flex flex-wrap pa-6">
+          <div class="d-flex flex-wrap pa-6"
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/descontoOrcamento')"
@@ -47,6 +47,12 @@ import login from "../login/login";
               class="mr-4 mb-4"
               @click="router.push('/valeDinheiro')"
               >Vale dinheiro
+            </v-btn>
+            
+            <v-btn 
+              class="mr-4 mb-4" 
+              @click="router.push('/corredores')"
+              >Corredores
             </v-btn>
 
             <v-btn
