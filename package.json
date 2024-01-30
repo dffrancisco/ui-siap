@@ -6,6 +6,7 @@
   "scripts": {
     "serve": "vite preview",
     "build": "npm version patch && vite build",
+    "buildGit": "vite build",
     "app:build": "npm run build:for:electron && npm run electron:builder && ./clear_dist_electron.sh",
     "app:buildWin": "npm version patch && npm run build:for:electron && npm run electron:builder",
     "build2": "vue-tsc --noEmit && vite build",
