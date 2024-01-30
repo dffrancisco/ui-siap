@@ -154,6 +154,11 @@ export const actions = {
 
       state.dataAusencia = dataFormatada;
 
+      // state.codFuncionario,
+      // state.cpf,
+      // state.nome,
+      // state.dataAusencia,
+
       actions.justificarAusencia(state.dataAusencia);
     } else {
       return;
@@ -169,12 +174,12 @@ export const actions = {
   },
 
   justificarAusencia(dataAusencia) {
-    // state.loading = true;
+    state.loading = true;
     // console.log(infoParaAusencia, dataAusencia);
     actions.modal();
     state.modalJustificarFalta.open();
 
-    // state.loading = false;
+    state.loading = false;
   },
 
   init(route: RouteLocationNormalizedLoaded) {
