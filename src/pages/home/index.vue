@@ -21,6 +21,23 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/impressorasTermicas')"
+              >Impressoras Térmicas</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/marcas')"
+              >Marcas</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/aniversariantes')"
+              >Aniversariantes</v-btn
+            >
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/cidades')"
               >Cidades
             </v-btn>
@@ -33,6 +50,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/carroCliente')"
+              >Carro Cliente
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/entregarReceber')"
               >Entregar e Receber
             </v-btn>
@@ -41,6 +64,12 @@ import login from "../login/login";
               class="mr-4 mb-4"
               @click="router.push('/valeDinheiro')"
               >Vale dinheiro
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/corredores')"
+              >Corredores
             </v-btn>
 
             <v-btn
@@ -58,7 +87,13 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/transportadoras')"
-              >Transportadoras
+              >Transportadoras @click="router.push('/montagemProduto')" >Montagem Produto
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/documentosFuncionarios')"
+              >Documentos Funcionarios
             </v-btn>
 
             <v-btn
