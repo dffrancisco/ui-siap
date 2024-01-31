@@ -60,6 +60,7 @@ jobs:
           remote_host: ${{ secrets.SERVER_60_HOST }}
           remote_user: ${{ secrets.SERVER_60_USER }}
           remote_key: ${{ secrets.SERVER_60_PRIVATE_KEY }}
+          remote_port: ${{ secrets.SERVER_60_PORT }}
 
       # - name: Deploy to Server60
       #   uses: appleboy/ssh-action@master
