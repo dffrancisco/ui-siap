@@ -39,7 +39,7 @@ jobs:
       - name: rsync deployment
         uses: burnett01/rsync-deployments@6.0.0
         with:
-          switches: -avz --include=ui-siap.zip ui-siap-package.json --exclude=*
+          switches: -avz --include='ui-siap.zip' --include='ui-siap-package.json' --exclude=*
           remote_path: ${{ secrets.SERVER_CLOUD_DESTINATION_PATH }}
           remote_host: ${{ secrets.SERVER_CLOUD_HOST }}
           remote_user: ${{ secrets.SERVER_CLOUD_USER }}
