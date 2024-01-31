@@ -67,6 +67,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.SERVER_60_PRIVATE_KEY }}
+          po
 
       - name: Copy File to Server
-        run: scp $GITHUB_WORKSPACE/ui-siap.zip  ${{ secrets.SERVER_60_USER }}@ ${{ secrets.SERVER_60_HOST }}:${{ secrets.SERVER_60_DESTINATION_PATH }}
+        run: scp -P ${{ secrets.SERVER_60_PORT }} $GITHUB_WORKSPACE/ui-siap.zip ${{ secrets.SERVER_60_USER }}@${{ secrets.SERVER_60_HOST }}:${{ secrets.SERVER_60_DESTINATION_PATH }}
