@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build & Deploy
 
 on:
   push:
@@ -18,16 +18,19 @@ jobs:
         with:
           node-version: 16
 
-      - name: Bump version and push changes
+      - name: Git config
         run: |
           git config --global user.email "realacessoriosdev@gmail.com"
           git config --global user.name "realacessorios-dev"
 
+      - name: Bump Version
+        run: |
           npm version patch
 
-          git add .
-          git commit -m "Bump version" --allow-empty
-          git push origin HEAD --follow-tags
+      - name: Push changes to repository
+        run: |
+          git push origin HEAD --force
+          git push origin HEAD --tags --force
 
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -38,26 +41,22 @@ jobs:
       - name: Build project
         run: npm run buildGit
 
-      - name: Bump version
-        run: |
-          npm version patch
-          git push --follow-tags
-
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Zip files
         run: |
-          cp package.json ./ui-siap
-          zip -r ./ui-siap.zip ./ui-siap
+          cp package.json ui-siap
+          zip -r ui-siap.zip ui-siap
+          chmod 644 ui-siap.zip
 
-      - name: Deploy to Server60
-        uses: appleboy/ssh-action@master
+      - name: Debug da existência de 'ui-siap.zip'
+        run: |
+          ls -al $GITHUB_WORKSPACE
+
+      - name: rsync deployment
+        uses: burnett01/rsync-deployments@6.0.0
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            # Replace 'path/to/destination' with the actual path on your server
-            scp ui-siap.zip ${{ secrets.SERVER_DESTINATION_PATH }}
-            ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SERVER_DESTINATION_PATH }}"
+          switches: -avz --include=ui-siap.zip --exclude=*
+          remote_path: ${{ secrets.SERVER_60_DESTINATION_PATH }}
+          remote_host: ${{ secrets.SERVER_60_HOST }}
+          remote_user: ${{ secrets.SERVER_60_USER }}
+          remote_key: ${{ secrets.SERVER_60_PRIVATE_KEY }}
+          remote_port: ${{ secrets.SERVER_60_PORT }}
