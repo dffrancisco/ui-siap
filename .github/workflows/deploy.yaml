@@ -54,5 +54,5 @@ jobs:
           key: ${{ secrets.SERVER_60_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_60_PORT }}
           script: |
-            scp ui-siap.zip ${{ secrets.SERVER_60_DESTINATION_PATH }}
             ssh ${{ secrets.SERVER_60_USER }}@${{ secrets.SERVER_60_HOST }} -p ${{ secrets.SERVER_60_PORT }} "cd ${{ secrets.SERVER_60_DESTINATION_PATH }}"
+            scp ui-siap.zip ${{ secrets.SERVER_60_DESTINATION_PATH }}
