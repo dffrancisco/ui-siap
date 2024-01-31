@@ -43,10 +43,9 @@ jobs:
 
       - name: Zip files
         run: |
-          cp package.json $GITHUB_WORKSPACE/ui-siap
-          zip -r $GITHUB_WORKSPACE/ui-siap.zip $GITHUB_WORKSPACE/ui-siap
-          chmod 644 $GITHUB_WORKSPACE/ui-siap.zip
-        working-directory: ${{ github.workspace }}
+          cp package.json ui-siap
+          zip -r ui-siap.zip ui-siap
+          chmod 644 ui-siap.zip
 
       - name: Debug da existência de 'ui-siap.zip'
         run: |
