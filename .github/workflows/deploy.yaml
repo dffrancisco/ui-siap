@@ -45,7 +45,6 @@ jobs:
         run: |
           cp package.json $GITHUB_WORKSPACE/ui-siap
           zip -r $GITHUB_WORKSPACE/ui-siap.zip $GITHUB_WORKSPACE/ui-siap
-
         working-directory: ${{ github.workspace }}
 
       - name: Debug da existência de 'ui-siap.zip'
@@ -62,5 +61,4 @@ jobs:
           script: |
             scp $GITHUB_WORKSPACE/ui-siap.zip ${{ secrets.SERVER_60_DESTINATION_PATH }}
             ssh ${{ secrets.SERVER_60_USER }}@${{ secrets.SERVER_60_HOST }} -p ${{ secrets.SERVER_60_PORT }} "cd ${{ secrets.SERVER_60_DESTINATION_PATH }}"
-
         working-directory: ${{ github.workspace }}
