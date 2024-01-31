@@ -51,7 +51,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_60_HOST }}
           username: ${{ secrets.SERVER_60_USER }}
-          key: ${{ secrets.SERVER_60_PRIVATE_KEY }}
+          password: ${{SERVER_60_PASSWORD}}
           port: ${{ secrets.SERVER_60_PORT }}
           script: |
             scp ui-siap.zip ${{ secrets.SERVER_DESTINATION_PATH }}
