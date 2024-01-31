@@ -27,8 +27,9 @@ jobs:
         run: |
           npm version patch
 
-      - name: Push changes to repository
+      - name: Pull and Push changes to repository
         run: |
+          git pull origin production --ff-only
           git push origin HEAD
           git push origin HEAD --tags
 
@@ -52,6 +53,7 @@ jobs:
           host: ${{ secrets.SERVER_60_HOST }}
           username: ${{ secrets.SERVER_60_USER }}
           key: ${{ secrets.SERVER_60_PASSWORD }}
+          port: ${{ secrets.SERVER_60_PORT }}
           script: |
             scp ui-siap.zip ${{ secrets.SERVER_DESTINATION_PATH }}
-            ssh ${{ secrets.SERVER_60_USER }}@${{ secrets.SERVER_60_HOST }} -p 2608 "cd ${{ secrets.SERVER_60_DESTINATION_PATH }}"
+            ssh ${{ secrets.SERVER_60_USER }}@${{ secrets.SERVER_60_HOST }} -p ${{ secrets.SERVER_60_PORT }} "cd ${{ secrets.SERVER_60_DESTINATION_PATH }}"
