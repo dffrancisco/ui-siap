@@ -52,15 +52,24 @@ jobs:
         run: |
           ls -al $GITHUB_WORKSPACE
 
-      - name: Deploy to Server60
-        uses: appleboy/ssh-action@master
+      - name: rsync deployment
+        uses: burnett01/rsync-deployments@6.0.0
         with:
-          host: ${{ secrets.SERVER_60_HOST }}
-          username: ${{ secrets.SERVER_60_USER }}
-          key: ${{ secrets.SERVER_60_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_60_PORT }}
-          script: |
-            scp $GITHUB_WORKSPACE/ui-siap.zip ${{ secrets.SERVER_60_DESTINATION_PATH }}
+          switches: -avz --include=ui-siap.zip --exclude=*
+          remote_path: ${{ secrets.SERVER_60_DESTINATION_PATH }}
+          remote_host: ${{ secrets.SERVER_60_HOST }}
+          remote_user: ${{ secrets.SERVER_60_USER }}
+          remote_key: ${{ secrets.SERVER_60_PRIVATE_KEY }}
+
+      # - name: Deploy to Server60
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.SERVER_60_HOST }}
+      #     username: ${{ secrets.SERVER_60_USER }}
+      #     key: ${{ secrets.SERVER_60_PRIVATE_KEY }}
+      #     port: ${{ secrets.SERVER_60_PORT }}
+      #     script: |
+      #       scp $GITHUB_WORKSPACE/ui-siap.zip ${{ secrets.SERVER_60_DESTINATION_PATH }}
 
       # - name: Set up SSH
       #   uses: webfactory/ssh-agent@v0.5.4
