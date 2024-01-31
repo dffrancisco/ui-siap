@@ -1,4 +1,4 @@
-name: Build & Deploy
+name: Build and Deploy
 
 on:
   push:
@@ -51,7 +51,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_60_HOST }}
           username: ${{ secrets.SERVER_60_USER }}
-          password: ${{ secrets.SERVER_60_PASSWORD }}
+          key: ${{ secrets.SERVER_60_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_60_PORT }}
           script: |
             scp ui-siap.zip ${{ secrets.SERVER_DESTINATION_PATH }}
