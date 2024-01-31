@@ -38,7 +38,6 @@ export const state = reactive({
 // });
 
 export const actions = {
-  
   getFotoFuncionarioURL(cpf: string) {
     if (!cpf) {
       return "";
@@ -151,27 +150,29 @@ export const actions = {
 
       state.dataAusencia = dataFormatada;
       state.codFuncionario,
-      state.cpf,
-      state.nome,
-      state.dataAusencia,
-
-      actions.justificarAusencia(state.dataAusencia);
+        state.cpf,
+        state.nome,
+        state.dataAusencia,
+        actions.justificarAusencia(state.dataAusencia);
     } else {
       return;
     }
   },
 
-  modal() {
+  modal(dataAusencia) {
     state.modalJustificarFalta = new xModal.create({
-      height: 500,
+      height: 700,
       width: 600,
       el: "#modalJustificarFalta",
     });
   },
 
   justificarAusencia(dataAusencia) {
+    // console.log(dataAusencia);
+
     state.loading = true;
-    actions.modal();
+    // actions.modal();
+    actions.modal(dataAusencia);
     state.modalJustificarFalta.open();
 
     state.loading = false;
