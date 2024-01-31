@@ -53,6 +53,7 @@ jobs:
 
       - name: Deploy to Server60
         uses: appleboy/ssh-action@master
+        working-directory: ${{ github.workspace }}
         with:
           host: ${{ secrets.SERVER_60_HOST }}
           username: ${{ secrets.SERVER_60_USER }}
@@ -61,4 +62,3 @@ jobs:
           script: |
             scp $GITHUB_WORKSPACE/ui-siap.zip ${{ secrets.SERVER_60_DESTINATION_PATH }}
             ssh ${{ secrets.SERVER_60_USER }}@${{ secrets.SERVER_60_HOST }} -p ${{ secrets.SERVER_60_PORT }} "cd ${{ secrets.SERVER_60_DESTINATION_PATH }}"
-        working-directory: ${{ github.workspace }}
