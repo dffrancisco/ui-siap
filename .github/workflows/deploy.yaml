@@ -29,9 +29,8 @@ jobs:
 
       - name: Pull and Push changes to repository
         run: |
-          git pull origin production --ff-only
-          git push origin HEAD
-          git push origin HEAD --tags
+          git push origin HEAD --force
+          git push origin HEAD --tags --force
 
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
