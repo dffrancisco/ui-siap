@@ -11,6 +11,7 @@ export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     edtSearch: <HTMLInputElement>{},
     dbBairro: <iBairro>{},
+    dbBairroAntiga: <iBairro>{},
     pnSearch: false,
     loading: false
 });
@@ -111,6 +112,8 @@ export const actions = {
 
     btnInsert() {
         state.pnSearch = true;
+    
+        state.dbBairro = <iBairro>{}
 
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
@@ -172,8 +175,12 @@ export const actions = {
 
     btnCancel() {
         state.pnSearch = false;
+
         state.gridPrincipal.enable();
-        state.gridPrincipal.focus();
+
+        state.gridPrincipal.queryOpen({ DESCRICAO: "" }, () => {
+            state.gridPrincipal.focus();
+        });
     },
 
     async getBairros({ offset, param }: iParamGetBairros) {
@@ -192,10 +199,10 @@ export const actions = {
         }
     },
 
-    async getDuplicidade({field, value}: iParamDuplicity) {
+    async getDuplicidade({ field, value }: iParamDuplicity) {
         try {
-            const data = await serviceBairros.getDuplicidade({field, value});
-        
+            const data = await serviceBairros.getDuplicidade({ field, value });
+
             return data;
         } catch (error) {
             Swal.fire({
@@ -212,18 +219,52 @@ export const actions = {
             );
 
             state.loading = true;
+
             const data = await serviceBairros.insert(newParams);
-            state.loading = false;
 
             state.gridPrincipal.insertLine({
                 ...newParams,
-                 ID_BAIRRO: data.ID_BAIRRO
+                ID_BAIRRO: data.ID_BAIRRO
             })
+
+            state.loading = false;
+
         } catch (error) {
             state.loading = false;
             Swal.fire({
                 icon: "error",
                 text: "Erro ao inserir novo registro!"
+            })
+        }
+    },
+
+    async update() {
+        try {
+            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
+
+            if (dadosDiff.diff == false) {
+                return
+            }
+
+            let dadosAtualizados = {
+                ...state.dbBairro,
+                ...dadosDiff.new
+            }
+
+            state.loading = true;
+
+            await serviceBairros.update(dadosAtualizados);
+
+            state.gridPrincipal.dataSource(dadosAtualizados)
+            state.dbBairro = dadosAtualizados
+
+            state.loading = false;
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao atualizar registro!"
             })
         }
     },

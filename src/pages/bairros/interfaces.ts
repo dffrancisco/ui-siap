@@ -23,3 +23,5 @@ export interface iParamInsert {
 
 export interface iGetBairrosResponse extends iBairro{}
 export interface iInsertResponse extends iBairro{}
+export interface iParamUpdate extends iBairro{}
+export interface iUpdateResponse extends iBairro{}

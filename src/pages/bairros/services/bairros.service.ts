@@ -5,7 +5,9 @@ import {
         iInsertResponse,
         iParamDuplicity, 
         iParamGetBairros, 
-        iParamInsert
+        iParamInsert,
+        iParamUpdate,
+        iUpdateResponse
 } from "../interfaces"
 
 const caminho = 'siap/bairros';
@@ -13,6 +15,7 @@ const caminho = 'siap/bairros';
 type iGetBairrosFunction = (param: iParamGetBairros) => Promise<iGetBairrosResponse>;
 type iGetDuplicidadeFunction = (param: iParamDuplicity) => Promise<iGetDuplicidadeResponse>;
 type iInsertFunction = (param: iParamInsert) => Promise<iInsertResponse>;
+type iUpdateFunction = (param: iParamUpdate) => Promise<iUpdateResponse>;
 
 const getBairros: iGetBairrosFunction = async ({param, offset}) => {
     let {data} = await axios.post(caminho, {
@@ -43,8 +46,18 @@ const insert: iInsertFunction = async (newParams) => {
     return data;
 };
 
+const update: iUpdateFunction = async (param: iParamUpdate) => {
+    let {data} = await axios.post(caminho, {
+        call: "update",
+        param
+    });
+
+    return data;
+};
+
 export default {
     getBairros,
     getDuplicidade,
-    insert
+    insert,
+    update
 }
