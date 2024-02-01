@@ -2,20 +2,20 @@ import axios from "axios";
 import { 
         iGetBairrosResponse, 
         iGetDuplicidadeResponse,
-        iInsertResponse,
+        iToInsertResponse,
         iParamDuplicity, 
         iParamGetBairros, 
-        iParamInsert,
-        iParamUpdate,
-        iUpdateResponse
+        iParamToInsert,
+        iParamToUpdate,
+        iToUpdateResponse
 } from "../interfaces"
 
 const caminho = 'siap/bairros';
 
 type iGetBairrosFunction = (param: iParamGetBairros) => Promise<iGetBairrosResponse>;
 type iGetDuplicidadeFunction = (param: iParamDuplicity) => Promise<iGetDuplicidadeResponse>;
-type iInsertFunction = (param: iParamInsert) => Promise<iInsertResponse>;
-type iUpdateFunction = (param: iParamUpdate) => Promise<iUpdateResponse>;
+type iToInsertFunction = (param: iParamToInsert) => Promise<iToInsertResponse>;
+type iToUpdateFunction = (param: iParamToUpdate) => Promise<iToUpdateResponse>;
 
 const getBairros: iGetBairrosFunction = async ({param, offset}) => {
     let {data} = await axios.post(caminho, {
@@ -37,7 +37,7 @@ const getDuplicidade: iGetDuplicidadeFunction = async ({field, value}) => {
     return data;
 };
 
-const insert: iInsertFunction = async (newParams) => {
+const toInsert: iToInsertFunction = async (newParams) => {
     let {data} = await axios.post(caminho, {
         call: "insert",
         param: newParams
@@ -46,7 +46,7 @@ const insert: iInsertFunction = async (newParams) => {
     return data;
 };
 
-const update: iUpdateFunction = async (param: iParamUpdate) => {
+const toUpdate: iToUpdateFunction = async (param: iParamToUpdate) => {
     let {data} = await axios.post(caminho, {
         call: "update",
         param
@@ -55,9 +55,21 @@ const update: iUpdateFunction = async (param: iParamUpdate) => {
     return data;
 };
 
+const toDelete = async (id_bairro: number) => {
+    let {data} = await axios.post(caminho, {
+        call: "delete",
+        param: {
+            ID_BAIRRO: id_bairro
+        }
+    });
+
+    return data;
+}
+
 export default {
     getBairros,
     getDuplicidade,
-    insert,
-    update
+    toInsert,
+    toUpdate,
+    toDelete
 }

@@ -17,11 +17,11 @@ export interface iGetDuplicidadeResponse {
     DESCRICAO: string
 }
 
-export interface iParamInsert {
+export interface iParamToInsert {
     DESCRICAO: string
 }
 
 export interface iGetBairrosResponse extends iBairro{}
-export interface iInsertResponse extends iBairro{}
-export interface iParamUpdate extends iBairro{}
-export interface iUpdateResponse extends iBairro{}
+export interface iToInsertResponse extends iBairro{}
+export interface iParamToUpdate extends iBairro{}
+export interface iToUpdateResponse extends iBairro{}

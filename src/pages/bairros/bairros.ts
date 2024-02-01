@@ -11,7 +11,6 @@ export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     edtSearch: <HTMLInputElement>{},
     dbBairro: <iBairro>{},
-    dbBairroAntiga: <iBairro>{},
     pnSearch: false,
     loading: false
 });
@@ -117,7 +116,6 @@ export const actions = {
 
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
-        state.gridPrincipal.clearElementSideBySide();
     },
 
     btnUpdate() {
@@ -147,7 +145,7 @@ export const actions = {
         }
 
         if (await msgConfirm("Confirmação", "Confirma exclusão deste registro?")) {
-            await actions.delete()
+            await actions.toDelete()
             state.gridPrincipal.focus();
         }
     },
@@ -163,9 +161,9 @@ export const actions = {
 
         //@ts-ignore
         if (state.gridPrincipal.dataSource() == false) {
-            actions.insert();
+            actions.toInsert();
         } else {
-            actions.update();
+            actions.toUpdate();
         }
 
         state.pnSearch = false;
@@ -212,7 +210,7 @@ export const actions = {
         }
     },
 
-    async insert() {
+    async toInsert() {
         try {
             let newParams = <any>(
                 state.gridPrincipal.getElementSideBySideJson(true, false)
@@ -220,7 +218,7 @@ export const actions = {
 
             state.loading = true;
 
-            const data = await serviceBairros.insert(newParams);
+            const data = await serviceBairros.toInsert(newParams);
 
             state.gridPrincipal.insertLine({
                 ...newParams,
@@ -238,7 +236,7 @@ export const actions = {
         }
     },
 
-    async update() {
+    async toUpdate() {
         try {
             let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
@@ -253,7 +251,7 @@ export const actions = {
 
             state.loading = true;
 
-            await serviceBairros.update(dadosAtualizados);
+            await serviceBairros.toUpdate(dadosAtualizados);
 
             state.gridPrincipal.dataSource(dadosAtualizados)
             state.dbBairro = dadosAtualizados
@@ -268,6 +266,25 @@ export const actions = {
             })
         }
     },
+
+    async toDelete() {
+        try {
+            let id_bairro = state.dbBairro.ID_BAIRRO
+
+            state.loading = true;
+
+            await serviceBairros.toDelete(id_bairro);
+            state.gridPrincipal.deleteLine();
+            
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao excluir registro!"
+            })
+        }
+    }
 
 }
 
