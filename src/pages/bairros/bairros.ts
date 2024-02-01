@@ -203,7 +203,30 @@ export const actions = {
                 text: "Erro ao verificar duplicidade!"
             })
         }
-    }
+    },
+
+    async insert() {
+        try {
+            let newParams = <any>(
+                state.gridPrincipal.getElementSideBySideJson(true, false)
+            );
+
+            state.loading = true;
+            const data = await serviceBairros.insert(newParams);
+            state.loading = false;
+
+            state.gridPrincipal.insertLine({
+                ...newParams,
+                 ID_BAIRRO: data.ID_BAIRRO
+            })
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao inserir novo registro!"
+            })
+        }
+    },
 
 }
 

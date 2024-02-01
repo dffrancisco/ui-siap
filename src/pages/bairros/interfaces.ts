@@ -17,4 +17,9 @@ export interface iGetDuplicidadeResponse {
     DESCRICAO: string
 }
 
+export interface iParamInsert {
+    DESCRICAO: string
+}
+
 export interface iGetBairrosResponse extends iBairro{}
+export interface iInsertResponse extends iBairro{}
