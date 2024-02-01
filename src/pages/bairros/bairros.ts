@@ -1,0 +1,109 @@
+import { reactive } from "vue";
+import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
+import Swal from "sweetalert2";
+import { msgConfirm } from "@/ts/message";
+import $ from 'jquery'
+import { iBairro } from './interfaces'
+import serviceBairros from './services/bairros.service';
+
+export const state = reactive({
+    gridPrincipal: <ixGridCreate>{},
+    edtSearch: <HTMLInputElement>{},
+    dbBairro: <iBairro>{},
+    pnSearch: false,
+    loading: false
+});
+
+export const actions = {
+    grids() {
+        state.gridPrincipal = new xGridV2.create({
+            el: "#gridPrincipal",
+            height: 200,
+            count: true,
+            columns: {
+                'Descrição': { dataField: "DESCRICAO" },
+            },
+            query: {
+                async execute(rs) {
+                    let data = await actions.getBairros({
+                        offset: rs.offset,
+                        param: rs.param
+                    });
+                    state.gridPrincipal.querySourceAdd(data);
+                }
+            },
+            sideBySide: {
+                el: "#pnCampos",
+                vModel(r) {
+                    state.dbBairro = r;
+                },
+                duplicity: {
+                    dataField: ["DESCRICAO"],
+                    async execute(rs) {
+                        let dup = await actions.getDuplicidade({
+                            value: rs.value.toUpperCase(),
+                            field: rs.field
+                        });
+
+                        if (Object.keys(dup).length > 0) {
+                            state.gridPrincipal.showMessageDuplicity(
+                                rs.text + " já está cadastrada"
+                            );
+                            return true;
+                        }
+
+                        return false;
+                    },
+                },
+                frame: {
+                    el: "#pnBotoes",
+                    buttons: {
+                        novo: {
+                            html: "Novo",
+                            state: "insert",
+                            click: actions.btnInsert
+                        },
+                        update: {
+                            html: "Atualizar",
+                            state: "update",
+                            click: actions.btnUpdate
+                        },
+                        excluir: {
+                            html: "Excluir",
+                            state: "delete",
+                            click: actions.btnDelete
+                        },
+                        salvar: {
+                            html: "Salvar",
+                            state: "save",
+                            click: actions.btnSave,
+                            preLoad: "Salvando"
+                        },
+                        cancelar: {
+                            html: "Cancelar",
+                            state: "cancel",
+                            click: actions.btnCancel,
+                        }
+                    }
+                }
+            }
+        });
+    },
+
+    init() {
+        $(".ss").attr("autocomplete", "off");
+
+        state.edtSearch = <any>document.getElementById("edtMarcaSearch");
+
+        actions.grids();
+    },
+
+    search() {
+        state.gridPrincipal.queryOpen({
+            DESCRICAO: state.edtSearch.value.toUpperCase(),
+        });
+    },
+
+}
+
+export default { state, actions };
