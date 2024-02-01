@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import printJS from "print-js";
 import { ref, defineProps } from "vue";
 
 const justificativa = ref<string>("");
@@ -9,14 +10,62 @@ const preencherJustificativa = (DESCRICAO: string) => {
   justificativa.value = DESCRICAO;
   showCIDAutocomplete.value = DESCRICAO === "Atestado";
 };
+
+function imprimirJustificativa() {
+  console.log("imprimir folha");
+
+  const conteudoElement = criarHTMLParaPDF();
+
+  printJS({
+    documentTitle: "Justificativa de ausência",
+    printable: conteudoElement,
+    type: "html",
+  });
+}
+
+function criarHTMLParaPDF() {
+  let nome = document.getElementById("nome");
+  const justificativaValor = justificativa && justificativa.value ? justificativa.value : "";
+  // const dataAusencia = dadosAusencia || "";
+
+  const conteudoHTML = `
+    <div id="justificativaPDF">
+      <p>JUSTIFICATIVA DE AUSÊNCIA</p>
+      <p>Eu, ${nome}, brasileiro (a), de CPF ${pontos.cpf}, profissional lotado no cargo ${pontos.cargo}, na empresa REAL ACESSÓRIOS venho justificar ao RH, minha ausência que foi devido a: ${justificativaValor}. No dia ${dadosAusencia}, motivos pelos quais impossibilitaram minha presença na empresa, bem como o desempenho das respectivas funções. Solicito, portanto, o abono da falta, visto que a mesma ocorreu por motivo de força maior e foi devidamente justificada.</p>
+      <p>Por ser expressão da verdade, firmo a presente.</p>
+      <p>Brasília-DF, __/__/____.</p>
+      <p>${nome}</p>
+    </div>
+  `;
+
+  // Criar um elemento temporário e atribuir o conteúdo HTML
+  const tempElement = document.createElement("div");
+  tempElement.innerHTML = conteudoHTML;
+
+  return tempElement;
+}
 </script>
 
 <template>
   <div class="modal-justificar-falta">
     <v-row>
       <div>
-        <span class="dataAusencia">{{ "Data: " + dadosAusencia }}-</span>
-        <span class="nomeFuncionario">{{ pontos.nome }}</span>
+        <span
+          class="dataAusencia"
+          id="dataAusencia"
+          >{{ "Data: " + dadosAusencia }} -
+        </span>
+        <span
+          class="nomeFuncionario"
+          id="nome"
+          >{{ pontos.nome }}</span
+        >
+        <span
+          class="cargoFuncionario"
+          id="cargo"
+        >
+          - {{ pontos.cargo }}</span
+        >
       </div>
 
       <div class="horarios">
@@ -90,7 +139,8 @@ const preencherJustificativa = (DESCRICAO: string) => {
       <v-row>
         <v-col cols="12">
           <v-textarea
-            label="Justificativa"
+            label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
+            id="justificativa"
             v-model="justificativa"
           >
           </v-textarea>
@@ -108,6 +158,7 @@ const preencherJustificativa = (DESCRICAO: string) => {
       <v-btn
         color="primary"
         class="btnJustificar"
+        @click="imprimirJustificativa"
       >
         <v-icon>mdi-printer-settings</v-icon>
         Justificativa
@@ -124,6 +175,10 @@ const preencherJustificativa = (DESCRICAO: string) => {
 </template>
 
 <style scoped>
+.notaRodape {
+  font-size: x-small;
+  padding-top: -20px;
+}
 .modal-justificar-falta {
   padding: 15px;
 }

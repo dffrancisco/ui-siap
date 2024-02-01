@@ -151,7 +151,7 @@ export const actions = {
 
   modal() {
     state.modalJustificarFalta = new xModal.create({
-      height: 500,
+      height: 530,
       width: 700,
       el: "#modalJustificarFalta",
       theme: "xModal-blue",
@@ -237,6 +237,7 @@ export const pontosDiaSelecionado = computed(() => {
   let pontos = state.pontos["Dia:" + state.diaSelecionado];
   let nome = ref(state.nome);
   let cpf = ref(state.cpf);
+  let cargo = ref(state.cargo);
 
   const formatarData = (data) => {
     return moment(data).format("HH:mm");
@@ -246,6 +247,7 @@ export const pontosDiaSelecionado = computed(() => {
     ...pontos,
     nome: nome.value,
     cpf: cpf.value,
+    cargo: cargo.value,
     HORA_CHEGADA: pontos.HORA_CHEGADA ? formatarData(pontos.HORA_CHEGADA) : "??:??",
     HORA_ALMOCO_INICIAL: pontos.HORA_ALMOCO_INICIAL ? formatarData(pontos.HORA_ALMOCO_INICIAL) : "??:??",
     HORA_ALMOCO_FINAL: pontos.HORA_ALMOCO_FINAL ? formatarData(pontos.HORA_ALMOCO_FINAL) : "??:??",
