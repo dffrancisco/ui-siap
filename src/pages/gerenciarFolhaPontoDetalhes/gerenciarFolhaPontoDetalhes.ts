@@ -151,9 +151,10 @@ export const actions = {
 
   modal() {
     state.modalJustificarFalta = new xModal.create({
-      height: 560,
+      height: 500,
       width: 700,
       el: "#modalJustificarFalta",
+      theme: "xModal-blue",
     });
   },
 

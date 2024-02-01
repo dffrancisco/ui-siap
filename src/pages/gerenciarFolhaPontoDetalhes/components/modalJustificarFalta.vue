@@ -2,10 +2,12 @@
 import { ref, defineProps } from "vue";
 
 const justificativa = ref<string>("");
+const showCIDAutocomplete = ref(false);
 const { dadosAusencia, pontos, tiposDeFalta } = defineProps(["dadosAusencia", "pontos", "tiposDeFalta"]);
 
 const preencherJustificativa = (DESCRICAO: string) => {
   justificativa.value = DESCRICAO;
+  showCIDAutocomplete.value = DESCRICAO === "Atestado";
 };
 </script>
 
@@ -64,7 +66,6 @@ const preencherJustificativa = (DESCRICAO: string) => {
 
       <div style="width: 100%">
         <v-container fluid>
-          <span class="motivo">Motivo</span>
           <v-row>
             <v-autocomplete
               :items="tiposDeFalta.map((item) => item.DESCRICAO)"
@@ -74,6 +75,14 @@ const preencherJustificativa = (DESCRICAO: string) => {
             ></v-autocomplete>
           </v-row>
         </v-container>
+      </div>
+      <div style="width: 30%"
+        ><v-autocomplete
+          id="cid"
+          v-if="showCIDAutocomplete"
+          label="CID"
+        >
+        </v-autocomplete>
       </div>
     </v-row>
 
@@ -115,6 +124,9 @@ const preencherJustificativa = (DESCRICAO: string) => {
 </template>
 
 <style scoped>
+.modal-justificar-falta {
+  padding: 15px;
+}
 .horarios {
   margin-top: 10px;
   width: 100%;
@@ -137,7 +149,7 @@ const preencherJustificativa = (DESCRICAO: string) => {
 
 .btnJustificar {
   margin-right: 5px;
-  margin-left: 330px;
+  margin-left: 280px;
 }
 
 .btnSalvar {
