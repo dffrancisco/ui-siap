@@ -32,10 +32,3 @@ export interface iTipoFaltasCount {
   UPLOAD_ARQUIVO: string;
   COUNT_TIPO: number;
 }
-
-export interface iAusencias {
-  COD_FUNCIONARIO: number;
-  CPF: string;
-  NOME_FUNCIONARIO: string;
-  DATA_AUSENCIA: string;
-}

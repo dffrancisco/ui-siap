@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { actions, state, pontosCalendario } from "./gerenciarFolhaPontoDetalhes";
+import { actions, state, pontosCalendario, pontosDiaSelecionado } from "./gerenciarFolhaPontoDetalhes";
 import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -178,7 +178,13 @@ actions.init(route);
     <div
       id="modalJustificarFalta"
       title="Justificar Ausência"
-      ><modal-justificar-falta />
+      style="display: none"
+    >
+      <modal-justificar-falta
+        :dadosAusencia="state.dataAusencia"
+        :tiposDeFalta="state.tipoFaltas"
+        :pontos="pontosDiaSelecionado"
+      />
     </div>
 
     <div id="pnCodigoTela">folhaPontoDetalhes</div>

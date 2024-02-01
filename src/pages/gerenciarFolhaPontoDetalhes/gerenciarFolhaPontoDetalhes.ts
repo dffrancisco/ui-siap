@@ -1,9 +1,10 @@
 import { computed, nextTick, reactive, ref, watch } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
-import { iAusencias, iParam, iParamComCPF, iPonto, iTipoFaltasCount } from "./interface";
+import { iParam, iParamComCPF, iPonto, iTipoFaltasCount } from "./interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDetalhes.service";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
+import moment from "moment";
 
 export const state = reactive({
   pontos: {},
@@ -24,18 +25,9 @@ export const state = reactive({
   ano: 2024,
   initialDate: <any>new Date(),
   modalJustificarFalta: <iModalCreate>(<unknown>null),
-  ausencias: <iAusencias[]>[],
   dataAusencia: <any>new Date(),
+  diaSelecionado: undefined,
 });
-
-// export const infoParaAusencia = computed((): iAusencias => {
-//   return {
-//     COD_FUNCIONARIO: state.codFuncionario,
-//     CPF: state.cpf,
-//     NOME_FUNCIONARIO: state.nome,
-//     DATA_AUSENCIA: state.dataAusencia,
-//   };
-// });
 
 export const actions = {
   getFotoFuncionarioURL(cpf: string) {
@@ -140,42 +132,29 @@ export const actions = {
 
   clickModalJustificarAusencia(event: any) {
     const data = event.date;
+
     if (data.getDay() != 0) {
       let dia = data.getDate();
       let mes = data.getMonth() + 1;
       let ano = data.getFullYear();
       let diaFormatado = dia < 10 ? "0" + dia : dia;
       let mesFormatado = mes < 10 ? "0" + mes : mes;
-      let dataFormatada = `${diaFormatado}.${mesFormatado}.${ano}`;
+      let dataFormatada = `${diaFormatado}/${mesFormatado}/${ano}`;
 
       state.dataAusencia = dataFormatada;
-      state.codFuncionario,
-        state.cpf,
-        state.nome,
-        state.dataAusencia,
-        actions.justificarAusencia(state.dataAusencia);
+      state.diaSelecionado = dia;
+      state.modalJustificarFalta.open();
     } else {
       return;
     }
   },
 
-  modal(dataAusencia) {
+  modal() {
     state.modalJustificarFalta = new xModal.create({
-      height: 700,
-      width: 600,
+      height: 560,
+      width: 700,
       el: "#modalJustificarFalta",
     });
-  },
-
-  justificarAusencia(dataAusencia) {
-    // console.log(dataAusencia);
-
-    state.loading = true;
-    // actions.modal();
-    actions.modal(dataAusencia);
-    state.modalJustificarFalta.open();
-
-    state.loading = false;
   },
 
   init(route: RouteLocationNormalizedLoaded) {
@@ -188,6 +167,7 @@ export const actions = {
       state.cpf = String(route.query.cpf);
       state.mes = Number(route.query.mes);
       state.ano = Number(route.query.ano);
+      actions.modal();
 
       await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
       await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
@@ -246,6 +226,32 @@ export const selecionandoData = watch([() => state.mes, () => state.ano], async 
 
   state.initialDate = new Date(novoAno, novoMes - 1, 1);
   state.loadingCalendar = false;
+});
+
+export const pontosDiaSelecionado = computed(() => {
+  if (state.diaSelecionado == undefined) {
+    return {};
+  }
+
+  let pontos = state.pontos["Dia:" + state.diaSelecionado];
+  let nome = ref(state.nome);
+  let cpf = ref(state.cpf);
+
+  const formatarData = (data) => {
+    return moment(data).format("HH:mm");
+  };
+
+  pontos = {
+    ...pontos,
+    nome: nome.value,
+    cpf: cpf.value,
+    HORA_CHEGADA: pontos.HORA_CHEGADA ? formatarData(pontos.HORA_CHEGADA) : "??:??",
+    HORA_ALMOCO_INICIAL: pontos.HORA_ALMOCO_INICIAL ? formatarData(pontos.HORA_ALMOCO_INICIAL) : "??:??",
+    HORA_ALMOCO_FINAL: pontos.HORA_ALMOCO_FINAL ? formatarData(pontos.HORA_ALMOCO_FINAL) : "??:??",
+    HORA_SAIDA: pontos.HORA_SAIDA ? formatarData(pontos.HORA_SAIDA) : "??:??",
+  };
+
+  return pontos;
 });
 
 export default { state, actions };
