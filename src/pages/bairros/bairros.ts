@@ -5,6 +5,7 @@ import { msgConfirm } from "@/ts/message";
 import $ from 'jquery'
 import { iBairro, iParamGetBairros } from './interfaces'
 import serviceBairros from './services/bairros.service';
+import utils from "@/ts/utils";
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
@@ -106,6 +107,73 @@ export const actions = {
         state.gridPrincipal.queryOpen({
             DESCRICAO: state.edtSearch.value.toUpperCase(),
         });
+    },
+
+    btnInsert() {
+        state.pnSearch = true;
+
+        state.gridPrincipal.disable();
+        state.gridPrincipal.focusField();
+        state.gridPrincipal.clearElementSideBySide();
+    },
+
+    btnUpdate() {
+        state.pnSearch = true;
+
+        //@ts-ignore
+        if (state.gridPrincipal.dataSource() == false) {
+            Swal.fire({
+                icon: "warning",
+                text: "Nenhum registro selecionado para alteração, operação cancelada!"
+            })
+            return false;
+        }
+        state.gridPrincipal.disable();
+        state.gridPrincipal.focusField();
+
+    },
+
+    async btnDelete() {
+        //@ts-ignore
+        if (state.gridPrincipal.dataSource() == false) {
+            Swal.fire({
+                icon: "warning",
+                text: "Nenhum registro selecionado para exclusão, operação cancelada!"
+            })
+            return false;
+        }
+
+        if (await msgConfirm("Confirmação", "Confirma exclusão deste registro?")) {
+            await actions.delete()
+            state.gridPrincipal.focus();
+        }
+    },
+
+    async btnSave() {
+        if (utils.validaOBR()) {
+            return false
+        }
+
+        if (await state.gridPrincipal.getDuplicityAll()) {
+            return false;
+        }
+
+        //@ts-ignore
+        if (state.gridPrincipal.dataSource() == false) {
+            actions.insert();
+        } else {
+            actions.update();
+        }
+
+        state.pnSearch = false;
+        state.gridPrincipal.enable();
+        state.gridPrincipal.focus();
+    },
+
+    btnCancel() {
+        state.pnSearch = false;
+        state.gridPrincipal.enable();
+        state.gridPrincipal.focus();
     },
 
     async getBairros({ offset, param }: iParamGetBairros) {
