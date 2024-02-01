@@ -3,7 +3,7 @@ import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import $ from 'jquery'
-import { iBairro } from './interfaces'
+import { iBairro, iParamGetBairros } from './interfaces'
 import serviceBairros from './services/bairros.service';
 
 export const state = reactive({
@@ -93,15 +93,35 @@ export const actions = {
     init() {
         $(".ss").attr("autocomplete", "off");
 
-        state.edtSearch = <any>document.getElementById("edtMarcaSearch");
+        state.edtSearch = <any>document.getElementById("edtSearch");
 
         actions.grids();
+
+        state.gridPrincipal.queryOpen({ DESCRICAO: "" }, () => {
+            state.gridPrincipal.focus();
+        });
     },
 
     search() {
         state.gridPrincipal.queryOpen({
             DESCRICAO: state.edtSearch.value.toUpperCase(),
         });
+    },
+
+    async getBairros({ offset, param }: iParamGetBairros) {
+        try {
+            state.loading = true;
+            const data = await serviceBairros.getBairros({ offset, param });
+            state.loading = false;
+
+            return data;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao exibir os bairros!"
+            })
+        }
     },
 
 }
