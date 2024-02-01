@@ -1,9 +1,11 @@
 import axios from "axios";
 
 import {
+    iAdicionarMarcaResponse,
     iGetClienteResponse,
     iGetMarcaAdicionadaResponse,
     iGetMarcaResponse,
+    iParamAdicionarMarca,
     iParamGetClientes,
     iParamGetMarcas,
     iParamGetMarcasAdicionadas
@@ -12,6 +14,7 @@ import {
 type iGetClientesFunction = (param: iParamGetClientes) => Promise<iGetClienteResponse>;
 type iGetMarcasFunction = (param: iParamGetMarcas) => Promise<iGetMarcaResponse>;
 type iGetMarcasAdicionadas = (param: iParamGetMarcasAdicionadas) => Promise<iGetMarcaAdicionadaResponse>;
+type iAdicionarMarcaFuntion = (param: iParamAdicionarMarca) => Promise<iAdicionarMarcaResponse>
 
 const caminho = 'siap/descontoCliente'
 
@@ -42,6 +45,14 @@ const getMarcasAdicionadas: iGetMarcasAdicionadas = async ({ offset, param }) =>
     return data;
 }
 
+const adicionarMarca: iAdicionarMarcaFuntion = async (newFields) => {
+    let { data } = await axios.post(caminho, {
+        call: "adicionarMarca",
+        param: newFields
+    })
+    return data;
+}
+
 const removerMarca = async (idMarca: number, idCliente: number) => {
     let { data } = await axios.post(caminho, {
         call: "removerMarca",
@@ -57,5 +68,6 @@ export default {
     getClientes,
     getMarcas,
     getMarcasAdicionadas,
-    removerMarca
+    removerMarca,
+    adicionarMarca
 }

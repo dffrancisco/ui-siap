@@ -13,8 +13,16 @@ export interface iMarca {
 
 export interface iMarcaAdicionada {
     ID_MARCA: number;
+    ID_CLIENTE: number;
     DESCRICAO: string;
     DESCONTO: number;
+    DATA_INICIAL: Date;
+    DATA_FINAL: Date;
+}
+
+export interface iMarcaAdicionadaForm {
+    DESCONTO: string;
+    DESCRICAO: string;
     DATA_INICIAL: Date;
     DATA_FINAL: Date;
 }
@@ -37,3 +45,5 @@ export interface iParamGetMarcasAdicionadas {
 export interface iGetClienteResponse extends iCliente { }
 export interface iGetMarcaResponse extends iMarca { }
 export interface iGetMarcaAdicionadaResponse extends iMarcaAdicionada { }
+export interface iParamAdicionarMarca extends iMarcaAdicionada { }
+export interface iAdicionarMarcaResponse extends iMarcaAdicionada { }

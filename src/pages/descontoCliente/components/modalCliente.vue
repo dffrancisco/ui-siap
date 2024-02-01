@@ -25,10 +25,11 @@ const state = reactive({
 
   dbCliente: <iCliente>{},
 
+  search : null,
+
   edtClienteSearch: <HTMLInputElement>{},
 
   loading: false,
-  pnSearch: false
 });
 
 const emit = defineEmits(["cancelar", "clienteSelecionado"]);
@@ -41,9 +42,6 @@ function criarGrids() {
     columns: {
       CNPJ: { dataField: "CGC_CLIENTE", width: "30%" },
       Cliente: { dataField: "NOME", compare: "colorir" },
-    },
-    onSelectLine: (cliente: iCliente) => {
-      state.dbCliente = cliente;
     },
     compare: {
       colorir: (r) => {
@@ -110,6 +108,12 @@ function selecionarCliente() {
 
 function onClickCancelar() {
   emit("cancelar");
+
+  state.gridCliente.queryOpen({
+    NOME: "",
+  });
+
+  state.search = null
 }
 
 async function getClientes({ offset, param }: iParamGetClientes) {
@@ -147,17 +151,16 @@ onMounted(() => {
       <div class="d-flex justify-end my-4">
         <input
           type="text"
+          v-model="state.search"
           style="margin: 5px 0 5px"
           autofocus
           placeholder="F1 - Localizar"
-          :disabled="state.pnSearch"
           @keydown.enter="searchClientes"
           @keyup.arrow-down="state.gridCliente.focus(0)"
           id="edtClienteSearch"
           class="ss"
         />
         <v-btn
-          :disabled="state.pnSearch"
           size="small"
           class="ml-2 mt-1 elevation-0"
           color="primary"

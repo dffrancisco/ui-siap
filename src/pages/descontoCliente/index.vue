@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import $ from "jquery";
+import modalCliente from "./components/modalCliente.vue";
+import modalAdicionarMarca from "./components/modalAdicionarMarca.vue";
+import { actions, state } from "../descontoCliente/descontoCliente";
 import { nextTick, onUnmounted } from "vue";
 import { useEventListener } from "@vueuse/core";
-import modalCliente from "./components/modalCliente.vue";
-import adicionarMarcaModal from "./components/adicionarMarcaModal.vue";
-import { actions, state } from "../descontoCliente/descontoCliente";
 
 nextTick(async () => {
-  $(".ss").attr("autocomplete", "off");
-
-  state.edtMarcaSearch = <any>document.getElementById("edtMarcaSearch");
-
-  actions.grids();
-  actions.criarModais();
+  actions.init();
 });
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -180,7 +174,11 @@ onUnmounted(() => {
     style="display: none"
     title="Adicionar Marca"
   >
-    <adicionarMarcaModal :opened="state.modalAdicionarMarcaOpened" />
+    <modalAdicionarMarca
+      :marcas="state.dbMarca"
+      @cancelar="actions.onClickCloseAdicionarMarcaModal"
+      @adicionarMarca="actions.adicionarMarca"
+    />
   </div>
 </template>
 
