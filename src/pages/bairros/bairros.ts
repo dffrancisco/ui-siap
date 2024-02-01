@@ -3,7 +3,7 @@ import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import $ from 'jquery'
-import { iBairro, iParamGetBairros } from './interfaces'
+import { iBairro, iParamGetBairros, iParamDuplicity } from './interfaces'
 import serviceBairros from './services/bairros.service';
 import utils from "@/ts/utils";
 
@@ -191,6 +191,19 @@ export const actions = {
             })
         }
     },
+
+    async getDuplicidade({field, value}: iParamDuplicity) {
+        try {
+            const data = await serviceBairros.getDuplicidade({field, value});
+        
+            return data;
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao verificar duplicidade!"
+            })
+        }
+    }
 
 }
 

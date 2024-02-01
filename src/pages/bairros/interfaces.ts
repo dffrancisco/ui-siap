@@ -8,4 +8,13 @@ export interface iParamGetBairros {
     param: object
 }
 
+export interface iParamDuplicity {
+    field: string,
+    value: string
+}
+
+export interface iGetDuplicidadeResponse {
+    DESCRICAO: string
+}
+
 export interface iGetBairrosResponse extends iBairro{}
