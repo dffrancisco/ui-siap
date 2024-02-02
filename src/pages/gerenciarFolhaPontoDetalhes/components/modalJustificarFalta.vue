@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import printJS from "print-js";
-import { ref, defineProps } from "vue";
+import { ref, defineProps, computed } from "vue";
 
 const justificativa = ref<string>("");
 const showCIDAutocomplete = ref(false);
@@ -12,8 +12,6 @@ const preencherJustificativa = (DESCRICAO: string) => {
 };
 
 function imprimirJustificativa() {
-  console.log("imprimir folha");
-
   const conteudoElement = criarHTMLParaPDF();
 
   printJS({
@@ -38,12 +36,28 @@ function criarHTMLParaPDF() {
     </div>
   `;
 
-  // Criar um elemento temporário e atribuir o conteúdo HTML
   const tempElement = document.createElement("div");
   tempElement.innerHTML = conteudoHTML;
 
   return tempElement;
 }
+
+const tipoAusenciaDisabled = computed(() => {
+  let chegada = $("#chegada").val();
+  let inicioAlmoco = $("#inicioAlmoco").val();
+  let fimAlmoco = $("#fimAlmoco").val();
+  let saida = $("#saida").val();
+
+  if (chegada && inicioAlmoco && fimAlmoco && saida !== "??:??") {
+    return false;
+  }
+  // return (
+  //   pontos.HORA_CHEGADA !== "??:??" &&
+  //   pontos.HORA_ALMOCO_INICIAL !== "??:??" &&
+  //   pontos.HORA_ALMOCO_FINAL !== "??:??" &&
+  //   pontos.HORA_SAIDA !== "??:??"
+  // );
+});
 </script>
 
 <template>
@@ -72,6 +86,7 @@ function criarHTMLParaPDF() {
         <v-row>
           <v-col cols="3">
             <v-autocomplete
+              class="horarios__ponto"
               label="Chegada"
               id="chegada"
               item-title="text"
@@ -82,8 +97,9 @@ function criarHTMLParaPDF() {
           </v-col>
           <v-col cols="3">
             <v-autocomplete
+              class="horarios__ponto"
               label="Início Almoço"
-              id="inicioChegada"
+              id="inicioAlmoco"
               item-title="text"
               item-value="value"
               v-mask="'00:00'"
@@ -92,6 +108,7 @@ function criarHTMLParaPDF() {
           </v-col>
           <v-col cols="3">
             <v-autocomplete
+              class="horarios__ponto"
               label="Fim Almoço"
               id="fimAlmoco"
               item-title="text"
@@ -102,6 +119,7 @@ function criarHTMLParaPDF() {
           </v-col>
           <v-col cols="3">
             <v-autocomplete
+              class="horarios__ponto"
               label="Saída"
               id="saida"
               item-title="text"
@@ -119,8 +137,10 @@ function criarHTMLParaPDF() {
             <v-autocomplete
               :items="tiposDeFalta.map((item) => item.DESCRICAO)"
               :item-value="tiposDeFalta.map((item) => item.TIPO)"
+              id="tiposDeFalta"
               label="Tipo de Ausência"
               @update:model-value="preencherJustificativa"
+              :disabled="tipoAusenciaDisabled"
             ></v-autocomplete>
           </v-row>
         </v-container>
