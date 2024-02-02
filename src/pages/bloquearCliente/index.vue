@@ -52,6 +52,25 @@ nextTick(async () => {
 
       <div id="gridBloqueioCliente"></div>
 
+      <div class="btn-block">
+        <v-btn
+          prepend-icon="mdi-checkbox-marked-circle"
+          color="#3C8DBC"
+          size="small"
+          :disabled="state.btnDisabled"
+        >
+          Desbloquear
+        </v-btn>
+        <v-btn
+          prepend-icon="mdi-cancel"
+          color="#E43A3A"
+          size="small"
+          :disabled="state.btnDisabled"
+        >
+          Bloquear
+        </v-btn>
+      </div>
+
       <v-overlay
         :model-value="state.loading"
         class="align-center justify-center"
@@ -64,9 +83,8 @@ nextTick(async () => {
         >
         </v-progress-circular>
       </v-overlay>
-
-      <div id="pnCodigoTela">BLOQUEAR_CLIENTE</div>
     </v-card>
+    <div id="pnCodigoTela">BLOQUEAR_CLIENTE</div>
   </v-container>
 
   <div
@@ -79,3 +97,12 @@ nextTick(async () => {
     />
   </div>
 </template>
+
+<style scoped>
+  .btn-block {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding-top: 10px;
+  }
+</style>

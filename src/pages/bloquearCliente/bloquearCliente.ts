@@ -14,7 +14,8 @@ export const state = reactive({
     dbClienteSelecionado: <iCliente>{},
     dbBloqueioCliente: <iBloqueioCliente>{},
 
-    loading: false
+    loading: false,
+    btnDisabled: true
 })
 
 export const actions = {
