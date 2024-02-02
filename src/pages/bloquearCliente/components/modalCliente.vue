@@ -89,11 +89,21 @@ function selecionarCliente() {
     return;
   }
 
+  state.gridCliente.queryOpen({
+    NOME: "",
+  });
+
+  state.search = null;
+
   emit("clienteSelecionado", cliente);
 }
 
 function modalClienteClose() {
   emit("cancelar");
+
+  state.gridCliente.queryOpen({
+    NOME: "",
+  });
 
   state.search = null;
 }

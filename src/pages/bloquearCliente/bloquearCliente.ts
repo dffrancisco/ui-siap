@@ -38,6 +38,7 @@ export const actions = {
             el: '#modalCliente',
             height: 342,
             width: 600,
+            closeBtn: false,
             theme: 'xModal-blue'
         },)
 
@@ -71,6 +72,22 @@ export const actions = {
     modalBloquearClienteClose(){
         state.modalBloquearCliente.close();
     },
+
+    selecionarCliente(cliente: iCliente) {
+        state.dbClienteSelecionado = {
+            ...cliente
+        }
+
+        if(cliente.BLOQUEADO == 0) {
+            state.btnBlockDisabled = false
+            state.btnUnlockDisabled = true
+        } else {
+            state.btnUnlockDisabled = false
+            state.btnBlockDisabled = true
+        }
+
+        state.modalCliente.close()
+    }
 
 }
 

@@ -23,10 +23,12 @@ nextTick(async () => {
             <input
               type="button"
               v-model="state.dbClienteSelecionado.CGC_CLIENTE"
+              :class="{'cliente-block' : state.btnBlockDisabled}"
               class="ss"
               name="CGC_CLIENTE"
               id="CGC_CLIENTE"
               @click="actions.modalClienteOpen"
+              style="text-align: start;"
             />
           </v-col>
           <v-col cols="8">
@@ -34,10 +36,12 @@ nextTick(async () => {
             <input
               type="button"
               v-model="state.dbClienteSelecionado.NOME"
+              :class="{'cliente-block' : state.btnBlockDisabled}"
               class="ss"
               name="NOME"
               id="NOME"
               @click="actions.modalClienteOpen"
+              style="text-align: start;"
             />
           </v-col>
           <v-btn
@@ -96,6 +100,7 @@ nextTick(async () => {
   >
     <modalCliente
       @cancelar="actions.modalClienteClose"
+      @clienteSelecionado="actions.selecionarCliente"
     />
   </div>
 
@@ -116,5 +121,9 @@ nextTick(async () => {
     justify-content: center;
     gap: 15px;
     padding-top: 10px;
+  }
+
+  .cliente-block {
+    color: red;
   }
 </style>
