@@ -1,0 +1,73 @@
+import { reactive } from 'vue';
+import $ from 'jquery';
+import xGridV2, { ixGridCreate } from '@/plugins/xGridV2'
+import xModal, { iModalCreate } from '@/plugins/xModal/xModal';
+import Swal from "sweetalert2";
+import { msgConfirm } from "@/ts/message";
+import { iBloqueioCliente, iCliente } from './interfaces';
+
+export const state = reactive({
+    gridBloqueioCliente: <ixGridCreate>{},
+    modalCliente: <iModalCreate>{},
+    modalBloquearCliente: <iModalCreate>{},
+
+    dbClienteSelecionado: <iCliente>{},
+    dbBloqueioCliente: <iBloqueioCliente>{},
+
+    loading: false
+})
+
+export const actions = {
+    grids() {
+        state.gridBloqueioCliente = new xGridV2.create({
+            el: "#pnBloqueioCliente",
+            height: 400,
+            columns: {
+                'Data do Bloqueio': {dataField: 'DATA_BLOQUEIO', width: "20%", center: true},
+                'Data do Desbloqueio': {dataField: 'DATA_DESBLOQUEIO', width: "20%", center: true},
+                'Observação': {dataField: 'OBS'}
+            },
+        })
+    },
+
+    criarModais() {
+        state.modalCliente = new xModal.create({
+            el: '#modalCliente',
+            height: 221,
+            width: 340,
+            theme: 'xModal-blue'
+        },)
+
+        state.modalBloquearCliente = new xModal.create({
+            el: "#modalBloquearCliente",
+            height: 220,
+            width: 300,
+            theme: 'xModal-blue'
+        })
+    },
+
+    init() {
+        $(".ss").attr("autocomplete", "off");
+
+        actions.grids();
+        actions.criarModais();
+    },
+
+    modalClienteOpen(){
+        state.modalCliente.open();
+    },
+
+    modalClienteClose(){
+        state.modalCliente.close();
+    },
+
+    modalBloquearClienteOpen(){
+        state.modalBloquearCliente.open();
+    },
+
+    modalBloquearClienteClose(){
+        state.modalBloquearCliente.close();
+    },
+
+}
+
