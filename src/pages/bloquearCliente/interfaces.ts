@@ -15,3 +15,10 @@ export interface iBloqueioCliente {
 export interface iBloqueioClienteForm {
     OBS: string;
 }
+
+export interface iParamGetCliente {
+    offset: number;
+    param: object
+}
+
+export interface iGetClientesResponse extends iCliente{}

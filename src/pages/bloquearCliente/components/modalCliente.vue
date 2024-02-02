@@ -3,7 +3,8 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { useEventListener } from "@vueuse/core";
 import { onUnmounted, onMounted, nextTick, reactive } from "vue";
 import Swal from "sweetalert2";
-import { iCliente } from "../interfaces";
+import { iCliente, iParamGetCliente } from "../interfaces";
+import serviceBloquearCliente from "../services/bloquearCliente.service";
 
 const state = reactive({
   gridCliente: <ixGridCreate>{},
@@ -24,8 +25,17 @@ function grids() {
     height: 175,
     count: true,
     columns: {
-      CNPJ: { dataField: "CGC_CLIENTE", width: "30%" },
+      CNPJ: { dataField: "CGC_CLIENTE", width: "25%" },
       Cliente: { dataField: "NOME", compare: "colorir" },
+    },
+    query: {
+      async execute(rs) {
+        let data = await getClientes({
+          offset: rs.offset,
+          param: rs.param,
+        });
+        state.gridCliente.querySourceAdd(data);
+      },
     },
     compare: {
       colorir: (r) => {
@@ -84,13 +94,33 @@ function selecionarCliente() {
 
 function modalClienteClose() {
   emit("cancelar");
-  
-  state.search = null
+
+  state.search = null;
+}
+
+async function getClientes({ offset, param }: iParamGetCliente) {
+  try {
+    state.loading = true;
+    const data = await serviceBloquearCliente.getClientes({ offset, param });
+    state.loading = false;
+
+    return data;
+  } catch (error) {
+    state.loading = false;
+    Swal.fire({
+      icon: "error",
+      title: "Erro ao carregar os clientes!",
+    });
+  }
 }
 
 onMounted(() => {
   nextTick(() => {
     grids();
+
+    state.gridCliente.queryOpen({
+      NOME: ""
+    });
 
     state.edtClienteSearch = <any>document.getElementById("edtClienteSearch");
   });

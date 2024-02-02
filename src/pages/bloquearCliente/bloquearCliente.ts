@@ -16,7 +16,7 @@ export const state = reactive({
 
     loading: false,
 
-    btnBlockDisabled: false,
+    btnBlockDisabled: true,
     btnUnlockDisabled: true
 })
 
