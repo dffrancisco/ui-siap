@@ -11,3 +11,7 @@ export interface iBloqueioCliente {
     DATA_DESBLOQUEIO: Date;
     OBS: string;
 }
+
+export interface iBloqueioClienteForm {
+    OBS: string;
+}

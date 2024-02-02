@@ -2,6 +2,7 @@
 import { nextTick } from "vue";
 import { state, actions } from "./bloquearCliente";
 import modalCliente from "./components/modalCliente.vue";
+import modalBloquearCliente from "./components/modalBloquearCliente.vue";
 
 nextTick(async () => {
   actions.init();
@@ -57,7 +58,7 @@ nextTick(async () => {
           prepend-icon="mdi-checkbox-marked-circle"
           color="#3C8DBC"
           size="small"
-          :disabled="state.btnDisabled"
+          :disabled="state.btnUnlockDisabled"
         >
           Desbloquear
         </v-btn>
@@ -65,7 +66,8 @@ nextTick(async () => {
           prepend-icon="mdi-cancel"
           color="#E43A3A"
           size="small"
-          :disabled="state.btnDisabled"
+          :disabled="state.btnBlockDisabled"
+          @click="actions.modalBloquearClienteOpen"
         >
           Bloquear
         </v-btn>
@@ -94,6 +96,16 @@ nextTick(async () => {
   >
     <modalCliente
       @cancelar="actions.modalClienteClose"
+    />
+  </div>
+
+  <div
+    id="modalBloquearCliente"
+    style="display: none"
+    title="Observação"
+  >
+    <modalBloquearCliente
+      @cancelar="actions.modalBloquearClienteClose"
     />
   </div>
 </template>

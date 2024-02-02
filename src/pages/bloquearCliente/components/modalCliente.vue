@@ -84,11 +84,7 @@ function selecionarCliente() {
 
 function modalClienteClose() {
   emit("cancelar");
-
-  state.gridCliente.queryOpen({
-    NOME: "",
-  });
-
+  
   state.search = null
 }
 

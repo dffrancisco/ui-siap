@@ -15,7 +15,9 @@ export const state = reactive({
     dbBloqueioCliente: <iBloqueioCliente>{},
 
     loading: false,
-    btnDisabled: true
+
+    btnBlockDisabled: false,
+    btnUnlockDisabled: true
 })
 
 export const actions = {
@@ -41,7 +43,7 @@ export const actions = {
 
         state.modalBloquearCliente = new xModal.create({
             el: "#modalBloquearCliente",
-            height: 220,
+            height: 175,
             width: 300,
             theme: 'xModal-blue'
         })
