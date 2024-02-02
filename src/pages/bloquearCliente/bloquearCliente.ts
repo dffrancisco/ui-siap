@@ -20,8 +20,8 @@ export const state = reactive({
 export const actions = {
     grids() {
         state.gridBloqueioCliente = new xGridV2.create({
-            el: "#pnBloqueioCliente",
-            height: 400,
+            el: "#gridBloqueioCliente",
+            height: 250,
             columns: {
                 'Data do Bloqueio': {dataField: 'DATA_BLOQUEIO', width: "20%", center: true},
                 'Data do Desbloqueio': {dataField: 'DATA_DESBLOQUEIO', width: "20%", center: true},
@@ -33,8 +33,8 @@ export const actions = {
     criarModais() {
         state.modalCliente = new xModal.create({
             el: '#modalCliente',
-            height: 221,
-            width: 340,
+            height: 342,
+            width: 600,
             theme: 'xModal-blue'
         },)
 

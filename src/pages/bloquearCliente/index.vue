@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { nextTick } from "vue";
 import { state, actions } from "./bloquearCliente";
+import modalCliente from "./components/modalCliente.vue";
 
 nextTick(async () => {
   actions.init();
@@ -49,7 +50,7 @@ nextTick(async () => {
         </v-row>
       </div>
 
-      <div id="pnBloqueioCliente"></div>
+      <div id="gridBloqueioCliente"></div>
 
       <v-overlay
         :model-value="state.loading"
@@ -67,4 +68,14 @@ nextTick(async () => {
       <div id="pnCodigoTela">BLOQUEAR_CLIENTE</div>
     </v-card>
   </v-container>
+
+  <div
+    id="modalCliente"
+    style="display: none"
+    title="Clientes"
+  >
+    <modalCliente
+      @cancelar="actions.modalClienteClose"
+    />
+  </div>
 </template>
