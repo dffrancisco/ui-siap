@@ -1,29 +1,29 @@
 <script setup lang="ts">
-function resizeImage(file, callback) {
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const img = new Image();
-    img.onload = function () {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+// function resizeImage(file, callback) {
+//   const reader = new FileReader();
+//   reader.onload = function (e) {
+//     const img = new Image();
+//     img.onload = function () {
+//       const canvas = document.createElement("canvas");
+//       const ctx = canvas.getContext("2d");
 
-      const newWidth = 800;
-      const newHeight = (img.height / img.width) * newWidth;
+//       const newWidth = 800;
+//       const newHeight = (img.height / img.width) * newWidth;
 
-      canvas.width = newWidth;
-      canvas.height = newHeight;
+//       canvas.width = newWidth;
+//       canvas.height = newHeight;
 
-      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+//       ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
-      canvas.toBlob(function (blob) {
-        const resizedFile = new File([blob], file.name, { type: file.type });
-        callback(resizedFile);
-      }, file.type);
-    };
-    // img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
+//       canvas.toBlob(function (blob) {
+//         const resizedFile = new File([blob], file.name, { type: file.type });
+//         callback(resizedFile);
+//       }, file.type);
+//     };
+//     // img.src = e.target.result;
+//   };
+//   reader.readAsDataURL(file);
+// }
 
 // const modalQrCode = () => {
 
@@ -190,10 +190,7 @@ function resizeImage(file, callback) {
 </script>
 
 <template>
-  <div
-    id="modalQrcodeDocumento"
-    style="display: none"
-  >
+  <div class="modal-qr-code">
     <div class="row">
       <div
         class="col s6"

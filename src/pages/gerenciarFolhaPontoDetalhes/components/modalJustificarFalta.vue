@@ -1,12 +1,20 @@
 <script setup lang="ts">
-import xModal from "@/plugins/xModal/xModal";
+import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import printJS from "print-js";
-import { onMounted } from "vue";
-import { ref, defineProps, computed } from "vue";
+import { ref, defineProps, computed, onMounted, nextTick, reactive } from "vue";
+import ModalQrCode from "./modalQrCode.vue";
 
 const justificativa = ref<string>("");
 const showCIDAutocomplete = ref(false);
-const { dadosAusencia, pontos, tiposDeFalta } = defineProps(["dadosAusencia", "pontos", "tiposDeFalta"]);
+const props = defineProps([
+  "dadosAusencia",
+  "funcionario",
+  "horaChegada",
+  "horaAlmocoInicial",
+  "horaAlmocoFinal",
+  "horaSaida",
+  "tiposDeFalta",
+]);
 
 const preencherJustificativa = (DESCRICAO: string) => {
   justificativa.value = DESCRICAO;
@@ -24,17 +32,15 @@ function imprimirJustificativa() {
 }
 
 function criarHTMLParaPDF() {
-  let nome = document.getElementById("nome");
   const justificativaValor = justificativa && justificativa.value ? justificativa.value : "";
-  // const dataAusencia = dadosAusencia || "";
 
   const conteudoHTML = `
     <div id="justificativaPDF">
       <p>JUSTIFICATIVA DE AUSÊNCIA</p>
-      <p>Eu, ${nome}, brasileiro (a), de CPF ${pontos.cpf}, profissional lotado no cargo ${pontos.cargo}, na empresa REAL ACESSÓRIOS venho justificar ao RH, minha ausência que foi devido a: ${justificativaValor}. No dia ${dadosAusencia}, motivos pelos quais impossibilitaram minha presença na empresa, bem como o desempenho das respectivas funções. Solicito, portanto, o abono da falta, visto que a mesma ocorreu por motivo de força maior e foi devidamente justificada.</p>
+      <p>Eu, ${props.funcionario.nome}, brasileiro (a), de CPF ${props.funcionario.cpf}, profissional lotado no cargo ${props.funcionario.cargo}, na empresa REAL ACESSÓRIOS venho justificar ao RH, minha ausência que foi devido a: ${justificativaValor}. No dia ${props.dadosAusencia}, motivos pelos quais impossibilitaram minha presença na empresa, bem como o desempenho das respectivas funções. Solicito, portanto, o abono da falta, visto que a mesma ocorreu por motivo de força maior e foi devidamente justificada.</p>
       <p>Por ser expressão da verdade, firmo a presente.</p>
       <p>Brasília-DF, __/__/____.</p>
-      <p>${nome}</p>
+      <p>${props.funcionario.nome}</p>
     </div>
   `;
 
@@ -44,17 +50,25 @@ function criarHTMLParaPDF() {
   return tempElement;
 }
 
+const state = reactive({
+  modalQrCode: <iModalCreate>(<unknown>null),
+});
+
 const tipoAusenciaDisabled = computed(() => {
-  return (
-    pontos.HORA_CHEGADA == null &&
-    pontos.HORA_ALMOCO_INICIAL == null &&
-    pontos.HORA_ALMOCO_FINAL == null &&
-    pontos.HORA_SAIDA == null
-  );
+  if (
+    props.horaChegada != null &&
+    props.horaAlmocoInicial != null &&
+    props.horaAlmocoFinal != null &&
+    props.horaSaida != null
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 });
 
 function modal() {
-  const modalQrCode = new xModal.create({
+  state.modalQrCode = new xModal.create({
     width: 400,
     height: 425,
     el: "#modalQrCode",
@@ -62,11 +76,22 @@ function modal() {
   });
 }
 
-onMounted(() => {
-  modal();
+function abrirModalQrCode() {
+  state.modalQrCode.open();
+}
+
+const dadosDocumentoAusencia = computed(() => {
+  const justificativaValor = justificativa && justificativa.value ? justificativa.value : "";
+  if (justificativaValor == undefined) {
+    return {};
+  }
 });
 
-const dadosDocumentoAusencia = computed(() => {});
+onMounted(() => {
+  nextTick(() => {
+    modal();
+  });
+});
 </script>
 
 <template>
@@ -81,65 +106,61 @@ const dadosDocumentoAusencia = computed(() => {});
         <span
           class="nomeFuncionario"
           id="nome"
-          >{{ pontos.nome }}</span
+          >{{ props.funcionario.nome }}</span
         >
         <span
           class="cargoFuncionario"
           id="cargo"
         >
-          - {{ pontos.cargo }}</span
+          - {{ props.funcionario.cargo }}</span
         >
       </div>
 
       <div class="horarios">
         <v-row>
           <v-col cols="3">
-            <v-autocomplete
+            <v-text-field
               class="horarios__ponto"
-              :class="{ vazio: pontos.HORA_CHEGADA == null }"
+              :class="{ vazio: props.horaChegada == null }"
               label="Chegada"
               id="chegada"
-              item-title="text"
-              item-value="value"
-              v-mask="'00:00'"
-              v-model="pontos.HORA_CHEGADA"
-            ></v-autocomplete>
+              v-model="props.horaChegada"
+              disabled
+              hide-details
+            ></v-text-field>
           </v-col>
           <v-col cols="3">
-            <v-autocomplete
+            <v-text-field
               class="horarios__ponto"
-              :class="{ vazio: pontos.HORA_ALMOCO_INICIAL == null }"
+              :class="{ vazio: props.horaAlmocoInicial == null }"
               label="Início Almoço"
               id="inicioAlmoco"
-              item-title="text"
-              item-value="value"
-              v-mask="'00:00'"
-              v-model="pontos.HORA_ALMOCO_INICIAL"
-            ></v-autocomplete>
+              v-model="props.horaAlmocoInicial"
+              disabled
+              hide-details
+            ></v-text-field>
           </v-col>
           <v-col cols="3">
-            <v-autocomplete
+            <v-text-field
               class="horarios__ponto"
-              :class="{ vazio: pontos.HORA_ALMOCO_FINAL == null }"
+              :class="{ vazio: props.horaAlmocoFinal == null }"
               label="Fim Almoço"
               id="fimAlmoco"
-              item-title="text"
-              item-value="value"
-              v-mask="'00:00'"
-              v-model="pontos.HORA_ALMOCO_FINAL"
-            ></v-autocomplete>
+              v-model="props.horaAlmocoFinal"
+              disabled
+              hide-details
+            ></v-text-field>
           </v-col>
           <v-col cols="3">
-            <v-autocomplete
+            <v-text-field
               class="horarios__ponto"
-              :class="{ vazio: pontos.HORA_SAIDA == null }"
+              :class="{ vazio: props.horaSaida == null }"
               label="Saída"
               id="saida"
-              item-title="text"
-              item-value="value"
-              v-mask="'00:00'"
-              v-model="pontos.HORA_SAIDA"
-            ></v-autocomplete>
+              v-model="props.horaSaida"
+              disabled
+              hide-details
+            ></v-text-field>
           </v-col>
         </v-row>
       </div>
@@ -186,6 +207,7 @@ const dadosDocumentoAusencia = computed(() => {});
       ><v-btn
         color="primary"
         class="btnDelete"
+        :disabled="tipoAusenciaDisabled"
       >
         <v-icon>mdi-delete</v-icon>
       </v-btn>
@@ -193,6 +215,7 @@ const dadosDocumentoAusencia = computed(() => {});
         color="primary"
         class="btnJustificar"
         @click="imprimirJustificativa"
+        :disabled="tipoAusenciaDisabled"
       >
         <v-icon>mdi-printer-settings</v-icon>
         Justificativa
@@ -200,7 +223,8 @@ const dadosDocumentoAusencia = computed(() => {});
       <v-btn
         color="primary"
         class="btnSalvar"
-        :dadosDocumentoAusencia="dadosDocumentoAusencia"
+        @click="abrirModalQrCode()"
+        :disabled="tipoAusenciaDisabled"
       >
         <v-icon>mdi-content-save</v-icon>
         Salvar
@@ -213,14 +237,16 @@ const dadosDocumentoAusencia = computed(() => {});
     title="Enviar Documento Ausência"
     style="display: none"
   >
-    <modal-qr-code />
+    <ModalQrCode :dadosDocumentoAusencia="dadosDocumentoAusencia" />
   </div>
 </template>
 
 <style scoped>
 .vazio {
   background-color: #fbc8c868;
+  height: 40px;
   border: 1px solid rgb(254, 91, 91);
+  font-weight: 600;
 }
 .notaRodape {
   font-size: x-small;
@@ -232,6 +258,7 @@ const dadosDocumentoAusencia = computed(() => {});
 .horarios {
   margin-top: 10px;
   width: 100%;
+  padding-bottom: 10px;
 }
 .motivo {
   margin-left: 10px;

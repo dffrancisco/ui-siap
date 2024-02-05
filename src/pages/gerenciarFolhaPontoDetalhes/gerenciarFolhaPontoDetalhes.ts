@@ -1,6 +1,6 @@
 import { computed, nextTick, reactive, ref, watch } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
-import { iParam, iParamComCPF, iPonto, iTipoFaltasCount } from "./interface";
+import { iCodFunc, iParam, iParamComCPF, iPonto, iTipoFaltasCount } from "./interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDetalhes.service";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -16,11 +16,12 @@ export const state = reactive({
   nome: <string | null>null,
   cargo: <string | null>null,
   codFuncionario: 0,
+  dadosFuncionario: {},
+  cpf: <string | null>null,
   QTD_A_JUSTIFICAR: 0,
   QTD_FALTAS_JUSTIFICADAS: 0,
   QTD_PONTOS_INCOMPLETOS: 0,
   QTD_PONTOS_NAO_BATIDOS: 0,
-  cpf: <string | null>null,
   mes: 1,
   ano: 2024,
   initialDate: <any>new Date(),
@@ -37,6 +38,25 @@ export const actions = {
 
     const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
     return `http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
+  },
+
+  async getDadosFuncionario(cod_funcionario: number) {
+    const param: iCodFunc = {
+      cod_funcionario: cod_funcionario,
+    };
+
+    try {
+      state.dadosFuncionario = await gerenciarFolhaPontoDetalhesService.getDadosFuncionario(param);
+      state.nome = state.dadosFuncionario[0].NOME_COMP;
+      state.cpf = state.dadosFuncionario[0].CPF;
+      state.cargo = state.dadosFuncionario[0].CARGO;
+      // console.log(state.dadosFuncionario[0].CARGO);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Ocorreu um erro ao buscar os dados do funcionário.",
+      });
+    }
   },
 
   async getPontos(cod_funcionario: number, cpf: string, mes: number, ano: number) {
@@ -122,16 +142,8 @@ export const actions = {
     }
   },
 
-  alternandoMesEAno(info: any) {
-    const mes = info.view.currentStart.getMonth() + 1;
-    const ano = info.view.currentStart.getFullYear();
-
-    state.mes = mes;
-    state.ano = ano;
-  },
-
   clickModalJustificarAusencia(event: any) {
-    const data = event.date;
+    const data = event.date || new Date(event.start);
 
     if (data.getDay() != 0) {
       let dia = data.getDate();
@@ -162,14 +174,16 @@ export const actions = {
     nextTick(async () => {
       state.loading = true;
 
-      state.nome = String(route.query.nome);
-      state.cargo = String(route.query.cargo);
+      // state.nome = String(route.query.nome);
+      // state.cargo = String(route.query.cargo);
       state.codFuncionario = Number(route.query.cod_funcionario);
-      state.cpf = String(route.query.cpf);
+      // state.cpf = String(route.query.cpf);
       state.mes = Number(route.query.mes);
       state.ano = Number(route.query.ano);
+      state.initialDate = new Date(state.ano, state.mes - 1, 1);
       actions.modal();
 
+      await actions.getDadosFuncionario(state.codFuncionario);
       await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
       await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
       await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
@@ -219,19 +233,26 @@ export const pontosCalendario = computed(() => {
 });
 
 export const selecionandoData = watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
+  console.log("aaaa");
+
   state.loadingCalendar = true;
   await actions.getPontos(state.codFuncionario, state.cpf, novoMes, novoAno);
+  console.log("uiii");
+
   await actions.getResumoPontosFuncionario(state.codFuncionario, novoMes, novoAno);
   await actions.getTipoFaltas(state.codFuncionario, novoMes, novoAno);
+
   await nextTick();
 
   state.initialDate = new Date(novoAno, novoMes - 1, 1);
   state.loadingCalendar = false;
+
+  console.log("kkkk");
 });
 
 export const pontosDiaSelecionado = computed(() => {
   if (state.diaSelecionado == undefined) {
-    return {};
+    return {} as iPonto;
   }
 
   let pontos = state.pontos["Dia:" + state.diaSelecionado];
@@ -240,7 +261,11 @@ export const pontosDiaSelecionado = computed(() => {
   let cargo = ref(state.cargo);
 
   const formatarData = (data) => {
-    return moment(data).format("HH:mm");
+    if (data) {
+      return moment(data).format("HH:mm");
+    }
+
+    return null;
   };
 
   pontos = {

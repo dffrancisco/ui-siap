@@ -32,3 +32,7 @@ export interface iTipoFaltasCount {
   UPLOAD_ARQUIVO: string;
   COUNT_TIPO: number;
 }
+
+export interface iCodFunc {
+  cod_funcionario: number;
+}

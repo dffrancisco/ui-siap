@@ -146,25 +146,24 @@ actions.init(route);
               width="1050"
             >
               <FullCalendar
-                v-if="state.loadingCalendar == false"
+                v-if="!state.loadingCalendar && !state.loading"
                 ref="calendario"
                 :options="{
-                  buttonText: {
-                    today: 'Hoje',
-                  },
                   plugins: [dayGridPlugin, interactionPlugin],
                   initialView: 'dayGridMonth',
                   // hiddenDays: [0],
                   events: pontosCalendario,
                   dateClick: actions.clickModalJustificarAusencia,
                   locale: 'pt-br',
-                  datesSet: actions.alternandoMesEAno,
                   eventOrder: 'defId',
                   initialDate: state.initialDate,
                 }"
               >
                 <template v-slot:eventContent="arg">
-                  <div class="calendario__horario">
+                  <div
+                    class="calendario__horario"
+                    @click.prevent="actions.clickModalJustificarAusencia(arg.event)"
+                  >
                     <span>{{ arg.event.title }}</span>
                   </div>
                 </template>
@@ -184,6 +183,15 @@ actions.init(route);
         :dadosAusencia="state.dataAusencia"
         :tiposDeFalta="state.tipoFaltas"
         :pontos="pontosDiaSelecionado"
+        :horaChegada="pontosDiaSelecionado.HORA_CHEGADA"
+        :horaAlmocoInicial="pontosDiaSelecionado.HORA_ALMOCO_INICIAL"
+        :horaAlmocoFinal="pontosDiaSelecionado.HORA_ALMOCO_FINAL"
+        :horaSaida="pontosDiaSelecionado.HORA_SAIDA"
+        :funcionario="{
+          nome: state.nome,
+          cpf: state.cpf,
+          cargo: state.cargo,
+        }"
       />
     </div>
 
@@ -232,6 +240,10 @@ actions.init(route);
 .fc-today-button.fc-button.fc-button-primary {
   border: none;
   background-color: #6495ed;
+}
+
+.fc-toolbar-chunk {
+  display: none;
 }
 </style>
 
