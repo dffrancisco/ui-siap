@@ -30,7 +30,7 @@ export const actions = {
     grids() {
         state.gridBloqueioCliente = new xGridV2.create({
             el: "#gridBloqueioCliente",
-            height: 250,
+            height: 350,
             columns: {
                 'Data do Bloqueio': { dataField: 'DATA_BLOQUEIO', width: "17%", center: true, render: utils.dataBrasil },
                 'Data do Desbloqueio': { dataField: 'DATA_DESBLOQUEIO', width: "17%", center: true, render: utils.dataBrasil },
