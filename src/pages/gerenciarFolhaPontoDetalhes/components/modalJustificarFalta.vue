@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import xModal from "@/plugins/xModal/xModal";
 import printJS from "print-js";
+import { onMounted } from "vue";
 import { ref, defineProps, computed } from "vue";
 
 const justificativa = ref<string>("");
@@ -43,21 +45,28 @@ function criarHTMLParaPDF() {
 }
 
 const tipoAusenciaDisabled = computed(() => {
-  let chegada = $("#chegada").val();
-  let inicioAlmoco = $("#inicioAlmoco").val();
-  let fimAlmoco = $("#fimAlmoco").val();
-  let saida = $("#saida").val();
-
-  if (chegada && inicioAlmoco && fimAlmoco && saida !== "??:??") {
-    return false;
-  }
-  // return (
-  //   pontos.HORA_CHEGADA !== "??:??" &&
-  //   pontos.HORA_ALMOCO_INICIAL !== "??:??" &&
-  //   pontos.HORA_ALMOCO_FINAL !== "??:??" &&
-  //   pontos.HORA_SAIDA !== "??:??"
-  // );
+  return (
+    pontos.HORA_CHEGADA == null &&
+    pontos.HORA_ALMOCO_INICIAL == null &&
+    pontos.HORA_ALMOCO_FINAL == null &&
+    pontos.HORA_SAIDA == null
+  );
 });
+
+function modal() {
+  const modalQrCode = new xModal.create({
+    width: 400,
+    height: 425,
+    el: "#modalQrCode",
+    theme: "xModal-blue",
+  });
+}
+
+onMounted(() => {
+  modal();
+});
+
+const dadosDocumentoAusencia = computed(() => {});
 </script>
 
 <template>
@@ -87,6 +96,7 @@ const tipoAusenciaDisabled = computed(() => {
           <v-col cols="3">
             <v-autocomplete
               class="horarios__ponto"
+              :class="{ vazio: pontos.HORA_CHEGADA == null }"
               label="Chegada"
               id="chegada"
               item-title="text"
@@ -98,6 +108,7 @@ const tipoAusenciaDisabled = computed(() => {
           <v-col cols="3">
             <v-autocomplete
               class="horarios__ponto"
+              :class="{ vazio: pontos.HORA_ALMOCO_INICIAL == null }"
               label="Início Almoço"
               id="inicioAlmoco"
               item-title="text"
@@ -109,6 +120,7 @@ const tipoAusenciaDisabled = computed(() => {
           <v-col cols="3">
             <v-autocomplete
               class="horarios__ponto"
+              :class="{ vazio: pontos.HORA_ALMOCO_FINAL == null }"
               label="Fim Almoço"
               id="fimAlmoco"
               item-title="text"
@@ -120,6 +132,7 @@ const tipoAusenciaDisabled = computed(() => {
           <v-col cols="3">
             <v-autocomplete
               class="horarios__ponto"
+              :class="{ vazio: pontos.HORA_SAIDA == null }"
               label="Saída"
               id="saida"
               item-title="text"
@@ -162,6 +175,7 @@ const tipoAusenciaDisabled = computed(() => {
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
             v-model="justificativa"
+            :disabled="tipoAusenciaDisabled"
           >
           </v-textarea>
         </v-col>
@@ -186,15 +200,28 @@ const tipoAusenciaDisabled = computed(() => {
       <v-btn
         color="primary"
         class="btnSalvar"
+        :dadosDocumentoAusencia="dadosDocumentoAusencia"
       >
         <v-icon>mdi-content-save</v-icon>
         Salvar
       </v-btn>
     </div>
   </div>
+
+  <div
+    id="modalQrCode"
+    title="Enviar Documento Ausência"
+    style="display: none"
+  >
+    <modal-qr-code />
+  </div>
 </template>
 
 <style scoped>
+.vazio {
+  background-color: #fbc8c868;
+  border: 1px solid rgb(254, 91, 91);
+}
 .notaRodape {
   font-size: x-small;
   padding-top: -20px;

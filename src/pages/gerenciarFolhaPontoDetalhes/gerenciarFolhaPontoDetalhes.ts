@@ -248,10 +248,10 @@ export const pontosDiaSelecionado = computed(() => {
     nome: nome.value,
     cpf: cpf.value,
     cargo: cargo.value,
-    HORA_CHEGADA: pontos.HORA_CHEGADA ? formatarData(pontos.HORA_CHEGADA) : "??:??",
-    HORA_ALMOCO_INICIAL: pontos.HORA_ALMOCO_INICIAL ? formatarData(pontos.HORA_ALMOCO_INICIAL) : "??:??",
-    HORA_ALMOCO_FINAL: pontos.HORA_ALMOCO_FINAL ? formatarData(pontos.HORA_ALMOCO_FINAL) : "??:??",
-    HORA_SAIDA: pontos.HORA_SAIDA ? formatarData(pontos.HORA_SAIDA) : "??:??",
+    HORA_CHEGADA: formatarData(pontos.HORA_CHEGADA),
+    HORA_ALMOCO_INICIAL: formatarData(pontos.HORA_ALMOCO_INICIAL),
+    HORA_ALMOCO_FINAL: formatarData(pontos.HORA_ALMOCO_FINAL),
+    HORA_SAIDA: formatarData(pontos.HORA_SAIDA),
   };
 
   return pontos;
