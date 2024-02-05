@@ -10,6 +10,22 @@ const state = reactive({
 
 const emit = defineEmits(["cancelar", "bloquearCliente"]);
 
+function bloquearCliente() {
+  if (!state.dbBloquearCliente.OBS) {
+    Swal.fire({
+      icon: "error",
+      text: "Observação deve ser preenchido",
+    });
+    return
+  }
+
+  const bloqueioCliente = state.dbBloquearCliente;
+
+  emit("bloquearCliente", bloqueioCliente);
+
+  state.dbBloquearCliente.OBS = null;
+}
+
 function modalBloquearClienteClose() {
   emit("cancelar");
 }
@@ -28,6 +44,7 @@ function modalBloquearClienteClose() {
             class="ss obr"
             rows="3"
             maxlength="200"
+            style="text-transform: none"
           >
           </textarea>
         </v-col>
@@ -47,7 +64,7 @@ function modalBloquearClienteClose() {
           style="font-size: small"
           color="#3680AB"
           size="small"
-          @click=""
+          @click="bloquearCliente"
         >
           Bloquear
         </v-btn>

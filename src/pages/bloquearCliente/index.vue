@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick } from "vue";
+
 import { state, actions } from "./bloquearCliente";
 import modalCliente from "./components/modalCliente.vue";
 import modalBloquearCliente from "./components/modalBloquearCliente.vue";
@@ -63,6 +64,7 @@ nextTick(async () => {
           color="#3C8DBC"
           size="small"
           :disabled="state.btnUnlockDisabled"
+          @click="actions.desbloquearCliente"
         >
           Desbloquear
         </v-btn>
@@ -101,6 +103,7 @@ nextTick(async () => {
     <modalCliente
       @cancelar="actions.modalClienteClose"
       @clienteSelecionado="actions.selecionarCliente"
+      :modalClienteOpened="state.modalClienteOpened"
     />
   </div>
 
@@ -110,7 +113,9 @@ nextTick(async () => {
     title="Observação"
   >
     <modalBloquearCliente
+      :dadosBloqueio="state.gridBloqueioCliente"
       @cancelar="actions.modalBloquearClienteClose"
+      @bloquearCliente="actions.bloquearCliente"
     />
   </div>
 </template>

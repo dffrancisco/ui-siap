@@ -21,4 +21,22 @@ export interface iParamGetCliente {
     param: object
 }
 
+export interface iParamGetBloqueioCliente {
+    offset: number;
+    param: object
+}
+
+export interface iParamBloquearCliente {
+    ID_CLIENTE: number;
+    OBS: string;
+}
+
+export interface iParamDesbloquearCliente {
+    ID_CLIENTE: number;
+    DATA_BLOQUEIO: Date;
+}
+
 export interface iGetClientesResponse extends iCliente{}
+export interface iGetBloqueioClienteResponse extends iBloqueioCliente{}
+export interface iBloquearClienteResponse extends iBloqueioCliente{}
+export interface iDesbloquearClienteResponse extends iBloqueioCliente{}

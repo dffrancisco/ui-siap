@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import { useEventListener } from "@vueuse/core";
-import { onUnmounted, onMounted, nextTick, reactive } from "vue";
+import { onMounted, nextTick, reactive, watch } from "vue";
 import Swal from "sweetalert2";
+
 import { iCliente, iParamGetCliente } from "../interfaces";
 import serviceBloquearCliente from "../services/bloquearCliente.service";
 
@@ -17,16 +17,32 @@ const state = reactive({
   loading: false,
 });
 
+const props = defineProps<{
+  modalClienteOpened: boolean;
+}>();
+
+watch(
+  () => props.modalClienteOpened,
+  () => {
+    state.gridCliente.queryOpen({
+      NOME: "",
+    });
+
+    state.search = null;
+  }
+);
+
 const emit = defineEmits(["cancelar", "clienteSelecionado"]);
 
 function grids() {
   state.gridCliente = new xGridV2.create({
     el: "#gridCliente",
-    height: 175,
+    height: 200,
     count: true,
     columns: {
-      CNPJ: { dataField: "CGC_CLIENTE", width: "25%" },
+      CNPJ: { dataField: "CGC_CLIENTE", width: "20%",compare: "colorir" },
       Cliente: { dataField: "NOME", compare: "colorir" },
+      Status: {compare: "status", width:"17%", center: true}
     },
     query: {
       async execute(rs) {
@@ -43,6 +59,13 @@ function grids() {
           return '<span style="color: red">' + r.value + "<span>";
         } else {
           return r.value;
+        }
+      },
+      status: (r) => {
+        if (r.BLOQUEADO == 1) {
+          return '<span style="color: red">' + "Bloqueado" + "<span>";
+        } else {
+          return "Desbloqueado";
         }
       },
     },
@@ -89,23 +112,11 @@ function selecionarCliente() {
     return;
   }
 
-  state.gridCliente.queryOpen({
-    NOME: "",
-  });
-
-  state.search = null;
-
   emit("clienteSelecionado", cliente);
 }
 
 function modalClienteClose() {
   emit("cancelar");
-
-  state.gridCliente.queryOpen({
-    NOME: "",
-  });
-
-  state.search = null;
 }
 
 async function getClientes({ offset, param }: iParamGetCliente) {
@@ -127,10 +138,6 @@ async function getClientes({ offset, param }: iParamGetCliente) {
 onMounted(() => {
   nextTick(() => {
     grids();
-
-    state.gridCliente.queryOpen({
-      NOME: ""
-    });
 
     state.edtClienteSearch = <any>document.getElementById("edtClienteSearch");
   });
