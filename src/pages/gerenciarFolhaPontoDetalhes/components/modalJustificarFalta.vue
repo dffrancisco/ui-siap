@@ -6,6 +6,8 @@ import ModalQrCode from "./modalQrCode.vue";
 
 const justificativa = ref<string>("");
 const showCIDAutocomplete = ref(false);
+const desativarSeForFeriadoFolgaouPontoIncompleto = ref(true);
+
 const selectedCID = ref("");
 
 const props = defineProps([
@@ -68,6 +70,22 @@ const tipoAusenciaDisabled = computed(() => {
     return false;
   }
 });
+
+//parei aqui para fazer os botoes alternarem em disabled caso cumpra os requisitos abaixo
+// const seForFeriadoFolgaouPontoIncompleto = computed(() => {
+//   const tipoFaltaSelecionada = props.tiposDeFalta.value;
+//   switch (tipoFaltaSelecionada) {
+//     case "Dia de Folga":
+//       false;
+//     case "Feriado":
+//       false;
+//     case "Ponto Incompleto":
+//       false;
+//       break;
+//     default:
+//       true;
+//   }
+// });
 
 function modal() {
   state.modalQrCode = new xModal.create({
@@ -216,6 +234,7 @@ onMounted(() => {
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
             v-model="justificativa"
+            v-if="desativarSeForFeriadoFolgaouPontoIncompleto"
             :disabled="tipoAusenciaDisabled"
           >
           </v-textarea>
