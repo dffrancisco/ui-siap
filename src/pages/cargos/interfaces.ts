@@ -7,5 +7,8 @@ export interface iCargo {
 
 export interface iParamGetCargo {
     param: object,
-    offset: number
+    offset: number,
+    checkbox: boolean
 }
+
+export interface iGetCargosResponse extends iCargo {}

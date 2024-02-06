@@ -1,9 +1,22 @@
 <script setup lang="ts">
-import { nextTick } from "vue";
+import { nextTick, onUnmounted } from "vue";
 import { state, actions } from "./cargos";
+import { useEventListener } from "@vueuse/core";
 
 nextTick(async () => {
-    actions.init();
+  actions.init();
+});
+
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F1") {
+    state.edtSearch.select();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
 });
 </script>
 
@@ -14,7 +27,7 @@ nextTick(async () => {
       class="pa-5"
       style="width: 700px; margin: 0 auto"
     >
-      <div>
+      <div id="camposGridCargos">
         <v-row>
           <v-col cols="9">
             <span>Descrição</span>
@@ -31,10 +44,11 @@ nextTick(async () => {
             <span>Salário</span>
             <input
               type="text"
-              v-model="state.cargo.SALARIO"
+              v-model.lazy="state.cargo.SALARIO"
               class="obr ss"
               name="SALARIO"
               id="SALARIO"
+              v-money3="state.configVMoney"
             />
           </v-col>
         </v-row>
@@ -45,9 +59,7 @@ nextTick(async () => {
               label="Exibir Inativos"
               color="blue"
               :disabled="state.toggleDisabled"
-              @change="state.isChecked != state.isChecked"
-              @update:model-value="actions.search"
-              @click="state.edtSearch.value = null"
+              @click="actions.checkboxClicked"
             >
             </v-checkbox>
           </v-col>
@@ -59,7 +71,7 @@ nextTick(async () => {
                 autofocus
                 placeholder="F1 - Localizar"
                 :disabled="state.pnSearch"
-                @keydown.enter="actions.search()"
+                @keydown.enter="actions.searchCargos()"
                 @keyup.arrow-down="state.gridCargos.focus(0)"
                 id="edtSearch"
                 class="ss"
@@ -69,7 +81,7 @@ nextTick(async () => {
                 size="small"
                 class="ml-2 mt-1 elevation-0"
                 color="primary"
-                @click="actions.search()"
+                @click="actions.searchCargos()"
               >
                 Localizar
               </v-btn>
@@ -79,6 +91,19 @@ nextTick(async () => {
       </div>
 
       <div id="gridCargos"></div>
+
+      <v-overlay
+        :model-value="state.loading"
+        class="align-center justify-center"
+        persistent
+      >
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="64"
+        >
+        </v-progress-circular>
+      </v-overlay>
     </v-card>
     <div id="pnCodigoTela">CADASTRO_CARGOS</div>
   </v-container>
