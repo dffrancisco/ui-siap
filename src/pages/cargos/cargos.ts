@@ -15,6 +15,7 @@ export const state = reactive({
     edtSearch: <HTMLInputElement>{},
 
     isChecked: false,
+    btnDisabled: false,
     toggleDisabled: false,
     loading: false,
 
@@ -52,8 +53,10 @@ export const actions = {
             sideBySide: {
                 el: "#camposGridCargos",
                 vModel(r) {
-                    r.SALARIO = r.SALARIO * 100
-                    state.dbCargo = r
+                    state.dbCargo = {
+                        ...r,
+                         SALARIO: utils.formatValor(r.SALARIO)
+                    }
                 },
                 duplicity: {
                     dataField: ['DESCRICAO'],
@@ -211,8 +214,24 @@ export const actions = {
 
         if (state.isChecked) {
             document.querySelector('button[state="delete"]').textContent = 'Reativar';
+            document.querySelectorAll('button[state="update"]').forEach(button => {
+                //@ts-ignore
+                button.disabled = true;
+            });
+            document.querySelectorAll('button[state="insert"]').forEach(button => {
+                //@ts-ignore
+                button.disabled = true;
+            });
         } else {
             document.querySelector('button[state="delete"]').textContent = 'Inativar';
+            document.querySelectorAll('button[state="update"]').forEach(button => {
+                //@ts-ignore
+                button.disabled = false;
+            });
+            document.querySelectorAll('button[state="insert"]').forEach(button => {
+                //@ts-ignore
+                button.disabled = false;
+            });
         }
 
         state.gridCargos.queryOpen({ DESCRICAO: "" }, () => {
@@ -308,8 +327,12 @@ export const actions = {
                 ...param
             })
 
-            state.dbCargo = param as iCargo;
-            state.dbCargo.SALARIO = param.SALARIO * 100;
+            state.dbCargo = {
+                ...param,
+            }
+
+            console.log(state.dbCargo.SALARIO);
+            
 
             state.loading = false
 
