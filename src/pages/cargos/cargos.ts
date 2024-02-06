@@ -1,9 +1,10 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { reactive } from "vue";
 import Swal from "sweetalert2";
+import $ from "jquery"
 import { msgConfirm } from "@/ts/message";
 import serviceCargos from './services/cargos.service';
-import { iCargo, iParamGetCargo } from './interfaces';
+import { iCargo, iParamGetCargo, iFieldDuplicity } from './interfaces';
 import utils from "@/ts/utils";
 
 export const state = reactive({
@@ -54,6 +55,24 @@ export const actions = {
                     r.SALARIO = r.SALARIO * 100
                     state.dbCargo = r
                 },
+                duplicity: {
+                    dataField: ['DESCRICAO'],
+                    async execute(rs) {
+                        let dup = await actions.getDuplicidade({
+                            value: rs.value.toUpperCase(),
+                            field: rs.field,
+                        });
+
+                        if (Object.keys(dup).length > 0) {
+                            state.gridCargos.showMessageDuplicity(
+                                rs.text + ' já está cadastrada'
+                            );
+                            return true;
+                        }
+
+                        return false
+                    }
+                },
                 frame: {
                     el: "#btnGridCargos",
                     buttons: {
@@ -92,6 +111,8 @@ export const actions = {
 
     init() {
         actions.criarGrids()
+
+        $(".ss").attr("autocomplete", "off");
 
         state.edtSearch = <any>document.getElementById("edtSearch");
 
@@ -154,8 +175,9 @@ export const actions = {
             return false
         }
 
-        // if (await state.gridCargos.getDuplicityAll())
-        //     return false;
+        if (await state.gridCargos.getDuplicityAll()) {
+            return false;
+        }
 
         if (!state.gridCargos.dataSource())
             actions.adicionarCargo();
@@ -207,7 +229,7 @@ export const actions = {
     async getCargos({ offset, param, checkbox }: iParamGetCargo) {
         try {
             state.loading = true
-            
+
             const data = await serviceCargos.getCargos({ offset, param, checkbox })
 
             state.loading = false
@@ -219,6 +241,20 @@ export const actions = {
                 icon: 'error',
                 text: 'Erro ao exibir os cargos!'
             })
+        }
+    },
+
+    async getDuplicidade({ value, field }: iFieldDuplicity) {
+        try {
+            const data = await serviceCargos.getDuplicidade({ value, field });
+
+            return data
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao chamar getDuplicidade!"
+            });
         }
     },
 

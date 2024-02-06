@@ -21,6 +21,15 @@ export interface iParamInativarCargo {
     DELETADO: string
 }
 
+export interface iFieldDuplicity {
+    value: string,
+    field: string
+}
+
+export interface iGetDuplicityResponse {
+    DESCRICAO?: string;
+}
+
 export interface iParamAlterarCargo extends iCargo {}
 
 export interface iGetCargosResponse extends iCargo {}
