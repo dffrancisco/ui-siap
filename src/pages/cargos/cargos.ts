@@ -3,7 +3,7 @@ import { reactive } from "vue";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import serviceCargos from './services/cargos.service';
-import {iCargo, iParamGetCargo} from './interfaces';
+import { iCargo, iParamGetCargo } from './interfaces';
 import utils from "@/ts/utils";
 
 export const state = reactive({
@@ -21,7 +21,7 @@ export const state = reactive({
         thousands: ".",
         decimal: ",",
         precision: 2,
-      },
+    },
 })
 
 export const actions = {
@@ -30,6 +30,9 @@ export const actions = {
             el: '#gridCargos',
             height: 350,
             count: true,
+            enter: function () {
+                document.getElementById('btnUpdate').click()
+            },
             columns: {
                 DESCRICAO: { dataField: 'DESCRICAO', width: "80%" },
                 SALARIO: { dataField: 'SALARIO', render: utils.formatValor },
@@ -47,14 +50,42 @@ export const actions = {
             sideBySide: {
                 el: "#camposGridCargos",
                 vModel(r) {
-                    r.SALARIO = r.SALARIO * 100 
-                    state.cargo = r 
+                    r.SALARIO = r.SALARIO * 100
+                    state.cargo = r
                 },
                 frame: {
                     el: "#btnGridCargos",
+                    buttons: {
+                        novo: {
+                            html: 'Novo',
+                            state: 'insert',
+                            click: actions.btnInsert
+                        },
+                        atualizar: {
+                            html: 'Atualizar',
+                            state: 'update',
+                            click: actions.btnEdit
+                        },
+                        excluir: {
+                            html: 'Excluir',
+                            state: 'delete',
+                            click: actions.btnDelete
+                        },
+                        salvar: {
+                            html: 'Salvar',
+                            state: 'save',
+                            click: actions.btnSave,
+                            preLoad: 'Salvando'
+                        },
+                        cancela: {
+                            html: 'Cancelar',
+                            state: 'cancel',
+                            click: actions.btnCancel
+                        }
+                    }
                 }
             }
-            
+
         })
     },
 
@@ -63,9 +94,9 @@ export const actions = {
 
         state.edtSearch = <any>document.getElementById("edtSearch");
 
-        state.gridCargos.queryOpen({
-            DESCRICAO: "",
-        })
+        state.gridCargos.queryOpen({ DESCRICAO: "" }, () => {
+            state.gridCargos.focus();
+        });
     },
 
     checkboxClicked() {
@@ -82,7 +113,7 @@ export const actions = {
         });
     },
 
-    async getCargos({offset, param, checkbox}: iParamGetCargo) {
+    async getCargos({ offset, param, checkbox }: iParamGetCargo) {
         try {
             state.loading = true
             const data = await serviceCargos.getCargos({ offset, param, checkbox })
@@ -96,5 +127,5 @@ export const actions = {
                 text: 'Erro ao exibir cargos!'
             })
         }
-    } 
+    },
 }

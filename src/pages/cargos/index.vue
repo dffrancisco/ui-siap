@@ -92,6 +92,12 @@ onUnmounted(() => {
 
       <div id="gridCargos"></div>
 
+      <div 
+        id="btnGridCargos"
+        class="mt-3"
+        style="text-align: center"
+    ></div>
+
       <v-overlay
         :model-value="state.loading"
         class="align-center justify-center"
