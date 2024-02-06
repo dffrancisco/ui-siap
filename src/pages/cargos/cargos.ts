@@ -62,12 +62,12 @@ export const actions = {
                             click: actions.btnInsert
                         },
                         atualizar: {
-                            html: 'Atualizar',
+                            html: 'Alterar',
                             state: 'update',
                             click: actions.btnEdit
                         },
                         excluir: {
-                            html: 'Excluir',
+                            html: 'Inativar',
                             state: 'delete',
                             click: actions.btnDelete
                         },
@@ -99,12 +99,102 @@ export const actions = {
         });
     },
 
+    btnInsert() {
+        state.pnSearch = true
+        state.toggleDisabled = true
+
+        state.gridCargos.disable();
+        state.gridCargos.focusField()
+        state.gridCargos.clearElementSideBySide();
+    },
+
+    btnEdit() {
+
+        if (!state.gridCargos.dataSource()) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Nenhum registro selecionado para alteração, operação cancelada!'
+            })
+            return false;
+        }
+
+        state.pnSearch = true
+        state.toggleDisabled = true
+        state.gridCargos.disable();
+        state.gridCargos.focusField();
+    },
+
+    async btnDelete() {
+
+        if (!state.gridCargos.dataSource()) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Nenhum registro selecionado para alteração, operação cancelada!'
+            })
+            return false;
+        }
+
+        if (state.isChecked) {
+            if (await msgConfirm("Confirmação", "Confirma a reativação deste cargo?")) {
+                await actions.inativarCargo()
+                state.gridCargos.focus();
+            }
+        } else {
+            if (await msgConfirm("Confirmação", "Confirma inativação deste registro?")) {
+                await actions.inativarCargo()
+                state.gridCargos.focus();
+            }
+        }
+    },
+
+    async btnSave() {
+
+
+        if (utils.validaOBR())
+            return false
+
+        // if (await state.gridCargos.getDuplicityAll())
+        //     return false;
+
+        if (!state.gridCargos.dataSource())
+            actions.adicionarCargo();
+        else {
+            actions.atualizarCargo();
+        }
+
+        state.gridCargos.enable();
+
+        state.pnSearch = false
+        state.toggleDisabled = false
+        state.gridCargos.focus();
+    },
+
+    btnCancel() {
+
+        state.toggleDisabled = false
+        state.pnSearch = false;
+        state.gridCargos.enable();
+
+        if (!state.gridCargos.dataSource()) {
+            state.gridCargos.queryOpen({ DESCRICAO: "" }, () => {
+                state.gridCargos.focus();
+            });
+        }
+    },
+
     checkboxClicked() {
         state.isChecked = !state.isChecked
         state.edtSearch.value = null
-        state.gridCargos.queryOpen({
-            DESCRICAO: "",
-        })
+
+        if (state.isChecked) {
+            document.querySelector('button[state="delete"]').textContent = 'Reativar';
+        } else {
+            document.querySelector('button[state="delete"]').textContent = 'Inativar';
+        }
+
+        state.gridCargos.queryOpen({ DESCRICAO: "" }, () => {
+            state.gridCargos.focus();
+        });
     },
 
     searchCargos() {
@@ -128,4 +218,28 @@ export const actions = {
             })
         }
     },
+
+    async adicionarCargo() {
+        try {
+            let newFields = <any>(
+                state.gridCargos.getElementSideBySideJson(true, false)
+            );
+
+            state.loading = true
+            const data = await serviceCargos.adicionarCargo(newFields)
+            state.loading = false
+
+            state.gridCargos.insertLine({
+                ...newFields,
+                ID_CARGO: data.ID_CARGO
+            })
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao cadastrar cargo!'
+            })
+        }
+    }
 }

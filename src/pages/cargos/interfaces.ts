@@ -11,4 +11,10 @@ export interface iParamGetCargo {
     checkbox: boolean
 }
 
+export interface iParamAdicionarCargo {
+    DESCRICAO: string,
+    SALARIO: number,
+}
+
 export interface iGetCargosResponse extends iCargo {}
+export interface iAdicionarCargoResponse extends iCargo {}

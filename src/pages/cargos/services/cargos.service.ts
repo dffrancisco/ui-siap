@@ -1,11 +1,17 @@
 import axios from "axios";
-import { iGetCargosResponse, iParamGetCargo } from '../interfaces'
+import {
+    iAdicionarCargoResponse,
+    iGetCargosResponse,
+    iParamAdicionarCargo,
+    iParamGetCargo
+} from '../interfaces'
 
 const caminho = 'siap/cargos'
 
 type iGetCargosFunction = (param: iParamGetCargo) => Promise<iGetCargosResponse>
+type iAdicionarCargoFunction = (param: iParamAdicionarCargo) => Promise<iAdicionarCargoResponse>
 
-const getCargos: iGetCargosFunction = async ({offset, param, checkbox}) => {
+const getCargos: iGetCargosFunction = async ({ offset, param, checkbox }) => {
     let { data } = await axios.post(caminho, {
         call: "getCargos",
         offset,
@@ -15,6 +21,15 @@ const getCargos: iGetCargosFunction = async ({offset, param, checkbox}) => {
     return data;
 }
 
+const adicionarCargo: iAdicionarCargoFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "adicionarCargo",
+        param
+    });
+    return data;
+}
+
 export default {
-    getCargos
+    getCargos,
+    adicionarCargo
 }
