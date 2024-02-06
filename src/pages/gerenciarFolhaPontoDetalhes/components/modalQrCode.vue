@@ -1,192 +1,96 @@
 <script setup lang="ts">
-// function resizeImage(file, callback) {
-//   const reader = new FileReader();
-//   reader.onload = function (e) {
-//     const img = new Image();
-//     img.onload = function () {
-//       const canvas = document.createElement("canvas");
-//       const ctx = canvas.getContext("2d");
+import utils from "@/ts/utils";
+import QrcodeVue from "qrcode.vue";
+import { nextTick, onMounted, ref } from "vue";
+// import state from "../../login/login";
+import $ from "jquery";
 
-//       const newWidth = 800;
-//       const newHeight = (img.height / img.width) * newWidth;
+const props = defineProps(["dadosParaQrCode"]);
+const qrData = ref("");
+var intervalId;
+var cpf;
 
-//       canvas.width = newWidth;
-//       canvas.height = newHeight;
+function gerarQrCode() {
+  let cpf = props.dadosParaQrCode.cpf;
+  let nomeFunc = props.dadosParaQrCode.nomeFuncionario;
+  let tipoDocumento = "ausencia";
+  // let usuario = state.state.login.LOGIN;
+  let usuario = "VITOR";
+  let dataDocArquivo = props.dadosParaQrCode.data;
+  dataDocArquivo = ajustarData(dataDocArquivo);
 
-//       ctx.drawImage(img, 0, 0, newWidth, newHeight);
+  let justificativa = props.dadosParaQrCode.justificativaValor;
+  let cid = props.dadosParaQrCode.cid;
 
-//       canvas.toBlob(function (blob) {
-//         const resizedFile = new File([blob], file.name, { type: file.type });
-//         callback(resizedFile);
-//       }, file.type);
-//     };
-//     // img.src = e.target.result;
-//   };
-//   reader.readAsDataURL(file);
-// }
+  const chave = gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo);
 
-// const modalQrCode = () => {
+  qrData.value = `http://192.168.100.202/siap+/funcionario_doc_imagem/?chave=${chave}`;
 
-// $("#modalQrcodeDocumento").mofo({
-//     width: 400,
-//     height: 425,
-//     title: "Cadastro de Documentos",
-//     open: function () {
+  console.log(qrData.value);
+  console.log(chave);
 
-//         let tipoDocumento = $("#penalidades").val()
-//         let cpf = $('#cpf').val()
-//         let usuario = nome;
-//         let nomeFunc = $('[name="LOGIN"]').val();
+  setTimeout(() => {
+    intervalId = setInterval(verificarArquivos, 2000);
+  }, 1000);
+}
 
-//         if (tipoDocumento == '' || null) {
-//             tipoDocumento = $("#documentos").val()
-//         }
+function ajustarData(dataDocArquivo) {
+  const partesData = dataDocArquivo.split("/");
+  const dataObjeto = new Date(partesData[2], partesData[1] - 1, partesData[0]);
+  const ano = dataObjeto.getFullYear();
+  let mes = dataObjeto.getMonth() + 1;
+  let dia = dataObjeto.getDate();
+  const dataFormatada = `${ano}-${mes < 10 ? "0" + mes : mes}-${dia < 10 ? "0" + dia : dia}`;
 
-//         function getValorData(id) {
-//             return $('#' + id).val();
-//         }
+  return dataFormatada;
+}
 
-//         let dataArquivos = [];
-//         let dataDocArquivo = "";
+function verificarArquivos() {
+  cpf = props.dadosParaQrCode.cpf.replaceAll(".", "").replaceAll("-", "");
 
-//         for (let input of document.querySelectorAll('input[type="date"]')) {
-//             dataArquivos.push(getValorData(input.id));
-//         }
+  $.ajax({
+    url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
+    type: "POST",
+    dataType: "json",
+    data: {
+      class: "Files",
+      call: "getFilesTemp",
+      param: {
+        cpf: cpf,
+        pasta: "ausencia",
+      },
+    },
+    success: function (r) {
+      if (r.length > 0) {
+        const nomeDoDocumento = r[0].file;
+        exibirArquivo(nomeDoDocumento);
+        clearInterval(intervalId);
+      }
+    },
+  });
+}
 
-//         if (dataArquivos.length) {
-//             dataDocArquivo = dataArquivos.join(', ');
-//         } else {
-//             show("Nenhum elemento de data foi selecionado.");
-//         }
+function exibirArquivo(nomeDoDocumento: string) {
+  const imgElement = document.createElement("img");
+  imgElement.src = `https://reallatas.com.br/doc_funcionario/temp/${cpf}/ausencia/${nomeDoDocumento}`;
+  imgElement.style.width = "200px";
+  imgElement.style.height = "200px";
+  imgElement.style.objectFit = "cover";
 
-//         dataDocArquivo = dataDocArquivo.trim().replace(/,/g, ' ');
-//         let partesData = dataDocArquivo.split('-');
+  const qrGenerate = document.getElementById("qr-generate");
+  qrGenerate.innerHTML = "";
+  qrGenerate.appendChild(imgElement);
+}
 
-//         if (partesData.length === 3) {
-//             dataDocArquivo = partesData[0] + '-' + partesData[1] + '-' + partesData[2];
-//         }
+function gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo) {
+  return utils.base64_encode(`${cpf}|${tipoDocumento}|${usuario}|${nomeFunc}|${dataDocArquivo}`);
+}
 
-//         dataDocArquivo = dataDocArquivo.replace(/\s+/g, '').replace(/\./g, '');
-
-//         setTimeout(() => {
-
-//             let url = 'http://192.168.100.60/siap+/funcionario_doc_imagem/?chave=';
-
-//             let chave = gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo)
-
-//             $("#qr-generate").html('');
-
-//             $("#qr-generate").css({
-//                 width: "200",
-//                 height: "200",
-//                 marginLeft: "20",
-//                 marginTop: "4",
-//             });
-
-//             $("#qr-generate").qrcode({
-//                 width: "200",
-//                 height: "200",
-//                 text: url + chave,
-//             });
-
-//             // Inicie o intervalo para verificar arquivos periodicamente após algum tempo
-//             setTimeout(() => {
-//                 intervalId = setInterval(verificarArquivos, 2000);
-//             }, 1000);
-//         }, 300);
-
-//         const verificarArquivos = function () {
-//             cpf = cpf.replaceAll('.', '').replaceAll('-', '');
-
-//             $.ajax({
-//                 url: 'https://reallatas.com.br/doc_funcionario/getFiles.php',
-//                 type: 'POST',
-//                 dataType: 'json',
-//                 data: {
-//                     class: 'Files',
-//                     call: 'getFilesTemp',
-//                     param: {
-//                         cpf: cpf,
-//                         pasta: tipoDocumento,
-//                     }
-//                 },
-//                 success: function (r) {
-//                     if (r.length > 0) {
-
-//                         let nomeDoDocumento = r[0].file
-//                         // Exiba o arquivo encontrado e interrompa o intervalo
-//                         exibirArquivo(nomeDoDocumento);
-//                         clearInterval(intervalId);
-//                     }
-//                 }
-//             });
-//         };
-
-//         const exibirArquivo = function (nomeDoDocumento) {
-
-//             $("#qr-generate").empty();
-
-//             const imgElement = $("<img>").attr("src", `https://reallatas.com.br/doc_funcionario/temp/${cpf}/${tipoDocumento}/${nomeDoDocumento}`);
-
-//             imgElement.css({
-//                 width: "200px",
-//                 height: "200px",
-//                 objectFit: "cover",
-//             });
-//             $("#qr-generate").append(imgElement);
-
-//             setTimeout(() => {
-//                 $('#pnLoadDocumento').html('<div style="margin: 0 auto; padding-top: 5px; text-align: center">Salvando documento...<br><img src="img/ajax-loader.gif"/></div>');
-//                 moverArquivoTemp(nomeDoDocumento);
-//             }, 2000);
-
-//         };
-
-//         const moverArquivoTemp = function (nomeDoDocumento) {
-//             $.ajax({
-//                 url: 'https://reallatas.com.br/doc_funcionario/getFiles.php',
-//                 type: 'POST',
-//                 dataType: 'json',
-//                 data: {
-//                     class: 'Files',
-//                     call: 'moverArquivoTemp',
-//                     param: {
-//                         cpf: cpf,
-//                         pasta: tipoDocumento,
-//                     }
-//                 },
-//                 success: function (rs) {
-//                     if (rs.success) {
-//                         insertInTable(rs, cpf.replaceAll('.', '').replaceAll('-', ''), tipoDocumento);
-
-//                         penalidadesDocsFuncionarios.createRegistroDocumentos(nomeDoDocumento, tipoDocumento, dataDocArquivo, cpf);
-
-//                         setTimeout(() => {
-//                             $('#pnLoadDocumento').empty();
-//                             $("#modalQrcodeDocumento").mofo('close');
-//                             $("#qr-generate").empty();
-//                             limparInputs()
-//                         }, 4000);
-//                     } else {
-//                         show('Erro na operação.');
-//                     }
-
-//                 }
-//             });
-//         }
-//     },
-//     close: function () {
-//         clearInterval(intervalId);
-//         limparInputs();
-//         chave = ''
-//     },
-// });
-
-// }
-
-// function gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo) {
-// return util.base64_encode(`${cpf}|${tipoDocumento}|${usuario}|${nomeFunc}|${dataDocArquivo}`);
-// }
+onMounted(() => {
+  nextTick(() => {
+    gerarQrCode();
+  });
+});
 </script>
 
 <template>
@@ -196,24 +100,22 @@
         class="col s6"
         style="margin-left: 70px; margin-top: 30px"
       >
-        <div
-          id="qr-generate"
-          style="margin-top: 1rem; margin-bottom: 3rem; margin-left: 1rem"
-        >
+        <div id="qr-generate"
+          ><qrcode-vue
+            :value="qrData"
+            :size="200"
+          />
         </div>
 
-        <div
-          id="pnLoadDocumento"
-          class="center-align"
-        >
-          <input
-            type="file"
-            name="file"
+        <div class="center-align">
+          <v-file-input
+            label="Escolher Arquivo"
+            variant="solo-filled"
             id="file"
-            class="btn-Frame-blue input-file"
-            style="display: inline; margin-left: 70px"
+            class="input-file"
             accept=".pdf, .jpg, .jpeg"
-          />
+          >
+          </v-file-input>
         </div>
       </div>
 
@@ -249,4 +151,16 @@
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.input-file {
+  margin-left: 10px;
+  margin-right: 30px;
+  width: 200px;
+}
+
+#qr-generate {
+  margin-top: 1rem;
+  margin-bottom: 3rem;
+  margin-left: 1rem;
+}
+</style>

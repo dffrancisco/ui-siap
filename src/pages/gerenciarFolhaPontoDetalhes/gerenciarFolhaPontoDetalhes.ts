@@ -174,10 +174,7 @@ export const actions = {
     nextTick(async () => {
       state.loading = true;
 
-      // state.nome = String(route.query.nome);
-      // state.cargo = String(route.query.cargo);
       state.codFuncionario = Number(route.query.cod_funcionario);
-      // state.cpf = String(route.query.cpf);
       state.mes = Number(route.query.mes);
       state.ano = Number(route.query.ano);
       state.initialDate = new Date(state.ano, state.mes - 1, 1);

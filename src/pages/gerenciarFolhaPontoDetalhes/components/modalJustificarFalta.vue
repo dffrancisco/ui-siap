@@ -6,6 +6,8 @@ import ModalQrCode from "./modalQrCode.vue";
 
 const justificativa = ref<string>("");
 const showCIDAutocomplete = ref(false);
+const selectedCID = ref("");
+
 const props = defineProps([
   "dadosAusencia",
   "funcionario",
@@ -70,7 +72,7 @@ const tipoAusenciaDisabled = computed(() => {
 function modal() {
   state.modalQrCode = new xModal.create({
     width: 400,
-    height: 425,
+    height: 550,
     el: "#modalQrCode",
     theme: "xModal-blue",
   });
@@ -85,7 +87,23 @@ const dadosDocumentoAusencia = computed(() => {
   if (justificativaValor == undefined) {
     return {};
   }
+
+  let cpf = props.funcionario.cpf;
+  let nomeFuncionario = props.funcionario.nome;
+  let data = props.dadosAusencia;
+
+  const dadosParaQrCode = {
+    cpf: cpf,
+    nomeFuncionario: nomeFuncionario,
+    data: data,
+    justificativaValor: justificativaValor,
+    cid: selectedCID.value,
+  };
+
+  return dadosParaQrCode;
 });
+
+function salvarFeriadoOuFolga() {}
 
 onMounted(() => {
   nextTick(() => {
@@ -180,12 +198,14 @@ onMounted(() => {
         </v-container>
       </div>
       <div style="width: 30%"
-        ><v-autocomplete
+        ><v-text-field
+          class="cid"
           id="cid"
           v-if="showCIDAutocomplete"
           label="CID"
+          v-model="selectedCID"
         >
-        </v-autocomplete>
+        </v-text-field>
       </div>
     </v-row>
 
@@ -229,6 +249,15 @@ onMounted(() => {
         <v-icon>mdi-content-save</v-icon>
         Salvar
       </v-btn>
+      <v-btn
+        style="display: none"
+        color="primary"
+        class="btnSalvarFeriadoFolgaOuPontoIncompleto"
+        @click="salvarFeriadoOuFolga()"
+      >
+        <v-icon>mdi-content-save</v-icon>
+        Salvar
+      </v-btn>
     </div>
   </div>
 
@@ -237,7 +266,7 @@ onMounted(() => {
     title="Enviar Documento Ausência"
     style="display: none"
   >
-    <ModalQrCode :dadosDocumentoAusencia="dadosDocumentoAusencia" />
+    <ModalQrCode :dadosParaQrCode="dadosDocumentoAusencia" />
   </div>
 </template>
 
@@ -247,6 +276,10 @@ onMounted(() => {
   height: 40px;
   border: 1px solid rgb(254, 91, 91);
   font-weight: 600;
+}
+
+.cid {
+  margin-left: 10px;
 }
 .notaRodape {
   font-size: x-small;
