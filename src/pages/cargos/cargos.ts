@@ -149,9 +149,9 @@ export const actions = {
 
     async btnSave() {
 
-
-        if (utils.validaOBR())
+        if (utils.validaOBR()) {
             return false
+        }
 
         // if (await state.gridCargos.getDuplicityAll())
         //     return false;
@@ -159,7 +159,7 @@ export const actions = {
         if (!state.gridCargos.dataSource())
             actions.adicionarCargo();
         else {
-            actions.atualizarCargo();
+            actions.alterarCargo();
         }
 
         state.gridCargos.enable();
@@ -206,7 +206,9 @@ export const actions = {
     async getCargos({ offset, param, checkbox }: iParamGetCargo) {
         try {
             state.loading = true
+            
             const data = await serviceCargos.getCargos({ offset, param, checkbox })
+
             state.loading = false
 
             return data
@@ -214,7 +216,7 @@ export const actions = {
             state.loading = false;
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao exibir cargos!'
+                text: 'Erro ao exibir os cargos!'
             })
         }
     },
@@ -226,19 +228,59 @@ export const actions = {
             );
 
             state.loading = true
+
             const data = await serviceCargos.adicionarCargo(newFields)
-            state.loading = false
 
             state.gridCargos.insertLine({
                 ...newFields,
                 ID_CARGO: data.ID_CARGO
             })
 
+            state.loading = false
+
         } catch (error) {
             state.loading = false;
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao cadastrar cargo!'
+                text: 'Erro ao inserir o cargo!'
+            })
+        }
+    },
+
+    async alterarCargo() {
+        try {
+            let dadosDiff = state.gridCargos.getDiffTwoJson(true, false)
+
+            if (dadosDiff.diff == false) {
+                return
+            }
+
+            let salario = <any>state.cargo.SALARIO
+
+            let param = {
+                ...state.cargo,
+                SALARIO: utils.formatValorUSA(salario),
+                ...dadosDiff.new
+            }
+
+            state.loading = true
+
+            await serviceCargos.alterarCargo(param)
+
+            state.gridCargos.dataSource({
+                ...param
+            })
+
+            state.cargo = param as iCargo;
+            state.cargo.SALARIO = param.SALARIO * 100;
+
+            state.loading = false
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao alterar o cargo!'
             })
         }
     }

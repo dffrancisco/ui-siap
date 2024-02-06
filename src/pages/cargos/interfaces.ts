@@ -16,5 +16,8 @@ export interface iParamAdicionarCargo {
     SALARIO: number,
 }
 
+export interface iParamAlterarCargo extends iCargo {}
+
 export interface iGetCargosResponse extends iCargo {}
 export interface iAdicionarCargoResponse extends iCargo {}
+export interface iAlterarCargoResponse extends iCargo {}
