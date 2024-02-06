@@ -1,0 +1,47 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run buildGit
+
+      - name: Zip files
+        run: |
+          cp package.json ui-siap
+          zip -r ui-siap.zip ui-siap
+          cp package.json ui-siap-package.json
+
+          chmod 644 ui-siap.zip ui-siap-package.json
+
+      - name: Debug da existência de 'ui-siap.zip'
+        run: |
+          ls -al $GITHUB_WORKSPACE
+
+      - name: rsync deployment
+        uses: burnett01/rsync-deployments@6.0.0
+        with:
+          switches: -avz --include='ui-siap.zip' --include='ui-siap-package.json' --exclude=*
+          remote_path: ${{ secrets.SERVER_CLOUD_DESTINATION_PATH }}
+          remote_host: ${{ secrets.SERVER_CLOUD_HOST }}
+          remote_user: ${{ secrets.SERVER_CLOUD_USER }}
+          remote_key: ${{ secrets.SERVER_CLOUD_PRIVATE_KEY }}
+          remote_port: ${{ secrets.SERVER_CLOUD_PORT }}
