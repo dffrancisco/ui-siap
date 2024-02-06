@@ -3,9 +3,11 @@ import {
     iAdicionarCargoResponse,
     iAlterarCargoResponse,
     iGetCargosResponse,
+    iInativarCargoResponse,
     iParamAdicionarCargo,
     iParamAlterarCargo,
-    iParamGetCargo
+    iParamGetCargo,
+    iParamInativarCargo
 } from '../interfaces'
 
 const caminho = 'siap/cargos'
@@ -13,6 +15,7 @@ const caminho = 'siap/cargos'
 type iGetCargosFunction = (param: iParamGetCargo) => Promise<iGetCargosResponse>
 type iAdicionarCargoFunction = (param: iParamAdicionarCargo) => Promise<iAdicionarCargoResponse>
 type iAlterarCargoFunction = (param: iParamAlterarCargo) => Promise<iAlterarCargoResponse>
+type iInativarCargoFunction = (param: iParamInativarCargo) => Promise<iInativarCargoResponse>
 
 const getCargos: iGetCargosFunction = async ({ offset, param, checkbox }) => {
     let { data } = await axios.post(caminho, {
@@ -40,8 +43,17 @@ const alterarCargo: iAlterarCargoFunction = async (param) => {
     return data;
 }
 
+const inativarCargo: iInativarCargoFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "inativarCargo",
+        param
+    });
+    return data;
+}
+
 export default {
     getCargos,
     adicionarCargo,
-    alterarCargo
+    alterarCargo,
+    inativarCargo
 }

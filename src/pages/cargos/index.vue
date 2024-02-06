@@ -33,7 +33,7 @@ onUnmounted(() => {
             <span>Descrição</span>
             <input
               type="text"
-              v-model="state.cargo.DESCRICAO"
+              v-model="state.dbCargo.DESCRICAO"
               class="obr ss"
               name="DESCRICAO"
               id="DESCRICAO"
@@ -44,7 +44,7 @@ onUnmounted(() => {
             <span>Salário</span>
             <input
               type="text"
-              v-model.lazy="state.cargo.SALARIO"
+              v-model.lazy="state.dbCargo.SALARIO"
               class="obr ss"
               name="SALARIO"
               id="SALARIO"

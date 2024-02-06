@@ -8,7 +8,7 @@ import utils from "@/ts/utils";
 
 export const state = reactive({
     gridCargos: <ixGridCreate>{},
-    cargo: <iCargo>{},
+    dbCargo: <iCargo>{},
 
     pnSearch: false,
     edtSearch: <HTMLInputElement>{},
@@ -31,7 +31,8 @@ export const actions = {
             height: 350,
             count: true,
             enter: function () {
-                document.getElementById('btnUpdate').click()
+                //@ts-ignore
+                document.querySelector('button[state="update"]').click();
             },
             columns: {
                 DESCRICAO: { dataField: 'DESCRICAO', width: "80%" },
@@ -51,7 +52,7 @@ export const actions = {
                 el: "#camposGridCargos",
                 vModel(r) {
                     r.SALARIO = r.SALARIO * 100
-                    state.cargo = r
+                    state.dbCargo = r
                 },
                 frame: {
                     el: "#btnGridCargos",
@@ -255,10 +256,10 @@ export const actions = {
                 return
             }
 
-            let salario = <any>state.cargo.SALARIO
+            let salario = <any>state.dbCargo.SALARIO
 
             let param = {
-                ...state.cargo,
+                ...state.dbCargo,
                 SALARIO: utils.formatValorUSA(salario),
                 ...dadosDiff.new
             }
@@ -271,8 +272,8 @@ export const actions = {
                 ...param
             })
 
-            state.cargo = param as iCargo;
-            state.cargo.SALARIO = param.SALARIO * 100;
+            state.dbCargo = param as iCargo;
+            state.dbCargo.SALARIO = param.SALARIO * 100;
 
             state.loading = false
 
@@ -281,6 +282,30 @@ export const actions = {
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao alterar o cargo!'
+            })
+        }
+    },
+
+    async inativarCargo() {
+        try {
+            let param = {
+                ID_CARGO: state.dbCargo.ID_CARGO,
+                DELETADO: state.dbCargo.DELETADO
+            }
+
+            state.loading = true
+
+            await serviceCargos.inativarCargo(param)
+
+            state.gridCargos.deleteLine()
+
+            state.loading = false
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao inativar o cargo!'
             })
         }
     }
