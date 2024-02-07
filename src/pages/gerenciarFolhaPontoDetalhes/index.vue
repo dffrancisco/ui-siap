@@ -10,6 +10,17 @@ import ModalJustificarFalta from "./components/modalJustificarFalta.vue";
 
 const route = useRoute();
 
+async function atualizarTela() {
+  state.loading = true;
+
+  await actions.getDadosFuncionario(state.codFuncionario);
+  await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
+  await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
+  await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
+
+  state.loading = false;
+}
+
 actions.init(route);
 </script>
 
@@ -193,6 +204,7 @@ actions.init(route);
           cpf: state.cpf,
           cargo: state.cargo,
         }"
+        @exibirFaltaFeriadoOuFolga="atualizarTela()"
       />
     </div>
 

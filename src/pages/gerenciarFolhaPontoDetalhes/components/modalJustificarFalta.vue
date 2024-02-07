@@ -17,7 +17,10 @@ const props = defineProps([
   "tiposDeFalta",
 ]);
 
+const emit = defineEmits(["exibirFaltaFeriadoOuFolga"]);
+
 const state = reactive({
+  loading: false,
   justificativa: "",
   selectedCID: "",
   showCIDAutocomplete: false,
@@ -138,20 +141,45 @@ const dadosDocumentoAusencia = computed(() => {
 });
 
 async function salvarFaltaFeriadoOuFolga() {
+  let dataFalta = props.dadosAusencia;
+  dataFalta = ajustarData(dataFalta);
+
   const param: iFaltaFeriadoFolga = {
     falta: state.selectedFalta,
-    data: props.dadosAusencia,
+    data: dataFalta,
     cod_funcionario: props.funcionario.cod_funcionario,
     tipo: state.selectedFaltaTipo,
   };
+
   try {
+    state.loading = true;
     state.inserirFalta = await gerenciarFolhaPontoDetalhesService.setFaltaFeriadoOuFolga(param);
+    state.loading = false;
+    Swal.fire({
+      icon: "success",
+      title: "Ausência salva com sucesso!",
+      showConfirmButton: false,
+      timer: 2500,
+    });
   } catch (error) {
     Swal.fire({
       icon: "error",
       text: "Ocorreu um erro ao inserir a falta.",
     });
   }
+
+  emit("exibirFaltaFeriadoOuFolga");
+}
+
+function ajustarData(dataFalta) {
+  const partesData = dataFalta.split("/");
+  const dataObjeto = new Date(partesData[2], partesData[1] - 1, partesData[0]);
+  const ano = dataObjeto.getFullYear();
+  let mes = dataObjeto.getMonth() + 1;
+  let dia = dataObjeto.getDate();
+  const dataFormatada = `${ano}-${mes < 10 ? "0" + mes : mes}-${dia < 10 ? "0" + dia : dia}`;
+
+  return dataFormatada;
 }
 
 onMounted(() => {
@@ -307,7 +335,8 @@ onMounted(() => {
         v-if="showSalvarFeriadoFolga"
         color="primary"
         class="btnSalvarFeriadoFolga"
-        @click="salvarFaltaFeriadoOuFolga || buttonsDisabled"
+        @click="salvarFaltaFeriadoOuFolga"
+        :disabled="tipoAusenciaDisabled || buttonsDisabled"
       >
         <v-icon>mdi-content-save</v-icon>
         Salvar
@@ -325,6 +354,18 @@ onMounted(() => {
       :opened="state.modalQrCodeOpened"
     />
   </div>
+
+  <v-overlay
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
 
 <style scoped>

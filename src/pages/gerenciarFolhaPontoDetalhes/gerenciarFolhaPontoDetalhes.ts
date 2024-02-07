@@ -243,8 +243,6 @@ export const selecionandoData = watch([() => state.mes, () => state.ano], async 
 
   state.initialDate = new Date(novoAno, novoMes - 1, 1);
   state.loadingCalendar = false;
-
-  console.log("kkkk");
 });
 
 export const pontosDiaSelecionado = computed(() => {
@@ -253,6 +251,11 @@ export const pontosDiaSelecionado = computed(() => {
   }
 
   let pontos = state.pontos["Dia:" + state.diaSelecionado];
+
+  if (pontos == undefined) {
+    return {} as iPonto;
+  }
+
   let nome = ref(state.nome);
   let cpf = ref(state.cpf);
   let cargo = ref(state.cargo);
