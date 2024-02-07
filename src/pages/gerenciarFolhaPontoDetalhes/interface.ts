@@ -36,3 +36,10 @@ export interface iTipoFaltasCount {
 export interface iCodFunc {
   cod_funcionario: number;
 }
+
+export interface iFaltaFeriadoFolga {
+  falta: string;
+  data: string;
+  cod_funcionario: number;
+  tipo: string;
+}

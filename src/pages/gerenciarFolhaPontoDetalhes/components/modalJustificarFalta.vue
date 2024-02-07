@@ -1,23 +1,11 @@
 <script setup lang="ts">
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import printJS from "print-js";
-import { ref, defineProps, computed, onMounted, nextTick, reactive } from "vue";
+import { defineProps, computed, onMounted, nextTick, reactive } from "vue";
 import ModalQrCode from "./modalQrCode.vue";
-
-const justificativa = ref<string>("");
-const showCIDAutocomplete = ref(false);
-const selectedCID = ref("");
-
-const hideButtons = ref(false);
-
-const showSalvarFeriadoFolga = computed(() => {
-  if (justificativa.value) {
-    const selectedFalta = props.tiposDeFalta.find((item) => item.DESCRICAO === justificativa.value);
-    return selectedFalta && (selectedFalta.DESCRICAO === "Dia de Folga" || selectedFalta.DESCRICAO === "Feriado");
-  } else {
-    return false;
-  }
-});
+import { iFaltaFeriadoFolga } from "../interface";
+import gerenciarFolhaPontoDetalhesService from "./../services/gerenciarFolhaPontoDetalhes.service";
+import Swal from "sweetalert2";
 
 const props = defineProps([
   "dadosAusencia",
@@ -29,12 +17,38 @@ const props = defineProps([
   "tiposDeFalta",
 ]);
 
+const state = reactive({
+  justificativa: "",
+  selectedCID: "",
+  showCIDAutocomplete: false,
+  hideButtons: false,
+  selectedFalta: "",
+  selectedFaltaTipo: "",
+  modalQrCode: <iModalCreate>(<unknown>null),
+  modalQrCodeOpened: false,
+  inserirFalta: <unknown>null,
+});
+
+const showSalvarFeriadoFolga = computed(() => {
+  if (state.justificativa) {
+    const selectedFalta = props.tiposDeFalta.find((item) => item.DESCRICAO === state.justificativa);
+    return selectedFalta && (selectedFalta.DESCRICAO === "Dia de Folga" || selectedFalta.DESCRICAO === "Feriado");
+  } else {
+    return false;
+  }
+});
+
 const preencherJustificativa = (DESCRICAO: string) => {
-  justificativa.value = DESCRICAO;
-  showCIDAutocomplete.value = DESCRICAO === "Atestado";
+  state.justificativa = DESCRICAO;
+  state.showCIDAutocomplete = DESCRICAO === "Atestado";
 
   const isFeriadoFolga = DESCRICAO === "Dia de Folga" || DESCRICAO === "Feriado";
-  hideButtons.value = isFeriadoFolga;
+  state.hideButtons = isFeriadoFolga;
+
+  const selectedFalta = props.tiposDeFalta.find((item) => item.DESCRICAO === DESCRICAO);
+  if (selectedFalta) {
+    state.selectedFaltaTipo = selectedFalta.TIPO;
+  }
 };
 
 function imprimirJustificativa() {
@@ -48,7 +62,7 @@ function imprimirJustificativa() {
 }
 
 function criarHTMLParaPDF() {
-  const justificativaValor = justificativa && justificativa.value ? justificativa.value : "";
+  const justificativaValor = state.justificativa ? state.justificativa : "";
 
   const conteudoHTML = `
     <div id="justificativaPDF">
@@ -66,11 +80,6 @@ function criarHTMLParaPDF() {
   return tempElement;
 }
 
-const state = reactive({
-  modalQrCode: <iModalCreate>(<unknown>null),
-  modalQrCodeOpened: false,
-});
-
 const tipoAusenciaDisabled = computed(() => {
   if (
     props.horaChegada != null &&
@@ -82,6 +91,10 @@ const tipoAusenciaDisabled = computed(() => {
   } else {
     return false;
   }
+});
+
+const buttonsDisabled = computed(() => {
+  return !state.selectedFalta || !state.justificativa;
 });
 
 function modal() {
@@ -104,7 +117,7 @@ function abrirModalQrCode() {
 }
 
 const dadosDocumentoAusencia = computed(() => {
-  const justificativaValor = justificativa && justificativa.value ? justificativa.value : "";
+  const justificativaValor = state.justificativa ? state.justificativa : "";
   if (justificativaValor == undefined) {
     return {};
   }
@@ -118,13 +131,28 @@ const dadosDocumentoAusencia = computed(() => {
     nomeFuncionario: nomeFuncionario,
     data: data,
     justificativaValor: justificativaValor,
-    cid: selectedCID.value,
+    cid: state.selectedCID,
   };
 
   return dadosParaQrCode;
 });
 
-function salvarFeriadoOuFolga() {}
+async function salvarFaltaFeriadoOuFolga() {
+  const param: iFaltaFeriadoFolga = {
+    falta: state.selectedFalta,
+    data: props.dadosAusencia,
+    cod_funcionario: props.funcionario.cod_funcionario,
+    tipo: state.selectedFaltaTipo,
+  };
+  try {
+    state.inserirFalta = await gerenciarFolhaPontoDetalhesService.setFaltaFeriadoOuFolga(param);
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      text: "Ocorreu um erro ao inserir a falta.",
+    });
+  }
+}
 
 onMounted(() => {
   nextTick(() => {
@@ -211,6 +239,7 @@ onMounted(() => {
               :item-value="tiposDeFalta.map((item) => item.TIPO)"
               id="tiposDeFalta"
               label="Tipo de Ausência"
+              v-model="state.selectedFalta"
               @update:model-value="preencherJustificativa"
               :disabled="tipoAusenciaDisabled"
             ></v-autocomplete>
@@ -221,9 +250,10 @@ onMounted(() => {
         ><v-text-field
           class="cid"
           id="cid"
-          v-if="showCIDAutocomplete"
+          v-if="state.showCIDAutocomplete"
           label="CID"
-          v-model="selectedCID"
+          v-model="state.selectedCID"
+          :disabled="tipoAusenciaDisabled"
         >
         </v-text-field>
       </div>
@@ -235,7 +265,7 @@ onMounted(() => {
           <v-textarea
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
-            v-model="justificativa"
+            v-model="state.justificativa"
             :disabled="tipoAusenciaDisabled"
           >
           </v-textarea>
@@ -245,28 +275,30 @@ onMounted(() => {
 
     <div
       ><v-btn
+        label="Deletar Falta"
         color="primary"
         class="btnDelete"
         :disabled="tipoAusenciaDisabled"
       >
         <v-icon>mdi-delete</v-icon>
+        Deletar Falta
       </v-btn>
       <v-btn
-        v-if="!hideButtons"
+        v-if="!state.hideButtons"
         color="primary"
         class="btnJustificar"
         @click="imprimirJustificativa"
-        :disabled="tipoAusenciaDisabled"
+        :disabled="tipoAusenciaDisabled || buttonsDisabled"
       >
         <v-icon>mdi-printer-settings</v-icon>
         Justificativa
       </v-btn>
       <v-btn
-        v-if="!hideButtons"
+        v-if="!state.hideButtons"
         color="primary"
         class="btnSalvar"
         @click="abrirModalQrCode()"
-        :disabled="tipoAusenciaDisabled"
+        :disabled="tipoAusenciaDisabled || buttonsDisabled"
       >
         <v-icon>mdi-content-save</v-icon>
         Salvar
@@ -275,7 +307,7 @@ onMounted(() => {
         v-if="showSalvarFeriadoFolga"
         color="primary"
         class="btnSalvarFeriadoFolga"
-        @click="salvarFeriadoOuFolga()"
+        @click="salvarFaltaFeriadoOuFolga || buttonsDisabled"
       >
         <v-icon>mdi-content-save</v-icon>
         Salvar
@@ -331,15 +363,19 @@ onMounted(() => {
   margin-top: 10px;
 }
 .btnDelete {
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .btnJustificar {
   margin-right: 5px;
-  margin-left: 280px;
+  margin-left: 200px;
 }
 
 .btnSalvar {
   margin-right: 5px;
+}
+
+.btnSalvarFeriadoFolga {
+  margin-left: 350px;
 }
 </style>

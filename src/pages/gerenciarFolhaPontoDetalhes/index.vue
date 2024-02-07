@@ -188,6 +188,7 @@ actions.init(route);
         :horaAlmocoFinal="pontosDiaSelecionado.HORA_ALMOCO_FINAL"
         :horaSaida="pontosDiaSelecionado.HORA_SAIDA"
         :funcionario="{
+          cod_funcionario: state.codFuncionario,
           nome: state.nome,
           cpf: state.cpf,
           cargo: state.cargo,
