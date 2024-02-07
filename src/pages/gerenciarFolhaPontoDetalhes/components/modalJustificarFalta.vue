@@ -6,9 +6,18 @@ import ModalQrCode from "./modalQrCode.vue";
 
 const justificativa = ref<string>("");
 const showCIDAutocomplete = ref(false);
-const desativarSeForFeriadoFolgaouPontoIncompleto = ref(true);
-
 const selectedCID = ref("");
+
+const hideButtons = ref(false);
+
+const showSalvarFeriadoFolga = computed(() => {
+  if (justificativa.value) {
+    const selectedFalta = props.tiposDeFalta.find((item) => item.DESCRICAO === justificativa.value);
+    return selectedFalta && (selectedFalta.DESCRICAO === "Dia de Folga" || selectedFalta.DESCRICAO === "Feriado");
+  } else {
+    return false;
+  }
+});
 
 const props = defineProps([
   "dadosAusencia",
@@ -23,6 +32,9 @@ const props = defineProps([
 const preencherJustificativa = (DESCRICAO: string) => {
   justificativa.value = DESCRICAO;
   showCIDAutocomplete.value = DESCRICAO === "Atestado";
+
+  const isFeriadoFolga = DESCRICAO === "Dia de Folga" || DESCRICAO === "Feriado";
+  hideButtons.value = isFeriadoFolga;
 };
 
 function imprimirJustificativa() {
@@ -56,6 +68,7 @@ function criarHTMLParaPDF() {
 
 const state = reactive({
   modalQrCode: <iModalCreate>(<unknown>null),
+  modalQrCodeOpened: false,
 });
 
 const tipoAusenciaDisabled = computed(() => {
@@ -71,28 +84,18 @@ const tipoAusenciaDisabled = computed(() => {
   }
 });
 
-//parei aqui para fazer os botoes alternarem em disabled caso cumpra os requisitos abaixo
-// const seForFeriadoFolgaouPontoIncompleto = computed(() => {
-//   const tipoFaltaSelecionada = props.tiposDeFalta.value;
-//   switch (tipoFaltaSelecionada) {
-//     case "Dia de Folga":
-//       false;
-//     case "Feriado":
-//       false;
-//     case "Ponto Incompleto":
-//       false;
-//       break;
-//     default:
-//       true;
-//   }
-// });
-
 function modal() {
   state.modalQrCode = new xModal.create({
     width: 400,
     height: 550,
     el: "#modalQrCode",
     theme: "xModal-blue",
+    onOpen: () => {
+      state.modalQrCodeOpened = true;
+    },
+    onClose: () => {
+      state.modalQrCodeOpened = false;
+    },
   });
 }
 
@@ -200,7 +203,6 @@ onMounted(() => {
           </v-col>
         </v-row>
       </div>
-
       <div style="width: 100%">
         <v-container fluid>
           <v-row>
@@ -234,7 +236,6 @@ onMounted(() => {
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
             v-model="justificativa"
-            v-if="desativarSeForFeriadoFolgaouPontoIncompleto"
             :disabled="tipoAusenciaDisabled"
           >
           </v-textarea>
@@ -251,6 +252,7 @@ onMounted(() => {
         <v-icon>mdi-delete</v-icon>
       </v-btn>
       <v-btn
+        v-if="!hideButtons"
         color="primary"
         class="btnJustificar"
         @click="imprimirJustificativa"
@@ -260,6 +262,7 @@ onMounted(() => {
         Justificativa
       </v-btn>
       <v-btn
+        v-if="!hideButtons"
         color="primary"
         class="btnSalvar"
         @click="abrirModalQrCode()"
@@ -269,9 +272,9 @@ onMounted(() => {
         Salvar
       </v-btn>
       <v-btn
-        style="display: none"
+        v-if="showSalvarFeriadoFolga"
         color="primary"
-        class="btnSalvarFeriadoFolgaOuPontoIncompleto"
+        class="btnSalvarFeriadoFolga"
         @click="salvarFeriadoOuFolga()"
       >
         <v-icon>mdi-content-save</v-icon>
@@ -285,7 +288,10 @@ onMounted(() => {
     title="Enviar Documento Ausência"
     style="display: none"
   >
-    <ModalQrCode :dadosParaQrCode="dadosDocumentoAusencia" />
+    <ModalQrCode
+      :dadosParaQrCode="dadosDocumentoAusencia"
+      :opened="state.modalQrCodeOpened"
+    />
   </div>
 </template>
 

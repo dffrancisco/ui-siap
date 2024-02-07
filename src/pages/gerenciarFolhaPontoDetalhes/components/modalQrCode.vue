@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
 import QrcodeVue from "qrcode.vue";
-import { nextTick, onMounted, ref } from "vue";
+import { nextTick, onActivated, onMounted, ref, watch } from "vue";
 // import state from "../../login/login";
 import $ from "jquery";
+import { onUpdated } from "vue";
 
-const props = defineProps(["dadosParaQrCode"]);
+// const props = defineProps(["dadosParaQrCode", "opened: boolean"]);
+
+const props = defineProps<{
+  dadosParaQrCode;
+  opened: boolean;
+}>();
+
 const qrData = ref("");
 var intervalId;
 var cpf;
@@ -27,7 +34,7 @@ function gerarQrCode() {
   qrData.value = `http://192.168.100.202/siap+/funcionario_doc_imagem/?chave=${chave}`;
 
   console.log(qrData.value);
-  console.log(chave);
+  console.log(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo);
 
   setTimeout(() => {
     intervalId = setInterval(verificarArquivos, 2000);
@@ -86,11 +93,16 @@ function gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo) {
   return utils.base64_encode(`${cpf}|${tipoDocumento}|${usuario}|${nomeFunc}|${dataDocArquivo}`);
 }
 
-onMounted(() => {
-  nextTick(() => {
-    gerarQrCode();
-  });
-});
+watch(
+  () => props.opened,
+  (newValue) => {
+    nextTick(async () => {
+      if (newValue) {
+        gerarQrCode();
+      }
+    });
+  }
+);
 </script>
 
 <template>
