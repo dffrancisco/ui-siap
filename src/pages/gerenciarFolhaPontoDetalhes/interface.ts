@@ -43,3 +43,8 @@ export interface iFaltaFeriadoFolga {
   cod_funcionario: number;
   tipo: string;
 }
+
+export interface iDeletarFalta {
+  cod_funcionario: number;
+  data: string;
+}

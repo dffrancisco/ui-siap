@@ -3,7 +3,7 @@ import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import printJS from "print-js";
 import { defineProps, computed, onMounted, nextTick, reactive } from "vue";
 import ModalQrCode from "./modalQrCode.vue";
-import { iFaltaFeriadoFolga } from "../interface";
+import { iDeletarFalta, iFaltaFeriadoFolga } from "../interface";
 import gerenciarFolhaPontoDetalhesService from "./../services/gerenciarFolhaPontoDetalhes.service";
 import Swal from "sweetalert2";
 
@@ -30,6 +30,7 @@ const state = reactive({
   modalQrCode: <iModalCreate>(<unknown>null),
   modalQrCodeOpened: false,
   inserirFalta: <unknown>null,
+  deletarFalta: <unknown>null,
 });
 
 const showSalvarFeriadoFolga = computed(() => {
@@ -182,6 +183,33 @@ function ajustarData(dataFalta) {
   return dataFormatada;
 }
 
+async function deletarFalta() {
+  let dataFalta = props.dadosAusencia;
+  dataFalta = ajustarData(dataFalta);
+
+  const param: iDeletarFalta = {
+    data: dataFalta,
+    cod_funcionario: props.funcionario.cod_funcionario,
+  };
+
+  try {
+    state.loading = true;
+    state.deletarFalta = await gerenciarFolhaPontoDetalhesService.deletarFalta(param);
+    state.loading = false;
+    Swal.fire({
+      icon: "success",
+      title: "Ausência deletada com sucesso!",
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      text: "Ocorreu um erro ao deletar a falta.",
+    });
+  }
+}
+
 onMounted(() => {
   nextTick(() => {
     modal();
@@ -307,6 +335,7 @@ onMounted(() => {
         color="primary"
         class="btnDelete"
         :disabled="tipoAusenciaDisabled"
+        @click="deletarFalta"
       >
         <v-icon>mdi-delete</v-icon>
         Deletar Falta
