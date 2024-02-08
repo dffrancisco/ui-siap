@@ -6,16 +6,18 @@ import ModalQrCode from "./modalQrCode.vue";
 import { iDeletarFalta, iFaltaFeriadoFolga } from "../interface";
 import gerenciarFolhaPontoDetalhesService from "./../services/gerenciarFolhaPontoDetalhes.service";
 import Swal from "sweetalert2";
+import { confirmaCodigo } from "@/ts/utils";
 
-const props = defineProps([
-  "dadosAusencia",
-  "funcionario",
-  "horaChegada",
-  "horaAlmocoInicial",
-  "horaAlmocoFinal",
-  "horaSaida",
-  "tiposDeFalta",
-]);
+const props = defineProps<{
+  dadosAusencia;
+  funcionario;
+  horaChegada;
+  horaAlmocoInicial;
+  horaAlmocoFinal;
+  horaSaida;
+  tiposDeFalta;
+  opened: boolean;
+}>();
 
 const emit = defineEmits(["exibirFaltaFeriadoOuFolga"]);
 
@@ -192,22 +194,28 @@ async function deletarFalta() {
     cod_funcionario: props.funcionario.cod_funcionario,
   };
 
-  try {
-    state.loading = true;
-    state.deletarFalta = await gerenciarFolhaPontoDetalhesService.deletarFalta(param);
-    state.loading = false;
-    Swal.fire({
-      icon: "success",
-      title: "Ausência deletada com sucesso!",
-      showConfirmButton: false,
-      timer: 2500,
-    });
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      text: "Ocorreu um erro ao deletar a falta.",
-    });
-  }
+  confirmaCodigo({
+    msg: "Confirma exclusão deste registro?",
+    call: async function () {
+      try {
+        state.loading = true;
+        state.deletarFalta = await gerenciarFolhaPontoDetalhesService.deletarFalta(param);
+        state.loading = false;
+        Swal.fire({
+          icon: "success",
+          title: "Ausência deletada com sucesso!",
+          showConfirmButton: false,
+          timer: 2500,
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          text: "Ocorreu um erro ao deletar a falta.",
+        });
+      }
+      emit("exibirFaltaFeriadoOuFolga");
+    },
+  });
 }
 
 onMounted(() => {

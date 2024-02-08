@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
 import QrcodeVue from "qrcode.vue";
-import { nextTick, onActivated, onMounted, ref, watch } from "vue";
-// import state from "../../login/login";
+import { nextTick, ref, watch } from "vue";
+import state from "../../login/login";
 import $ from "jquery";
-import { onUpdated } from "vue";
-
-// const props = defineProps(["dadosParaQrCode", "opened: boolean"]);
 
 const props = defineProps<{
   dadosParaQrCode;
@@ -21,8 +18,7 @@ function gerarQrCode() {
   let cpf = props.dadosParaQrCode.cpf;
   let nomeFunc = props.dadosParaQrCode.nomeFuncionario;
   let tipoDocumento = "ausencia";
-  // let usuario = state.state.login.LOGIN;
-  let usuario = "VITOR";
+  let usuario = state.state.login.LOGIN;
   let dataDocArquivo = props.dadosParaQrCode.data;
   dataDocArquivo = ajustarData(dataDocArquivo);
 

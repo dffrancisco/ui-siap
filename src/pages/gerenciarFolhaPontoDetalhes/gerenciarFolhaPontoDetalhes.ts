@@ -26,6 +26,7 @@ export const state = reactive({
   ano: 2024,
   initialDate: <any>new Date(),
   modalJustificarFalta: <iModalCreate>(<unknown>null),
+  modalJustificarFaltaOpened: false,
   dataAusencia: <any>new Date(),
   diaSelecionado: undefined,
 });
@@ -167,6 +168,12 @@ export const actions = {
       width: 700,
       el: "#modalJustificarFalta",
       theme: "xModal-blue",
+      onOpen: () => {
+        state.modalJustificarFaltaOpened = true;
+      },
+      onClose: () => {
+        state.modalJustificarFaltaOpened = false;
+      },
     });
   },
 
