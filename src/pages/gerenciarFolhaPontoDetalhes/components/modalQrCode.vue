@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import utils from "@/ts/utils";
+import utils, { show } from "@/ts/utils";
 import QrcodeVue from "qrcode.vue";
 import { nextTick, ref, watch } from "vue";
 import state from "../../login/login";
@@ -35,6 +35,10 @@ function gerarQrCode() {
   setTimeout(() => {
     intervalId = setInterval(verificarArquivos, 2000);
   }, 1000);
+}
+
+function gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo) {
+  return utils.base64_encode(`${cpf}|${tipoDocumento}|${usuario}|${nomeFunc}|${dataDocArquivo}`);
 }
 
 function ajustarData(dataDocArquivo) {
@@ -83,10 +87,59 @@ function exibirArquivo(nomeDoDocumento: string) {
   const qrGenerate = document.getElementById("qr-generate");
   qrGenerate.innerHTML = "";
   qrGenerate.appendChild(imgElement);
+
+  setTimeout(() => {
+    moverArquivoTemp(nomeDoDocumento);
+  }, 2000);
 }
 
-function gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo) {
-  return utils.base64_encode(`${cpf}|${tipoDocumento}|${usuario}|${nomeFunc}|${dataDocArquivo}`);
+function moverArquivoTemp(nomeDoDocumento: string) {
+  let tipoDocumento = "ausencia";
+  $.ajax({
+    url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
+    type: "POST",
+    dataType: "json",
+    data: {
+      class: "Files",
+      call: "moverArquivoTemp",
+      param: {
+        cpf: cpf,
+        pasta: tipoDocumento,
+      },
+    },
+    success: function (rs) {
+      if (rs.success) {
+        createRegistroAusencia(nomeDoDocumento, tipoDocumento);
+
+        setTimeout(() => {
+          $("#pnLoadDocumento").empty();
+          $("#qr-generate").empty();
+        }, 4000);
+      } else {
+        show("Erro na operação.");
+      }
+    },
+  });
+}
+
+async function createRegistroAusencia(nomeDoDocumento: string, tipoDocumento: string) {
+  let cpf = props.dadosParaQrCode.cpf;
+  let nomeFunc = props.dadosParaQrCode.nomeFuncionario;
+  let usuario = state.state.login.LOGIN;
+  let dataDocArquivo = props.dadosParaQrCode.data;
+  dataDocArquivo = ajustarData(dataDocArquivo);
+
+  let justificativa = props.dadosParaQrCode.justificativaValor;
+  let cid = props.dadosParaQrCode.cid;
+
+  // const param: iRegistrarDocumentoAusencia = {
+  //   cpf: cpf,
+  //   nomeFuncionario: nomeFunc,
+  //   tipoDocumento: tipoDocumento,
+  //   dataDocArquivo: dataDocArquivo,
+  //   justificativaValor: justificativa,
+  //   cid: cid,
+  // }
 }
 
 watch(

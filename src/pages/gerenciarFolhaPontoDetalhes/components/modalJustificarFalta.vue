@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import { confirmaCodigo } from "@/ts/utils";
 
 const props = defineProps<{
+  pontos;
   dadosAusencia;
   funcionario;
   horaChegada;
@@ -19,7 +20,7 @@ const props = defineProps<{
   opened: boolean;
 }>();
 
-const emit = defineEmits(["exibirFaltaFeriadoOuFolga"]);
+const emit = defineEmits(["exibirFaltaFeriadoOuFolga", "fecharModal"]);
 
 const state = reactive({
   loading: false,
@@ -86,20 +87,28 @@ function criarHTMLParaPDF() {
   return tempElement;
 }
 
+const jaJustificado = computed(() => {
+  if (!props.pontos?.STATUS) {
+    return false;
+  } else {
+    return true;
+  }
+});
+
 const tipoAusenciaDisabled = computed(() => {
-  if (
-    props.horaChegada != null &&
-    props.horaAlmocoInicial != null &&
-    props.horaAlmocoFinal != null &&
-    props.horaSaida != null
-  ) {
+  let chegada = props.horaChegada;
+  let inicioAlmoco = props.horaAlmocoInicial;
+  let fimAlmoco = props.horaAlmocoFinal;
+  let saida = props.horaSaida;
+
+  if (chegada != null && inicioAlmoco != null && fimAlmoco != null && saida != null) {
     return true;
   } else {
     return false;
   }
 });
 
-const buttonsDisabled = computed(() => {
+const desativarBotoesSeNadaSelecionado = computed(() => {
   return !state.selectedFalta || !state.justificativa;
 });
 
@@ -207,6 +216,7 @@ async function deletarFalta() {
           showConfirmButton: false,
           timer: 2500,
         });
+        emit("fecharModal");
       } catch (error) {
         Swal.fire({
           icon: "error",
@@ -298,15 +308,15 @@ onMounted(() => {
       <div style="width: 100%">
         <v-container fluid>
           <v-row>
-            <v-autocomplete
+            <v-select
               :items="tiposDeFalta.map((item) => item.DESCRICAO)"
               :item-value="tiposDeFalta.map((item) => item.TIPO)"
               id="tiposDeFalta"
               label="Tipo de Ausência"
               v-model="state.selectedFalta"
               @update:model-value="preencherJustificativa"
-              :disabled="tipoAusenciaDisabled"
-            ></v-autocomplete>
+              :disabled="tipoAusenciaDisabled || jaJustificado"
+            ></v-select>
           </v-row>
         </v-container>
       </div>
@@ -317,7 +327,7 @@ onMounted(() => {
           v-if="state.showCIDAutocomplete"
           label="CID"
           v-model="state.selectedCID"
-          :disabled="tipoAusenciaDisabled"
+          :disabled="tipoAusenciaDisabled || jaJustificado"
         >
         </v-text-field>
       </div>
@@ -330,7 +340,7 @@ onMounted(() => {
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
             v-model="state.justificativa"
-            :disabled="tipoAusenciaDisabled"
+            :disabled="tipoAusenciaDisabled || jaJustificado"
           >
           </v-textarea>
         </v-col>
@@ -353,7 +363,7 @@ onMounted(() => {
         color="primary"
         class="btnJustificar"
         @click="imprimirJustificativa"
-        :disabled="tipoAusenciaDisabled || buttonsDisabled"
+        :disabled="tipoAusenciaDisabled || desativarBotoesSeNadaSelecionado || jaJustificado"
       >
         <v-icon>mdi-printer-settings</v-icon>
         Justificativa
@@ -363,7 +373,7 @@ onMounted(() => {
         color="primary"
         class="btnSalvar"
         @click="abrirModalQrCode()"
-        :disabled="tipoAusenciaDisabled || buttonsDisabled"
+        :disabled="tipoAusenciaDisabled || desativarBotoesSeNadaSelecionado || jaJustificado"
       >
         <v-icon>mdi-content-save</v-icon>
         Salvar
@@ -373,7 +383,7 @@ onMounted(() => {
         color="primary"
         class="btnSalvarFeriadoFolga"
         @click="salvarFaltaFeriadoOuFolga"
-        :disabled="tipoAusenciaDisabled || buttonsDisabled"
+        :disabled="tipoAusenciaDisabled || desativarBotoesSeNadaSelecionado"
       >
         <v-icon>mdi-content-save</v-icon>
         Salvar

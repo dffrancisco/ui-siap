@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { actions, state, pontosCalendario, pontosDiaSelecionado } from "./gerenciarFolhaPontoDetalhes";
+import {
+  actions,
+  state,
+  pontosCalendario,
+  pontosDiaSelecionado,
+  tipoFaltaPontoIncompleto,
+} from "./gerenciarFolhaPontoDetalhes";
 import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -9,6 +15,10 @@ import interactionPlugin from "@fullcalendar/interaction";
 import ModalJustificarFalta from "./components/modalJustificarFalta.vue";
 
 const route = useRoute();
+
+function fecharModal() {
+  state.modalJustificarFalta.close();
+}
 
 async function atualizarTela() {
   state.loading = true;
@@ -201,7 +211,7 @@ actions.init(route);
     >
       <modal-justificar-falta
         :dadosAusencia="state.dataAusencia"
-        :tiposDeFalta="state.tipoFaltas"
+        :tiposDeFalta="tipoFaltaPontoIncompleto"
         :pontos="pontosDiaSelecionado"
         :horaChegada="pontosDiaSelecionado.HORA_CHEGADA"
         :horaAlmocoInicial="pontosDiaSelecionado.HORA_ALMOCO_INICIAL"
@@ -215,6 +225,7 @@ actions.init(route);
         }"
         :opened="state.modalJustificarFaltaOpened"
         @exibirFaltaFeriadoOuFolga="atualizarTela()"
+        @fecharModal="fecharModal()"
       />
     </div>
 
@@ -239,7 +250,8 @@ actions.init(route);
 }
 
 .fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events {
-  margin-top: -15px;
+  margin-top: -10px;
+  padding-left: 5px;
 }
 
 .fc-daygrid-event-harness {

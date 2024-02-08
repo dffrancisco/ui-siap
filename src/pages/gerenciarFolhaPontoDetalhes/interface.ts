@@ -48,3 +48,7 @@ export interface iDeletarFalta {
   cod_funcionario: number;
   data: string;
 }
+
+export interface iRegistrarDocumentoAusencia {
+  nomeDoDocumento: string;
+}

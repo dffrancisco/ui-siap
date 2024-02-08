@@ -227,7 +227,23 @@ export const pontosCalendario = computed(() => {
     }
 
     if (ponto.STATUS) {
-      let eventoFormatado = actions.formatarEvento(ponto.STATUS, dataInicio, dataFim, "#3CB371");
+      let cor;
+      switch (ponto.STATUS) {
+        case "Atestado" || "Ponto Incompleto":
+          cor = "#FF6347"; // Laranja
+          break;
+        case "Licença Maternidade" || "Licença Paternidade":
+          cor = "#F7FE2E"; // Amarelo
+          break;
+        case "Falta Abonada" || "Falta" || "Falta Justificada":
+          cor = "#9F5F9F"; // Roxo
+          break;
+        case "Suspenso":
+          cor = "#960303"; // Vermelho
+        default:
+          cor = "#3CB371"; // Azul padrão
+      }
+      let eventoFormatado = actions.formatarEvento(ponto.STATUS, dataInicio, dataFim, cor);
 
       eventos.push(eventoFormatado);
     }
@@ -237,12 +253,8 @@ export const pontosCalendario = computed(() => {
 });
 
 export const selecionandoData = watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
-  console.log("aaaa");
-
   state.loadingCalendar = true;
   await actions.getPontos(state.codFuncionario, state.cpf, novoMes, novoAno);
-  console.log("uiii");
-
   await actions.getResumoPontosFuncionario(state.codFuncionario, novoMes, novoAno);
   await actions.getTipoFaltas(state.codFuncionario, novoMes, novoAno);
 
@@ -287,6 +299,17 @@ export const pontosDiaSelecionado = computed(() => {
   };
 
   return pontos;
+});
+
+//AJUSTAR PROBLEMA COM O NULL
+export const tipoFaltaPontoIncompleto = computed(() => {
+  const algumPontoIncompleto = Object.values(pontosDiaSelecionado).some((value) => value !== null);
+
+  if (algumPontoIncompleto) {
+    return state.tipoFaltas.filter((item) => item.DESCRICAO == "Ponto Incompleto");
+  } else {
+    return state.tipoFaltas;
+  }
 });
 
 export default { state, actions };
