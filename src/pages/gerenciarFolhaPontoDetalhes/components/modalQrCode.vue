@@ -1,14 +1,29 @@
 <script setup lang="ts">
-import utils, { show } from "@/ts/utils";
+import utils from "@/ts/utils";
 import QrcodeVue from "qrcode.vue";
-import { nextTick, ref, watch } from "vue";
-import state from "../../login/login";
+import { nextTick, reactive, ref, watch } from "vue";
+import stateLogin from "../../login/login";
+import globalState from "@/store/globalState";
 import $ from "jquery";
+import { iRegistrarDocumentoAusencia } from "../interface";
+import Swal from "sweetalert2";
+import gerenciarFolhaPontoDetalhesService from "../services/gerenciarFolhaPontoDetalhes.service";
 
-const props = defineProps<{
-  dadosParaQrCode;
-  opened: boolean;
-}>();
+const props = defineProps({
+  dadosParaQrCode: {
+    type: Object,
+  },
+  opened: {
+    type: Boolean,
+  },
+});
+
+const state = reactive({
+  inserirDadosDocumento: <unknown>null,
+  loading: false,
+  nomeDoDocumento: "",
+  tipoDocumento: "ausencia",
+});
 
 const qrData = ref("");
 var intervalId;
@@ -16,14 +31,11 @@ var cpf;
 
 function gerarQrCode() {
   let cpf = props.dadosParaQrCode.cpf;
-  let nomeFunc = props.dadosParaQrCode.nomeFuncionario;
-  let tipoDocumento = "ausencia";
-  let usuario = state.state.login.LOGIN;
+  let nomeFunc = props.dadosParaQrCode.loginFuncionario;
+  let tipoDocumento = state.tipoDocumento;
+  let usuario = stateLogin.state.login.LOGIN;
   let dataDocArquivo = props.dadosParaQrCode.data;
   dataDocArquivo = ajustarData(dataDocArquivo);
-
-  let justificativa = props.dadosParaQrCode.justificativaValor;
-  let cid = props.dadosParaQrCode.cid;
 
   const chave = gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo);
 
@@ -54,7 +66,7 @@ function ajustarData(dataDocArquivo) {
 
 function verificarArquivos() {
   cpf = props.dadosParaQrCode.cpf.replaceAll(".", "").replaceAll("-", "");
-
+  // state.loading = true;
   $.ajax({
     url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
     type: "POST",
@@ -69,8 +81,8 @@ function verificarArquivos() {
     },
     success: function (r) {
       if (r.length > 0) {
-        const nomeDoDocumento = r[0].file;
-        exibirArquivo(nomeDoDocumento);
+        state.nomeDoDocumento = r[0].file;
+        exibirArquivo(state.nomeDoDocumento);
         clearInterval(intervalId);
       }
     },
@@ -93,6 +105,91 @@ function exibirArquivo(nomeDoDocumento: string) {
   }, 2000);
 }
 
+function uploadArquivoPeloBotao(event) {
+  const file = event.target.files[0];
+
+  const imgElement = document.createElement("img");
+  imgElement.src = file;
+  imgElement.style.width = "200px";
+  imgElement.style.height = "200px";
+  imgElement.style.objectFit = "cover";
+
+  const qrGenerate = document.getElementById("qr-generate");
+  qrGenerate.innerHTML = "";
+  qrGenerate.appendChild(imgElement);
+
+  if (file.size > 1500000) {
+    resizeImage(file, function (resizedFile) {
+      uploadPDF(resizedFile, state.tipoDocumento);
+    });
+  } else {
+    uploadPDF(file, state.tipoDocumento);
+  }
+}
+
+function resizeImage(file, callback) {
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const img = new Image();
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const newWidth = 800;
+      const newHeight = (img.height / img.width) * newWidth;
+
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+
+      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+      canvas.toBlob(function (blob) {
+        const resizedFile = new File([blob], file.name, { type: file.type });
+        callback(resizedFile);
+      }, file.type);
+    };
+    //@ts-ignore
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function uploadPDF(file, tipoDocumento) {
+  let formData = new FormData();
+
+  let cpf = props.dadosParaQrCode.cpf;
+  let usuario = stateLogin.state.login.LOGIN;
+  let nomeFunc = props.dadosParaQrCode.loginFuncionario;
+  let dataDocArquivo = props.dadosParaQrCode.data;
+  dataDocArquivo = ajustarData(dataDocArquivo);
+  let dataUpload = new Date().toISOString();
+  dataUpload = ajustarData(dataUpload);
+
+  formData.append("file", file);
+  formData.append("cpf", cpf);
+  formData.append("tipoDocumento", tipoDocumento);
+  formData.append("usuario", usuario);
+  formData.append("nomeFunc", nomeFunc);
+  formData.append("dataDocArquivo", dataDocArquivo);
+
+  formData.append("class", "Files");
+  formData.append("call", "uploadPdf");
+
+  $.ajax({
+    url: "http://www.reallatas.com.br/doc_funcionario/getFiles.php",
+    type: "POST",
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: function (rs) {
+      let nomeDoDocumento = rs.file;
+      createRegistroAusencia(nomeDoDocumento, tipoDocumento);
+    },
+  });
+
+  return false;
+}
+
 function moverArquivoTemp(nomeDoDocumento: string) {
   let tipoDocumento = "ausencia";
   $.ajax({
@@ -110,13 +207,12 @@ function moverArquivoTemp(nomeDoDocumento: string) {
     success: function (rs) {
       if (rs.success) {
         createRegistroAusencia(nomeDoDocumento, tipoDocumento);
-
-        setTimeout(() => {
-          $("#pnLoadDocumento").empty();
-          $("#qr-generate").empty();
-        }, 4000);
-      } else {
-        show("Erro na operação.");
+        Swal.fire({
+          icon: "success",
+          title: "Documento salvo com sucesso!",
+          showConfirmButton: false,
+          timer: 2500,
+        });
       }
     },
   });
@@ -124,23 +220,38 @@ function moverArquivoTemp(nomeDoDocumento: string) {
 
 async function createRegistroAusencia(nomeDoDocumento: string, tipoDocumento: string) {
   let cpf = props.dadosParaQrCode.cpf;
-  let nomeFunc = props.dadosParaQrCode.nomeFuncionario;
-  let usuario = state.state.login.LOGIN;
+  let usuario = stateLogin.state.login.LOGIN;
   let dataDocArquivo = props.dadosParaQrCode.data;
   dataDocArquivo = ajustarData(dataDocArquivo);
+  let dataUpload = new Date().toISOString();
+  dataUpload = ajustarData(dataUpload);
 
-  let justificativa = props.dadosParaQrCode.justificativaValor;
-  let cid = props.dadosParaQrCode.cid;
+  // let justificativa = props.dadosParaQrCode.justificativaValor;
+  // let cid = props.dadosParaQrCode.cid;
+  const param: iRegistrarDocumentoAusencia = {
+    nomeDoDocumento: nomeDoDocumento,
+    cpf: cpf,
+    docPasta: tipoDocumento,
+    dataPonto: dataDocArquivo,
+    dataUpload: dataUpload,
+    usuario: usuario,
+    cnpj: globalState.empresa.CGC_EMPRESA,
+  };
 
-  // const param: iRegistrarDocumentoAusencia = {
-  //   cpf: cpf,
-  //   nomeFuncionario: nomeFunc,
-  //   tipoDocumento: tipoDocumento,
-  //   dataDocArquivo: dataDocArquivo,
-  //   justificativaValor: justificativa,
-  //   cid: cid,
-  // }
+  try {
+    state.inserirDadosDocumento = await gerenciarFolhaPontoDetalhesService.createRegistroDocumento(param);
+    // state.loading = false;
+    console.log(state.inserirDadosDocumento);
+    // setFalta()
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      text: "Ocorreu um erro ao inserir o documento.",
+    });
+  }
 }
+
+// async function setFalta() {}
 
 watch(
   () => props.opened,
@@ -175,6 +286,7 @@ watch(
             id="file"
             class="input-file"
             accept=".pdf, .jpg, .jpeg"
+            @change="uploadArquivoPeloBotao"
           >
           </v-file-input>
         </div>
@@ -210,6 +322,17 @@ watch(
       </div>
     </div>
   </div>
+  <v-overlay
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
 
 <style scoped>

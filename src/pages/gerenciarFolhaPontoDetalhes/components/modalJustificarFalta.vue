@@ -3,22 +3,46 @@ import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import printJS from "print-js";
 import { defineProps, computed, onMounted, nextTick, reactive } from "vue";
 import ModalQrCode from "./modalQrCode.vue";
-import { iDeletarFalta, iFaltaFeriadoFolga } from "../interface";
+import {
+  iDeletarFalta,
+  iFaltaFeriadoFolga,
+  iPropsFuncionario,
+  iPropsPontosDiaSelecionado,
+  iPropsTiposDeFalta,
+} from "../interface";
 import gerenciarFolhaPontoDetalhesService from "./../services/gerenciarFolhaPontoDetalhes.service";
 import Swal from "sweetalert2";
 import { confirmaCodigo } from "@/ts/utils";
 
-const props = defineProps<{
-  pontos;
-  dadosAusencia;
-  funcionario;
-  horaChegada;
-  horaAlmocoInicial;
-  horaAlmocoFinal;
-  horaSaida;
-  tiposDeFalta;
-  opened: boolean;
-}>();
+const props = defineProps({
+  pontos: {
+    type: Object as () => iPropsPontosDiaSelecionado,
+  },
+  dadosAusencia: {
+    type: String,
+  },
+  funcionario: {
+    type: Object as () => iPropsFuncionario,
+  },
+  horaChegada: {
+    type: String || null || undefined,
+  },
+  horaAlmocoInicial: {
+    type: String || null || undefined,
+  },
+  horaAlmocoFinal: {
+    type: String || null || undefined,
+  },
+  horaSaida: {
+    type: String || null || undefined,
+  },
+  tiposDeFalta: {
+    type: Array as () => iPropsTiposDeFalta[],
+  },
+  opened: {
+    type: Boolean,
+  },
+});
 
 const emit = defineEmits(["exibirFaltaFeriadoOuFolga", "fecharModal"]);
 
@@ -29,7 +53,7 @@ const state = reactive({
   showCIDAutocomplete: false,
   hideButtons: false,
   selectedFalta: "",
-  selectedFaltaTipo: "",
+  selectedFaltaTipo: <number>null,
   modalQrCode: <iModalCreate>(<unknown>null),
   modalQrCodeOpened: false,
   inserirFalta: <unknown>null,
@@ -88,6 +112,7 @@ function criarHTMLParaPDF() {
 }
 
 const jaJustificado = computed(() => {
+  //@ts-ignore
   if (!props.pontos?.STATUS) {
     return false;
   } else {
@@ -139,12 +164,16 @@ const dadosDocumentoAusencia = computed(() => {
 
   let cpf = props.funcionario.cpf;
   let nomeFuncionario = props.funcionario.nome;
+  let loginFuncionario = props.funcionario.loginFuncionario;
   let data = props.dadosAusencia;
 
   const dadosParaQrCode = {
     cpf: cpf,
     nomeFuncionario: nomeFuncionario,
+    loginFuncionario: loginFuncionario,
     data: data,
+    falta: state.selectedFalta,
+    tipoFalta: state.selectedFaltaTipo,
     justificativaValor: justificativaValor,
     cid: state.selectedCID,
   };

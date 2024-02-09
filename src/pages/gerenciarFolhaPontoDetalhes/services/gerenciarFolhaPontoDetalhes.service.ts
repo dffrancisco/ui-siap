@@ -1,5 +1,12 @@
 import axios from "axios";
-import { iCodFunc, iDeletarFalta, iFaltaFeriadoFolga, iParam, iParamComCPF } from "../interface";
+import {
+  iCodFunc,
+  iDeletarFalta,
+  iFaltaFeriadoFolga,
+  iParam,
+  iParamComCPF,
+  iRegistrarDocumentoAusencia,
+} from "../interface";
 const caminho = "siap/gerenciarFolhaPonto";
 
 type iGetPontosFunction = (param: iParamComCPF) => Promise<object>;
@@ -8,6 +15,7 @@ type iGetTipoFaltas = (param: iParam) => Promise<object>;
 type iGetDadosFuncionario = (param: iCodFunc) => Promise<object>;
 type iSetFeriadoFolga = (param: iFaltaFeriadoFolga) => Promise<object>;
 type iDeleteFalta = (param: iDeletarFalta) => Promise<object>;
+type iInserirRegistroAusencia = (param: iRegistrarDocumentoAusencia) => Promise<object>;
 
 const getDadosFuncionario: iGetDadosFuncionario = async (param) => {
   let { data } = await axios.post(caminho, {
@@ -62,6 +70,15 @@ const deletarFalta: iDeleteFalta = async (param) => {
   return data;
 };
 
+const createRegistroDocumento: iInserirRegistroAusencia = async (param) => {
+  let { data } = await axios.post(caminho, {
+    call: "createRegistroDocumento",
+    param,
+  });
+
+  return data;
+};
+
 export default {
   getDadosFuncionario,
   getPontos,
@@ -69,4 +86,5 @@ export default {
   getTipoFaltas,
   setFaltaFeriadoOuFolga,
   deletarFalta,
+  createRegistroDocumento,
 };

@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDetalhes.service";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import moment from "moment";
+import router from "@/router";
 
 export const state = reactive({
   pontos: {},
@@ -15,6 +16,7 @@ export const state = reactive({
   loadingCalendar: false,
   nome: <string | null>null,
   cargo: <string | null>null,
+  loginFuncionario: <string | null>null,
   codFuncionario: 0,
   dadosFuncionario: {},
   cpf: <string | null>null,
@@ -41,6 +43,10 @@ export const actions = {
     return `http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
   },
 
+  onClickVoltar() {
+    router.push("gerenciarFolhaPonto");
+  },
+
   async getDadosFuncionario(cod_funcionario: number) {
     const param: iCodFunc = {
       cod_funcionario: cod_funcionario,
@@ -51,7 +57,7 @@ export const actions = {
       state.nome = state.dadosFuncionario[0].NOME_COMP;
       state.cpf = state.dadosFuncionario[0].CPF;
       state.cargo = state.dadosFuncionario[0].CARGO;
-      // console.log(state.dadosFuncionario[0].CARGO);
+      state.loginFuncionario = state.dadosFuncionario[0].LOGIN;
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -169,6 +175,8 @@ export const actions = {
       el: "#modalJustificarFalta",
       theme: "xModal-blue",
       onOpen: () => {
+        console.log(tipoFaltaModal);
+
         state.modalJustificarFaltaOpened = true;
       },
       onClose: () => {
@@ -301,15 +309,37 @@ export const pontosDiaSelecionado = computed(() => {
   return pontos;
 });
 
-//AJUSTAR PROBLEMA COM O NULL
-export const tipoFaltaPontoIncompleto = computed(() => {
-  const algumPontoIncompleto = Object.values(pontosDiaSelecionado).some((value) => value !== null);
+export const tipoFaltaModal = computed(() => {
+  console.log(pontosDiaSelecionado.value);
 
-  if (algumPontoIncompleto) {
-    return state.tipoFaltas.filter((item) => item.DESCRICAO == "Ponto Incompleto");
-  } else {
-    return state.tipoFaltas;
+  if (!pontosDiaSelecionado.value) {
+    return [];
   }
+
+  let tipoFaltas: iTipoFaltasCount[] = [...state.tipoFaltas];
+
+  if (pontosDiaSelecionado.value.COD_FUNCIONARIO == undefined) {
+    let indexPontoIncompleto = tipoFaltas.findIndex((tipoFalta) => {
+      return tipoFalta.ID_TIPO_FALTA == 10;
+    });
+
+    tipoFaltas.splice(indexPontoIncompleto, 1);
+    return tipoFaltas;
+  }
+
+  if (
+    pontosDiaSelecionado.value.HORA_CHEGADA == null ||
+    pontosDiaSelecionado.value.HORA_ALMOCO_INICIAL == null ||
+    pontosDiaSelecionado.value.HORA_ALMOCO_FINAL == null ||
+    pontosDiaSelecionado.value.HORA_SAIDA == null
+  ) {
+    let pontoIncompleto = tipoFaltas.find((tipoFalta) => {
+      return tipoFalta.ID_TIPO_FALTA == 10;
+    });
+    return [pontoIncompleto];
+  }
+
+  return [];
 });
 
 export default { state, actions };

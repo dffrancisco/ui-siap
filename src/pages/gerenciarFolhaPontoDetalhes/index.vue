@@ -5,7 +5,7 @@ import {
   state,
   pontosCalendario,
   pontosDiaSelecionado,
-  tipoFaltaPontoIncompleto,
+  tipoFaltaModal,
 } from "./gerenciarFolhaPontoDetalhes";
 import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 import FullCalendar from "@fullcalendar/vue3";
@@ -38,6 +38,7 @@ actions.init(route);
 <template>
   <v-container>
     <title>Detalhes dos pontos</title>
+
     <div
       class="pa-5"
       style="max-width: 1100px; margin: 0 auto"
@@ -45,13 +46,23 @@ actions.init(route);
       <v-row>
         <v-col cols="12">
           <div>
-            <strong>Detalhes dos pontos</strong>
+            <!-- <strong>Detalhes dos pontos</strong> -->
+
             <v-card class="pa-5 cardFolhaPontoDetalhes">
               <div class="mesAnoEBotoes ml-2">
                 <v-row>
-                  <v-col cols="5">
+                  <v-btn
+                    color="primary"
+                    variant="text"
+                    density="compact"
+                    class="mb-4 pa-0"
+                    icon="mdi-arrow-left"
+                    @click="actions.onClickVoltar"
+                  />
+                  <v-col cols="4">
                     <v-select
                       label="Mês"
+                      class="ml-4"
                       id="mes"
                       dense
                       v-model="state.mes"
@@ -61,9 +72,10 @@ actions.init(route);
                       hide-details
                     ></v-select>
                   </v-col>
-                  <v-col cols="5">
+                  <v-col cols="4">
                     <v-select
                       label="Ano"
+                      class="ml-4"
                       id="ano"
                       dense
                       v-model="state.ano"
@@ -71,7 +83,7 @@ actions.init(route);
                       hide-details
                     ></v-select>
                   </v-col>
-                  <v-col cols="2"
+                  <v-col cols="3"
                     ><v-btn
                       icon
                       color="primary"
@@ -211,7 +223,7 @@ actions.init(route);
     >
       <modal-justificar-falta
         :dadosAusencia="state.dataAusencia"
-        :tiposDeFalta="tipoFaltaPontoIncompleto"
+        :tiposDeFalta="tipoFaltaModal"
         :pontos="pontosDiaSelecionado"
         :horaChegada="pontosDiaSelecionado.HORA_CHEGADA"
         :horaAlmocoInicial="pontosDiaSelecionado.HORA_ALMOCO_INICIAL"
@@ -222,6 +234,7 @@ actions.init(route);
           nome: state.nome,
           cpf: state.cpf,
           cargo: state.cargo,
+          loginFuncionario: state.loginFuncionario,
         }"
         :opened="state.modalJustificarFaltaOpened"
         @exibirFaltaFeriadoOuFolga="atualizarTela()"
@@ -292,7 +305,7 @@ actions.init(route);
   margin-left: 20px;
 }
 .btnSearch {
-  margin-left: 10px;
+  margin-left: 50px;
   margin-top: 10px;
 }
 
