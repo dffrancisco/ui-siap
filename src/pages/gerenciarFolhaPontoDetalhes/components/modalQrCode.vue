@@ -5,7 +5,7 @@ import { nextTick, reactive, ref, watch } from "vue";
 import stateLogin from "../../login/login";
 import globalState from "@/store/globalState";
 import $ from "jquery";
-import { iRegistrarDocumentoAusencia } from "../interface";
+import { iRegistrarDocumentoAusencia, iRegistrarFalta } from "../interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "../services/gerenciarFolhaPontoDetalhes.service";
 
@@ -18,8 +18,11 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["exibirDadosAtualizados", "fecharModalQrCode"]);
+
 const state = reactive({
-  inserirDadosDocumento: <unknown>null,
+  inserirDadosDocumento: <any>null,
+  inserirJustificativa: <any>null,
   loading: false,
   nomeDoDocumento: "",
   tipoDocumento: "ausencia",
@@ -66,7 +69,6 @@ function ajustarData(dataDocArquivo) {
 
 function verificarArquivos() {
   cpf = props.dadosParaQrCode.cpf.replaceAll(".", "").replaceAll("-", "");
-  // state.loading = true;
   $.ajax({
     url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
     type: "POST",
@@ -101,15 +103,18 @@ function exibirArquivo(nomeDoDocumento: string) {
   qrGenerate.appendChild(imgElement);
 
   setTimeout(() => {
+    state.loading = true;
     moverArquivoTemp(nomeDoDocumento);
   }, 2000);
 }
 
 function uploadArquivoPeloBotao(event) {
+  state.loading = true;
   const file = event.target.files[0];
+  const imgUrl = URL.createObjectURL(file);
 
   const imgElement = document.createElement("img");
-  imgElement.src = file;
+  imgElement.src = imgUrl;
   imgElement.style.width = "200px";
   imgElement.style.height = "200px";
   imgElement.style.objectFit = "cover";
@@ -120,6 +125,7 @@ function uploadArquivoPeloBotao(event) {
 
   if (file.size > 1500000) {
     resizeImage(file, function (resizedFile) {
+      console.log("diminuindo a imagem");
       uploadPDF(resizedFile, state.tipoDocumento);
     });
   } else {
@@ -162,8 +168,6 @@ function uploadPDF(file, tipoDocumento) {
   let nomeFunc = props.dadosParaQrCode.loginFuncionario;
   let dataDocArquivo = props.dadosParaQrCode.data;
   dataDocArquivo = ajustarData(dataDocArquivo);
-  let dataUpload = new Date().toISOString();
-  dataUpload = ajustarData(dataUpload);
 
   formData.append("file", file);
   formData.append("cpf", cpf);
@@ -171,7 +175,6 @@ function uploadPDF(file, tipoDocumento) {
   formData.append("usuario", usuario);
   formData.append("nomeFunc", nomeFunc);
   formData.append("dataDocArquivo", dataDocArquivo);
-
   formData.append("class", "Files");
   formData.append("call", "uploadPdf");
 
@@ -182,7 +185,8 @@ function uploadPDF(file, tipoDocumento) {
     processData: false,
     contentType: false,
     success: function (rs) {
-      let nomeDoDocumento = rs.file;
+      const rsObj = JSON.parse(rs);
+      const nomeDoDocumento = rsObj.log.arquivo;
       createRegistroAusencia(nomeDoDocumento, tipoDocumento);
     },
   });
@@ -207,13 +211,10 @@ function moverArquivoTemp(nomeDoDocumento: string) {
     success: function (rs) {
       if (rs.success) {
         createRegistroAusencia(nomeDoDocumento, tipoDocumento);
-        Swal.fire({
-          icon: "success",
-          title: "Documento salvo com sucesso!",
-          showConfirmButton: false,
-          timer: 2500,
-        });
       }
+    },
+    error: function (error) {
+      console.log(error);
     },
   });
 }
@@ -223,11 +224,13 @@ async function createRegistroAusencia(nomeDoDocumento: string, tipoDocumento: st
   let usuario = stateLogin.state.login.LOGIN;
   let dataDocArquivo = props.dadosParaQrCode.data;
   dataDocArquivo = ajustarData(dataDocArquivo);
-  let dataUpload = new Date().toISOString();
-  dataUpload = ajustarData(dataUpload);
 
-  // let justificativa = props.dadosParaQrCode.justificativaValor;
-  // let cid = props.dadosParaQrCode.cid;
+  let dataAtual = new Date();
+  let options = { year: "numeric", month: "2-digit", day: "2-digit" };
+  //@ts-ignore
+  let dataUpload = dataAtual.toLocaleDateString("pt-BR", options);
+  dataUpload = dataUpload.split("/").reverse().join("-");
+
   const param: iRegistrarDocumentoAusencia = {
     nomeDoDocumento: nomeDoDocumento,
     cpf: cpf,
@@ -240,9 +243,16 @@ async function createRegistroAusencia(nomeDoDocumento: string, tipoDocumento: st
 
   try {
     state.inserirDadosDocumento = await gerenciarFolhaPontoDetalhesService.createRegistroDocumento(param);
-    // state.loading = false;
-    console.log(state.inserirDadosDocumento);
-    // setFalta()
+    const id_documento = state.inserirDadosDocumento.id_doc_funcionario;
+
+    Swal.fire({
+      icon: "success",
+      title: "Documento salvo com sucesso!",
+      showConfirmButton: false,
+      timer: 2500,
+    });
+
+    setFalta(dataDocArquivo, id_documento);
   } catch (error) {
     Swal.fire({
       icon: "error",
@@ -251,7 +261,36 @@ async function createRegistroAusencia(nomeDoDocumento: string, tipoDocumento: st
   }
 }
 
-// async function setFalta() {}
+async function setFalta(dataDocArquivo, id_documento) {
+  let cod_funcionario = props.dadosParaQrCode.cod_funcionario;
+  let falta = props.dadosParaQrCode.falta;
+  let justificativa = props.dadosParaQrCode.justificativaValor;
+  let cid = props.dadosParaQrCode.cid;
+  let tipoFalta = props.dadosParaQrCode.tipoFalta;
+  console.log(cod_funcionario, falta, justificativa, cid, tipoFalta, dataDocArquivo, id_documento);
+
+  const param: iRegistrarFalta = {
+    cod_funcionario: cod_funcionario,
+    falta: falta,
+    justificativa: justificativa,
+    cid: cid,
+    tipoFalta: tipoFalta,
+    dataDocArquivo: dataDocArquivo,
+    id_documento: id_documento,
+  };
+
+  try {
+    state.inserirJustificativa = await gerenciarFolhaPontoDetalhesService.setFalta(param);
+    emit("fecharModalQrCode");
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      text: "Ocorreu um erro ao inserir a falta.",
+    });
+  }
+
+  state.loading = false;
+}
 
 watch(
   () => props.opened,

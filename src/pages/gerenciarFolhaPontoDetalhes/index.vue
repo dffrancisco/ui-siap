@@ -22,13 +22,12 @@ function fecharModal() {
 
 async function atualizarTela() {
   state.loading = true;
-
   await actions.getDadosFuncionario(state.codFuncionario);
   await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
   await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
   await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
   actions.getFotoFuncionarioURL(state.cpf);
-
+  state.modalJustificarFalta.close();
   state.loading = false;
 }
 
@@ -89,7 +88,7 @@ actions.init(route);
                       color="primary"
                       size="small"
                       class="btnSearch"
-                      @click="actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano)"
+                      @click="actions.getDadosPontos()"
                     >
                       <v-icon> mdi-magnify</v-icon> </v-btn
                     ><v-btn
@@ -166,7 +165,7 @@ actions.init(route);
                       v-for="tipoFalta in state.tipoFaltas"
                       :key="tipoFalta.ID_TIPO_FALTA"
                     >
-                      <div>
+                      <div class="funcionario__card__faltas__info__count">
                         {{ tipoFalta.DESCRICAO }}:
                         <b> {{ tipoFalta.COUNT_TIPO }}</b>
                       </div>
@@ -237,7 +236,7 @@ actions.init(route);
           loginFuncionario: state.loginFuncionario,
         }"
         :opened="state.modalJustificarFaltaOpened"
-        @exibirFaltaFeriadoOuFolga="atualizarTela()"
+        @atualizarDados="atualizarTela()"
         @fecharModal="fecharModal()"
       />
     </div>
@@ -259,11 +258,11 @@ actions.init(route);
 
 <style>
 .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
-  height: 135px;
+  height: 145px;
 }
 
 .fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events {
-  margin-top: -10px;
+  margin-top: -18px;
   padding-left: 5px;
 }
 
@@ -334,7 +333,7 @@ actions.init(route);
   width: 18%;
   font-size: 15px;
   white-space: nowrap;
-  color: #5a6069;
+  color: #8c8c8c;
   line-height: 2;
   padding-left: 10px;
   margin-right: 12px;
@@ -353,7 +352,7 @@ actions.init(route);
   margin-right: 12px;
   width: 45%;
   font-size: 15px;
-  color: #5a6069;
+  color: #a1a1a1;
   line-height: 2;
 }
 

@@ -175,8 +175,6 @@ export const actions = {
       el: "#modalJustificarFalta",
       theme: "xModal-blue",
       onOpen: () => {
-        console.log(tipoFaltaModal);
-
         state.modalJustificarFaltaOpened = true;
       },
       onClose: () => {
@@ -202,6 +200,20 @@ export const actions = {
 
       state.loading = false;
     });
+  },
+
+  async getDadosPontos() {
+    state.loadingCalendar = true;
+
+    await actions.getDadosFuncionario(state.codFuncionario);
+    await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
+    await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
+    await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
+
+    await nextTick();
+    state.initialDate = new Date(state.ano, state.mes - 1, 1);
+
+    state.loadingCalendar = false;
   },
 };
 
@@ -241,7 +253,7 @@ export const pontosCalendario = computed(() => {
           cor = "#FF6347"; // Laranja
           break;
         case "Licença Maternidade" || "Licença Paternidade":
-          cor = "#F7FE2E"; // Amarelo
+          cor = "#84871c"; // Amarelo
           break;
         case "Falta Abonada" || "Falta" || "Falta Justificada":
           cor = "#9F5F9F"; // Roxo
@@ -255,21 +267,15 @@ export const pontosCalendario = computed(() => {
 
       eventos.push(eventoFormatado);
     }
+
+    if (ponto.JUSTIFICATIVA == "Ponto Incompleto") {
+      let eventoFormatado = actions.formatarEvento("JUSTIFICADO", dataInicio, dataFim, "#9F5F9F");
+
+      eventos.push(eventoFormatado);
+    }
   }
 
   return eventos;
-});
-
-export const selecionandoData = watch([() => state.mes, () => state.ano], async ([novoMes, novoAno]) => {
-  state.loadingCalendar = true;
-  await actions.getPontos(state.codFuncionario, state.cpf, novoMes, novoAno);
-  await actions.getResumoPontosFuncionario(state.codFuncionario, novoMes, novoAno);
-  await actions.getTipoFaltas(state.codFuncionario, novoMes, novoAno);
-
-  await nextTick();
-
-  state.initialDate = new Date(novoAno, novoMes - 1, 1);
-  state.loadingCalendar = false;
 });
 
 export const pontosDiaSelecionado = computed(() => {
@@ -310,8 +316,6 @@ export const pontosDiaSelecionado = computed(() => {
 });
 
 export const tipoFaltaModal = computed(() => {
-  console.log(pontosDiaSelecionado.value);
-
   if (!pontosDiaSelecionado.value) {
     return [];
   }

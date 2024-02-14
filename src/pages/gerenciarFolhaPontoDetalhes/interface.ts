@@ -20,6 +20,7 @@ export interface iPonto {
   HORA_ALMOCO_INICIAL: string;
   HORA_ALMOCO_FINAL: string;
   HORA_SAIDA: string;
+  JUSTIFICATIVA: string;
 }
 
 export interface iTipoFaltasCount {
@@ -90,12 +91,12 @@ export interface iPropsTiposDeFalta {
   COUNT_TIPO: number;
 }
 
-// export interface iPropsDadosParaQrCode {
-//   cpf: string;
-//   nomeFuncionario: string;
-//   data: string;
-//   falta: string;
-//   tipoFalta: number;
-//   justificativaValor: string;
-//   cid: string;
-// }
+export interface iRegistrarFalta {
+  cod_funcionario: number;
+  falta: string;
+  justificativa: string;
+  cid: string;
+  tipoFalta: number;
+  dataDocArquivo: string;
+  id_documento: number;
+}

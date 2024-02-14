@@ -93,8 +93,6 @@ export const actions = {
     }
   },
 
-  async getResumoPontosFuncionario() {},
-
   getFotoFuncionarioURL(cpf: string) {
     if (!cpf) {
       return "";

@@ -44,7 +44,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["exibirFaltaFeriadoOuFolga", "fecharModal"]);
+const emit = defineEmits(["atualizarDados", "fecharModal"]);
 
 const state = reactive({
   loading: false,
@@ -168,6 +168,7 @@ const dadosDocumentoAusencia = computed(() => {
   let data = props.dadosAusencia;
 
   const dadosParaQrCode = {
+    cod_funcionario: props.funcionario.cod_funcionario,
     cpf: cpf,
     nomeFuncionario: nomeFuncionario,
     loginFuncionario: loginFuncionario,
@@ -209,7 +210,8 @@ async function salvarFaltaFeriadoOuFolga() {
     });
   }
 
-  emit("exibirFaltaFeriadoOuFolga");
+  emit("atualizarDados");
+  limparInputs();
 }
 
 function ajustarData(dataFalta) {
@@ -245,16 +247,29 @@ async function deletarFalta() {
           showConfirmButton: false,
           timer: 2500,
         });
-        emit("fecharModal");
       } catch (error) {
         Swal.fire({
           icon: "error",
           text: "Ocorreu um erro ao deletar a falta.",
         });
       }
-      emit("exibirFaltaFeriadoOuFolga");
+      emit("fecharModal");
+      emit("atualizarDados");
+      limparInputs();
     },
   });
+}
+
+function limparInputs() {
+  state.selectedFalta = "";
+  state.selectedCID = "";
+  state.justificativa = "";
+}
+
+function fecharModalQrCode() {
+  state.modalQrCode.close();
+  emit("atualizarDados");
+  limparInputs();
 }
 
 onMounted(() => {
@@ -428,6 +443,7 @@ onMounted(() => {
     <ModalQrCode
       :dadosParaQrCode="dadosDocumentoAusencia"
       :opened="state.modalQrCodeOpened"
+      @fecharModalQrCode="fecharModalQrCode()"
     />
   </div>
 
