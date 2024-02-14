@@ -87,7 +87,13 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/transportadoras')"
-              >Transportadoras  
+              >Transportadoras
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/montagemProduto')"
+              >Montagem Produto
             </v-btn>
 
             <v-btn
@@ -96,6 +102,12 @@ import login from "../login/login";
               >Documentos Funcionarios
             </v-btn>
 
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/bairros')"
+              >Bairros
+            </v-btn>
+            
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/bloquearCliente')"
