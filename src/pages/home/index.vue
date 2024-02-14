@@ -36,10 +36,12 @@ import login from "../login/login";
               @click="router.push('/aniversariantes')"
               >Aniversariantes</v-btn
             >
+
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/cidades')"
-              >Cidades
+            >
+              Cidades
             </v-btn>
 
             <v-btn
@@ -51,25 +53,29 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/carroCliente')"
-              >Carro Cliente
+            >
+              Carro Cliente
             </v-btn>
 
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/entregarReceber')"
-              >Entregar e Receber
+            >
+              Entregar e Receber
             </v-btn>
 
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/valeDinheiro')"
-              >Vale dinheiro
+            >
+              Vale dinheiro
             </v-btn>
 
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/corredores')"
-              >Corredores
+            >
+              Corredores
             </v-btn>
 
             <v-btn
@@ -93,13 +99,28 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/documentosFuncionarios')"
-              >Documentos Funcionarios
+            >
+              Documentos Funcionarios
             </v-btn>
 
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/descontoCliente')"
-              >Desconto Cliente
+            >
+              Bairros
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/bloquearCliente')"
+            >
+              Bloquear Cliente
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/cargos')"
+              >Cargos
             </v-btn>
 
             <v-btn
@@ -111,7 +132,8 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="login.actions.confirmarSaida()"
-              >Logout
+            >
+              Logout
             </v-btn>
           </div>
         </v-row>
