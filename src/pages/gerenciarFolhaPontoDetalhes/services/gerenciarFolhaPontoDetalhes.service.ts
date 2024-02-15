@@ -2,7 +2,7 @@ import axios from "axios";
 import {
   iCodFunc,
   iDadosDocumento,
-  iDeletarFalta,
+  iDeletarFaltaEDocumento,
   iFaltaFeriadoFolga,
   iParam,
   iParamComCPF,
@@ -18,7 +18,7 @@ type iGetTipoFaltas = (param: iParam) => Promise<object>;
 type iGetDadosFuncionario = (param: iCodFunc) => Promise<object>;
 type iSetFeriadoFolga = (param: iFaltaFeriadoFolga) => Promise<object>;
 type iSetFalta = (param: iRegistrarFalta) => Promise<object>;
-type iDeleteFalta = (param: iDeletarFalta) => Promise<object>;
+type iDeleteFalta = (param: iDeletarFaltaEDocumento) => Promise<object>;
 type iInserirRegistroAusencia = (param: iRegistrarDocumentoAusencia) => Promise<object>;
 type iGetDocumentoAusencia = (param: iParamDocumentoAusencia) => Promise<iDadosDocumento[]>;
 
@@ -75,9 +75,9 @@ const setFalta: iSetFalta = async (param) => {
   return data;
 };
 
-const deletarFalta: iDeleteFalta = async (param) => {
+const deletarFaltaEDocumento: iDeleteFalta = async (param) => {
   let { data } = await axios.post(caminho, {
-    call: "deletarFalta",
+    call: "deletarFaltaEDocumento",
     param,
   });
 
@@ -108,7 +108,7 @@ export default {
   getResumoPontosFuncionario,
   getTipoFaltas,
   setFaltaFeriadoOuFolga,
-  deletarFalta,
+  deletarFaltaEDocumento,
   createRegistroDocumento,
   setFalta,
   getDocumentoAusencia,

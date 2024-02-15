@@ -2,10 +2,12 @@
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import printJS from "print-js";
 import { defineProps, computed, onMounted, nextTick, reactive } from "vue";
+import stateLogin from "../../login/login";
+import globalState from "@/store/globalState";
 import ModalQrCode from "./modalQrCode.vue";
 import {
   iDadosDocumento,
-  iDeletarFalta,
+  iDeletarFaltaEDocumento,
   iFaltaFeriadoFolga,
   iPropsFuncionario,
   iPropsPontosDiaSelecionado,
@@ -61,7 +63,7 @@ const state = reactive({
   modalQrCode: <iModalCreate>(<unknown>null),
   modalQrCodeOpened: false,
   inserirFalta: <unknown>null,
-  deletarFalta: <unknown>null,
+  deletarFaltaEDocumento: <unknown>null,
   dadosDocumento: props.dadosDocumento,
 });
 
@@ -238,13 +240,16 @@ function ajustarData(dataFalta) {
   return dataFormatada;
 }
 
-async function deletarFalta() {
+async function deletarFaltaEDocumento() {
   let dataFalta = props.dadosAusencia;
   dataFalta = ajustarData(dataFalta);
+  let file_name = props.dadosDocumento[0].nome_arquivo;
 
-  const param: iDeletarFalta = {
+  const param: iDeletarFaltaEDocumento = {
     data: dataFalta,
     cod_funcionario: props.funcionario.cod_funcionario,
+    file_name: file_name,
+    cnpj: globalState.empresa.CGC_EMPRESA,
   };
 
   confirmaCodigo({
@@ -252,8 +257,8 @@ async function deletarFalta() {
     call: async function () {
       try {
         state.loading = true;
-        state.deletarFalta = await gerenciarFolhaPontoDetalhesService.deletarFalta(param);
-        state.loading = false;
+        state.deletarFaltaEDocumento = await gerenciarFolhaPontoDetalhesService.deletarFaltaEDocumento(param);
+        deletarArquivo(file_name);
         Swal.fire({
           icon: "success",
           title: "Ausência deletada com sucesso!",
@@ -268,7 +273,32 @@ async function deletarFalta() {
       }
       emit("fecharModal");
       emit("atualizarDados");
+      state.loading = false;
       limparInputs();
+    },
+  });
+}
+
+function deletarArquivo(file_name: string) {
+  let cpf = props.funcionario.cpf;
+  cpf = cpf.replace(/\D/g, "");
+  let usuario = stateLogin.state.login.LOGIN;
+
+  console.log(cpf, usuario);
+
+  $.ajax({
+    url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
+    type: "POST",
+    dataType: "json",
+    data: {
+      call: "deleteArquivo",
+      class: "Files",
+      param: {
+        cpf: cpf,
+        folderName: "ausencia",
+        nomeArquivo: file_name,
+        usuario: usuario,
+      },
     },
   });
 }
@@ -389,7 +419,7 @@ onMounted(() => {
               label="Tipo de Ausência"
               v-model="state.selectedFalta"
               @update:model-value="preencherJustificativa"
-              :disabled="tipoAusenciaDisabled || jaJustificado"
+              :disabled="tipoAusenciaDisabled || jaJustificado || !desativarBtnVerDoc"
             ></v-select>
           </v-row>
         </v-container>
@@ -414,7 +444,7 @@ onMounted(() => {
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
             v-model="state.justificativa"
-            :disabled="tipoAusenciaDisabled || jaJustificado"
+            :disabled="tipoAusenciaDisabled || jaJustificado || !desativarBtnVerDoc"
           >
           </v-textarea>
         </v-col>
@@ -428,7 +458,7 @@ onMounted(() => {
         color="primary"
         class="btnDelete"
         :disabled="tipoAusenciaDisabled"
-        @click="deletarFalta"
+        @click="deletarFaltaEDocumento"
       >
         <v-icon>mdi-delete</v-icon>
         Deletar Falta
