@@ -100,3 +100,19 @@ export interface iRegistrarFalta {
   dataDocArquivo: string;
   id_documento: number;
 }
+
+export interface iParamDocumentoAusencia {
+  data: string;
+  cpf: string;
+}
+
+export interface iDadosDocumento {
+  id_doc_funcionario: number;
+  nome_arquivo: string;
+  cpf: string;
+  doc_pasta: string;
+  data_ponto: string;
+  data_upload: string;
+  user_upload: string;
+  cnpj: string;
+}

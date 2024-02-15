@@ -1,6 +1,14 @@
 import { computed, nextTick, reactive, ref, watch } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
-import { iCodFunc, iParam, iParamComCPF, iPonto, iTipoFaltasCount } from "./interface";
+import {
+  iCodFunc,
+  iDadosDocumento,
+  iParam,
+  iParamComCPF,
+  iParamDocumentoAusencia,
+  iPonto,
+  iTipoFaltasCount,
+} from "./interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDetalhes.service";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -31,6 +39,7 @@ export const state = reactive({
   modalJustificarFaltaOpened: false,
   dataAusencia: <any>new Date(),
   diaSelecionado: undefined,
+  documentoFalta: <iDadosDocumento[]>[],
 });
 
 export const actions = {
@@ -126,6 +135,26 @@ export const actions = {
     }
   },
 
+  async getDocumento() {
+    let data = state.dataAusencia;
+    data = actions.formatarData(data);
+    let cpf = state.cpf;
+
+    const param: iParamDocumentoAusencia = {
+      data: data,
+      cpf: cpf,
+    };
+
+    try {
+      state.documentoFalta = await gerenciarFolhaPontoDetalhesService.getDocumentoAusencia(param);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Ocorreu um erro ao visualizar o documento.",
+      });
+    }
+  },
+
   formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, cor = "#6495ED") {
     if (titulo == null) {
       titulo = "---------";
@@ -149,6 +178,17 @@ export const actions = {
     }
   },
 
+  formatarData(data) {
+    const partesData = data.split("/");
+    const dataObjeto = new Date(partesData[2], partesData[1] - 1, partesData[0]);
+    const ano = dataObjeto.getFullYear();
+    let mes = dataObjeto.getMonth() + 1;
+    let dia = dataObjeto.getDate();
+    const dataFormatada = `${ano}-${mes < 10 ? "0" + mes : mes}-${dia < 10 ? "0" + dia : dia}`;
+
+    return dataFormatada;
+  },
+
   clickModalJustificarAusencia(event: any) {
     const data = event.date || new Date(event.start);
 
@@ -163,6 +203,7 @@ export const actions = {
       state.dataAusencia = dataFormatada;
       state.diaSelecionado = dia;
       state.modalJustificarFalta.open();
+      actions.getDocumento();
     } else {
       return;
     }

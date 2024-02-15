@@ -4,6 +4,7 @@ import printJS from "print-js";
 import { defineProps, computed, onMounted, nextTick, reactive } from "vue";
 import ModalQrCode from "./modalQrCode.vue";
 import {
+  iDadosDocumento,
   iDeletarFalta,
   iFaltaFeriadoFolga,
   iPropsFuncionario,
@@ -36,6 +37,9 @@ const props = defineProps({
   horaSaida: {
     type: String || null || undefined,
   },
+  dadosDocumento: {
+    type: Array as () => iDadosDocumento[],
+  },
   tiposDeFalta: {
     type: Array as () => iPropsTiposDeFalta[],
   },
@@ -58,6 +62,7 @@ const state = reactive({
   modalQrCodeOpened: false,
   inserirFalta: <unknown>null,
   deletarFalta: <unknown>null,
+  dadosDocumento: props.dadosDocumento,
 });
 
 const showSalvarFeriadoFolga = computed(() => {
@@ -127,6 +132,14 @@ const tipoAusenciaDisabled = computed(() => {
   let saida = props.horaSaida;
 
   if (chegada != null && inicioAlmoco != null && fimAlmoco != null && saida != null) {
+    return true;
+  } else {
+    return false;
+  }
+});
+
+const desativarBtnVerDoc = computed(() => {
+  if (props.dadosDocumento.length == 0) {
     return true;
   } else {
     return false;
@@ -258,6 +271,23 @@ async function deletarFalta() {
       limparInputs();
     },
   });
+}
+
+function visualizarDocumento() {
+  let cpf = props.funcionario.cpf.replace(/\D/g, "");
+  let file_name = props.dadosDocumento[0].nome_arquivo;
+  let urlPdf = `http://www.reallatas.com.br/doc_funcionario/documentos/${cpf}/ausencia/${file_name}`;
+
+  if (file_name.toLowerCase().endsWith(".pdf")) {
+    window.open(`${urlPdf}`, "_blank");
+  } else if (file_name.toLowerCase().match(/\.(jpeg|jpg|gif|png)$/) != null) {
+    let img = new Image();
+    img.src = urlPdf;
+    let newTab = window.open("");
+    newTab.document.write(img.outerHTML);
+  } else {
+    console.error("Tipo de arquivo não suportado");
+  }
 }
 
 function limparInputs() {
@@ -393,6 +423,7 @@ onMounted(() => {
 
     <div
       ><v-btn
+        v-if="!desativarBtnVerDoc"
         label="Deletar Falta"
         color="primary"
         class="btnDelete"
@@ -403,7 +434,17 @@ onMounted(() => {
         Deletar Falta
       </v-btn>
       <v-btn
-        v-if="!state.hideButtons"
+        v-if="!desativarBtnVerDoc"
+        label="Visualizar"
+        color="primary"
+        class="btnVisualizarDocumento"
+        @click="visualizarDocumento"
+      >
+        <v-icon>mdi-eye</v-icon>
+        Visualizar
+      </v-btn>
+      <v-btn
+        v-if="!tipoAusenciaDisabled"
         color="primary"
         class="btnJustificar"
         @click="imprimirJustificativa"
@@ -413,7 +454,6 @@ onMounted(() => {
         Justificativa
       </v-btn>
       <v-btn
-        v-if="!state.hideButtons"
         color="primary"
         class="btnSalvar"
         @click="abrirModalQrCode()"
@@ -501,13 +541,16 @@ onMounted(() => {
 
 .btnJustificar {
   margin-right: 5px;
-  margin-left: 200px;
+  margin-left: 50px;
 }
 
 .btnSalvar {
   margin-right: 5px;
 }
 
+.btnVisualizarDocumento {
+  margin-left: 10px;
+}
 .btnSalvarFeriadoFolga {
   margin-left: 350px;
 }
