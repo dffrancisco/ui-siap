@@ -3,7 +3,8 @@ import {
   iCodFunc,
   iDadosDocumento,
   iDeletarArquivo,
-  iDeletarFaltaEDocumento,
+  iDeletarDocumento,
+  iDeletarFalta,
   iFaltaFeriadoFolga,
   iParam,
   iParamComCPF,
@@ -19,7 +20,8 @@ type iGetTipoFaltas = (param: iParam) => Promise<object>;
 type iGetDadosFuncionario = (param: iCodFunc) => Promise<object>;
 type iSetFeriadoFolga = (param: iFaltaFeriadoFolga) => Promise<object>;
 type iSetFalta = (param: iRegistrarFalta) => Promise<object>;
-type iDeleteFalta = (param: iDeletarFaltaEDocumento) => Promise<object>;
+type iDeleteFalta = (param: iDeletarFalta) => Promise<object>;
+type iDeleteDocumento = (param: iDeletarDocumento) => Promise<object>;
 type iDeleteArquivo = (param: iDeletarArquivo) => Promise<object>;
 type iInserirRegistroAusencia = (param: iRegistrarDocumentoAusencia) => Promise<object>;
 type iGetDocumentoAusencia = (param: iParamDocumentoAusencia) => Promise<iDadosDocumento[]>;
@@ -77,9 +79,18 @@ const setFalta: iSetFalta = async (param) => {
   return data;
 };
 
-const deletarFaltaEDocumento: iDeleteFalta = async (param) => {
+const deletarFalta: iDeleteFalta = async (param) => {
   let { data } = await axios.post(caminho, {
-    call: "deletarFaltaEDocumento",
+    call: "deletarFalta",
+    param,
+  });
+
+  return data;
+};
+
+const deletarDocumento: iDeleteDocumento = async (param) => {
+  let { data } = await axios.post(caminho, {
+    call: "deletarDocumento",
     param,
   });
 
@@ -185,7 +196,8 @@ export default {
   getResumoPontosFuncionario,
   getTipoFaltas,
   setFaltaFeriadoOuFolga,
-  deletarFaltaEDocumento,
+  deletarFalta,
+  deletarDocumento,
   deletarArquivo,
   createRegistroDocumento,
   setFalta,

@@ -8,7 +8,8 @@ import ModalQrCode from "./modalQrCode.vue";
 import {
   iDadosDocumento,
   iDeletarArquivo,
-  iDeletarFaltaEDocumento,
+  iDeletarDocumento,
+  iDeletarFalta,
   iFaltaFeriadoFolga,
   iPropsFuncionario,
   iPropsPontosDiaSelecionado,
@@ -64,7 +65,6 @@ const state = reactive({
   modalQrCode: <iModalCreate>(<unknown>null),
   modalQrCodeOpened: false,
   inserirFalta: <unknown>null,
-  deletarFaltaEDocumento: <unknown>null,
   dadosDocumento: props.dadosDocumento,
 });
 
@@ -142,10 +142,11 @@ const tipoAusenciaDisabled = computed(() => {
 });
 
 const desativarBtnVerDoc = computed(() => {
-  if (props.dadosDocumento.length == 0) {
-    return true;
-  } else {
+  //@ts-ignore
+  if ((props.dadosDocumento.length != 0) == "") {
     return false;
+  } else {
+    return true;
   }
 });
 
@@ -166,10 +167,6 @@ function modal() {
       state.modalQrCodeOpened = false;
     },
   });
-}
-
-function abrirModalQrCode() {
-  state.modalQrCode.open();
 }
 
 const dadosDocumentoAusencia = computed(() => {
@@ -197,6 +194,16 @@ const dadosDocumentoAusencia = computed(() => {
 
   return dadosParaQrCode;
 });
+
+function salvar() {
+  const faltaSelecionada = state.selectedFalta;
+
+  if (faltaSelecionada === "Feriado" || faltaSelecionada === "Dia de Folga") {
+    salvarFaltaFeriadoOuFolga();
+  } else {
+    state.modalQrCode.open();
+  }
+}
 
 async function salvarFaltaFeriadoOuFolga() {
   let dataFalta = props.dadosAusencia;
@@ -241,15 +248,13 @@ function ajustarData(dataFalta) {
   return dataFormatada;
 }
 
-async function deletarFaltaEDocumento() {
+async function deletarFalta() {
   let dataFalta = props.dadosAusencia;
   dataFalta = ajustarData(dataFalta);
-  let file_name = props.dadosDocumento[0].nome_arquivo;
 
-  const param: iDeletarFaltaEDocumento = {
+  const param: iDeletarFalta = {
     data: dataFalta,
     cod_funcionario: props.funcionario.cod_funcionario,
-    file_name: file_name,
     cnpj: globalState.empresa.CGC_EMPRESA,
   };
 
@@ -258,20 +263,51 @@ async function deletarFaltaEDocumento() {
     call: async function () {
       try {
         state.loading = true;
-        state.deletarFaltaEDocumento = await gerenciarFolhaPontoDetalhesService.deletarFaltaEDocumento(param);
-        deletarArquivo(file_name);
+        await gerenciarFolhaPontoDetalhesService.deletarFalta(param);
+
+        if (props.dadosDocumento.length != 0) {
+          deletarDocumento();
+        }
+
+        Swal.fire({
+          icon: "success",
+          title: "Ausência deletada com sucesso!",
+          showConfirmButton: false,
+          timer: 2500,
+        });
+
+        emit("fecharModal");
+        emit("atualizarDados");
+        state.loading = false;
+        limparInputs();
       } catch (error) {
         Swal.fire({
           icon: "error",
           text: "Ocorreu um erro ao deletar a falta.",
         });
       }
-      emit("fecharModal");
-      emit("atualizarDados");
-      state.loading = false;
-      limparInputs();
     },
   });
+}
+
+async function deletarDocumento() {
+  let dataFalta = props.dadosAusencia;
+  dataFalta = ajustarData(dataFalta);
+  let file_name = props.dadosDocumento[0].nome_arquivo;
+
+  const param: iDeletarDocumento = {
+    data: dataFalta,
+    cod_funcionario: props.funcionario.cod_funcionario,
+    file_name: file_name,
+    cnpj: globalState.empresa.CGC_EMPRESA,
+  };
+
+  try {
+    await gerenciarFolhaPontoDetalhesService.deletarDocumento(param);
+    deletarArquivo(file_name);
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function deletarArquivo(file_name) {
@@ -300,6 +336,11 @@ async function deletarArquivo(file_name) {
       text: "Ocorreu um erro ao deletar o arquivo.",
     });
   }
+
+  emit("fecharModal");
+  emit("atualizarDados");
+  state.loading = false;
+  limparInputs();
 }
 
 function visualizarDocumento() {
@@ -418,7 +459,7 @@ onMounted(() => {
               label="Tipo de Ausência"
               v-model="state.selectedFalta"
               @update:model-value="preencherJustificativa"
-              :disabled="tipoAusenciaDisabled || jaJustificado || !desativarBtnVerDoc"
+              :disabled="tipoAusenciaDisabled || jaJustificado"
             ></v-select>
           </v-row>
         </v-container>
@@ -443,7 +484,7 @@ onMounted(() => {
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
             v-model="state.justificativa"
-            :disabled="tipoAusenciaDisabled || jaJustificado || !desativarBtnVerDoc"
+            :disabled="tipoAusenciaDisabled || jaJustificado || desativarBtnVerDoc"
           >
           </v-textarea>
         </v-col>
@@ -452,18 +493,18 @@ onMounted(() => {
 
     <div
       ><v-btn
-        v-if="!desativarBtnVerDoc"
+        v-if="desativarBtnVerDoc"
         label="Deletar Falta"
         color="primary"
         class="btnDelete"
         :disabled="tipoAusenciaDisabled"
-        @click="deletarFaltaEDocumento"
+        @click="deletarFalta"
       >
         <v-icon>mdi-delete</v-icon>
         Deletar Falta
       </v-btn>
       <v-btn
-        v-if="!desativarBtnVerDoc"
+        v-if="desativarBtnVerDoc"
         label="Visualizar"
         color="primary"
         class="btnVisualizarDocumento"
@@ -485,18 +526,8 @@ onMounted(() => {
       <v-btn
         color="primary"
         class="btnSalvar"
-        @click="abrirModalQrCode()"
+        @click="salvar()"
         :disabled="tipoAusenciaDisabled || desativarBotoesSeNadaSelecionado || jaJustificado"
-      >
-        <v-icon>mdi-content-save</v-icon>
-        Salvar
-      </v-btn>
-      <v-btn
-        v-if="showSalvarFeriadoFolga"
-        color="primary"
-        class="btnSalvarFeriadoFolga"
-        @click="salvarFaltaFeriadoOuFolga"
-        :disabled="tipoAusenciaDisabled || desativarBotoesSeNadaSelecionado"
       >
         <v-icon>mdi-content-save</v-icon>
         Salvar
@@ -570,17 +601,14 @@ onMounted(() => {
 
 .btnJustificar {
   margin-right: 5px;
-  margin-left: 50px;
+  margin-left: 10px;
 }
 
 .btnSalvar {
-  margin-right: 5px;
+  margin-left: 4px;
 }
 
 .btnVisualizarDocumento {
   margin-left: 10px;
-}
-.btnSalvarFeriadoFolga {
-  margin-left: 350px;
 }
 </style>

@@ -45,10 +45,16 @@ export interface iFaltaFeriadoFolga {
   tipo: number;
 }
 
-export interface iDeletarFaltaEDocumento {
+export interface iDeletarDocumento {
   cod_funcionario: number;
   data: string;
   file_name: string;
+  cnpj: string;
+}
+
+export interface iDeletarFalta {
+  cod_funcionario: number;
+  data: string;
   cnpj: string;
 }
 

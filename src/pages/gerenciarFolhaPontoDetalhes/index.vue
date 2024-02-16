@@ -263,13 +263,13 @@ actions.init(route);
 }
 
 .fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events {
-  margin-top: -18px;
-  padding-left: 5px;
+  margin-top: -5px;
+  padding-left: 10px;
 }
 
 .fc-daygrid-event-harness {
-  width: 100px;
-  margin-left: 15px;
+  width: 115px;
+  margin-left: 5px;
 }
 
 /* .fc-toolbar-title {

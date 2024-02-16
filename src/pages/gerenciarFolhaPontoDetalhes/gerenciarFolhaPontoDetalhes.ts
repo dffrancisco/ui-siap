@@ -85,6 +85,7 @@ export const actions = {
 
     try {
       state.pontos = await gerenciarFolhaPontoDetalhesService.getPontos(param);
+      console.log(state.pontos);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -155,9 +156,14 @@ export const actions = {
     }
   },
 
-  formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, cor = "#6495ED") {
+  formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, jaFoiJustificado: boolean, cor = "#6495ED") {
     if (titulo == null) {
       titulo = "---------";
+      cor = "#FF6347";
+    }
+
+    if (jaFoiJustificado == true) {
+      titulo = "Justificado";
       cor = "#FF6347";
     }
 
@@ -266,23 +272,30 @@ export const pontosCalendario = computed(() => {
     let dataFim = new Date(ponto.DATA);
 
     if (ponto.HORA_CHEGADA || ponto.HORA_ALMOCO_INICIAL || ponto.HORA_ALMOCO_FINAL || ponto.HORA_SAIDA) {
+      // let jaFoiJustificado = false;
+      // let jaFoiJustificado = ponto.JUSTIFICATIVA == undefined ? false : true;
+
+      let jaFoiJustificado = ponto.HORA_CHEGADA == null && ponto.JUSTIFICATIVA == "Ponto Incompleto";
       let horaFormatada = actions.formatarHora(ponto.HORA_CHEGADA);
-      let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim);
+      let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado);
 
       eventos.push(eventoFormatado);
 
+      jaFoiJustificado = ponto.HORA_ALMOCO_INICIAL == null && ponto.JUSTIFICATIVA == "Ponto Incompleto";
       horaFormatada = actions.formatarHora(ponto.HORA_ALMOCO_INICIAL);
-      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "#6495ED");
+      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, "#6495ED");
 
       eventos.push(eventoFormatado);
 
+      jaFoiJustificado = ponto.HORA_ALMOCO_FINAL == null && ponto.JUSTIFICATIVA == "Ponto Incompleto";
       horaFormatada = actions.formatarHora(ponto.HORA_ALMOCO_FINAL);
-      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, "#6495ED");
+      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, "#6495ED");
 
       eventos.push(eventoFormatado);
 
+      jaFoiJustificado = ponto.HORA_SAIDA == null && ponto.JUSTIFICATIVA == "Ponto Incompleto";
       horaFormatada = actions.formatarHora(ponto.HORA_SAIDA);
-      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim);
+      eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado);
 
       eventos.push(eventoFormatado);
     }
@@ -290,30 +303,41 @@ export const pontosCalendario = computed(() => {
     if (ponto.STATUS) {
       let cor;
       switch (ponto.STATUS) {
-        case "Atestado" || "Ponto Incompleto":
+        case "Atestado":
           cor = "#FF6347"; // Laranja
           break;
-        case "Licença Maternidade" || "Licença Paternidade":
-          cor = "#84871c"; // Amarelo
+        case "Falta Abonada":
+          cor = "#7e57c2"; // deep purple
           break;
-        case "Falta Abonada" || "Falta" || "Falta Justificada":
-          cor = "#9F5F9F"; // Roxo
+        case "Falta":
+          cor = "#7e57c2"; // deep purple
+          break;
+        case "Falta Justificada":
+          cor = "#7e57c2"; // deep purple
           break;
         case "Suspenso":
-          cor = "#960303"; // Vermelho
+          cor = "#dd2c00"; // deep orange
+          break;
+        case "Feriado":
+          cor = "#4caf50"; // green
+          break;
+        case "Dia de Folga":
+          cor = "#4caf50"; // green
+          break;
         default:
-          cor = "#3CB371"; // Azul padrão
+          cor = "#8d6e63"; // brown
+          break;
       }
-      let eventoFormatado = actions.formatarEvento(ponto.STATUS, dataInicio, dataFim, cor);
+      let eventoFormatado = actions.formatarEvento(ponto.STATUS, dataInicio, dataFim, false, cor);
 
       eventos.push(eventoFormatado);
     }
 
-    if (ponto.JUSTIFICATIVA == "Ponto Incompleto") {
-      let eventoFormatado = actions.formatarEvento("JUSTIFICADO", dataInicio, dataFim, "#9F5F9F");
+    // if (ponto.JUSTIFICATIVA == "Ponto Incompleto") {
+    //   let eventoFormatado = actions.formatarEvento("Justificado", dataInicio, dataFim, jaFoiJustificado, "#FF6347");
 
-      eventos.push(eventoFormatado);
-    }
+    //   eventos.push(eventoFormatado);
+    // }
   }
 
   return eventos;
