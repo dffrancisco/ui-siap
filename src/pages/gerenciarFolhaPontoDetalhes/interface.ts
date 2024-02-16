@@ -118,3 +118,10 @@ export interface iDadosDocumento {
   user_upload: string;
   cnpj: string;
 }
+
+export interface iDeletarArquivo {
+  file_name: string;
+  folderName: string;
+  cpf: string;
+  usuario: string;
+}

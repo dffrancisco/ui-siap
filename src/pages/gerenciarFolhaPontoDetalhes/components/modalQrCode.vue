@@ -160,7 +160,7 @@ function resizeImage(file, callback) {
   reader.readAsDataURL(file);
 }
 
-function uploadPDF(file, tipoDocumento) {
+async function uploadPDF(file, tipoDocumento) {
   let formData = new FormData();
 
   let cpf = props.dadosParaQrCode.cpf;
@@ -178,20 +178,16 @@ function uploadPDF(file, tipoDocumento) {
   formData.append("class", "Files");
   formData.append("call", "uploadPdf");
 
-  $.ajax({
-    url: "http://www.reallatas.com.br/doc_funcionario/getFiles.php",
-    type: "POST",
-    data: formData,
-    processData: false,
-    contentType: false,
-    success: function (rs) {
-      const rsObj = JSON.parse(rs);
-      const nomeDoDocumento = rsObj.log.arquivo;
-      createRegistroAusencia(nomeDoDocumento, tipoDocumento);
-    },
-  });
+  try {
+    const rs = await gerenciarFolhaPontoDetalhesService.uploadPDF(formData);
 
-  return false;
+    const rsObj = JSON.parse(rs);
+    const nomeDoDocumento = rsObj.log.arquivo;
+    createRegistroAusencia(nomeDoDocumento, tipoDocumento);
+    clearInterval(intervalId);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 function moverArquivoTemp(nomeDoDocumento: string) {

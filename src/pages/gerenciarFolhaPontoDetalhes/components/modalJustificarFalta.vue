@@ -7,6 +7,7 @@ import globalState from "@/store/globalState";
 import ModalQrCode from "./modalQrCode.vue";
 import {
   iDadosDocumento,
+  iDeletarArquivo,
   iDeletarFaltaEDocumento,
   iFaltaFeriadoFolga,
   iPropsFuncionario,
@@ -259,12 +260,6 @@ async function deletarFaltaEDocumento() {
         state.loading = true;
         state.deletarFaltaEDocumento = await gerenciarFolhaPontoDetalhesService.deletarFaltaEDocumento(param);
         deletarArquivo(file_name);
-        Swal.fire({
-          icon: "success",
-          title: "Ausência deletada com sucesso!",
-          showConfirmButton: false,
-          timer: 2500,
-        });
       } catch (error) {
         Swal.fire({
           icon: "error",
@@ -279,28 +274,32 @@ async function deletarFaltaEDocumento() {
   });
 }
 
-function deletarArquivo(file_name: string) {
-  let cpf = props.funcionario.cpf;
-  cpf = cpf.replace(/\D/g, "");
+async function deletarArquivo(file_name) {
+  let cpf = props.funcionario.cpf.replaceAll(".", "").replaceAll("-", "");
   let usuario = stateLogin.state.login.LOGIN;
+  let folderName = "ausencia";
 
-  console.log(cpf, usuario);
+  const param: iDeletarArquivo = {
+    file_name: file_name,
+    cpf: cpf,
+    folderName: folderName,
+    usuario: usuario,
+  };
 
-  $.ajax({
-    url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
-    type: "POST",
-    dataType: "json",
-    data: {
-      call: "deleteArquivo",
-      class: "Files",
-      param: {
-        cpf: cpf,
-        folderName: "ausencia",
-        nomeArquivo: file_name,
-        usuario: usuario,
-      },
-    },
-  });
+  try {
+    await gerenciarFolhaPontoDetalhesService.deletarArquivo(param);
+    Swal.fire({
+      icon: "success",
+      title: "Ausência deletada com sucesso!",
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      text: "Ocorreu um erro ao deletar o arquivo.",
+    });
+  }
 }
 
 function visualizarDocumento() {

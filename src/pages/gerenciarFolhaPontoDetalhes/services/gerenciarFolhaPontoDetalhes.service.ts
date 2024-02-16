@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   iCodFunc,
   iDadosDocumento,
+  iDeletarArquivo,
   iDeletarFaltaEDocumento,
   iFaltaFeriadoFolga,
   iParam,
@@ -19,6 +20,7 @@ type iGetDadosFuncionario = (param: iCodFunc) => Promise<object>;
 type iSetFeriadoFolga = (param: iFaltaFeriadoFolga) => Promise<object>;
 type iSetFalta = (param: iRegistrarFalta) => Promise<object>;
 type iDeleteFalta = (param: iDeletarFaltaEDocumento) => Promise<object>;
+type iDeleteArquivo = (param: iDeletarArquivo) => Promise<object>;
 type iInserirRegistroAusencia = (param: iRegistrarDocumentoAusencia) => Promise<object>;
 type iGetDocumentoAusencia = (param: iParamDocumentoAusencia) => Promise<iDadosDocumento[]>;
 
@@ -84,6 +86,39 @@ const deletarFaltaEDocumento: iDeleteFalta = async (param) => {
   return data;
 };
 
+const deletarArquivo: iDeleteArquivo = async (param) => {
+  return $.ajax({
+    url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
+    type: "POST",
+    dataType: "json",
+    data: {
+      call: "deleteArquivo",
+      class: "Files",
+      param: {
+        cpf: param.cpf,
+        folderName: param.folderName,
+        nomeArquivo: param.file_name,
+        usuario: param.usuario,
+      },
+    },
+  });
+};
+
+const uploadPDF = async (formData) => {
+  try {
+    const rs = await $.ajax({
+      url: "http://www.reallatas.com.br/doc_funcionario/getFiles.php",
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+    });
+    return rs;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const createRegistroDocumento: iInserirRegistroAusencia = async (param) => {
   let { data } = await axios.post(caminho, {
     call: "createRegistroDocumento",
@@ -109,7 +144,9 @@ export default {
   getTipoFaltas,
   setFaltaFeriadoOuFolga,
   deletarFaltaEDocumento,
+  deletarArquivo,
   createRegistroDocumento,
   setFalta,
   getDocumentoAusencia,
+  uploadPDF,
 };

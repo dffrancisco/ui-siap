@@ -49,7 +49,7 @@ export const actions = {
     }
 
     const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
-    return `http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
+    return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
   },
 
   onClickVoltar() {
