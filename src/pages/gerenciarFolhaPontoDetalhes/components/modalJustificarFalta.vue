@@ -484,7 +484,7 @@ onMounted(() => {
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
             v-model="state.justificativa"
-            :disabled="tipoAusenciaDisabled || jaJustificado || desativarBtnVerDoc"
+            :disabled="tipoAusenciaDisabled || jaJustificado"
           >
           </v-textarea>
         </v-col>
