@@ -119,6 +119,48 @@ const uploadPDF = async (formData) => {
   }
 };
 
+const verificarArquivos = async (cpf) => {
+  try {
+    const rs = await $.ajax({
+      url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
+      type: "POST",
+      dataType: "json",
+      data: {
+        class: "Files",
+        call: "getFilesTemp",
+        param: {
+          cpf: cpf,
+          pasta: "ausencia",
+        },
+      },
+    });
+    return rs;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const moverArquivoTemp = async (tipoDocumento, cpf) => {
+  try {
+    const rs = await $.ajax({
+      url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
+      type: "POST",
+      dataType: "json",
+      data: {
+        class: "Files",
+        call: "moverArquivoTemp",
+        param: {
+          cpf: cpf,
+          pasta: tipoDocumento,
+        },
+      },
+    });
+    return rs;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const createRegistroDocumento: iInserirRegistroAusencia = async (param) => {
   let { data } = await axios.post(caminho, {
     call: "createRegistroDocumento",
@@ -149,4 +191,6 @@ export default {
   setFalta,
   getDocumentoAusencia,
   uploadPDF,
+  verificarArquivos,
+  moverArquivoTemp,
 };

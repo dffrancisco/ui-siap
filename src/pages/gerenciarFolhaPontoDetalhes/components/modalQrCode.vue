@@ -4,7 +4,6 @@ import QrcodeVue from "qrcode.vue";
 import { nextTick, reactive, ref, watch } from "vue";
 import stateLogin from "../../login/login";
 import globalState from "@/store/globalState";
-import $ from "jquery";
 import { iRegistrarDocumentoAusencia, iRegistrarFalta } from "../interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "../services/gerenciarFolhaPontoDetalhes.service";
@@ -67,28 +66,19 @@ function ajustarData(dataDocArquivo) {
   return dataFormatada;
 }
 
-function verificarArquivos() {
+async function verificarArquivos() {
   cpf = props.dadosParaQrCode.cpf.replaceAll(".", "").replaceAll("-", "");
-  $.ajax({
-    url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
-    type: "POST",
-    dataType: "json",
-    data: {
-      class: "Files",
-      call: "getFilesTemp",
-      param: {
-        cpf: cpf,
-        pasta: "ausencia",
-      },
-    },
-    success: function (r) {
-      if (r.length > 0) {
-        state.nomeDoDocumento = r[0].file;
-        exibirArquivo(state.nomeDoDocumento);
-        clearInterval(intervalId);
-      }
-    },
-  });
+
+  try {
+    const rs = await gerenciarFolhaPontoDetalhesService.verificarArquivos(cpf);
+    if (rs.length > 0) {
+      state.nomeDoDocumento = rs[0].file;
+      exibirArquivo(state.nomeDoDocumento);
+      clearInterval(intervalId);
+    }
+  } catch (error) {
+    throw error;
+  }
 }
 
 function exibirArquivo(nomeDoDocumento: string) {
@@ -190,29 +180,17 @@ async function uploadPDF(file, tipoDocumento) {
   }
 }
 
-function moverArquivoTemp(nomeDoDocumento: string) {
+async function moverArquivoTemp(nomeDoDocumento: string) {
   let tipoDocumento = "ausencia";
-  $.ajax({
-    url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
-    type: "POST",
-    dataType: "json",
-    data: {
-      class: "Files",
-      call: "moverArquivoTemp",
-      param: {
-        cpf: cpf,
-        pasta: tipoDocumento,
-      },
-    },
-    success: function (rs) {
-      if (rs.success) {
-        createRegistroAusencia(nomeDoDocumento, tipoDocumento);
-      }
-    },
-    error: function (error) {
-      console.log(error);
-    },
-  });
+  let cpf = props.dadosParaQrCode.cpf.replaceAll(".", "").replaceAll("-", "");
+  try {
+    const rs = await gerenciarFolhaPontoDetalhesService.moverArquivoTemp(tipoDocumento, cpf);
+    if (rs.success) {
+      createRegistroAusencia(nomeDoDocumento, tipoDocumento);
+    }
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function createRegistroAusencia(nomeDoDocumento: string, tipoDocumento: string) {
