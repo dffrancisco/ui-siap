@@ -16,21 +16,6 @@ import ModalJustificarFalta from "./components/modalJustificarFalta.vue";
 
 const route = useRoute();
 
-function fecharModal() {
-  state.modalJustificarFalta.close();
-}
-
-async function atualizarTela() {
-  state.loading = true;
-  await actions.getDadosFuncionario(state.codFuncionario);
-  await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
-  await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
-  await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
-  actions.getFotoFuncionarioURL(state.cpf);
-  state.modalJustificarFalta.close();
-  state.loading = false;
-}
-
 actions.init(route);
 </script>
 
@@ -69,6 +54,7 @@ actions.init(route);
                       item-value="value"
                       :items="meses"
                       hide-details
+                      @update:model-value="actions.getDadosPontos"
                     ></v-select>
                   </v-col>
                   <v-col cols="4">
@@ -80,6 +66,7 @@ actions.init(route);
                       v-model="state.ano"
                       :items="anos"
                       hide-details
+                      @update:model-value="actions.getDadosPontos"
                     ></v-select>
                   </v-col>
                   <v-col cols="3"
@@ -237,8 +224,8 @@ actions.init(route);
           loginFuncionario: state.loginFuncionario,
         }"
         :opened="state.modalJustificarFaltaOpened"
-        @atualizarDados="atualizarTela()"
-        @fecharModal="fecharModal()"
+        @atualizarDados="actions.atualizarTela()"
+        @fecharModal="actions.fecharModal()"
       />
     </div>
 
@@ -271,28 +258,6 @@ actions.init(route);
   width: 115px;
   margin-left: 5px;
 }
-
-/* .fc-toolbar-title {
-  margin-left: 25px !important;
-  margin-top: 10px !important;
-} */
-
-/* .fc-prev-button.fc-button.fc-button-primary {
-  border: none;
-  margin-right: 5px;
-  background-color: #6495ed;
-}
-
-.fc-next-button.fc-button.fc-button-primary {
-  border: none;
-  margin-right: 5px;
-  background-color: #6495ed;
-} */
-
-/* .fc-today-button.fc-button.fc-button-primary {
-  border: none;
-  background-color: #6495ed;
-} */
 
 .fc-toolbar-chunk {
   display: none;

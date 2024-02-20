@@ -99,7 +99,7 @@ const deletarDocumento: iDeleteDocumento = async (param) => {
 
 const deletarArquivo: iDeleteArquivo = async (param) => {
   return $.ajax({
-    url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
+    url: "http://reallatas.com.br/doc_funcionario/getFiles.php",
     type: "POST",
     dataType: "json",
     data: {

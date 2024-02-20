@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import printJS from "print-js";
-import { defineProps, computed, onMounted, nextTick, reactive } from "vue";
+import { defineProps, computed, onMounted, nextTick, reactive, watch } from "vue";
 import stateLogin from "../../login/login";
 import globalState from "@/store/globalState";
 import ModalQrCode from "./modalQrCode.vue";
@@ -103,12 +103,12 @@ function imprimirJustificativa() {
 function criarHTMLParaPDF() {
   const justificativaValor = state.justificativa ? state.justificativa : "";
 
-  const conteudoHTML = `
+  const conteudoHTML = `<br><br><br>
     <div id="justificativaPDF">
       <p>JUSTIFICATIVA DE AUSÊNCIA</p>
       <p>Eu, ${props.funcionario.nome}, brasileiro (a), de CPF ${props.funcionario.cpf}, profissional lotado no cargo ${props.funcionario.cargo}, na empresa REAL ACESSÓRIOS venho justificar ao RH, minha ausência que foi devido a: ${justificativaValor}. No dia ${props.dadosAusencia}, motivos pelos quais impossibilitaram minha presença na empresa, bem como o desempenho das respectivas funções. Solicito, portanto, o abono da falta, visto que a mesma ocorreu por motivo de força maior e foi devidamente justificada.</p>
       <p>Por ser expressão da verdade, firmo a presente.</p>
-      <p>Brasília-DF, __/__/____.</p>
+      <p>Brasília-DF, ___/___/_____.</p>
       <p>${props.funcionario.nome}</p>
     </div>
   `;
@@ -128,13 +128,19 @@ const jaJustificado = computed(() => {
   }
 });
 
-const tipoAusenciaDisabled = computed(() => {
+const desativarBtn = computed(() => {
   let chegada = props.horaChegada;
   let inicioAlmoco = props.horaAlmocoInicial;
   let fimAlmoco = props.horaAlmocoFinal;
   let saida = props.horaSaida;
 
-  if (chegada != null && inicioAlmoco != null && fimAlmoco != null && saida != null) {
+  if (
+    chegada != null &&
+    inicioAlmoco != null &&
+    fimAlmoco != null &&
+    saida != null &&
+    props.dadosDocumento.length == 0
+  ) {
     return true;
   } else {
     return false;
@@ -142,8 +148,13 @@ const tipoAusenciaDisabled = computed(() => {
 });
 
 const desativarBtnVerDoc = computed(() => {
-  //@ts-ignore
-  if ((props.dadosDocumento.length != 0) == "") {
+  if (
+    props.dadosDocumento.length === 0 &&
+    //@ts-ignore
+    props.pontos.STATUS !== "Feriado" &&
+    //@ts-ignore
+    props.pontos.STATUS !== "Dia de Folga"
+  ) {
     return false;
   } else {
     return true;
@@ -344,6 +355,14 @@ async function deletarArquivo(file_name) {
 }
 
 function visualizarDocumento() {
+  if (props.dadosDocumento.length === 0) {
+    Swal.fire({
+      icon: "error",
+      text: "Não há documento a ser visualizado.",
+    });
+    return;
+  }
+
   let cpf = props.funcionario.cpf.replace(/\D/g, "");
   let file_name = props.dadosDocumento[0].nome_arquivo;
   let urlPdf = `http://www.reallatas.com.br/doc_funcionario/documentos/${cpf}/ausencia/${file_name}`;
@@ -377,6 +396,16 @@ onMounted(() => {
     modal();
   });
 });
+
+watch(
+  () => props.opened,
+  (opened, previousOpened) => {
+    if (opened === true && previousOpened === false) {
+      state.selectedFalta = "";
+      state.justificativa = "";
+    }
+  }
+);
 </script>
 
 <template>
@@ -459,7 +488,7 @@ onMounted(() => {
               label="Tipo de Ausência"
               v-model="state.selectedFalta"
               @update:model-value="preencherJustificativa"
-              :disabled="tipoAusenciaDisabled || jaJustificado"
+              :disabled="desativarBtn || jaJustificado"
             ></v-select>
           </v-row>
         </v-container>
@@ -471,7 +500,7 @@ onMounted(() => {
           v-if="state.showCIDAutocomplete"
           label="CID"
           v-model="state.selectedCID"
-          :disabled="tipoAusenciaDisabled || jaJustificado"
+          :disabled="desativarBtn || jaJustificado"
         >
         </v-text-field>
       </div>
@@ -484,7 +513,7 @@ onMounted(() => {
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
             v-model="state.justificativa"
-            :disabled="tipoAusenciaDisabled || jaJustificado"
+            :disabled="desativarBtn || jaJustificado || showSalvarFeriadoFolga"
           >
           </v-textarea>
         </v-col>
@@ -497,7 +526,7 @@ onMounted(() => {
         label="Deletar Falta"
         color="primary"
         class="btnDelete"
-        :disabled="tipoAusenciaDisabled"
+        :disabled="desativarBtn"
         @click="deletarFalta"
       >
         <v-icon>mdi-delete</v-icon>
@@ -514,11 +543,11 @@ onMounted(() => {
         Visualizar
       </v-btn>
       <v-btn
-        v-if="!tipoAusenciaDisabled"
+        v-if="!desativarBtn"
         color="primary"
         class="btnJustificar"
         @click="imprimirJustificativa"
-        :disabled="tipoAusenciaDisabled || desativarBotoesSeNadaSelecionado || jaJustificado"
+        :disabled="desativarBtn || desativarBotoesSeNadaSelecionado || jaJustificado || showSalvarFeriadoFolga"
       >
         <v-icon>mdi-printer-settings</v-icon>
         Justificativa
@@ -527,7 +556,7 @@ onMounted(() => {
         color="primary"
         class="btnSalvar"
         @click="salvar()"
-        :disabled="tipoAusenciaDisabled || desativarBotoesSeNadaSelecionado || jaJustificado"
+        :disabled="desativarBtn || desativarBotoesSeNadaSelecionado || jaJustificado"
       >
         <v-icon>mdi-content-save</v-icon>
         Salvar

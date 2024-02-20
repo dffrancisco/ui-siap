@@ -56,6 +56,21 @@ export const actions = {
     router.push("gerenciarFolhaPonto");
   },
 
+  async atualizarTela() {
+    state.loading = true;
+    await actions.getDadosFuncionario(state.codFuncionario);
+    await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
+    await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
+    await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
+    actions.getFotoFuncionarioURL(state.cpf);
+    state.modalJustificarFalta.close();
+    state.loading = false;
+  },
+
+  fecharModal() {
+    state.modalJustificarFalta.close();
+  },
+
   async getDadosFuncionario(cod_funcionario: number) {
     const param: iCodFunc = {
       cod_funcionario: cod_funcionario,
@@ -85,7 +100,6 @@ export const actions = {
 
     try {
       state.pontos = await gerenciarFolhaPontoDetalhesService.getPontos(param);
-      console.log(state.pontos);
     } catch (error) {
       Swal.fire({
         icon: "error",

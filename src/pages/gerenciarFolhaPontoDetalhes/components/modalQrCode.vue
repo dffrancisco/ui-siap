@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
 import QrcodeVue from "qrcode.vue";
-import { nextTick, reactive, ref, watch } from "vue";
+import { reactive, watch } from "vue";
 import stateLogin from "../../login/login";
 import globalState from "@/store/globalState";
 import { iRegistrarDocumentoAusencia, iRegistrarFalta } from "../interface";
@@ -25,13 +25,18 @@ const state = reactive({
   loading: false,
   nomeDoDocumento: "",
   tipoDocumento: "ausencia",
+  qrData: "",
 });
 
-const qrData = ref("");
 var intervalId;
 var cpf;
 
 function gerarQrCode() {
+  console.log("gerandoqrcode");
+
+  const qrCode = document.getElementById("qr-generate");
+  qrCode.style.display = "";
+
   let cpf = props.dadosParaQrCode.cpf;
   let nomeFunc = props.dadosParaQrCode.loginFuncionario;
   let tipoDocumento = state.tipoDocumento;
@@ -41,9 +46,9 @@ function gerarQrCode() {
 
   const chave = gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo);
 
-  qrData.value = `http://192.168.100.202/siap+/funcionario_doc_imagem/?chave=${chave}`;
+  state.qrData = `http://192.168.100.202/siap+/funcionario_doc_imagem/?chave=${chave}`;
 
-  console.log(qrData.value);
+  console.log(state.qrData);
   console.log(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo);
 
   setTimeout(() => {
@@ -88,12 +93,15 @@ function exibirArquivo(nomeDoDocumento: string) {
   imgElement.style.height = "200px";
   imgElement.style.objectFit = "cover";
 
-  const qrGenerate = document.getElementById("qr-generate");
-  qrGenerate.innerHTML = "";
-  qrGenerate.appendChild(imgElement);
+  const imagemDoc = document.getElementById("appendImg");
+
+  const qrCode = document.getElementById("qr-generate");
+  qrCode.style.display = "none";
+
+  imagemDoc.appendChild(imgElement);
+  state.loading = true;
 
   setTimeout(() => {
-    state.loading = true;
     moverArquivoTemp(nomeDoDocumento);
   }, 2000);
 }
@@ -115,7 +123,6 @@ function uploadArquivoPeloBotao(event) {
 
   if (file.size > 1500000) {
     resizeImage(file, function (resizedFile) {
-      console.log("diminuindo a imagem");
       uploadPDF(resizedFile, state.tipoDocumento);
     });
   } else {
@@ -268,12 +275,15 @@ async function setFalta(dataDocArquivo, id_documento) {
 
 watch(
   () => props.opened,
-  (newValue) => {
-    nextTick(async () => {
-      if (newValue) {
-        gerarQrCode();
-      }
-    });
+  (opened, previousOpened) => {
+    if (opened === true && previousOpened === false) {
+      const imagemDoc = document.getElementById("appendImg");
+      const imgElements = imagemDoc.querySelectorAll("img");
+      imgElements.forEach((imgElement) => {
+        imgElement.remove();
+      });
+      gerarQrCode();
+    }
   }
 );
 </script>
@@ -285,9 +295,11 @@ watch(
         class="col s6"
         style="margin-left: 70px; margin-top: 30px"
       >
+        <div id="appendImg"> </div>
+
         <div id="qr-generate"
           ><qrcode-vue
-            :value="qrData"
+            :value="state.qrData"
             :size="200"
           />
         </div>
@@ -356,6 +368,12 @@ watch(
 }
 
 #qr-generate {
+  margin-top: 1rem;
+  margin-bottom: 3rem;
+  margin-left: 1rem;
+}
+
+#appendImg {
   margin-top: 1rem;
   margin-bottom: 3rem;
   margin-left: 1rem;
