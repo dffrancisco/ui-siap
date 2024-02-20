@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import {
-  actions,
-  state,
-  funcionariosOrdenados,
-  meses,
-  anos,
-  totalizador,
-} from "./gerenciarFolhaPonto";
+import { actions, state, funcionariosOrdenados, meses, anos, totalizador } from "./gerenciarFolhaPonto";
 
 onMounted(async () => {
   actions.init(state.selectedFuncionario, state.mes, state.ano);
@@ -17,7 +10,10 @@ onMounted(async () => {
 <template>
   <v-container>
     <title>Gerenciar Folha de Ponto</title>
-    <div class="pa-5" style="max-width: 1100px; margin: 0 auto">
+    <div
+      class="pa-5"
+      style="max-width: 1100px; margin: 0 auto"
+    >
       <v-row>
         <v-col cols="12">
           <div>
@@ -59,13 +55,7 @@ onMounted(async () => {
                     color="primary"
                     size="small"
                     class="btnSearch"
-                    @click="
-                      actions.getFuncionarios(
-                        state.selectedFuncionario,
-                        state.mes,
-                        state.ano
-                      )
-                    "
+                    @click="actions.getFuncionarios(state.selectedFuncionario, state.mes, state.ano)"
                   >
                     <v-icon> mdi-magnify</v-icon>
                   </v-btn></v-col
@@ -76,7 +66,10 @@ onMounted(async () => {
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" class="pt-0">
+        <v-col
+          cols="12"
+          class="pt-0"
+        >
           <div class="funcionarios">
             <strong>FUNCIONÁRIOS</strong>
 
@@ -91,9 +84,7 @@ onMounted(async () => {
                   width="50px"
                 ></v-img>
 
-                <span class="funcionarios__lista__card__totalizador"
-                  ><u>TOTALIZADOR</u>
-                </span>
+                <span class="funcionarios__lista__card__totalizador"><u>TOTALIZADOR</u> </span>
                 <span class="funcionarios__lista__card__totalizador">
                   Pontos não batidos:
                   <b>{{ totalizador.QTD_PONTOS_NAO_BATIDOS || 0 }}</b>
@@ -121,6 +112,16 @@ onMounted(async () => {
                 :key="funcionario.COD_FUNCIONARIO"
                 :class="{ pendencia: funcionario.QTD_A_JUSTIFICAR > 0 }"
                 class="funcionarios__lista__card"
+                @click="
+                  actions.onClickFuncionario(
+                    funcionario.NOME_COMP,
+                    funcionario.CARGO,
+                    funcionario.COD_FUNCIONARIO,
+                    funcionario.CPF,
+                    state.mes,
+                    state.ano
+                  )
+                "
               >
                 <div class="funcionarios__lista__card__usuario">
                   <v-avatar
@@ -128,8 +129,7 @@ onMounted(async () => {
                     color="primary"
                     :title="funcionario.LOGIN"
                     :class="{
-                      'funcionario-com-pendencia':
-                        funcionario.QTD_A_JUSTIFICAR > 0,
+                      'funcionario-com-pendencia': funcionario.QTD_A_JUSTIFICAR > 0,
                     }"
                     class="funcionarios__lista__avatar"
                   >
@@ -164,8 +164,7 @@ onMounted(async () => {
                 <span
                   class="funcionarios__lista__card__faltas"
                   :class="{
-                    'funcionario-com-pendencia':
-                      funcionario.QTD_A_JUSTIFICAR > 0,
+                    'funcionario-com-pendencia': funcionario.QTD_A_JUSTIFICAR > 0,
                   }"
                 >
                   Pontos à justificar:

@@ -20,6 +20,10 @@
   "main": "electron/electron.js",
   "dependencies": {
     "@devindex/vue-mask": "^2.0.3",
+    "@fullcalendar/core": "^6.1.10",
+    "@fullcalendar/daygrid": "^6.1.10",
+    "@fullcalendar/interaction": "^6.1.10",
+    "@fullcalendar/vue3": "^6.1.10",
     "@vuelidate/core": "^2.0.0-alpha.33",
     "@vuelidate/validators": "^2.0.0-alpha.26",
     "@vueuse/core": "^7.6.1",

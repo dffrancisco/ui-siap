@@ -74,15 +74,33 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/corredores')"
+              >Desconto Orçamento</v-btn
             >
-              Corredores
-            </v-btn>
-
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/carros')"
+              >Carros</v-btn
+            >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/entregarReceber')"
+              >Entregar e Receber</v-btn
+            >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/valeDinheiro')"
+              >Vale dinheiro</v-btn
+            >
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/chamados')"
-              >Chamados
-            </v-btn>
+              >Chamados</v-btn
+            >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/corredores')"
+              >Corredores</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
@@ -112,9 +130,14 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/bloquearCliente')"
+              @click="router.push('/aniversariantes')"
+              >Aniversariantes</v-btn
             >
-              Bloquear Cliente
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/bloquearCliente')"
+              >Bloquear Cliente
             </v-btn>
 
             <v-btn
@@ -128,6 +151,7 @@ import login from "../login/login";
               @click="router.push('/bloquearCliente')"
               >Bloquear Cliente
             </v-btn>
+            <v-btn @click="router.push('/gerenciarFolhaPonto')">Folha Ponto</v-btn>
 
             <v-btn
               class="mr-4 mb-4"
