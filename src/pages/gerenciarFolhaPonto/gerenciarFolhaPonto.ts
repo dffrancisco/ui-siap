@@ -3,6 +3,8 @@ import { iFuncionario, iGetMesEAno, iTotalizador } from "./interface";
 import gerenciarFolhaPontoService from "./services/gerenciarFolhaPonto.service";
 import Swal from "sweetalert2";
 import router from "@/router";
+import printJS from "print-js";
+import globalState from "@/store/globalState";
 
 export const state = reactive({
   funcionarios: {},
@@ -123,6 +125,70 @@ export const actions = {
     setTimeout(() => {
       state.loading = false;
     }, 100);
+  },
+
+  imprimirFolhaPontoTodosFuncionarios() {
+    const conteudo = actions.criarHTMLParaPDF();
+
+    printJS({
+      documentTitle: "Folha de Ponto",
+      printable: conteudo,
+      type: "html",
+    });
+  },
+
+  criarHTMLParaPDF() {
+    let func = "funcionario";
+
+    let cabecalho = `
+      <div class="cabecalho">
+        <table width="100%" class="tbTitulo">
+            <tr>
+                <td rowspan="4" style="width: 150px;"><img src="src/assets/Logo-Real-Shop-Car-menor.png" width="155" alt="" /></td>
+                <td colspan="3" style="font-weight: bold" name="razao">${globalState.empresa.RAZAO_SOCIAL}</td>
+                <td style="width: 150px;"><span class="spData"></span> <span class="spHora"></span></td>
+            </tr>
+            <tr>
+                <td colspan="3" name="endereco"></td>
+                <td name="cnpj"></td>
+            </tr>
+            <tr>
+                <td>Cidade.: <span name="cidade"></span> </td>
+                <td>Bairro.: <span name="bairro"></span> </td>
+                <td>CEP.: <span name="cep"></span> </td>
+                <td> <span name="inscricao"></span> </td>
+            </tr>
+            <tr>
+                <td colspan="2">Telefone.: <span name="fone"></span> </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="5">
+                    <div style="border-top: 1px solid #666666; border-bottom: 1px solid #666666; margin-top: 3px; text-align: center" class="pnTituloCabecalho"></div>
+                </td>
+            </tr>
+        </table>
+      </div>`;
+
+    const conteudoHTML = `${cabecalho}<br><br><br>
+    <div id="justificativaPDF">
+      <p>JUSTIFICATIVA DE AUSÊNCIA</p>
+      <p>Eu, ${func}, brasileiro (a), de CPF ${func}, profissional lotado no cargo ${func}, 
+      na empresa REAL ACESSÓRIOS venho justificar ao RH, minha ausência que foi devido a: 
+      ${func}. No dia ${func}, motivos pelos quais impossibilitaram 
+      minha presença na empresa, bem como o desempenho das respectivas funções. Solicito, portanto, 
+      o abono da falta, visto que a mesma ocorreu por motivo de força maior e foi devidamente justificada.</p>
+      <p>Por ser expressão da verdade, firmo a presente.</p>
+      <p>Brasília-DF, ___/___/_____.</p>
+      <p>${func}</p>
+    </div>
+  `;
+
+    const tempElement = document.createElement("div");
+    tempElement.innerHTML = conteudoHTML;
+
+    return tempElement;
   },
 };
 

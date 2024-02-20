@@ -58,8 +58,17 @@ onMounted(async () => {
                     @click="actions.getFuncionarios(state.selectedFuncionario, state.mes, state.ano)"
                   >
                     <v-icon> mdi-magnify</v-icon>
-                  </v-btn></v-col
-                >
+                  </v-btn>
+                  <v-btn
+                    icon
+                    color="primary"
+                    size="small"
+                    class="btnPrint"
+                    @click="actions.imprimirFolhaPontoTodosFuncionarios"
+                  >
+                    <v-icon>mdi-printer</v-icon>
+                  </v-btn>
+                </v-col>
               </v-row>
             </v-card>
           </div>
@@ -183,6 +192,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.btnPrint {
+  margin-top: 10px;
+  margin-left: 20px;
+}
 .funcionarios {
   .funcionarios__lista {
     display: flex;
