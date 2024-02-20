@@ -20,6 +20,7 @@ export interface iPonto {
   HORA_ALMOCO_INICIAL: string;
   HORA_ALMOCO_FINAL: string;
   HORA_SAIDA: string;
+  JUSTIFICATIVA: string;
 }
 
 export interface iTipoFaltasCount {
@@ -33,9 +34,100 @@ export interface iTipoFaltasCount {
   COUNT_TIPO: number;
 }
 
-export interface iAusencias {
+export interface iCodFunc {
+  cod_funcionario: number;
+}
+
+export interface iFaltaFeriadoFolga {
+  falta: string;
+  data: string;
+  cod_funcionario: number;
+  tipo: number;
+}
+
+export interface iDeletarDocumento {
+  cod_funcionario: number;
+  data: string;
+  file_name: string;
+  cnpj: string;
+}
+
+export interface iDeletarFalta {
+  cod_funcionario: number;
+  data: string;
+  cnpj: string;
+}
+
+export interface iRegistrarDocumentoAusencia {
+  nomeDoDocumento: string;
+  cpf: string;
+  docPasta: string;
+  dataPonto: string;
+  dataUpload: string;
+  usuario: string;
+  cnpj: string;
+}
+
+export interface iPropsPontosDiaSelecionado {
   COD_FUNCIONARIO: number;
-  CPF: string;
-  NOME_FUNCIONARIO: string;
-  DATA_AUSENCIA: string;
+  DATA: string;
+  HORA_CHEGADA: string;
+  HORA_ALMOCO_INICIAL: string;
+  HORA_ALMOCO_FINAL: string;
+  HORA_SAIDA: string;
+  nome: string;
+  cpf: string;
+  cargo: string;
+}
+
+export interface iPropsFuncionario {
+  cod_funcionario: number;
+  nome: string;
+  cpf: string;
+  cargo: string;
+  loginFuncionario: string;
+}
+
+export interface iPropsTiposDeFalta {
+  DESCRICAO: string;
+  EXIGE_CID: string;
+  ID_TIPO_FALTA: number;
+  IMPRIMIR_JUSTIFICATIVA: string;
+  LANCAR_FALTA: string;
+  TIPO: number;
+  UPLOAD_ARQUIVO: string;
+  COUNT_TIPO: number;
+}
+
+export interface iRegistrarFalta {
+  cod_funcionario: number;
+  falta: string;
+  justificativa: string;
+  cid: string;
+  tipoFalta: number;
+  dataDocArquivo: string;
+  id_documento: number;
+}
+
+export interface iParamDocumentoAusencia {
+  data: string;
+  cpf: string;
+}
+
+export interface iDadosDocumento {
+  id_doc_funcionario: number;
+  nome_arquivo: string;
+  cpf: string;
+  doc_pasta: string;
+  data_ponto: string;
+  data_upload: string;
+  user_upload: string;
+  cnpj: string;
+}
+
+export interface iDeletarArquivo {
+  file_name: string;
+  folderName: string;
+  cpf: string;
+  usuario: string;
 }

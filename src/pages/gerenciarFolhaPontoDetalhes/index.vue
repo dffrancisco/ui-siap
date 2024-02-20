@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { actions, state, pontosCalendario } from "./gerenciarFolhaPontoDetalhes";
+import {
+  actions,
+  state,
+  pontosCalendario,
+  pontosDiaSelecionado,
+  tipoFaltaModal,
+} from "./gerenciarFolhaPontoDetalhes";
 import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -16,6 +22,7 @@ actions.init(route);
 <template>
   <v-container>
     <title>Detalhes dos pontos</title>
+
     <div
       class="pa-5"
       style="max-width: 1100px; margin: 0 auto"
@@ -23,117 +30,137 @@ actions.init(route);
       <v-row>
         <v-col cols="12">
           <div>
-            <strong>Detalhes dos pontos</strong>
+            <!-- <strong>Detalhes dos pontos</strong> -->
+
             <v-card class="pa-5 cardFolhaPontoDetalhes">
+              <div class="mesAnoEBotoes ml-2">
+                <v-row>
+                  <v-btn
+                    color="primary"
+                    variant="text"
+                    density="compact"
+                    class="mb-4 pa-0"
+                    icon="mdi-arrow-left"
+                    @click="actions.onClickVoltar"
+                  />
+                  <v-col cols="4">
+                    <v-select
+                      label="Mês"
+                      class="ml-4"
+                      id="mes"
+                      dense
+                      v-model="state.mes"
+                      item-title="text"
+                      item-value="value"
+                      :items="meses"
+                      hide-details
+                      @update:model-value="actions.getDadosPontos"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="4">
+                    <v-select
+                      label="Ano"
+                      class="ml-4"
+                      id="ano"
+                      dense
+                      v-model="state.ano"
+                      :items="anos"
+                      hide-details
+                      @update:model-value="actions.getDadosPontos"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="3"
+                    ><v-btn
+                      icon
+                      color="primary"
+                      size="small"
+                      class="btnSearch"
+                      @click="actions.getDadosPontos()"
+                    >
+                      <v-icon> mdi-magnify</v-icon> </v-btn
+                    ><v-btn
+                      icon
+                      color="primary"
+                      size="small"
+                      class="btnPrint"
+                    >
+                      <v-icon>mdi-printer</v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </div>
+
               <v-row>
-                <v-col cols="5">
-                  <v-autocomplete
-                    label="Mês"
-                    id="mes"
-                    dense
-                    v-model="state.mes"
-                    item-title="text"
-                    item-value="value"
-                    :items="meses"
-                  ></v-autocomplete>
+                <v-col cols="12">
+                  <v-row>
+                    <v-col cols="5">
+                      <div class="funcionario__card__usuario ml-2">
+                        <v-avatar
+                          size="60px"
+                          color="primary"
+                          class="funcionario__avatar"
+                        >
+                          <v-img
+                            :src="actions.getFotoFuncionarioURL(state.cpf)"
+                            aspect-ratio="1"
+                            cover
+                          >
+                          </v-img>
+                        </v-avatar>
+
+                        <div class="funcionario__card">
+                          <strong class="funcionario__card__nome"
+                            ><b>{{ state.nome }}</b></strong
+                          >
+                          <span class="funcionario__card__cargo">{{ state.cargo }}</span>
+                        </div>
+                      </div>
+                    </v-col>
+                    <v-col cols="7">
+                      <div class="div__funcionario__card__infos">
+                        <div class="funcionario__card__infos">
+                          Pontos não batidos:
+                          <b>{{ state.QTD_PONTOS_NAO_BATIDOS || 0 }}</b>
+                        </div>
+                        <div class="funcionario__card__infos">
+                          Pontos incompletos:
+                          <b>{{ state.QTD_PONTOS_INCOMPLETOS || 0 }}</b>
+                        </div>
+
+                        <div class="funcionario__card__infos">
+                          Qtd de justificativas:
+                          <b>{{ state.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
+                        </div>
+                        <div class="funcionario__card__infos">
+                          Pontos à justificar:
+                          <b>{{ state.QTD_A_JUSTIFICAR || 0 }}</b>
+                        </div>
+                      </div>
+                    </v-col>
+                  </v-row>
                 </v-col>
-                <v-col cols="5">
-                  <v-autocomplete
-                    label="Ano"
-                    id="ano"
-                    dense
-                    v-model="state.ano"
-                    :items="anos"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col cols="2"
-                  ><v-btn
-                    icon
-                    color="primary"
-                    size="small"
-                    class="btnSearch"
-                    @click="actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano)"
-                  >
-                    <v-icon> mdi-magnify</v-icon> </v-btn
-                  ><v-btn
-                    icon
-                    color="primary"
-                    size="small"
-                    class="btnPrint"
-                  >
-                    <v-icon>mdi-printer</v-icon>
-                  </v-btn>
+              </v-row>
+
+              <v-row class="mt-2">
+                <v-col
+                  cols="12"
+                  class="pt-0"
+                >
+                  <div class="funcionario__card__faltas ml-2">
+                    <div
+                      class="funcionario__card__faltas__info"
+                      v-for="tipoFalta in state.tipoFaltas"
+                      :key="tipoFalta.ID_TIPO_FALTA"
+                    >
+                      <div class="funcionario__card__faltas__info__count">
+                        {{ tipoFalta.DESCRICAO }}:
+                        <b> {{ tipoFalta.COUNT_TIPO }}</b>
+                      </div>
+                    </div>
+                  </div>
                 </v-col>
               </v-row>
             </v-card>
-          </div>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col
-          cols="12"
-          class="pt-0"
-        >
-          <div class="funcionarios">
-            <div class="funcionarios__lista">
-              <v-card class="funcionario__card">
-                <div class="funcionario__card__usuario">
-                  <v-avatar
-                    size="50px"
-                    color="primary"
-                    class="funcionario__avatar"
-                  >
-                    <v-img
-                      :src="actions.getFotoFuncionarioURL(state.cpf)"
-                      aspect-ratio="1"
-                      cover
-                    >
-                    </v-img>
-                  </v-avatar>
-
-                  <div class="nomeCargo">
-                    <strong class="funcionario__card__nome"
-                      ><b>{{ state.nome }}</b></strong
-                    >
-                    <span class="funcionario__card__cargo">{{ state.cargo }}</span>
-                  </div>
-                </div>
-
-                <v-col>
-                  <span class="funcionario__card__infos">
-                    Pontos não batidos:
-                    <b>{{ state.QTD_PONTOS_NAO_BATIDOS || 0 }}</b>
-                  </span>
-                  <span class="funcionario__card__infos">
-                    Pontos incompletos:
-                    <b>{{ state.QTD_PONTOS_INCOMPLETOS || 0 }}</b>
-                  </span>
-                </v-col>
-
-                <v-col class="infoPontosFunc">
-                  <span class="funcionario__card__infos">
-                    Qtd de justificativas:
-                    <b>{{ state.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
-                  </span>
-                  <span class="funcionario__card__infos">
-                    Pontos à justificar:
-                    <b>{{ state.QTD_A_JUSTIFICAR || 0 }}</b>
-                  </span>
-                </v-col>
-              </v-card>
-
-              <v-card class="funcionario__card__faltas">
-                <v-col
-                  v-for="tipoFalta in state.tipoFaltas"
-                  :key="tipoFalta.ID_TIPO_FALTA"
-                >
-                  <span class="funcionario__card__faltas__info"
-                    >{{ tipoFalta.DESCRICAO }}:
-                    <b> {{ tipoFalta.COUNT_TIPO }}</b>
-                  </span>
-                </v-col>
-              </v-card>
-            </div>
           </div>
         </v-col>
       </v-row>
@@ -142,29 +169,29 @@ actions.init(route);
         <v-row class="fill-height">
           <v-col>
             <v-sheet
-              height="900"
+              height="796"
               width="1050"
             >
               <FullCalendar
-                v-if="state.loadingCalendar == false"
+                v-if="!state.loadingCalendar && !state.loading"
                 ref="calendario"
                 :options="{
-                  buttonText: {
-                    today: 'Hoje',
-                  },
                   plugins: [dayGridPlugin, interactionPlugin],
                   initialView: 'dayGridMonth',
-                  // hiddenDays: [0],
                   events: pontosCalendario,
+                  // hiddenDays: [0],
                   dateClick: actions.clickModalJustificarAusencia,
                   locale: 'pt-br',
-                  datesSet: actions.alternandoMesEAno,
                   eventOrder: 'defId',
                   initialDate: state.initialDate,
+                  fixedWeekCount: false,
                 }"
               >
                 <template v-slot:eventContent="arg">
-                  <div class="calendario__horario">
+                  <div
+                    class="calendario__horario"
+                    @click.prevent="actions.clickModalJustificarAusencia(arg.event)"
+                  >
                     <span>{{ arg.event.title }}</span>
                   </div>
                 </template>
@@ -179,7 +206,27 @@ actions.init(route);
       id="modalJustificarFalta"
       title="Justificar Ausência"
       style="display: none"
-      ><modal-justificar-falta />
+    >
+      <modal-justificar-falta
+        :dadosAusencia="state.dataAusencia"
+        :tiposDeFalta="tipoFaltaModal"
+        :pontos="pontosDiaSelecionado"
+        :horaChegada="pontosDiaSelecionado.HORA_CHEGADA"
+        :horaAlmocoInicial="pontosDiaSelecionado.HORA_ALMOCO_INICIAL"
+        :horaAlmocoFinal="pontosDiaSelecionado.HORA_ALMOCO_FINAL"
+        :horaSaida="pontosDiaSelecionado.HORA_SAIDA"
+        :dadosDocumento="state.documentoFalta"
+        :funcionario="{
+          cod_funcionario: state.codFuncionario,
+          nome: state.nome,
+          cpf: state.cpf,
+          cargo: state.cargo,
+          loginFuncionario: state.loginFuncionario,
+        }"
+        :opened="state.modalJustificarFaltaOpened"
+        @atualizarDados="actions.atualizarTela()"
+        @fecharModal="actions.fecharModal()"
+      />
     </div>
 
     <div id="pnCodigoTela">folhaPontoDetalhes</div>
@@ -199,34 +246,21 @@ actions.init(route);
 
 <style>
 .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
-  height: 150px;
+  height: 145px;
+}
+
+.fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events {
+  margin-top: -5px;
+  padding-left: 10px;
 }
 
 .fc-daygrid-event-harness {
-  width: 100px;
-  margin-left: 15px;
+  width: 115px;
+  margin-left: 5px;
 }
 
-.fc-toolbar-title {
-  margin-left: 25px !important;
-  margin-top: 10px !important;
-}
-
-.fc-prev-button.fc-button.fc-button-primary {
-  border: none;
-  margin-right: 5px;
-  background-color: #6495ed;
-}
-
-.fc-next-button.fc-button.fc-button-primary {
-  border: none;
-  margin-right: 5px;
-  background-color: #6495ed;
-}
-
-.fc-today-button.fc-button.fc-button-primary {
-  border: none;
-  background-color: #6495ed;
+.fc-toolbar-chunk {
+  display: none;
 }
 </style>
 
@@ -236,61 +270,62 @@ actions.init(route);
   margin-left: 20px;
 }
 .btnSearch {
-  margin-left: 10px;
+  margin-left: 50px;
   margin-top: 10px;
 }
 
-.funcionarios__lista {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  max-height: 650px;
-}
-
-.funcionario__card {
-  width: 522px;
-  height: 150px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 12px;
-  cursor: pointer;
-  position: relative;
-}
-
-.funcionario__card__faltas {
-  width: 520px;
-  height: 150px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
 .funcionario__card__usuario {
-  padding-left: 12px;
+  /* border: 1px solid rgb(111, 111, 111); */
+  padding: 5px;
   display: flex;
   gap: 12px;
 }
 
 .funcionario__avatar {
-  margin-top: 30px;
-  margin-left: 20px;
   cursor: pointer;
   opacity: 1;
   border: 1px solid #0000002f;
 }
 
-.funcionario__card__faltas__info {
-  font-size: 15px;
-  white-space: nowrap;
-  color: #5a6069;
-}
-.funcionario__card__infos {
-  margin-left: 20px;
-  font-size: 15px;
-  color: #5a6069;
+.funcionario__card__faltas {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
+.funcionario__card__faltas__info {
+  width: 18%;
+  font-size: 15px;
+  white-space: nowrap;
+  color: #8c8c8c;
+  line-height: 2;
+  padding-left: 10px;
+  margin-right: 12px;
+}
+
+.div__funcionario__card__infos {
+  /* border: 1px solid rgb(111, 111, 111); */
+  padding: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 15px;
+}
+
+.funcionario__card__infos {
+  white-space: nowrap;
+  margin-right: 12px;
+  width: 45%;
+  font-size: 15px;
+  color: #a1a1a1;
+  line-height: 2;
+}
+
+.funcionario__card {
+  margin-top: 10px;
+  padding-left: 20px;
+}
 .funcionario__card__nome {
   font-size: 15px;
   color: #2a2a2a;
@@ -305,15 +340,6 @@ actions.init(route);
   overflow: hidden;
   text-overflow: ellipsis;
   color: #5a6069;
-}
-
-.nomeCargo {
-  margin-top: 30px;
-  margin-left: 20px;
-}
-
-.infoPontosFunc {
-  margin-top: -15px;
 }
 
 .calendario__horario {

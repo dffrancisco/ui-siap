@@ -93,23 +93,18 @@ export const actions = {
     }
   },
 
-  async getResumoPontosFuncionario() {},
-
   getFotoFuncionarioURL(cpf: string) {
     if (!cpf) {
       return "";
     }
 
     const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
-    return `http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
+    return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
   },
 
-  onClickFuncionario(nome: string, cargo: string, codFuncionario: number, cpf: string, mes: number, ano: number) {
+  onClickFuncionario(codFuncionario: number, mes: number, ano: number) {
     let query = {
-      nome: nome,
-      cargo: cargo,
       cod_funcionario: codFuncionario,
-      cpf: cpf,
       mes: mes,
       ano: ano,
     };
