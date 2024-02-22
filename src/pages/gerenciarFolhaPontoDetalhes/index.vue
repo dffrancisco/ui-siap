@@ -83,7 +83,7 @@ actions.init(route);
                       color="primary"
                       size="small"
                       class="btnPrint"
-                      @click.prevent="actions.imprimirFolhaPontoTodosFuncionarios()"
+                      @click.prevent="actions.imprimirFolhaPonto()"
                     >
                       <v-icon>mdi-printer</v-icon>
                     </v-btn>
@@ -287,7 +287,7 @@ actions.init(route);
 
 <style scoped>
 .btnPrint {
-  margin-top: 15px;
+  margin-top: 5px;
   margin-left: 20px;
 }
 .btnSearch {

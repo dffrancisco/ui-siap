@@ -258,15 +258,6 @@ export const actions = {
       onClose: () => {
         state.modalImprimirFolhaPontoOpened = false;
       },
-      buttons: {
-        Imprimir: {
-          html: "Imprimir",
-          class: "btnImprimir",
-          click() {
-            console.log("teste");
-          },
-        },
-      },
     });
   },
 
@@ -303,7 +294,7 @@ export const actions = {
     state.loadingCalendar = false;
   },
 
-  imprimirFolhaPontoTodosFuncionarios() {
+  imprimirFolhaPonto() {
     state.modalImprimirFolhaPonto.open();
   },
 };

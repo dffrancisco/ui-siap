@@ -208,7 +208,7 @@ onMounted(async () => {
 
 <style scoped>
 .btnPrint {
-  margin-top: 15px;
+  margin-top: 5px;
   margin-left: 20px;
 }
 .funcionarios {

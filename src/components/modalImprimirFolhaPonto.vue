@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import globalState from "@/store/globalState";
-import printJS from "print-js";
 import { defineProps } from "vue";
 
 const props = defineProps({
@@ -12,8 +11,6 @@ const props = defineProps({
   },
 });
 
-// const emit = defineEmits(["documentoASerImpresso"]);
-
 function formatarDataAdmissao(dataString: string): string {
   const data = new Date(dataString);
   const dia = data.getDate().toString().padStart(2, "0");
@@ -22,17 +19,8 @@ function formatarDataAdmissao(dataString: string): string {
   return `${dia}/${mes}/${ano}`;
 }
 
-function imprimirFolhaDePonto() {
-  const folhaPonto = criarHTMLParaPDF();
-  printJS({
-    documentTitle: "Folha de Ponto",
-    printable: folhaPonto,
-    type: "html",
-  });
-}
-
 function criarHTMLParaPDF() {
-  let html = "";
+  var html = "";
   let cabecalho = `
   <div class="cabecalho">
     <table
@@ -240,35 +228,35 @@ function criarHTMLParaPDF() {
 
   return html;
 }
+
+function imprimirFolhaDePonto() {
+  const folhaPonto = criarHTMLParaPDF();
+}
 </script>
 
 <template>
-  <!-- <v-btn
-    color="primary"
-    class="btnPrint"
-    @click="imprimirFolhaDePonto()"
-  >
-    <v-icon>mdi-printer-settings</v-icon>
-    Imprimir
-  </v-btn> -->
-
-  <!-- <div>{{ props.dadosParaImpressao }}</div> -->
-
   <div
     id="folhaPonto"
     v-html="criarHTMLParaPDF()"
   >
   </div>
-  <hr />
+
+  <v-btn
+    color="primary"
+    class="btnImprimir"
+    @click="imprimirFolhaDePonto()"
+  >
+    <v-icon>mdi-printer-settings</v-icon>
+    Imprimir
+  </v-btn>
 </template>
 
 <style>
-.xModal-blue .xModal-modal-foot {
-  height: auto !important;
-}
-
-.btnPrint {
-  margin-left: 850px;
+.btnImprimir {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  margin-right: 10px;
   margin-bottom: 10px;
 }
 
@@ -289,11 +277,11 @@ function criarHTMLParaPDF() {
 }
 
 .tabela tr:nth-child(even) {
-  background-color: #f2f2f2; /* Cor de fundo para linhas pares */
+  background-color: #d9dce590; /* Cor de fundo para linhas pares */
 }
 
 .tabela tr:hover {
-  background-color: #ddd; /* Cor de fundo ao passar o mouse */
+  background-color: #dddddd;
 }
 
 .infoFunc {

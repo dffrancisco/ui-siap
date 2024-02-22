@@ -159,14 +159,6 @@ export const actions = {
       onClose: () => {
         state.modalImprimirFolhaPontoOpened = false;
       },
-      buttons: {
-        Imprimir: {
-          html: "Imprimir",
-          click() {
-            console.log("teste");
-          },
-        },
-      },
     });
   },
 
