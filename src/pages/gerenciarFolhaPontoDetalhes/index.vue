@@ -13,7 +13,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 //@ts-ignore
 import interactionPlugin from "@fullcalendar/interaction";
 import ModalJustificarFalta from "./components/modalJustificarFalta.vue";
-
+import modalImprimirFolhaPonto from "@/components/modalImprimirFolhaPonto.vue";
 const route = useRoute();
 
 actions.init(route);
@@ -83,6 +83,7 @@ actions.init(route);
                       color="primary"
                       size="small"
                       class="btnPrint"
+                      @click.prevent="actions.imprimirFolhaPontoTodosFuncionarios()"
                     >
                       <v-icon>mdi-printer</v-icon>
                     </v-btn>
@@ -229,6 +230,26 @@ actions.init(route);
       />
     </div>
 
+    <div
+      id="modalImprimirPontos"
+      title="Folha de Ponto"
+      style="display: none"
+    >
+      <modal-imprimir-folha-ponto
+        :dadosParaImpressaoIndividual="{
+          COD_FUNCIONARIO: state.codFuncionario,
+          CPF: state.cpf,
+          NOME_COMP: state.nome,
+          LOGIN: state.loginFuncionario,
+          CARGO: state.cargo,
+          ADMISSAO: state.dataAdmissao,
+          faltas: state.pontos,
+          mes: state.mes,
+          ano: state.ano,
+        }"
+      />
+    </div>
+
     <div id="pnCodigoTela">folhaPontoDetalhes</div>
     <v-overlay
       :model-value="state.loading || state.loadingCalendar"
@@ -266,12 +287,12 @@ actions.init(route);
 
 <style scoped>
 .btnPrint {
-  margin-top: 10px;
+  margin-top: 15px;
   margin-left: 20px;
 }
 .btnSearch {
   margin-left: 50px;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .funcionario__card__usuario {

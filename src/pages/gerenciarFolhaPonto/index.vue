@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { actions, state, funcionariosOrdenados, meses, anos, totalizador } from "./gerenciarFolhaPonto";
-
+import modalImprimirFolhaPonto from "@/components/modalImprimirFolhaPonto.vue";
 onMounted(async () => {
   actions.init(state.selectedFuncionario, state.mes, state.ano);
 });
@@ -64,7 +64,7 @@ onMounted(async () => {
                     color="primary"
                     size="small"
                     class="btnPrint"
-                    @click="actions.imprimirFolhaPontoTodosFuncionarios"
+                    @click.prevent="actions.imprimirFolhaPontoTodosFuncionarios()"
                   >
                     <v-icon>mdi-printer</v-icon>
                   </v-btn>
@@ -176,6 +176,21 @@ onMounted(async () => {
         </v-col>
       </v-row>
     </div>
+
+    <div
+      id="modalImprimirPontos"
+      title="Folha de Ponto"
+      style="display: none"
+    >
+      <modal-imprimir-folha-ponto
+        :dadosParaImpressao="{
+          dadosFuncionarios: state.dadosParaModalImpressao,
+          mes: state.mes,
+          ano: state.ano,
+        }"
+      />
+    </div>
+
     <div id="pnCodigoTela">folhaPonto</div>
     <v-overlay
       :model-value="state.loading"
@@ -193,7 +208,7 @@ onMounted(async () => {
 
 <style scoped>
 .btnPrint {
-  margin-top: 10px;
+  margin-top: 15px;
   margin-left: 20px;
 }
 .funcionarios {
@@ -292,6 +307,6 @@ onMounted(async () => {
 }
 
 .btnSearch {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 </style>

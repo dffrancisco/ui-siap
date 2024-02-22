@@ -26,6 +26,7 @@ export const state = reactive({
   cargo: <string | null>null,
   loginFuncionario: <string | null>null,
   codFuncionario: 0,
+  dataAdmissao: null,
   dadosFuncionario: {},
   cpf: <string | null>null,
   QTD_A_JUSTIFICAR: 0,
@@ -40,6 +41,8 @@ export const state = reactive({
   dataAusencia: <any>new Date(),
   diaSelecionado: undefined,
   documentoFalta: <iDadosDocumento[]>[],
+  modalImprimirFolhaPonto: <iModalCreate>(<unknown>null),
+  modalImprimirFolhaPontoOpened: false,
 });
 
 export const actions = {
@@ -82,6 +85,7 @@ export const actions = {
       state.cpf = state.dadosFuncionario[0].CPF;
       state.cargo = state.dadosFuncionario[0].CARGO;
       state.loginFuncionario = state.dadosFuncionario[0].LOGIN;
+      state.dataAdmissao = state.dadosFuncionario[0].DATA_ADMISSAO;
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -242,6 +246,28 @@ export const actions = {
         state.modalJustificarFaltaOpened = false;
       },
     });
+
+    state.modalImprimirFolhaPonto = new xModal.create({
+      height: 800,
+      width: 1000,
+      el: "#modalImprimirPontos",
+      theme: "xModal-blue",
+      onOpen: () => {
+        state.modalImprimirFolhaPontoOpened = true;
+      },
+      onClose: () => {
+        state.modalImprimirFolhaPontoOpened = false;
+      },
+      buttons: {
+        Imprimir: {
+          html: "Imprimir",
+          class: "btnImprimir",
+          click() {
+            console.log("teste");
+          },
+        },
+      },
+    });
   },
 
   init(route: RouteLocationNormalizedLoaded) {
@@ -276,6 +302,10 @@ export const actions = {
 
     state.loadingCalendar = false;
   },
+
+  imprimirFolhaPontoTodosFuncionarios() {
+    state.modalImprimirFolhaPonto.open();
+  },
 };
 
 export const pontosCalendario = computed(() => {
@@ -286,9 +316,6 @@ export const pontosCalendario = computed(() => {
     let dataFim = new Date(ponto.DATA);
 
     if (ponto.HORA_CHEGADA || ponto.HORA_ALMOCO_INICIAL || ponto.HORA_ALMOCO_FINAL || ponto.HORA_SAIDA) {
-      // let jaFoiJustificado = false;
-      // let jaFoiJustificado = ponto.JUSTIFICATIVA == undefined ? false : true;
-
       let jaFoiJustificado = ponto.HORA_CHEGADA == null && ponto.JUSTIFICATIVA == "Ponto Incompleto";
       let horaFormatada = actions.formatarHora(ponto.HORA_CHEGADA);
       let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado);
@@ -346,12 +373,6 @@ export const pontosCalendario = computed(() => {
 
       eventos.push(eventoFormatado);
     }
-
-    // if (ponto.JUSTIFICATIVA == "Ponto Incompleto") {
-    //   let eventoFormatado = actions.formatarEvento("Justificado", dataInicio, dataFim, jaFoiJustificado, "#FF6347");
-
-    //   eventos.push(eventoFormatado);
-    // }
   }
 
   return eventos;
