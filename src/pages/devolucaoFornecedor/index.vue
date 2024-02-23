@@ -1,3 +1,52 @@
+<script setup lang="ts">
+import { nextTick, onUnmounted } from "vue";
+import { state, actions } from "./devolucaoFornecedor";
+import { useEventListener } from "@vueuse/core";
+
+import ModalLocalizarDevolucao from "./components/ModalLocalizarDevolucao.vue";
+import utils from "@/ts/utils";
+
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (!state.modalLocalizarDevolucoesOpened) {
+    if (event.key === "F1") {
+      const button = document.getElementById("btnLocalizarDevolucao");
+      button.click();
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
+  if (event.key === "F2") {
+    const button = document.getElementById("meuBotao");
+    button.click();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  if (event.key === "F3") {
+    const button = document.getElementById("meuBotao");
+    button.click();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  if (event.key === "F6") {
+    const button = document.getElementById("meuBotao");
+    button.click();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
+
+nextTick(async () => {
+  actions.init();
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
+});
+</script>
+
 <template>
   <v-container>
     <v-card
@@ -6,7 +55,13 @@
       width="1167px"
     >
       <div class="btns">
-        <v-btn color="#3680AB"> Localizar devolução (F1) </v-btn>
+        <v-btn
+          id="btnLocalizarDevolucao"
+          color="#3680AB"
+          @click="actions.openModalLocalizarDevolucoes"
+        >
+          Localizar devolução (F1)
+        </v-btn>
         <v-btn color="#3680AB"> Nova devolução (F2) </v-btn>
       </div>
 
@@ -19,11 +74,11 @@
               ><v-row>
                 <v-col cols="3">
                   <label>CNPJ: </label>
-                  <p>-</p>
+                  <p>{{ state.dbDevolucaoSelecionado.CGC_FORNECEDOR || "-" }}</p>
                 </v-col>
                 <v-col>
                   <label>Fornecedor: </label>
-                  <p>-</p>
+                  <p>{{ state.dbDevolucaoSelecionado.RAZAO_SOCIAL || "-" }}</p>
                 </v-col>
               </v-row>
             </div>
@@ -75,19 +130,19 @@
           <v-row>
             <v-col cols="2">
               <label>N° Nota:</label>
-              <p>-</p>
+              <p>{{ state.dbDevolucaoSelecionado.NUM_NOTA_DEVOLUCAO || "-" }}</p>
             </v-col>
             <v-col cols="6">
               <label>Chave:</label>
-              <p>-</p>
+              <p>{{ utils.formatarChaveNF(state.dbDevolucaoSelecionado.CHAVE_DEVOLUCAO) }}</p>
             </v-col>
             <v-col cols="2">
               <label>Data:</label>
-              <p>-</p>
+              <p>{{ utils.dataBrasil(state.dbDevolucaoSelecionado.DATA) || "-" }}</p>
             </v-col>
             <v-col>
               <label>Valor:</label>
-              <p>-</p>
+              <p>{{ utils.formatValor(state.dbDevolucaoSelecionado.VALOR) || "-" }}</p>
             </v-col>
           </v-row>
         </div>
@@ -101,12 +156,17 @@
         <h2 class="pb-2 font-weight-regular">Itens</h2>
         <div class="cards">
           <v-card
-            v-for="i in 6"
+            v-for="i in 1"
             :key="i"
             class="card"
           >
             <button>
-              <v-icon size="25px"> mdi-plus-circle-outline </v-icon>
+              <v-icon
+                size="25px"
+                disabled
+              >
+                mdi-plus-circle-outline
+              </v-icon>
             </button>
             <p> NOVO ITEM (F3) </p>
           </v-card>
@@ -128,10 +188,23 @@
             >Prévia</v-btn
           >
         </div>
-        <v-btn color="#3680AB"> Finalizar (F4) </v-btn>
+        <v-btn color="#3680AB"> Finalizar (F6) </v-btn>
+      </div>
+      <div
+        id="modalLocalizarDevolucoes"
+        style="display: none"
+        title="Selecionar Devolução"
+      >
+        <ModalLocalizarDevolucao
+          @devolucaoSelecionado="actions.selecionarDevolucao"
+          @closeModalLocalizarDevolucoes="actions.closeModalLocalizarDevolucoes"
+          :modalLocalizarDevolucoesOpened="state.modalLocalizarDevolucoesOpened"
+        ></ModalLocalizarDevolucao>
       </div>
     </v-card>
   </v-container>
+
+  <div id="pnCodigoTela">DEVOLUCAO_FORNECEDOR</div>
 </template>
 
 <style scoped>
