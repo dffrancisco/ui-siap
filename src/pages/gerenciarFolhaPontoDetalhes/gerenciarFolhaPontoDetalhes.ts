@@ -1,8 +1,9 @@
-import { computed, nextTick, reactive, ref, watch } from "vue";
+import { computed, nextTick, reactive, ref } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import {
   iCodFunc,
   iDadosDocumento,
+  iGetDadosParaImpressaoIndividual,
   iParam,
   iParamComCPF,
   iParamDocumentoAusencia,
@@ -43,6 +44,7 @@ export const state = reactive({
   documentoFalta: <iDadosDocumento[]>[],
   modalImprimirFolhaPonto: <iModalCreate>(<unknown>null),
   modalImprimirFolhaPontoOpened: false,
+  dadosParaModalImpressao: {},
 });
 
 export const actions = {
@@ -295,7 +297,25 @@ export const actions = {
   },
 
   imprimirFolhaPonto() {
+    actions.dadosParaImpressao(state.mes, state.ano);
     state.modalImprimirFolhaPonto.open();
+  },
+
+  async dadosParaImpressao(mes: number, ano: number) {
+    const param: iGetDadosParaImpressaoIndividual = {
+      cod_funcionario: state.codFuncionario,
+      mes: mes,
+      ano: ano,
+    };
+
+    try {
+      state.dadosParaModalImpressao = await gerenciarFolhaPontoDetalhesService.getDadosParaImpressao(param);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Ocorreu um erro ao buscar os dados para impressão",
+      });
+    }
   },
 };
 

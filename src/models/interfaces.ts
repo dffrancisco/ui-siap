@@ -13,6 +13,7 @@ export interface iEmpresa {
   RAZAO_SOCIAL: string;
   NOME_FANTAZIA: string;
   ENDERECO: string;
+  UF: string;
   // COD_CIDADE: number;
   TELEFONE1: string;
   TELEFONE2: string;

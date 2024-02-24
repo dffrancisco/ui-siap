@@ -3,7 +3,6 @@ import { iFuncionario, iGetMesEAno, iTotalizador, iGetDadosParaImpressao } from 
 import gerenciarFolhaPontoService from "./services/gerenciarFolhaPonto.service";
 import Swal from "sweetalert2";
 import router from "@/router";
-import globalState from "@/store/globalState";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 
 export const state = reactive({

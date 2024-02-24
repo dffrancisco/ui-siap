@@ -32,8 +32,6 @@ var intervalId;
 var cpf;
 
 function gerarQrCode() {
-  console.log("gerandoqrcode");
-
   const qrCode = document.getElementById("qr-generate");
   qrCode.style.display = "";
 
@@ -47,9 +45,6 @@ function gerarQrCode() {
   const chave = gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo);
 
   state.qrData = `http://192.168.100.202/siap+/funcionario_doc_imagem/?chave=${chave}`;
-
-  console.log(state.qrData);
-  console.log(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo);
 
   setTimeout(() => {
     intervalId = setInterval(verificarArquivos, 2000);
@@ -248,7 +243,6 @@ async function setFalta(dataDocArquivo, id_documento) {
   let justificativa = props.dadosParaQrCode.justificativaValor;
   let cid = props.dadosParaQrCode.cid;
   let tipoFalta = props.dadosParaQrCode.tipoFalta;
-  console.log(cod_funcionario, falta, justificativa, cid, tipoFalta, dataDocArquivo, id_documento);
 
   const param: iRegistrarFalta = {
     cod_funcionario: cod_funcionario,

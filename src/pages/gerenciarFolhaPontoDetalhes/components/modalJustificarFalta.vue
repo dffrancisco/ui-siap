@@ -335,21 +335,12 @@ async function deletarArquivo(file_name) {
 
   try {
     await gerenciarFolhaPontoDetalhesService.deletarArquivo(param);
-    Swal.fire({
-      icon: "success",
-      title: "Ausência deletada com sucesso!",
-      showConfirmButton: false,
-      timer: 2500,
-    });
   } catch (error) {
     Swal.fire({
       icon: "error",
       text: "Ocorreu um erro ao deletar o arquivo.",
     });
   }
-
-  emit("fecharModal");
-  emit("atualizarDados");
   state.loading = false;
   limparInputs();
 }
@@ -369,13 +360,16 @@ function visualizarDocumento() {
 
   if (file_name.toLowerCase().endsWith(".pdf")) {
     window.open(`${urlPdf}`, "_blank");
-  } else if (file_name.toLowerCase().match(/\.(jpeg|jpg|gif|png)$/) != null) {
+  } else if (file_name.toLowerCase().match(/\.(jpeg|jpg|pdf|png)$/) != null) {
     let img = new Image();
     img.src = urlPdf;
     let newTab = window.open("");
     newTab.document.write(img.outerHTML);
   } else {
-    console.error("Tipo de arquivo não suportado");
+    Swal.fire({
+      icon: "error",
+      text: "Tipo de arquivo não suportado.",
+    });
   }
 }
 

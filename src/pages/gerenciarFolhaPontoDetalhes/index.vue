@@ -30,8 +30,6 @@ actions.init(route);
       <v-row>
         <v-col cols="12">
           <div>
-            <!-- <strong>Detalhes dos pontos</strong> -->
-
             <v-card class="pa-5 cardFolhaPontoDetalhes">
               <div class="mesAnoEBotoes ml-2">
                 <v-row>
@@ -71,21 +69,11 @@ actions.init(route);
                   </v-col>
                   <v-col cols="3"
                     ><v-btn
-                      icon
                       color="primary"
-                      size="small"
-                      class="btnSearch"
-                      @click="actions.getDadosPontos()"
-                    >
-                      <v-icon> mdi-magnify</v-icon> </v-btn
-                    ><v-btn
-                      icon
-                      color="primary"
-                      size="small"
                       class="btnPrint"
                       @click.prevent="actions.imprimirFolhaPonto()"
                     >
-                      <v-icon>mdi-printer</v-icon>
+                      <v-icon>mdi-printer</v-icon> Imprimir Folha de Ponto
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -236,14 +224,8 @@ actions.init(route);
       style="display: none"
     >
       <modal-imprimir-folha-ponto
-        :dadosParaImpressaoIndividual="{
-          COD_FUNCIONARIO: state.codFuncionario,
-          CPF: state.cpf,
-          NOME_COMP: state.nome,
-          LOGIN: state.loginFuncionario,
-          CARGO: state.cargo,
-          ADMISSAO: state.dataAdmissao,
-          faltas: state.pontos,
+        :dadosParaImpressao="{
+          dadosFuncionarios: state.dadosParaModalImpressao,
           mes: state.mes,
           ano: state.ano,
         }"
@@ -287,7 +269,8 @@ actions.init(route);
 
 <style scoped>
 .btnPrint {
-  margin-top: 5px;
+  margin-top: 15px;
+  width: auto;
   margin-left: 20px;
 }
 .btnSearch {
@@ -296,7 +279,6 @@ actions.init(route);
 }
 
 .funcionario__card__usuario {
-  /* border: 1px solid rgb(111, 111, 111); */
   padding: 5px;
   display: flex;
   gap: 12px;

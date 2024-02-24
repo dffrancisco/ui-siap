@@ -6,6 +6,7 @@ import {
   iDeletarDocumento,
   iDeletarFalta,
   iFaltaFeriadoFolga,
+  iGetDadosParaImpressaoIndividual,
   iParam,
   iParamComCPF,
   iParamDocumentoAusencia,
@@ -25,6 +26,7 @@ type iDeleteDocumento = (param: iDeletarDocumento) => Promise<object>;
 type iDeleteArquivo = (param: iDeletarArquivo) => Promise<object>;
 type iInserirRegistroAusencia = (param: iRegistrarDocumentoAusencia) => Promise<object>;
 type iGetDocumentoAusencia = (param: iParamDocumentoAusencia) => Promise<iDadosDocumento[]>;
+type iGetDadosParaImpressaoPDF = (param: iGetDadosParaImpressaoIndividual) => Promise<object>;
 
 const getDadosFuncionario: iGetDadosFuncionario = async (param) => {
   let { data } = await axios.post(caminho, {
@@ -190,6 +192,15 @@ const getDocumentoAusencia: iGetDocumentoAusencia = async (param) => {
   return data;
 };
 
+const getDadosParaImpressao: iGetDadosParaImpressaoPDF = async (param) => {
+  let { data } = await axios.post(caminho, {
+    call: "getDadosParaImpressao",
+    param,
+  });
+
+  return data;
+};
+
 export default {
   getDadosFuncionario,
   getPontos,
@@ -205,4 +216,5 @@ export default {
   uploadPDF,
   verificarArquivos,
   moverArquivoTemp,
+  getDadosParaImpressao,
 };
