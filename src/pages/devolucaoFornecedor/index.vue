@@ -4,37 +4,40 @@ import { state, actions } from "./devolucaoFornecedor";
 import { useEventListener } from "@vueuse/core";
 
 import ModalLocalizarDevolucao from "./components/ModalLocalizarDevolucao.vue";
+import ModalSelecionarFornecedor from "./components/ModalSelecionarFornecedor.vue";
+
 import utils from "@/ts/utils";
+import moment from "moment";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
-  if (!state.modalLocalizarDevolucoesOpened) {
+  if (!state.modalOpened) {
     if (event.key === "F1") {
       const button = document.getElementById("btnLocalizarDevolucao");
       button.click();
       event.preventDefault();
       event.stopPropagation();
     }
-  }
 
-  if (event.key === "F2") {
-    const button = document.getElementById("meuBotao");
-    button.click();
-    event.preventDefault();
-    event.stopPropagation();
-  }
+    if (event.key === "F2") {
+      const button = document.getElementById("btnSelecionarFornecedor");
+      button.click();
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
-  if (event.key === "F3") {
-    const button = document.getElementById("meuBotao");
-    button.click();
-    event.preventDefault();
-    event.stopPropagation();
-  }
+    if (event.key === "F3") {
+      const button = document.getElementById("meuBotao");
+      button.click();
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
-  if (event.key === "F6") {
-    const button = document.getElementById("meuBotao");
-    button.click();
-    event.preventDefault();
-    event.stopPropagation();
+    if (event.key === "F6") {
+      const button = document.getElementById("meuBotao");
+      button.click();
+      event.preventDefault();
+      event.stopPropagation();
+    }
   }
 });
 
@@ -62,7 +65,13 @@ onUnmounted(() => {
         >
           Localizar devolução (F1)
         </v-btn>
-        <v-btn color="#3680AB"> Nova devolução (F2) </v-btn>
+        <v-btn
+          id="btnSelecionarFornecedor"
+          color="#3680AB"
+          @click="actions.openModalSelecionarFornecedor"
+        >
+          Nova devolução (F2)
+        </v-btn>
       </div>
 
       <!-- componente dados do fornecedor /-->
@@ -74,11 +83,11 @@ onUnmounted(() => {
               ><v-row>
                 <v-col cols="3">
                   <label>CNPJ: </label>
-                  <p>{{ state.dbDevolucaoSelecionado.CGC_FORNECEDOR || "-" }}</p>
+                  <p>{{ state.dbFornecedor.CGC_FORNECEDOR || "-" }}</p>
                 </v-col>
                 <v-col>
                   <label>Fornecedor: </label>
-                  <p>{{ state.dbDevolucaoSelecionado.RAZAO_SOCIAL || "-" }}</p>
+                  <p>{{ state.dbFornecedor.RAZAO_SOCIAL || "-" }}</p>
                 </v-col>
               </v-row>
             </div>
@@ -110,12 +119,15 @@ onUnmounted(() => {
               <p>-</p>
             </v-col>
             <v-col>
-              <button disabled>
+              <button
+                :disabled="state.disabledBtnAdicionarTransportadora"
+                v-if="state.dbDevolucao.STATUS != 1"
+              >
                 <v-icon
                   size="25px"
                   color="#2d9cdb"
                 >
-                  mdi-plus-circle-outline
+                  {{ state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR ? "mdi-pencil" : "mdi-plus-circle-outline" }}
                 </v-icon>
               </button>
             </v-col>
@@ -130,19 +142,19 @@ onUnmounted(() => {
           <v-row>
             <v-col cols="2">
               <label>N° Nota:</label>
-              <p>{{ state.dbDevolucaoSelecionado.NUM_NOTA_DEVOLUCAO || "-" }}</p>
+              <p>{{ state.dbDevolucao.NUM_NOTA_DEVOLUCAO || "-" }}</p>
             </v-col>
             <v-col cols="6">
               <label>Chave:</label>
-              <p>{{ utils.formatarChaveNF(state.dbDevolucaoSelecionado.CHAVE_DEVOLUCAO) }}</p>
+              <p>{{ utils.formatarChaveNF(state.dbDevolucao.CHAVE_DEVOLUCAO) }}</p>
             </v-col>
             <v-col cols="2">
               <label>Data:</label>
-              <p>{{ utils.dataBrasil(state.dbDevolucaoSelecionado.DATA) || "-" }}</p>
+              <p>{{ utils.dataBrasil(state.dbDevolucao.DATA) || "-" }}</p>
             </v-col>
             <v-col>
               <label>Valor:</label>
-              <p>{{ utils.formatValor(state.dbDevolucaoSelecionado.VALOR) || "-" }}</p>
+              <p>{{ utils.formatValor(state.dbDevolucao.VALOR) || "-" }}</p>
             </v-col>
           </v-row>
         </div>
@@ -156,20 +168,17 @@ onUnmounted(() => {
         <h2 class="pb-2 font-weight-regular">Itens</h2>
         <div class="cards">
           <v-card
+            v-if="state.dbDevolucao.STATUS != 1"
             v-for="i in 1"
             :key="i"
             class="card"
           >
-            <button>
-              <v-icon
-                size="25px"
-                disabled
-              >
-                mdi-plus-circle-outline
-              </v-icon>
+            <button :disabled="state.disabledBtnAdicionarItens">
+              <v-icon size="25px"> mdi-plus-circle-outline </v-icon>
             </button>
             <p> NOVO ITEM (F3) </p>
           </v-card>
+          <v-card></v-card>
         </div>
       </div>
 
@@ -177,19 +186,50 @@ onUnmounted(() => {
         <div class="d-flex flex-wrap ga-2">
           <v-btn
             color="#3680AB"
+            v-if="state.dbDevolucao.STATUS != 1"
             title="DELETAR DEVOLUÇÃO"
+            :disabled="state.disabledBtnDelete"
             ><v-icon size="24px">mdi-delete</v-icon>
           </v-btn>
-          <v-btn color="#3680AB">
+          <v-btn
+            color="#3680AB"
+            :disabled="state.disabledBtnPrint"
+          >
             <v-icon
               size="24px"
               class="mr-2"
               >mdi-printer</v-icon
-            >Prévia</v-btn
+            >{{ state.dbDevolucao.STATUS == 1 ? "Imprimir" : "Prévia" }}</v-btn
           >
         </div>
-        <v-btn color="#3680AB"> Finalizar (F6) </v-btn>
+        <span
+          v-if="state.dbDevolucao.STATUS == 1"
+          class="font-weight-medium"
+          >Devolução finalizada por: {{ state.dbDevolucao.LOGIN }} -
+          {{ utils.dataBrasil(state.dbDevolucao.DATA) }} -
+          {{ moment(state.dbDevolucao.HORA_FINALIZOU).format("HH:mm") }}
+        </span>
+        <v-btn
+          color="#3680AB"
+          :disabled="state.disabledBtnFinalizar"
+        >
+          Finalizar (F6)
+        </v-btn>
       </div>
+
+      <v-overlay
+        :model-value="state.loading"
+        class="align-center justify-center"
+        persistent
+      >
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="64"
+        >
+        </v-progress-circular>
+      </v-overlay>
+
       <div
         id="modalLocalizarDevolucoes"
         style="display: none"
@@ -198,8 +238,20 @@ onUnmounted(() => {
         <ModalLocalizarDevolucao
           @devolucaoSelecionado="actions.selecionarDevolucao"
           @closeModalLocalizarDevolucoes="actions.closeModalLocalizarDevolucoes"
-          :modalLocalizarDevolucoesOpened="state.modalLocalizarDevolucoesOpened"
+          :modalOpened="state.modalOpened"
         ></ModalLocalizarDevolucao>
+      </div>
+
+      <div
+        id="modalSelecionarFornecedor"
+        style="display: none"
+        title="Selecionar Fornecedor"
+      >
+        <ModalSelecionarFornecedor
+          @closeModalSelecionarFornecedor="actions.closeModalSelecionarFornecedor"
+          @selecionarFornecedor="actions.fornecedorSelecionado"
+          :modalOpened="state.modalOpened"
+        ></ModalSelecionarFornecedor>
       </div>
     </v-card>
   </v-container>

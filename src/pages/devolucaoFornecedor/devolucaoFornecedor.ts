@@ -1,13 +1,27 @@
 import { reactive } from 'vue'
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal'
 
-import { iDevolucao } from './interfaces'
+import { iDevolucao, iFornecedor } from './interfaces'
+import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
+import Swal from 'sweetalert2';
+
 
 export const state = reactive({
     modalLocalizarDevolucoes: <iModalCreate>{},
-    modalLocalizarDevolucoesOpened: false,
+    modalSelecionarFornecedor: <iModalCreate>{},
 
-    dbDevolucaoSelecionado: <iDevolucao>{},
+    modalOpened: false,
+
+    dbDevolucao: <iDevolucao>{},
+    dbFornecedor: <iFornecedor>{},
+
+    disabledBtnFinalizar: true,
+    disabledBtnDelete: true,
+    disabledBtnPrint: true,
+    disabledBtnAdicionarTransportadora: true,
+    disabledBtnAdicionarItens: true,
+
+    loading: false
 })
 
 export const actions = {
@@ -17,8 +31,17 @@ export const actions = {
             height: 466,
             width: 704,
             theme: "xModal-blue",
-            onOpen: () => { state.modalLocalizarDevolucoesOpened = true },
-            onClose: () => { state.modalLocalizarDevolucoesOpened = false }
+            onOpen: () => { state.modalOpened = true },
+            onClose: () => { state.modalOpened = false }
+        })
+
+        state.modalSelecionarFornecedor = new xModal.create({
+            el: '#modalSelecionarFornecedor',
+            height: 466,
+            width: 704,
+            theme: "xModal-blue",
+            onOpen: () => { state.modalOpened = true },
+            onClose: () => { state.modalOpened = false },
         })
     },
 
@@ -30,14 +53,86 @@ export const actions = {
         state.modalLocalizarDevolucoes.close();
     },
 
-    selecionarDevolucao(devolucao: iDevolucao) {
-        state.dbDevolucaoSelecionado = { ...devolucao }
+    openModalSelecionarFornecedor() {
+        state.modalSelecionarFornecedor.open();
+    },
 
-        state.modalLocalizarDevolucoes.close()
+    closeModalSelecionarFornecedor() {
+        state.modalSelecionarFornecedor.close();
+    },
+
+    habilitarBtns() {
+        state.disabledBtnFinalizar = false
+        state.disabledBtnDelete = false
+        state.disabledBtnPrint = false
+        state.disabledBtnAdicionarTransportadora = false
+        state.disabledBtnAdicionarItens = false
     },
 
     init() {
         actions.criarModais();
+    },
+
+    async selecionarDevolucao(devolucao: iDevolucao) {
+        try {
+            state.loading = true
+
+            let id_devolucao = devolucao.ID_DEVOLUCAO_FORNECEDOR
+
+            let data = await serviceDevolucaoFornecedor.devolucaoSelecionado({ id_devolucao })
+
+            state.dbFornecedor = {
+                ID_FORNECEDOR: null,
+                CGC_FORNECEDOR: data.CGC_FORNECEDOR,
+                RAZAO_SOCIAL: data.RAZAO_SOCIAL,
+            }
+
+            state.dbDevolucao = {
+                ...data
+            }
+
+            actions.habilitarBtns()
+            if (state.dbDevolucao.STATUS == 1) {
+                state.disabledBtnFinalizar = true
+            }
+
+            state.modalLocalizarDevolucoes.close()
+
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao selecionar devolução!",
+            });
+        }
+    },
+
+    async fornecedorSelecionado(fornecedor: iFornecedor) {
+        try {
+            state.loading = true
+
+            let id_fornecedor = fornecedor.ID_FORNECEDOR
+
+            let data = await serviceDevolucaoFornecedor.fornecedorSelecionado({ id_fornecedor })
+
+            state.dbDevolucao = {} as iDevolucao
+
+            state.dbFornecedor = {
+                ...data
+            }
+
+            actions.habilitarBtns()
+            state.modalSelecionarFornecedor.close()
+
+            state.loading = false
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao selecionar fornecedor!",
+            });
+        }
     }
 }
 

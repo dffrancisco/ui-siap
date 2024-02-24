@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { nextTick, reactive, watch, onUnmounted } from "vue";
-import Swal from "sweetalert2";
-
-import { iDevolucao, iParamGetDevolucoes } from "../interfaces";
-import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
-import utils from "@/ts/utils";
 import { useEventListener } from "@vueuse/core";
 
-const emit = defineEmits(["devolucaoSelecionado", "closeModalLocalizarDevolucoes"]);
+import Swal from "sweetalert2";
+
+import { iFornecedor, iParamGetFornecedores } from "../interfaces";
+import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
+
+const emit = defineEmits(["selecionarFornecedor", "closeModalSelecionarFornecedor"]);
 
 const props = defineProps<{
   modalOpened: boolean;
@@ -18,89 +18,78 @@ watch(
   () => props.modalOpened,
   () => {
     if (props.modalOpened) {
-      state.gridDevolucoes.queryOpen({
+      state.gridFornecedores.queryOpen({
         search: "",
       });
 
       state.search = null;
-      state.edtDevolucaoSearch.focus();
+      state.edtFornecedorSearch.focus();
     }
   }
 );
 
 const state = reactive({
-  gridDevolucoes: <ixGridCreate>{},
-  dbDevolucao: <iDevolucao>{},
+  gridFornecedores: <ixGridCreate>{},
+  dbFornecedor: <iFornecedor>{},
 
   search: null,
-  edtDevolucaoSearch: <HTMLInputElement>{},
+  edtFornecedorSearch: <HTMLInputElement>{},
 
   loading: false,
 });
 
 const actions = {
   criarGrids() {
-    state.gridDevolucoes = new xGridV2.create({
-      el: "#gridDevolucoes",
+    state.gridFornecedores = new xGridV2.create({
+      el: "#gridFornecedores",
       height: 272,
       count: true,
       columns: {
-        Fornecedor: { dataField: "RAZAO_SOCIAL", width: "52%" },
-        Status: { dataField: "STATUS", center: true, compare: "colorir" },
-        "N° da nota": { dataField: "NUM_NOTA_DEVOLUCAO", center: true },
-        Valor: { dataField: "VALOR", center: true, render: utils.formatValor },
-      },
-      compare: {
-        colorir: (r) => {
-          if (r.STATUS == 0) {
-            return '<span style="color: red">' + "Em andamento" + "<span>";
-          } else {
-            return '<span style="color: green">' + "Finalizada" + "<span>";
-          }
-        },
+        CNPJ: { dataField: "CGC_FORNECEDOR", width: "22%", center: true },
+        Fornecedor: { dataField: "RAZAO_SOCIAL" },
       },
       query: {
         async execute(rs) {
-          let data = await actions.getDevolucoes({
+          let data = await actions.getFornecedores({
             offset: rs.offset,
             param: rs.param,
           });
-          state.gridDevolucoes.querySourceAdd(data);
+          state.gridFornecedores.querySourceAdd(data);
         },
       },
-      enter: actions.selecionarDevolucao,
-      dblClick: actions.selecionarDevolucao,
+      enter: actions.selecionarFornecedor,
+      dblClick: actions.selecionarFornecedor,
     });
   },
 
-  searchDevolucao() {
-    state.gridDevolucoes.queryOpen({
-      search: state.edtDevolucaoSearch.value.toUpperCase(),
+  searchFornecedor() {
+    state.gridFornecedores.queryOpen({
+      search: state.edtFornecedorSearch.value.toUpperCase(),
     });
   },
 
-  selecionarDevolucao() {
-    const devolucao = state.gridDevolucoes.dataSource();
+  selecionarFornecedor() {
+    const fornecedor = state.gridFornecedores.dataSource();
 
-    if (!devolucao) {
+    if (!fornecedor) {
       Swal.fire({
         icon: "warning",
-        title: "Selecione uma devolução",
+        title: "Selecione um fornecedor",
       });
       return;
     }
 
-    emit("devolucaoSelecionado", devolucao);
+    emit("selecionarFornecedor", fornecedor);
   },
 
-  closeModalLocalizarDevolucoes() {
-    emit("closeModalLocalizarDevolucoes");
+  closeModalSelecionarFornecedor() {
+    emit("closeModalSelecionarFornecedor");
   },
 
-  async getDevolucoes({ offset, param }: iParamGetDevolucoes) {
+  async getFornecedores({ offset, param }: iParamGetFornecedores) {
     try {
       state.loading = true;
-      const data = await serviceDevolucaoFornecedor.getDevolucoes({ offset, param });
+      const data = await serviceDevolucaoFornecedor.getFornecedores({ offset, param });
       state.loading = false;
 
       return data;
@@ -108,7 +97,7 @@ const actions = {
       state.loading = false;
       Swal.fire({
         icon: "error",
-        title: "Erro ao buscar as devoluções",
+        title: "Erro ao buscar os fornecedores",
       });
     }
   },
@@ -117,7 +106,7 @@ const actions = {
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (props.modalOpened) {
     if (event.key === "F1") {
-      state.edtDevolucaoSearch.select();
+      state.edtFornecedorSearch.select();
       event.preventDefault();
       event.stopPropagation();
     }
@@ -127,7 +116,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
 nextTick(async () => {
   actions.criarGrids();
 
-  state.edtDevolucaoSearch = <any>document.getElementById("edtDevolucaoSearch");
+  state.edtFornecedorSearch = <any>document.getElementById("edtFornecedorSearch");
 });
 
 onUnmounted(() => {
@@ -142,12 +131,12 @@ onUnmounted(() => {
         <v-col>
           <input
             type="text"
-            placeholder="Pesquisar pelo n° nota devolução , chave ou fornecedor (F1)"
-            class="searchDevolucao pa-2"
+            placeholder="Pesquisar pelo CNPJ , razão social ou nome fantasia (F1)"
+            class="searchFornecedor pa-2"
             v-model="state.search"
-            id="edtDevolucaoSearch"
-            @keydown.enter="actions.searchDevolucao"
-            @keydown.arrow-down="state.gridDevolucoes.focus(0)"
+            id="edtFornecedorSearch"
+            @keydown.enter="actions.searchFornecedor"
+            @keydown.arrow-down="state.gridFornecedores.focus(0)"
             autocomplete="off"
           />
         </v-col>
@@ -156,7 +145,7 @@ onUnmounted(() => {
             size="small"
             class="btnSearch"
             color="#3680AB"
-            @click="actions.searchDevolucao"
+            @click="actions.searchFornecedor"
           >
             <v-icon size="24px">mdi-magnify</v-icon>
           </v-btn>
@@ -164,17 +153,17 @@ onUnmounted(() => {
       </v-row>
     </div>
 
-    <div id="gridDevolucoes"></div>
+    <div id="gridFornecedores"></div>
 
     <div class="btns">
       <v-btn
         style="color: #3680ab; border: 1px solid #3680ab"
-        @click="actions.closeModalLocalizarDevolucoes"
+        @click="actions.closeModalSelecionarFornecedor"
         >Cancelar</v-btn
       >
       <v-btn
         color="#3680AB"
-        @click="actions.selecionarDevolucao"
+        @click="actions.selecionarFornecedor"
         >Selecionar</v-btn
       >
     </div>
@@ -195,7 +184,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.searchDevolucao {
+.searchFornecedor {
   width: 558px;
   border-radius: 8px;
   border: 2px solid #d9d9d9;
