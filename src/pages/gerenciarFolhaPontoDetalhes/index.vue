@@ -13,7 +13,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 //@ts-ignore
 import interactionPlugin from "@fullcalendar/interaction";
 import ModalJustificarFalta from "./components/modalJustificarFalta.vue";
-
+import modalImprimirFolhaPonto from "@/components/modalImprimirFolhaPonto.vue";
 const route = useRoute();
 
 actions.init(route);
@@ -30,8 +30,6 @@ actions.init(route);
       <v-row>
         <v-col cols="12">
           <div>
-            <!-- <strong>Detalhes dos pontos</strong> -->
-
             <v-card class="pa-5 cardFolhaPontoDetalhes">
               <div class="mesAnoEBotoes ml-2">
                 <v-row>
@@ -57,7 +55,7 @@ actions.init(route);
                       @update:model-value="actions.getDadosPontos"
                     ></v-select>
                   </v-col>
-                  <v-col cols="4">
+                  <v-col cols="3">
                     <v-select
                       label="Ano"
                       class="ml-4"
@@ -74,15 +72,8 @@ actions.init(route);
                       icon
                       color="primary"
                       size="small"
-                      class="btnSearch"
-                      @click="actions.getDadosPontos()"
-                    >
-                      <v-icon> mdi-magnify</v-icon> </v-btn
-                    ><v-btn
-                      icon
-                      color="primary"
-                      size="small"
                       class="btnPrint"
+                      @click.prevent="actions.imprimirFolhaPonto()"
                     >
                       <v-icon>mdi-printer</v-icon>
                     </v-btn>
@@ -179,7 +170,6 @@ actions.init(route);
                   plugins: [dayGridPlugin, interactionPlugin],
                   initialView: 'dayGridMonth',
                   events: pontosCalendario,
-                  // hiddenDays: [0],
                   dateClick: actions.clickModalJustificarAusencia,
                   locale: 'pt-br',
                   eventOrder: 'defId',
@@ -229,6 +219,20 @@ actions.init(route);
       />
     </div>
 
+    <div
+      id="modalImprimirPontos"
+      title="Folha de Ponto"
+      style="display: none"
+    >
+      <modal-imprimir-folha-ponto
+        :dadosParaImpressao="{
+          dadosFuncionarios: state.dadosParaModalImpressao,
+          mes: state.mes,
+          ano: state.ano,
+        }"
+      />
+    </div>
+
     <div id="pnCodigoTela">folhaPontoDetalhes</div>
     <v-overlay
       :model-value="state.loading || state.loadingCalendar"
@@ -266,16 +270,15 @@ actions.init(route);
 
 <style scoped>
 .btnPrint {
-  margin-top: 10px;
-  margin-left: 20px;
+  margin-top: 5px;
+  margin-left: 330px;
 }
 .btnSearch {
   margin-left: 50px;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .funcionario__card__usuario {
-  /* border: 1px solid rgb(111, 111, 111); */
   padding: 5px;
   display: flex;
   gap: 12px;

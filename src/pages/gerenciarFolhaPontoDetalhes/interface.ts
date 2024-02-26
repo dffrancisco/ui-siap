@@ -131,3 +131,9 @@ export interface iDeletarArquivo {
   cpf: string;
   usuario: string;
 }
+
+export interface iGetDadosParaImpressaoIndividual {
+  cod_funcionario: number;
+  mes: number;
+  ano: number;
+}

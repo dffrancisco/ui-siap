@@ -1,8 +1,9 @@
 import { reactive, computed } from "vue";
-import { iFuncionario, iGetMesEAno, iTotalizador } from "./interface";
+import { iFuncionario, iGetMesEAno, iTotalizador, iGetDadosParaImpressao } from "./interface";
 import gerenciarFolhaPontoService from "./services/gerenciarFolhaPonto.service";
 import Swal from "sweetalert2";
 import router from "@/router";
+import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 
 export const state = reactive({
   funcionarios: {},
@@ -10,6 +11,9 @@ export const state = reactive({
   ano: new Date().getFullYear(),
   selectedFuncionario: <number | null>null,
   loading: false,
+  modalImprimirFolhaPonto: <iModalCreate>(<unknown>null),
+  modalImprimirFolhaPontoOpened: false,
+  dadosParaModalImpressao: {},
 });
 
 export const meses = computed(() => [
@@ -93,6 +97,22 @@ export const actions = {
     }
   },
 
+  async dadosParaImpressao(mes: number, ano: number) {
+    const param: iGetDadosParaImpressao = {
+      mes: mes,
+      ano: ano,
+    };
+
+    try {
+      state.dadosParaModalImpressao = await gerenciarFolhaPontoService.getDadosParaImpressao(param);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Ocorreu um erro ao buscar os dados para impressão",
+      });
+    }
+  },
+
   getFotoFuncionarioURL(cpf: string) {
     if (!cpf) {
       return "";
@@ -119,10 +139,32 @@ export const actions = {
     state.loading = true;
 
     await actions.getFuncionarios(codFuncionario, mes, ano);
+    actions.modal();
 
     setTimeout(() => {
       state.loading = false;
     }, 100);
+  },
+
+  modal() {
+    state.modalImprimirFolhaPonto = new xModal.create({
+      height: 850,
+      width: 1000,
+      el: "#modalImprimirPontos",
+      theme: "xModal-blue",
+      onOpen: () => {
+        state.modalImprimirFolhaPontoOpened = true;
+      },
+      onClose: () => {
+        state.modalImprimirFolhaPontoOpened = false;
+      },
+    });
+  },
+
+  imprimirFolhaPontoTodosFuncionarios() {
+    actions.dadosParaImpressao(state.mes, state.ano);
+
+    state.modalImprimirFolhaPonto.open();
   },
 };
 
