@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 export const state = reactive({
     modalLocalizarDevolucoes: <iModalCreate>{},
     modalSelecionarFornecedor: <iModalCreate>{},
+    modalTransportadora: <iModalCreate>{},
 
     modalOpened: false,
 
@@ -28,7 +29,7 @@ export const actions = {
     criarModais() {
         state.modalLocalizarDevolucoes = new xModal.create({
             el: '#modalLocalizarDevolucoes',
-            height: 466,
+            height: 458,
             width: 704,
             theme: "xModal-blue",
             onOpen: () => { state.modalOpened = true },
@@ -37,8 +38,17 @@ export const actions = {
 
         state.modalSelecionarFornecedor = new xModal.create({
             el: '#modalSelecionarFornecedor',
-            height: 466,
+            height: 458,
             width: 704,
+            theme: "xModal-blue",
+            onOpen: () => { state.modalOpened = true },
+            onClose: () => { state.modalOpened = false },
+        })
+
+        state.modalTransportadora = new xModal.create({
+            el: '#modalTransportadora',
+            height: 308,
+            width: 784,
             theme: "xModal-blue",
             onOpen: () => { state.modalOpened = true },
             onClose: () => { state.modalOpened = false },
@@ -60,6 +70,15 @@ export const actions = {
     closeModalSelecionarFornecedor() {
         state.modalSelecionarFornecedor.close();
     },
+
+    openModalTransportadora() {
+        state.modalTransportadora.open();
+    },
+
+    closeModalTransportadora() {
+        state.modalTransportadora.close();
+    },
+
 
     habilitarBtns() {
         state.disabledBtnFinalizar = false

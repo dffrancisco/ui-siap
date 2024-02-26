@@ -5,6 +5,7 @@ import { useEventListener } from "@vueuse/core";
 
 import ModalLocalizarDevolucao from "./components/ModalLocalizarDevolucao.vue";
 import ModalSelecionarFornecedor from "./components/ModalSelecionarFornecedor.vue";
+import ModalTransportadora from "./components/ModalTransportadora.vue";
 
 import utils from "@/ts/utils";
 import moment from "moment";
@@ -122,6 +123,7 @@ onUnmounted(() => {
               <button
                 :disabled="state.disabledBtnAdicionarTransportadora"
                 v-if="state.dbDevolucao.STATUS != 1"
+                @click="actions.openModalTransportadora"
               >
                 <v-icon
                   size="25px"
@@ -252,6 +254,18 @@ onUnmounted(() => {
           @selecionarFornecedor="actions.fornecedorSelecionado"
           :modalOpened="state.modalOpened"
         ></ModalSelecionarFornecedor>
+      </div>
+
+      <div
+        id="modalTransportadora"
+        style="display: none"
+        title="Transportadora"
+      >
+        <ModalTransportadora
+          @closeModalSelecionarFornecedor="actions.closeModalSelecionarFornecedor"
+          @selecionarFornecedor="actions.fornecedorSelecionado"
+          :modalOpened="state.modalOpened"
+        ></ModalTransportadora>
       </div>
     </v-card>
   </v-container>

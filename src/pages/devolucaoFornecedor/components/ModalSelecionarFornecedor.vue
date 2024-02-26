@@ -126,7 +126,7 @@ onUnmounted(() => {
 
 <template>
   <v-container>
-    <div class="pb-4">
+    <div class="pb-2">
       <v-row>
         <v-col>
           <input
