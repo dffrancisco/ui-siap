@@ -55,7 +55,7 @@ actions.init(route);
                       @update:model-value="actions.getDadosPontos"
                     ></v-select>
                   </v-col>
-                  <v-col cols="4">
+                  <v-col cols="3">
                     <v-select
                       label="Ano"
                       class="ml-4"
@@ -69,11 +69,13 @@ actions.init(route);
                   </v-col>
                   <v-col cols="3"
                     ><v-btn
+                      icon
                       color="primary"
+                      size="small"
                       class="btnPrint"
                       @click.prevent="actions.imprimirFolhaPonto()"
                     >
-                      <v-icon>mdi-printer</v-icon> Imprimir Folha de Ponto
+                      <v-icon>mdi-printer</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -168,7 +170,6 @@ actions.init(route);
                   plugins: [dayGridPlugin, interactionPlugin],
                   initialView: 'dayGridMonth',
                   events: pontosCalendario,
-                  // hiddenDays: [0],
                   dateClick: actions.clickModalJustificarAusencia,
                   locale: 'pt-br',
                   eventOrder: 'defId',
@@ -269,9 +270,8 @@ actions.init(route);
 
 <style scoped>
 .btnPrint {
-  margin-top: 15px;
-  width: auto;
-  margin-left: 20px;
+  margin-top: 5px;
+  margin-left: 330px;
 }
 .btnSearch {
   margin-left: 50px;
