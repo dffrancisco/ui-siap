@@ -9,12 +9,24 @@ export interface iDevolucao {
     CHAVE_DEVOLUCAO: string,
     LOGIN: string,
     HORA_FINALIZOU: string
+    ID_FORNECEDOR: number
 }
 
 export interface iFornecedor {
     ID_FORNECEDOR: number,
     CGC_FORNECEDOR: string,
     RAZAO_SOCIAL: string
+}
+
+export interface iItens {
+    ID_ENTRADA: number,
+    ID_ITEM: number,
+    DESCRICAO: string,
+    NUM_NOTA: number,
+    QUANTIDADE: number,
+    COD_FABRICANTE: string,
+    CUSTO: number,
+    COD_PRODUTO: number
 }
 
 export interface iParamGetDevolucoes {
@@ -27,6 +39,11 @@ export interface iParamGetFornecedores {
     param: object
 }
 
+export interface iParamGetItens {
+    offset: number,
+    param: object
+}
+
 export interface iParamFornecedorSelecionado {
     id_fornecedor: number
 }
@@ -35,7 +52,9 @@ export interface iParamDevolucaoSelecionado {
     id_devolucao: number
 }
 
+
 export interface iGetDevolucoesResponse extends iDevolucao { }
 export interface iDevolucaoSelecionadoResponse extends iDevolucao { }
 export interface iGetFornecedoresResponse extends iFornecedor { }
 export interface iFornecedorSelecionadoResponse extends iFornecedor { }
+export interface iGetItensResponse extends iItens { }

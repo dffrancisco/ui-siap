@@ -10,8 +10,13 @@ export const state = reactive({
     modalLocalizarDevolucoes: <iModalCreate>{},
     modalSelecionarFornecedor: <iModalCreate>{},
     modalTransportadora: <iModalCreate>{},
+    modalEscolherItem: <iModalCreate>{},
 
     modalOpened: false,
+    modalLocalizarDevolucoesOpened: false,
+    modalSelecionarFornecedorOpened: false,
+    modalTransportadoraOpened: false,
+    modalEscolherItemOpened: false,
 
     dbDevolucao: <iDevolucao>{},
     dbFornecedor: <iFornecedor>{},
@@ -32,8 +37,8 @@ export const actions = {
             height: 458,
             width: 704,
             theme: "xModal-blue",
-            onOpen: () => { state.modalOpened = true },
-            onClose: () => { state.modalOpened = false }
+            onOpen: () => { state.modalOpened = true; state.modalLocalizarDevolucoesOpened = true },
+            onClose: () => { state.modalOpened = false; state.modalLocalizarDevolucoesOpened = false }
         })
 
         state.modalSelecionarFornecedor = new xModal.create({
@@ -41,8 +46,8 @@ export const actions = {
             height: 458,
             width: 704,
             theme: "xModal-blue",
-            onOpen: () => { state.modalOpened = true },
-            onClose: () => { state.modalOpened = false },
+            onOpen: () => { state.modalOpened = true; state.modalSelecionarFornecedorOpened = true },
+            onClose: () => { state.modalOpened = false; state.modalSelecionarFornecedorOpened = false },
         })
 
         state.modalTransportadora = new xModal.create({
@@ -52,6 +57,15 @@ export const actions = {
             theme: "xModal-blue",
             onOpen: () => { state.modalOpened = true },
             onClose: () => { state.modalOpened = false },
+        })
+
+        state.modalEscolherItem = new xModal.create({
+            el: '#modalEscolherItem',
+            height: 528,
+            width: 704,
+            theme: "xModal-blue",
+            onOpen: () => { state.modalOpened = true; state.modalEscolherItemOpened = true },
+            onClose: () => { state.modalOpened = false; state.modalEscolherItemOpened = false },
         })
     },
 
@@ -79,6 +93,14 @@ export const actions = {
         state.modalTransportadora.close();
     },
 
+    openModalEscolherItem() {
+        state.modalEscolherItem.open();
+    },
+
+    closeModalEscolherItem() {
+        state.modalEscolherItem.close();
+    },
+
 
     habilitarBtns() {
         state.disabledBtnFinalizar = false
@@ -101,7 +123,7 @@ export const actions = {
             let data = await serviceDevolucaoFornecedor.devolucaoSelecionado({ id_devolucao })
 
             state.dbFornecedor = {
-                ID_FORNECEDOR: null,
+                ID_FORNECEDOR: data.ID_FORNECEDOR,
                 CGC_FORNECEDOR: data.CGC_FORNECEDOR,
                 RAZAO_SOCIAL: data.RAZAO_SOCIAL,
             }

@@ -6,6 +6,7 @@ import { useEventListener } from "@vueuse/core";
 import ModalLocalizarDevolucao from "./components/ModalLocalizarDevolucao.vue";
 import ModalSelecionarFornecedor from "./components/ModalSelecionarFornecedor.vue";
 import ModalTransportadora from "./components/ModalTransportadora.vue";
+import ModalEscolherItem from "./components/ModalEscolherItem.vue";
 
 import utils from "@/ts/utils";
 import moment from "moment";
@@ -27,7 +28,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
     }
 
     if (event.key === "F3") {
-      const button = document.getElementById("meuBotao");
+      const button = document.getElementById("btnEscolherItem");
       button.click();
       event.preventDefault();
       event.stopPropagation();
@@ -175,7 +176,11 @@ onUnmounted(() => {
             :key="i"
             class="card"
           >
-            <button :disabled="state.disabledBtnAdicionarItens">
+            <button
+              :disabled="state.disabledBtnAdicionarItens"
+              @click="actions.openModalEscolherItem"
+              id="btnEscolherItem"
+            >
               <v-icon size="25px"> mdi-plus-circle-outline </v-icon>
             </button>
             <p> NOVO ITEM (F3) </p>
@@ -240,7 +245,7 @@ onUnmounted(() => {
         <ModalLocalizarDevolucao
           @devolucaoSelecionado="actions.selecionarDevolucao"
           @closeModalLocalizarDevolucoes="actions.closeModalLocalizarDevolucoes"
-          :modalOpened="state.modalOpened"
+          :modalOpened="state.modalLocalizarDevolucoesOpened"
         ></ModalLocalizarDevolucao>
       </div>
 
@@ -252,7 +257,7 @@ onUnmounted(() => {
         <ModalSelecionarFornecedor
           @closeModalSelecionarFornecedor="actions.closeModalSelecionarFornecedor"
           @selecionarFornecedor="actions.fornecedorSelecionado"
-          :modalOpened="state.modalOpened"
+          :modalOpened="state.modalSelecionarFornecedorOpened"
         ></ModalSelecionarFornecedor>
       </div>
 
@@ -261,11 +266,19 @@ onUnmounted(() => {
         style="display: none"
         title="Transportadora"
       >
-        <ModalTransportadora
-          @closeModalSelecionarFornecedor="actions.closeModalSelecionarFornecedor"
-          @selecionarFornecedor="actions.fornecedorSelecionado"
-          :modalOpened="state.modalOpened"
-        ></ModalTransportadora>
+        <ModalTransportadora :modalOpened="state.modalOpened"></ModalTransportadora>
+      </div>
+
+      <div
+        id="modalEscolherItem"
+        style="display: none"
+        title="Escolher item"
+      >
+        <ModalEscolherItem
+          :idFornecedor="state.dbFornecedor.ID_FORNECEDOR"
+          :modalOpened="state.modalEscolherItemOpened"
+          @closeModal="actions.closeModalEscolherItem"
+        ></ModalEscolherItem>
       </div>
     </v-card>
   </v-container>

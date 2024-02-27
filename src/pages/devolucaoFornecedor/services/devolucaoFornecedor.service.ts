@@ -4,10 +4,12 @@ import {
     iFornecedorSelecionadoResponse,
     iGetDevolucoesResponse,
     iGetFornecedoresResponse,
+    iGetItensResponse,
     iParamDevolucaoSelecionado,
     iParamFornecedorSelecionado,
     iParamGetDevolucoes,
-    iParamGetFornecedores
+    iParamGetFornecedores,
+    iParamGetItens
 } from "../interfaces";
 
 const caminho = 'siap/devolucaoFornecedor'
@@ -16,6 +18,7 @@ type iGetDevolucoesFunction = (param: iParamGetDevolucoes) => Promise<iGetDevolu
 type iDevolucaoSelecionadoFunction = (param: iParamDevolucaoSelecionado) => Promise<iDevolucaoSelecionadoResponse>
 type iGetFornecedoresFunction = (param: iParamGetFornecedores) => Promise<iGetFornecedoresResponse>
 type iFornecedorSelecionadoFunction = (param: iParamFornecedorSelecionado) => Promise<iFornecedorSelecionadoResponse>
+type iGetItensFunction = (param: iParamGetItens) => Promise<iGetItensResponse>
 
 const getDevolucoes: iGetDevolucoesFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -51,9 +54,19 @@ const fornecedorSelecionado: iFornecedorSelecionadoFunction = async ({ id_fornec
     return data;
 }
 
+const getItens: iGetItensFunction = async ({ offset, param }) => {
+    let { data } = await axios.post(caminho, {
+        call: 'getItens',
+        offset,
+        param
+    })
+    return data;
+}
+
 export default {
     getDevolucoes,
     getFornecedores,
     fornecedorSelecionado,
-    devolucaoSelecionado
+    devolucaoSelecionado,
+    getItens
 }
