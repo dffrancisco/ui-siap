@@ -63,10 +63,18 @@ const getItens: iGetItensFunction = async ({ offset, param }) => {
     return data;
 }
 
+const getTransportadoras = async () => {
+    let { data } = await axios.post(caminho, {
+        call: 'getTransportadoras'
+    })
+    return data
+}
+
 export default {
     getDevolucoes,
     getFornecedores,
     fornecedorSelecionado,
     devolucaoSelecionado,
-    getItens
+    getItens,
+    getTransportadoras
 }

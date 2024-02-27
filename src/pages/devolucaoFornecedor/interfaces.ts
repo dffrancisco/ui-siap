@@ -30,6 +30,18 @@ export interface iItem {
     CFOP: string
 }
 
+export interface iTransportadora {
+    ID_TRANSPORTADORA: number,
+    RAZAO_SOCIAL: string,
+    TIPO_FRETE: number,
+    VALOR_FRETE: number,
+}
+
+export interface iListaTransportadoras {
+    ID_TRANSPORTADORA: number,
+    RAZAO_SOCIAL: string,
+}
+
 export interface iParamGetDevolucoes {
     offset: number,
     param: object

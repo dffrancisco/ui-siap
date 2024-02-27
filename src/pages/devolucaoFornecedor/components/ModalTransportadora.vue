@@ -1,13 +1,52 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { watch, reactive } from "vue";
+import { iTransportadora, iListaTransportadoras } from "../interfaces";
+import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
+import Swal from "sweetalert2";
+
+const props = defineProps<{
+  modalOpened: boolean;
+}>();
+
+watch(
+  () => props.modalOpened,
+  () => {
+    if (props.modalOpened) {
+      state.dbTransportadora = {} as iTransportadora;
+      actions.getTransportadoras();
+    }
+  }
+);
 
 const state = reactive({
+  dbTransportadora: <iTransportadora>{},
+  listaTransportadoras: <iListaTransportadoras[]>[],
+
   configVMoney: {
     thousands: ".",
     decimal: ",",
     precision: 2,
   },
+
+  loading: false,
 });
+
+const actions = {
+  async getTransportadoras() {
+    try {
+      state.loading = true;
+      let data = await serviceDevolucaoFornecedor.getTransportadoras();
+      state.listaTransportadoras = data;
+      state.loading = false;
+    } catch (error) {
+      state.loading = false;
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao carregar as transportadoras!",
+      });
+    }
+  },
+};
 </script>
 
 <template>
@@ -18,14 +57,16 @@ const state = reactive({
           <h2 class="font-weight-regular">Transportadora</h2>
           <div>
             <select
+              v-model="state.dbTransportadora.RAZAO_SOCIAL"
               class="ss obr"
-              value=""
+              name="RAZAO_SOCIAL"
+              id="RAZAO_SOCIAL"
             >
               <option
-                v-for="i in 13"
-                :value="i"
+                v-for="transportadora in state.listaTransportadoras"
+                :value="transportadora.ID_TRANSPORTADORA"
               >
-                {{ i }}</option
+                {{ transportadora.RAZAO_SOCIAL }}</option
               >
             </select>
           </div>
@@ -35,7 +76,9 @@ const state = reactive({
           <div>
             <select
               class="obr ss"
-              value=""
+              name="TIPO_FRETE"
+              id="TIPO_FRETE"
+              v-model="state.dbTransportadora.TIPO_FRETE"
             >
               <option value="0">Por conta do emitente</option>
               <option value="1">Por conta do destinatário/remetente</option>
@@ -52,6 +95,9 @@ const state = reactive({
             <input
               class="ss obr"
               type="text"
+              name="VALOR_FRETE"
+              id="VALOR_FRETE"
+              v-model="state.dbTransportadora.VALOR_FRETE"
               v-money3="state.configVMoney"
             /> </div
         ></v-col>

@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal'
 
-import { iDevolucao, iFornecedor } from './interfaces'
+import { iDevolucao, iFornecedor, iTransportadora } from './interfaces'
 import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
 import Swal from 'sweetalert2';
 
@@ -19,6 +19,7 @@ export const state = reactive({
 
     dbDevolucao: <iDevolucao>{},
     dbFornecedor: <iFornecedor>{},
+    dbTransportadora: <iTransportadora>{},
 
     disabledBtnFinalizar: true,
     disabledBtnDelete: true,
