@@ -3,15 +3,17 @@ import { reactive, nextTick, watch, onUnmounted } from "vue";
 import { useEventListener } from "@vueuse/core";
 
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
+import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 
-import { iParamGetItens } from "../interfaces";
+import { iItem, iParamGetItens } from "../interfaces";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
+import ModalInformarQntItem from "./ModalInformarQntItem.vue";
 
 const props = defineProps<{
   modalOpened: boolean;
-  idFornecedor: number;
+  idFornecedor: number | undefined;
 }>();
 
 const emit = defineEmits(["closeModal"]);
@@ -33,6 +35,9 @@ watch(
 
 const state = reactive({
   gridEscolherItem: <ixGridCreate>{},
+  modalInformarQtdItem: <iModalCreate>{},
+  dbItem: <iItem>{},
+  modalInformaQtdOpened: false,
 
   search: null,
   edtItemSearch: <HTMLInputElement>{},
@@ -100,8 +105,24 @@ const actions = {
           state.gridEscolherItem.querySourceAdd(data);
         },
       },
-      enter: () => {},
-      dblClick: () => {},
+      enter: actions.openModalInformarQtdItem,
+      dblClick: actions.openModalInformarQtdItem,
+    });
+  },
+
+  criarModal() {
+    state.modalInformarQtdItem = new xModal.create({
+      el: "#modalInformarQtdItem",
+      height: 262,
+      width: 715,
+      theme: "xModal-blue",
+      onOpen: () => {
+        state.modalInformaQtdOpened = true;
+      },
+      onClose: () => {
+        state.modalInformaQtdOpened = false;
+        state.gridEscolherItem.focus();
+      },
     });
   },
 
@@ -114,6 +135,26 @@ const actions = {
 
   closeModalEscolherItem() {
     emit("closeModal");
+  },
+
+  openModalInformarQtdItem() {
+    const item = state.gridEscolherItem.dataSource();
+
+    state.dbItem = item;
+
+    if (!item) {
+      Swal.fire({
+        icon: "warning",
+        title: "Selecione um item",
+      });
+      return;
+    }
+
+    state.modalInformarQtdItem.open();
+  },
+
+  closeModalInformarQtdItem() {
+    state.modalInformarQtdItem.close();
   },
 
   async getItens({ offset, param }: iParamGetItens) {
@@ -145,6 +186,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
 
 nextTick(async () => {
   actions.criarGrids();
+  actions.criarModal();
 
   state.edtItemSearch = <any>document.getElementById("edtItemSearch");
 });
@@ -193,7 +235,7 @@ onUnmounted(() => {
       >
       <v-btn
         color="#3680AB"
-        @click=""
+        @click="actions.openModalInformarQtdItem"
         >Selecionar</v-btn
       >
     </div>
@@ -210,6 +252,17 @@ onUnmounted(() => {
       >
       </v-progress-circular>
     </v-overlay>
+
+    <div
+      id="modalInformarQtdItem"
+      style="display: none"
+      title="Informar Qtd"
+    >
+      <ModalInformarQntItem
+        :modalInformaQtdOpened="state.modalInformaQtdOpened"
+        :dbItem="state.dbItem"
+      ></ModalInformarQntItem>
+    </div>
   </v-container>
 </template>
 

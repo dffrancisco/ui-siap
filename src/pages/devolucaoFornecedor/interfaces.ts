@@ -18,7 +18,7 @@ export interface iFornecedor {
     RAZAO_SOCIAL: string
 }
 
-export interface iItens {
+export interface iItem {
     ID_ENTRADA: number,
     ID_ITEM: number,
     DESCRICAO: string,
@@ -27,6 +27,7 @@ export interface iItens {
     COD_FABRICANTE: string,
     CUSTO: number,
     COD_PRODUTO: number
+    CFOP: string
 }
 
 export interface iParamGetDevolucoes {
@@ -57,4 +58,4 @@ export interface iGetDevolucoesResponse extends iDevolucao { }
 export interface iDevolucaoSelecionadoResponse extends iDevolucao { }
 export interface iGetFornecedoresResponse extends iFornecedor { }
 export interface iFornecedorSelecionadoResponse extends iFornecedor { }
-export interface iGetItensResponse extends iItens { }
+export interface iGetItensResponse extends iItem { }

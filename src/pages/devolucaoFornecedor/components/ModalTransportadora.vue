@@ -85,9 +85,4 @@ h2 {
   margin-top: 10px;
   gap: 8px;
 }
-
-.ss {
-  height: 38px !important;
-  border-radius: 8px;
-}
 </style>

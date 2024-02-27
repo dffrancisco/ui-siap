@@ -5,7 +5,6 @@ import { iDevolucao, iFornecedor } from './interfaces'
 import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
 import Swal from 'sweetalert2';
 
-
 export const state = reactive({
     modalLocalizarDevolucoes: <iModalCreate>{},
     modalSelecionarFornecedor: <iModalCreate>{},
@@ -52,7 +51,7 @@ export const actions = {
 
         state.modalTransportadora = new xModal.create({
             el: '#modalTransportadora',
-            height: 308,
+            height: 288,
             width: 784,
             theme: "xModal-blue",
             onOpen: () => { state.modalOpened = true },
@@ -67,6 +66,7 @@ export const actions = {
             onOpen: () => { state.modalOpened = true; state.modalEscolherItemOpened = true },
             onClose: () => { state.modalOpened = false; state.modalEscolherItemOpened = false },
         })
+
     },
 
     openModalLocalizarDevolucoes() {
