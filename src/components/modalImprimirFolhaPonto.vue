@@ -179,13 +179,12 @@ const print = async () => {
         </table>
         <br /><br />
         <div style="float: left; width: 50%; text-align: center; font-size: 14px">
-          <span>Assinatura do Gerente</span><br />
-          <span>______________________________________________</span>
+          <span>______________________________________________</span><br />
+          <span>Assinatura do Gerente</span>
         </div>
         <div style="float: left; width: 50%; text-align: center; font-size: 14px">
-          <span>{{ funcionario.NOME_COMP }}</span
-          ><br />
-          <span>______________________________________________</span>
+          <span>______________________________________________</span><br />
+          <span>{{ funcionario.NOME_COMP }}</span>
         </div>
         <br /><br /><br />
       </div>

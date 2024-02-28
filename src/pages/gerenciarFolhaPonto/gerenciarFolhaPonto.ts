@@ -4,7 +4,7 @@ import gerenciarFolhaPontoService from "./services/gerenciarFolhaPonto.service";
 import Swal from "sweetalert2";
 import router from "@/router";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import { mesesToSelect } from "@/constants/constants";
+import { anosToSelect, mesesToSelect } from "@/constants/constants";
 
 export const state = reactive({
   funcionarios: {},
@@ -18,18 +18,7 @@ export const state = reactive({
 });
 
 export const meses = mesesToSelect;
-
-export const anos = computed(() => {
-  const anosArray: number[] = [];
-  const anoAtual = new Date().getFullYear();
-
-  for (let i = 0; i < 20; i++) {
-    const ano = anoAtual - 10 + i;
-    anosArray.push(ano);
-  }
-
-  return anosArray;
-});
+export const anos = anosToSelect;
 
 export const funcionariosOrdenados = computed(() => {
   let funcionariosArray = <iFuncionario[]>[];

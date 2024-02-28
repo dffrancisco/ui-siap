@@ -93,8 +93,15 @@ onMounted(async () => {
                   width="50px"
                 ></v-img>
 
+                <span
+                  class="funcionarios__lista__card__totalizador"
+                  style="margin-top: -30px"
+                >
+                  <u class="funcionarios__lista__card__totalizador__title">TOTALIZADOR</u>
+                </span>
                 <span class="funcionarios__lista__card__totalizador">
-                  <u>TOTALIZADOR</u>
+                  Quantidade de Funcionários:
+                  <b>{{ funcionariosOrdenados.length }}</b>
                 </span>
                 <span class="funcionarios__lista__card__totalizador">
                   Pontos não batidos:
@@ -297,6 +304,10 @@ onMounted(async () => {
   overflow: hidden;
   text-overflow: ellipsis;
   color: #5a6069;
+}
+
+.funcionarios__lista__card__totalizador__title {
+  margin-left: 60px;
 }
 
 .funcionarios__lista__card__totalizador.com-pendencia {

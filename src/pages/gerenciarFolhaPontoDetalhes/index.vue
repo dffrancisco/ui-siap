@@ -7,7 +7,6 @@ import {
   pontosDiaSelecionado,
   tipoFaltaModal,
 } from "./gerenciarFolhaPontoDetalhes";
-import { anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 //@ts-ignore
@@ -62,7 +61,7 @@ actions.init(route);
                       id="ano"
                       dense
                       v-model="state.ano"
-                      :items="anos"
+                      :items="state.anos"
                       hide-details
                       @update:model-value="actions.getDadosPontos"
                     ></v-select>
@@ -122,7 +121,7 @@ actions.init(route);
                           Qtd de justificativas:
                           <b>{{ state.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
                         </div>
-                        <div class="funcionario__card__infos">
+                        <div class="funcionario__card__infos__justificar">
                           Pontos à justificar:
                           <b>{{ state.QTD_A_JUSTIFICAR || 0 }}</b>
                         </div>
@@ -302,7 +301,7 @@ actions.init(route);
   width: 18%;
   font-size: 15px;
   white-space: nowrap;
-  color: #8c8c8c;
+  color: #a1a1a1;
   line-height: 2;
   padding-left: 10px;
   margin-right: 12px;
@@ -321,7 +320,16 @@ actions.init(route);
   margin-right: 12px;
   width: 45%;
   font-size: 15px;
-  color: #a1a1a1;
+  color: #4f4f4f;
+  line-height: 2;
+}
+
+.funcionario__card__infos__justificar {
+  white-space: nowrap;
+  margin-right: 12px;
+  width: 45%;
+  font-size: 15px;
+  color: #b80303;
   line-height: 2;
 }
 
