@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 
 import { iFornecedor, iParamGetFornecedores } from "../interfaces";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
+import { msgConfirm } from "@/ts/message";
 
 const emit = defineEmits(["selecionarFornecedor", "closeModalSelecionarFornecedor"]);
 
@@ -68,8 +69,8 @@ const actions = {
     });
   },
 
-  selecionarFornecedor() {
-    const fornecedor = state.gridFornecedores.dataSource();
+  async selecionarFornecedor() {
+    const fornecedor: iFornecedor = state.gridFornecedores.dataSource();
 
     if (!fornecedor) {
       Swal.fire({
@@ -79,7 +80,22 @@ const actions = {
       return;
     }
 
-    emit("selecionarFornecedor", fornecedor);
+    const devolucaoFornecedorDuplicado = await actions.verificarSeExisteDevolucaoFornecedor(
+      fornecedor.ID_FORNECEDOR
+    );
+
+    if (devolucaoFornecedorDuplicado == false) {
+      return await actions.addNotaDevolucao(fornecedor);
+    }
+
+    let confirmacao = await msgConfirm(
+      "Confirmação",
+      "Existe uma devolução em andamento para este fornecedor. Deseja adicionar uma nova nota assim mesmo?"
+    );
+
+    if (confirmacao == true) {
+      return await actions.addNotaDevolucao(fornecedor);
+    }
   },
 
   closeModalSelecionarFornecedor() {
@@ -99,6 +115,35 @@ const actions = {
         icon: "error",
         title: "Erro ao buscar os fornecedores",
       });
+    }
+  },
+
+  async addNotaDevolucao(fornecedor: iFornecedor) {
+    try {
+      state.loading = true;
+      await serviceDevolucaoFornecedor.addNotaDevolucao(fornecedor.ID_FORNECEDOR);
+      state.loading = false;
+
+      emit("selecionarFornecedor", fornecedor);
+    } catch (error) {
+      state.loading = false;
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao adicionar uma nova devolução",
+      });
+    }
+  },
+
+  async verificarSeExisteDevolucaoFornecedor(id_fornecedor: number) {
+    try {
+      state.loading = true;
+      let data = await serviceDevolucaoFornecedor.verificarSeExisteDevolucaoFornecedor(id_fornecedor);
+      state.loading = false;
+
+      return data.COUNT == 0 ? false : true;
+    } catch (error) {
+      state.loading = false;
+      return false;
     }
   },
 };

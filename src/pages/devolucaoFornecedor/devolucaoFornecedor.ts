@@ -55,8 +55,8 @@ export const actions = {
             height: 288,
             width: 784,
             theme: "xModal-blue",
-            onOpen: () => { state.modalOpened = true },
-            onClose: () => { state.modalOpened = false },
+            onOpen: () => { state.modalOpened = true; state.modalTransportadoraOpened = true; },
+            onClose: () => { state.modalOpened = false; state.modalTransportadoraOpened = false; },
         })
 
         state.modalEscolherItem = new xModal.create({

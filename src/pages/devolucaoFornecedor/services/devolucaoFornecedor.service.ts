@@ -78,6 +78,21 @@ const getTransportadoraDevolucao = async (id_devolucaoFornecedorTransp: number) 
     return data
 }
 
+const addNotaDevolucao = async (id_fornecedor: number) => {
+    await axios.post(caminho, {
+        call: 'addNovaDevolucao',
+        ID_FORNECEDOR: id_fornecedor
+    })
+}
+
+const verificarSeExisteDevolucaoFornecedor = async (id_fornecedor: number) => {
+    let { data } = await axios.post(caminho, {
+        call: 'verificarSeExisteDevolucaoFornecedor',
+        ID_FORNECEDOR: id_fornecedor
+    })
+    return data
+}
+
 export default {
     getDevolucoes,
     getFornecedores,
@@ -85,5 +100,7 @@ export default {
     devolucaoSelecionado,
     getItens,
     getTransportadoras,
-    getTransportadoraDevolucao
+    getTransportadoraDevolucao,
+    addNotaDevolucao,
+    verificarSeExisteDevolucaoFornecedor
 }

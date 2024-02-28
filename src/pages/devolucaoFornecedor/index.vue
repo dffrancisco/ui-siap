@@ -268,7 +268,7 @@ onUnmounted(() => {
       >
         <ModalTransportadora
           :id_devolucaoFornecedorTransp="state.dbTransportadora.ID_DEVOLUCAO_FORNECEDOR_TRANSP"
-          :modalOpened="state.modalOpened"
+          :modalOpened="state.modalTransportadoraOpened"
           @closeModalTransportadoras="actions.closeModalTransportadora"
         ></ModalTransportadora>
       </div>
