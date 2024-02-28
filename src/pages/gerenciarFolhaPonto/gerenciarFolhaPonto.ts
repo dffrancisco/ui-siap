@@ -4,6 +4,7 @@ import gerenciarFolhaPontoService from "./services/gerenciarFolhaPonto.service";
 import Swal from "sweetalert2";
 import router from "@/router";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
+import { mesesToSelect } from "@/constants/constants";
 
 export const state = reactive({
   funcionarios: {},
@@ -16,20 +17,7 @@ export const state = reactive({
   dadosParaModalImpressao: {},
 });
 
-export const meses = computed(() => [
-  { text: "Janeiro", value: 1 },
-  { text: "Fevereiro", value: 2 },
-  { text: "Março", value: 3 },
-  { text: "Abril", value: 4 },
-  { text: "Maio", value: 5 },
-  { text: "Junho", value: 6 },
-  { text: "Julho", value: 7 },
-  { text: "Agosto", value: 8 },
-  { text: "Setembro", value: 9 },
-  { text: "Outubro", value: 10 },
-  { text: "Novembro", value: 11 },
-  { text: "Dezembro", value: 12 },
-]);
+export const meses = mesesToSelect;
 
 export const anos = computed(() => {
   const anosArray: number[] = [];
@@ -65,7 +53,9 @@ export const totalizador = computed(() => {
     QTD_PONTOS_NAO_BATIDOS: 0,
   };
 
-  for (const func of Object.values(state.funcionarios) as iFuncionario[]) {
+  let funcionarios: iFuncionario[] = Object.values(state.funcionarios);
+
+  for (const func of funcionarios) {
     if (func.QTD_A_JUSTIFICAR) total.QTD_A_JUSTIFICAR += func.QTD_A_JUSTIFICAR;
     if (func.QTD_FALTAS_JUSTIFICADAS) total.QTD_FALTAS_JUSTIFICADAS += func.QTD_FALTAS_JUSTIFICADAS;
     if (func.QTD_PONTOS_INCOMPLETOS) total.QTD_PONTOS_INCOMPLETOS += func.QTD_PONTOS_INCOMPLETOS;
@@ -76,11 +66,13 @@ export const totalizador = computed(() => {
 });
 
 export const actions = {
-  handleFuncionarioChange() {
-    actions.getFuncionarios(state.selectedFuncionario, state.mes, state.ano);
+  async onFuncionarioChange() {
+    await actions.getResumoPontosFuncionario(state.selectedFuncionario, state.mes, state.ano);
   },
 
-  async getFuncionarios(cod_funcionario: number, mes: number, ano: number) {
+  async getResumoPontosFuncionario(cod_funcionario: number, mes: number, ano: number) {
+    state.loading = true;
+
     const param: iGetMesEAno = {
       cod_funcionario: cod_funcionario,
       mes: mes,
@@ -88,12 +80,14 @@ export const actions = {
     };
 
     try {
-      state.funcionarios = await gerenciarFolhaPontoService.getFuncionarios(param);
+      state.funcionarios = await gerenciarFolhaPontoService.getResumoPontosFuncionario(param);
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Ocorreu um erro ao buscar os funcionários",
       });
+    } finally {
+      state.loading = false;
     }
   },
 
@@ -103,6 +97,8 @@ export const actions = {
       ano: ano,
     };
 
+    state.loading = true;
+
     try {
       state.dadosParaModalImpressao = await gerenciarFolhaPontoService.getDadosParaImpressao(param);
     } catch (error) {
@@ -110,6 +106,8 @@ export const actions = {
         icon: "error",
         text: "Ocorreu um erro ao buscar os dados para impressão",
       });
+    } finally {
+      state.loading = false;
     }
   },
 
@@ -138,7 +136,7 @@ export const actions = {
   async init(codFuncionario: number, mes: number, ano: number) {
     state.loading = true;
 
-    await actions.getFuncionarios(codFuncionario, mes, ano);
+    await actions.getResumoPontosFuncionario(codFuncionario, mes, ano);
     actions.modal();
 
     setTimeout(() => {

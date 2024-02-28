@@ -27,24 +27,3 @@ export interface iGetDadosParaImpressao {
   mes: number;
   ano: number;
 }
-
-export interface iDadosFuncionariosFolhaPonto {
-  pontos: any;
-  faltas: any;
-  COD_FUNCIONARIO: number;
-  NOME_COMP: string;
-  LOGIN: string;
-  CPF: string;
-  DELETADO: string;
-  ID_CARGO: number;
-  BATE_PONTO: string;
-  CARGO: string;
-  DATA: string;
-  HORA_CHEGADA: string;
-  HORA_ALMOCO_INICIAL: string;
-  HORA_ALMOCO_FINAL: string;
-  HORA_SAIDA: string;
-  JUSTIFICATIVA: string;
-  STATUS: string;
-  TIPO: number;
-}

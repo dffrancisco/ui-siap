@@ -7,7 +7,7 @@ import {
   pontosDiaSelecionado,
   tipoFaltaModal,
 } from "./gerenciarFolhaPontoDetalhes";
-import { meses, anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
+import { anos } from "../gerenciarFolhaPonto/gerenciarFolhaPonto";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 //@ts-ignore
@@ -48,9 +48,9 @@ actions.init(route);
                       id="mes"
                       dense
                       v-model="state.mes"
-                      item-title="text"
+                      item-title="title"
                       item-value="value"
-                      :items="meses"
+                      :items="state.meses"
                       hide-details
                       @update:model-value="actions.getDadosPontos"
                     ></v-select>

@@ -15,6 +15,7 @@ import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDe
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import moment from "moment";
 import router from "@/router";
+import { mesesToSelect } from "@/constants/constants";
 
 export const state = reactive({
   pontos: {},
@@ -36,6 +37,7 @@ export const state = reactive({
   QTD_PONTOS_NAO_BATIDOS: 0,
   mes: 1,
   ano: 2024,
+  meses: mesesToSelect,
   initialDate: <any>new Date(),
   modalJustificarFalta: <iModalCreate>(<unknown>null),
   modalJustificarFaltaOpened: false,

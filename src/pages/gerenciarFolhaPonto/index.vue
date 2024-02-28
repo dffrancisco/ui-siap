@@ -2,6 +2,7 @@
 import { onMounted } from "vue";
 import { actions, state, funcionariosOrdenados, meses, anos, totalizador } from "./gerenciarFolhaPonto";
 import modalImprimirFolhaPonto from "@/components/modalImprimirFolhaPonto.vue";
+
 onMounted(async () => {
   actions.init(state.selectedFuncionario, state.mes, state.ano);
 });
@@ -16,62 +17,61 @@ onMounted(async () => {
     >
       <v-row>
         <v-col cols="12">
-          <div>
-            <strong>Gerenciar Folha de Ponto</strong>
-            <v-card class="pa-5 cardFolhaPonto">
-              <v-row>
-                <v-col cols="5">
-                  <v-autocomplete
-                    :clearable="true"
-                    label="Funcionário"
-                    v-model="state.selectedFuncionario"
-                    :items="funcionariosOrdenados"
-                    item-title="NOME_COMP"
-                    item-value="COD_FUNCIONARIO"
-                    @update:model-value="actions.handleFuncionarioChange"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col cols="2">
-                  <v-autocomplete
-                    label="Mês"
-                    id="mes"
-                    v-model="state.mes"
-                    item-title="text"
-                    item-value="value"
-                    :items="meses"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col cols="3">
-                  <v-autocomplete
-                    label="Ano"
-                    id="ano"
-                    v-model="state.ano"
-                    :items="anos"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col cols="2"
-                  ><v-btn
-                    icon
-                    color="primary"
-                    size="small"
-                    class="btnSearch"
-                    @click="actions.getFuncionarios(state.selectedFuncionario, state.mes, state.ano)"
-                  >
-                    <v-icon> mdi-magnify</v-icon>
-                  </v-btn>
-                  <v-btn
-                    icon
-                    color="primary"
-                    size="small"
-                    class="btnPrint"
-                    @click.prevent="actions.imprimirFolhaPontoTodosFuncionarios()"
-                  >
-                    <v-icon>mdi-printer</v-icon>
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-card>
-          </div>
+          <v-card class="pa-5 cardFolhaPonto">
+            <v-row>
+              <v-col cols="5">
+                <v-autocomplete
+                  :clearable="true"
+                  label="Funcionário"
+                  v-model="state.selectedFuncionario"
+                  :items="funcionariosOrdenados"
+                  item-title="NOME_COMP"
+                  item-value="COD_FUNCIONARIO"
+                  @update:model-value="actions.onFuncionarioChange"
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="2">
+                <v-autocomplete
+                  id="mes"
+                  label="Mês"
+                  v-model="state.mes"
+                  item-title="title"
+                  item-value="value"
+                  :items="meses"
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="3">
+                <v-autocomplete
+                  id="ano"
+                  label="Ano"
+                  v-model="state.ano"
+                  :items="anos"
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="2"
+                ><v-btn
+                  icon
+                  color="primary"
+                  size="small"
+                  class="btnSearch"
+                  title="Buscar funcionários"
+                  @click="actions.getResumoPontosFuncionario(state.selectedFuncionario, state.mes, state.ano)"
+                >
+                  <v-icon> mdi-magnify</v-icon>
+                </v-btn>
+                <v-btn
+                  icon
+                  color="primary"
+                  size="small"
+                  class="btnPrint"
+                  title="Imprimir folha de ponto de todos os funcionários"
+                  @click.prevent="actions.imprimirFolhaPontoTodosFuncionarios()"
+                >
+                  <v-icon>mdi-printer</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card>
         </v-col>
       </v-row>
       <v-row>
@@ -93,18 +93,20 @@ onMounted(async () => {
                   width="50px"
                 ></v-img>
 
-                <span class="funcionarios__lista__card__totalizador"><u>TOTALIZADOR</u> </span>
+                <span class="funcionarios__lista__card__totalizador">
+                  <u>TOTALIZADOR</u>
+                </span>
                 <span class="funcionarios__lista__card__totalizador">
                   Pontos não batidos:
-                  <b>{{ totalizador.QTD_PONTOS_NAO_BATIDOS || 0 }}</b>
+                  <b>{{ totalizador.QTD_PONTOS_NAO_BATIDOS }}</b>
                 </span>
                 <span class="funcionarios__lista__card__totalizador">
                   Pontos incompletos:
-                  <b>{{ totalizador.QTD_PONTOS_INCOMPLETOS || 0 }}</b>
+                  <b>{{ totalizador.QTD_PONTOS_INCOMPLETOS }}</b>
                 </span>
                 <span class="funcionarios__lista__card__totalizador">
                   Quantidade de justificativas:
-                  <b>{{ totalizador.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
+                  <b>{{ totalizador.QTD_FALTAS_JUSTIFICADAS }}</b>
                 </span>
                 <span
                   class="funcionarios__lista__card__totalizador"
@@ -113,7 +115,7 @@ onMounted(async () => {
                   }"
                 >
                   Pontos à justificar:
-                  <b>{{ totalizador.QTD_A_JUSTIFICAR || 0 }}</b>
+                  <b>{{ totalizador.QTD_A_JUSTIFICAR }}</b>
                 </span>
               </v-card>
               <v-card
@@ -129,7 +131,7 @@ onMounted(async () => {
                     color="primary"
                     :title="funcionario.LOGIN"
                     :class="{
-                      'funcionario-com-pendencia': funcionario.QTD_A_JUSTIFICAR > 0,
+                      'funcionarios__lista__avatar--red': funcionario.QTD_A_JUSTIFICAR > 0,
                     }"
                     class="funcionarios__lista__avatar"
                   >
@@ -151,15 +153,15 @@ onMounted(async () => {
 
                 <span class="funcionarios__lista__card__faltas">
                   Pontos não batidos:
-                  <b>{{ funcionario.QTD_PONTOS_NAO_BATIDOS || 0 }}</b>
+                  <b>{{ funcionario.QTD_PONTOS_NAO_BATIDOS }}</b>
                 </span>
                 <span class="funcionarios__lista__card__faltas">
                   Pontos incompletos:
-                  <b>{{ funcionario.QTD_PONTOS_INCOMPLETOS || 0 }}</b>
+                  <b>{{ funcionario.QTD_PONTOS_INCOMPLETOS }}</b>
                 </span>
                 <span class="funcionarios__lista__card__faltas">
                   Qtd de justificativas:
-                  <b>{{ funcionario.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
+                  <b>{{ funcionario.QTD_FALTAS_JUSTIFICADAS }}</b>
                 </span>
                 <span
                   class="funcionarios__lista__card__faltas"
@@ -168,7 +170,7 @@ onMounted(async () => {
                   }"
                 >
                   Pontos à justificar:
-                  <b>{{ funcionario.QTD_A_JUSTIFICAR || 0 }}</b>
+                  <b>{{ funcionario.QTD_A_JUSTIFICAR }}</b>
                 </span>
               </v-card>
             </div>
@@ -226,6 +228,10 @@ onMounted(async () => {
     cursor: pointer;
     opacity: 1;
     border: 1px solid #0000002f;
+  }
+
+  .funcionarios__lista__avatar--red {
+    border: 2px solid red;
   }
 
   .funcionarios__lista__totalizador,
