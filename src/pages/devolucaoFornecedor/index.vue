@@ -110,15 +110,15 @@ onUnmounted(() => {
           <v-row>
             <v-col cols="8">
               <label>Nome:</label>
-              <p>-</p>
+              <p>{{ state.dbTransportadora.NOME_TRANSPORTADORA || "-" }}</p>
             </v-col>
             <v-col cols="2">
               <label>Frete por conta:</label>
-              <p>-</p>
+              <p>{{ state.dbTransportadora.TIPO_FRETE || "-" }}</p>
             </v-col>
             <v-col>
               <label>Valor:</label>
-              <p>-</p>
+              <p>{{ utils.formatValor(state.dbTransportadora.VALOR_FRETE) || "-" }}</p>
             </v-col>
             <v-col>
               <button
@@ -130,7 +130,7 @@ onUnmounted(() => {
                   size="25px"
                   color="#2d9cdb"
                 >
-                  {{ state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR ? "mdi-pencil" : "mdi-plus-circle-outline" }}
+                  {{ state.dbTransportadora.ID_TRANSPORTADORA ? "mdi-pencil" : "mdi-plus-circle-outline" }}
                 </v-icon>
               </button>
             </v-col>
@@ -266,7 +266,11 @@ onUnmounted(() => {
         style="display: none"
         title="Transportadora"
       >
-        <ModalTransportadora :modalOpened="state.modalOpened"></ModalTransportadora>
+        <ModalTransportadora
+          :id_devolucaoFornecedorTransp="state.dbTransportadora.ID_DEVOLUCAO_FORNECEDOR_TRANSP"
+          :modalOpened="state.modalOpened"
+          @closeModalTransportadoras="actions.closeModalTransportadora"
+        ></ModalTransportadora>
       </div>
 
       <div

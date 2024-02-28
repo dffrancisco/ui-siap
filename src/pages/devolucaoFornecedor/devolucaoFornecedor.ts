@@ -124,12 +124,14 @@ export const actions = {
             let data = await serviceDevolucaoFornecedor.devolucaoSelecionado({ id_devolucao })
 
             state.dbFornecedor = {
-                ID_FORNECEDOR: data.ID_FORNECEDOR,
-                CGC_FORNECEDOR: data.CGC_FORNECEDOR,
-                RAZAO_SOCIAL: data.RAZAO_SOCIAL,
+                ...data
             }
 
             state.dbDevolucao = {
+                ...data
+            }
+
+            state.dbTransportadora = {
                 ...data
             }
 
@@ -159,6 +161,7 @@ export const actions = {
             let data = await serviceDevolucaoFornecedor.fornecedorSelecionado({ id_fornecedor })
 
             state.dbDevolucao = {} as iDevolucao
+            state.dbTransportadora = {} as iTransportadora
 
             state.dbFornecedor = {
                 ...data

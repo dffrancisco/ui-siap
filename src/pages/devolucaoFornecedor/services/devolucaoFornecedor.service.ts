@@ -9,7 +9,7 @@ import {
     iParamFornecedorSelecionado,
     iParamGetDevolucoes,
     iParamGetFornecedores,
-    iParamGetItens
+    iParamGetItens,
 } from "../interfaces";
 
 const caminho = 'siap/devolucaoFornecedor'
@@ -70,11 +70,20 @@ const getTransportadoras = async () => {
     return data
 }
 
+const getTransportadoraDevolucao = async (id_devolucaoFornecedorTransp: number) => {
+    let { data } = await axios.post(caminho, {
+        call: 'getTransportadoraDevolucao',
+        ID_DEVOLUCAO_FORNECEDOR_TRANSP: id_devolucaoFornecedorTransp
+    })
+    return data
+}
+
 export default {
     getDevolucoes,
     getFornecedores,
     fornecedorSelecionado,
     devolucaoSelecionado,
     getItens,
-    getTransportadoras
+    getTransportadoras,
+    getTransportadoraDevolucao
 }

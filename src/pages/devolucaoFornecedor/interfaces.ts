@@ -8,8 +8,13 @@ export interface iDevolucao {
     VALOR: number,
     CHAVE_DEVOLUCAO: string,
     LOGIN: string,
-    HORA_FINALIZOU: string
-    ID_FORNECEDOR: number
+    HORA_FINALIZOU: string,
+    ID_FORNECEDOR: number,
+    ID_TRANSPORTADORA: number,
+    NOME_TRANSPORTADORA: string,
+    VALOR_FRETE: number,
+    TIPO_FRETE: number,
+    ID_DEVOLUCAO_FORNECEDOR_TRANSP: number
 }
 
 export interface iFornecedor {
@@ -31,15 +36,16 @@ export interface iItem {
 }
 
 export interface iTransportadora {
+    ID_DEVOLUCAO_FORNECEDOR_TRANSP: number,
     ID_TRANSPORTADORA: number,
-    RAZAO_SOCIAL: string,
+    NOME_TRANSPORTADORA: string,
     TIPO_FRETE: number,
     VALOR_FRETE: number,
 }
 
 export interface iListaTransportadoras {
     ID_TRANSPORTADORA: number,
-    RAZAO_SOCIAL: string,
+    NOME_TRANSPORTADORA: string,
 }
 
 export interface iParamGetDevolucoes {
@@ -64,7 +70,6 @@ export interface iParamFornecedorSelecionado {
 export interface iParamDevolucaoSelecionado {
     id_devolucao: number
 }
-
 
 export interface iGetDevolucoesResponse extends iDevolucao { }
 export interface iDevolucaoSelecionadoResponse extends iDevolucao { }

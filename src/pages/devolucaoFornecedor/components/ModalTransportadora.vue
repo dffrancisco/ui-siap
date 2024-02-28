@@ -6,14 +6,19 @@ import Swal from "sweetalert2";
 
 const props = defineProps<{
   modalOpened: boolean;
+  id_devolucaoFornecedorTransp: number | undefined;
 }>();
+
+const emits = defineEmits(["closeModalTransportadoras"]);
 
 watch(
   () => props.modalOpened,
   () => {
     if (props.modalOpened) {
       state.dbTransportadora = {} as iTransportadora;
+      state.dbTransportadora.VALOR_FRETE = state.dbTransportadora.VALOR_FRETE * 100;
       actions.getTransportadoras();
+      actions.getTransportadoraDevolucao();
     }
   }
 );
@@ -26,6 +31,8 @@ const state = reactive({
     thousands: ".",
     decimal: ",",
     precision: 2,
+    focusOnRight: true,
+    disableNegative: true,
   },
 
   loading: false,
@@ -34,17 +41,33 @@ const state = reactive({
 const actions = {
   async getTransportadoras() {
     try {
-      state.loading = true;
       let data = await serviceDevolucaoFornecedor.getTransportadoras();
       state.listaTransportadoras = data;
-      state.loading = false;
     } catch (error) {
-      state.loading = false;
       Swal.fire({
         icon: "error",
         text: "Erro ao carregar as transportadoras!",
       });
     }
+  },
+
+  async getTransportadoraDevolucao() {
+    try {
+      state.loading = true;
+      let data = await serviceDevolucaoFornecedor.getTransportadoraDevolucao(props.id_devolucaoFornecedorTransp);
+      state.dbTransportadora = data;
+      state.dbTransportadora.VALOR_FRETE *= 100;
+      state.loading = false;
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao carregar a transportadora da devolução!",
+      });
+    }
+  },
+
+  closeModalTransportadoras() {
+    emits("closeModalTransportadoras");
   },
 };
 </script>
@@ -57,16 +80,16 @@ const actions = {
           <h2 class="font-weight-regular">Transportadora</h2>
           <div>
             <select
-              v-model="state.dbTransportadora.RAZAO_SOCIAL"
+              v-model="state.dbTransportadora.ID_TRANSPORTADORA"
               class="ss obr"
-              name="RAZAO_SOCIAL"
-              id="RAZAO_SOCIAL"
+              name="ID_TRANSPORTADORA"
+              id="ID_TRANSPORTADORA"
             >
               <option
                 v-for="transportadora in state.listaTransportadoras"
                 :value="transportadora.ID_TRANSPORTADORA"
               >
-                {{ transportadora.RAZAO_SOCIAL }}</option
+                {{ transportadora.NOME_TRANSPORTADORA }}</option
               >
             </select>
           </div>
@@ -97,7 +120,7 @@ const actions = {
               type="text"
               name="VALOR_FRETE"
               id="VALOR_FRETE"
-              v-model="state.dbTransportadora.VALOR_FRETE"
+              v-model.lazy="state.dbTransportadora.VALOR_FRETE"
               v-money3="state.configVMoney"
             /> </div
         ></v-col>
@@ -107,7 +130,7 @@ const actions = {
     <div class="btns pt-4">
       <v-btn
         style="color: #3680ab; border: 1px solid #3680ab"
-        @click=""
+        @click="actions.closeModalTransportadoras"
         >Cancelar</v-btn
       >
       <v-btn
