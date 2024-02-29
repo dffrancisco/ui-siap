@@ -1,16 +1,3 @@
-export interface iParam {
-  cod_funcionario: number;
-  mes: number;
-  ano: number;
-}
-
-export interface iParamComCPF {
-  cod_funcionario: number;
-  cpf: string;
-  mes: number;
-  ano: number;
-}
-
 export interface iPonto {
   TIPO: number;
   STATUS: string;
@@ -31,11 +18,13 @@ export interface iTipoFaltasCount {
   LANCAR_FALTA: string;
   TIPO: number;
   UPLOAD_ARQUIVO: string;
-  COUNT_TIPO: number;
+  COUNT: number;
 }
 
-export interface iCodFunc {
+export interface iGetDetalhes {
   cod_funcionario: number;
+  mes: number;
+  ano: number;
 }
 
 export interface iFaltaFeriadoFolga {
@@ -96,7 +85,7 @@ export interface iPropsTiposDeFalta {
   LANCAR_FALTA: string;
   TIPO: number;
   UPLOAD_ARQUIVO: string;
-  COUNT_TIPO: number;
+  COUNT: number;
 }
 
 export interface iRegistrarFalta {

@@ -1,24 +1,19 @@
 import axios from "axios";
 import {
-  iCodFunc,
   iDadosDocumento,
   iDeletarArquivo,
   iDeletarDocumento,
   iDeletarFalta,
   iFaltaFeriadoFolga,
   iGetDadosParaImpressaoIndividual,
-  iParam,
-  iParamComCPF,
+  iGetDetalhes,
   iParamDocumentoAusencia,
   iRegistrarDocumentoAusencia,
   iRegistrarFalta,
 } from "../interface";
 const caminho = "siap/gerenciarFolhaPonto";
 
-type iGetPontosFunction = (param: iParamComCPF) => Promise<object>;
-type iGetResumoPontosFuncionario = (param: iParam) => Promise<object>;
-type iGetTipoFaltas = (param: iParam) => Promise<object>;
-type iGetDadosFuncionario = (param: iCodFunc) => Promise<object>;
+type igetDetalhes = (param: iGetDetalhes) => Promise<object>;
 type iSetFeriadoFolga = (param: iFaltaFeriadoFolga) => Promise<object>;
 type iSetFalta = (param: iRegistrarFalta) => Promise<object>;
 type iDeleteFalta = (param: iDeletarFalta) => Promise<object>;
@@ -28,38 +23,11 @@ type iInserirRegistroAusencia = (param: iRegistrarDocumentoAusencia) => Promise<
 type iGetDocumentoAusencia = (param: iParamDocumentoAusencia) => Promise<iDadosDocumento[]>;
 type iGetDadosParaImpressaoPDF = (param: iGetDadosParaImpressaoIndividual) => Promise<object>;
 
-const getDadosFuncionario: iGetDadosFuncionario = async (param) => {
+const getDetalhes: igetDetalhes = async (param) => {
   let { data } = await axios.post(caminho, {
-    call: "getDadosFuncionario",
+    call: "getDetalhes",
     param,
   });
-  return data;
-};
-
-const getPontos: iGetPontosFunction = async (param) => {
-  let { data } = await axios.post(caminho, {
-    call: "getPontos",
-    param,
-  });
-
-  return data;
-};
-
-const getResumoPontosFuncionario: iGetResumoPontosFuncionario = async (param) => {
-  let { data } = await axios.post(caminho, {
-    call: "getResumoPontosFuncionario",
-    param,
-  });
-
-  return data;
-};
-
-const getTipoFaltas: iGetTipoFaltas = async (param) => {
-  let { data } = await axios.post(caminho, {
-    call: "getTipoFaltas",
-    param,
-  });
-
   return data;
 };
 
@@ -202,10 +170,10 @@ const getDadosParaImpressao: iGetDadosParaImpressaoPDF = async (param) => {
 };
 
 export default {
-  getDadosFuncionario,
-  getPontos,
-  getResumoPontosFuncionario,
-  getTipoFaltas,
+  getDetalhes,
+  // getPontos,
+  // getResumoPontosFuncionario,
+  // getTipoFaltas,
   setFaltaFeriadoOuFolga,
   deletarFalta,
   deletarDocumento,

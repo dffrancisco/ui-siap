@@ -1,11 +1,9 @@
 import { computed, nextTick, reactive, ref } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import {
-  iCodFunc,
   iDadosDocumento,
   iGetDadosParaImpressaoIndividual,
-  iParam,
-  iParamComCPF,
+  iGetDetalhes,
   iParamDocumentoAusencia,
   iPonto,
   iTipoFaltasCount,
@@ -18,10 +16,10 @@ import router from "@/router";
 import { anosToSelect, mesesToSelect } from "@/constants/constants";
 
 export const state = reactive({
+  detalhes: {} as any,
   pontos: {},
-  resumoPontosFuncionario: {},
+  resumoPontos: {},
   tipoFaltas: <iTipoFaltasCount[]>[],
-  contadorDeFaltas: {},
   loading: false,
   loadingCalendar: false,
   nome: <string | null>null,
@@ -29,7 +27,7 @@ export const state = reactive({
   loginFuncionario: <string | null>null,
   codFuncionario: 0,
   dataAdmissao: null,
-  dadosFuncionario: {},
+  dadosFuncionario: {} as any,
   cpf: <string | null>null,
   QTD_A_JUSTIFICAR: 0,
   QTD_FALTAS_JUSTIFICADAS: 0,
@@ -66,10 +64,7 @@ export const actions = {
 
   async atualizarTela() {
     state.loading = true;
-    await actions.getDadosFuncionario(state.codFuncionario);
-    await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
-    await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
-    await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
+    await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
     actions.getFotoFuncionarioURL(state.cpf);
     state.modalJustificarFalta.close();
     state.loading = false;
@@ -79,82 +74,34 @@ export const actions = {
     state.modalJustificarFalta.close();
   },
 
-  async getDadosFuncionario(cod_funcionario: number) {
-    const param: iCodFunc = {
+  async getDetalhes(cod_funcionario: number, mes: number, ano: number) {
+    const param: iGetDetalhes = {
       cod_funcionario: cod_funcionario,
+      mes: mes,
+      ano: ano,
     };
 
     try {
-      state.dadosFuncionario = await gerenciarFolhaPontoDetalhesService.getDadosFuncionario(param);
-      state.nome = state.dadosFuncionario[0].NOME_COMP;
-      state.cpf = state.dadosFuncionario[0].CPF;
-      state.cargo = state.dadosFuncionario[0].CARGO;
-      state.loginFuncionario = state.dadosFuncionario[0].LOGIN;
-      state.dataAdmissao = state.dadosFuncionario[0].DATA_ADMISSAO;
+      state.detalhes = await gerenciarFolhaPontoDetalhesService.getDetalhes(param);
+      const detalhes = state.detalhes;
+      state.dadosFuncionario = detalhes.dadosFuncionario;
+      state.pontos = detalhes.pontos;
+      state.resumoPontos = detalhes.resumoPontos;
+      state.tipoFaltas = detalhes.tipoFaltas;
+      state.QTD_PONTOS_NAO_BATIDOS = detalhes.resumoPontos.QTD_PONTOS_NAO_BATIDOS;
+      state.QTD_FALTAS_JUSTIFICADAS = detalhes.resumoPontos.QTD_FALTAS_JUSTIFICADAS;
+      state.QTD_PONTOS_INCOMPLETOS = detalhes.resumoPontos.QTD_PONTOS_INCOMPLETOS;
+      state.QTD_A_JUSTIFICAR = detalhes.resumoPontos.QTD_A_JUSTIFICAR;
+      state.nome = state.dadosFuncionario.NOME_COMP;
+      state.cpf = state.dadosFuncionario.CPF;
+      state.cargo = state.dadosFuncionario.CARGO;
+      state.loginFuncionario = state.dadosFuncionario.LOGIN;
+      state.dataAdmissao = state.dadosFuncionario.DATA_ADMISSAO;
     } catch (error) {
+      console.error(error);
       Swal.fire({
         icon: "error",
         text: "Ocorreu um erro ao buscar os dados do funcionário.",
-      });
-    }
-  },
-
-  async getPontos(cod_funcionario: number, cpf: string, mes: number, ano: number) {
-    const param: iParamComCPF = {
-      cod_funcionario: cod_funcionario,
-      cpf: cpf,
-      mes: mes,
-      ano: ano,
-    };
-
-    try {
-      state.pontos = await gerenciarFolhaPontoDetalhesService.getPontos(param);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        text: "Ocorreu um erro ao buscar os pontos do funcionário.",
-      });
-    }
-  },
-
-  async getTipoFaltas(cod_funcionario: number, mes: number, ano: number) {
-    const param: iParam = {
-      cod_funcionario: cod_funcionario,
-      mes: mes,
-      ano: ano,
-    };
-    try {
-      //@ts-ignore
-      state.tipoFaltas = await gerenciarFolhaPontoDetalhesService.getTipoFaltas(param);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        text: "Ocorreu um erro ao buscar os tipos de faltas.",
-      });
-    }
-  },
-
-  async getResumoPontosFuncionario(cod_funcionario: number, mes: number, ano: number) {
-    const param: iParam = {
-      cod_funcionario: cod_funcionario,
-      mes: mes,
-      ano: ano,
-    };
-
-    try {
-      state.resumoPontosFuncionario = await gerenciarFolhaPontoDetalhesService.getResumoPontosFuncionario(param);
-
-      for (const value of Object.values(state.resumoPontosFuncionario)) {
-        for (const [prop, val] of Object.entries(value)) {
-          if (state.hasOwnProperty(prop)) {
-            state[prop] = val;
-          }
-        }
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        text: "Ocorreu um erro ao buscar o resumo dos pontos do funcionário.",
       });
     }
   },
@@ -276,11 +223,7 @@ export const actions = {
       state.initialDate = new Date(state.ano, state.mes - 1, 1);
       actions.modal();
 
-      await actions.getDadosFuncionario(state.codFuncionario);
-      await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
-      await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
-      await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
-
+      await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
       state.loading = false;
     });
   },
@@ -288,11 +231,7 @@ export const actions = {
   async getDadosPontos() {
     state.loadingCalendar = true;
 
-    await actions.getDadosFuncionario(state.codFuncionario);
-    await actions.getPontos(state.codFuncionario, state.cpf, state.mes, state.ano);
-    await actions.getResumoPontosFuncionario(state.codFuncionario, state.mes, state.ano);
-    await actions.getTipoFaltas(state.codFuncionario, state.mes, state.ano);
-
+    await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
     await nextTick();
     state.initialDate = new Date(state.ano, state.mes - 1, 1);
 
@@ -438,7 +377,7 @@ export const tipoFaltaModal = computed(() => {
 
   if (pontosDiaSelecionado.value.COD_FUNCIONARIO == undefined) {
     let indexPontoIncompleto = tipoFaltas.findIndex((tipoFalta) => {
-      return tipoFalta.ID_TIPO_FALTA == 10;
+      return tipoFalta.TIPO == 9;
     });
 
     tipoFaltas.splice(indexPontoIncompleto, 1);
@@ -452,7 +391,7 @@ export const tipoFaltaModal = computed(() => {
     pontosDiaSelecionado.value.HORA_SAIDA == null
   ) {
     let pontoIncompleto = tipoFaltas.find((tipoFalta) => {
-      return tipoFalta.ID_TIPO_FALTA == 10;
+      return tipoFalta.TIPO == 9;
     });
     return [pontoIncompleto];
   }

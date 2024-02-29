@@ -144,7 +144,7 @@ actions.init(route);
                     >
                       <div class="funcionario__card__faltas__info__count">
                         {{ tipoFalta.DESCRICAO }}:
-                        <b> {{ tipoFalta.COUNT_TIPO }}</b>
+                        <b> {{ tipoFalta.COUNT }}</b>
                       </div>
                     </div>
                   </div>
