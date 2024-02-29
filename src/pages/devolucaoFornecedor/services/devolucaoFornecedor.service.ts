@@ -29,9 +29,9 @@ const getDevolucoes: iGetDevolucoesFunction = async ({ offset, param }) => {
     return data;
 }
 
-const devolucaoSelecionado = async (id_devolucao: number) => {
+const getDevolucao = async (id_devolucao: number) => {
     let { data } = await axios.post(caminho, {
-        call: 'devolucaoSelecionado',
+        call: 'getDevolucao',
         ID_DEVOLUCAO_FORNECEDOR: id_devolucao
     })
     return data;
@@ -42,14 +42,6 @@ const getFornecedores: iGetFornecedoresFunction = async ({ offset, param }) => {
         call: 'getFornecedores',
         offset,
         param
-    })
-    return data;
-}
-
-const fornecedorSelecionado = async (id_fornecedor: number) => {
-    let { data } = await axios.post(caminho, {
-        call: 'fornecedorSelecionado',
-        ID_FORNECEDOR: id_fornecedor
     })
     return data;
 }
@@ -114,8 +106,7 @@ const updateTransportadoraDevolucao: iUpdateTransportadoraDevolucaoFunction = as
 export default {
     getDevolucoes,
     getFornecedores,
-    fornecedorSelecionado,
-    devolucaoSelecionado,
+    getDevolucao,
     getItens,
     getTransportadoras,
     getTransportadoraDevolucao,

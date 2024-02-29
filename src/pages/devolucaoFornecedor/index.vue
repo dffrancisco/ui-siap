@@ -245,7 +245,7 @@ onUnmounted(() => {
         title="Selecionar Devolução"
       >
         <ModalLocalizarDevolucao
-          @devolucaoSelecionado="actions.selecionarDevolucao"
+          @devolucaoSelecionado="actions.getDevolucao"
           @closeModalLocalizarDevolucoes="actions.closeModalLocalizarDevolucoes"
           :modalOpened="state.modalLocalizarDevolucoesOpened"
         ></ModalLocalizarDevolucao>
@@ -258,7 +258,7 @@ onUnmounted(() => {
       >
         <ModalSelecionarFornecedor
           @closeModalSelecionarFornecedor="actions.closeModalSelecionarFornecedor"
-          @selecionarFornecedor="actions.fornecedorSelecionado"
+          @selecionarFornecedor="actions.getDevolucao"
           :modalOpened="state.modalSelecionarFornecedorOpened"
         ></ModalSelecionarFornecedor>
       </div>
@@ -273,7 +273,7 @@ onUnmounted(() => {
           :id_devolucaoFornecedor="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
           :modalOpened="state.modalTransportadoraOpened"
           @closeModalTransportadoras="actions.closeModalTransportadora"
-          @selecionarTransportadoraDevolucao="actions.transportadoraDevolucaoSelecionada"
+          @selecionarTransportadoraDevolucao="actions.getDevolucao"
         ></ModalTransportadora>
       </div>
 

@@ -87,10 +87,12 @@ const actions = {
         icon: "warning",
         title: "Selecione uma devolução",
       });
-      return;
+      return false;
     }
 
     emit("devolucaoSelecionado", devolucao);
+
+    actions.closeModalLocalizarDevolucoes();
   },
 
   closeModalLocalizarDevolucoes() {

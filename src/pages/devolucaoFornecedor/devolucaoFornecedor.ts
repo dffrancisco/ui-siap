@@ -141,13 +141,13 @@ export const actions = {
         actions.criarModais();
     },
 
-    async selecionarDevolucao(devolucao: iDevolucao) {
+    async getDevolucao(devolucao: iDevolucao) {
         try {
             state.loading = true
 
             let id_devolucao = devolucao.ID_DEVOLUCAO_FORNECEDOR
 
-            let data = await serviceDevolucaoFornecedor.devolucaoSelecionado(id_devolucao)
+            let data = await serviceDevolucaoFornecedor.getDevolucao(id_devolucao)
 
             state.dbFornecedor = {
                 ...data
@@ -166,8 +166,6 @@ export const actions = {
                 state.disabledBtnFinalizar = true
             }
 
-            state.modalLocalizarDevolucoes.close()
-
             state.loading = false;
         } catch (error) {
             state.loading = false;
@@ -178,59 +176,6 @@ export const actions = {
         }
     },
 
-    async fornecedorSelecionado(fornecedor: iFornecedor, devolucao: iDevolucao) {
-        try {
-            state.loading = true
-
-            let id_fornecedor = fornecedor.ID_FORNECEDOR
-
-            let data = await serviceDevolucaoFornecedor.fornecedorSelecionado(id_fornecedor)
-
-            state.dbDevolucao = {} as iDevolucao
-            state.dbTransportadoraDevolucao = {} as iTranspordadoraDevolucao
-
-            state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR = devolucao.ID_DEVOLUCAO_FORNECEDOR
-
-            state.dbFornecedor = {
-                ...data
-            }
-
-            actions.habilitarBtns()
-            state.modalSelecionarFornecedor.close()
-
-            state.loading = false
-        } catch (error) {
-            state.loading = false
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao selecionar fornecedor!",
-            });
-        }
-    },
-
-    async transportadoraDevolucaoSelecionada(transportadoraDevolucao: iTranspordadoraDevolucao) {
-        try {
-            state.loading = true
-
-            let id_devolucaoFornecedorTransp = transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP
-            let data = await serviceDevolucaoFornecedor.getTransportadoraDevolucao(id_devolucaoFornecedorTransp)
-
-            state.dbTransportadoraDevolucao = {} as iTranspordadoraDevolucao
-            state.dbTransportadoraDevolucao = {
-                ...data
-            }
-
-            state.modalTransportadora.close()
-
-            state.loading = false
-        } catch (error) {
-            state.loading = false
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao selecionar transportadora!",
-            });
-        }
-    }
 }
 
 export default { state, actions }

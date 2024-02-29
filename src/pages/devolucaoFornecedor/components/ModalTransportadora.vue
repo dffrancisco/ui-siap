@@ -128,7 +128,9 @@ const actions = {
 
       state.dbTransportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP = data.ID_DEVOLUCAO_FORNECEDOR_TRANSP;
 
-      emits("selecionarTransportadoraDevolucao", state.dbTransportadoraDevolucao);
+      emits("selecionarTransportadoraDevolucao", transportadoraDevolucao);
+
+      actions.closeModalTransportadoras();
 
       state.loading = false;
     } catch (error) {
@@ -148,6 +150,7 @@ const actions = {
 
       transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP = props.id_devolucaoFornecedorTransp;
       transportadoraDevolucao.VALOR_FRETE = utils.formatValorUSA(transportadoraDevolucao.VALOR_FRETE.toString());
+      transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR = props.id_devolucaoFornecedor;
 
       let param = {
         ...transportadoraDevolucao,
@@ -155,7 +158,9 @@ const actions = {
 
       await serviceDevolucaoFornecedor.updateTransportadoraDevolucao({ param });
 
-      emits("selecionarTransportadoraDevolucao", state.dbTransportadoraDevolucao);
+      emits("selecionarTransportadoraDevolucao", transportadoraDevolucao);
+
+      actions.closeModalTransportadoras();
 
       state.loading = false;
     } catch (error) {

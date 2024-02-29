@@ -124,7 +124,9 @@ const actions = {
       let devolucao = await serviceDevolucaoFornecedor.addNotaDevolucao(fornecedor.ID_FORNECEDOR);
       state.loading = false;
 
-      emit("selecionarFornecedor", fornecedor, devolucao);
+      emit("selecionarFornecedor", devolucao);
+
+      actions.closeModalSelecionarFornecedor();
     } catch (error) {
       state.loading = false;
       Swal.fire({

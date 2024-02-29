@@ -25,13 +25,7 @@ const state = reactive({
   edtItemQtd: <HTMLInputElement>{},
 });
 
-const actions = {
-  validarQuantidade(input) {
-    if (input.value > props.dbItem.QUANTIDADE) {
-      input.value = props.dbItem.QUANTIDADE;
-    }
-  },
-};
+const actions = {};
 
 nextTick(async () => {
   state.edtItemQtd = <any>document.getElementById("QTD_DEVOLUCAO");
