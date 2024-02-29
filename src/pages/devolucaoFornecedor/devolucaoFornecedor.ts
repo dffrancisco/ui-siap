@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal'
 
-import { iDevolucao, iFornecedor, iTransportadora } from './interfaces'
+import { iDevolucao, iFornecedor, iTranspordadoraDevolucao } from './interfaces'
 import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
 import Swal from 'sweetalert2';
 
@@ -19,7 +19,7 @@ export const state = reactive({
 
     dbDevolucao: <iDevolucao>{},
     dbFornecedor: <iFornecedor>{},
-    dbTransportadora: <iTransportadora>{},
+    dbTransportadoraDevolucao: <iTranspordadoraDevolucao>{},
 
     disabledBtnFinalizar: true,
     disabledBtnDelete: true,
@@ -102,6 +102,32 @@ export const actions = {
         state.modalEscolherItem.close();
     },
 
+    fretePorConta(tipoDeFrete: number) {
+        if (tipoDeFrete == 0) {
+            return "Por conta do emitente"
+        }
+
+        if (tipoDeFrete == 1) {
+            return "Por conta do destinatário/remetente"
+        }
+
+        if (tipoDeFrete == 2) {
+            return "Por conta de terceiros"
+        }
+
+        if (tipoDeFrete == 3) {
+            return "Transporte próprio por conta do remetente"
+        }
+
+        if (tipoDeFrete == 4) {
+            return "Transporte próprio por conta do destinatário"
+        }
+
+        if (tipoDeFrete == 9) {
+            return "Sem transporte"
+        }
+    },
+
 
     habilitarBtns() {
         state.disabledBtnFinalizar = false
@@ -121,7 +147,7 @@ export const actions = {
 
             let id_devolucao = devolucao.ID_DEVOLUCAO_FORNECEDOR
 
-            let data = await serviceDevolucaoFornecedor.devolucaoSelecionado({ id_devolucao })
+            let data = await serviceDevolucaoFornecedor.devolucaoSelecionado(id_devolucao)
 
             state.dbFornecedor = {
                 ...data
@@ -131,7 +157,7 @@ export const actions = {
                 ...data
             }
 
-            state.dbTransportadora = {
+            state.dbTransportadoraDevolucao = {
                 ...data
             }
 
@@ -152,16 +178,18 @@ export const actions = {
         }
     },
 
-    async fornecedorSelecionado(fornecedor: iFornecedor) {
+    async fornecedorSelecionado(fornecedor: iFornecedor, devolucao: iDevolucao) {
         try {
             state.loading = true
 
             let id_fornecedor = fornecedor.ID_FORNECEDOR
 
-            let data = await serviceDevolucaoFornecedor.fornecedorSelecionado({ id_fornecedor })
+            let data = await serviceDevolucaoFornecedor.fornecedorSelecionado(id_fornecedor)
 
             state.dbDevolucao = {} as iDevolucao
-            state.dbTransportadora = {} as iTransportadora
+            state.dbTransportadoraDevolucao = {} as iTranspordadoraDevolucao
+
+            state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR = devolucao.ID_DEVOLUCAO_FORNECEDOR
 
             state.dbFornecedor = {
                 ...data
@@ -176,6 +204,30 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao selecionar fornecedor!",
+            });
+        }
+    },
+
+    async transportadoraDevolucaoSelecionada(transportadoraDevolucao: iTranspordadoraDevolucao) {
+        try {
+            state.loading = true
+
+            let id_devolucaoFornecedorTransp = transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP
+            let data = await serviceDevolucaoFornecedor.getTransportadoraDevolucao(id_devolucaoFornecedorTransp)
+
+            state.dbTransportadoraDevolucao = {} as iTranspordadoraDevolucao
+            state.dbTransportadoraDevolucao = {
+                ...data
+            }
+
+            state.modalTransportadora.close()
+
+            state.loading = false
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao selecionar transportadora!",
             });
         }
     }

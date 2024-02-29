@@ -108,17 +108,17 @@ onUnmounted(() => {
         <h2 class="pb-2 font-weight-regular">Dados da Transportadora</h2>
         <div class="container">
           <v-row>
-            <v-col cols="8">
+            <v-col cols="7">
               <label>Nome:</label>
-              <p>{{ state.dbTransportadora.NOME_TRANSPORTADORA || "-" }}</p>
+              <p>{{ state.dbTransportadoraDevolucao.NOME_TRANSPORTADORA || "-" }}</p>
             </v-col>
-            <v-col cols="2">
+            <v-col cols="3">
               <label>Frete por conta:</label>
-              <p>{{ state.dbTransportadora.TIPO_FRETE || "-" }}</p>
+              <p>{{ actions.fretePorConta(state.dbTransportadoraDevolucao.TIPO_FRETE) || "-" }}</p>
             </v-col>
             <v-col>
               <label>Valor:</label>
-              <p>{{ utils.formatValor(state.dbTransportadora.VALOR_FRETE) || "-" }}</p>
+              <p>{{ utils.formatValor(state.dbTransportadoraDevolucao.VALOR_FRETE) || "-" }}</p>
             </v-col>
             <v-col>
               <button
@@ -130,7 +130,9 @@ onUnmounted(() => {
                   size="25px"
                   color="#2d9cdb"
                 >
-                  {{ state.dbTransportadora.ID_TRANSPORTADORA ? "mdi-pencil" : "mdi-plus-circle-outline" }}
+                  {{
+                    state.dbTransportadoraDevolucao.ID_TRANSPORTADORA ? "mdi-pencil" : "mdi-plus-circle-outline"
+                  }}
                 </v-icon>
               </button>
             </v-col>
@@ -147,11 +149,11 @@ onUnmounted(() => {
               <label>N° Nota:</label>
               <p>{{ state.dbDevolucao.NUM_NOTA_DEVOLUCAO || "-" }}</p>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="5">
               <label>Chave:</label>
               <p>{{ utils.formatarChaveNF(state.dbDevolucao.CHAVE_DEVOLUCAO) }}</p>
             </v-col>
-            <v-col cols="2">
+            <v-col cols="3">
               <label>Data:</label>
               <p>{{ utils.dataBrasil(state.dbDevolucao.DATA) || "-" }}</p>
             </v-col>
@@ -267,9 +269,11 @@ onUnmounted(() => {
         title="Transportadora"
       >
         <ModalTransportadora
-          :id_devolucaoFornecedorTransp="state.dbTransportadora.ID_DEVOLUCAO_FORNECEDOR_TRANSP"
+          :id_devolucaoFornecedorTransp="state.dbTransportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP"
+          :id_devolucaoFornecedor="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
           :modalOpened="state.modalTransportadoraOpened"
           @closeModalTransportadoras="actions.closeModalTransportadora"
+          @selecionarTransportadoraDevolucao="actions.transportadoraDevolucaoSelecionada"
         ></ModalTransportadora>
       </div>
 

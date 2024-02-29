@@ -121,10 +121,10 @@ const actions = {
   async addNotaDevolucao(fornecedor: iFornecedor) {
     try {
       state.loading = true;
-      await serviceDevolucaoFornecedor.addNotaDevolucao(fornecedor.ID_FORNECEDOR);
+      let devolucao = await serviceDevolucaoFornecedor.addNotaDevolucao(fornecedor.ID_FORNECEDOR);
       state.loading = false;
 
-      emit("selecionarFornecedor", fornecedor);
+      emit("selecionarFornecedor", fornecedor, devolucao);
     } catch (error) {
       state.loading = false;
       Swal.fire({

@@ -35,8 +35,9 @@ export interface iItem {
     CFOP: string
 }
 
-export interface iTransportadora {
+export interface iTranspordadoraDevolucao {
     ID_DEVOLUCAO_FORNECEDOR_TRANSP: number,
+    ID_DEVOLUCAO_FORNECEDOR: number,
     ID_TRANSPORTADORA: number,
     NOME_TRANSPORTADORA: string,
     TIPO_FRETE: number,
@@ -63,16 +64,16 @@ export interface iParamGetItens {
     param: object
 }
 
-export interface iParamFornecedorSelecionado {
-    id_fornecedor: number
+export interface iParamInsertTransportadoraDevolucao {
+    param: object
 }
 
-export interface iParamDevolucaoSelecionado {
-    id_devolucao: number
+export interface iParamUpdateTransportadoraDevolucao {
+    param: object
 }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }
-export interface iDevolucaoSelecionadoResponse extends iDevolucao { }
 export interface iGetFornecedoresResponse extends iFornecedor { }
-export interface iFornecedorSelecionadoResponse extends iFornecedor { }
 export interface iGetItensResponse extends iItem { }
+export interface iInsertTransportadoraResponse extends iTranspordadoraDevolucao { }
+export interface iUpdateTransportadoraResponse extends iTranspordadoraDevolucao { }
