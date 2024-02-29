@@ -110,20 +110,20 @@ actions.init(route);
                       <div class="div__funcionario__card__infos">
                         <div class="funcionario__card__infos">
                           Pontos não batidos:
-                          <b>{{ state.QTD_PONTOS_NAO_BATIDOS || 0 }}</b>
+                          <b>{{ state.QTD_PONTOS_NAO_BATIDOS }}</b>
                         </div>
                         <div class="funcionario__card__infos">
                           Pontos incompletos:
-                          <b>{{ state.QTD_PONTOS_INCOMPLETOS || 0 }}</b>
+                          <b>{{ state.QTD_PONTOS_INCOMPLETOS }}</b>
                         </div>
 
                         <div class="funcionario__card__infos">
                           Qtd de justificativas:
-                          <b>{{ state.QTD_FALTAS_JUSTIFICADAS || 0 }}</b>
+                          <b>{{ state.QTD_FALTAS_JUSTIFICADAS }}</b>
                         </div>
                         <div class="funcionario__card__infos__justificar">
                           Pontos à justificar:
-                          <b>{{ state.QTD_A_JUSTIFICAR || 0 }}</b>
+                          <b>{{ state.QTD_A_JUSTIFICAR }}</b>
                         </div>
                       </div>
                     </v-col>
