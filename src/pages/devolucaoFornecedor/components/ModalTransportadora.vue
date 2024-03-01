@@ -4,6 +4,7 @@ import { iTranspordadoraDevolucao, iListaTransportadoras } from "../interfaces";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
+import { configVMoney } from "../../../constants/constants";
 
 const props = defineProps<{
   modalOpened: boolean;
@@ -31,15 +32,8 @@ const state = reactive({
   dbTransportadoraDevolucao: <iTranspordadoraDevolucao>{},
   listaTransportadoras: <iListaTransportadoras[]>[],
 
-  configVMoney: {
-    thousands: ".",
-    decimal: ",",
-    precision: 2,
-    focusOnRight: true,
-    disableNegative: true,
-  },
-
   loading: false,
+  valor: 0,
 });
 
 const actions = {
@@ -98,9 +92,8 @@ const actions = {
 
       state.dbTransportadoraDevolucao = {
         ...data,
+        VALOR_FRETE: utils.formatValor(data.VALOR_FRETE.toString()),
       };
-
-      state.dbTransportadoraDevolucao.VALOR_FRETE = state.dbTransportadoraDevolucao.VALOR_FRETE * 100;
 
       state.loading = false;
     } catch (error) {
@@ -217,8 +210,9 @@ const actions = {
             type="text"
             name="VALOR_FRETE"
             id="VALOR_FRETE"
+            :model-modifiers="{ number: true }"
             v-model.lazy="state.dbTransportadoraDevolucao.VALOR_FRETE"
-            v-money3="state.configVMoney"
+            v-money3="configVMoney"
           />
         </v-col>
       </v-row>
