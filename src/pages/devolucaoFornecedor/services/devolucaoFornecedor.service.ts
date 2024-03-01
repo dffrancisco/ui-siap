@@ -37,6 +37,14 @@ const getDevolucao = async (id_devolucao: number) => {
     return data;
 }
 
+const getItensDevolucao = async (id_devolucao: number) => {
+    let { data } = await axios.post(caminho, {
+        call: 'getItensDevolucao',
+        ID_DEVOLUCAO_FORNECEDOR: id_devolucao
+    })
+    return data;
+}
+
 const getFornecedores: iGetFornecedoresFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
         call: 'getFornecedores',
@@ -107,6 +115,7 @@ export default {
     getDevolucoes,
     getFornecedores,
     getDevolucao,
+    getItensDevolucao,
     getItens,
     getTransportadoras,
     getTransportadoraDevolucao,

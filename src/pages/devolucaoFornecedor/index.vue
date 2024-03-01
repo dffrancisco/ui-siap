@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onUnmounted } from "vue";
-import { state, actions } from "./devolucaoFornecedor";
+import { state, actions, numNotas } from "./devolucaoFornecedor";
 import { useEventListener } from "@vueuse/core";
 
 import ModalLocalizarDevolucao from "./components/ModalLocalizarDevolucao.vue";
@@ -55,9 +55,10 @@ onUnmounted(() => {
 <template>
   <v-container>
     <v-card
-      class="pa-5"
+      class="pa-4"
       style="margin: 0 auto"
-      width="1167px"
+      width="1164px"
+      height="728px"
     >
       <div class="btns">
         <v-btn
@@ -79,25 +80,36 @@ onUnmounted(() => {
       <!-- componente dados do fornecedor /-->
       <div class="pt-5">
         <v-row>
-          <v-col>
+          <v-col cols="7">
             <h2 class="pb-2 font-weight-regular">Dados do Fornecedor</h2>
             <div class="container"
               ><v-row>
                 <v-col cols="3">
                   <label>CNPJ: </label>
-                  <p>{{ state.dbFornecedor.CGC_FORNECEDOR || "-" }}</p>
+                  <p>{{ state.dbDevolucao.CGC_FORNECEDOR || "-" }}</p>
                 </v-col>
                 <v-col>
                   <label>Fornecedor: </label>
-                  <p>{{ state.dbFornecedor.RAZAO_SOCIAL || "-" }}</p>
+                  <p>{{ state.dbDevolucao.RAZAO_SOCIAL || "-" }}</p>
                 </v-col>
               </v-row>
             </div>
           </v-col>
           <v-col>
-            <h2 class="pb-2 font-weight-regular">Notas vinculadas (0)</h2>
-            <div class="container">
-              <span>Nenhuma nota vinculada, necessário adicionar itens!</span>
+            <h2 class="pb-2 font-weight-regular">Notas vinculadas ({{ numNotas.length }})</h2>
+            <div class="container notas_vinculadas">
+              <span v-if="!state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
+                >Nenhuma nota vinculada, necessário adicionar itens!</span
+              >
+              <v-card
+                v-if="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
+                v-for="notas in numNotas"
+              >
+                <div class="card_nota pa-2">
+                  <span>{{ notas.NUM_NOTA }}</span>
+                  <p>{{ utils.dataBrasil(notas.DATA_EMISSAO) }}</p>
+                </div>
+              </v-card>
             </div>
           </v-col>
         </v-row>
@@ -108,17 +120,17 @@ onUnmounted(() => {
         <h2 class="pb-2 font-weight-regular">Dados da Transportadora</h2>
         <div class="container">
           <v-row>
-            <v-col cols="7">
+            <v-col cols="6">
               <label>Nome:</label>
-              <p>{{ state.dbTransportadoraDevolucao.NOME_TRANSPORTADORA || "-" }}</p>
+              <p>{{ state.dbDevolucao.NOME_TRANSPORTADORA || "-" }}</p>
             </v-col>
-            <v-col cols="3">
+            <v-col cols="4">
               <label>Frete por conta:</label>
-              <p>{{ actions.fretePorConta(state.dbTransportadoraDevolucao.TIPO_FRETE) || "-" }}</p>
+              <p>{{ actions.fretePorConta(state.dbDevolucao.TIPO_FRETE) || "-" }}</p>
             </v-col>
             <v-col>
               <label>Valor:</label>
-              <p>{{ utils.formatValor(state.dbTransportadoraDevolucao.VALOR_FRETE) || "-" }}</p>
+              <p>{{ utils.formatValor(state.dbDevolucao.VALOR_FRETE) || "-" }}</p>
             </v-col>
             <v-col>
               <button
@@ -130,9 +142,7 @@ onUnmounted(() => {
                   size="25px"
                   color="#2d9cdb"
                 >
-                  {{
-                    state.dbTransportadoraDevolucao.ID_TRANSPORTADORA ? "mdi-pencil" : "mdi-plus-circle-outline"
-                  }}
+                  {{ state.dbDevolucao.ID_TRANSPORTADORA ? "mdi-pencil" : "mdi-plus-circle-outline" }}
                 </v-icon>
               </button>
             </v-col>
@@ -174,9 +184,7 @@ onUnmounted(() => {
         <div class="cards">
           <v-card
             v-if="state.dbDevolucao.STATUS != 1"
-            v-for="i in 1"
-            :key="i"
-            class="card"
+            class="card card_escolher_item"
           >
             <button
               :disabled="state.disabledBtnAdicionarItens"
@@ -187,7 +195,29 @@ onUnmounted(() => {
             </button>
             <p> NOVO ITEM (F3) </p>
           </v-card>
-          <v-card></v-card>
+          <v-card
+            v-for="itens in state.dbItensDevolucao"
+            class="card pa-6"
+            :key="itens.ID_DEVOLUCAO_FORNECEDOR_ITEM"
+          >
+            <v-row class="card_item"
+              ><span>{{ itens.DESCRICAO }}</span>
+              <button
+                v-if="state.dbDevolucao.STATUS != 1"
+                title="DELETAR ITEM"
+                ><v-icon size="20px">mdi-delete</v-icon>
+              </button>
+            </v-row>
+            <v-row class="d-flex justify-space-between mt-6">
+              <span>NF: {{ itens.NUM_NOTA }}</span>
+              <span>{{ itens.QTD }}x {{ utils.formatValor(itens.VALOR_UNITARIO) }}</span>
+              <span
+                class="font-weight-bold"
+                style="font-size: 16px"
+                >{{ utils.formatValor(itens.VALOR_TOTAL) }}</span
+              >
+            </v-row>
+          </v-card>
         </div>
       </div>
 
@@ -269,7 +299,7 @@ onUnmounted(() => {
         title="Transportadora"
       >
         <ModalTransportadora
-          :id_devolucaoFornecedorTransp="state.dbTransportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP"
+          :id_devolucaoFornecedorTransp="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP"
           :id_devolucaoFornecedor="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
           :modalOpened="state.modalTransportadoraOpened"
           @closeModalTransportadoras="actions.closeModalTransportadora"
@@ -283,7 +313,7 @@ onUnmounted(() => {
         title="Escolher item"
       >
         <ModalEscolherItem
-          :idFornecedor="state.dbFornecedor.ID_FORNECEDOR"
+          :idFornecedor="state.dbDevolucao.ID_FORNECEDOR"
           :modalOpened="state.modalEscolherItemOpened"
           @closeModal="actions.closeModalEscolherItem"
         ></ModalEscolherItem>
@@ -296,7 +326,7 @@ onUnmounted(() => {
 
 <style scoped>
 h2 {
-  font-size: 16px;
+  font-size: 14px;
 }
 .btns {
   display: flex;
@@ -307,7 +337,7 @@ h2 {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 12px;
-  min-height: 68px;
+  height: 80px;
   display: flex;
   align-items: center;
 }
@@ -322,10 +352,15 @@ h2 {
 }
 
 .card {
-  width: 362px;
+  width: 340px;
   height: 77px;
   border-radius: 8px;
   background-color: #d9d9d9;
+  display: flex;
+  flex-direction: column;
+}
+
+.card_escolher_item {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -338,6 +373,49 @@ h2 {
   flex-wrap: wrap;
   gap: 10px;
   overflow: auto;
-  height: 184px;
+  height: 172px;
+}
+
+.card_nota {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #2d9cdb;
+  height: 54px;
+}
+
+.card_nota span {
+  color: #f2f2f2;
+  font-weight: 700;
+}
+
+.card_nota p {
+  color: #f2f2f2;
+}
+
+.notas_vinculadas {
+  gap: 4px;
+  overflow: auto;
+  flex-wrap: wrap;
+}
+
+.card_item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card_item span {
+  color: #000000;
+  font-weight: 700;
+  display: inline-block;
+  width: 270px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card_item button {
+  top: 80px;
 }
 </style>

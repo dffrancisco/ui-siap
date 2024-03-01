@@ -17,6 +17,19 @@ export interface iDevolucao {
     ID_DEVOLUCAO_FORNECEDOR_TRANSP: number
 }
 
+export interface iItensDevolucao {
+    ID_DEVOLUCAO_FORNECEDOR_ITEM: number,
+    ID_DEVOLUCAO_FORNECEDOR: number,
+    ID_NF_ENTRADA_MANIFESTO: number,
+    ID_NF_ENTRADA_ITEM: number,
+    QTD: number,
+    VALOR_UNITARIO: number,
+    VALOR_TOTAL: number,
+    DESCRICAO: string,
+    NUM_NOTA: number,
+    DATA_EMISSAO: string
+}
+
 export interface iFornecedor {
     ID_FORNECEDOR: number,
     CGC_FORNECEDOR: string,

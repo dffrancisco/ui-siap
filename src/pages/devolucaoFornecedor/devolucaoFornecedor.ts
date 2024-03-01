@@ -1,9 +1,21 @@
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal'
 
-import { iDevolucao, iFornecedor, iTranspordadoraDevolucao } from './interfaces'
+import { iDevolucao, iItensDevolucao } from './interfaces'
 import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
 import Swal from 'sweetalert2';
+
+export const numNotas = computed((): iItensDevolucao[] => {
+    let notasUnicas = {}
+
+    state.dbItensDevolucao.forEach(nota => {
+        if (!notasUnicas[nota.NUM_NOTA]) {
+            notasUnicas[nota.NUM_NOTA] = nota;
+        }
+    })
+
+    return Object.values(notasUnicas)
+})
 
 export const state = reactive({
     modalLocalizarDevolucoes: <iModalCreate>{},
@@ -18,8 +30,7 @@ export const state = reactive({
     modalEscolherItemOpened: false,
 
     dbDevolucao: <iDevolucao>{},
-    dbFornecedor: <iFornecedor>{},
-    dbTransportadoraDevolucao: <iTranspordadoraDevolucao>{},
+    dbItensDevolucao: <iItensDevolucao[]>[],
 
     disabledBtnFinalizar: true,
     disabledBtnDelete: true,
@@ -149,17 +160,13 @@ export const actions = {
 
             let data = await serviceDevolucaoFornecedor.getDevolucao(id_devolucao)
 
-            state.dbFornecedor = {
-                ...data
-            }
-
             state.dbDevolucao = {
-                ...data
+                ...data.DEVOLUCAO
             }
 
-            state.dbTransportadoraDevolucao = {
-                ...data
-            }
+            state.dbItensDevolucao = [
+                ...data.ITENS_DEVOLUCAO
+            ]
 
             actions.habilitarBtns()
             if (state.dbDevolucao.STATUS == 1) {
@@ -178,4 +185,4 @@ export const actions = {
 
 }
 
-export default { state, actions }
+export default { state, actions, numNotas }
