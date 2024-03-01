@@ -1,66 +1,310 @@
 <script setup lang="ts">
-import { actions, state } from "./compras";
-import { nextTick, onUnmounted, ref } from "vue";
-import { useEventListener } from "@vueuse/core";
-import globalActions from "@/store/globalActions";
-import cSearchProduto from "./components/cSearchProduto.vue";
+import { dataBrasil, formatValor } from "@/ts/utils";
+import { state, actions, marcasAgrupadas, valorPendente, qtdPedidosMaisDe20Dias } from "./compras";
 
-const tab = ref();
-
-const eventListener = useEventListener(document, "keydown", async (event) => {
-  if (event.key === "F1") {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-});
-
-nextTick(async () => {
-  state.displayProduto.uso = state.displayProduto.simples;
-
-  actions.grids();
-
-  actions.getProdutos();
-});
-
-onUnmounted(() => {
-  removeEventListener("keydown", eventListener);
-});
+actions.init();
 </script>
 
 <template>
   <title>Compras</title>
 
-  <v-card class="px-5" style="width: 1024px; margin: 0 auto">
-    <v-tabs v-model="tab" align-tabs="center" density="compact">
-      <v-tab value="produtos">Produtos</v-tab>
-      <v-tab value="compras">Compras</v-tab>
-    </v-tabs>
-    <v-window v-model="tab">
-      <v-window-item value="produtos">
-        <v-container>
-          <v-row>
-            <v-col cols="2">a</v-col>
-            <v-col cols="8">
-              <cSearchProduto />
-              <div id="xgProduto"></div>
-            </v-col>
-            <v-col cols="2">c</v-col>
-          </v-row>
-        </v-container>
-      </v-window-item>
-
-      <v-window-item value="compras">
-        <v-container> nnnnnnnnnnnn </v-container>
-      </v-window-item>
-    </v-window>
-  </v-card>
-
-  <div id="pnCodigoTela">COMPRAS</div>
-  <v-btn
-    variant="text"
-    @click="globalActions.toggleTheme()"
-    icon="mdi-theme-light-dark"
-  ></v-btn>
+  <div class="compras-container">
+    <div class="compras">
+      <div class="compras__titulo">COMPRAS</div>
+      <div class="compras__dashboard">
+        <v-card class="compras__dashboard__card">
+          <span>Pedidos Pend.</span>
+          <strong class="compras__dashboard__card__titulo">
+            {{ state.compras.length }}
+          </strong>
+        </v-card>
+        <v-card class="compras__dashboard__card">
+          <span>Valor Pendente</span>
+          <strong class="compras__dashboard__card__titulo">
+            {{ formatValor(valorPendente) }}
+          </strong>
+        </v-card>
+        <v-card class="compras__dashboard__card compras__dashboard__card--red">
+          <span>Pedidos 20D+</span>
+          <strong class="compras__dashboard__card__titulo">
+            {{ qtdPedidosMaisDe20Dias }}
+          </strong>
+        </v-card>
+      </div>
+      <div class="compras__dados">
+        <div class="compras__marcas">
+          <div class="compras__marcas__pesquisa">
+            <div class="input-group-dark">
+              <input
+                class="input-dark"
+                placeholder="informe a marca"
+                v-model="state.edtMarca"
+              />
+            </div>
+          </div>
+          <div class="compras__marcas__lista">
+            <div
+              v-for="marca in marcasAgrupadas"
+              class="compras__marcas__card"
+            >
+              <div class="compras__marcas__card__contador"> {{ marca.qtd }} </div>
+              <div class="compras__marcas__card__dados">
+                <span>{{ marca.nomeMarca }}</span>
+                <span>{{ formatValor(marca.valor) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <v-divider
+          vertical
+          color="grey"
+        ></v-divider>
+        <div class="compras__lista">
+          <v-data-table
+            class="compras__grid"
+            itemsPerPage="-1"
+            :fixed-footer="false"
+            :items="state.compras"
+            :headers="[
+              {
+                title: 'Nº Pedido',
+                key: 'ID_COMPRAS',
+                align: 'start',
+                sortable: true,
+              },
+              {
+                title: 'Comprador',
+                key: 'COMPRADOR',
+                align: 'start',
+                sortable: true,
+              },
+              {
+                title: 'Marca',
+                key: 'NOME_MARCA',
+                align: 'start',
+                sortable: true,
+              },
+              {
+                title: 'Data',
+                key: 'DATA',
+                align: 'center',
+                sortable: true,
+              },
+              {
+                title: 'Valor',
+                key: 'VALOR',
+                align: 'center',
+                sortable: true,
+              },
+              {
+                title: 'Ações',
+                key: 'ACOES',
+                align: 'center',
+                sortable: false,
+              },
+            ]"
+          >
+            <template v-slot:item.DATA="{ value }">
+              {{ dataBrasil(value) }}
+            </template>
+            <template v-slot:item.VALOR="{ value }">
+              {{ formatValor(value) }}
+            </template>
+            <template v-slot:bottom> </template>
+          </v-data-table>
+          <div class="compras__grid__footer">
+            <v-btn
+              @click="actions.onClickNovoPedido"
+              class="compras__btn-novo-pedido"
+              >Novo Pedido (F1)</v-btn
+            >
+          </div>
+        </div>
+      </div>
+      <v-overlay
+        :model-value="state.loading"
+        class="align-center justify-center"
+        persistent
+      >
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-overlay>
+      <div id="pnCodigoTela">COMPRAS</div>
+    </div>
+  </div>
 </template>
 
-<style></style>
+<style lang="scss">
+.input-group-dark {
+  display: flex;
+  gap: 4px;
+  padding: 10px;
+  color: var(--grey-400);
+  font-size: 14px;
+  background-color: var(--grey-800);
+  border-radius: 6px;
+}
+
+.input-dark {
+  color: var(--grey-400);
+  font-size: 14px;
+  width: 100%;
+  height: 24px;
+}
+
+.compras-container {
+  width: 100vw;
+  height: 100vh;
+  background: #161b21;
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.compras {
+  display: flex;
+  flex-direction: column;
+  width: 1116px;
+  gap: 12px;
+}
+
+.compras__titulo {
+  padding: 10px 0;
+  color: var(--grey-100);
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.compras__dashboard {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.compras__dashboard__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background-color: var(--primary-600);
+  font-size: 18px;
+  color: var(--grey-100);
+  font-weight: 500;
+}
+
+.compras__dashboard__card--red {
+  background-color: var(--danger-600);
+}
+
+.compras__dashboard__card__titulo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.compras__dados {
+  display: flex;
+  width: 100%;
+  padding: 12px 0;
+  gap: 10px;
+  border-radius: 8px;
+  background-color: var(--grey-900);
+}
+
+.compras__marcas {
+  width: 336px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compras__marcas__pesquisa {
+  padding: 0 8px;
+}
+
+.compras__marcas__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 58vh;
+  overflow-y: auto;
+  padding: 0 8px;
+}
+
+.compras__marcas__card {
+  display: flex;
+  align-items: center;
+  padding: 6px 6px;
+  background-color: var(--grey-700);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--grey-100);
+}
+
+.compras__marcas__card__contador {
+  background-color: var(--grey-100);
+  color: var(--primary-600);
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.compras__marcas__card__dados {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.compras__lista {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 750px;
+  gap: 12px;
+}
+
+.compras__grid {
+  background-color: var(--grey-900);
+  color: var(--grey-100);
+  max-width: 100%;
+  height: 58vh;
+  overflow-y: auto;
+}
+
+.compras__grid__footer {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.compras__btn-novo-pedido {
+  background-color: var(--success-600);
+  color: var(--grey-100);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 3px;
+}
+::-webkit-scrollbar-track-piece {
+  background-color: #000;
+}
+::-webkit-scrollbar-thumb {
+  height: 50px;
+  background-color: #666;
+  border-radius: 3px;
+}
+</style>
