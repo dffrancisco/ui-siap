@@ -205,6 +205,7 @@ onUnmounted(() => {
               <button
                 v-if="state.dbDevolucao.STATUS != 1"
                 title="DELETAR ITEM"
+                @click="actions.deleteItemDevolucao(itens.ID_DEVOLUCAO_FORNECEDOR_ITEM)"
                 ><v-icon size="20px">mdi-delete</v-icon>
               </button>
             </v-row>

@@ -4,6 +4,7 @@ import xModal, { iModalCreate } from '@/plugins/xModal/xModal'
 import { iDevolucao, iItensDevolucao } from './interfaces'
 import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
 import Swal from 'sweetalert2';
+import { msgConfirm } from '@/ts/message';
 
 export const numNotas = computed((): iItensDevolucao[] => {
     let notasUnicas = {}
@@ -182,6 +183,28 @@ export const actions = {
             });
         }
     },
+
+    async deleteItemDevolucao(id_devolucaoFornecedorItem: number) {
+        try {
+
+            if (await msgConfirm("Confirmação", "Confirma exclusão deste item?")) {
+                state.loading = true
+
+                await serviceDevolucaoFornecedor.deleteItemDevolucao(id_devolucaoFornecedorItem)
+
+                actions.getDevolucao(state.dbDevolucao)
+
+                state.loading = false;
+            }
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao excluir item de devolução!",
+            });
+        }
+    }
 
 }
 
