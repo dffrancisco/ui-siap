@@ -50,14 +50,15 @@ export interface iItem {
     CST: string,
     BASE_ICMS_ST: number,
     PERCENTUAL_ICMS: number,
-    PERCENTUAL_IPI: number
+    PERCENTUAL_IPI: number,
+    UF: string
 }
 
 export interface iItemDevolucao {
     ID_DEVOLUCAO_FORNECEDOR: number
     ID_ENTRADA: number,
     ID_ITEM: number,
-    CFOP: number,
+    CFOP: string,
     QTD: number,
     CST: string,
     VALOR_UNITARIO: number,
@@ -106,6 +107,10 @@ export interface iParamUpdateTransportadoraDevolucao {
 
 export interface iParamUpdateInsertItemDevolucao {
     param: object
+}
+
+export interface objNotasAgrupadas {
+    [key: number]: iItensDevolucao
 }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }

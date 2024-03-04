@@ -76,8 +76,6 @@ onUnmounted(() => {
           Nova devolução (F2)
         </v-btn>
       </div>
-
-      <!-- componente dados do fornecedor /-->
       <div class="pt-5">
         <v-row>
           <v-col cols="7">
@@ -132,8 +130,7 @@ onUnmounted(() => {
             </v-col>
             <v-col>
               <button
-                :disabled="state.disabledBtnAdicionarTransportadora"
-                v-if="state.dbDevolucao.STATUS != 1"
+                v-if="state.dbDevolucao.STATUS == 0"
                 @click="actions.openModalTransportadora"
               >
                 <v-icon
@@ -172,8 +169,6 @@ onUnmounted(() => {
           </v-row>
         </div>
       </div>
-
-      <!-- componente itens -->
       <div
         class="pt-5"
         style="min-height: 210px"
@@ -182,13 +177,11 @@ onUnmounted(() => {
         <div class="cards">
           <v-card
             v-if="state.dbDevolucao.STATUS != 1"
+            :disabled="state.disabledBtnAdicionarItens"
+            @click="actions.openModalEscolherItem"
             class="card card_escolher_item"
           >
-            <button
-              :disabled="state.disabledBtnAdicionarItens"
-              @click="actions.openModalEscolherItem"
-              id="btnEscolherItem"
-            >
+            <button id="btnEscolherItem">
               <v-icon size="25px"> mdi-plus-circle-outline </v-icon>
             </button>
             <p> NOVO ITEM (F3) </p>
@@ -198,8 +191,8 @@ onUnmounted(() => {
             class="card pa-6"
             :key="itens.ID_DEVOLUCAO_FORNECEDOR_ITEM"
           >
-            <v-row class="card_item"
-              ><span>{{ itens.DESCRICAO }}</span>
+            <v-row class="card_item">
+              <span>{{ itens.DESCRICAO }}</span>
               <button
                 v-if="state.dbDevolucao.STATUS != 1"
                 title="DELETAR ITEM"
@@ -351,6 +344,10 @@ h2 {
 .container span {
   color: #2d9cdb;
   font-size: medium;
+}
+
+.container p {
+  font-weight: bold;
 }
 
 .card {

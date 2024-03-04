@@ -17,21 +17,23 @@ const emit = defineEmits(["salvarItem", "closeModalInformarQtdItem"]);
 watch(
   () => props.modalInformaQtdOpened,
   () => {
+    console.log(props.dbItem);
+
     if (props.modalInformaQtdOpened) {
-      if (props.dbItem.VALOR_ICMS_ST != 0 && globalState.empresa.UF == "DF") {
-        state.dbItemDevolucao.CFOP = 5411;
+      if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF == globalState.empresa.UF) {
+        state.dbItemDevolucao.CFOP = "5411";
       }
 
-      if (props.dbItem.VALOR_ICMS_ST != 0 && globalState.empresa.UF != "DF") {
-        state.dbItemDevolucao.CFOP = 6411;
+      if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF != globalState.empresa.UF) {
+        state.dbItemDevolucao.CFOP = "6411";
       }
 
-      if (props.dbItem.VALOR_ICMS_ST == 0 && globalState.empresa.UF == "DF") {
-        state.dbItemDevolucao.CFOP = 5202;
+      if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF == globalState.empresa.UF) {
+        state.dbItemDevolucao.CFOP = "5202";
       }
 
-      if (props.dbItem.VALOR_ICMS_ST == 0 && globalState.empresa.UF != "DF") {
-        state.dbItemDevolucao.CFOP = 6202;
+      if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF != globalState.empresa.UF) {
+        state.dbItemDevolucao.CFOP = "6202";
       }
 
       state.dbItemDevolucao = {
@@ -62,7 +64,7 @@ const state = reactive({
 
 const actions = {
   async salvarItemDevolucao() {
-    if (state.dbItemDevolucao.QTD == 0) {
+    if (state.dbItemDevolucao.QTD <= 0) {
       Swal.fire({
         icon: "error",
         title: "A quantidade deve ser maior que zero",
@@ -82,6 +84,14 @@ const actions = {
       Swal.fire({
         icon: "error",
         title: "O CFOP deve ser informado",
+      });
+      return;
+    }
+
+    if (state.dbItemDevolucao.CFOP.length < 4) {
+      Swal.fire({
+        icon: "error",
+        title: "O CFOP deve conter 4 dígitos",
       });
       return;
     }
@@ -180,6 +190,7 @@ nextTick(async () => {
             maxlength="4"
             autocomplete="off"
             v-mask="'####'"
+            @keydown.enter="state.edtItemQtd.focus()"
           />
         </v-col>
         <v-col>
@@ -193,6 +204,7 @@ nextTick(async () => {
             class="ss obr"
             id="QTD_DEVOLUCAO"
             name="QTD_DEVOLUCAO"
+            @keydown.enter="actions.salvarItemDevolucao"
           />
         </v-col>
       </v-row>

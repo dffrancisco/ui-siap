@@ -9,7 +9,7 @@ import utils from "@/ts/utils";
 
 import { iItem, iParamGetItens } from "../interfaces";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
-import ModalInformarQntItem from "./ModalInformarQntItem.vue";
+import ModalInformarQtdItem from "./ModalInformarQtdItem.vue";
 
 const props = defineProps<{
   modalOpened: boolean;
@@ -265,13 +265,13 @@ onUnmounted(() => {
       style="display: none"
       title="Informar Qtd"
     >
-      <ModalInformarQntItem
+      <ModalInformarQtdItem
         :modalInformaQtdOpened="state.modalInformaQtdOpened"
         :dbItem="state.dbItem"
         :id_devolucaoFornecedor="props.id_devolucaoFornecedor"
         @closeModalInformarQtdItem="actions.closeModalInformarQtdItem"
         @salvarItem="actions.getDevolucao"
-      ></ModalInformarQntItem>
+      ></ModalInformarQtdItem>
     </div>
   </v-container>
 </template>

@@ -1,13 +1,13 @@
 import { reactive, computed } from 'vue'
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal'
 
-import { iDevolucao, iItensDevolucao } from './interfaces'
+import { iDevolucao, iItensDevolucao, objNotasAgrupadas } from './interfaces'
 import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
 import Swal from 'sweetalert2';
 import { msgConfirm } from '@/ts/message';
 
 export const numNotas = computed((): iItensDevolucao[] => {
-    let notasUnicas = {}
+    let notasUnicas: objNotasAgrupadas = {}
 
     state.dbItensDevolucao.forEach(nota => {
         if (!notasUnicas[nota.NUM_NOTA]) {
@@ -15,7 +15,7 @@ export const numNotas = computed((): iItensDevolucao[] => {
         }
     })
 
-    return Object.values(notasUnicas)
+    return Object.values(notasUnicas).sort((a, b) => b.NUM_NOTA - a.NUM_NOTA);
 })
 
 export const somaTotalItens = computed((): number => {
@@ -188,6 +188,7 @@ export const actions = {
             ]
 
             actions.habilitarBtns()
+
             if (state.dbDevolucao.STATUS == 1) {
                 state.disabledBtnFinalizar = true
             }
@@ -210,7 +211,7 @@ export const actions = {
 
                 await serviceDevolucaoFornecedor.deleteItemDevolucao(id_devolucaoFornecedorItem)
 
-                actions.getDevolucao(state.dbDevolucao)
+                await actions.getDevolucao(state.dbDevolucao)
 
                 state.loading = false;
             }

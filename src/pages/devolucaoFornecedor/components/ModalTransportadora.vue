@@ -58,7 +58,7 @@ const actions = {
       return false;
     }
 
-    if (utils.formatValorUSA(state.dbTransportadoraDevolucao.VALOR_FRETE.toString()) == 0) {
+    if (utils.formatValorUSA(state.dbTransportadoraDevolucao.VALOR_FRETE.toString()) <= 0) {
       Swal.fire({
         icon: "error",
         title: "O campo valor deve ser maior que 0",
