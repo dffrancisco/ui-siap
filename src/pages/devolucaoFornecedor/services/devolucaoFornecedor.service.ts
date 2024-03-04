@@ -8,7 +8,9 @@ import {
     iParamGetFornecedores,
     iParamGetItens,
     iParamInsertTransportadoraDevolucao,
+    iParamUpdateInsertItemDevolucao,
     iParamUpdateTransportadoraDevolucao,
+    iUpdateInsertItemDevolucaoResponse,
     iUpdateTransportadoraResponse,
 } from "../interfaces";
 
@@ -19,6 +21,7 @@ type iGetFornecedoresFunction = (param: iParamGetFornecedores) => Promise<iGetFo
 type iGetItensFunction = (param: iParamGetItens) => Promise<iGetItensResponse>
 type iInsertTransportadoraDevolucaoFunction = (param: iParamInsertTransportadoraDevolucao) => Promise<iInsertTransportadoraResponse>
 type iUpdateTransportadoraDevolucaoFunction = (param: iParamUpdateTransportadoraDevolucao) => Promise<iUpdateTransportadoraResponse>
+type iUpdateInsertItemDevolucaoFunction = (param: iParamUpdateInsertItemDevolucao) => Promise<iUpdateInsertItemDevolucaoResponse>
 
 const getDevolucoes: iGetDevolucoesFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -118,6 +121,14 @@ const deleteItemDevolucao = async (id_devolucaoFornecedorItem: number) => {
     })
 }
 
+const updateInsertItemDevolucao: iUpdateInsertItemDevolucaoFunction = async ({ param }) => {
+    let { data } = await axios.post(caminho, {
+        call: 'updateInsertItemDevolucao',
+        param
+    })
+    return data
+}
+
 export default {
     getDevolucoes,
     getFornecedores,
@@ -130,5 +141,6 @@ export default {
     verificarSeExisteDevolucaoFornecedor,
     insertTransportadoraDevolucao,
     updateTransportadoraDevolucao,
-    deleteItemDevolucao
+    deleteItemDevolucao,
+    updateInsertItemDevolucao
 }

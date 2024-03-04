@@ -98,9 +98,7 @@ onUnmounted(() => {
           <v-col>
             <h2 class="pb-2 font-weight-regular">Notas vinculadas ({{ numNotas.length }})</h2>
             <div class="container notas_vinculadas">
-              <span v-if="!state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
-                >Nenhuma nota vinculada, necessário adicionar itens!</span
-              >
+              <span v-if="numNotas.length == 0">Nenhuma nota vinculada, necessário adicionar itens!</span>
               <v-card
                 v-if="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
                 v-for="notas in numNotas"
@@ -314,9 +312,11 @@ onUnmounted(() => {
         title="Escolher item"
       >
         <ModalEscolherItem
-          :idFornecedor="state.dbDevolucao.ID_FORNECEDOR"
+          :id_fornecedor="state.dbDevolucao.ID_FORNECEDOR"
           :modalOpened="state.modalEscolherItemOpened"
+          :id_devolucaoFornecedor="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
           @closeModal="actions.closeModalEscolherItem"
+          @getDevolucao="actions.getDevolucao(state.dbDevolucao)"
         ></ModalEscolherItem>
       </div>
     </v-card>

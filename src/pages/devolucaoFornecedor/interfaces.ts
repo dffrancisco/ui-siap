@@ -45,7 +45,26 @@ export interface iItem {
     COD_FABRICANTE: string,
     CUSTO: number,
     COD_PRODUTO: number
-    CFOP: string
+    CFOP: string,
+    VALOR_ICMS_ST: number,
+    CST: string,
+    BASE_ICMS_ST: number,
+    PERCENTUAL_ICMS: number,
+    PERCENTUAL_IPI: number
+}
+
+export interface iItemDevolucao {
+    ID_DEVOLUCAO_FORNECEDOR: number
+    ID_ENTRADA: number,
+    ID_ITEM: number,
+    CFOP: number,
+    QTD: number,
+    CST: string,
+    VALOR_UNITARIO: number,
+    VALOR_ICMS_ST: number,
+    BASE_ICMS_ST: number,
+    PERCENTUAL_ICMS: number,
+    PERCENTUAL_IPI: number,
 }
 
 export interface iTranspordadoraDevolucao {
@@ -85,8 +104,13 @@ export interface iParamUpdateTransportadoraDevolucao {
     param: object
 }
 
+export interface iParamUpdateInsertItemDevolucao {
+    param: object
+}
+
 export interface iGetDevolucoesResponse extends iDevolucao { }
 export interface iGetFornecedoresResponse extends iFornecedor { }
 export interface iGetItensResponse extends iItem { }
 export interface iInsertTransportadoraResponse extends iTranspordadoraDevolucao { }
 export interface iUpdateTransportadoraResponse extends iTranspordadoraDevolucao { }
+export interface iUpdateInsertItemDevolucaoResponse extends iItemDevolucao { }

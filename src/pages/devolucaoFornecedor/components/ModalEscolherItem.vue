@@ -13,10 +13,11 @@ import ModalInformarQntItem from "./ModalInformarQntItem.vue";
 
 const props = defineProps<{
   modalOpened: boolean;
-  idFornecedor: number | undefined;
+  id_fornecedor: number | undefined;
+  id_devolucaoFornecedor: number | undefined;
 }>();
 
-const emit = defineEmits(["closeModal"]);
+const emit = defineEmits(["closeModal", "getDevolucao"]);
 
 watch(
   () => props.modalOpened,
@@ -24,7 +25,7 @@ watch(
     if (props.modalOpened) {
       state.gridEscolherItem.queryOpen({
         search: "",
-        ID_FORNECEDOR: props.idFornecedor,
+        ID_FORNECEDOR: props.id_fornecedor,
       });
 
       state.search = null;
@@ -129,7 +130,7 @@ const actions = {
   searchItem() {
     state.gridEscolherItem.queryOpen({
       search: state.edtItemSearch.value.toUpperCase(),
-      ID_FORNECEDOR: props.idFornecedor,
+      ID_FORNECEDOR: props.id_fornecedor,
     });
   },
 
@@ -155,6 +156,12 @@ const actions = {
 
   closeModalInformarQtdItem() {
     state.modalInformarQtdItem.close();
+  },
+
+  getDevolucao() {
+    actions.closeModalEscolherItem();
+    state.modalInformarQtdItem.close();
+    emit("getDevolucao");
   },
 
   async getItens({ offset, param }: iParamGetItens) {
@@ -261,6 +268,9 @@ onUnmounted(() => {
       <ModalInformarQntItem
         :modalInformaQtdOpened="state.modalInformaQtdOpened"
         :dbItem="state.dbItem"
+        :id_devolucaoFornecedor="props.id_devolucaoFornecedor"
+        @closeModalInformarQtdItem="actions.closeModalInformarQtdItem"
+        @salvarItem="actions.getDevolucao"
       ></ModalInformarQntItem>
     </div>
   </v-container>
