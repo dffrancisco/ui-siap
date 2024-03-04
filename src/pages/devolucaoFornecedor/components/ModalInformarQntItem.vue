@@ -18,19 +18,19 @@ watch(
   () => props.modalInformaQtdOpened,
   () => {
     if (props.modalInformaQtdOpened) {
-      if (props.dbItem.VALOR_ICMS_ST && globalState.empresa.UF == "DF") {
+      if (props.dbItem.VALOR_ICMS_ST != 0 && globalState.empresa.UF == "DF") {
         state.dbItemDevolucao.CFOP = 5411;
       }
 
-      if (props.dbItem.VALOR_ICMS_ST && globalState.empresa.UF != "DF") {
+      if (props.dbItem.VALOR_ICMS_ST != 0 && globalState.empresa.UF != "DF") {
         state.dbItemDevolucao.CFOP = 6411;
       }
 
-      if (!props.dbItem.VALOR_ICMS_ST && globalState.empresa.UF == "DF") {
+      if (props.dbItem.VALOR_ICMS_ST == 0 && globalState.empresa.UF == "DF") {
         state.dbItemDevolucao.CFOP = 5202;
       }
 
-      if (!props.dbItem.VALOR_ICMS_ST && globalState.empresa.UF != "DF") {
+      if (props.dbItem.VALOR_ICMS_ST == 0 && globalState.empresa.UF != "DF") {
         state.dbItemDevolucao.CFOP = 6202;
       }
 
