@@ -18,6 +18,16 @@ export const numNotas = computed((): iItensDevolucao[] => {
     return Object.values(notasUnicas)
 })
 
+export const somaTotalItens = computed((): number => {
+    let total = 0;
+
+    state.dbItensDevolucao.forEach(item => {
+        total += item.VALOR_TOTAL;
+    });
+
+    return total;
+});
+
 export const state = reactive({
     modalLocalizarDevolucoes: <iModalCreate>{},
     modalSelecionarFornecedor: <iModalCreate>{},
@@ -241,4 +251,4 @@ export const actions = {
 
 }
 
-export default { state, actions, numNotas }
+export default { state, actions, numNotas, somaTotalItens }

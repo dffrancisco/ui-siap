@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onUnmounted } from "vue";
-import { state, actions, numNotas } from "./devolucaoFornecedor";
+import { state, actions, numNotas, somaTotalItens } from "./devolucaoFornecedor";
 import { useEventListener } from "@vueuse/core";
 
 import ModalLocalizarDevolucao from "./components/ModalLocalizarDevolucao.vue";
@@ -128,7 +128,7 @@ onUnmounted(() => {
             </v-col>
             <v-col>
               <label>Valor:</label>
-              <p>{{ utils.formatValor(state.dbDevolucao.VALOR_FRETE) || "-" }}</p>
+              <p>{{ utils.formatValor(state.dbDevolucao.VALOR_FRETE) }}</p>
             </v-col>
             <v-col>
               <button
@@ -167,7 +167,7 @@ onUnmounted(() => {
             </v-col>
             <v-col>
               <label>Valor:</label>
-              <p>{{ utils.formatValor(state.dbDevolucao.VALOR) || "-" }}</p>
+              <p>{{ utils.formatValor(somaTotalItens) }}</p>
             </v-col>
           </v-row>
         </div>
