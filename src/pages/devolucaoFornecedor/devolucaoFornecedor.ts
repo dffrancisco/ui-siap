@@ -149,6 +149,14 @@ export const actions = {
         state.disabledBtnAdicionarItens = false
     },
 
+    desabilitarBtns() {
+        state.disabledBtnFinalizar = true
+        state.disabledBtnDelete = true
+        state.disabledBtnPrint = true
+        state.disabledBtnAdicionarTransportadora = true
+        state.disabledBtnAdicionarItens = true
+    },
+
     init() {
         actions.criarModais();
     },
@@ -202,6 +210,31 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao excluir item de devolução!",
+            });
+        }
+    },
+
+    async deleteDevolucao() {
+        try {
+
+            if (await msgConfirm("Confirmação", "Confirma exclusão desta devolução?")) {
+                state.loading = true
+
+                await serviceDevolucaoFornecedor.deleteDevolucao(state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR)
+
+                state.dbDevolucao = {} as iDevolucao
+                state.dbItensDevolucao = [] as iItensDevolucao[]
+
+                actions.desabilitarBtns()
+
+                state.loading = false;
+            }
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao excluir devolução!",
             });
         }
     }

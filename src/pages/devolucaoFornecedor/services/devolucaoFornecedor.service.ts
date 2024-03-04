@@ -129,6 +129,15 @@ const updateInsertItemDevolucao: iUpdateInsertItemDevolucaoFunction = async ({ p
     return data
 }
 
+const deleteDevolucao = async (id_devolucao: number) => {
+    let { data } = await axios.post(caminho, {
+        call: 'deleteDevolucao',
+        ID_DEVOLUCAO_FORNECEDOR: id_devolucao
+    })
+
+    return data
+}
+
 export default {
     getDevolucoes,
     getFornecedores,
@@ -142,5 +151,6 @@ export default {
     insertTransportadoraDevolucao,
     updateTransportadoraDevolucao,
     deleteItemDevolucao,
-    updateInsertItemDevolucao
+    updateInsertItemDevolucao,
+    deleteDevolucao
 }

@@ -227,6 +227,7 @@ onUnmounted(() => {
             v-if="state.dbDevolucao.STATUS != 1"
             title="DELETAR DEVOLUÇÃO"
             :disabled="state.disabledBtnDelete"
+            @click="actions.deleteDevolucao"
             ><v-icon size="24px">mdi-delete</v-icon>
           </v-btn>
           <v-btn
