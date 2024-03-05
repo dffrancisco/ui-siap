@@ -139,8 +139,8 @@ actions.init(route);
                   <div class="funcionario__card__faltas ml-2">
                     <div
                       class="funcionario__card__faltas__info"
-                      v-for="tipoFalta in state.tipoFaltas"
-                      :key="tipoFalta.ID_TIPO_FALTA"
+                      v-for="tipoFalta in state.detalhes.totalizadorDeFaltas"
+                      :key="tipoFalta.TIPO"
                     >
                       <div class="funcionario__card__faltas__info__count">
                         {{ tipoFalta.DESCRICAO }}:
@@ -308,7 +308,6 @@ actions.init(route);
 }
 
 .div__funcionario__card__infos {
-  /* border: 1px solid rgb(111, 111, 111); */
   padding: 5px;
   display: flex;
   flex-wrap: wrap;

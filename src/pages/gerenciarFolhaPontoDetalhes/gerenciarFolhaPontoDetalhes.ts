@@ -1,4 +1,4 @@
-import { computed, nextTick, reactive, ref } from "vue";
+import { computed, nextTick, reactive } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import {
   iDadosDocumento,
@@ -342,10 +342,6 @@ export const pontosDiaSelecionado = computed(() => {
     return {} as iPonto;
   }
 
-  let nome = ref(state.nome);
-  let cpf = ref(state.cpf);
-  let cargo = ref(state.cargo);
-
   const formatarData = (data) => {
     if (data) {
       return moment(data).format("HH:mm");
@@ -356,9 +352,9 @@ export const pontosDiaSelecionado = computed(() => {
 
   pontos = {
     ...pontos,
-    nome: nome.value,
-    cpf: cpf.value,
-    cargo: cargo.value,
+    nome: state.nome,
+    cpf: state.cpf,
+    cargo: state.cargo,
     HORA_CHEGADA: formatarData(pontos.HORA_CHEGADA),
     HORA_ALMOCO_INICIAL: formatarData(pontos.HORA_ALMOCO_INICIAL),
     HORA_ALMOCO_FINAL: formatarData(pontos.HORA_ALMOCO_FINAL),
