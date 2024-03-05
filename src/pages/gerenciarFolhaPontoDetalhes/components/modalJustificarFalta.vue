@@ -24,7 +24,7 @@ const props = defineProps({
     type: Object as () => iPropsPontosDiaSelecionado,
   },
   dadosAusencia: {
-    type: String,
+    type: [Date, String],
   },
   funcionario: {
     type: Object as () => iPropsFuncionario,
@@ -401,7 +401,7 @@ watch(
       state.loading = true;
       state.selectedFalta = "";
       state.justificativa = "";
-      state.showCIDAutocomplete = "";
+      state.showCIDAutocomplete = false;
       state.loading = false;
     }
   }
@@ -415,7 +415,7 @@ watch(
         <span
           class="dataAusencia"
           id="dataAusencia"
-          >{{ "Data: " + dadosAusencia }} -
+          >{{ "Data: " + props.dadosAusencia }} -
         </span>
         <span
           class="nomeFuncionario"
