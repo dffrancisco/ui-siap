@@ -1,9 +1,11 @@
 import axios from "axios";
 import {
+    iFinalizarDevolucaoResponse,
     iGetDevolucoesResponse,
     iGetFornecedoresResponse,
     iGetItensResponse,
     iInsertTransportadoraResponse,
+    iParamFinalizarDevolucao,
     iParamGetDevolucoes,
     iParamGetFornecedores,
     iParamGetItens,
@@ -19,9 +21,13 @@ const caminho = 'siap/devolucaoFornecedor'
 type iGetDevolucoesFunction = (param: iParamGetDevolucoes) => Promise<iGetDevolucoesResponse>
 type iGetFornecedoresFunction = (param: iParamGetFornecedores) => Promise<iGetFornecedoresResponse>
 type iGetItensFunction = (param: iParamGetItens) => Promise<iGetItensResponse>
-type iInsertTransportadoraDevolucaoFunction = (param: iParamInsertTransportadoraDevolucao) => Promise<iInsertTransportadoraResponse>
-type iUpdateTransportadoraDevolucaoFunction = (param: iParamUpdateTransportadoraDevolucao) => Promise<iUpdateTransportadoraResponse>
-type iUpdateInsertItemDevolucaoFunction = (param: iParamUpdateInsertItemDevolucao) => Promise<iUpdateInsertItemDevolucaoResponse>
+type iInsertTransportadoraDevolucaoFunction = (param: iParamInsertTransportadoraDevolucao) =>
+    Promise<iInsertTransportadoraResponse>
+type iUpdateTransportadoraDevolucaoFunction = (param: iParamUpdateTransportadoraDevolucao) =>
+    Promise<iUpdateTransportadoraResponse>
+type iUpdateInsertItemDevolucaoFunction = (param: iParamUpdateInsertItemDevolucao) =>
+    Promise<iUpdateInsertItemDevolucaoResponse>
+type iFinalizarDevolucaoFunction = (param: iParamFinalizarDevolucao) => Promise<iFinalizarDevolucaoResponse>
 
 const getDevolucoes: iGetDevolucoesFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -138,6 +144,14 @@ const deleteDevolucao = async (id_devolucao: number) => {
     return data
 }
 
+const finalizarDevolucao: iFinalizarDevolucaoFunction = async ({ param }) => {
+    let { data } = await axios.post(caminho, {
+        call: 'finalizarDevolucao',
+        param
+    })
+    return data
+}
+
 export default {
     getDevolucoes,
     getFornecedores,
@@ -152,5 +166,6 @@ export default {
     updateTransportadoraDevolucao,
     deleteItemDevolucao,
     updateInsertItemDevolucao,
-    deleteDevolucao
+    deleteDevolucao,
+    finalizarDevolucao
 }

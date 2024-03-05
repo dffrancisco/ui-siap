@@ -6,7 +6,7 @@ import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
 import Swal from 'sweetalert2';
 import { msgConfirm } from '@/ts/message';
 
-export const numNotas = computed((): iItensDevolucao[] => {
+export const notasAgrupadas = computed((): iItensDevolucao[] => {
     let notasUnicas: objNotasAgrupadas = {}
 
     state.dbItensDevolucao.forEach(nota => {
@@ -24,6 +24,8 @@ export const somaTotalItens = computed((): number => {
     state.dbItensDevolucao.forEach(item => {
         total += item.VALOR_TOTAL;
     });
+
+    state.dbDevolucao.VALOR = total
 
     return total;
 });
@@ -225,6 +227,50 @@ export const actions = {
         }
     },
 
+    async finalizarDevolucao() {
+        try {
+            if (!state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP) {
+                Swal.fire({
+                    icon: "error",
+                    text: "É necessário adicionar transportadora para finalizar a devolução!",
+                });
+                return false
+            }
+
+            if (state.dbItensDevolucao.length == 0) {
+                Swal.fire({
+                    icon: "error",
+                    text: "É necessário adicionar itens para finalizar a devolução!",
+                })
+                return false
+            }
+
+            let param = {
+                ID_DEVOLUCAO_FORNECEDOR: state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR,
+                CHAVE_DEVOLUCAO: state.dbDevolucao.CHAVE_DEVOLUCAO,
+                VALOR: state.dbDevolucao.VALOR,
+                NUM_NOTA_DEVOLUCAO: state.dbDevolucao.NUM_NOTA_DEVOLUCAO,
+            }
+
+
+            if (await msgConfirm("Confirmação", "Confirma a finalização desta devolução?")) {
+                state.loading = true;
+
+                await serviceDevolucaoFornecedor.finalizarDevolucao({ param })
+
+                await actions.getDevolucao(state.dbDevolucao)
+
+                state.loading = false;
+            }
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao finalizar devolução!",
+            });
+        }
+    },
+
     async deleteDevolucao() {
         try {
 
@@ -252,4 +298,4 @@ export const actions = {
 
 }
 
-export default { state, actions, numNotas, somaTotalItens }
+export default { state, actions, notasAgrupadas, somaTotalItens }

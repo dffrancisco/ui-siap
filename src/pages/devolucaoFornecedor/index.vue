@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onUnmounted } from "vue";
-import { state, actions, numNotas, somaTotalItens } from "./devolucaoFornecedor";
+import { state, actions, notasAgrupadas, somaTotalItens } from "./devolucaoFornecedor";
 import { useEventListener } from "@vueuse/core";
 
 import ModalLocalizarDevolucao from "./components/ModalLocalizarDevolucao.vue";
@@ -35,7 +35,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
     }
 
     if (event.key === "F6") {
-      const button = document.getElementById("meuBotao");
+      const button = document.getElementById("btnFinalizarDevolucao");
       button.click();
       event.preventDefault();
       event.stopPropagation();
@@ -94,12 +94,12 @@ onUnmounted(() => {
             </div>
           </v-col>
           <v-col>
-            <h2 class="pb-2 font-weight-regular">Notas vinculadas ({{ numNotas.length }})</h2>
+            <h2 class="pb-2 font-weight-regular">Notas vinculadas ({{ notasAgrupadas.length }})</h2>
             <div class="container notas_vinculadas">
-              <span v-if="numNotas.length == 0">Nenhuma nota vinculada, necessário adicionar itens!</span>
+              <span v-if="notasAgrupadas.length == 0">Nenhuma nota vinculada, necessário adicionar itens!</span>
               <v-card
                 v-if="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
-                v-for="notas in numNotas"
+                v-for="notas in notasAgrupadas"
               >
                 <div class="card_nota pa-2">
                   <span>{{ notas.NUM_NOTA }}</span>
@@ -244,6 +244,9 @@ onUnmounted(() => {
         <v-btn
           color="#3680AB"
           :disabled="state.disabledBtnFinalizar"
+          title="FINALIZAR DEVOLUÇÃO"
+          id="btnFinalizarDevolucao"
+          @click="actions.finalizarDevolucao"
         >
           Finalizar (F6)
         </v-btn>

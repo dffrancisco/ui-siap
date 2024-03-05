@@ -17,25 +17,6 @@ export interface iDevolucao {
     ID_DEVOLUCAO_FORNECEDOR_TRANSP: number
 }
 
-export interface iItensDevolucao {
-    ID_DEVOLUCAO_FORNECEDOR_ITEM: number,
-    ID_DEVOLUCAO_FORNECEDOR: number,
-    ID_NF_ENTRADA_MANIFESTO: number,
-    ID_NF_ENTRADA_ITEM: number,
-    QTD: number,
-    VALOR_UNITARIO: number,
-    VALOR_TOTAL: number,
-    DESCRICAO: string,
-    NUM_NOTA: number,
-    DATA_EMISSAO: string
-}
-
-export interface iFornecedor {
-    ID_FORNECEDOR: number,
-    CGC_FORNECEDOR: string,
-    RAZAO_SOCIAL: string
-}
-
 export interface iItem {
     ID_ENTRADA: number,
     ID_ITEM: number,
@@ -66,6 +47,25 @@ export interface iItemDevolucao {
     BASE_ICMS_ST: number,
     PERCENTUAL_ICMS: number,
     PERCENTUAL_IPI: number,
+}
+
+export interface iItensDevolucao {
+    ID_DEVOLUCAO_FORNECEDOR_ITEM: number,
+    ID_DEVOLUCAO_FORNECEDOR: number,
+    ID_NF_ENTRADA_MANIFESTO: number,
+    ID_NF_ENTRADA_ITEM: number,
+    QTD: number,
+    VALOR_UNITARIO: number,
+    VALOR_TOTAL: number,
+    DESCRICAO: string,
+    NUM_NOTA: number,
+    DATA_EMISSAO: string
+}
+
+export interface iFornecedor {
+    ID_FORNECEDOR: number,
+    CGC_FORNECEDOR: string,
+    RAZAO_SOCIAL: string
 }
 
 export interface iTranspordadoraDevolucao {
@@ -109,6 +109,10 @@ export interface iParamUpdateInsertItemDevolucao {
     param: object
 }
 
+export interface iParamFinalizarDevolucao {
+    param: object
+}
+
 export interface objNotasAgrupadas {
     [key: number]: iItensDevolucao
 }
@@ -119,3 +123,4 @@ export interface iGetItensResponse extends iItem { }
 export interface iInsertTransportadoraResponse extends iTranspordadoraDevolucao { }
 export interface iUpdateTransportadoraResponse extends iTranspordadoraDevolucao { }
 export interface iUpdateInsertItemDevolucaoResponse extends iItemDevolucao { }
+export interface iFinalizarDevolucaoResponse extends iDevolucao { }

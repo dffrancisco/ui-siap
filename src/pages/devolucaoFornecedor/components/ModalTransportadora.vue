@@ -111,10 +111,12 @@ const actions = {
       let transportadoraDevolucao = state.dbTransportadoraDevolucao;
 
       transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR = props.id_devolucaoFornecedor;
-      transportadoraDevolucao.VALOR_FRETE = utils.formatValorUSA(transportadoraDevolucao.VALOR_FRETE.toString());
+
+      let valorFrete = utils.formatValorUSA(transportadoraDevolucao.VALOR_FRETE.toString());
 
       let param = {
         ...transportadoraDevolucao,
+        VALOR_FRETE: valorFrete,
       };
 
       let data = await serviceDevolucaoFornecedor.insertTransportadoraDevolucao({ param });
@@ -142,11 +144,13 @@ const actions = {
       let transportadoraDevolucao = state.dbTransportadoraDevolucao;
 
       transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP = props.id_devolucaoFornecedorTransp;
-      transportadoraDevolucao.VALOR_FRETE = utils.formatValorUSA(transportadoraDevolucao.VALOR_FRETE.toString());
       transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR = props.id_devolucaoFornecedor;
+
+      let valorFrete = utils.formatValorUSA(transportadoraDevolucao.VALOR_FRETE.toString());
 
       let param = {
         ...transportadoraDevolucao,
+        VALOR_FRETE: valorFrete,
       };
 
       await serviceDevolucaoFornecedor.updateTransportadoraDevolucao({ param });
