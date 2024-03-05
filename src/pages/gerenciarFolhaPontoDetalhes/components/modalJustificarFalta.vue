@@ -317,7 +317,10 @@ async function deletarDocumento() {
     await gerenciarFolhaPontoDetalhesService.deletarDocumento(param);
     deletarArquivo(file_name);
   } catch (error) {
-    throw error;
+    Swal.fire({
+      icon: "error",
+      text: "Ocorreu um erro ao deletar o documento.",
+    });
   }
 }
 

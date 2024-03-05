@@ -8,6 +8,21 @@ import { iRegistrarDocumentoAusencia, iRegistrarFalta } from "../interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "../services/gerenciarFolhaPontoDetalhes.service";
 
+watch(
+  () => props.opened,
+  () => {
+    if (props.opened) {
+      const imagemDoc = document.getElementById("appendImg");
+      const imgElements = imagemDoc.querySelectorAll("img");
+      imgElements.forEach((imgElement) => {
+        imgElement.remove();
+      });
+      state.arquivo = undefined;
+      gerarQrCode();
+    }
+  }
+);
+
 const props = defineProps({
   dadosParaQrCode: {
     type: Object,
@@ -26,14 +41,15 @@ const state = reactive({
   nomeDoDocumento: "",
   tipoDocumento: "ausencia",
   qrData: "",
+  arquivo: undefined,
 });
 
-var intervalId;
-var cpf;
+let intervalId;
+let cpf;
 
 function gerarQrCode() {
   const qrCode = document.getElementById("qr-generate");
-  qrCode.style.display = "";
+  qrCode.style.display = "block";
 
   let cpf = props.dadosParaQrCode.cpf;
   let nomeFunc = props.dadosParaQrCode.loginFuncionario;
@@ -77,7 +93,10 @@ async function verificarArquivos() {
       clearInterval(intervalId);
     }
   } catch (error) {
-    throw error;
+    Swal.fire({
+      icon: "error",
+      text: "Ocorreu um erro ao verificar os arquivos",
+    });
   }
 }
 
@@ -112,9 +131,9 @@ function uploadArquivoPeloBotao(event) {
   imgElement.style.height = "200px";
   imgElement.style.objectFit = "cover";
 
-  const qrGenerate = document.getElementById("qr-generate");
-  qrGenerate.innerHTML = "";
-  qrGenerate.appendChild(imgElement);
+  const imagemDoc = document.getElementById("appendImg");
+
+  imagemDoc.appendChild(imgElement);
 
   if (file.size > 1500000) {
     resizeImage(file, function (resizedFile) {
@@ -153,6 +172,9 @@ function resizeImage(file, callback) {
 }
 
 async function uploadPDF(file, tipoDocumento) {
+  const qrGenerate = document.getElementById("qr-generate");
+  qrGenerate.style.display = "none";
+
   let formData = new FormData();
 
   let cpf = props.dadosParaQrCode.cpf;
@@ -191,7 +213,10 @@ async function moverArquivoTemp(nomeDoDocumento: string) {
       createRegistroAusencia(nomeDoDocumento, tipoDocumento);
     }
   } catch (error) {
-    throw error;
+    Swal.fire({
+      icon: "error",
+      text: "Ocorreu um erro ao mover o arquivo",
+    });
   }
 }
 
@@ -266,20 +291,6 @@ async function setFalta(dataDocArquivo, id_documento) {
 
   state.loading = false;
 }
-
-watch(
-  () => props.opened,
-  (opened, previousOpened) => {
-    if (opened === true && previousOpened === false) {
-      const imagemDoc = document.getElementById("appendImg");
-      const imgElements = imagemDoc.querySelectorAll("img");
-      imgElements.forEach((imgElement) => {
-        imgElement.remove();
-      });
-      gerarQrCode();
-    }
-  }
-);
 </script>
 
 <template>
@@ -305,6 +316,7 @@ watch(
             id="file"
             class="input-file"
             accept=".pdf, .jpg, .jpeg"
+            v-model="state.arquivo"
             @change="uploadArquivoPeloBotao"
           >
           </v-file-input>
