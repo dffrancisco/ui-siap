@@ -17,8 +17,6 @@ const emit = defineEmits(["salvarItem", "closeModalInformarQtdItem"]);
 watch(
   () => props.modalInformaQtdOpened,
   () => {
-    console.log(props.dbItem);
-
     if (props.modalInformaQtdOpened) {
       if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF == globalState.empresa.UF) {
         state.dbItemDevolucao.CFOP = "5411";
