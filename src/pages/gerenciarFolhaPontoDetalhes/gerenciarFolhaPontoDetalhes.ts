@@ -167,8 +167,9 @@ export const actions = {
 
   clickModalJustificarAusencia(event: any) {
     const data = event.date || new Date(event.start);
+    const dataHoje = new Date();
 
-    if (data.getDay() != 0) {
+    if (data.getDay() != 0 && data.getTime() < dataHoje.getTime()) {
       let dia = data.getDate();
       let mes = data.getMonth() + 1;
       let ano = data.getFullYear();
