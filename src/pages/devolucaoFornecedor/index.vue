@@ -110,8 +110,6 @@ onUnmounted(() => {
           </v-col>
         </v-row>
       </div>
-
-      <!-- componente dados da transportadora -->
       <div class="pt-5">
         <h2 class="pb-2 font-weight-regular">Dados da Transportadora</h2>
         <div class="container">
