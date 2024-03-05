@@ -396,10 +396,13 @@ onMounted(() => {
 
 watch(
   () => props.opened,
-  (opened, previousOpened) => {
-    if (opened === true && previousOpened === false) {
+  () => {
+    if (props.opened) {
+      state.loading = true;
       state.selectedFalta = "";
       state.justificativa = "";
+      state.showCIDAutocomplete = "";
+      state.loading = false;
     }
   }
 );
