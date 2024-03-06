@@ -60,7 +60,7 @@ function gerarQrCode() {
 
   const chave = gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo);
 
-  state.qrData = `http://localhost/siap+/funcionario_doc_imagem/?chave=${chave}`;
+  state.qrData = `http://192.168.100.60/siap+/funcionario_doc_imagem/?chave=${chave}`;
 
   setTimeout(() => {
     intervalId = setInterval(verificarArquivos, 2000);
