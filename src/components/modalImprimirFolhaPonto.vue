@@ -105,7 +105,7 @@ const print = async () => {
               rowspan="4"
               style="width: 150px"
               ><img
-                src="src/assets/Logo-Real-Shop-Car-menor.png"
+                src="../assets/Logo-Real-Shop-Car-menor.png"
                 width="135"
             /></td>
             <td
