@@ -21,7 +21,9 @@ export const state = reactive({
             QTD_MEDIA_ITENS: 1,
             PERCENTUAL: '30%'
         },
-    ]
+    ],
+
+    teste: ""
 })
 
 export default { state }

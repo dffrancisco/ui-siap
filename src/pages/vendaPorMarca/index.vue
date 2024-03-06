@@ -8,18 +8,18 @@ import { state } from "./vendaPorMarca";
       <v-row class="pa-5">
         <v-col>
           <v-autocomplete
-            id="mes"
             label="Mês"
-            item-title="title"
-            item-value="value"
             autocomplete="off"
           ></v-autocomplete>
         </v-col>
         <v-col>
           <v-text-field
+            v-model="state.teste"
             label="Ano"
             density="default"
             variant="filled"
+            maxlength="4"
+            v-mask="'####'"
           ></v-text-field>
         </v-col>
         <v-col class="d-flex justify-center align-center"
