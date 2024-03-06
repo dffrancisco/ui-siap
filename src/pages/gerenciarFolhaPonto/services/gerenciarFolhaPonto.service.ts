@@ -1,10 +1,15 @@
 import axios from "axios";
-import { iGetMesEAno, iGetDadosParaImpressao } from "../interface";
+import {
+  iGetMesEAno,
+  iGetDadosParaImpressao,
+  iResumoPontosFuncionarioResponse,
+  iGetDadosParaImpressaoResponse,
+} from "../interface";
 
 const caminho = "siap/gerenciarFolhaPonto";
 
-type iGetResumoPontosFuncionarioFunction = (param: iGetMesEAno) => Promise<object>;
-type iGetDadosParaImpressaoPDF = (param: iGetDadosParaImpressao) => Promise<object>;
+type iGetResumoPontosFuncionarioFunction = (param: iGetMesEAno) => Promise<iResumoPontosFuncionarioResponse>;
+type iGetDadosParaImpressaoPDF = (param: iGetDadosParaImpressao) => Promise<iGetDadosParaImpressaoResponse>;
 
 const getResumoPontosFuncionario: iGetResumoPontosFuncionarioFunction = async (param) => {
   let { data } = await axios.post(caminho, {

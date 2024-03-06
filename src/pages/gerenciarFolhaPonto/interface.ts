@@ -27,3 +27,41 @@ export interface iGetDadosParaImpressao {
   mes: number;
   ano: number;
 }
+
+export interface iPontos {
+  COD_FUNCIONARIO: number;
+  DATA: string;
+  HORA_CHEGADA?: string;
+  HORA_ALMOCO_INICIAL?: string;
+  HORA_ALMOCO_FINAL?: string;
+  HORA_SAIDA?: string;
+  JUSTIFICATIVA?: string;
+}
+
+export interface iFaltas {
+  COD_FUNCIONARIO: number;
+  DATA: string;
+  STATUS: string;
+  TIPO: number;
+}
+
+export interface iResumoPontosFuncionarioResponse extends iFuncionario {
+  BATE_PONTO: string;
+  DATA_ADMISSAO: string;
+  DELETADO: string;
+  ID_CARGO: number;
+}
+
+export interface iGetDadosParaImpressaoResponse {
+  COD_FUNCIONARIO: number;
+  NOME_COMP: string;
+  LOGIN: string;
+  CPF: string;
+  DELETADO: string;
+  DATA_ADMISSAO: string;
+  ID_CARGO: number;
+  BATE_PONTO: string;
+  CARGO: string;
+  pontos: iPontos[];
+  faltas: iFaltas[];
+}

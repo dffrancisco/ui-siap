@@ -4,24 +4,34 @@ import {
   iDeletarArquivo,
   iDeletarDocumento,
   iDeletarFalta,
+  iDeleteArquivoResponse,
+  iDeleteDocumentoResponse,
+  iDeleteFaltaResponse,
   iFaltaFeriadoFolga,
   iGetDadosParaImpressaoIndividual,
+  iGetDadosParaImpressaoPDFResponse,
   iGetDetalhes,
+  iGetDetalhesResponse,
+  iInserirRegistroAusenciaResponse,
   iParamDocumentoAusencia,
   iRegistrarDocumentoAusencia,
   iRegistrarFalta,
+  iSetFaltaResponse,
+  iSetFeriadoFolgaResponse,
 } from "../interface";
 const caminho = "siap/gerenciarFolhaPonto";
 
-type igetDetalhes = (param: iGetDetalhes) => Promise<object>;
-type iSetFeriadoFolga = (param: iFaltaFeriadoFolga) => Promise<object>;
-type iSetFalta = (param: iRegistrarFalta) => Promise<object>;
-type iDeleteFalta = (param: iDeletarFalta) => Promise<object>;
-type iDeleteDocumento = (param: iDeletarDocumento) => Promise<object>;
-type iDeleteArquivo = (param: iDeletarArquivo) => Promise<object>;
-type iInserirRegistroAusencia = (param: iRegistrarDocumentoAusencia) => Promise<object>;
+type igetDetalhes = (param: iGetDetalhes) => Promise<iGetDetalhesResponse>;
+type iSetFeriadoFolga = (param: iFaltaFeriadoFolga) => Promise<iSetFeriadoFolgaResponse>;
+type iSetFalta = (param: iRegistrarFalta) => Promise<iSetFaltaResponse>;
+type iDeleteFalta = (param: iDeletarFalta) => Promise<iDeleteFaltaResponse>;
+type iDeleteDocumento = (param: iDeletarDocumento) => Promise<iDeleteDocumentoResponse>;
+type iDeleteArquivo = (param: iDeletarArquivo) => Promise<iDeleteArquivoResponse>;
+type iInserirRegistroAusencia = (param: iRegistrarDocumentoAusencia) => Promise<iInserirRegistroAusenciaResponse>;
 type iGetDocumentoAusencia = (param: iParamDocumentoAusencia) => Promise<iDadosDocumento[]>;
-type iGetDadosParaImpressaoPDF = (param: iGetDadosParaImpressaoIndividual) => Promise<object>;
+type iGetDadosParaImpressaoPDF = (
+  param: iGetDadosParaImpressaoIndividual
+) => Promise<iGetDadosParaImpressaoPDFResponse>;
 
 const getDetalhes: igetDetalhes = async (param) => {
   let { data } = await axios.post(caminho, {
