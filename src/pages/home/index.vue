@@ -125,8 +125,8 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/bloquearCliente')"
-              >Bloquear Cliente
+              @click="router.push('/vendaPorMarca')"
+              >Venda Por Marca
             </v-btn>
 
             <v-btn
