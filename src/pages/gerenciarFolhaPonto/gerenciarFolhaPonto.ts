@@ -1,0 +1,158 @@
+import { reactive, computed } from "vue";
+import { iFuncionario, iGetMesEAno, iTotalizador, iGetDadosParaImpressao } from "./interface";
+import gerenciarFolhaPontoService from "./services/gerenciarFolhaPonto.service";
+import Swal from "sweetalert2";
+import router from "@/router";
+import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
+import { anosToSelect, mesesToSelect } from "@/constants/constants";
+
+export const state = reactive({
+  funcionarios: {},
+  mes: new Date().getMonth() + 1,
+  ano: new Date().getFullYear(),
+  selectedFuncionario: <number | null>null,
+  loading: false,
+  modalImprimirFolhaPonto: <iModalCreate>(<unknown>null),
+  modalImprimirFolhaPontoOpened: false,
+  dadosParaModalImpressao: {},
+});
+
+export const meses = mesesToSelect;
+export const anos = anosToSelect;
+
+export const funcionariosOrdenados = computed(() => {
+  let funcionariosArray = <iFuncionario[]>[];
+
+  for (let indexFuncionario in state.funcionarios) {
+    funcionariosArray.push(state.funcionarios[indexFuncionario]);
+  }
+
+  funcionariosArray.sort((funcionario1, funcionario2) => {
+    return funcionario1.NOME_COMP > funcionario2.NOME_COMP ? 1 : -1;
+  });
+
+  return funcionariosArray;
+});
+
+export const totalizador = computed(() => {
+  const total: iTotalizador = {
+    QTD_A_JUSTIFICAR: 0,
+    QTD_FALTAS_JUSTIFICADAS: 0,
+    QTD_PONTOS_INCOMPLETOS: 0,
+    QTD_PONTOS_NAO_BATIDOS: 0,
+  };
+
+  let funcionarios: iFuncionario[] = Object.values(state.funcionarios);
+
+  for (const func of funcionarios) {
+    if (func.QTD_A_JUSTIFICAR) total.QTD_A_JUSTIFICAR += func.QTD_A_JUSTIFICAR;
+    if (func.QTD_FALTAS_JUSTIFICADAS) total.QTD_FALTAS_JUSTIFICADAS += func.QTD_FALTAS_JUSTIFICADAS;
+    if (func.QTD_PONTOS_INCOMPLETOS) total.QTD_PONTOS_INCOMPLETOS += func.QTD_PONTOS_INCOMPLETOS;
+    if (func.QTD_PONTOS_NAO_BATIDOS) total.QTD_PONTOS_NAO_BATIDOS += func.QTD_PONTOS_NAO_BATIDOS;
+  }
+
+  return total;
+});
+
+export const actions = {
+  async onFuncionarioChange() {
+    await actions.getResumoPontosFuncionario(state.selectedFuncionario, state.mes, state.ano);
+  },
+
+  async getResumoPontosFuncionario(cod_funcionario: number, mes: number, ano: number) {
+    state.loading = true;
+
+    const param: iGetMesEAno = {
+      cod_funcionario: cod_funcionario,
+      mes: mes,
+      ano: ano,
+    };
+
+    try {
+      state.funcionarios = await gerenciarFolhaPontoService.getResumoPontosFuncionario(param);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Ocorreu um erro ao buscar os funcionários",
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  async dadosParaImpressao(mes: number, ano: number) {
+    const param: iGetDadosParaImpressao = {
+      mes: mes,
+      ano: ano,
+    };
+
+    state.loading = true;
+
+    try {
+      state.dadosParaModalImpressao = await gerenciarFolhaPontoService.getDadosParaImpressao(param);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Ocorreu um erro ao buscar os dados para impressão",
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  getFotoFuncionarioURL(cpf: string) {
+    if (!cpf) {
+      return "";
+    }
+
+    const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
+    return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
+  },
+
+  onClickFuncionario(codFuncionario: number, mes: number, ano: number) {
+    let query = {
+      cod_funcionario: codFuncionario,
+      mes: mes,
+      ano: ano,
+    };
+
+    router.push({
+      name: "gerenciarFolhaPontoDetalhes",
+      query,
+    });
+  },
+
+  async init(codFuncionario: number, mes: number, ano: number) {
+    state.loading = true;
+
+    await actions.getResumoPontosFuncionario(codFuncionario, mes, ano);
+    actions.modal();
+
+    setTimeout(() => {
+      state.loading = false;
+    }, 100);
+  },
+
+  modal() {
+    state.modalImprimirFolhaPonto = new xModal.create({
+      height: 850,
+      width: 1000,
+      el: "#modalImprimirPontos",
+      theme: "xModal-blue",
+      onOpen: () => {
+        state.modalImprimirFolhaPontoOpened = true;
+      },
+      onClose: () => {
+        state.modalImprimirFolhaPontoOpened = false;
+      },
+    });
+  },
+
+  imprimirFolhaPontoTodosFuncionarios() {
+    actions.dadosParaImpressao(state.mes, state.ano);
+
+    state.modalImprimirFolhaPonto.open();
+  },
+};
+
+export default { state, actions, meses, anos, totalizador };
