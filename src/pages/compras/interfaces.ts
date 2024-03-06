@@ -9,6 +9,15 @@ export interface iCompra {
     VALOR: number
 }
 
+export interface iParamInsertCompra {
+
+}
+
+export interface iMarca {
+    ID_MARCA: number,
+    DESCRICAO: string,
+}
+
 export interface marcaAgrupada {
     qtd: number,
     nomeMarca: string,

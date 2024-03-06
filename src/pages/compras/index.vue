@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { dataBrasil, formatValor } from "@/ts/utils";
-import { state, actions, marcasAgrupadas, valorPendente, qtdPedidosMaisDe20Dias } from "./compras";
+import ModalNovoPedido from "./components/ModalNovoPedido.vue";
+
+import {
+  state,
+  actions,
+  marcasAgrupadas,
+  valorPendente,
+  qtdPedidosMaisDe20Dias,
+  comprasFiltradas,
+} from "./compras";
 
 actions.init();
 </script>
@@ -64,7 +73,7 @@ actions.init();
             class="compras__grid"
             itemsPerPage="-1"
             :fixed-footer="false"
-            :items="state.compras"
+            :items="comprasFiltradas"
             :headers="[
               {
                 title: 'Nº Pedido',
@@ -110,6 +119,18 @@ actions.init();
             <template v-slot:item.VALOR="{ value }">
               {{ formatValor(value) }}
             </template>
+            <template v-slot:item.ACOES="{ item }">
+              <div>
+                <v-icon title="Itens do pedido">mdi mdi-cart</v-icon>
+                <v-icon title="Alterar cabeçalho">mdi mdi-pencil</v-icon>
+                <v-icon title="Imprimir pedido">mdi mdi-printer</v-icon>
+                <v-icon
+                  title="Deletar pedido"
+                  class="compras__grid__btn--red"
+                  >mdi mdi-trash-can</v-icon
+                >
+              </div>
+            </template>
             <template v-slot:bottom> </template>
           </v-data-table>
           <div class="compras__grid__footer">
@@ -121,6 +142,16 @@ actions.init();
           </div>
         </div>
       </div>
+      <v-dialog
+        v-model="state.modalNovoPedidoOpened"
+        max-width="480px"
+        transition="dialog-transition"
+      >
+        <ModalNovoPedido
+          :marcas="state.marcas"
+          @closeModal="actions.closeModalNovoPedido"
+        />
+      </v-dialog>
       <v-overlay
         :model-value="state.loading"
         class="align-center justify-center"
@@ -172,7 +203,7 @@ actions.init();
 }
 
 .compras__titulo {
-  padding: 10px 0;
+  padding: 10px 0 0;
   color: var(--grey-100);
   font-size: 24px;
   font-weight: bold;
@@ -281,6 +312,10 @@ actions.init();
   max-width: 100%;
   height: 58vh;
   overflow-y: auto;
+}
+
+.compras__grid__btn--red {
+  color: var(--danger-600);
 }
 
 .compras__grid__footer {

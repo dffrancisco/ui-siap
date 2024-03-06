@@ -1,11 +1,13 @@
 import axios from "axios";
 import {
-    iCompra,
+    iCompra, iMarca,
 } from "../interfaces";
 
 const caminho = "siap/compras";
 
 type iGetComprasFunction = () => Promise<iCompra[]>;
+type iGetMarcasFunction = () => Promise<iMarca[]>;
+type iInsertCompraFunction = (param: iParamInsertCompra) => Promise<iCompra>;
 
 const getCompras: iGetComprasFunction = async () => {
     let { data } = await axios.post(caminho, {
@@ -14,6 +16,21 @@ const getCompras: iGetComprasFunction = async () => {
     return data;
 };
 
+const getMarcas: iGetMarcasFunction = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getMarcas",
+    });
+    return data;
+};
+
+const insertCompra: iInsertCompraFunction = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getMarcas",
+    });
+    return data;
+};
+
 export default {
-    getCompras
+    getCompras,
+    getMarcas
 };

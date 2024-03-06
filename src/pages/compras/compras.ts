@@ -1,19 +1,22 @@
 import { computed, reactive } from 'vue'
 import comprasService from './services/compras.service'
 import Swal from 'sweetalert2'
-import { iCompra, objMarcasAgrupadas } from './interfaces'
+import { iCompra, iMarca, objMarcasAgrupadas } from './interfaces'
 import moment from 'moment'
 
 export const state = reactive(({
     edtMarca: '',
     compras: <iCompra[]>[],
+    marcas: <iMarca[]>[],
     loading: false,
+    modalNovoPedidoOpened: false,
 }))
 
 export const actions = {
     init: async () => {
         state.loading = true;
         await actions.getCompras();
+        await actions.getMarcas();
         state.loading = false;
     },
 
@@ -29,15 +32,41 @@ export const actions = {
         }
     },
 
+    getMarcas: async () => {
+        try {
+            let dados = await comprasService.getMarcas()
+            state.marcas = dados;
+        } catch (error) {
+            Swal.fire({
+                text: 'Ocorreu um erro ao buscar as marcas',
+                icon: 'error'
+            })
+        }
+    },
+
     onClickNovoPedido: () => {
-        console.log('oi');
+        state.modalNovoPedidoOpened = true;
+    },
+
+    closeModalNovoPedido: () => {
+        state.modalNovoPedidoOpened = false;
     }
 }
+
+export const comprasFiltradas = computed(() => {
+    if (!state.edtMarca) {
+        return state.compras
+    }
+
+    return state.compras.filter(compra => {
+        return compra.NOME_MARCA.toLocaleLowerCase().indexOf(state.edtMarca.toLocaleLowerCase()) > -1 ? true : false
+    })
+})
 
 export const marcasAgrupadas = computed(() => {
     let objMarcasAgrupadas: objMarcasAgrupadas = {}
 
-    state.compras.forEach(compra => {
+    comprasFiltradas.value.forEach(compra => {
         if (objMarcasAgrupadas[compra.NOME_MARCA] == undefined) {
             objMarcasAgrupadas[compra.NOME_MARCA] = {
                 qtd: 0,
