@@ -6,7 +6,7 @@ import { state } from "./vendaPorMarca";
   <v-container>
     <v-card>
       <v-row class="pa-5">
-        <v-col cols="4">
+        <v-col>
           <v-autocomplete
             id="mes"
             label="Mês"
@@ -15,14 +15,14 @@ import { state } from "./vendaPorMarca";
             autocomplete="off"
           ></v-autocomplete>
         </v-col>
-        <v-col cols="4">
+        <v-col>
           <v-text-field
             label="Ano"
-            class="input_ano"
+            density="default"
             variant="filled"
           ></v-text-field>
         </v-col>
-        <v-col class="ml-9 mt-4"
+        <v-col class="d-flex justify-center align-center"
           ><v-btn color="primary mr-5"> <v-icon class="mr-2">mdi-magnify </v-icon>Consultar </v-btn>
           <v-btn color="primary"> <v-icon class="mr-2">mdi-printer </v-icon>Imprimir </v-btn>
         </v-col>
@@ -34,9 +34,3 @@ import { state } from "./vendaPorMarca";
     </v-card>
   </v-container>
 </template>
-
-<style scoped>
-.input_ano {
-  height: 94px;
-}
-</style>
