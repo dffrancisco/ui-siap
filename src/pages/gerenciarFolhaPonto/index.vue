@@ -28,7 +28,6 @@ onMounted(async () => {
                   item-title="NOME_COMP"
                   item-value="COD_FUNCIONARIO"
                   @update:model-value="actions.onFuncionarioChange"
-                  autofocus
                 ></v-autocomplete>
               </v-col>
               <v-col cols="2">
