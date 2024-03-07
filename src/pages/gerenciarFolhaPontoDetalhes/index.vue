@@ -229,8 +229,8 @@ actions.init(route);
           dadosFuncionarios: state.dadosParaModalImpressao,
           mes: state.mes,
           ano: state.ano,
-          cnpj: state.empresa.CGC_EMPRESA,
         }"
+        :cnpj="state.empresa.CGC_EMPRESA"
       />
     </div>
 
