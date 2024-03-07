@@ -25,8 +25,6 @@ export const state = reactive({
 
     dbVendasPorMarca: <iVendasPorMarca[]>[],
 
-    teste: "",
-
     mes: null,
     ano: null,
 
