@@ -87,11 +87,10 @@ onMounted(async () => {
                 variant="outlined"
                 class="funcionarios__lista__totalizador"
               >
-                <v-img
-                  src="./src/assets/pessoas.svg"
+                <img
+                  src="./assets/pessoas.svg"
                   class="imgIconTodos"
-                  width="50px"
-                ></v-img>
+                />
 
                 <span
                   class="funcionarios__lista__card__totalizador"
@@ -321,6 +320,8 @@ onMounted(async () => {
 
 .imgIconTodos {
   margin-left: 40px;
+  width: 50px;
+  height: 60px;
 }
 
 .btnSearch {
