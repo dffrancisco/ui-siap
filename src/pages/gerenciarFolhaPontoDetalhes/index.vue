@@ -230,7 +230,7 @@ actions.init(route);
           mes: state.mes,
           ano: state.ano,
         }"
-        :cnpj="state.empresa.CGC_EMPRESA"
+        :empresa="state.empresa"
       />
     </div>
 
