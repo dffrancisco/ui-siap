@@ -1,8 +1,16 @@
 import utils from "@/ts/utils";
 import Swal from "sweetalert2";
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import serviceVendaPorMarca from "./services/vendaPorMarca.service";
 import { iVendasPorMarca } from "./interfaces";
+
+export const dadosFormatToPrint = computed(() => {
+    return state.dbVendasPorMarca.map(venda => ({
+        ...venda,
+        VALOR: utils.formatValor(venda.VALOR),
+        TICKET_MEDIO: utils.formatValor(venda.TICKET_MEDIO)
+    }));
+})
 
 export const state = reactive({
 
@@ -12,7 +20,7 @@ export const state = reactive({
         { title: 'Qtd. Itens', key: 'QTD', align: 'center' },
         { title: 'Qtd. Média Itens', key: 'QTD_MEDIA_ITENS', align: 'center' },
         { title: 'Ticket Médio (R$)', key: 'TICKET_MEDIO', align: 'center', value: (venda: iVendasPorMarca) => utils.formatValor(venda.TICKET_MEDIO) },
-        { title: 'Percentual (%)', key: 'PERCENTUAL', align: 'center', value: (venda: iVendasPorMarca) => utils.formatValor(venda.PERCENTUAL) }
+        { title: 'Percentual (%)', key: 'PERCENTUAL', align: 'center' }
     ],
 
     dbVendasPorMarca: <iVendasPorMarca[]>[],
@@ -50,7 +58,7 @@ export const actions = {
             });
 
             data.forEach(venda => {
-                venda.PERCENTUAL = (venda.VALOR / totalVendas) * 100;
+                venda.PERCENTUAL = ((venda.VALOR / totalVendas) * 100).toFixed(2);
             })
 
             state.dbVendasPorMarca = data

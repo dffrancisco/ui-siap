@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { mesesToSelect } from "@/constants/constants";
-import { actions, state } from "./vendaPorMarca";
+import { actions, state, dadosFormatToPrint } from "./vendaPorMarca";
 import { nextTick } from "vue";
+import printJS from "print-js";
 
 nextTick(async () => {
   actions.init();
@@ -44,7 +45,28 @@ nextTick(async () => {
           >
             <v-icon class="mr-2">mdi-magnify </v-icon>Consultar
           </v-btn>
-          <v-btn color="primary"> <v-icon class="mr-2">mdi-printer </v-icon>Imprimir </v-btn>
+          <v-btn
+            color="primary"
+            @click="
+              printJS({
+                printable: dadosFormatToPrint,
+                properties: [
+                  { field: 'DESCRICAO', displayName: 'Marcas' },
+                  { field: 'VALOR', displayName: 'Valor (R$)' },
+                  { field: 'QTD', displayName: 'Qtd' },
+                  { field: 'QTD_MEDIA_ITENS', displayName: 'Qtd. Média Itens' },
+                  { field: 'TICKET_MEDIO', displayName: 'Ticket Médio (R$)' },
+                  { field: 'PERCENTUAL', displayName: 'Percentual (%)' },
+                ],
+                type: 'json',
+                gridHeaderStyle: 'border: 1px solid #000000',
+                gridStyle: 'text-align: center; border: 1px solid #000000',
+              })
+            "
+            :disabled="state.dbVendasPorMarca.length == 0 ? true : false"
+          >
+            <v-icon class="mr-2">mdi-printer </v-icon>Imprimir
+          </v-btn>
         </v-col>
       </v-row>
       <v-data-table

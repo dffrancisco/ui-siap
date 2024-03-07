@@ -5,7 +5,7 @@ export interface iVendasPorMarca {
     VALOR: number,
     TICKET_MEDIO: number,
     QTD_MEDIA_ITENS: number,
-    PERCENTUAL?: number,
+    PERCENTUAL?: number | string,
 }
 
 export interface iParamGetVendasPorMarca {
