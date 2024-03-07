@@ -6,7 +6,8 @@ import {
   iGetDetalhes,
   iParamDocumentoAusencia,
   iPonto,
-  iTipoFaltasCount,
+  iTipoFaltas,
+  iTotalizadorDeFaltas,
 } from "./interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDetalhes.service";
@@ -14,12 +15,14 @@ import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import moment from "moment";
 import router from "@/router";
 import { anosToSelect, mesesToSelect } from "@/constants/constants";
+import { iEmpresa } from "@/models/interfaces";
 
 export const state = reactive({
+  empresa: <iEmpresa>{},
   detalhes: {} as any,
   pontos: {},
   resumoPontos: {},
-  tipoFaltas: <iTipoFaltasCount[]>[],
+  tipoFaltas: <iTipoFaltas[]>[],
   loading: false,
   loadingCalendar: false,
   nome: <string | null>null,
@@ -46,6 +49,7 @@ export const state = reactive({
   modalImprimirFolhaPonto: <iModalCreate>(<unknown>null),
   modalImprimirFolhaPontoOpened: false,
   dadosParaModalImpressao: {},
+  totalizadorFaltas: <iTotalizadorDeFaltas[]>[]
 });
 
 export const actions = {
@@ -82,12 +86,13 @@ export const actions = {
     };
 
     try {
-      state.detalhes = await gerenciarFolhaPontoDetalhesService.getDetalhes(param);
-      const detalhes = state.detalhes;
+      const detalhes = await gerenciarFolhaPontoDetalhesService.getDetalhes(param);
+      state.empresa = detalhes.empresa;
       state.dadosFuncionario = detalhes.dadosFuncionario;
       state.pontos = detalhes.pontos;
       state.resumoPontos = detalhes.resumoPontos;
       state.tipoFaltas = detalhes.tipoFaltas;
+      state.totalizadorFaltas = detalhes.totalizadorDeFaltas;
       state.QTD_PONTOS_NAO_BATIDOS = detalhes.resumoPontos.QTD_PONTOS_NAO_BATIDOS;
       state.QTD_FALTAS_JUSTIFICADAS = detalhes.resumoPontos.QTD_FALTAS_JUSTIFICADAS;
       state.QTD_PONTOS_INCOMPLETOS = detalhes.resumoPontos.QTD_PONTOS_INCOMPLETOS;
@@ -370,7 +375,7 @@ export const tipoFaltaModal = computed(() => {
     return [];
   }
 
-  let tipoFaltas: iTipoFaltasCount[] = [...state.tipoFaltas];
+  let tipoFaltas: iTipoFaltas[] = [...state.tipoFaltas];
 
   if (pontosDiaSelecionado.value.COD_FUNCIONARIO == undefined) {
     let indexPontoIncompleto = tipoFaltas.findIndex((tipoFalta) => {

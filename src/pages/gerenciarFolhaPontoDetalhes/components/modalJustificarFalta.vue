@@ -3,7 +3,6 @@ import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import printJS from "print-js";
 import { defineProps, computed, onMounted, nextTick, reactive, watch } from "vue";
 import stateLogin from "../../login/login";
-import globalState from "@/store/globalState";
 import ModalQrCode from "./modalQrCode.vue";
 import {
   iDadosDocumento,
@@ -49,6 +48,9 @@ const props = defineProps({
   },
   opened: {
     type: Boolean,
+  },
+  cnpj: {
+    type: String,
   },
 });
 
@@ -266,7 +268,7 @@ async function deletarFalta() {
   const param: iDeletarFalta = {
     data: dataFalta,
     cod_funcionario: props.funcionario.cod_funcionario,
-    cnpj: globalState.empresa.CGC_EMPRESA,
+    cnpj: props.cnpj,
   };
 
   confirmaCodigo({
@@ -310,7 +312,7 @@ async function deletarDocumento() {
     data: dataFalta,
     cod_funcionario: props.funcionario.cod_funcionario,
     file_name: file_name,
-    cnpj: globalState.empresa.CGC_EMPRESA,
+    cnpj: props.cnpj,
   };
 
   try {
@@ -572,6 +574,7 @@ watch(
     <ModalQrCode
       :dadosParaQrCode="dadosDocumentoAusencia"
       :opened="state.modalQrCodeOpened"
+      :cnpj="props.cnpj"
       @fecharModalQrCode="fecharModalQrCode()"
     />
   </div>

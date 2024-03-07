@@ -28,6 +28,7 @@ onMounted(async () => {
                   item-title="NOME_COMP"
                   item-value="COD_FUNCIONARIO"
                   @update:model-value="actions.onFuncionarioChange"
+                  autofocus
                 ></v-autocomplete>
               </v-col>
               <v-col cols="2">
@@ -185,18 +186,18 @@ onMounted(async () => {
         </v-col>
       </v-row>
     </div>
-
     <div
       id="modalImprimirPontos"
       title="Folha de Ponto"
       style="display: none"
     >
-      <modal-imprimir-folha-ponto
+      <modalImprimirFolhaPonto
         :dadosParaImpressao="{
           dadosFuncionarios: state.dadosParaModalImpressao,
           mes: state.mes,
           ano: state.ano,
         }"
+        :empresa="state.empresa"
       />
     </div>
 

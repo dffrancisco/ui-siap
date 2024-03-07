@@ -96,60 +96,48 @@ const deletarArquivo: iDeleteArquivo = async (param) => {
 };
 
 const uploadPDF = async (formData) => {
-    try {
-        const rs = await $.ajax({
-            url: "http://www.reallatas.com.br/doc_funcionario/getFiles.php",
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-        });
-        return rs;
-    } catch (error) {
-        throw error;
-    }
+    const rs = await $.ajax({
+        url: "http://www.reallatas.com.br/doc_funcionario/getFiles.php",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+    });
+    return rs;
 };
 
 const verificarArquivos = async (cpf) => {
-    try {
-        const rs = await $.ajax({
-            url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
-            type: "POST",
-            dataType: "json",
-            data: {
-                class: "Files",
-                call: "getFilesTemp",
-                param: {
-                    cpf: cpf,
-                    pasta: "ausencia",
-                },
+    const rs = await $.ajax({
+        url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
+        type: "POST",
+        dataType: "json",
+        data: {
+            class: "Files",
+            call: "getFilesTemp",
+            param: {
+                cpf: cpf,
+                pasta: "ausencia",
             },
-        });
-        return rs;
-    } catch (error) {
-        throw error;
-    }
+        },
+    });
+    return rs;
 };
 
 const moverArquivoTemp = async (tipoDocumento, cpf) => {
-    try {
-        const rs = await $.ajax({
-            url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
-            type: "POST",
-            dataType: "json",
-            data: {
-                class: "Files",
-                call: "moverArquivoTemp",
-                param: {
-                    cpf: cpf,
-                    pasta: tipoDocumento,
-                },
+    const rs = await $.ajax({
+        url: "https://reallatas.com.br/doc_funcionario/getFiles.php",
+        type: "POST",
+        dataType: "json",
+        data: {
+            class: "Files",
+            call: "moverArquivoTemp",
+            param: {
+                cpf: cpf,
+                pasta: tipoDocumento,
             },
-        });
-        return rs;
-    } catch (error) {
-        throw error;
-    }
+        },
+    });
+    return rs;
 };
 
 const createRegistroDocumento: iInserirRegistroAusencia = async (param) => {
