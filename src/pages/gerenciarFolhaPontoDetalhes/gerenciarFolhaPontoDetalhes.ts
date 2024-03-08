@@ -295,7 +295,7 @@ export const pontosCalendario = computed(() => {
       eventos.push(eventoFormatado);
     }
 
-    if (ponto.STATUS) {
+    if (ponto.STATUS && ponto.STATUS != "Ponto Incompleto") {
       let cor;
       switch (ponto.STATUS) {
         case "Atestado":
@@ -366,34 +366,29 @@ export const pontosDiaSelecionado = computed(() => {
 });
 
 export const tipoFaltaModal = computed(() => {
-  if (!pontosDiaSelecionado.value) {
+  if (!pontosDiaSelecionado.value.COD_FUNCIONARIO) {
     return [];
   }
 
+  const { HORA_CHEGADA, HORA_ALMOCO_INICIAL, HORA_ALMOCO_FINAL, HORA_SAIDA } = pontosDiaSelecionado.value
+
   let tipoFaltas: iTipoFaltasCount[] = [...state.tipoFaltas];
 
-  if (pontosDiaSelecionado.value.COD_FUNCIONARIO == undefined) {
-    let indexPontoIncompleto = tipoFaltas.findIndex((tipoFalta) => {
-      return tipoFalta.TIPO == 9;
-    });
+  let temAlgumPontoBatido = HORA_CHEGADA || HORA_ALMOCO_INICIAL || HORA_ALMOCO_FINAL || HORA_SAIDA;
 
-    tipoFaltas.splice(indexPontoIncompleto, 1);
-    return tipoFaltas;
-  }
-
-  if (
-    pontosDiaSelecionado.value.HORA_CHEGADA == null ||
-    pontosDiaSelecionado.value.HORA_ALMOCO_INICIAL == null ||
-    pontosDiaSelecionado.value.HORA_ALMOCO_FINAL == null ||
-    pontosDiaSelecionado.value.HORA_SAIDA == null
-  ) {
+  if (temAlgumPontoBatido) {
     let pontoIncompleto = tipoFaltas.find((tipoFalta) => {
       return tipoFalta.TIPO == 9;
     });
     return [pontoIncompleto];
-  }
+  } else {
 
-  return [];
+    let tipoFaltasFiltrado = tipoFaltas.filter((tipoFalta) => {
+      return tipoFalta.TIPO != 9;
+    });
+
+    return tipoFaltasFiltrado;
+  }
 });
 
 export default { state, actions };

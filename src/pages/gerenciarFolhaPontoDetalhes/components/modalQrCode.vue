@@ -19,6 +19,8 @@ watch(
       });
       state.arquivo = undefined;
       gerarQrCode();
+    } else {
+      clearInterval(intervalId);
     }
   }
 );

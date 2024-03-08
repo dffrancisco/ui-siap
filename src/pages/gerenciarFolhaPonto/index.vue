@@ -121,7 +121,7 @@ onMounted(async () => {
                     'com-pendencia': totalizador.QTD_A_JUSTIFICAR > 0,
                   }"
                 >
-                  Pontos à justificar:
+                  Funcionários à justificar:
                   <b>{{ totalizador.QTD_A_JUSTIFICAR }}</b>
                 </span>
               </v-card>
