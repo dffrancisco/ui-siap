@@ -30,6 +30,14 @@ const defaultConfig = {
     color: 'cyan-lighten-1',
     clearable: true,
     clearIcon: "mdi-close-circle",
+  },
+  VAutocomplete: {
+    density: 'compact',
+    variant: 'outlined',
+    color: 'cyan-lighten-1',
+    clearable: true,
+    clearIcon: "mdi-close-circle",
+    hideDetails: true
   }
 }
 
