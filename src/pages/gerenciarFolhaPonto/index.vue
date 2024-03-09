@@ -130,7 +130,7 @@ onMounted(async () => {
               <v-card
                 v-for="funcionario in funcionariosOrdenados"
                 :key="funcionario.COD_FUNCIONARIO"
-                :class="{ pendencia: funcionario.QTD_A_JUSTIFICAR > 0 }"
+                :class="{ pendencia_card: funcionario.QTD_A_JUSTIFICAR > 0 }"
                 class="funcionarios__lista__card"
                 @click="actions.onClickFuncionario(funcionario.COD_FUNCIONARIO, state.mes, state.ano)"
               >
@@ -154,7 +154,10 @@ onMounted(async () => {
                   </div>
                   <div>
                     <div class="funcionarios__lista__dados">
-                      <p class="funcionarios__lista__card__nome">
+                      <p
+                        class="funcionarios__lista__card__nome"
+                        :class="{ pendencia_nome: funcionario.QTD_A_JUSTIFICAR > 0 }"
+                      >
                         {{ funcionario.NOME_COMP }}
                       </p>
                       <p class="funcionarios__lista__card__cargo">
@@ -207,7 +210,7 @@ onMounted(async () => {
       />
     </div>
 
-    <div id="pnCodigoTela">folhaPonto</div>
+    <div id="pnCodigoTela">FOLHA_PONTO</div>
     <v-overlay
       :model-value="state.loading"
       class="align-center justify-center"
@@ -309,8 +312,12 @@ onMounted(async () => {
   padding: 4px 8px 4px 8px;
 }
 
-.pendencia {
+.pendencia_card {
   background-color: #fbc8c868;
+}
+
+.pendencia_nome {
+  color: #ff316a !important;
 }
 
 .imgIconTodos {
