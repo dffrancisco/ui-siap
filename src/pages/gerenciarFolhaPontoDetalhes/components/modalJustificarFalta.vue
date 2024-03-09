@@ -54,14 +54,27 @@ const props = defineProps({
 
 const emit = defineEmits(["atualizarDados", "fecharModal"]);
 
+watch(
+  () => props.opened,
+  () => {
+    if (props.opened) {
+      state.loading = true;
+      state.selectedFalta = props.pontos.TIPO;
+      state.justificativa = props.pontos.STATUS;
+      state.showCIDAutocomplete = false;
+      state.loading = false;
+    }
+  }
+);
+
 const state = reactive({
   loading: false,
-  justificativa: "",
-  selectedCID: "",
+  justificativa: null,
+  selectedCID: null,
   showCIDAutocomplete: false,
   hideButtons: false,
   selectedFalta: null,
-  selectedFaltaTipo: <number>null,
+  selectedFaltaTipo: null,
   modalQrCode: <iModalCreate>(<unknown>null),
   modalQrCodeOpened: false,
   inserirFalta: <unknown>null,
@@ -77,18 +90,17 @@ const showSalvarFeriadoFolga = computed(() => {
   }
 });
 
-// const preencherJustificativa = (DESCRICAO: string) => {
-//   state.justificativa = DESCRICAO;
-//   state.showCIDAutocomplete = DESCRICAO === "Atestado";
+const preencherJustificativa = (TIPO: number) => {
+  state.showCIDAutocomplete = TIPO == 3;
 
-//   const isFeriadoFolga = DESCRICAO === "Dia de Folga" || DESCRICAO === "Feriado";
-//   state.hideButtons = isFeriadoFolga;
+  const isFeriadoFolga = TIPO == 5 || TIPO == 7;
+  state.hideButtons = isFeriadoFolga;
 
-//   const selectedFalta = props.tiposDeFalta.find((item) => item.DESCRICAO === DESCRICAO);
-//   if (selectedFalta) {
-//     state.selectedFaltaTipo = selectedFalta.TIPO;
-//   }
-// };
+  const selectedFalta = props.tiposDeFalta.find((item) => item.TIPO === TIPO);
+  if (selectedFalta) {
+    state.justificativa = selectedFalta.DESCRICAO;
+  }
+};
 
 function imprimirJustificativa() {
   const conteudoElement = criarHTMLParaPDF();
@@ -149,9 +161,7 @@ const desativarBtn = computed(() => {
 const desativarBtnVerDoc = computed(() => {
   if (
     props.dadosDocumento.length == 0 ||
-    //@ts-ignore
     props.pontos.STATUS == "Feriado" ||
-    //@ts-ignore
     props.pontos.STATUS == "Dia de Folga"
   ) {
     return false;
@@ -161,7 +171,11 @@ const desativarBtnVerDoc = computed(() => {
 });
 
 const desativarBtnDelete = computed(() => {
-  if (props.dadosDocumento.length == 0) {
+  if (
+    props.dadosDocumento.length > 0 ||
+    props.pontos.STATUS == "Feriado" ||
+    props.pontos.STATUS == "Dia de Folga"
+  ) {
     return true;
   } else {
     return false;
@@ -169,7 +183,7 @@ const desativarBtnDelete = computed(() => {
 });
 
 const desativarBotoesSeNadaSelecionado = computed(() => {
-  return !state.selectedFalta;
+  return state.selectedFalta == null;
 });
 
 function modal() {
@@ -400,27 +414,11 @@ onMounted(() => {
     modal();
   });
 });
-
-watch(
-  () => props.opened,
-  () => {
-    if (props.opened) {
-      state.loading = true;
-      state.selectedFalta = props.pontos.TIPO;
-      state.justificativa = props.pontos.STATUS;
-      state.showCIDAutocomplete = false;
-      state.loading = false;
-      console.log(props.pontos);
-      console.log(props.dadosDocumento);
-    }
-  }
-);
 </script>
 
 <template>
   <div class="modal-justificar-falta">
     <v-row>
-      {{ state.selectedFalta }}
       <div>
         <span
           class="dataAusencia"
@@ -492,13 +490,14 @@ watch(
         <v-container fluid>
           <v-row>
             <v-select
-              :items="tiposDeFalta"
+              :items="props.tiposDeFalta"
               item-value="TIPO"
               item-title="DESCRICAO"
               id="tiposDeFalta"
               label="Tipo de Ausência"
               v-model="state.selectedFalta"
               :disabled="desativarBtn || jaJustificado"
+              @update:model-value="preencherJustificativa"
             ></v-select>
           </v-row>
         </v-container>

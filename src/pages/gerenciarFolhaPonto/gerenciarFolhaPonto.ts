@@ -40,6 +40,7 @@ export const totalizador = computed(() => {
         QTD_FALTAS_JUSTIFICADAS: 0,
         QTD_PONTOS_INCOMPLETOS: 0,
         QTD_PONTOS_NAO_BATIDOS: 0,
+        QTD_PONTOS_BATIDOS: 0,
     };
 
     let funcionarios: iFuncionario[] = Object.values(state.funcionarios);
@@ -51,6 +52,8 @@ export const totalizador = computed(() => {
             total.QTD_PONTOS_INCOMPLETOS += func.QTD_PONTOS_INCOMPLETOS;
             total.QTD_PONTOS_NAO_BATIDOS += func.QTD_PONTOS_NAO_BATIDOS;
         }
+
+        total.QTD_PONTOS_BATIDOS += func.QTD_PONTOS_BATIDOS;
     }
 
     return total;

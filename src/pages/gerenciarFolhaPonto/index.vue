@@ -85,45 +85,47 @@ onMounted(async () => {
             <div class="funcionarios__lista">
               <v-card
                 variant="outlined"
-                class="funcionarios__lista__totalizador"
+                class="funcionarios__lista__totalizador pl-2"
               >
-                <v-img
-                  src="./src/assets/pessoas.svg"
-                  class="imgIconTodos"
-                  width="50px"
-                ></v-img>
-
-                <span
-                  class="funcionarios__lista__card__totalizador"
-                  style="margin-top: -30px"
-                >
-                  <u class="funcionarios__lista__card__totalizador__title">TOTALIZADOR</u>
-                </span>
-                <span class="funcionarios__lista__card__totalizador">
-                  Quantidade de Funcionários:
-                  <b>{{ funcionariosOrdenados.length }}</b>
-                </span>
-                <span class="funcionarios__lista__card__totalizador">
-                  Pontos não batidos:
-                  <b>{{ totalizador.QTD_PONTOS_NAO_BATIDOS }}</b>
-                </span>
-                <span class="funcionarios__lista__card__totalizador">
-                  Pontos incompletos:
-                  <b>{{ totalizador.QTD_PONTOS_INCOMPLETOS }}</b>
-                </span>
-                <span class="funcionarios__lista__card__totalizador">
-                  Quantidade de justificativas:
-                  <b>{{ totalizador.QTD_FALTAS_JUSTIFICADAS }}</b>
-                </span>
-                <span
-                  class="funcionarios__lista__card__totalizador"
-                  :class="{
-                    'com-pendencia': totalizador.QTD_A_JUSTIFICAR > 0,
-                  }"
-                >
-                  Funcionários à justificar:
-                  <b>{{ totalizador.QTD_A_JUSTIFICAR }}</b>
-                </span>
+                <div>
+                  <p class="funcionarios__lista__card__totalizador">
+                    Qtd de Funcionários:
+                    {{ funcionariosOrdenados.length }}
+                  </p>
+                  <p
+                    class="funcionarios__lista__card__totalizador"
+                    style="color: #ffaa04"
+                  >
+                    Pontos não batidos: {{ totalizador.QTD_PONTOS_NAO_BATIDOS }}
+                  </p>
+                  <p
+                    class="funcionarios__lista__card__totalizador"
+                    style="color: #b142f5"
+                  >
+                    Pontos incompletos:
+                    {{ totalizador.QTD_PONTOS_INCOMPLETOS }}
+                  </p>
+                </div>
+                <div>
+                  <p class="funcionarios__lista__card__totalizador">
+                    Funcionários Pendentes:
+                    {{ totalizador.QTD_A_JUSTIFICAR }}</p
+                  >
+                  <p
+                    class="funcionarios__lista__card__totalizador"
+                    style="color: #ff316a"
+                  >
+                    Pontos à justificar:
+                    {{ totalizador.QTD_FALTAS_JUSTIFICADAS }}
+                  </p>
+                  <p
+                    class="funcionarios__lista__card__totalizador"
+                    style="color: #4880ff"
+                  >
+                    Pontos justificados:
+                    {{ totalizador.QTD_PONTOS_BATIDOS }}
+                  </p>
+                </div>
               </v-card>
               <v-card
                 v-for="funcionario in funcionariosOrdenados"
@@ -133,52 +135,57 @@ onMounted(async () => {
                 @click="actions.onClickFuncionario(funcionario.COD_FUNCIONARIO, state.mes, state.ano)"
               >
                 <div class="funcionarios__lista__card__usuario">
-                  <v-avatar
-                    size="60px"
-                    color="primary"
-                    :title="funcionario.LOGIN"
-                    :class="{
-                      'funcionarios__lista__avatar--red': funcionario.QTD_A_JUSTIFICAR > 0,
-                    }"
-                    class="funcionarios__lista__avatar"
-                  >
-                    <v-img
-                      :src="actions.getFotoFuncionarioURL(funcionario.CPF)"
-                      aspect-ratio="1"
-                      cover
-                    ></v-img>
-                  </v-avatar>
+                  <div class="funcionario_card_avatar">
+                    <v-avatar
+                      size="60px"
+                      color="primary"
+                      :title="funcionario.LOGIN"
+                      :class="{
+                        'funcionarios__lista__avatar--red': funcionario.QTD_A_JUSTIFICAR > 0,
+                      }"
+                      class="funcionarios__lista__avatar"
+                    >
+                      <v-img
+                        :src="actions.getFotoFuncionarioURL(funcionario.CPF)"
+                        aspect-ratio="1"
+                        cover
+                      ></v-img>
+                    </v-avatar>
+                  </div>
                   <div>
-                    <strong class="funcionarios__lista__card__nome">
-                      {{ funcionario.NOME_COMP }}
-                    </strong>
-                    <span class="funcionarios__lista__card__cargo">
-                      {{ funcionario.CARGO }}
-                    </span>
+                    <div class="funcionarios__lista__dados">
+                      <p class="funcionarios__lista__card__nome">
+                        {{ funcionario.NOME_COMP }}
+                      </p>
+                      <p class="funcionarios__lista__card__cargo">
+                        {{ funcionario.CARGO }}
+                      </p>
+
+                      <div class="funcionarios__lista__card__chip">
+                        <v-chip
+                          variant="outlined"
+                          color="#ffaa04"
+                          >{{ funcionario.QTD_PONTOS_NAO_BATIDOS }}</v-chip
+                        >
+                        <v-chip
+                          variant="outlined"
+                          color="#B142F5"
+                          >{{ funcionario.QTD_PONTOS_INCOMPLETOS }}</v-chip
+                        >
+                        <v-chip
+                          variant="outlined"
+                          color="#FF316A"
+                          >{{ funcionario.QTD_A_JUSTIFICAR }}</v-chip
+                        >
+                        <v-chip
+                          variant="outlined"
+                          color="#4880FF"
+                          >{{ funcionario.QTD_FALTAS_JUSTIFICADAS }}</v-chip
+                        >
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                <span class="funcionarios__lista__card__faltas">
-                  Pontos não batidos:
-                  <b>{{ funcionario.QTD_PONTOS_NAO_BATIDOS }}</b>
-                </span>
-                <span class="funcionarios__lista__card__faltas">
-                  Pontos incompletos:
-                  <b>{{ funcionario.QTD_PONTOS_INCOMPLETOS }}</b>
-                </span>
-                <span class="funcionarios__lista__card__faltas">
-                  Qtd de justificativas:
-                  <b>{{ funcionario.QTD_FALTAS_JUSTIFICADAS }}</b>
-                </span>
-                <span
-                  class="funcionarios__lista__card__faltas"
-                  :class="{
-                    'funcionario-com-pendencia': funcionario.QTD_A_JUSTIFICAR > 0,
-                  }"
-                >
-                  Pontos à justificar:
-                  <b>{{ funcionario.QTD_A_JUSTIFICAR }}</b>
-                </span>
               </v-card>
             </div>
           </div>
@@ -231,7 +238,7 @@ onMounted(async () => {
   }
 
   .funcionarios__lista__avatar {
-    margin-left: 5px;
+    margin-left: 8px;
     cursor: pointer;
     opacity: 1;
     border: 1px solid #0000002f;
@@ -241,27 +248,15 @@ onMounted(async () => {
     border: 2px solid red;
   }
 
-  .funcionarios__lista__totalizador,
-  .funcionarios__lista__card {
-    width: 330px;
-    height: 190px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 12px;
-    cursor: pointer;
-    position: relative;
-  }
-
   .funcionarios__lista__card__usuario {
-    padding-left: 12px;
     display: flex;
+    flex-direction: row;
     gap: 12px;
-    margin-bottom: 10px;
+    width: 330px;
+    height: 90px;
   }
 
   .funcionarios__lista__card__cargo {
-    margin-bottom: 30px;
     font-size: 12px;
     white-space: nowrap;
     overflow: hidden;
@@ -270,53 +265,52 @@ onMounted(async () => {
   }
 
   .funcionarios__lista__card__nome {
-    font-size: 15px;
-    color: #2a2a2a;
-    display: flex;
-    align-items: left;
-    justify-content: left;
-  }
-
-  .funcionarios__lista__card__faltas {
-    margin-left: 20px;
-    font-size: 15px;
-    font-style: bold;
+    font-size: 14px;
+    font-weight: bold;
+    width: 222px;
+    color: #202224;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #5a6069;
   }
+}
 
-  .funcionarios__lista__card__faltas.funcionario-com-pendencia {
-    color: red;
-  }
-
-  .funcionarios__lista__avatar.funcionario-com-pendencia {
-    border: 2px solid red;
-  }
+.funcionarios__lista__totalizador {
+  height: 90px;
+  width: 330px;
+  flex-direction: row;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .funcionarios__lista__card__totalizador {
-  margin-left: 40px;
-  font-size: 15px;
-  font-style: bold;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #5a6069;
+  font-size: 12px;
+  font-weight: bold;
+  color: #202224;
 }
 
-.funcionarios__lista__card__totalizador__title {
-  margin-left: 60px;
+.funcionarios__lista__card__chip {
+  display: flex;
+  gap: 10px;
 }
 
-.funcionarios__lista__card__totalizador.com-pendencia {
-  color: red;
+.funcionario_card_avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.funcionarios__lista__dados {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 4px 8px 4px 8px;
 }
 
 .pendencia {
   background-color: #fbc8c868;
-  border: 1px solid rgb(254, 91, 91);
 }
 
 .imgIconTodos {
