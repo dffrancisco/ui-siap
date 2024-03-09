@@ -37,18 +37,6 @@ export const setup = (emit: any, props: any) => {
         }
     });
 
-    const preencherJustificativa = (TIPO: number) => {
-        state.showCIDAutocomplete = TIPO == 3;
-
-        const isFeriadoFolga = TIPO == 5 || TIPO == 7;
-        state.hideButtons = isFeriadoFolga;
-
-        const selectedFalta = props.tiposDeFalta.find((item) => item.TIPO === TIPO);
-        if (selectedFalta) {
-            state.justificativa = selectedFalta.DESCRICAO;
-        }
-    };
-
     const jaJustificado = computed(() => {
         if (props.pontos.STATUS || props.pontos.JUSTIFICATIVA == "Ponto Incompleto") {
             return true;
@@ -197,6 +185,18 @@ export const setup = (emit: any, props: any) => {
                 actions.salvarFaltaFeriadoOuFolga();
             } else {
                 state.modalQrCode.open();
+            }
+        },
+
+        preencherJustificativa(TIPO: number) {
+            state.showCIDAutocomplete = TIPO == 3;
+
+            const isFeriadoFolga = TIPO == 5 || TIPO == 7;
+            state.hideButtons = isFeriadoFolga;
+
+            const selectedFalta = props.tiposDeFalta.find((item) => item.TIPO === TIPO);
+            if (selectedFalta) {
+                state.justificativa = selectedFalta.DESCRICAO;
             }
         },
 
@@ -380,7 +380,6 @@ export const setup = (emit: any, props: any) => {
         actions,
         emit,
         showSalvarFeriadoFolga,
-        preencherJustificativa,
         jaJustificado,
         desativarBtn,
         desativarBtnVerDoc,

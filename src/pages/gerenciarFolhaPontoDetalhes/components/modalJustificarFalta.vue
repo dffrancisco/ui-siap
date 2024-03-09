@@ -43,7 +43,6 @@ const {
   state,
   actions,
   showSalvarFeriadoFolga,
-  preencherJustificativa,
   jaJustificado,
   desativarBtn,
   desativarBtnVerDoc,
@@ -140,7 +139,7 @@ onMounted(() => {
               label="Tipo de Ausência"
               v-model="state.selectedFalta"
               :disabled="desativarBtn || jaJustificado"
-              @update:model-value="preencherJustificativa"
+              @update:model-value="actions.preencherJustificativa"
             ></v-select>
           </v-row>
         </v-container>
