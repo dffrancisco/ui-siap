@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import globalState from "@/store/globalState";
 import { defineProps } from "vue";
 import printJS from "print-js";
 import { sleep } from "@/ts/utils";
+import { iEmpresa } from "@/models/interfaces";
 
 const props = defineProps({
   dadosParaImpressao: {
     type: Object as () => any,
+  },
+  empresa: {
+    type: Object as () => iEmpresa,
   },
 });
 
@@ -31,6 +34,7 @@ const formatarDadosTable = (funcionario) => {
       funcionario.pontos && Array.isArray(funcionario.pontos)
         ? funcionario.pontos.find((ponto) => new Date(ponto.DATA).getDate() === dia)
         : null;
+
     const faltaDia =
       funcionario.faltas && Array.isArray(funcionario.faltas)
         ? funcionario.faltas.find((falta) => new Date(falta.DATA).getDate() === dia)
@@ -38,27 +42,13 @@ const formatarDadosTable = (funcionario) => {
 
     // Definindo os valores de entrada/saída e justificativa/status
     const entrada1 = pontoDia ? new Date(pontoDia.HORA_CHEGADA).toLocaleTimeString() : "-";
-    const saida1 = pontoDia
-      ? pontoDia.HORA_ALMOCO_INICIAL
-        ? new Date(pontoDia.HORA_ALMOCO_INICIAL).toLocaleTimeString()
-        : "-"
+    const saida1 = pontoDia?.HORA_ALMOCO_INICIAL
+      ? new Date(pontoDia.HORA_ALMOCO_INICIAL).toLocaleTimeString()
       : "-";
-    const entrada2 = pontoDia
-      ? pontoDia.HORA_ALMOCO_FINAL
-        ? new Date(pontoDia.HORA_ALMOCO_FINAL).toLocaleTimeString()
-        : "-"
-      : "-";
-    const saida2 = pontoDia
-      ? pontoDia.HORA_SAIDA
-        ? new Date(pontoDia.HORA_SAIDA).toLocaleTimeString()
-        : "-"
-      : "-";
-    const justificativa =
-      pontoDia && pontoDia.JUSTIFICATIVA
-        ? pontoDia.JUSTIFICATIVA
-        : faltaDia && (faltaDia.STATUS || faltaDia.JUSTIFICATIVA)
-        ? faltaDia.STATUS || faltaDia.JUSTIFICATIVA
-        : "";
+    const entrada2 = pontoDia?.HORA_ALMOCO_FINAL ? new Date(pontoDia.HORA_ALMOCO_FINAL).toLocaleTimeString() : "-";
+    const saida2 = pontoDia?.HORA_SAIDA ? new Date(pontoDia.HORA_SAIDA).toLocaleTimeString() : "-";
+
+    const justificativa = pontoDia?.JUSTIFICATIVA || faltaDia?.STATUS || faltaDia?.JUSTIFICATIVA || "";
 
     diasNoMes.push({
       data: data.toLocaleDateString(),
@@ -105,41 +95,30 @@ const print = async () => {
               rowspan="4"
               style="width: 150px"
               ><img
-                src="src/assets/Logo-Real-Shop-Car-menor.png"
+                src="../assets/Logo-Real-Shop-Car-menor.png"
                 width="135"
             /></td>
             <td
               style="font-weight: bold; font-size: 12px"
               name="razao"
-              ><span> {{ globalState.empresa.RAZAO_SOCIAL }}</span></td
+              ><span> {{ empresa.RAZAO_SOCIAL }}</span></td
             >
           </tr>
           <tr>
-            <td style="font-size: 12px"
-              ><span name="cidade"></span>{{ globalState.empresa.BAIRRO }}-{{ globalState.empresa.UF }}</td
-            >
-            <td style="font-size: 12px">Bairro: <span name="bairro"></span>{{ globalState.empresa.ENDERECO }}</td>
+            <td style="font-size: 12px"><span name="cidade"></span>{{ empresa.BAIRRO }}-{{ empresa.UF }}</td>
+            <td style="font-size: 12px">Bairro: <span name="bairro"></span>{{ empresa.ENDERECO }}</td>
 
-            <td style="font-size: 12px">CNPJ:<span name="cnpj"></span> {{ globalState.empresa.CGC_EMPRESA }}</td>
+            <td style="font-size: 12px">CNPJ:<span name="cnpj"></span> {{ empresa.CGC_EMPRESA }}</td>
           </tr>
           <tr>
-            <td style="font-size: 12px">CEP: <span name="cep"></span>{{ globalState.empresa.CEP }}</td>
-            <td style="font-size: 12px">Telefone: <span name="fone"></span>{{ globalState.empresa.TELEFONE1 }}</td>
-            <td style="font-size: 12px"
-              >Inscrição: <span name="inscricao"></span>{{ globalState.empresa.INSCRICAO }}</td
-            >
+            <td style="font-size: 12px">CEP: <span name="cep"></span>{{ empresa.CEP }}</td>
+            <td style="font-size: 12px">Telefone: <span name="fone"></span>{{ empresa.TELEFONE1 }}</td>
+            <td style="font-size: 12px">Inscrição: <span name="inscricao"></span>{{ empresa.INSCRICAO }}</td>
           </tr>
         </table>
         <div
           class="infoFunc"
-          style="
-            text-align: center;
-            font-size: 12px;
-            font-weight: bold;
-            border: 1px solid black;
-            padding: 4px;
-            text-align: center;
-          "
+          style="text-align: center; font-size: 12px; font-weight: bold; border: 1px solid black; padding: 4px"
         >
           {{ funcionario.NOME_COMP }} - CPF: {{ funcionario.CPF }} - Cargo: {{ funcionario.CARGO }} - Admissão:
           {{ formatarDataAdmissao(funcionario.DATA_ADMISSAO) }}

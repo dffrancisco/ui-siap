@@ -30,7 +30,32 @@ const defaultConfig = {
     color: 'cyan-lighten-1',
     clearable: true,
     clearIcon: "mdi-close-circle",
-  }
+    hideDetails: true
+  },
+  VTextarea: {
+    density: 'compact',
+    variant: 'outlined',
+    color: 'cyan-lighten-1',
+    clearable: true,
+    clearIcon: "mdi-close-circle",
+    hideDetails: true
+  },
+  VAutocomplete: {
+    density: 'compact',
+    variant: 'outlined',
+    color: 'cyan-lighten-1',
+    clearable: true,
+    clearIcon: "mdi-close-circle",
+    hideDetails: true
+  },
+  VSelect: {
+    density: 'compact',
+    variant: 'outlined',
+    color: 'cyan-lighten-1',
+    clearable: true,
+    clearIcon: "mdi-close-circle",
+    hideDetails: true
+  },
 }
 
 

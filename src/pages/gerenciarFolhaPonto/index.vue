@@ -38,6 +38,7 @@ onMounted(async () => {
                   item-title="title"
                   item-value="value"
                   :items="meses"
+                  :clearable="false"
                 ></v-autocomplete>
               </v-col>
               <v-col cols="3">
@@ -46,13 +47,14 @@ onMounted(async () => {
                   label="Ano"
                   v-model="state.ano"
                   :items="anos"
+                  :clearable="false"
                 ></v-autocomplete>
               </v-col>
               <v-col cols="2"
                 ><v-btn
                   icon
                   color="primary"
-                  size="small"
+                  size="x-small"
                   class="btnSearch"
                   title="Buscar funcionários"
                   @click="actions.getResumoPontosFuncionario(state.selectedFuncionario, state.mes, state.ano)"
@@ -62,7 +64,7 @@ onMounted(async () => {
                 <v-btn
                   icon
                   color="primary"
-                  size="small"
+                  size="x-small"
                   class="btnPrint"
                   title="Imprimir folha de ponto de todos os funcionários"
                   @click.prevent="actions.imprimirFolhaPontoTodosFuncionarios()"
@@ -80,8 +82,6 @@ onMounted(async () => {
           class="pt-0"
         >
           <div class="funcionarios">
-            <strong>FUNCIONÁRIOS</strong>
-
             <div class="funcionarios__lista">
               <v-card
                 variant="outlined"
@@ -195,18 +195,18 @@ onMounted(async () => {
         </v-col>
       </v-row>
     </div>
-
     <div
       id="modalImprimirPontos"
       title="Folha de Ponto"
       style="display: none"
     >
-      <modal-imprimir-folha-ponto
+      <modalImprimirFolhaPonto
         :dadosParaImpressao="{
           dadosFuncionarios: state.dadosParaModalImpressao,
           mes: state.mes,
           ano: state.ano,
         }"
+        :empresa="state.empresa"
       />
     </div>
 
@@ -322,6 +322,8 @@ onMounted(async () => {
 
 .imgIconTodos {
   margin-left: 40px;
+  width: 50px;
+  height: 60px;
 }
 
 .btnSearch {

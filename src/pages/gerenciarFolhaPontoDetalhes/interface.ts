@@ -1,3 +1,5 @@
+import { iEmpresa } from "@/models/interfaces";
+
 export interface iPonto {
     TIPO: number;
     STATUS: string;
@@ -8,17 +10,6 @@ export interface iPonto {
     HORA_ALMOCO_FINAL: string;
     HORA_SAIDA: string;
     JUSTIFICATIVA: string;
-}
-
-export interface iTipoFaltasCount {
-    DESCRICAO: string;
-    EXIGE_CID: string;
-    ID_TIPO_FALTA: number;
-    IMPRIMIR_JUSTIFICATIVA: string;
-    LANCAR_FALTA: string;
-    TIPO: number;
-    UPLOAD_ARQUIVO: string;
-    COUNT: number;
 }
 
 export interface iGetDetalhes {
@@ -88,7 +79,6 @@ export interface iPropsTiposDeFalta {
     LANCAR_FALTA: string;
     TIPO: number;
     UPLOAD_ARQUIVO: string;
-    COUNT: number;
 }
 
 export interface iRegistrarFalta {
@@ -177,6 +167,7 @@ export interface iTotalizadorDeFaltas {
 }
 
 export interface iGetDetalhesResponse {
+    empresa: iEmpresa
     dadosFuncionario: iDadosFuncionario;
     pontos: iPontos;
     resumoPontos: iResumoPontos;

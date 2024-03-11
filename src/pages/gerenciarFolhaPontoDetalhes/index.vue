@@ -139,7 +139,7 @@ actions.init(route);
                   <div class="funcionario__card__faltas ml-2">
                     <div
                       class="funcionario__card__faltas__info"
-                      v-for="tipoFalta in state.detalhes.totalizadorDeFaltas"
+                      v-for="tipoFalta in state.totalizadorFaltas"
                       :key="tipoFalta.TIPO"
                     >
                       <div class="funcionario__card__faltas__info__count">
@@ -196,7 +196,8 @@ actions.init(route);
       title="Justificar Ausência"
       style="display: none"
     >
-      <modal-justificar-falta
+      <ModalJustificarFalta
+        :cnpj="state.empresa.CGC_EMPRESA"
         :dadosAusencia="state.dataAusencia"
         :tiposDeFalta="tipoFaltaModal"
         :pontos="pontosDiaSelecionado"
@@ -223,12 +224,13 @@ actions.init(route);
       title="Folha de Ponto"
       style="display: none"
     >
-      <modal-imprimir-folha-ponto
+      <modalImprimirFolhaPonto
         :dadosParaImpressao="{
           dadosFuncionarios: state.dadosParaModalImpressao,
           mes: state.mes,
           ano: state.ano,
         }"
+        :empresa="state.empresa"
       />
     </div>
 

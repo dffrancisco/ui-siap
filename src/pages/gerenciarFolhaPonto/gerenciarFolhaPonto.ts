@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import router from "@/router";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { anosToSelect, mesesToSelect } from "@/constants/constants";
+import { iEmpresa } from "@/models/interfaces";
 
 export const state = reactive({
     funcionarios: {},
@@ -15,6 +16,7 @@ export const state = reactive({
     modalImprimirFolhaPonto: <iModalCreate>(<unknown>null),
     modalImprimirFolhaPontoOpened: false,
     dadosParaModalImpressao: {},
+    empresa: <iEmpresa>{}
 });
 
 export const meses = mesesToSelect;
@@ -85,6 +87,15 @@ export const actions = {
         }
     },
 
+    async getEmpresa() {
+        try {
+            const dados = await gerenciarFolhaPontoService.getEmpresa();
+            state.empresa = dados[0];
+        } catch (error) {
+            console.error('Ocorreu um erro ao buscar os dados da empresa');
+        }
+    },
+
     async dadosParaImpressao(mes: number, ano: number) {
         const param: iGetDadosParaImpressao = {
             mes: mes,
@@ -130,12 +141,11 @@ export const actions = {
     async init(codFuncionario: number, mes: number, ano: number) {
         state.loading = true;
 
+        await actions.getEmpresa();
         await actions.getResumoPontosFuncionario(codFuncionario, mes, ano);
         actions.modal();
 
-        setTimeout(() => {
-            state.loading = false;
-        }, 100);
+        state.loading = false;
     },
 
     modal() {

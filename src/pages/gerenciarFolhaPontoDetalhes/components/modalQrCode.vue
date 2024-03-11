@@ -3,7 +3,6 @@ import utils from "@/ts/utils";
 import QrcodeVue from "qrcode.vue";
 import { reactive, watch } from "vue";
 import stateLogin from "../../login/login";
-import globalState from "@/store/globalState";
 import { iRegistrarDocumentoAusencia, iRegistrarFalta } from "../interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "../services/gerenciarFolhaPontoDetalhes.service";
@@ -31,6 +30,9 @@ const props = defineProps({
   },
   opened: {
     type: Boolean,
+  },
+  cnpj: {
+    type: String,
   },
 });
 
@@ -62,7 +64,7 @@ function gerarQrCode() {
 
   const chave = gerarChave(cpf, tipoDocumento, usuario, nomeFunc, dataDocArquivo);
 
-  state.qrData = `http://localhost/siap+/funcionario_doc_imagem/?chave=${chave}`;
+  state.qrData = `http://192.168.100.60/siap+/funcionario_doc_imagem/?chave=${chave}`;
 
   setTimeout(() => {
     intervalId = setInterval(verificarArquivos, 2000);
@@ -241,7 +243,7 @@ async function createRegistroAusencia(nomeDoDocumento: string, tipoDocumento: st
     dataPonto: dataDocArquivo,
     dataUpload: dataUpload,
     usuario: usuario,
-    cnpj: globalState.empresa.CGC_EMPRESA,
+    cnpj: props.cnpj,
   };
 
   try {

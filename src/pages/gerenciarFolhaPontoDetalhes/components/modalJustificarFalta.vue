@@ -35,6 +35,9 @@ const props = defineProps({
   opened: {
     type: Boolean,
   },
+  cnpj: {
+    type: String,
+  },
 });
 
 const emit = defineEmits(["atualizarDados", "fecharModal"]);
