@@ -31,7 +31,7 @@ onMounted(async () => {
                 ></v-autocomplete>
               </v-col>
               <v-col cols="2">
-                <v-autocomplete
+                <v-select
                   id="mes"
                   label="Mês"
                   v-model="state.mes"
@@ -39,16 +39,16 @@ onMounted(async () => {
                   item-value="value"
                   :items="meses"
                   :clearable="false"
-                ></v-autocomplete>
+                ></v-select>
               </v-col>
               <v-col cols="3">
-                <v-autocomplete
+                <v-select
                   id="ano"
                   label="Ano"
                   v-model="state.ano"
                   :items="anos"
                   :clearable="false"
-                ></v-autocomplete>
+                ></v-select>
               </v-col>
               <v-col cols="2"
                 ><v-btn
@@ -83,48 +83,60 @@ onMounted(async () => {
         >
           <div class="funcionarios">
             <div class="funcionarios__lista">
-              <v-card
-                variant="outlined"
-                class="funcionarios__lista__totalizador pl-2"
-              >
+              <v-card class="funcionarios__lista__totalizador">
                 <div>
-                  <p class="funcionarios__lista__card__totalizador">
-                    Qtd de Funcionários:
-                    {{ funcionariosOrdenados.length }}
-                  </p>
-                  <p
+                  <span
                     class="funcionarios__lista__card__totalizador"
-                    style="color: #ffaa04"
+                    style="color: #b17500"
                   >
-                    Pontos não batidos: {{ totalizador.QTD_PONTOS_NAO_BATIDOS }}
-                  </p>
-                  <p
-                    class="funcionarios__lista__card__totalizador"
+                    Pontos não batidos:
+                    <v-chip
+                      variant="outlined"
+                      color="#b17500"
+                      class="ml-2"
+                      title="PONTOS NÃO BATIDOS"
+                      >{{ totalizador.QTD_PONTOS_NAO_BATIDOS }}</v-chip
+                    >
+                  </span>
+                  <span
+                    class="funcionarios__lista__card__totalizador px-10"
                     style="color: #b142f5"
                   >
                     Pontos incompletos:
-                    {{ totalizador.QTD_PONTOS_INCOMPLETOS }}
-                  </p>
-                </div>
-                <div>
-                  <p class="funcionarios__lista__card__totalizador">
-                    Funcionários Pendentes:
-                    {{ totalizador.QTD_A_JUSTIFICAR }}</p
-                  >
-                  <p
-                    class="funcionarios__lista__card__totalizador"
-                    style="color: #ff316a"
+                    <v-chip
+                      variant="outlined"
+                      color="#B142F5"
+                      class="ml-2"
+                      title="PONTOS INCOMPLETOS"
+                      >{{ totalizador.QTD_PONTOS_INCOMPLETOS }}</v-chip
+                    >
+                  </span>
+                  <span
+                    class="funcionarios__lista__card__totalizador pr-10"
+                    style="color: #d50000"
                   >
                     Pontos à justificar:
-                    {{ totalizador.QTD_FALTAS_JUSTIFICADAS }}
-                  </p>
-                  <p
+                    <v-chip
+                      variant="outlined"
+                      color="#D50000"
+                      class="ml-2 chip_ponto_a_justificar"
+                      title="PONTOS À JUSTIFICAR"
+                      >{{ totalizador.QTD_A_JUSTIFICAR }}</v-chip
+                    >
+                  </span>
+                  <span
                     class="funcionarios__lista__card__totalizador"
                     style="color: #4880ff"
                   >
                     Pontos justificados:
-                    {{ totalizador.QTD_PONTOS_BATIDOS }}
-                  </p>
+                    <v-chip
+                      variant="outlined"
+                      color="#4880FF"
+                      title="PONTOS JUSTIFICADOS"
+                      class="ml-2"
+                      >{{ totalizador.QTD_FALTAS_JUSTIFICADAS }}</v-chip
+                    >
+                  </span>
                 </div>
               </v-card>
               <v-card
@@ -154,10 +166,7 @@ onMounted(async () => {
                   </div>
                   <div>
                     <div class="funcionarios__lista__dados">
-                      <p
-                        class="funcionarios__lista__card__nome"
-                        :class="{ pendencia_nome: funcionario.QTD_A_JUSTIFICAR > 0 }"
-                      >
+                      <p class="funcionarios__lista__card__nome">
                         {{ funcionario.NOME_COMP }}
                       </p>
                       <p class="funcionarios__lista__card__cargo">
@@ -167,22 +176,26 @@ onMounted(async () => {
                       <div class="funcionarios__lista__card__chip">
                         <v-chip
                           variant="outlined"
-                          color="#ffaa04"
+                          color="#b17500"
+                          title="PONTOS NÃO BATIDOS"
                           >{{ funcionario.QTD_PONTOS_NAO_BATIDOS }}</v-chip
                         >
                         <v-chip
                           variant="outlined"
                           color="#B142F5"
+                          title="PONTOS INCOMPLETOS"
                           >{{ funcionario.QTD_PONTOS_INCOMPLETOS }}</v-chip
                         >
                         <v-chip
                           variant="outlined"
-                          color="#FF316A"
+                          color="#D50000"
+                          title="PONTOS À JUSTIFICAR"
                           >{{ funcionario.QTD_A_JUSTIFICAR }}</v-chip
                         >
                         <v-chip
                           variant="outlined"
                           color="#4880FF"
+                          title="PONTOS JUSTIFICADOS"
                           >{{ funcionario.QTD_FALTAS_JUSTIFICADAS }}</v-chip
                         >
                       </div>
@@ -237,7 +250,6 @@ onMounted(async () => {
     flex-wrap: wrap;
     max-height: 650px;
     overflow-y: scroll;
-    margin-top: 8px;
   }
 
   .funcionarios__lista__avatar {
@@ -279,16 +291,16 @@ onMounted(async () => {
 }
 
 .funcionarios__lista__totalizador {
-  height: 90px;
-  width: 330px;
+  height: 50px;
+  width: 97%;
   flex-direction: row;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
 }
 
 .funcionarios__lista__card__totalizador {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: bold;
   color: #202224;
 }
@@ -316,8 +328,8 @@ onMounted(async () => {
   background-color: #fbc8c868;
 }
 
-.pendencia_nome {
-  color: #ff316a !important;
+.chip_ponto_a_justificar {
+  background-color: #ffcdd2;
 }
 
 .imgIconTodos {

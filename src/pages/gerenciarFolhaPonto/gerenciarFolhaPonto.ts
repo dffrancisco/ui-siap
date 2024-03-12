@@ -4,7 +4,7 @@ import gerenciarFolhaPontoService from "./services/gerenciarFolhaPonto.service";
 import Swal from "sweetalert2";
 import router from "@/router";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import { anosToSelect, mesesToSelect } from "@/constants/constants";
+import { mesesToSelect } from "@/constants/constants";
 import { iEmpresa } from "@/models/interfaces";
 
 export const state = reactive({
@@ -20,7 +20,17 @@ export const state = reactive({
 });
 
 export const meses = mesesToSelect;
-export const anos = anosToSelect;
+export const anos = computed(() => {
+    const anosArray: number[] = [];
+    const anoAtual = new Date().getFullYear();
+
+    for (let i = 0; i < 10; i++) {
+        const ano = anoAtual - i;
+        anosArray.push(ano);
+    }
+
+    return anosArray;
+});
 
 export const funcionariosOrdenados = computed(() => {
     let funcionariosArray = <iFuncionario[]>[];
@@ -48,15 +58,15 @@ export const totalizador = computed(() => {
     let funcionarios: iFuncionario[] = Object.values(state.funcionarios);
 
     for (const func of funcionarios) {
-        if (func.QTD_A_JUSTIFICAR > 0) {
-            total.QTD_A_JUSTIFICAR++;
-            total.QTD_FALTAS_JUSTIFICADAS += func.QTD_FALTAS_JUSTIFICADAS;
-            total.QTD_PONTOS_INCOMPLETOS += func.QTD_PONTOS_INCOMPLETOS;
-            total.QTD_PONTOS_NAO_BATIDOS += func.QTD_PONTOS_NAO_BATIDOS;
-        }
 
+        total.QTD_FALTAS_JUSTIFICADAS += func.QTD_FALTAS_JUSTIFICADAS;
+        total.QTD_PONTOS_INCOMPLETOS += func.QTD_PONTOS_INCOMPLETOS;
+        total.QTD_PONTOS_NAO_BATIDOS += func.QTD_PONTOS_NAO_BATIDOS;
         total.QTD_PONTOS_BATIDOS += func.QTD_PONTOS_BATIDOS;
     }
+
+    total.QTD_A_JUSTIFICAR = total.QTD_PONTOS_INCOMPLETOS + total.QTD_PONTOS_NAO_BATIDOS - total.QTD_FALTAS_JUSTIFICADAS
+
 
     return total;
 });

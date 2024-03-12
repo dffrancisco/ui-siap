@@ -14,7 +14,7 @@ import gerenciarFolhaPontoDetalhesService from "./services/gerenciarFolhaPontoDe
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import moment from "moment";
 import router from "@/router";
-import { anosToSelect, mesesToSelect } from "@/constants/constants";
+import { mesesToSelect } from "@/constants/constants";
 import { iEmpresa } from "@/models/interfaces";
 
 export const state = reactive({
@@ -39,7 +39,6 @@ export const state = reactive({
     mes: new Date().getMonth() + 1,
     ano: new Date().getFullYear(),
     meses: mesesToSelect,
-    anos: anosToSelect,
     initialDate: <any>new Date(),
     modalJustificarFalta: <iModalCreate>(<unknown>null),
     modalJustificarFaltaOpened: false,
@@ -50,6 +49,18 @@ export const state = reactive({
     modalImprimirFolhaPontoOpened: false,
     dadosParaModalImpressao: {},
     totalizadorFaltas: <iTotalizadorDeFaltas[]>[]
+});
+
+export const anos = computed(() => {
+    const anosArray: number[] = [];
+    const anoAtual = new Date().getFullYear();
+
+    for (let i = 0; i < 10; i++) {
+        const ano = anoAtual - i;
+        anosArray.push(ano);
+    }
+
+    return anosArray
 });
 
 export const actions = {
@@ -78,6 +89,34 @@ export const actions = {
         state.modalJustificarFalta.close();
     },
 
+    preencherBackgroundColorDataIncompleta() {
+        let diasSemPonto = [];
+        let dataInicio = moment({ year: state.ano, month: state.mes - 1, day: 1 })
+
+        let dataFim = moment(dataInicio).endOf("month")
+
+        let diasNoMes = dataFim.diff(dataInicio, 'days') + 1
+
+
+        for (let dia = 1; dia <= diasNoMes; dia++) {
+            if (state.pontos[`Dia:${dia}`] == undefined) {
+                let data = moment({ year: state.ano, month: state.mes - 1, day: dia });
+
+                let isDomingo = data.weekday() == 0 ? true : false;
+
+                if (isDomingo == false && data.isBefore(moment().add(-1, 'day'))) {
+                    diasSemPonto.push(data.format('YYYY-MM-DD'));
+                }
+            }
+        }
+
+        diasSemPonto.forEach((data) => {
+            const elemento = document.querySelector(`td[data-date='${data}']`);
+            elemento.className = 'calendario_data_sem_ponto';
+        })
+
+    },
+
     async getDetalhes(cod_funcionario: number, mes: number, ano: number) {
         const param: iGetDetalhes = {
             cod_funcionario: cod_funcionario,
@@ -102,6 +141,11 @@ export const actions = {
             state.cargo = state.dadosFuncionario.CARGO;
             state.loginFuncionario = state.dadosFuncionario.LOGIN;
             state.dataAdmissao = state.dadosFuncionario.DATA_ADMISSAO;
+
+            setTimeout(() => {
+                actions.preencherBackgroundColorDataIncompleta()
+            }, 100)
+
         } catch (error) {
             console.error(error);
             Swal.fire({
@@ -131,7 +175,18 @@ export const actions = {
         }
     },
 
-    formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, jaFoiJustificado: boolean, cor = "#6495ED") {
+    formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, jaFoiJustificado: boolean, qtdPontosDia: number, cor = "#6495ED") {
+
+        let isSabado = moment(dataInicio).weekday() == 6;
+        let pontosBatidosPar = qtdPontosDia % 2 == 0;
+
+
+        if (titulo == null && isSabado == true && pontosBatidosPar) {
+            titulo = "---------";
+            cor = "#acc8fb";
+        }
+
+
         if (titulo == null) {
             titulo = "---------";
             cor = "#FF6347";
@@ -193,7 +248,7 @@ export const actions = {
 
     modal() {
         state.modalJustificarFalta = new xModal.create({
-            height: 530,
+            height: 486,
             width: 700,
             el: "#modalJustificarFalta",
             theme: "xModal-blue",
@@ -230,6 +285,7 @@ export const actions = {
             actions.modal();
 
             await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
+
             state.loading = false;
         });
     },
@@ -274,37 +330,50 @@ export const pontosCalendario = computed(() => {
         let dataInicio = new Date(ponto.DATA);
         let dataFim = new Date(ponto.DATA);
 
-        if (ponto.HORA_CHEGADA || ponto.HORA_ALMOCO_INICIAL || ponto.HORA_ALMOCO_FINAL || ponto.HORA_SAIDA) {
-            let jaFoiJustificado = ponto.HORA_CHEGADA == null && ponto.JUSTIFICATIVA == "Ponto Incompleto";
-            let horaFormatada = actions.formatarHora(ponto.HORA_CHEGADA);
-            let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado);
+        const { HORA_CHEGADA, HORA_ALMOCO_FINAL, HORA_ALMOCO_INICIAL, HORA_SAIDA, JUSTIFICATIVA, STATUS } = ponto;
+        let qtdPontosDia = 0
+
+        if (HORA_CHEGADA || HORA_ALMOCO_INICIAL || HORA_ALMOCO_FINAL || HORA_SAIDA) {
+
+            if (HORA_CHEGADA) qtdPontosDia++;
+            if (HORA_ALMOCO_INICIAL) qtdPontosDia++;
+            if (HORA_ALMOCO_FINAL) qtdPontosDia++;
+            if (HORA_SAIDA) qtdPontosDia++;
+
+            let jaFoiJustificado = HORA_CHEGADA == null && JUSTIFICATIVA == "Ponto Incompleto";
+            let horaFormatada = actions.formatarHora(HORA_CHEGADA);
+            let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
 
             eventos.push(eventoFormatado);
 
-            jaFoiJustificado = ponto.HORA_ALMOCO_INICIAL == null && ponto.JUSTIFICATIVA == "Ponto Incompleto";
-            horaFormatada = actions.formatarHora(ponto.HORA_ALMOCO_INICIAL);
-            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, "#6495ED");
+            jaFoiJustificado = HORA_ALMOCO_INICIAL == null && JUSTIFICATIVA == "Ponto Incompleto";
+            horaFormatada = actions.formatarHora(HORA_ALMOCO_INICIAL);
+            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
 
             eventos.push(eventoFormatado);
 
-            jaFoiJustificado = ponto.HORA_ALMOCO_FINAL == null && ponto.JUSTIFICATIVA == "Ponto Incompleto";
-            horaFormatada = actions.formatarHora(ponto.HORA_ALMOCO_FINAL);
-            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, "#6495ED");
+            jaFoiJustificado = HORA_ALMOCO_FINAL == null && JUSTIFICATIVA == "Ponto Incompleto";
+            horaFormatada = actions.formatarHora(HORA_ALMOCO_FINAL);
+            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
 
             eventos.push(eventoFormatado);
 
-            jaFoiJustificado = ponto.HORA_SAIDA == null && ponto.JUSTIFICATIVA == "Ponto Incompleto";
-            horaFormatada = actions.formatarHora(ponto.HORA_SAIDA);
-            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado);
+            jaFoiJustificado = HORA_SAIDA == null && JUSTIFICATIVA == "Ponto Incompleto";
+            horaFormatada = actions.formatarHora(HORA_SAIDA);
+            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
 
             eventos.push(eventoFormatado);
+
+
         }
 
-        if (ponto.STATUS && ponto.STATUS != "Ponto Incompleto") {
+
+        if (STATUS && STATUS != "Ponto Incompleto") {
             let cor;
-            switch (ponto.STATUS) {
+
+            switch (STATUS) {
                 case "Atestado":
-                    cor = "#FF6347"; // Laranja
+                    cor = "#33691E";
                     break;
                 case "Falta Abonada":
                     cor = "#7e57c2"; // deep purple
@@ -328,7 +397,7 @@ export const pontosCalendario = computed(() => {
                     cor = "#8d6e63"; // brown
                     break;
             }
-            let eventoFormatado = actions.formatarEvento(ponto.STATUS, dataInicio, dataFim, false, cor);
+            let eventoFormatado = actions.formatarEvento(STATUS, dataInicio, dataFim, false, qtdPontosDia, cor);
 
             eventos.push(eventoFormatado);
         }
