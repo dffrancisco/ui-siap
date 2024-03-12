@@ -56,7 +56,7 @@ export const anos = computed(() => {
     const anoAtual = new Date().getFullYear();
 
     for (let i = 0; i < 10; i++) {
-        const ano = anoAtual - i;
+        const ano = anoAtual - 9 + i;
         anosArray.push(ano);
     }
 
@@ -116,6 +116,40 @@ export const actions = {
         })
 
     },
+
+    btnMesSeguinte() {
+        let dataHoje = moment()
+        let mesSelecionado = moment({ year: state.ano, month: state.mes - 1, day: 1 });
+
+        mesSelecionado.add(1, 'month');
+
+        let mesSeguinte = mesSelecionado.month() + 1;
+        let anoSeguinte = mesSelecionado.year();
+
+        if (dataHoje.isBefore(mesSelecionado)) {
+            return false;
+        }
+
+        state.mes = mesSeguinte;
+        state.ano = anoSeguinte;
+
+        actions.getDadosPontos()
+    },
+
+    btnMesAnterior() {
+        let mesSelecionado = moment({ year: state.ano, month: state.mes - 1, day: 1 });
+
+        mesSelecionado.subtract(1, 'month');
+
+        let mesSeguinte = mesSelecionado.month() + 1;
+        let anoSeguinte = mesSelecionado.year();
+
+        state.mes = mesSeguinte;
+        state.ano = anoSeguinte;
+
+        actions.getDadosPontos()
+    },
+
 
     async getDetalhes(cod_funcionario: number, mes: number, ano: number) {
         const param: iGetDetalhes = {

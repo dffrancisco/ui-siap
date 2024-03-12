@@ -20,7 +20,7 @@ actions.init(route);
 </script>
 
 <template>
-  <v-container>
+  <v-container class="container">
     <title>Detalhes dos pontos</title>
 
     <div style="max-width: 1100px; margin: 0 auto">
@@ -28,26 +28,39 @@ actions.init(route);
         <v-col cols="4">
           <div>
             <v-card
-              class="cardFolhaPontoDetalhes"
-              height="546px"
+              class="cardFolhaPontoDetalhes pt-5 px-3"
+              height="560px"
               elevation="2"
             >
-              <div class="mesAnoEBotoes pa-1">
-                <v-row class="pa-2 pt-5">
-                  <v-col cols="2">
+              <div class="mesAnoEBotoes pb-3">
+                <v-row>
+                  <div
+                    class="py-2 px-3 d-flex justify-space-between align-center"
+                    style="width: 100%"
+                  >
                     <v-btn
                       color="primary"
                       variant="text"
                       density="compact"
-                      icon="mdi-arrow-left"
+                      icon="mdi-arrow-left mdi-36px"
                       @click="actions.onClickVoltar"
                     />
-                  </v-col>
+                    <v-btn
+                      icon
+                      color="primary"
+                      size="small"
+                      @click.prevent="actions.imprimirFolhaPonto()"
+                    >
+                      <v-icon>mdi-printer</v-icon>
+                    </v-btn>
+                  </div>
+                </v-row>
+                <v-row>
                   <v-col>
                     <v-select
                       label="Mês"
                       id="mes"
-                      style="width: 135px"
+                      class="pl-2"
                       v-model="state.mes"
                       item-title="title"
                       item-value="value"
@@ -59,9 +72,9 @@ actions.init(route);
                   </v-col>
                   <v-col>
                     <v-select
-                      style="width: 100px"
                       label="Ano"
                       id="ano"
+                      class="pr-2"
                       v-model="state.ano"
                       :items="anos"
                       hide-details
@@ -140,57 +153,62 @@ actions.init(route);
                       :key="tipoFalta.TIPO"
                     >
                       <div class="funcionario__card__faltas__info__count">
-                        {{ tipoFalta.DESCRICAO }}:
-                        <b> {{ tipoFalta.COUNT }}</b>
+                        <b class="mr-2"> {{ tipoFalta.COUNT }}</b>
+                        <span class="spDescInf">{{ tipoFalta.DESCRICAO }}</span>
                       </div>
                     </div>
                   </div>
                 </v-col>
               </v-row>
-              <div class="btnPrint pt-4 pr-3">
-                <v-btn
-                  icon
-                  color="primary"
-                  size="small"
-                  @click.prevent="actions.imprimirFolhaPonto()"
-                >
-                  <v-icon>mdi-printer</v-icon>
-                </v-btn>
-              </div>
             </v-card>
           </div>
         </v-col>
         <v-col cols="8">
           <v-sheet
-            class="px-4 pb-4"
+            class="card-calendario"
             height="700px"
             elevation="2"
           >
-            <FullCalendar
-              v-if="!state.loadingCalendar && !state.loading"
-              ref="calendario"
-              :options="{
-                plugins: [dayGridPlugin, interactionPlugin],
-                initialView: 'dayGridMonth',
-                hiddenDays: [0],
-                events: pontosCalendario,
-                dateClick: actions.clickModalJustificarAusencia,
-                locale: 'pt-br',
-                eventOrder: 'defId',
-                initialDate: state.initialDate,
-                fixedWeekCount: false,
-                slotMinHeight: 112,
-              }"
-            >
-              <template v-slot:eventContent="arg">
-                <div
-                  class="calendario__horario"
-                  @click.prevent="actions.clickModalJustificarAusencia(arg.event)"
-                >
-                  <span>{{ arg.event.title }}</span>
-                </div>
-              </template>
-            </FullCalendar>
+            <v-btn
+              icon="mdi-arrow-left"
+              size="x-small"
+              color="primary"
+              class="btn-calendario-voltar"
+              @click="actions.btnMesAnterior"
+            />
+            <v-btn
+              icon="mdi-arrow-right"
+              size="x-small"
+              color="primary"
+              class="btn-calendario-avancar"
+              @click="actions.btnMesSeguinte"
+            />
+            <div class="container-calendario px-4 pb-4">
+              <FullCalendar
+                v-if="!state.loadingCalendar && !state.loading"
+                ref="calendario"
+                :options="{
+                  plugins: [dayGridPlugin, interactionPlugin],
+                  initialView: 'dayGridMonth',
+                  hiddenDays: [0],
+                  events: pontosCalendario,
+                  dateClick: actions.clickModalJustificarAusencia,
+                  locale: 'pt-br',
+                  eventOrder: 'defId',
+                  initialDate: state.initialDate,
+                  fixedWeekCount: false,
+                }"
+              >
+                <template v-slot:eventContent="arg">
+                  <div
+                    class="calendario__horario"
+                    @click.prevent="actions.clickModalJustificarAusencia(arg.event)"
+                  >
+                    <span>{{ arg.event.title }}</span>
+                  </div>
+                </template>
+              </FullCalendar>
+            </div>
           </v-sheet>
         </v-col>
       </v-row>
@@ -291,9 +309,20 @@ actions.init(route);
 .calendario_data_sem_ponto {
   background-color: #ffcdd2 !important;
 }
+
+@media screen and (max-width: 1280px) {
+  .fc-daygrid-event-harness {
+    width: 80px !important;
+  }
+}
 </style>
 
 <style scoped>
+.spDescInf {
+  font-size: 12px;
+  color: #4b4b4b;
+}
+
 .funcionario {
   display: flex;
   flex-direction: column;
@@ -367,18 +396,53 @@ actions.init(route);
   color: #5a6069;
 }
 
+.card-calendario {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.container-calendario {
+  width: 100%;
+  height: 100%;
+}
+
 .calendario__horario {
   padding: 2px;
   font-size: 12px;
   text-align: center;
 }
 
-.btnPrint {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .chip_ponto_a_justificar {
   background-color: #ffcdd2;
+}
+
+.btn-calendario-voltar {
+  position: absolute;
+  top: calc(50% - 32px);
+  left: -20px;
+}
+
+.btn-calendario-avancar {
+  position: absolute;
+  top: calc(50% - 32px);
+  left: calc(100% - 10px);
+}
+
+@media screen and (max-width: 1280px) {
+  .container {
+    min-width: 100%;
+  }
+
+  .container-calendario {
+    width: 600px;
+  }
+
+  .cardFolhaPontoDetalhes {
+    width: 326px;
+  }
 }
 </style>

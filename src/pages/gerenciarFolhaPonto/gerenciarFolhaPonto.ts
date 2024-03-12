@@ -6,6 +6,8 @@ import router from "@/router";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { mesesToSelect } from "@/constants/constants";
 import { iEmpresa } from "@/models/interfaces";
+// import globalState from '@/store/globalState'
+
 
 export const state = reactive({
     funcionarios: {},
@@ -20,12 +22,13 @@ export const state = reactive({
 });
 
 export const meses = mesesToSelect;
+
 export const anos = computed(() => {
     const anosArray: number[] = [];
     const anoAtual = new Date().getFullYear();
 
     for (let i = 0; i < 10; i++) {
-        const ano = anoAtual - i;
+        const ano = anoAtual - 9 + i;
         anosArray.push(ano);
     }
 
@@ -121,7 +124,8 @@ export const actions = {
                 icon: "error",
                 text: "Ocorreu um erro ao buscar os dados para impressão",
             });
-        } finally {
+        }
+        finally {
             state.loading = false;
         }
     },
