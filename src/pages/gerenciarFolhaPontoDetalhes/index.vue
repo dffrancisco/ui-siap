@@ -383,9 +383,11 @@ actions.init(route);
 .funcionario__card__nome {
   font-size: 15px;
   color: #2a2a2a;
-  display: flex;
-  align-items: left;
-  justify-content: left;
+  display: inline-block;
+  white-space: nowrap;
+  width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .funcionario__card__cargo {
