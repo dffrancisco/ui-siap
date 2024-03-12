@@ -209,7 +209,7 @@ export const actions = {
         }
     },
 
-    formatarEvento(titulo: string, dataInicio: Date, dataFim: Date, jaFoiJustificado: boolean, qtdPontosDia: number, cor = "#6495ED") {
+    formatarEvento(titulo: string, dataInicio: string, dataFim: string, jaFoiJustificado: boolean, qtdPontosDia: number, cor = "#6495ED") {
 
         let isSabado = moment(dataInicio).weekday() == 6;
         let pontosBatidosPar = qtdPontosDia % 2 == 0;
@@ -361,8 +361,8 @@ export const pontosCalendario = computed(() => {
     let eventos = [];
     for (let key of Object.keys(state.pontos)) {
         let ponto: iPonto = state.pontos[key];
-        let dataInicio = new Date(ponto.DATA);
-        let dataFim = new Date(ponto.DATA);
+        let dataInicio = moment(ponto.DATA).format('YYYY-MM-DD');
+        let dataFim = moment(ponto.DATA).format('YYYY-MM-DD');
 
         const { HORA_CHEGADA, HORA_ALMOCO_FINAL, HORA_ALMOCO_INICIAL, HORA_SAIDA, JUSTIFICATIVA, STATUS } = ponto;
         let qtdPontosDia = 0
