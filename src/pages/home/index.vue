@@ -128,6 +128,11 @@ import login from "../login/login";
               @click="router.push('/bloquearCliente')"
               >Bloquear Cliente
             </v-btn>
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/gerenciarFolhaPonto')"
+              >Folha Ponto</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
