@@ -6,6 +6,7 @@ import {
   pontosCalendario,
   pontosDiaSelecionado,
   tipoFaltaModal,
+  anos,
 } from "./gerenciarFolhaPontoDetalhes";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -19,132 +20,141 @@ actions.init(route);
 </script>
 
 <template>
-  <v-container>
+  <v-container class="container">
     <title>Detalhes dos pontos</title>
 
-    <div
-      class="pa-5"
-      style="max-width: 1100px; margin: 0 auto"
-    >
+    <div style="max-width: 1100px; margin: 0 auto">
       <v-row>
-        <v-col cols="12">
+        <v-col cols="4">
           <div>
-            <v-card class="pa-5 cardFolhaPontoDetalhes">
-              <div class="mesAnoEBotoes ml-2">
+            <v-card
+              class="cardFolhaPontoDetalhes pt-5 px-3"
+              height="560px"
+              elevation="2"
+            >
+              <div class="mesAnoEBotoes pb-3">
                 <v-row>
-                  <v-btn
-                    color="primary"
-                    variant="text"
-                    density="compact"
-                    class="mb-4 pa-0"
-                    icon="mdi-arrow-left"
-                    @click="actions.onClickVoltar"
-                  />
-                  <v-col cols="4">
+                  <div
+                    class="py-2 px-3 d-flex justify-space-between align-center"
+                    style="width: 100%"
+                  >
+                    <v-btn
+                      color="primary"
+                      variant="text"
+                      density="compact"
+                      icon="mdi-arrow-left mdi-36px"
+                      @click="actions.onClickVoltar"
+                    />
+                    <v-btn
+                      icon
+                      color="primary"
+                      size="small"
+                      @click.prevent="actions.imprimirFolhaPonto()"
+                    >
+                      <v-icon>mdi-printer</v-icon>
+                    </v-btn>
+                  </div>
+                </v-row>
+                <v-row>
+                  <v-col>
                     <v-select
                       label="Mês"
-                      class="ml-4"
                       id="mes"
-                      dense
+                      class="pl-2"
                       v-model="state.mes"
                       item-title="title"
                       item-value="value"
                       :items="state.meses"
                       hide-details
+                      :clearable="false"
                       @update:model-value="actions.getDadosPontos"
                     ></v-select>
                   </v-col>
-                  <v-col cols="3">
+                  <v-col>
                     <v-select
                       label="Ano"
-                      class="ml-4"
                       id="ano"
-                      dense
+                      class="pr-2"
                       v-model="state.ano"
-                      :items="state.anos"
+                      :items="anos"
                       hide-details
+                      :clearable="false"
                       @update:model-value="actions.getDadosPontos"
                     ></v-select>
-                  </v-col>
-                  <v-col cols="3"
-                    ><v-btn
-                      icon
-                      color="primary"
-                      size="small"
-                      class="btnPrint"
-                      @click.prevent="actions.imprimirFolhaPonto()"
-                    >
-                      <v-icon>mdi-printer</v-icon>
-                    </v-btn>
                   </v-col>
                 </v-row>
               </div>
 
+              <div class="funcionario pt-5">
+                <div>
+                  <v-avatar
+                    size="80px"
+                    color="primary"
+                    class="funcionario__avatar"
+                  >
+                    <v-img
+                      :src="actions.getFotoFuncionarioURL(state.cpf)"
+                      aspect-ratio="1"
+                      cover
+                    >
+                    </v-img>
+                  </v-avatar>
+                </div>
+
+                <div class="funcionario__card__usuario">
+                  <div class="funcionario__card">
+                    <strong class="funcionario__card__nome"
+                      ><b>{{ state.nome }}</b></strong
+                    >
+                  </div>
+                  <span class="funcionario__card__cargo">{{ state.cargo }}</span>
+                  <div></div>
+                </div>
+              </div>
+
               <v-row>
-                <v-col cols="12">
-                  <v-row>
-                    <v-col cols="5">
-                      <div class="funcionario__card__usuario ml-2">
-                        <v-avatar
-                          size="60px"
-                          color="primary"
-                          class="funcionario__avatar"
-                        >
-                          <v-img
-                            :src="actions.getFotoFuncionarioURL(state.cpf)"
-                            aspect-ratio="1"
-                            cover
-                          >
-                          </v-img>
-                        </v-avatar>
-
-                        <div class="funcionario__card">
-                          <strong class="funcionario__card__nome"
-                            ><b>{{ state.nome }}</b></strong
-                          >
-                          <span class="funcionario__card__cargo">{{ state.cargo }}</span>
-                        </div>
-                      </div>
-                    </v-col>
-                    <v-col cols="7">
-                      <div class="div__funcionario__card__infos">
-                        <div class="funcionario__card__infos">
-                          Pontos não batidos:
-                          <b>{{ state.QTD_PONTOS_NAO_BATIDOS }}</b>
-                        </div>
-                        <div class="funcionario__card__infos">
-                          Pontos incompletos:
-                          <b>{{ state.QTD_PONTOS_INCOMPLETOS }}</b>
-                        </div>
-
-                        <div class="funcionario__card__infos">
-                          Qtd de justificativas:
-                          <b>{{ state.QTD_FALTAS_JUSTIFICADAS }}</b>
-                        </div>
-                        <div class="funcionario__card__infos__justificar">
-                          Pontos à justificar:
-                          <b>{{ state.QTD_A_JUSTIFICAR }}</b>
-                        </div>
-                      </div>
-                    </v-col>
-                  </v-row>
+                <v-col>
+                  <div class="div__funcionario__card__infos pt-5">
+                    <v-chip
+                      variant="outlined"
+                      color="#b17500"
+                      title="PONTOS NÃO BATIDOS"
+                      >{{ state.QTD_PONTOS_NAO_BATIDOS }}</v-chip
+                    >
+                    <v-chip
+                      variant="outlined"
+                      color="#B142F5"
+                      title="PONTOS INCOMPLETOS"
+                      >{{ state.QTD_PONTOS_INCOMPLETOS }}</v-chip
+                    >
+                    <v-chip
+                      variant="outlined"
+                      color="#D50000"
+                      class="chip_ponto_a_justificar"
+                      title="PONTOS À JUSTIFICAR"
+                      >{{ state.QTD_A_JUSTIFICAR }}</v-chip
+                    >
+                    <v-chip
+                      variant="outlined"
+                      color="#4880FF"
+                      title="PONTOS JUSTIFICADOS"
+                      >{{ state.QTD_FALTAS_JUSTIFICADAS }}</v-chip
+                    >
+                  </div>
                 </v-col>
               </v-row>
 
-              <v-row class="mt-2">
-                <v-col
-                  cols="12"
-                  class="pt-0"
-                >
-                  <div class="funcionario__card__faltas ml-2">
+              <v-row>
+                <v-col>
+                  <div class="funcionario__card__faltas pa-3">
                     <div
                       class="funcionario__card__faltas__info"
                       v-for="tipoFalta in state.totalizadorFaltas"
                       :key="tipoFalta.TIPO"
                     >
                       <div class="funcionario__card__faltas__info__count">
-                        {{ tipoFalta.DESCRICAO }}:
-                        <b> {{ tipoFalta.COUNT }}</b>
+                        <b class="mr-2"> {{ tipoFalta.COUNT }}</b>
+                        <span class="spDescInf">{{ tipoFalta.DESCRICAO }}</span>
                       </div>
                     </div>
                   </div>
@@ -153,21 +163,34 @@ actions.init(route);
             </v-card>
           </div>
         </v-col>
-      </v-row>
-
-      <div class="calendario">
-        <v-row class="fill-height">
-          <v-col>
-            <v-sheet
-              height="796"
-              width="1050"
-            >
+        <v-col cols="8">
+          <v-sheet
+            class="card-calendario"
+            height="700px"
+            elevation="2"
+          >
+            <v-btn
+              icon="mdi-arrow-left"
+              size="x-small"
+              color="primary"
+              class="btn-calendario-voltar"
+              @click="actions.btnMesAnterior"
+            />
+            <v-btn
+              icon="mdi-arrow-right"
+              size="x-small"
+              color="primary"
+              class="btn-calendario-avancar"
+              @click="actions.btnMesSeguinte"
+            />
+            <div class="container-calendario px-4 pb-4">
               <FullCalendar
                 v-if="!state.loadingCalendar && !state.loading"
                 ref="calendario"
                 :options="{
                   plugins: [dayGridPlugin, interactionPlugin],
                   initialView: 'dayGridMonth',
+                  hiddenDays: [0],
                   events: pontosCalendario,
                   dateClick: actions.clickModalJustificarAusencia,
                   locale: 'pt-br',
@@ -185,10 +208,10 @@ actions.init(route);
                   </div>
                 </template>
               </FullCalendar>
-            </v-sheet>
-          </v-col>
-        </v-row>
-      </div>
+            </div>
+          </v-sheet>
+        </v-col>
+      </v-row>
     </div>
 
     <div
@@ -234,7 +257,7 @@ actions.init(route);
       />
     </div>
 
-    <div id="pnCodigoTela">folhaPontoDetalhes</div>
+    <div id="pnCodigoTela">FOLHA_PONTO_DETALHES</div>
     <v-overlay
       :model-value="state.loading || state.loadingCalendar"
       class="align-center justify-center"
@@ -250,39 +273,67 @@ actions.init(route);
 </template>
 
 <style>
+.fc {
+  height: 100%;
+}
+
 .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
-  height: 145px;
+  height: 126px;
 }
 
 .fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events {
   margin-top: -5px;
-  padding-left: 10px;
+  height: 98px !important;
+  font-size: 12px;
 }
 
 .fc-daygrid-event-harness {
-  width: 115px;
+  width: 104px !important;
   margin-left: 5px;
+}
+
+.fc-scroller {
+  overflow: hidden !important;
+}
+
+.fc-col-header-cell {
+  height: 20px;
+
+  overflow-y: hidden !important;
 }
 
 .fc-toolbar-chunk {
   display: none;
 }
+
+.calendario_data_sem_ponto {
+  background-color: #ffcdd2 !important;
+}
+
+@media screen and (max-width: 1280px) {
+  .fc-daygrid-event-harness {
+    width: 80px !important;
+  }
+}
 </style>
 
 <style scoped>
-.btnPrint {
-  margin-top: 5px;
-  margin-left: 330px;
+.spDescInf {
+  font-size: 12px;
+  color: #4b4b4b;
 }
-.btnSearch {
-  margin-left: 50px;
-  margin-top: 5px;
+
+.funcionario {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .funcionario__card__usuario {
   padding: 5px;
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  align-items: center;
 }
 
 .funcionario__avatar {
@@ -292,35 +343,26 @@ actions.init(route);
 }
 
 .funcionario__card__faltas {
-  margin: 0;
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  column-count: 2;
+  column-gap: 20px;
 }
 
 .funcionario__card__faltas__info {
-  width: 18%;
-  font-size: 15px;
-  white-space: nowrap;
-  color: #a1a1a1;
+  font-size: 14px;
   line-height: 2;
-  padding-left: 10px;
-  margin-right: 12px;
 }
 
 .div__funcionario__card__infos {
-  padding: 5px;
   display: flex;
-  flex-wrap: wrap;
-  padding-left: 15px;
+  justify-content: center;
+  gap: 10px;
 }
 
 .funcionario__card__infos {
   white-space: nowrap;
   margin-right: 12px;
   width: 45%;
-  font-size: 15px;
+  font-size: 18px;
   color: #4f4f4f;
   line-height: 2;
 }
@@ -329,7 +371,7 @@ actions.init(route);
   white-space: nowrap;
   margin-right: 12px;
   width: 45%;
-  font-size: 15px;
+  font-size: 18px;
   color: #b80303;
   line-height: 2;
 }
@@ -341,9 +383,11 @@ actions.init(route);
 .funcionario__card__nome {
   font-size: 15px;
   color: #2a2a2a;
-  display: flex;
-  align-items: left;
-  justify-content: left;
+  display: inline-block;
+  white-space: nowrap;
+  width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .funcionario__card__cargo {
@@ -354,9 +398,53 @@ actions.init(route);
   color: #5a6069;
 }
 
+.card-calendario {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.container-calendario {
+  width: 100%;
+  height: 100%;
+}
+
 .calendario__horario {
   padding: 2px;
-  font-size: 14px;
+  font-size: 12px;
   text-align: center;
+}
+
+.chip_ponto_a_justificar {
+  background-color: #ffcdd2;
+}
+
+.btn-calendario-voltar {
+  position: absolute;
+  top: calc(50% - 32px);
+  left: -20px;
+}
+
+.btn-calendario-avancar {
+  position: absolute;
+  top: calc(50% - 32px);
+  left: calc(100% - 10px);
+}
+
+@media screen and (max-width: 1280px) {
+  .container {
+    min-width: 100%;
+  }
+
+  .container-calendario {
+    width: 600px;
+  }
+
+  .cardFolhaPontoDetalhes {
+    width: 326px;
+  }
 }
 </style>
