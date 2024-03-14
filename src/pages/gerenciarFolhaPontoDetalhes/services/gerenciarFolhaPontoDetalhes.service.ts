@@ -12,16 +12,19 @@ import {
     iGetDadosParaImpressaoPDFResponse,
     iGetDetalhes,
     iGetDetalhesResponse,
+    iGetTotalizadorFuncionarioResponse,
     iInserirRegistroAusenciaResponse,
     iParamDocumentoAusencia,
     iRegistrarDocumentoAusencia,
     iRegistrarFalta,
     iSetFaltaResponse,
     iSetFeriadoFolgaResponse,
+    paramGetTotalizadorFuncionarios,
 } from "../interface";
 const caminho = "siap/gerenciarFolhaPonto";
 
 type igetDetalhes = (param: iGetDetalhes) => Promise<iGetDetalhesResponse>;
+type iGetTotalizadorFuncionarioFunction = (param: paramGetTotalizadorFuncionarios) => Promise<iGetTotalizadorFuncionarioResponse>;
 type iSetFeriadoFolga = (param: iFaltaFeriadoFolga) => Promise<iSetFeriadoFolgaResponse>;
 type iSetFalta = (param: iRegistrarFalta) => Promise<iSetFaltaResponse>;
 type iDeleteFalta = (param: iDeletarFalta) => Promise<iDeleteFaltaResponse>;
@@ -36,6 +39,14 @@ type iGetDadosParaImpressaoPDF = (
 const getDetalhes: igetDetalhes = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getDetalhes",
+        param,
+    });
+    return data;
+};
+
+const getTotalizadorFuncionario: iGetTotalizadorFuncionarioFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getTotalizadorFuncionario",
         param,
     });
     return data;
@@ -169,6 +180,7 @@ const getDadosParaImpressao: iGetDadosParaImpressaoPDF = async (param) => {
 
 export default {
     getDetalhes,
+    getTotalizadorFuncionario,
     setFaltaFeriadoOuFolga,
     deletarFalta,
     deletarDocumento,
