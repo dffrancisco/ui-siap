@@ -25,149 +25,153 @@ actions.init(route);
 
     <div style="max-width: 1100px; margin: 0 auto">
       <v-row>
-        <v-col cols="4">
-          <div>
-            <v-card
-              class="cardFolhaPontoDetalhes pt-5 px-3"
-              height="560px"
-              elevation="2"
-            >
-              <div class="mesAnoEBotoes pb-3">
-                <v-row>
-                  <div
-                    class="py-2 px-3 d-flex justify-space-between align-center"
-                    style="width: 100%"
-                  >
-                    <v-btn
-                      color="primary"
-                      variant="text"
-                      density="compact"
-                      icon="mdi-arrow-left mdi-36px"
-                      @click="actions.onClickVoltar"
-                    />
-                    <v-btn
-                      icon
-                      color="primary"
-                      size="small"
-                      @click.prevent="actions.imprimirFolhaPonto()"
-                    >
-                      <v-icon>mdi-printer</v-icon>
-                    </v-btn>
-                  </div>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-select
-                      label="Mês"
-                      id="mes"
-                      class="pl-2"
-                      v-model="state.mes"
-                      item-title="title"
-                      item-value="value"
-                      :items="state.meses"
-                      hide-details
-                      :clearable="false"
-                      @update:model-value="actions.getDadosPontos"
-                    ></v-select>
-                  </v-col>
-                  <v-col>
-                    <v-select
-                      label="Ano"
-                      id="ano"
-                      class="pr-2"
-                      v-model="state.ano"
-                      :items="anos"
-                      hide-details
-                      :clearable="false"
-                      @update:model-value="actions.getDadosPontos"
-                    ></v-select>
-                  </v-col>
-                </v-row>
-              </div>
-
-              <div class="funcionario pt-5">
-                <div>
-                  <v-avatar
-                    size="80px"
+        <v-col
+          cols="12"
+          md="4"
+        >
+          <v-card
+            class="cardFolhaPontoDetalhes pt-5 px-3"
+            height="560px"
+            elevation="2"
+          >
+            <div class="mesAnoEBotoes pb-3">
+              <v-row>
+                <div
+                  class="py-2 px-3 d-flex justify-space-between align-center"
+                  style="width: 100%"
+                >
+                  <v-btn
                     color="primary"
-                    class="funcionario__avatar"
+                    variant="text"
+                    density="compact"
+                    icon="mdi-arrow-left mdi-36px"
+                    @click="actions.onClickVoltar"
+                  />
+                  <v-btn
+                    icon
+                    color="primary"
+                    size="small"
+                    @click.prevent="actions.imprimirFolhaPonto()"
                   >
-                    <v-img
-                      :src="actions.getFotoFuncionarioURL(state.cpf)"
-                      aspect-ratio="1"
-                      cover
-                    >
-                    </v-img>
-                  </v-avatar>
+                    <v-icon>mdi-printer</v-icon>
+                  </v-btn>
                 </div>
-
-                <div class="funcionario__card__usuario">
-                  <div class="funcionario__card">
-                    <strong class="funcionario__card__nome"
-                      ><b>{{ state.nome }}</b></strong
-                    >
-                  </div>
-                  <span class="funcionario__card__cargo">{{ state.cargo }}</span>
-                  <div></div>
-                </div>
-              </div>
-
+              </v-row>
               <v-row>
                 <v-col>
-                  <div class="div__funcionario__card__infos pt-5">
-                    <v-chip
-                      variant="outlined"
-                      color="#b17500"
-                      title="PONTOS NÃO BATIDOS"
-                      >{{ state.QTD_PONTOS_NAO_BATIDOS }}</v-chip
-                    >
-                    <v-chip
-                      variant="outlined"
-                      color="#B142F5"
-                      title="PONTOS INCOMPLETOS"
-                      >{{ state.QTD_PONTOS_INCOMPLETOS }}</v-chip
-                    >
-                    <v-chip
-                      variant="outlined"
-                      color="#D50000"
-                      class="chip_ponto_a_justificar"
-                      title="PONTOS À JUSTIFICAR"
-                      >{{ state.QTD_A_JUSTIFICAR }}</v-chip
-                    >
-                    <v-chip
-                      variant="outlined"
-                      color="#4880FF"
-                      title="PONTOS JUSTIFICADOS"
-                      >{{ state.QTD_FALTAS_JUSTIFICADAS }}</v-chip
-                    >
-                  </div>
+                  <v-select
+                    label="Mês"
+                    id="mes"
+                    class="pl-2"
+                    v-model="state.mes"
+                    item-title="title"
+                    item-value="value"
+                    :items="state.meses"
+                    hide-details
+                    :clearable="false"
+                    @update:model-value="actions.carregarDados"
+                  ></v-select>
+                </v-col>
+                <v-col>
+                  <v-select
+                    label="Ano"
+                    id="ano"
+                    class="pr-2"
+                    v-model="state.ano"
+                    :items="anos"
+                    hide-details
+                    :clearable="false"
+                    @update:model-value="actions.carregarDados"
+                  ></v-select>
                 </v-col>
               </v-row>
+            </div>
 
-              <v-row>
-                <v-col>
-                  <div class="funcionario__card__faltas pa-3">
-                    <div
-                      class="funcionario__card__faltas__info"
-                      v-for="tipoFalta in state.totalizadorFaltas"
-                      :key="tipoFalta.TIPO"
-                    >
-                      <div class="funcionario__card__faltas__info__count">
-                        <b class="mr-2"> {{ tipoFalta.COUNT }}</b>
-                        <span class="spDescInf">{{ tipoFalta.DESCRICAO }}</span>
-                      </div>
+            <div class="funcionario pt-5">
+              <div>
+                <v-avatar
+                  size="80px"
+                  color="primary"
+                  class="funcionario__avatar"
+                >
+                  <v-img
+                    :src="actions.getFotoFuncionarioURL(state.cpf)"
+                    aspect-ratio="1"
+                    cover
+                  >
+                  </v-img>
+                </v-avatar>
+              </div>
+
+              <div class="funcionario__card__usuario">
+                <div class="funcionario__card">
+                  <strong class="funcionario__card__nome"
+                    ><b>{{ state.nome }}</b></strong
+                  >
+                </div>
+                <span class="funcionario__card__cargo">{{ state.cargo }}</span>
+                <div></div>
+              </div>
+            </div>
+
+            <v-row>
+              <v-col>
+                <div class="div__funcionario__card__infos pt-5">
+                  <v-chip
+                    variant="outlined"
+                    color="#b17500"
+                    title="PONTOS NÃO BATIDOS"
+                    >{{ state.QTD_PONTOS_NAO_BATIDOS }}</v-chip
+                  >
+                  <v-chip
+                    variant="outlined"
+                    color="#B142F5"
+                    title="PONTOS INCOMPLETOS"
+                    >{{ state.QTD_PONTOS_INCOMPLETOS }}</v-chip
+                  >
+                  <v-chip
+                    variant="outlined"
+                    color="#D50000"
+                    class="chip_ponto_a_justificar"
+                    title="PONTOS À JUSTIFICAR"
+                    >{{ state.QTD_A_JUSTIFICAR }}</v-chip
+                  >
+                  <v-chip
+                    variant="outlined"
+                    color="#4880FF"
+                    title="PONTOS JUSTIFICADOS"
+                    >{{ state.QTD_FALTAS_JUSTIFICADAS }}</v-chip
+                  >
+                </div>
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col>
+                <div class="funcionario__card__faltas pa-3">
+                  <div
+                    class="funcionario__card__faltas__info"
+                    v-for="tipoFalta in state.totalizadorFaltas"
+                    :key="tipoFalta.TIPO"
+                  >
+                    <div class="funcionario__card__faltas__info__count">
+                      <b class="mr-2"> {{ tipoFalta.COUNT }}</b>
+                      <span class="spDescInf">{{ tipoFalta.DESCRICAO }}</span>
                     </div>
                   </div>
-                </v-col>
-              </v-row>
-            </v-card>
-          </div>
+                </div>
+              </v-col>
+            </v-row>
+          </v-card>
         </v-col>
-        <v-col cols="8">
+        <v-col
+          cols="12"
+          md="8"
+        >
           <v-sheet
             class="card-calendario"
-            height="700px"
             elevation="2"
+            border="8"
           >
             <v-btn
               icon="mdi-arrow-left"
@@ -183,7 +187,7 @@ actions.init(route);
               class="btn-calendario-avancar"
               @click="actions.btnMesSeguinte"
             />
-            <div class="container-calendario px-4 pb-4">
+            <div class="container-calendario">
               <FullCalendar
                 v-if="!state.loadingCalendar && !state.loading"
                 ref="calendario"
@@ -277,14 +281,18 @@ actions.init(route);
   height: 100%;
 }
 
-.fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
-  height: 126px;
+.fc .fc-daygrid-day-frame {
+  height: 48px;
+  min-height: auto;
+  position: relative;
+}
+
+.fc .fc-toolbar.fc-header-toolbar {
+  margin: 0;
 }
 
 .fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events {
   margin-top: -5px;
-  height: 98px !important;
-  font-size: 12px;
 }
 
 .fc-daygrid-event-harness {
@@ -385,7 +393,7 @@ actions.init(route);
   color: #2a2a2a;
   display: inline-block;
   white-space: nowrap;
-  width: 300px;
+  max-width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -404,17 +412,20 @@ actions.init(route);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  height: calc(100vh - 48px);
+  max-height: 700px;
+  border-radius: 8px;
 }
 
 .container-calendario {
   width: 100%;
   height: 100%;
+  border-radius: 8px;
 }
 
 .calendario__horario {
-  padding: 2px;
-  font-size: 12px;
+  padding: 0 2px;
+  font-size: 11px;
   text-align: center;
 }
 
@@ -426,12 +437,14 @@ actions.init(route);
   position: absolute;
   top: calc(50% - 32px);
   left: -20px;
+  z-index: 5;
 }
 
 .btn-calendario-avancar {
   position: absolute;
   top: calc(50% - 32px);
   left: calc(100% - 10px);
+  z-index: 5;
 }
 
 @media screen and (max-width: 1280px) {
@@ -444,7 +457,7 @@ actions.init(route);
   }
 
   .cardFolhaPontoDetalhes {
-    width: 326px;
+    width: 100%;
   }
 }
 </style>

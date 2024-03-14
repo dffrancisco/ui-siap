@@ -45,12 +45,12 @@ const emit = defineEmits(["atualizarDados", "fecharModal"]);
 const {
   state,
   actions,
-  showSalvarFeriadoFolga,
+  desabilitarJustificativa,
   jaJustificado,
   desativarBtn,
   desativarBtnVerDoc,
   desativarBtnDelete,
-  desativarBotoesSeNadaSelecionado,
+  desabilitarBtnSalvar,
   dadosDocumentoAusencia,
 } = setup(emit, props);
 
@@ -144,7 +144,7 @@ onMounted(() => {
             id="tiposDeFalta"
             label="Tipo de Ausência"
             class="pb-2"
-            v-model="state.selectedFalta"
+            v-model="state.selectedTipoFalta"
             :disabled="desativarBtn || jaJustificado"
             @update:model-value="actions.preencherJustificativa"
           ></v-select>
@@ -168,7 +168,7 @@ onMounted(() => {
             id="justificativa"
             class="pt-5"
             v-model="state.justificativa"
-            :disabled="desativarBtn || jaJustificado || showSalvarFeriadoFolga"
+            :disabled="desabilitarJustificativa"
           >
           </v-textarea>
         </v-row>
@@ -200,7 +200,7 @@ onMounted(() => {
           color="primary"
           class="btnJustificar"
           @click="actions.imprimirJustificativa"
-          :disabled="desativarBtn || desativarBotoesSeNadaSelecionado || jaJustificado || showSalvarFeriadoFolga"
+          :disabled="desabilitarJustificativa"
         >
           <v-icon>mdi-printer-settings</v-icon>
           Justificativa
@@ -209,7 +209,7 @@ onMounted(() => {
           color="primary"
           class="btnSalvar"
           @click="actions.salvar()"
-          :disabled="desativarBtn || desativarBotoesSeNadaSelecionado || jaJustificado"
+          :disabled="desabilitarBtnSalvar"
         >
           <v-icon>mdi-content-save</v-icon>
           Salvar
@@ -217,7 +217,6 @@ onMounted(() => {
       </div>
     </v-container>
   </div>
-
   <div
     id="modalQrCode"
     title="Enviar Documento Ausência"
@@ -226,7 +225,9 @@ onMounted(() => {
     <ModalQrCode
       :dadosParaQrCode="dadosDocumentoAusencia"
       :opened="state.modalQrCodeOpened"
+      :cnpj="props.cnpj"
       @fecharModalQrCode="actions.fecharModalQrCode()"
+      @fecharModalJustificarFalta="actions.fecharModalJustificarFalta()"
     />
   </div>
 
