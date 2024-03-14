@@ -18,8 +18,13 @@ export interface iGetDetalhes {
     ano: number;
 }
 
+export interface paramGetTotalizadorFuncionarios {
+    cod_funcionario: number;
+    mes: number;
+    ano: number;
+}
+
 export interface iFaltaFeriadoFolga {
-    falta: string;
     data: string;
     cod_funcionario: number;
     tipo: number;
@@ -170,8 +175,11 @@ export interface iGetDetalhesResponse {
     empresa: iEmpresa
     dadosFuncionario: iDadosFuncionario;
     pontos: iPontos;
-    resumoPontos: iResumoPontos;
     tipoFaltas: iTipoFaltas[];
+}
+
+export interface iGetTotalizadorFuncionarioResponse {
+    resumoPontos: iResumoPontos;
     totalizadorDeFaltas: iTotalizadorDeFaltas[];
 }
 

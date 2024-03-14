@@ -13,14 +13,31 @@ import gerenciarFolhaPontoDetalhesService from "./../services/gerenciarFolhaPont
 import Swal from "sweetalert2";
 import { confirmaCodigo } from "@/ts/utils";
 
+const TIPO_FERIADO = 7
+const TIPO_DIA_FOLGA = 5
+
 export const setup = (emit: any, props: any) => {
+
+    const state = reactive({
+        loading: false,
+        justificativa: null,
+        selectedCID: null,
+        showCIDAutocomplete: false,
+        hideButtons: false,
+        status: null,
+        selectedTipoFalta: null,
+        modalQrCode: <iModalCreate>(<unknown>null),
+        modalQrCodeOpened: false,
+        inserirFalta: <unknown>null,
+        dadosDocumento: props.dadosDocumento,
+    });
 
     watch(
         () => props.opened,
         () => {
             if (props.opened) {
                 state.loading = true;
-                state.selectedFalta = props.pontos.TIPO;
+                state.selectedTipoFalta = props.pontos.TIPO;
                 state.justificativa = props.pontos.STATUS;
                 state.showCIDAutocomplete = false;
                 state.loading = false;
@@ -28,14 +45,55 @@ export const setup = (emit: any, props: any) => {
         }
     );
 
-    const showSalvarFeriadoFolga = computed(() => {
-        if (state.justificativa) {
-            const selectedFalta = props.tiposDeFalta.find((item) => item.DESCRICAO === state.justificativa);
-            return selectedFalta && (selectedFalta.DESCRICAO === "Dia de Folga" || selectedFalta.DESCRICAO === "Feriado");
+    let todosPontosPreenchidos = computed(() => {
+        let chegada = props.horaChegada;
+        let inicioAlmoco = props.horaAlmocoInicial;
+        let fimAlmoco = props.horaAlmocoFinal;
+        let saida = props.horaSaida;
+
+        if (chegada != null && inicioAlmoco != null && fimAlmoco != null && saida != null) {
+            return true;
         } else {
             return false;
         }
-    });
+    })
+
+    let desabilitarJustificativa = computed(() => {
+        console.log(state.selectedTipoFalta);
+        if (state.selectedTipoFalta == null || state.selectedTipoFalta == undefined) {
+            return true;
+        }
+
+        if ([TIPO_DIA_FOLGA, TIPO_FERIADO].includes(state.selectedTipoFalta)) {
+            return true;
+        }
+
+        if (jaJustificado.value) {
+            return true;
+        }
+
+        if (todosPontosPreenchidos.value) {
+            return true;
+        }
+
+        return false;
+    })
+
+    let desabilitarBtnSalvar = computed(() => {
+        if (state.selectedTipoFalta == null || state.selectedTipoFalta == undefined) {
+            return true;
+        }
+
+        if (jaJustificado.value) {
+            return true;
+        }
+
+        if (todosPontosPreenchidos.value) {
+            return true;
+        }
+
+        return false;
+    })
 
     const jaJustificado = computed(() => {
         if (props.pontos.STATUS || props.pontos.JUSTIFICATIVA == "Ponto Incompleto") {
@@ -67,8 +125,8 @@ export const setup = (emit: any, props: any) => {
     const desativarBtnVerDoc = computed(() => {
         if (
             props.dadosDocumento.length == 0 ||
-            props.pontos.STATUS == "Feriado" ||
-            props.pontos.STATUS == "Dia de Folga"
+            props.pontos.TIPO == TIPO_FERIADO ||
+            props.pontos.TIPO == TIPO_DIA_FOLGA
         ) {
             return false;
         } else {
@@ -79,8 +137,8 @@ export const setup = (emit: any, props: any) => {
     const desativarBtnDelete = computed(() => {
         if (
             props.dadosDocumento.length > 0 ||
-            props.pontos.STATUS == "Feriado" ||
-            props.pontos.STATUS == "Dia de Folga"
+            props.pontos.TIPO == TIPO_FERIADO ||
+            props.pontos.TIPO == TIPO_DIA_FOLGA
         ) {
             return true;
         } else {
@@ -89,7 +147,7 @@ export const setup = (emit: any, props: any) => {
     });
 
     const desativarBotoesSeNadaSelecionado = computed(() => {
-        return state.selectedFalta == null;
+        return state.selectedTipoFalta == null;
     });
 
     const dadosDocumentoAusencia = computed(() => {
@@ -109,28 +167,13 @@ export const setup = (emit: any, props: any) => {
             nomeFuncionario: nomeFuncionario,
             loginFuncionario: loginFuncionario,
             data: data,
-            falta: state.selectedFalta,
-            tipoFalta: state.selectedFaltaTipo,
+            falta: justificativaValor,
+            tipoFalta: state.selectedTipoFalta,
             justificativaValor: justificativaValor,
             cid: state.selectedCID,
         };
 
         return dadosParaQrCode;
-    });
-
-
-    const state = reactive({
-        loading: false,
-        justificativa: null,
-        selectedCID: null,
-        showCIDAutocomplete: false,
-        hideButtons: false,
-        selectedFalta: null,
-        selectedFaltaTipo: null,
-        modalQrCode: <iModalCreate>(<unknown>null),
-        modalQrCodeOpened: false,
-        inserirFalta: <unknown>null,
-        dadosDocumento: props.dadosDocumento,
     });
 
     const actions = {
@@ -179,9 +222,9 @@ export const setup = (emit: any, props: any) => {
         },
 
         salvar() {
-            const faltaSelecionada = state.selectedFalta;
+            const faltaSelecionada = state.selectedTipoFalta;
 
-            if (faltaSelecionada === "Feriado" || faltaSelecionada === "Dia de Folga") {
+            if (faltaSelecionada == TIPO_FERIADO || faltaSelecionada == TIPO_DIA_FOLGA) {
                 actions.salvarFaltaFeriadoOuFolga();
             } else {
                 state.modalQrCode.open();
@@ -189,14 +232,14 @@ export const setup = (emit: any, props: any) => {
         },
 
         preencherJustificativa(TIPO: number) {
-            state.showCIDAutocomplete = TIPO == 3;
+            state.showCIDAutocomplete = TIPO == 3 ? true : false;
 
-            const isFeriadoFolga = TIPO == 5 || TIPO == 7;
+            const isFeriadoFolga = [TIPO_FERIADO, TIPO_DIA_FOLGA].includes(TIPO);
             state.hideButtons = isFeriadoFolga;
 
-            const selectedFalta = props.tiposDeFalta.find((item) => item.TIPO === TIPO);
-            if (selectedFalta) {
-                state.justificativa = selectedFalta.DESCRICAO;
+            const status = props.tiposDeFalta.find((item) => item.TIPO === TIPO);
+            if (status) {
+                state.justificativa = status.DESCRICAO;
             }
         },
 
@@ -205,10 +248,9 @@ export const setup = (emit: any, props: any) => {
             dataFalta = actions.ajustarData(dataFalta);
 
             const param: iFaltaFeriadoFolga = {
-                falta: state.selectedFalta,
                 data: dataFalta,
                 cod_funcionario: props.funcionario.cod_funcionario,
-                tipo: state.selectedFaltaTipo,
+                tipo: state.selectedTipoFalta,
             };
 
             try {
@@ -361,25 +403,27 @@ export const setup = (emit: any, props: any) => {
         },
 
         limparInputs() {
-            state.selectedFalta = "";
             state.selectedCID = "";
             state.justificativa = "";
         },
 
         fecharModalQrCode() {
             state.modalQrCode.close();
-            emit("atualizarDados");
+        },
+
+        fecharModalJustificarFalta() {
+            state.modalQrCode.close();
             actions.limparInputs();
+            emit("atualizarDados");
         },
     }
-
-
 
     return {
         state,
         actions,
         emit,
-        showSalvarFeriadoFolga,
+        desabilitarJustificativa,
+        desabilitarBtnSalvar,
         jaJustificado,
         desativarBtn,
         desativarBtnVerDoc,

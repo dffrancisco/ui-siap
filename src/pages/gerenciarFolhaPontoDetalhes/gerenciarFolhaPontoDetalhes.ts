@@ -3,7 +3,6 @@ import { RouteLocationNormalizedLoaded } from "vue-router";
 import {
     iDadosDocumento,
     iGetDadosParaImpressaoIndividual,
-    iGetDetalhes,
     iParamDocumentoAusencia,
     iPonto,
     iTipoFaltas,
@@ -48,7 +47,8 @@ export const state = reactive({
     modalImprimirFolhaPonto: <iModalCreate>(<unknown>null),
     modalImprimirFolhaPontoOpened: false,
     dadosParaModalImpressao: {},
-    totalizadorFaltas: <iTotalizadorDeFaltas[]>[]
+    totalizadorFaltas: <iTotalizadorDeFaltas[]>[],
+    loadingTotais: false
 });
 
 export const anos = computed(() => {
@@ -78,10 +78,9 @@ export const actions = {
     },
 
     async atualizarTela() {
+        state.modalJustificarFalta.close();
         state.loading = true;
         await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
-        actions.getFotoFuncionarioURL(state.cpf);
-        state.modalJustificarFalta.close();
         state.loading = false;
     },
 
@@ -112,12 +111,12 @@ export const actions = {
 
         diasSemPonto.forEach((data) => {
             const elemento = document.querySelector(`td[data-date='${data}']`);
-            elemento.className = 'calendario_data_sem_ponto';
+            elemento.classList.add('calendario_data_sem_ponto');
         })
 
     },
 
-    btnMesSeguinte() {
+    async btnMesSeguinte() {
         let dataHoje = moment()
         let mesSelecionado = moment({ year: state.ano, month: state.mes - 1, day: 1 });
 
@@ -133,10 +132,12 @@ export const actions = {
         state.mes = mesSeguinte;
         state.ano = anoSeguinte;
 
-        actions.getDadosPontos()
+        await actions.carregarDados()
+
+        state.initialDate = new Date(state.ano, state.mes - 1, 1);
     },
 
-    btnMesAnterior() {
+    async btnMesAnterior() {
         let mesSelecionado = moment({ year: state.ano, month: state.mes - 1, day: 1 });
 
         mesSelecionado.subtract(1, 'month');
@@ -147,38 +148,32 @@ export const actions = {
         state.mes = mesSeguinte;
         state.ano = anoSeguinte;
 
-        actions.getDadosPontos()
+        await actions.carregarDados()
+
+        state.initialDate = new Date(state.ano, state.mes - 1, 1);
     },
 
 
     async getDetalhes(cod_funcionario: number, mes: number, ano: number) {
-        const param: iGetDetalhes = {
-            cod_funcionario: cod_funcionario,
-            mes: mes,
-            ano: ano,
-        };
+
+        state.loadingCalendar = true
+        state.loading = true;
 
         try {
-            const detalhes = await gerenciarFolhaPontoDetalhesService.getDetalhes(param);
+            const detalhes = await gerenciarFolhaPontoDetalhesService.getDetalhes({ cod_funcionario, mes, ano });
             state.empresa = detalhes.empresa;
             state.dadosFuncionario = detalhes.dadosFuncionario;
             state.pontos = detalhes.pontos;
-            state.resumoPontos = detalhes.resumoPontos;
             state.tipoFaltas = detalhes.tipoFaltas;
-            state.totalizadorFaltas = detalhes.totalizadorDeFaltas;
-            state.QTD_PONTOS_NAO_BATIDOS = detalhes.resumoPontos.QTD_PONTOS_NAO_BATIDOS;
-            state.QTD_FALTAS_JUSTIFICADAS = detalhes.resumoPontos.QTD_FALTAS_JUSTIFICADAS;
-            state.QTD_PONTOS_INCOMPLETOS = detalhes.resumoPontos.QTD_PONTOS_INCOMPLETOS;
-            state.QTD_A_JUSTIFICAR = detalhes.resumoPontos.QTD_A_JUSTIFICAR;
             state.nome = state.dadosFuncionario.NOME_COMP;
             state.cpf = state.dadosFuncionario.CPF;
             state.cargo = state.dadosFuncionario.CARGO;
             state.loginFuncionario = state.dadosFuncionario.LOGIN;
             state.dataAdmissao = state.dadosFuncionario.DATA_ADMISSAO;
 
-            setTimeout(() => {
-                actions.preencherBackgroundColorDataIncompleta()
-            }, 100)
+            await nextTick();
+            state.initialDate = new Date(state.ano, state.mes - 1, 1);
+
 
         } catch (error) {
             console.error(error);
@@ -186,6 +181,37 @@ export const actions = {
                 icon: "error",
                 text: "Ocorreu um erro ao buscar os dados do funcionário.",
             });
+        } finally {
+            state.loading = false;
+            state.loadingCalendar = false;
+        }
+
+        setTimeout(() => {
+            actions.preencherBackgroundColorDataIncompleta()
+        }, 100)
+    },
+
+    async getTotalizadorFuncionario(cod_funcionario: number, mes: number, ano: number) {
+        state.loadingTotais = true;
+
+        try {
+            const totais = await gerenciarFolhaPontoDetalhesService.getTotalizadorFuncionario({
+                cod_funcionario,
+                mes,
+                ano
+            });
+
+            state.resumoPontos = totais.resumoPontos;
+            state.totalizadorFaltas = totais.totalizadorDeFaltas;
+            state.QTD_PONTOS_NAO_BATIDOS = totais.resumoPontos.QTD_PONTOS_NAO_BATIDOS;
+            state.QTD_FALTAS_JUSTIFICADAS = totais.resumoPontos.QTD_FALTAS_JUSTIFICADAS;
+            state.QTD_PONTOS_INCOMPLETOS = totais.resumoPontos.QTD_PONTOS_INCOMPLETOS;
+            state.QTD_A_JUSTIFICAR = totais.resumoPontos.QTD_A_JUSTIFICAR;
+
+        } catch (error) {
+            console.error(error)
+        } finally {
+            state.loadingTotais = false;
         }
     },
 
@@ -261,23 +287,20 @@ export const actions = {
 
     clickModalJustificarAusencia(event: any) {
         const data = event.date || new Date(event.start);
-        const dataHoje = new Date();
 
-        if (data.getDay() != 0 && data.getTime() < dataHoje.getTime()) {
-            let dia = data.getDate();
-            let mes = data.getMonth() + 1;
-            let ano = data.getFullYear();
-            let diaFormatado = dia < 10 ? "0" + dia : dia;
-            let mesFormatado = mes < 10 ? "0" + mes : mes;
-            let dataFormatada = `${diaFormatado}/${mesFormatado}/${ano}`;
+        let dia = data.getDate();
+        let mes = data.getMonth() + 1;
+        let ano = data.getFullYear();
+        let diaFormatado = dia < 10 ? "0" + dia : dia;
+        let mesFormatado = mes < 10 ? "0" + mes : mes;
+        let dataFormatada = `${diaFormatado}/${mesFormatado}/${ano}`;
 
-            state.dataAusencia = dataFormatada;
-            state.diaSelecionado = dia;
-            state.modalJustificarFalta.open();
-            actions.getDocumento();
-        } else {
-            return;
-        }
+        state.dataAusencia = dataFormatada;
+        state.diaSelecionado = dia;
+
+        actions.getDocumento();
+
+        state.modalJustificarFalta.open();
     },
 
     modal() {
@@ -310,28 +333,21 @@ export const actions = {
 
     init(route: RouteLocationNormalizedLoaded) {
         nextTick(async () => {
-            state.loading = true;
+
+            actions.modal();
 
             state.codFuncionario = Number(route.query.cod_funcionario);
             state.mes = Number(route.query.mes);
             state.ano = Number(route.query.ano);
             state.initialDate = new Date(state.ano, state.mes - 1, 1);
-            actions.modal();
 
-            await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
-
-            state.loading = false;
+            actions.carregarDados();
         });
     },
 
-    async getDadosPontos() {
-        state.loadingCalendar = true;
-
+    async carregarDados() {
+        actions.getTotalizadorFuncionario(state.codFuncionario, state.mes, state.ano);
         await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
-        await nextTick();
-        state.initialDate = new Date(state.ano, state.mes - 1, 1);
-
-        state.loadingCalendar = false;
     },
 
     imprimirFolhaPonto() {
@@ -489,10 +505,7 @@ export const tipoFaltaModal = computed(() => {
     }
 
     if (temAlgumPontoBatido) {
-        let pontoIncompleto = tipoFaltas.find((tipoFalta) => {
-            return tipoFalta.TIPO == 9;
-        });
-        return [pontoIncompleto];
+        return tipoFaltas;
     } else {
 
         let tipoFaltasFiltrado = tipoFaltas.filter((tipoFalta) => {
