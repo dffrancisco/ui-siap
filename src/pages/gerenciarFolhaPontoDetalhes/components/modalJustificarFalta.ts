@@ -2,7 +2,6 @@ import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import printJS from "print-js";
 import { computed, reactive, watch } from "vue";
 import stateLogin from "../../login/login";
-import globalState from "@/store/globalState";
 import {
     iDeletarArquivo,
     iDeletarDocumento,
@@ -292,7 +291,7 @@ export const setup = (emit: any, props: any) => {
             const param: iDeletarFalta = {
                 data: dataFalta,
                 cod_funcionario: props.funcionario.cod_funcionario,
-                cnpj: globalState.empresa.CGC_EMPRESA,
+                cnpj: props.cnpj,
             };
 
             confirmaCodigo({
@@ -336,7 +335,7 @@ export const setup = (emit: any, props: any) => {
                 data: dataFalta,
                 cod_funcionario: props.funcionario.cod_funcionario,
                 file_name: file_name,
-                cnpj: globalState.empresa.CGC_EMPRESA,
+                cnpj: props.cnpj,
             };
 
             try {
