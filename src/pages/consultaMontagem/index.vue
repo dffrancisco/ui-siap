@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import moment from "moment";
 import { state, actions, dadosFormatToPrint } from "./consultaMontagem";
+import ModalMontagemInf from "./components/ModalMontagemInf.vue";
 import printJS from "print-js";
+import { nextTick } from "vue";
+
+nextTick(async () => {
+  actions.init();
+});
 </script>
-
-<link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-
 <template>
   <v-container>
     <v-card
@@ -44,10 +47,7 @@ import printJS from "print-js";
           @click="actions.pesquisarMontagens"
         />
       </div>
-      <div
-        class="ss"
-        style="text-transform: none"
-      >
+      <div style="text-transform: none">
         <v-data-table-virtual
           class="custom-table"
           :headers="state.headers"
@@ -64,7 +64,7 @@ import printJS from "print-js";
               v-if="item.ID_MONTADOR != null"
               size="large"
               color="primary"
-              @click="console.log('abrir modal', item.ID_MONTADOR)"
+              @click="actions.openModal(item.ID_MONTADOR), console.log(item.LOGIN)"
             >
               mdi-information
             </v-icon>
@@ -114,6 +114,19 @@ import printJS from "print-js";
       </v-overlay>
     </v-card>
     <div id="pnCodigoTela">CONSULTA_MONTAGEM</div>
+
+    <div
+      id="modalMontagemInf"
+      style="display: none"
+      title="Montagem Inf"
+    >
+      <ModalMontagemInf
+        :dataInicio="state.dataInicial"
+        :dataFim="state.dataFinal"
+        :id_montador="state.idMontador"
+        :modalOpened="state.modalMontagemInfOpened"
+      ></ModalMontagemInf>
+    </div>
   </v-container>
 </template>
 
