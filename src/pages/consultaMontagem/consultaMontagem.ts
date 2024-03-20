@@ -1,9 +1,18 @@
 import utils from "@/ts/utils";
 import Swal from "sweetalert2";
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import { iMontagem } from './interfaces'
 import serviceConsultaMontagem from './services/consutaMontagem.service'
 import moment from "moment";
+
+export const dadosFormatToPrint = computed(() => {
+    return state.dbMontagem.map(venda => ({
+        ...venda,
+        VALOR: utils.formatValor(venda.VALOR),
+        DEVOLUCAO: utils.formatValor(venda.DEVOLUCAO),
+        VALOR_TOTAL: utils.formatValor(venda.VALOR_TOTAL),
+    }));
+})
 
 export const state = reactive({
     headers: <any>[

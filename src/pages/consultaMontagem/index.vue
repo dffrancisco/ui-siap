@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import moment from "moment";
-import { state, actions } from "./consultaMontagem";
+import { state, actions, dadosFormatToPrint } from "./consultaMontagem";
+import printJS from "print-js";
 </script>
 
 <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" />
@@ -74,7 +75,21 @@ import { state, actions } from "./consultaMontagem";
       <div class="d-flex justify-end pt-2">
         <v-btn
           color="primary"
-          @click="console.log('imprimir')"
+          @click="
+            printJS({
+              printable: dadosFormatToPrint,
+              properties: [
+                { field: 'LOGIN', displayName: 'Montador' },
+                { field: 'VALOR', displayName: 'Valor' },
+                { field: 'DEVOLUCAO', displayName: 'Devolução' },
+                { field: 'VALOR_TOTAL', displayName: 'Total' },
+              ],
+              type: 'json',
+              gridHeaderStyle: 'border: 1px solid #000000',
+              gridStyle: 'text-align: center; border: 1px solid #000000',
+            })
+          "
+          :disabled="state.dbMontagem.length == 0 ? true : false"
         >
           <v-icon
             size="20px"
