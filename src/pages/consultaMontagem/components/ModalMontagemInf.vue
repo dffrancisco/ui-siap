@@ -16,14 +16,16 @@ const props = defineProps<{
 watch(
   () => props.modalOpened,
   () => {
-    state.gridMontagens.queryOpen(
-      { dataInicio: props.dataInicio, dataFim: props.dataFim, ID_MONTADOR: props.id_montador },
-      () => {}
-    );
-    state.gridDevolucoes.queryOpen(
-      { dataInicio: props.dataInicio, dataFim: props.dataFim, ID_MONTADOR: props.id_montador },
-      () => {}
-    );
+    if (props.modalOpened) {
+      state.gridMontagens.queryOpen(
+        { dataInicio: props.dataInicio, dataFim: props.dataFim, ID_MONTADOR: props.id_montador },
+        () => {}
+      );
+      state.gridDevolucoes.queryOpen(
+        { dataInicio: props.dataInicio, dataFim: props.dataFim, ID_MONTADOR: props.id_montador },
+        () => {}
+      );
+    }
   }
 );
 
