@@ -8,6 +8,7 @@ import Maska from "maska";
 import VueMask from "@devindex/vue-mask";
 import money from 'v-money3'
 import { Money3Directive } from 'v-money3'
+import CanvasJSChart from '@canvasjs/vue-charts';
 
 import config from "./ts/config";
 import { setupInterceptorsTo } from "./pages/login/interceptor";
@@ -26,6 +27,7 @@ app.use(VueMask);
 app.use(Maska);
 app.use(money)
 app.use(router)
+app.use(CanvasJSChart);
 
 app.directive('money3', Money3Directive)
 

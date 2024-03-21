@@ -6,6 +6,33 @@ import { iMontagem } from './interfaces'
 import serviceConsultaMontagem from './services/consutaMontagem.service'
 import moment from "moment";
 
+export const itemsToTable = computed(() => {
+    let totalVendas = 0;
+    let totalDevolucoes = 0;
+
+    state.dbMontagem.forEach(venda => {
+        totalVendas += venda.VALOR;
+        if (venda.DEVOLUCAO) {
+            totalDevolucoes += venda.DEVOLUCAO;
+        }
+    });
+
+    state.dbMontagem.sort((a, b) => b.VALOR - a.VALOR);
+
+    if (state.dbMontagem.length > 0) {
+        let totalizador = {
+            LOGIN: 'Totalizador',
+            VALOR: totalVendas,
+            DEVOLUCAO: totalDevolucoes,
+            VALOR_TOTAL: totalVendas - totalDevolucoes
+        }
+
+        state.dbMontagem.push(totalizador)
+    }
+
+    return state.dbMontagem
+})
+
 export const dadosFormatToPrint = computed(() => {
     return state.dbMontagem.map(venda => ({
         ...venda,
@@ -90,28 +117,6 @@ export const actions = {
             const data = await serviceConsultaMontagem.getRelatorioMontagens(param)
 
             state.dbMontagem = data
-
-            let totalVendas = 0;
-            let totalDevolucoes = 0;
-
-            state.dbMontagem.forEach(venda => {
-                totalVendas += venda.VALOR;
-                if (venda.DEVOLUCAO) {
-                    totalDevolucoes += venda.DEVOLUCAO;
-                }
-            });
-
-            if (state.dbMontagem.length > 0) {
-                let totalizador = {
-                    LOGIN: 'Totalizador',
-                    VALOR: totalVendas,
-                    DEVOLUCAO: totalDevolucoes,
-                    VALOR_TOTAL: totalVendas - totalDevolucoes
-                }
-
-                state.dbMontagem.push(totalizador)
-            }
-
 
             state.loading = false;
         } catch (error) {

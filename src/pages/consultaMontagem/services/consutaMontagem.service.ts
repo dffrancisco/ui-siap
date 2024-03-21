@@ -11,7 +11,7 @@ import {
 const caminho = "siap/consultaMontagem"
 
 type iGetRelatorioMontagensFunction = (param: iParamGetRelatorioMontagens) => Promise<iGetRelatorioMontagensResponse[]>;
-type iGetMontagemInfFunction = (param: iParamGetMontagemInf) => Promise<iGetMontagemInfResponse>;
+type iGetMontagemInfFunction = (param: iParamGetMontagemInf) => Promise<iGetMontagemInfResponse[]>;
 type iGetDevolucaoInfFunction = (param: iParamGetDevolucaoInf) => Promise<iGetDevolucaoInfResponse>;
 
 const getRelatorioMontagens: iGetRelatorioMontagensFunction = async (param) => {
@@ -22,20 +22,18 @@ const getRelatorioMontagens: iGetRelatorioMontagensFunction = async (param) => {
     return data
 };
 
-const getMontagemInf: iGetMontagemInfFunction = async ({ param, offset }) => {
+const getMontagemInf: iGetMontagemInfFunction = async ({ param }) => {
     let { data } = await axios.post(caminho, {
         call: "getMontagemInf",
         param,
-        offset
     })
     return data
 }
 
-const getDevolucoesInf: iGetDevolucaoInfFunction = async ({ param, offset }) => {
+const getDevolucoesInf: iGetDevolucaoInfFunction = async ({ param }) => {
     let { data } = await axios.post(caminho, {
         call: "getDevolucoesInf",
         param,
-        offset
     })
     return data
 }

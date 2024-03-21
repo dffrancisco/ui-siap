@@ -19,6 +19,7 @@
   },
   "main": "electron/electron.js",
   "dependencies": {
+    "@canvasjs/vue-charts": "^1.0.4",
     "@devindex/vue-mask": "^2.0.3",
     "@fullcalendar/core": "^6.1.10",
     "@fullcalendar/daygrid": "^6.1.10",

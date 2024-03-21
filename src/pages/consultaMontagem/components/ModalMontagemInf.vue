@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
-import { nextTick, reactive, watch } from "vue";
+import { nextTick, reactive, watch, computed } from "vue";
 import serviceConsultaMontagem from "../services/consutaMontagem.service";
-import { iParamGetMontagemInf, iParamGetDevolucaoInf } from "../interfaces";
 import utils from "@/ts/utils";
+import moment from "moment";
+import { iMontagemInf, iParamGetMontagemInf, iParamGetDevolucaoInf } from "../interfaces";
 
 const props = defineProps<{
   modalOpened: boolean;
@@ -13,6 +14,21 @@ const props = defineProps<{
   id_montador: number | null;
 }>();
 
+const dadosToGrafico = computed(() => {
+  const dadosFormatados = [];
+
+  if (state.dbMontagemInf) {
+    state.dbMontagemInf.forEach((item) => {
+      dadosFormatados.push({
+        label: moment(item.DATA).format("DD"),
+        y: item.VALOR,
+        indexLabel: utils.formatValor(item.VALOR),
+      });
+    });
+  }
+
+  return dadosFormatados;
+});
 watch(
   () => props.modalOpened,
   () => {
@@ -32,6 +48,10 @@ watch(
 const state = reactive({
   gridMontagens: <ixGridCreate>{},
   gridDevolucoes: <ixGridCreate>{},
+
+  dbMontagemInf: <iMontagemInf[]>[],
+
+  optionsGrafico: null,
 
   loading: false,
 });
@@ -53,7 +73,6 @@ const actions = {
       query: {
         async execute(rs) {
           let data = await actions.getMontagemInf({
-            offset: rs.offset,
             param: rs.param,
           });
           state.gridMontagens.querySourceAdd(data);
@@ -76,7 +95,6 @@ const actions = {
       query: {
         async execute(rs) {
           let data = await actions.getDevolucaoInf({
-            offset: rs.offset,
             param: rs.param,
           });
           state.gridDevolucoes.querySourceAdd(data);
@@ -85,11 +103,27 @@ const actions = {
     });
   },
 
-  async getMontagemInf({ param, offset }: iParamGetMontagemInf) {
+  criarGrafico() {
+    state.optionsGrafico = {
+      animationEnabled: true,
+      data: [
+        {
+          type: "column",
+          dataPoints: dadosToGrafico,
+        },
+      ],
+    };
+  },
+
+  async getMontagemInf({ param }: iParamGetMontagemInf) {
     try {
       state.loading = true;
-      const data = await serviceConsultaMontagem.getMontagemInf({ param, offset });
+      const data = await serviceConsultaMontagem.getMontagemInf({ param });
       state.loading = false;
+
+      state.dbMontagemInf = data;
+
+      actions.criarGrafico();
       return data;
     } catch (error) {
       state.loading = false;
@@ -100,10 +134,10 @@ const actions = {
     }
   },
 
-  async getDevolucaoInf({ param, offset }: iParamGetDevolucaoInf) {
+  async getDevolucaoInf({ param }: iParamGetDevolucaoInf) {
     try {
       state.loading = true;
-      const data = await serviceConsultaMontagem.getDevolucoesInf({ param, offset });
+      const data = await serviceConsultaMontagem.getDevolucoesInf({ param });
       state.loading = false;
       return data;
     } catch (error) {
@@ -133,10 +167,8 @@ nextTick(async () => {
         <div id="gridDevolucoes"> </div>
       </div>
     </v-row>
-    <div
-      class="ss"
-      style="height: 350px; width: 848px"
-    ></div>
+
+    <CanvasJSChart :options="state.optionsGrafico" />
 
     <v-overlay
       :model-value="state.loading"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import moment from "moment";
-import { state, actions, dadosFormatToPrint } from "./consultaMontagem";
+import { state, actions, dadosFormatToPrint, itemsToTable } from "./consultaMontagem";
 import ModalMontagemInf from "./components/ModalMontagemInf.vue";
 import printJS from "print-js";
 import { nextTick } from "vue";
@@ -51,7 +51,7 @@ nextTick(async () => {
         <v-data-table-virtual
           class="custom-table"
           :headers="state.headers"
-          :items="state.dbMontagem"
+          :items="itemsToTable"
           height="550"
           items-per-page-text="Itens por página"
           no-data-text="Não há dados disponíveis"
@@ -64,7 +64,7 @@ nextTick(async () => {
               v-if="item.ID_MONTADOR != null"
               size="large"
               color="primary"
-              @click="actions.openModal(item.ID_MONTADOR), console.log(item.LOGIN)"
+              @click="actions.openModal(item.ID_MONTADOR)"
             >
               mdi-information
             </v-icon>
@@ -116,9 +116,9 @@ nextTick(async () => {
     <div id="pnCodigoTela">CONSULTA_MONTAGEM</div>
 
     <div
+      title="Montagem Inf"
       id="modalMontagemInf"
       style="display: none"
-      title="Montagem Inf"
     >
       <ModalMontagemInf
         :dataInicio="state.dataInicial"

@@ -13,10 +13,9 @@ export interface iParamGetRelatorioMontagens {
 
 export interface iParamGetMontagemInf {
     param: object;
-    offset: number;
 }
 
-export interface iGetMontagemInfResponse {
+export interface iMontagemInf {
     VALOR: number,
     DATA: string,
     NUM_ORCAMENTO: number,
@@ -33,5 +32,6 @@ export interface iGetDevolucaoInfResponse {
 }
 
 export interface iParamGetDevolucaoInf extends iParamGetMontagemInf { }
-
 export interface iGetRelatorioMontagensResponse extends iMontagem { }
+export interface iGetMontagemInfResponse extends iMontagemInf { }
+
