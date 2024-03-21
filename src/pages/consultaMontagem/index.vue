@@ -55,7 +55,7 @@ nextTick(async () => {
           class="custom-table"
           :headers="state.headers"
           :items="itemsToTable"
-          height="550"
+          height="540"
           items-per-page-text="Itens por página"
           no-data-text="Não há dados disponíveis"
         >
