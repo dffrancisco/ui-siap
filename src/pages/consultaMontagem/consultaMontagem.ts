@@ -34,7 +34,9 @@ export const itemsToTable = computed(() => {
 })
 
 export const dadosFormatToPrint = computed(() => {
-    return state.dbMontagem.map(venda => ({
+    let dadosToPrint = state.dbMontagem
+
+    return dadosToPrint.map(venda => ({
         ...venda,
         VALOR: utils.formatValor(venda.VALOR),
         DEVOLUCAO: utils.formatValor(venda.DEVOLUCAO),
@@ -55,52 +57,62 @@ export const state = reactive({
 
     dataInicial: null,
     dataFinal: null,
+
+    dataInicialModal: null,
+    dataFinalModal: null,
+
     idMontador: null,
 
     modalMontagemInf: <iModalCreate>{},
     modalMontagemInfOpened: false,
 
+    elDataFinal: <HTMLInputElement>{},
     loading: false,
 })
 
 export const actions = {
     pesquisarMontagens() {
-        if (!state.dataInicial || !state.dataFinal) {
-            Swal.fire({
-                text: "Data inicial e/ou data final não preenchidos",
-                icon: "warning"
-            })
-            return false
-        }
+        setTimeout(() => {
+            if (!state.dataInicial || !state.dataFinal) {
+                Swal.fire({
+                    text: "Data inicial ou data final não preenchidos",
+                    icon: "warning"
+                })
+                return false
+            }
 
-        if (moment(state.dataInicial).isAfter(moment(state.dataFinal))) {
-            Swal.fire({
-                text: "Data inicial deve ser menor que a data final",
-                icon: "warning"
-            })
-            return false
-        }
+            if (moment(state.dataInicial).isAfter(moment(state.dataFinal))) {
+                Swal.fire({
+                    text: "Data inicial deve ser menor que a data final",
+                    icon: "warning"
+                })
+                return false
+            }
 
-        actions.getRelatorioMontagens()
+            actions.getRelatorioMontagens()
+        }, 100)
     },
 
     async init() {
-        actions.criarModais()
+        state.elDataFinal = <any>document.getElementById("elDataFinal");
     },
 
-    criarModais() {
+    criarModais(nameMontador: string) {
         state.modalMontagemInf = new xModal.create({
             el: '#modalMontagemInf',
-            height: 700,
+            height: 708,
             width: 900,
+            title: nameMontador,
             theme: 'xModal-blue',
             onOpen: () => { state.modalMontagemInfOpened = true },
-            onClose: () => { state.modalMontagemInfOpened = false }
+            onClose: () => { state.modalMontagemInfOpened = false, state.modalMontagemInf.destroy() }
         })
     },
 
-    openModal(id_montador: number) {
+    async openModal(id_montador: number, nameMontador: string) {
         state.idMontador = id_montador
+        actions.criarModais(nameMontador);
+
         state.modalMontagemInf.open();
     },
 
@@ -117,6 +129,9 @@ export const actions = {
             const data = await serviceConsultaMontagem.getRelatorioMontagens(param)
 
             state.dbMontagem = data
+
+            state.dataInicialModal = state.dataInicial
+            state.dataFinalModal = state.dataFinal
 
             state.loading = false;
         } catch (error) {

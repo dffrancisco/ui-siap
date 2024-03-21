@@ -1,9 +1,11 @@
 import axios from 'axios';
 import {
     iGetDevolucaoInfResponse,
+    iGetGraficoMesResponse,
     iGetMontagemInfResponse,
     iGetRelatorioMontagensResponse,
     iParamGetDevolucaoInf,
+    iParamGetGraficoMes,
     iParamGetMontagemInf,
     iParamGetRelatorioMontagens
 } from '../interfaces';
@@ -11,8 +13,9 @@ import {
 const caminho = "siap/consultaMontagem"
 
 type iGetRelatorioMontagensFunction = (param: iParamGetRelatorioMontagens) => Promise<iGetRelatorioMontagensResponse[]>;
-type iGetMontagemInfFunction = (param: iParamGetMontagemInf) => Promise<iGetMontagemInfResponse[]>;
+type iGetMontagemInfFunction = (param: iParamGetMontagemInf) => Promise<iGetMontagemInfResponse>;
 type iGetDevolucaoInfFunction = (param: iParamGetDevolucaoInf) => Promise<iGetDevolucaoInfResponse>;
+type iGetGraficoMesFunction = (param: iParamGetGraficoMes) => Promise<iGetGraficoMesResponse[]>;
 
 const getRelatorioMontagens: iGetRelatorioMontagensFunction = async (param) => {
     let { data } = await axios.post(caminho, {
@@ -22,18 +25,28 @@ const getRelatorioMontagens: iGetRelatorioMontagensFunction = async (param) => {
     return data
 };
 
-const getMontagemInf: iGetMontagemInfFunction = async ({ param }) => {
+const getMontagemInf: iGetMontagemInfFunction = async ({ param, offset }) => {
     let { data } = await axios.post(caminho, {
         call: "getMontagemInf",
         param,
+        offset
     })
     return data
 }
 
-const getDevolucoesInf: iGetDevolucaoInfFunction = async ({ param }) => {
+const getDevolucoesInf: iGetDevolucaoInfFunction = async ({ param, offset }) => {
     let { data } = await axios.post(caminho, {
         call: "getDevolucoesInf",
         param,
+        offset
+    })
+    return data
+}
+
+const getGraficoMes: iGetGraficoMesFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getGraficoMes",
+        param
     })
     return data
 }
@@ -41,5 +54,6 @@ const getDevolucoesInf: iGetDevolucaoInfFunction = async ({ param }) => {
 export default {
     getRelatorioMontagens,
     getMontagemInf,
-    getDevolucoesInf
+    getDevolucoesInf,
+    getGraficoMes
 }

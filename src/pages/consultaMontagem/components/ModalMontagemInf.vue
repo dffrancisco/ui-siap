@@ -4,8 +4,13 @@ import Swal from "sweetalert2";
 import { nextTick, reactive, watch, computed } from "vue";
 import serviceConsultaMontagem from "../services/consutaMontagem.service";
 import utils from "@/ts/utils";
-import moment from "moment";
-import { iMontagemInf, iParamGetMontagemInf, iParamGetDevolucaoInf } from "../interfaces";
+import {
+  iMontagemInf,
+  iParamGetMontagemInf,
+  iParamGetDevolucaoInf,
+  iParamGetGraficoMes,
+  iGraficoMes,
+} from "../interfaces";
 
 const props = defineProps<{
   modalOpened: boolean;
@@ -17,10 +22,10 @@ const props = defineProps<{
 const dadosToGrafico = computed(() => {
   const dadosFormatados = [];
 
-  if (state.dbMontagemInf) {
-    state.dbMontagemInf.forEach((item) => {
+  if (state.dbGraficoMes.length > 0) {
+    state.dbGraficoMes.forEach((item) => {
       dadosFormatados.push({
-        label: moment(item.DATA).format("DD"),
+        label: item.DIA,
         y: item.VALOR,
         indexLabel: utils.formatValor(item.VALOR),
       });
@@ -37,10 +42,13 @@ watch(
         { dataInicio: props.dataInicio, dataFim: props.dataFim, ID_MONTADOR: props.id_montador },
         () => {}
       );
+
       state.gridDevolucoes.queryOpen(
         { dataInicio: props.dataInicio, dataFim: props.dataFim, ID_MONTADOR: props.id_montador },
         () => {}
       );
+
+      actions.criarGrafico();
     }
   }
 );
@@ -49,7 +57,7 @@ const state = reactive({
   gridMontagens: <ixGridCreate>{},
   gridDevolucoes: <ixGridCreate>{},
 
-  dbMontagemInf: <iMontagemInf[]>[],
+  dbGraficoMes: <iGraficoMes[]>[],
 
   optionsGrafico: null,
 
@@ -73,6 +81,7 @@ const actions = {
       query: {
         async execute(rs) {
           let data = await actions.getMontagemInf({
+            offset: rs.offset,
             param: rs.param,
           });
           state.gridMontagens.querySourceAdd(data);
@@ -95,6 +104,7 @@ const actions = {
       query: {
         async execute(rs) {
           let data = await actions.getDevolucaoInf({
+            offset: rs.offset,
             param: rs.param,
           });
           state.gridDevolucoes.querySourceAdd(data);
@@ -103,7 +113,9 @@ const actions = {
     });
   },
 
-  criarGrafico() {
+  async criarGrafico() {
+    await actions.getGraficoMes();
+
     state.optionsGrafico = {
       animationEnabled: true,
       data: [
@@ -115,15 +127,12 @@ const actions = {
     };
   },
 
-  async getMontagemInf({ param }: iParamGetMontagemInf) {
+  async getMontagemInf({ param, offset }: iParamGetMontagemInf) {
     try {
       state.loading = true;
-      const data = await serviceConsultaMontagem.getMontagemInf({ param });
+      const data = await serviceConsultaMontagem.getMontagemInf({ param, offset });
       state.loading = false;
 
-      state.dbMontagemInf = data;
-
-      actions.criarGrafico();
       return data;
     } catch (error) {
       state.loading = false;
@@ -134,12 +143,33 @@ const actions = {
     }
   },
 
-  async getDevolucaoInf({ param }: iParamGetDevolucaoInf) {
+  async getDevolucaoInf({ param, offset }: iParamGetDevolucaoInf) {
     try {
       state.loading = true;
-      const data = await serviceConsultaMontagem.getDevolucoesInf({ param });
+      const data = await serviceConsultaMontagem.getDevolucoesInf({ param, offset });
       state.loading = false;
       return data;
+    } catch (error) {
+      state.loading = false;
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao exibir as informações das devoluções!",
+      });
+    }
+  },
+
+  async getGraficoMes() {
+    try {
+      let param: iParamGetGraficoMes = {
+        dataInicio: props.dataInicio,
+        dataFim: props.dataFim,
+        ID_MONTADOR: props.id_montador,
+      };
+
+      state.loading = true;
+      const data = await serviceConsultaMontagem.getGraficoMes(param);
+      state.dbGraficoMes = data;
+      state.loading = false;
     } catch (error) {
       state.loading = false;
       Swal.fire({

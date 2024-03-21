@@ -25,17 +25,20 @@ nextTick(async () => {
             style="width: 128px"
             :max="moment().format('YYYY-MM-DD')"
             maxlength="10"
+            @keydown.enter="state.elDataFinal.focus"
           />
         </div>
         <div class="inputData mr-1">
           <span>Data Final</span>
           <input
             v-model="state.dataFinal"
+            id="elDataFinal"
             type="date"
             class="ss"
             style="width: 128px"
             :max="moment().format('YYYY-MM-DD')"
             maxlength="10"
+            @keydown.enter="actions.pesquisarMontagens"
           />
         </div>
 
@@ -64,7 +67,7 @@ nextTick(async () => {
               v-if="item.ID_MONTADOR != null"
               size="large"
               color="primary"
-              @click="actions.openModal(item.ID_MONTADOR)"
+              @click="actions.openModal(item.ID_MONTADOR, item.LOGIN)"
             >
               mdi-information
             </v-icon>
@@ -116,13 +119,12 @@ nextTick(async () => {
     <div id="pnCodigoTela">CONSULTA_MONTAGEM</div>
 
     <div
-      title="Montagem Inf"
       id="modalMontagemInf"
       style="display: none"
     >
       <ModalMontagemInf
-        :dataInicio="state.dataInicial"
-        :dataFim="state.dataFinal"
+        :dataInicio="state.dataInicialModal"
+        :dataFim="state.dataFinalModal"
         :id_montador="state.idMontador"
         :modalOpened="state.modalMontagemInfOpened"
       ></ModalMontagemInf>
