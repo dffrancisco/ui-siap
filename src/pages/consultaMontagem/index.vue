@@ -50,12 +50,13 @@ nextTick(async () => {
           @click="actions.pesquisarMontagens"
         />
       </div>
-      <div style="text-transform: none">
+      <div>
         <v-data-table-virtual
-          class="custom-table"
+          style="text-transform: none"
+          class="custom-table ss"
           :headers="state.headers"
           :items="itemsToTable"
-          height="540"
+          height="536"
           items-per-page-text="Itens por página"
           no-data-text="Não há dados disponíveis"
         >
