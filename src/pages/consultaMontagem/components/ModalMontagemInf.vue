@@ -4,13 +4,7 @@ import Swal from "sweetalert2";
 import { nextTick, reactive, watch, computed } from "vue";
 import serviceConsultaMontagem from "../services/consutaMontagem.service";
 import utils from "@/ts/utils";
-import {
-  iMontagemInf,
-  iParamGetMontagemInf,
-  iParamGetDevolucaoInf,
-  iParamGetGraficoMes,
-  iGraficoMes,
-} from "../interfaces";
+import { iParamGetMontagemInf, iParamGetDevolucaoInf, iParamGetGraficoMes, iGraficoMes } from "../interfaces";
 
 const props = defineProps<{
   modalOpened: boolean;
@@ -174,7 +168,7 @@ const actions = {
       state.loading = false;
       Swal.fire({
         icon: "error",
-        text: "Erro ao exibir as informações das devoluções!",
+        text: "Erro ao exibir as informações param o gráfico",
       });
     }
   },
