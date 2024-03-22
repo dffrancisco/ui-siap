@@ -375,12 +375,13 @@ export const actions = {
 
 export const pontosCalendario = computed(() => {
     let eventos = [];
+
     for (let key of Object.keys(state.pontos)) {
         let ponto: iPonto = state.pontos[key];
         let dataInicio = moment(ponto.DATA).format('YYYY-MM-DD');
         let dataFim = moment(ponto.DATA).format('YYYY-MM-DD');
 
-        const { HORA_CHEGADA, HORA_ALMOCO_FINAL, HORA_ALMOCO_INICIAL, HORA_SAIDA, JUSTIFICATIVA, STATUS } = ponto;
+        const { HORA_CHEGADA, HORA_ALMOCO_FINAL, HORA_ALMOCO_INICIAL, HORA_SAIDA, TIPO, STATUS } = ponto;
         let qtdPontosDia = 0
 
         if (HORA_CHEGADA || HORA_ALMOCO_INICIAL || HORA_ALMOCO_FINAL || HORA_SAIDA) {
@@ -390,35 +391,34 @@ export const pontosCalendario = computed(() => {
             if (HORA_ALMOCO_FINAL) qtdPontosDia++;
             if (HORA_SAIDA) qtdPontosDia++;
 
-            let jaFoiJustificado = HORA_CHEGADA == null && JUSTIFICATIVA == "Ponto Incompleto";
+            let jaFoiJustificado = HORA_CHEGADA == null && TIPO == 9;
             let horaFormatada = actions.formatarHora(HORA_CHEGADA);
             let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
 
             eventos.push(eventoFormatado);
 
-            jaFoiJustificado = HORA_ALMOCO_INICIAL == null && JUSTIFICATIVA == "Ponto Incompleto";
+            jaFoiJustificado = HORA_ALMOCO_INICIAL == null && TIPO == 9;
             horaFormatada = actions.formatarHora(HORA_ALMOCO_INICIAL);
             eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
 
             eventos.push(eventoFormatado);
 
-            jaFoiJustificado = HORA_ALMOCO_FINAL == null && JUSTIFICATIVA == "Ponto Incompleto";
+            jaFoiJustificado = HORA_ALMOCO_FINAL == null && TIPO == 9;
             horaFormatada = actions.formatarHora(HORA_ALMOCO_FINAL);
             eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
 
             eventos.push(eventoFormatado);
 
-            jaFoiJustificado = HORA_SAIDA == null && JUSTIFICATIVA == "Ponto Incompleto";
+            jaFoiJustificado = HORA_SAIDA == null && TIPO == 9;
             horaFormatada = actions.formatarHora(HORA_SAIDA);
             eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
 
             eventos.push(eventoFormatado);
 
-
         }
 
 
-        if (STATUS && STATUS != "Ponto Incompleto") {
+        if (STATUS && TIPO != 9) {
             let cor;
 
             switch (STATUS) {
