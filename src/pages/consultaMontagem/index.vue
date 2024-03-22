@@ -65,7 +65,7 @@ nextTick(async () => {
           </template>
           <template v-slot:item.inf="{ item }">
             <v-icon
-              v-if="item.ID_MONTADOR != null"
+              v-if="item.ID_MONTADOR"
               size="large"
               color="primary"
               @click="actions.openModal(item.ID_MONTADOR, item.LOGIN)"
@@ -124,9 +124,7 @@ nextTick(async () => {
       style="display: none"
     >
       <ModalMontagemInf
-        :dataInicio="state.dataInicialModal"
-        :dataFim="state.dataFinalModal"
-        :id_montador="state.idMontador"
+        :dbMontagemDetalhes="state.dbMontagensDetalhes"
         :modalOpened="state.modalMontagemInfOpened"
       ></ModalMontagemInf>
     </div>

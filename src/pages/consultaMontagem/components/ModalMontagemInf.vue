@@ -1,48 +1,38 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import Swal from "sweetalert2";
 import { nextTick, reactive, watch, computed } from "vue";
-import serviceConsultaMontagem from "../services/consutaMontagem.service";
 import utils from "@/ts/utils";
-import { iParamGetMontagemInf, iParamGetDevolucaoInf, iParamGetGraficoMes, iGraficoMes } from "../interfaces";
+import VueApexCharts from "vue3-apexcharts";
+import { iMontagemDetalhes, iDadosToGraficoDia } from "../interfaces";
 
 const props = defineProps<{
   modalOpened: boolean;
-  dataInicio: string | null;
-  dataFim: string | null;
-  id_montador: number | null;
+  dbMontagemDetalhes: iMontagemDetalhes;
 }>();
 
 const dadosToGrafico = computed(() => {
-  const dadosFormatados = [];
+  const cabecalho = [];
+  const dados = [];
 
-  if (state.dbGraficoMes.length > 0) {
-    state.dbGraficoMes.forEach((item) => {
-      dadosFormatados.push({
-        label: item.DIA,
-        y: item.VALOR,
-        indexLabel: utils.formatValor(item.VALOR),
-      });
+  if (state.dbDadosToGraficoDia.length > 0) {
+    state.dbDadosToGraficoDia.forEach((item) => {
+      cabecalho.push(item.DIA);
+      dados.push(item.VALOR);
     });
   }
 
-  return dadosFormatados;
+  return {
+    labels: cabecalho,
+    series: dados,
+  };
 });
 watch(
   () => props.modalOpened,
   () => {
     if (props.modalOpened) {
-      state.gridMontagens.queryOpen(
-        { dataInicio: props.dataInicio, dataFim: props.dataFim, ID_MONTADOR: props.id_montador },
-        () => {}
-      );
-
-      state.gridDevolucoes.queryOpen(
-        { dataInicio: props.dataInicio, dataFim: props.dataFim, ID_MONTADOR: props.id_montador },
-        () => {}
-      );
-
-      actions.criarGrafico();
+      state.gridMontagens.source(props.dbMontagemDetalhes.montagemDetalhes);
+      state.gridDevolucoes.source(props.dbMontagemDetalhes.devolucaoDetalhes);
+      state.dbDadosToGraficoDia = props.dbMontagemDetalhes.dadosToGraficoDia;
     }
   }
 );
@@ -51,9 +41,7 @@ const state = reactive({
   gridMontagens: <ixGridCreate>{},
   gridDevolucoes: <ixGridCreate>{},
 
-  dbGraficoMes: <iGraficoMes[]>[],
-
-  optionsGrafico: null,
+  dbDadosToGraficoDia: <iDadosToGraficoDia[]>[],
 
   loading: false,
 });
@@ -72,15 +60,6 @@ const actions = {
         Placa: { dataField: "PLACA", center: true },
         Vendedor: { dataField: "VENDEDOR", width: "30%" },
       },
-      query: {
-        async execute(rs) {
-          let data = await actions.getMontagemInf({
-            offset: rs.offset,
-            param: rs.param,
-          });
-          state.gridMontagens.querySourceAdd(data);
-        },
-      },
     });
 
     state.gridDevolucoes = new xGridV2.create({
@@ -95,82 +74,7 @@ const actions = {
         Placa: { dataField: "PLACA", center: true },
         "Dt Dev": { dataField: "DATA", render: utils.dataBrasil, center: true },
       },
-      query: {
-        async execute(rs) {
-          let data = await actions.getDevolucaoInf({
-            offset: rs.offset,
-            param: rs.param,
-          });
-          state.gridDevolucoes.querySourceAdd(data);
-        },
-      },
     });
-  },
-
-  async criarGrafico() {
-    await actions.getGraficoMes();
-
-    state.optionsGrafico = {
-      animationEnabled: true,
-      data: [
-        {
-          type: "column",
-          dataPoints: dadosToGrafico,
-        },
-      ],
-    };
-  },
-
-  async getMontagemInf({ param, offset }: iParamGetMontagemInf) {
-    try {
-      state.loading = true;
-      const data = await serviceConsultaMontagem.getMontagemInf({ param, offset });
-      state.loading = false;
-
-      return data;
-    } catch (error) {
-      state.loading = false;
-      Swal.fire({
-        icon: "error",
-        text: "Erro ao exibir as informações das montagens!",
-      });
-    }
-  },
-
-  async getDevolucaoInf({ param, offset }: iParamGetDevolucaoInf) {
-    try {
-      state.loading = true;
-      const data = await serviceConsultaMontagem.getDevolucoesInf({ param, offset });
-      state.loading = false;
-      return data;
-    } catch (error) {
-      state.loading = false;
-      Swal.fire({
-        icon: "error",
-        text: "Erro ao exibir as informações das devoluções!",
-      });
-    }
-  },
-
-  async getGraficoMes() {
-    try {
-      let param: iParamGetGraficoMes = {
-        dataInicio: props.dataInicio,
-        dataFim: props.dataFim,
-        ID_MONTADOR: props.id_montador,
-      };
-
-      state.loading = true;
-      const data = await serviceConsultaMontagem.getGraficoMes(param);
-      state.dbGraficoMes = data;
-      state.loading = false;
-    } catch (error) {
-      state.loading = false;
-      Swal.fire({
-        icon: "error",
-        text: "Erro ao exibir as informações param o gráfico",
-      });
-    }
   },
 };
 
@@ -192,7 +96,31 @@ nextTick(async () => {
       </div>
     </v-row>
 
-    <CanvasJSChart :options="state.optionsGrafico" />
+    <span>Venda por Dia</span>
+    <VueApexCharts
+      width="100%"
+      height="350"
+      type="bar"
+      :options="{
+        chart: {
+          id: 'basic-bar',
+        },
+        xaxis: {
+          categories: dadosToGrafico.labels,
+        },
+        yaxis: {
+          labels: {
+            formatter: (value: number) => utils.formatValor(value),
+          },
+        },
+      }"
+      :series="[
+        {
+          name: 'Venda do Dia',
+          data: dadosToGrafico.series,
+        },
+      ]"
+    />
 
     <v-overlay
       :model-value="state.loading"

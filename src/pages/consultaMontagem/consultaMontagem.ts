@@ -2,29 +2,27 @@ import utils from "@/ts/utils";
 import Swal from "sweetalert2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { computed, reactive } from "vue";
-import { iMontagem } from './interfaces'
+import { iMontagem, iMontagemDetalhes } from './interfaces'
 import serviceConsultaMontagem from './services/consutaMontagem.service'
 import moment from "moment";
 
 export const itemsToTable = computed(() => {
     let totalVendas = 0;
     let totalDevolucoes = 0;
+    let valorTotal = 0;
 
     state.dbMontagem.forEach(venda => {
         totalVendas += venda.VALOR;
-        if (venda.DEVOLUCAO) {
-            totalDevolucoes += venda.DEVOLUCAO;
-        }
+        valorTotal += venda.TOTAL;
+        totalDevolucoes += venda.VALOR_DEVOLUCAO;
     });
-
-    state.dbMontagem.sort((a, b) => b.VALOR - a.VALOR);
 
     if (state.dbMontagem.length > 0) {
         let totalizador = {
             LOGIN: 'Totalizador',
             VALOR: totalVendas,
-            DEVOLUCAO: totalDevolucoes,
-            VALOR_TOTAL: totalVendas - totalDevolucoes
+            VALOR_DEVOLUCAO: totalDevolucoes,
+            TOTAL: valorTotal
         }
 
         state.dbMontagem.push(totalizador)
@@ -39,8 +37,8 @@ export const dadosFormatToPrint = computed(() => {
     return dadosToPrint.map(venda => ({
         ...venda,
         VALOR: utils.formatValor(venda.VALOR),
-        DEVOLUCAO: utils.formatValor(venda.DEVOLUCAO),
-        VALOR_TOTAL: utils.formatValor(venda.VALOR_TOTAL),
+        DEVOLUCAO: utils.formatValor(venda.VALOR_DEVOLUCAO),
+        VALOR_TOTAL: utils.formatValor(venda.TOTAL),
     }));
 })
 
@@ -48,15 +46,16 @@ export const state = reactive({
     headers: <any>[
         { title: 'Montador', key: 'LOGIN', width: '30%' },
         { title: 'Valor', key: 'VALOR', value: (montagem: iMontagem) => utils.formatValor(montagem.VALOR) },
-        { title: 'Devolução', key: 'DEVOLUCAO', value: (montagem: iMontagem) => utils.formatValor(montagem.DEVOLUCAO) },
-        { title: 'Total', key: 'VALOR_TOTAL', value: (montagem: iMontagem) => utils.formatValor(montagem.VALOR_TOTAL) },
+        { title: 'Devolução', key: 'VALOR_DEVOLUCAO', value: (montagem: iMontagem) => utils.formatValor(montagem.VALOR_DEVOLUCAO) },
+        { title: 'Total', key: 'TOTAL', value: (montagem: iMontagem) => utils.formatValor(montagem.TOTAL) },
         { title: 'Inf', key: 'inf', sortable: false },
     ],
 
     dbMontagem: <iMontagem[]>[],
+    dbMontagensDetalhes: <iMontagemDetalhes>{},
 
-    dataInicial: null,
-    dataFinal: null,
+    dataInicial: moment().startOf('month').format('YYYY-MM-DD'),
+    dataFinal: moment().endOf('month').format('YYYY-MM-DD'),
 
     dataInicialModal: null,
     dataFinalModal: null,
@@ -89,7 +88,7 @@ export const actions = {
                 return false
             }
 
-            actions.getRelatorioMontagens()
+            actions.getMontagens()
         }, 100)
     },
 
@@ -100,7 +99,7 @@ export const actions = {
     criarModais(nameMontador: string) {
         state.modalMontagemInf = new xModal.create({
             el: '#modalMontagemInf',
-            height: 708,
+            height: 730,
             width: 900,
             title: nameMontador,
             theme: 'xModal-blue',
@@ -111,12 +110,13 @@ export const actions = {
 
     async openModal(id_montador: number, nameMontador: string) {
         state.idMontador = id_montador
+        await actions.getMontagemDetalhes(id_montador)
         actions.criarModais(nameMontador);
 
         state.modalMontagemInf.open();
     },
 
-    async getRelatorioMontagens() {
+    async getMontagens() {
         try {
 
             state.loading = true;
@@ -126,7 +126,7 @@ export const actions = {
                 dataFim: state.dataFinal
             }
 
-            const data = await serviceConsultaMontagem.getRelatorioMontagens(param)
+            const data = await serviceConsultaMontagem.getMontagens(param)
 
             state.dbMontagem = data
 
@@ -138,10 +138,32 @@ export const actions = {
             state.loading = false;
             Swal.fire({
                 icon: "error",
-                text: "Erro ao exibir as montagens!",
+                text: error?.response?.data?.msg || "Erro ao exibir as montagens!",
             })
         }
-    }
+    },
+
+    async getMontagemDetalhes(id_montador: number) {
+        try {
+            let param = {
+                dataInicio: state.dataInicialModal,
+                dataFim: state.dataFinalModal,
+                ID_MONTADOR: id_montador,
+            };
+
+            state.loading = true;
+            const data = await serviceConsultaMontagem.getMontagemDetalhes(param);
+            state.dbMontagensDetalhes = data
+
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao exibir as informações dos detalhes do montador!"
+            });
+        }
+    },
 }
 
 export default { state, actions }

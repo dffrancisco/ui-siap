@@ -1,59 +1,33 @@
 import axios from 'axios';
 import {
-    iGetDevolucaoInfResponse,
-    iGetGraficoMesResponse,
-    iGetMontagemInfResponse,
-    iGetRelatorioMontagensResponse,
-    iParamGetDevolucaoInf,
-    iParamGetGraficoMes,
-    iParamGetMontagemInf,
-    iParamGetRelatorioMontagens
+    iGetMontagensResponse,
+    iParamGetMontagens,
+    iParamGetMontagemDetalhes,
+    iGetMontagemDetalhesResponse
 } from '../interfaces';
 
 const caminho = "siap/consultaMontagem"
 
-type iGetRelatorioMontagensFunction = (param: iParamGetRelatorioMontagens) => Promise<iGetRelatorioMontagensResponse[]>;
-type iGetMontagemInfFunction = (param: iParamGetMontagemInf) => Promise<iGetMontagemInfResponse>;
-type iGetDevolucaoInfFunction = (param: iParamGetDevolucaoInf) => Promise<iGetDevolucaoInfResponse>;
-type iGetGraficoMesFunction = (param: iParamGetGraficoMes) => Promise<iGetGraficoMesResponse[]>;
+type iGetRelatorioMontagensFunction = (param: iParamGetMontagens) => Promise<iGetMontagensResponse[]>;
+type iGetMontagemDetalhesFunction = (param: iParamGetMontagemDetalhes) => Promise<iGetMontagemDetalhesResponse>;
 
-const getRelatorioMontagens: iGetRelatorioMontagensFunction = async (param) => {
+const getMontagens: iGetRelatorioMontagensFunction = async (param) => {
     let { data } = await axios.post(caminho, {
-        call: "getRelatorioMontagens",
+        call: "getMontagens",
         param
     });
     return data
 };
 
-const getMontagemInf: iGetMontagemInfFunction = async ({ param, offset }) => {
+const getMontagemDetalhes: iGetMontagemDetalhesFunction = async (param) => {
     let { data } = await axios.post(caminho, {
-        call: "getMontagemInf",
+        call: "getMontagemDetalhes",
         param,
-        offset
-    })
-    return data
-}
-
-const getDevolucoesInf: iGetDevolucaoInfFunction = async ({ param, offset }) => {
-    let { data } = await axios.post(caminho, {
-        call: "getDevolucoesInf",
-        param,
-        offset
-    })
-    return data
-}
-
-const getGraficoMes: iGetGraficoMesFunction = async (param) => {
-    let { data } = await axios.post(caminho, {
-        call: "getGraficoMes",
-        param
     })
     return data
 }
 
 export default {
-    getRelatorioMontagens,
-    getMontagemInf,
-    getDevolucoesInf,
-    getGraficoMes
+    getMontagens,
+    getMontagemDetalhes,
 }
