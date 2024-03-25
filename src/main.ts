@@ -8,6 +8,7 @@ import Maska from "maska";
 import VueMask from "@devindex/vue-mask";
 import money from 'v-money3'
 import { Money3Directive } from 'v-money3'
+import VueApexCharts from "vue3-apexcharts";
 
 import config from "./ts/config";
 import { setupInterceptorsTo } from "./pages/login/interceptor";
@@ -26,6 +27,7 @@ app.use(VueMask);
 app.use(Maska);
 app.use(money)
 app.use(router)
+app.use(VueApexCharts);
 
 app.directive('money3', Money3Directive)
 
