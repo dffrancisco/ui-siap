@@ -58,7 +58,6 @@ export const setup = (emit: any, props: any) => {
     })
 
     let desabilitarJustificativa = computed(() => {
-        console.log(state.selectedTipoFalta);
         if (state.selectedTipoFalta == null || state.selectedTipoFalta == undefined) {
             return true;
         }

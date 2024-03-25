@@ -374,8 +374,8 @@ export const actions = {
 };
 
 export const isSixWeeks = computed(() => {
-    let primeiraSemanaMes = moment({ year: state.ano, month: state.mes - 1, day: 1 }).week();
-    let ultimaSemanaMes = moment({ year: state.ano, month: state.mes - 1 }).endOf('month').week();
+    let primeiraSemanaMes = moment({ year: state.ano, month: state.mes - 1, day: 1 }).weeks();
+    let ultimaSemanaMes = moment({ year: state.ano, month: state.mes - 1, day: 1 }).endOf('month').weeks();
     return (ultimaSemanaMes - primeiraSemanaMes) >= 5 ? true : false;
 })
 
