@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import { computed, reactive } from "vue";
 import serviceVendaPorMarca from "./services/vendaPorMarca.service";
 import { iVendasPorMarca } from "./interfaces";
+import moment from "moment";
 
 export const dadosFormatToPrint = computed(() => {
     return state.dbVendasPorMarca.map(venda => ({
@@ -25,8 +26,8 @@ export const state = reactive({
 
     dbVendasPorMarca: <iVendasPorMarca[]>[],
 
-    mes: null,
-    ano: null,
+    mes: moment().month() + 1,
+    ano: moment().year(),
 
     edtAno: <HTMLInputElement>{},
 
