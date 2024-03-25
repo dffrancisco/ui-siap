@@ -135,6 +135,16 @@ import login from "../login/login";
               @click="router.push('/devolucaoFornecedor')"
               >Devolução Fornecedor
             </v-btn>
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/vendaPorMarca')"
+              >Venda Por Marca
+            </v-btn>
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/gerenciarFolhaPonto')"
+              >Folha Ponto</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
