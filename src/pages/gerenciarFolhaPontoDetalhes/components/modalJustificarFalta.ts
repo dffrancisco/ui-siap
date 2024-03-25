@@ -250,6 +250,7 @@ export const setup = (emit: any, props: any) => {
                 data: dataFalta,
                 cod_funcionario: props.funcionario.cod_funcionario,
                 tipo: state.selectedTipoFalta,
+                falta: state.justificativa,
             };
 
             try {

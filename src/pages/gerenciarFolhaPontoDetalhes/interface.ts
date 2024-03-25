@@ -28,6 +28,7 @@ export interface iFaltaFeriadoFolga {
     data: string;
     cod_funcionario: number;
     tipo: number;
+    falta: string,
 }
 
 export interface iDeletarDocumento {

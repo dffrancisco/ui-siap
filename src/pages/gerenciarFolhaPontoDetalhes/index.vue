@@ -7,6 +7,7 @@ import {
   pontosDiaSelecionado,
   tipoFaltaModal,
   anos,
+  isSixWeeks,
 } from "./gerenciarFolhaPontoDetalhes";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -31,7 +32,6 @@ actions.init(route);
         >
           <v-card
             class="cardFolhaPontoDetalhes pt-5 px-3"
-            height="560px"
             elevation="2"
           >
             <div class="mesAnoEBotoes pb-3">
@@ -188,30 +188,34 @@ actions.init(route);
               @click="actions.btnMesSeguinte"
             />
             <div class="container-calendario">
-              <FullCalendar
-                v-if="!state.loadingCalendar && !state.loading"
-                ref="calendario"
-                :options="{
-                  plugins: [dayGridPlugin, interactionPlugin],
-                  initialView: 'dayGridMonth',
-                  hiddenDays: [0],
-                  events: pontosCalendario,
-                  dateClick: actions.clickModalJustificarAusencia,
-                  locale: 'pt-br',
-                  eventOrder: 'defId',
-                  initialDate: state.initialDate,
-                  fixedWeekCount: false,
-                }"
+              <div
+                class="calendario-dados"
+                :class="{ 'card-calendario--six-weeks': isSixWeeks }"
               >
-                <template v-slot:eventContent="arg">
-                  <div
-                    class="calendario__horario"
-                    @click.prevent="actions.clickModalJustificarAusencia(arg.event)"
-                  >
-                    <span>{{ arg.event.title }}</span>
-                  </div>
-                </template>
-              </FullCalendar>
+                <FullCalendar
+                  v-if="!state.loadingCalendar && !state.loading"
+                  ref="calendario"
+                  :options="{
+                    plugins: [dayGridPlugin, interactionPlugin],
+                    initialView: 'dayGridMonth',
+                    events: pontosCalendario,
+                    dateClick: actions.clickModalJustificarAusencia,
+                    locale: 'pt-br',
+                    eventOrder: 'defId',
+                    initialDate: state.initialDate,
+                    fixedWeekCount: false,
+                  }"
+                >
+                  <template v-slot:eventContent="arg">
+                    <div
+                      class="calendario__horario"
+                      @click.prevent="actions.clickModalJustificarAusencia(arg.event)"
+                    >
+                      <span>{{ arg.event.title }}</span>
+                    </div>
+                  </template>
+                </FullCalendar>
+              </div>
             </div>
           </v-sheet>
         </v-col>
@@ -296,7 +300,7 @@ actions.init(route);
 }
 
 .fc-daygrid-event-harness {
-  width: 104px !important;
+  width: 94px !important;
   margin-left: 5px;
 }
 
@@ -412,15 +416,25 @@ actions.init(route);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: calc(100vh - 48px);
   max-height: 700px;
   border-radius: 8px;
+  height: calc(100vh - 48px);
 }
 
 .container-calendario {
   width: 100%;
   height: 100%;
   border-radius: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.calendario-dados {
+  height: calc(100vh - 48px);
+}
+
+.card-calendario--six-weeks {
+  height: calc(125vh - 48px);
 }
 
 .calendario__horario {
