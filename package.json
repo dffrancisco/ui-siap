@@ -1,6 +1,6 @@
 {
   "name": "siap",
-  "version": "0.1.68",
+  "version": "0.1.77",
   "description": "Siap Real Acessórios",
   "author": "Francisco Alves  <dffrancisco@gmail.com> (https://github.com/dffrancisco)",
   "scripts": {
@@ -28,6 +28,7 @@
     "@vuelidate/validators": "^2.0.0-alpha.26",
     "@vueuse/core": "^7.6.1",
     "animate.css": "^4.1.1",
+    "apexcharts": "^3.48.0",
     "axios": "^0.21.1",
     "buffer": "^6.0.3",
     "cpf-cnpj-validator": "^1.0.3",
@@ -54,6 +55,7 @@
     "vue-demi": "^0.12.1",
     "vue-router": "^4.0.11",
     "vue-the-mask": "^0.11.1",
+    "vue3-apexcharts": "^1.5.2",
     "vuetify": "^3.4.10",
     "webfontloader": "^1.0.0"
   },

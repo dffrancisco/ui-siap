@@ -18,6 +18,8 @@ watch(
       });
       state.arquivo = undefined;
       gerarQrCode();
+    } else {
+      clearInterval(intervalId);
     }
   }
 );
@@ -34,7 +36,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["exibirDadosAtualizados", "fecharModalQrCode"]);
+const emit = defineEmits(["exibirDadosAtualizados", "fecharModalQrCode", "fecharModalJustificarFalta"]);
 
 const state = reactive({
   inserirDadosDocumento: <any>null,
@@ -117,32 +119,60 @@ function exibirArquivo(nomeDoDocumento: string) {
   imagemDoc.appendChild(imgElement);
   state.loading = true;
 
-  setTimeout(() => {
-    moverArquivoTemp(nomeDoDocumento);
+  setTimeout(async () => {
+    try {
+      await moverArquivoTemp(nomeDoDocumento);
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        text: "Ocorreu um erro ao salvar o arquivo",
+        icon: "error",
+      });
+    } finally {
+      state.loading = false;
+    }
   }, 2000);
 }
 
-function uploadArquivoPeloBotao(event) {
+async function uploadArquivoPeloBotao(event) {
   state.loading = true;
-  const file = event.target.files[0];
-  const imgUrl = URL.createObjectURL(file);
+  try {
+    const file = event.target.files[0];
+    const imgUrl = URL.createObjectURL(file);
 
-  const imgElement = document.createElement("img");
-  imgElement.src = imgUrl;
-  imgElement.style.width = "200px";
-  imgElement.style.height = "200px";
-  imgElement.style.objectFit = "cover";
+    const imgElement = document.createElement("img");
+    imgElement.src = imgUrl;
+    imgElement.style.width = "200px";
+    imgElement.style.height = "200px";
+    imgElement.style.objectFit = "cover";
 
-  const imagemDoc = document.getElementById("appendImg");
+    const imagemDoc = document.getElementById("appendImg");
 
-  imagemDoc.appendChild(imgElement);
+    imagemDoc.appendChild(imgElement);
 
-  if (file.size > 1500000) {
-    resizeImage(file, function (resizedFile) {
-      uploadPDF(resizedFile, state.tipoDocumento);
+    let isPDF = file.name.indexOf(".pdf") > -1 ? true : false;
+
+    if (isPDF == false && file.size > 1500000) {
+      resizeImage(file, async function (resizedFile) {
+        await uploadPDF(resizedFile, state.tipoDocumento);
+      });
+    } else {
+      await uploadPDF(file, state.tipoDocumento);
+    }
+
+    clearInterval(intervalId);
+    emit("fecharModalJustificarFalta");
+  } catch (error) {
+    console.error(error);
+
+    Swal.fire({
+      text: error.message || "Ocorreu um erro ao fazer upload do arquivo",
+      icon: "error",
     });
-  } else {
-    uploadPDF(file, state.tipoDocumento);
+
+    emit("fecharModalQrCode");
+  } finally {
+    state.loading = false;
   }
 }
 
@@ -173,7 +203,13 @@ function resizeImage(file, callback) {
   reader.readAsDataURL(file);
 }
 
-async function uploadPDF(file, tipoDocumento) {
+async function uploadPDF(file: File, tipoDocumento: string) {
+  let cincoMegabytes = 5000000;
+
+  if (file.size > cincoMegabytes) {
+    throw new Error("Arquivo deve ser menor que 5MB");
+  }
+
   const qrGenerate = document.getElementById("qr-generate");
   qrGenerate.style.display = "none";
 
@@ -194,31 +230,19 @@ async function uploadPDF(file, tipoDocumento) {
   formData.append("class", "Files");
   formData.append("call", "uploadPdf");
 
-  try {
-    const rs = await gerenciarFolhaPontoDetalhesService.uploadPDF(formData);
+  const rs = await gerenciarFolhaPontoDetalhesService.uploadPDF(formData);
 
-    const rsObj = JSON.parse(rs);
-    const nomeDoDocumento = rsObj.log.arquivo;
-    createRegistroAusencia(nomeDoDocumento, tipoDocumento);
-    clearInterval(intervalId);
-  } catch (error) {
-    console.error(error);
-  }
+  const rsObj = JSON.parse(rs);
+  const nomeDoDocumento = rsObj.log.arquivo;
+  await createRegistroAusencia(nomeDoDocumento, tipoDocumento);
 }
 
 async function moverArquivoTemp(nomeDoDocumento: string) {
   let tipoDocumento = "ausencia";
   let cpf = props.dadosParaQrCode.cpf.replaceAll(".", "").replaceAll("-", "");
-  try {
-    const rs = await gerenciarFolhaPontoDetalhesService.moverArquivoTemp(tipoDocumento, cpf);
-    if (rs.success) {
-      createRegistroAusencia(nomeDoDocumento, tipoDocumento);
-    }
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      text: "Ocorreu um erro ao mover o arquivo",
-    });
+  const rs = await gerenciarFolhaPontoDetalhesService.moverArquivoTemp(tipoDocumento, cpf);
+  if (rs.success) {
+    await createRegistroAusencia(nomeDoDocumento, tipoDocumento);
   }
 }
 
@@ -244,24 +268,10 @@ async function createRegistroAusencia(nomeDoDocumento: string, tipoDocumento: st
     cnpj: props.cnpj,
   };
 
-  try {
-    state.inserirDadosDocumento = await gerenciarFolhaPontoDetalhesService.createRegistroDocumento(param);
-    const id_documento = state.inserirDadosDocumento.id_doc_funcionario;
+  state.inserirDadosDocumento = await gerenciarFolhaPontoDetalhesService.createRegistroDocumento(param);
+  const id_documento = state.inserirDadosDocumento.id_doc_funcionario;
 
-    Swal.fire({
-      icon: "success",
-      title: "Documento salvo com sucesso!",
-      showConfirmButton: false,
-      timer: 2500,
-    });
-
-    setFalta(dataDocArquivo, id_documento);
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      text: "Ocorreu um erro ao inserir o documento.",
-    });
-  }
+  await setFalta(dataDocArquivo, id_documento);
 }
 
 async function setFalta(dataDocArquivo, id_documento) {
@@ -283,15 +293,9 @@ async function setFalta(dataDocArquivo, id_documento) {
 
   try {
     state.inserirJustificativa = await gerenciarFolhaPontoDetalhesService.setFalta(param);
-    emit("fecharModalQrCode");
   } catch (error) {
-    Swal.fire({
-      icon: "error",
-      text: "Ocorreu um erro ao inserir a falta.",
-    });
+    throw new Error("Erro ao inserir falta");
   }
-
-  state.loading = false;
 }
 </script>
 

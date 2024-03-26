@@ -1,22 +1,8 @@
 <script setup lang="ts">
-import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import printJS from "print-js";
-import { defineProps, computed, onMounted, nextTick, reactive, watch } from "vue";
-import stateLogin from "../../login/login";
+import { defineProps, onMounted, nextTick } from "vue";
 import ModalQrCode from "./modalQrCode.vue";
-import {
-  iDadosDocumento,
-  iDeletarArquivo,
-  iDeletarDocumento,
-  iDeletarFalta,
-  iFaltaFeriadoFolga,
-  iPropsFuncionario,
-  iPropsPontosDiaSelecionado,
-  iPropsTiposDeFalta,
-} from "../interface";
-import gerenciarFolhaPontoDetalhesService from "./../services/gerenciarFolhaPontoDetalhes.service";
-import Swal from "sweetalert2";
-import { confirmaCodigo } from "@/ts/utils";
+import { iDadosDocumento, iPropsFuncionario, iPropsPontosDiaSelecionado, iPropsTiposDeFalta } from "../interface";
+import { setup } from "./modalJustificarFalta";
 
 const props = defineProps({
   pontos: {
@@ -56,358 +42,23 @@ const props = defineProps({
 
 const emit = defineEmits(["atualizarDados", "fecharModal"]);
 
-const state = reactive({
-  loading: false,
-  justificativa: "",
-  selectedCID: "",
-  showCIDAutocomplete: false,
-  hideButtons: false,
-  selectedFalta: "",
-  selectedFaltaTipo: <number>null,
-  modalQrCode: <iModalCreate>(<unknown>null),
-  modalQrCodeOpened: false,
-  inserirFalta: <unknown>null,
-  dadosDocumento: props.dadosDocumento,
-});
-
-const showSalvarFeriadoFolga = computed(() => {
-  if (state.justificativa) {
-    const selectedFalta = props.tiposDeFalta.find((item) => item.DESCRICAO === state.justificativa);
-    return selectedFalta && (selectedFalta.DESCRICAO === "Dia de Folga" || selectedFalta.DESCRICAO === "Feriado");
-  } else {
-    return false;
-  }
-});
-
-const preencherJustificativa = (DESCRICAO: string) => {
-  state.justificativa = DESCRICAO;
-  state.showCIDAutocomplete = DESCRICAO === "Atestado";
-
-  const isFeriadoFolga = DESCRICAO === "Dia de Folga" || DESCRICAO === "Feriado";
-  state.hideButtons = isFeriadoFolga;
-
-  const selectedFalta = props.tiposDeFalta.find((item) => item.DESCRICAO === DESCRICAO);
-  if (selectedFalta) {
-    state.selectedFaltaTipo = selectedFalta.TIPO;
-  }
-};
-
-function imprimirJustificativa() {
-  const conteudoElement = criarHTMLParaPDF();
-
-  printJS({
-    documentTitle: "Justificativa de ausência",
-    printable: conteudoElement,
-    type: "html",
-  });
-}
-
-function criarHTMLParaPDF() {
-  const justificativaValor = state.justificativa ? state.justificativa : "";
-
-  const conteudoHTML = `<br><br><br>
-    <div id="justificativaPDF">
-      <p>JUSTIFICATIVA DE AUSÊNCIA</p>
-      <p>Eu, ${props.funcionario.nome}, brasileiro (a), de CPF ${props.funcionario.cpf}, profissional lotado no cargo ${props.funcionario.cargo}, na empresa REAL ACESSÓRIOS venho justificar ao RH, minha ausência que foi devido a: ${justificativaValor}. No dia ${props.dadosAusencia}, motivos pelos quais impossibilitaram minha presença na empresa, bem como o desempenho das respectivas funções. Solicito, portanto, o abono da falta, visto que a mesma ocorreu por motivo de força maior e foi devidamente justificada.</p>
-      <p>Por ser expressão da verdade, firmo a presente.</p>
-      <p>Brasília-DF, ___/___/_____.</p>
-      <p>${props.funcionario.nome}</p>
-    </div>
-  `;
-
-  const tempElement = document.createElement("div");
-  tempElement.innerHTML = conteudoHTML;
-
-  return tempElement;
-}
-
-const jaJustificado = computed(() => {
-  //@ts-ignore
-  if (!props.pontos?.STATUS) {
-    return false;
-  } else {
-    return true;
-  }
-});
-
-const desativarBtn = computed(() => {
-  let chegada = props.horaChegada;
-  let inicioAlmoco = props.horaAlmocoInicial;
-  let fimAlmoco = props.horaAlmocoFinal;
-  let saida = props.horaSaida;
-
-  if (
-    chegada != null &&
-    inicioAlmoco != null &&
-    fimAlmoco != null &&
-    saida != null &&
-    props.dadosDocumento.length == 0
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-});
-
-const desativarBtnVerDoc = computed(() => {
-  if (
-    props.dadosDocumento.length === 0 &&
-    //@ts-ignore
-    props.pontos.STATUS !== "Feriado" &&
-    //@ts-ignore
-    props.pontos.STATUS !== "Dia de Folga"
-  ) {
-    return false;
-  } else {
-    return true;
-  }
-});
-
-const desativarBotoesSeNadaSelecionado = computed(() => {
-  return !state.selectedFalta || !state.justificativa;
-});
-
-function modal() {
-  state.modalQrCode = new xModal.create({
-    width: 400,
-    height: 550,
-    el: "#modalQrCode",
-    theme: "xModal-blue",
-    onOpen: () => {
-      state.modalQrCodeOpened = true;
-    },
-    onClose: () => {
-      state.modalQrCodeOpened = false;
-    },
-  });
-}
-
-const dadosDocumentoAusencia = computed(() => {
-  const justificativaValor = state.justificativa ? state.justificativa : "";
-  if (justificativaValor == undefined) {
-    return {};
-  }
-
-  let cpf = props.funcionario.cpf;
-  let nomeFuncionario = props.funcionario.nome;
-  let loginFuncionario = props.funcionario.loginFuncionario;
-  let data = props.dadosAusencia;
-
-  const dadosParaQrCode = {
-    cod_funcionario: props.funcionario.cod_funcionario,
-    cpf: cpf,
-    nomeFuncionario: nomeFuncionario,
-    loginFuncionario: loginFuncionario,
-    data: data,
-    falta: state.selectedFalta,
-    tipoFalta: state.selectedFaltaTipo,
-    justificativaValor: justificativaValor,
-    cid: state.selectedCID,
-  };
-
-  return dadosParaQrCode;
-});
-
-function salvar() {
-  const faltaSelecionada = state.selectedFalta;
-
-  if (faltaSelecionada === "Feriado" || faltaSelecionada === "Dia de Folga") {
-    salvarFaltaFeriadoOuFolga();
-  } else {
-    state.modalQrCode.open();
-  }
-}
-
-async function salvarFaltaFeriadoOuFolga() {
-  let dataFalta = props.dadosAusencia;
-  dataFalta = ajustarData(dataFalta);
-
-  const param: iFaltaFeriadoFolga = {
-    falta: state.selectedFalta,
-    data: dataFalta,
-    cod_funcionario: props.funcionario.cod_funcionario,
-    tipo: state.selectedFaltaTipo,
-  };
-
-  try {
-    state.loading = true;
-    state.inserirFalta = await gerenciarFolhaPontoDetalhesService.setFaltaFeriadoOuFolga(param);
-    state.loading = false;
-    Swal.fire({
-      icon: "success",
-      title: "Ausência salva com sucesso!",
-      showConfirmButton: false,
-      timer: 2500,
-    });
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      text: "Ocorreu um erro ao inserir a falta.",
-    });
-  }
-
-  emit("atualizarDados");
-  limparInputs();
-}
-
-function ajustarData(dataFalta) {
-  const partesData = dataFalta.split("/");
-  const dataObjeto = new Date(partesData[2], partesData[1] - 1, partesData[0]);
-  const ano = dataObjeto.getFullYear();
-  let mes = dataObjeto.getMonth() + 1;
-  let dia = dataObjeto.getDate();
-  const dataFormatada = `${ano}-${mes < 10 ? "0" + mes : mes}-${dia < 10 ? "0" + dia : dia}`;
-
-  return dataFormatada;
-}
-
-async function deletarFalta() {
-  let dataFalta = props.dadosAusencia;
-  dataFalta = ajustarData(dataFalta);
-
-  const param: iDeletarFalta = {
-    data: dataFalta,
-    cod_funcionario: props.funcionario.cod_funcionario,
-    cnpj: props.cnpj,
-  };
-
-  confirmaCodigo({
-    msg: "Confirma exclusão deste registro?",
-    call: async function () {
-      try {
-        state.loading = true;
-        await gerenciarFolhaPontoDetalhesService.deletarFalta(param);
-
-        if (props.dadosDocumento.length != 0) {
-          deletarDocumento();
-        }
-
-        Swal.fire({
-          icon: "success",
-          title: "Ausência deletada com sucesso!",
-          showConfirmButton: false,
-          timer: 2500,
-        });
-
-        emit("fecharModal");
-        emit("atualizarDados");
-        state.loading = false;
-        limparInputs();
-      } catch (error) {
-        Swal.fire({
-          icon: "error",
-          text: "Ocorreu um erro ao deletar a falta.",
-        });
-      }
-    },
-  });
-}
-
-async function deletarDocumento() {
-  let dataFalta = props.dadosAusencia;
-  dataFalta = ajustarData(dataFalta);
-  let file_name = props.dadosDocumento[0].nome_arquivo;
-
-  const param: iDeletarDocumento = {
-    data: dataFalta,
-    cod_funcionario: props.funcionario.cod_funcionario,
-    file_name: file_name,
-    cnpj: props.cnpj,
-  };
-
-  try {
-    await gerenciarFolhaPontoDetalhesService.deletarDocumento(param);
-    deletarArquivo(file_name);
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      text: "Ocorreu um erro ao deletar o documento.",
-    });
-  }
-}
-
-async function deletarArquivo(file_name) {
-  let cpf = props.funcionario.cpf.replaceAll(".", "").replaceAll("-", "");
-  let usuario = stateLogin.state.login.LOGIN;
-  let folderName = "ausencia";
-
-  const param: iDeletarArquivo = {
-    file_name: file_name,
-    cpf: cpf,
-    folderName: folderName,
-    usuario: usuario,
-  };
-
-  try {
-    await gerenciarFolhaPontoDetalhesService.deletarArquivo(param);
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      text: "Ocorreu um erro ao deletar o arquivo.",
-    });
-  }
-  state.loading = false;
-  limparInputs();
-}
-
-function visualizarDocumento() {
-  if (props.dadosDocumento.length === 0) {
-    Swal.fire({
-      icon: "error",
-      text: "Não há documento a ser visualizado.",
-    });
-    return;
-  }
-
-  let cpf = props.funcionario.cpf.replace(/\D/g, "");
-  let file_name = props.dadosDocumento[0].nome_arquivo;
-  let urlPdf = `http://www.reallatas.com.br/doc_funcionario/documentos/${cpf}/ausencia/${file_name}`;
-
-  if (file_name.toLowerCase().endsWith(".pdf")) {
-    window.open(`${urlPdf}`, "_blank");
-  } else if (file_name.toLowerCase().match(/\.(jpeg|jpg|pdf|png)$/) != null) {
-    let img = new Image();
-    img.src = urlPdf;
-    let newTab = window.open("");
-    newTab.document.write(img.outerHTML);
-  } else {
-    Swal.fire({
-      icon: "error",
-      text: "Tipo de arquivo não suportado.",
-    });
-  }
-}
-
-function limparInputs() {
-  state.selectedFalta = "";
-  state.selectedCID = "";
-  state.justificativa = "";
-}
-
-function fecharModalQrCode() {
-  state.modalQrCode.close();
-  emit("atualizarDados");
-  limparInputs();
-}
+const {
+  state,
+  actions,
+  desabilitarJustificativa,
+  jaJustificado,
+  desativarBtn,
+  desativarBtnVerDoc,
+  desativarBtnDelete,
+  desabilitarBtnSalvar,
+  dadosDocumentoAusencia,
+} = setup(emit, props);
 
 onMounted(() => {
   nextTick(() => {
-    modal();
+    actions.modal();
   });
 });
-
-watch(
-  () => props.opened,
-  () => {
-    if (props.opened) {
-      state.loading = true;
-      state.selectedFalta = "";
-      state.justificativa = "";
-      state.showCIDAutocomplete = false;
-      state.loading = false;
-    }
-  }
-);
 </script>
 
 <template>
@@ -415,7 +66,7 @@ watch(
     <v-row>
       <div>
         <span
-          class="dataAusencia"
+          class="dataAusencia pl-3"
           id="dataAusencia"
           >{{ "Data: " + props.dadosAusencia }} -
         </span>
@@ -431,8 +82,9 @@ watch(
           - {{ props.funcionario.cargo }}</span
         >
       </div>
-
-      <div class="horarios">
+    </v-row>
+    <v-container>
+      <div class="horarios pt-2">
         <v-row>
           <v-col cols="3">
             <v-text-field
@@ -480,92 +132,91 @@ watch(
           </v-col>
         </v-row>
       </div>
-      <div style="width: 100%">
-        <v-container fluid>
-          <v-row>
-            <v-select
-              :items="tiposDeFalta.map((item) => item.DESCRICAO)"
-              :item-value="tiposDeFalta.map((item) => item.TIPO)"
-              id="tiposDeFalta"
-              label="Tipo de Ausência"
-              v-model="state.selectedFalta"
-              @update:model-value="preencherJustificativa"
+      <div
+        style="width: 100%"
+        class="pa-3 pt-10"
+      >
+        <v-row>
+          <v-select
+            :items="props.tiposDeFalta"
+            item-value="TIPO"
+            item-title="DESCRICAO"
+            id="tiposDeFalta"
+            label="Tipo de Ausência"
+            class="pb-2"
+            v-model="state.selectedTipoFalta"
+            :disabled="desativarBtn || jaJustificado"
+            @update:model-value="actions.preencherJustificativa"
+          ></v-select>
+        </v-row>
+        <v-row>
+          <div style="width: 30%"
+            ><v-text-field
+              class="cid"
+              id="cid"
+              v-if="state.showCIDAutocomplete"
+              label="CID"
+              v-model="state.selectedCID"
               :disabled="desativarBtn || jaJustificado"
-            ></v-select>
-          </v-row>
-        </v-container>
-      </div>
-      <div style="width: 30%"
-        ><v-text-field
-          class="cid"
-          id="cid"
-          v-if="state.showCIDAutocomplete"
-          label="CID"
-          v-model="state.selectedCID"
-          :disabled="desativarBtn || jaJustificado"
-        >
-        </v-text-field>
-      </div>
-    </v-row>
-
-    <div>
-      <v-row>
-        <v-col cols="12">
+            >
+            </v-text-field>
+          </div>
+        </v-row>
+        <v-row>
           <v-textarea
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
+            class="pt-5"
             v-model="state.justificativa"
-            :disabled="desativarBtn || jaJustificado || showSalvarFeriadoFolga"
+            :disabled="desabilitarJustificativa"
           >
           </v-textarea>
-        </v-col>
-      </v-row>
-    </div>
-
-    <div
-      ><v-btn
-        v-if="desativarBtnVerDoc"
-        label="Deletar Falta"
-        color="primary"
-        class="btnDelete"
-        :disabled="desativarBtn"
-        @click="deletarFalta"
-      >
-        <v-icon>mdi-delete</v-icon>
-        Deletar Falta
-      </v-btn>
-      <v-btn
-        v-if="desativarBtnVerDoc"
-        label="Visualizar"
-        color="primary"
-        class="btnVisualizarDocumento"
-        @click="visualizarDocumento"
-      >
-        <v-icon>mdi-eye</v-icon>
-        Visualizar
-      </v-btn>
-      <v-btn
-        v-if="!desativarBtn"
-        color="primary"
-        class="btnJustificar"
-        @click="imprimirJustificativa"
-        :disabled="desativarBtn || desativarBotoesSeNadaSelecionado || jaJustificado || showSalvarFeriadoFolga"
-      >
-        <v-icon>mdi-printer-settings</v-icon>
-        Justificativa
-      </v-btn>
-      <v-btn
-        color="primary"
-        class="btnSalvar"
-        @click="salvar()"
-        :disabled="desativarBtn || desativarBotoesSeNadaSelecionado || jaJustificado"
-      >
-        <v-icon>mdi-content-save</v-icon>
-        Salvar
-      </v-btn>
-    </div>
+        </v-row>
+      </div>
+      <div class="pt-5"
+        ><v-btn
+          v-if="desativarBtnDelete"
+          label="Deletar Falta"
+          color="primary"
+          class="btnDelete"
+          :disabled="desativarBtn"
+          @click="actions.deletarFalta"
+        >
+          <v-icon>mdi-delete</v-icon>
+          Deletar Falta
+        </v-btn>
+        <v-btn
+          v-if="desativarBtnVerDoc"
+          label="Visualizar"
+          color="primary"
+          class="btnVisualizarDocumento"
+          @click="actions.visualizarDocumento"
+        >
+          <v-icon>mdi-eye</v-icon>
+          Visualizar
+        </v-btn>
+        <v-btn
+          v-if="!desativarBtn"
+          color="primary"
+          class="btnJustificar"
+          @click="actions.imprimirJustificativa"
+          :disabled="desabilitarJustificativa"
+        >
+          <v-icon>mdi-printer-settings</v-icon>
+          Justificativa
+        </v-btn>
+        <v-btn
+          color="primary"
+          class="btnSalvar"
+          @click="actions.salvar()"
+          :disabled="desabilitarBtnSalvar"
+        >
+          <v-icon>mdi-content-save</v-icon>
+          Salvar
+        </v-btn>
+      </div>
+    </v-container>
   </div>
-
   <div
     id="modalQrCode"
     title="Enviar Documento Ausência"
@@ -575,7 +226,8 @@ watch(
       :dadosParaQrCode="dadosDocumentoAusencia"
       :opened="state.modalQrCodeOpened"
       :cnpj="props.cnpj"
-      @fecharModalQrCode="fecharModalQrCode()"
+      @fecharModalQrCode="actions.fecharModalQrCode()"
+      @fecharModalJustificarFalta="actions.fecharModalJustificarFalta()"
     />
   </div>
 
@@ -600,9 +252,6 @@ watch(
   font-weight: 600;
 }
 
-.cid {
-  margin-left: 10px;
-}
 .notaRodape {
   font-size: x-small;
   padding-top: -20px;
@@ -610,11 +259,7 @@ watch(
 .modal-justificar-falta {
   padding: 15px;
 }
-.horarios {
-  margin-top: 10px;
-  width: 100%;
-  padding-bottom: 10px;
-}
+
 .motivo {
   margin-left: 10px;
 }
@@ -628,12 +273,11 @@ watch(
   margin-top: 10px;
 }
 .btnDelete {
-  margin-left: 5px;
+  margin-right: 10px;
 }
 
 .btnJustificar {
   margin-right: 5px;
-  margin-left: 10px;
 }
 
 .btnSalvar {
@@ -641,6 +285,6 @@ watch(
 }
 
 .btnVisualizarDocumento {
-  margin-left: 10px;
+  margin-right: 10px;
 }
 </style>
