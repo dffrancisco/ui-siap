@@ -105,9 +105,16 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/descontoCliente')"
+              @click="router.push('/bairros')"
             >
               Bairros
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/descontoCliente')"
+            >
+              Desconto Cliente
             </v-btn>
 
             <v-btn
@@ -125,9 +132,25 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/bloquearCliente')"
-              >Bloquear Cliente
+              @click="router.push('/devolucaoFornecedor')"
+              >Devolução Fornecedor
             </v-btn>
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/vendaPorMarca')"
+              >Venda Por Marca
+            </v-btn>
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/gerenciarFolhaPonto')"
+              >Folha Ponto</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/consultaMontagem')"
+              >Consulta Montagem</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"

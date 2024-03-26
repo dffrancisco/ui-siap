@@ -6,16 +6,20 @@ import { Buffer } from "buffer";
 import vuetify from "./plugins/vuetify";
 import Maska from "maska";
 import VueMask from "@devindex/vue-mask";
-import money from 'v-money3'
-import { Money3Directive } from 'v-money3'
+import money, { Money3Directive } from 'v-money3'
+import VueApexCharts from "vue3-apexcharts";
 
 import config from "./ts/config";
 import { setupInterceptorsTo } from "./pages/login/interceptor";
 
-
 const app = createApp(App)
 
 setupInterceptorsTo(axios);
+
+const pluginOptions = {
+    /* see config reference */
+    globalOptions: { currency: 'null', locale: 'undefined', autoDecimalDigits: true },
+}
 
 axios.defaults.baseURL = config.SERVER + ":" + config.PORT
 
@@ -26,6 +30,7 @@ app.use(VueMask);
 app.use(Maska);
 app.use(money)
 app.use(router)
+app.use(VueApexCharts);
 
 app.directive('money3', Money3Directive)
 
