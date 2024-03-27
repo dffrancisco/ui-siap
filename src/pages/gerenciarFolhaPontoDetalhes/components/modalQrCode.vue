@@ -290,6 +290,7 @@ async function setFalta(dataDocArquivo, id_documento) {
 
   try {
     state.inserirJustificativa = await gerenciarFolhaPontoDetalhesService.setFalta(param);
+    clearInterval(intervalId);
     emit("fecharModalJustificarFalta");
   } catch (error) {
     throw new Error("Erro ao inserir falta");
