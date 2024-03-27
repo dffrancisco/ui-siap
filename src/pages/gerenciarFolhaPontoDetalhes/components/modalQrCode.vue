@@ -159,9 +159,6 @@ async function uploadArquivoPeloBotao(event) {
     } else {
       await uploadPDF(file, state.tipoDocumento);
     }
-
-    clearInterval(intervalId);
-    emit("fecharModalJustificarFalta");
   } catch (error) {
     console.error(error);
 
@@ -293,6 +290,7 @@ async function setFalta(dataDocArquivo, id_documento) {
 
   try {
     state.inserirJustificativa = await gerenciarFolhaPontoDetalhesService.setFalta(param);
+    emit("fecharModalJustificarFalta");
   } catch (error) {
     throw new Error("Erro ao inserir falta");
   }
