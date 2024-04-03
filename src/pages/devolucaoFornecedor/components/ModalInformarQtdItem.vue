@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import { iItem, iItemDevolucao } from "../interfaces";
+import { iItem, iItemDevolucao, iParamGetTributosPisCofinsItem } from "../interfaces";
 import { reactive, watch, nextTick } from "vue";
 import globalState from "@/store/globalState";
 import Swal from "sweetalert2";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
+import { configVMoney } from "../../../constants/constants";
+import moment from "moment";
 
 const props = defineProps<{
   dbItem: iItem;
@@ -16,7 +18,7 @@ const emit = defineEmits(["salvarItem", "closeModalInformarQtdItem"]);
 
 watch(
   () => props.modalInformaQtdOpened,
-  () => {
+  async () => {
     if (props.modalInformaQtdOpened) {
       if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF == globalState.empresa.UF) {
         state.dbItemDevolucao.CFOP = "5411";
@@ -46,7 +48,16 @@ watch(
         BASE_ICMS_ST: props.dbItem.BASE_ICMS_ST,
         PERCENTUAL_ICMS: props.dbItem.PERCENTUAL_ICMS,
         PERCENTUAL_IPI: props.dbItem.PERCENTUAL_IPI,
+        CST_PIS: null,
+        PERCENTUAL_PIS: 0,
+        CST_COFINS: null,
+        PERCENTUAL_COFINS: 0,
+        COD_FABRICANTE: props.dbItem.COD_FABRICANTE,
+        CHAVE: props.dbItem.CHAVE,
+        DATA_EMISSAO: props.dbItem.DATA_EMISSAO,
       };
+
+      await actions.getTributosPisCofinsItem();
 
       state.edtItemQtd.focus();
     }
@@ -57,13 +68,35 @@ const state = reactive({
   dbItemDevolucao: <iItemDevolucao>{},
   edtItemQtd: <HTMLInputElement>{},
 
+  mes: [
+    "",
+    "Janeiro",
+    "Fevereiro",
+    "Marco",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+  ],
+
   loading: false,
 });
 
 const actions = {
+  onKeyDownEnterQtdDevolucao(event) {
+    event.preventDefault();
+
+    actions.salvarItemDevolucao();
+  },
+
   async salvarItemDevolucao() {
     if (state.dbItemDevolucao.QTD <= 0) {
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
         title: "A quantidade deve ser maior que zero",
       });
@@ -86,10 +119,58 @@ const actions = {
       return;
     }
 
+    if (!state.dbItemDevolucao.CST_PIS) {
+      Swal.fire({
+        icon: "error",
+        title: "O PIS(CST) deve ser informado",
+      });
+      return;
+    }
+
+    if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_PIS.toString()) <= 0) {
+      Swal.fire({
+        icon: "error",
+        title: "O % PIS deve ser informado",
+      });
+      return;
+    }
+
+    if (!state.dbItemDevolucao.CST_COFINS) {
+      Swal.fire({
+        icon: "error",
+        title: "O COFINS(CST) deve ser informado",
+      });
+      return;
+    }
+
+    if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_COFINS.toString()) <= 0) {
+      Swal.fire({
+        icon: "error",
+        title: "O COFINS Percentual deve ser informado",
+      });
+      return;
+    }
+
     if (state.dbItemDevolucao.CFOP.length < 4) {
       Swal.fire({
         icon: "error",
         title: "O CFOP deve conter 4 dígitos",
+      });
+      return;
+    }
+
+    if (!state.dbItemDevolucao.CST_PIS) {
+      Swal.fire({
+        icon: "error",
+        title: "O CST PIS deve ser informado",
+      });
+      return;
+    }
+
+    if (!state.dbItemDevolucao.CST_COFINS) {
+      Swal.fire({
+        icon: "error",
+        title: "O CST COFINS deve ser informado",
       });
       return;
     }
@@ -105,7 +186,14 @@ const actions = {
     try {
       state.loading = true;
 
-      let param = state.dbItemDevolucao;
+      let pisPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_PIS.toString());
+      let cofinsPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_COFINS.toString());
+
+      let param = {
+        ...state.dbItemDevolucao,
+        PERCENTUAL_PIS: pisPercentual,
+        PERCENTUAL_COFINS: cofinsPercentual,
+      };
 
       await serviceDevolucaoFornecedor.updateInsertItemDevolucao({ param });
 
@@ -120,6 +208,30 @@ const actions = {
       });
     }
   },
+
+  async getTributosPisCofinsItem() {
+    try {
+      state.loading = true;
+
+      let param: iParamGetTributosPisCofinsItem = {
+        ANO: moment(state.dbItemDevolucao.DATA_EMISSAO).year(),
+        MES: state.mes[moment(state.dbItemDevolucao.DATA_EMISSAO).month() + 1],
+        CHAVE: state.dbItemDevolucao.CHAVE,
+        COD_FABRICANTE: state.dbItemDevolucao.COD_FABRICANTE,
+      };
+
+      let data = await serviceDevolucaoFornecedor.getTributosPisCofinsItem(param);
+
+      state.dbItemDevolucao.CST_PIS = data.CST_PIS;
+      state.dbItemDevolucao.CST_COFINS = data.CST_COFINS;
+      state.dbItemDevolucao.PERCENTUAL_PIS = utils.formatValor(data.PERCENTUAL_PIS);
+      state.dbItemDevolucao.PERCENTUAL_COFINS = utils.formatValor(data.PERCENTUAL_COFINS);
+
+      state.loading = false;
+    } catch (error) {
+      state.loading = false;
+    }
+  },
 };
 
 nextTick(async () => {
@@ -129,7 +241,10 @@ nextTick(async () => {
 
 <template>
   <v-container>
-    <div class="pb-2">
+    <div
+      class="pb-2"
+      id="pnCampos"
+    >
       <v-row>
         <v-col cols="3">
           <span>Cód Fabricante</span>
@@ -188,7 +303,6 @@ nextTick(async () => {
             maxlength="4"
             autocomplete="off"
             v-mask="'####'"
-            @keydown.enter="state.edtItemQtd.focus()"
           />
         </v-col>
         <v-col>
@@ -202,7 +316,75 @@ nextTick(async () => {
             class="ss obr"
             id="QTD_DEVOLUCAO"
             name="QTD_DEVOLUCAO"
-            @keydown.enter="actions.salvarItemDevolucao"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="10">
+          <span>CST PIS</span>
+          <select
+            v-model="state.dbItemDevolucao.CST_PIS"
+            class="ss obr"
+            id="CST_PIS"
+            name="CST_PIS"
+          >
+            <option value="01">01 - Operação Tributável com Alíquota Básica</option>
+            <option value="02">02 - Operação Tributável com Alíquota Diferenciada</option>
+            <option value="03">03 - Operação Tributável com Alíquota por Unidade de Medida de Produto</option>
+            <option value="04">04 - Operação Tributável Monofásica (Revenda a Alíquota Zero)</option>
+            <option value="05">05 - Operação Tributável por Substituição Tributária</option>
+            <option value="06">06 - Operação Tributável a Alíquota Zero</option>
+            <option value="07">07 - Operação Isenta da Contribuição</option>
+            <option value="08">08 - Operação Sem Incidência da Contribuição</option>
+            <option value="09">09 - Operação com Suspensão da Contribuição</option>
+            <option value="99">99 - Outras Operações</option>
+          </select>
+        </v-col>
+        <v-col cols="2">
+          <span>% PIS</span>
+          <input
+            v-model.lazy="state.dbItemDevolucao.PERCENTUAL_PIS"
+            type="text"
+            class="ss obr"
+            id="PERCENTUAL_PIS"
+            name="PERCENTUAL_PIS"
+            :model-modifiers="{ number: true }"
+            v-money3="configVMoney"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="10">
+          <span>CST COFINS</span>
+          <select
+            v-model="state.dbItemDevolucao.CST_COFINS"
+            class="ss obr"
+            id="CST_COFINS"
+            name="CST_COFINS"
+          >
+            <option value="01">01 - Operação Tributável com Alíquota Básica</option>
+            <option value="02">02 - Operação Tributável com Alíquota Diferenciada</option>
+            <option value="03">03 - Operação Tributável com Alíquota por Unidade de Medida de Produto</option>
+            <option value="04">04 - Operação Tributável Monofásica (Revenda a Alíquota Zero)</option>
+            <option value="05">05 - Operação Tributável por Substituição Tributária</option>
+            <option value="06">06 - Operação Tributável a Alíquota Zero</option>
+            <option value="07">07 - Operação Isenta da Contribuição</option>
+            <option value="08">08 - Operação Sem Incidência da Contribuição</option>
+            <option value="09">09 - Operação com Suspensão da Contribuição</option>
+            <option value="99">99 - Outras Operações</option>
+          </select>
+        </v-col>
+        <v-col>
+          <span>% COFINS</span>
+          <input
+            type="text"
+            v-model.lazy="state.dbItemDevolucao.PERCENTUAL_COFINS"
+            class="ss obr"
+            id="PERCENTUAL_COFINS"
+            name="PERCENTUAL_COFINS"
+            :model-modifiers="{ number: true }"
+            v-money3="configVMoney"
+            @keydown.enter="actions.onKeyDownEnterQtdDevolucao"
           />
         </v-col>
       </v-row>

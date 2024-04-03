@@ -222,14 +222,27 @@ onUnmounted(() => {
             ><v-icon size="24px">mdi-delete</v-icon>
           </v-btn>
           <v-btn
-            color="#3680AB"
+            v-if="state.dbDevolucao.STATUS != 1"
             :disabled="state.disabledBtnPrint"
+            color="#3680AB"
+            @click="actions.emitirNotaDevolucaoFornecedorPrevia"
           >
             <v-icon
               size="24px"
               class="mr-2"
               >mdi-printer</v-icon
-            >{{ state.dbDevolucao.STATUS == 1 ? "Imprimir" : "Prévia" }}</v-btn
+            >Prévia</v-btn
+          >
+          <v-btn
+            v-if="state.dbDevolucao.STATUS == 1"
+            color="#3680AB"
+            @click="actions.imprimirNotaDevolucaoFornecedorPDF"
+          >
+            <v-icon
+              size="24px"
+              class="mr-2"
+              >mdi-printer</v-icon
+            >Imprimir</v-btn
           >
         </div>
         <span
@@ -313,6 +326,13 @@ onUnmounted(() => {
           @closeModal="actions.closeModalEscolherItem"
           @getDevolucao="actions.getDevolucao(state.dbDevolucao)"
         ></ModalEscolherItem>
+      </div>
+
+      <div
+        id="modalPreviaNF"
+        style="display: none"
+      >
+        <ModalPreviaNF></ModalPreviaNF>
       </div>
     </v-card>
   </v-container>

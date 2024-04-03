@@ -5,6 +5,9 @@ import { iDevolucao, iItensDevolucao, objNotasAgrupadas } from './interfaces'
 import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
 import Swal from 'sweetalert2';
 import { msgConfirm } from '@/ts/message';
+import printJS from 'print-js';
+import config from '@/ts/config';
+import moment from 'moment';
 
 export const notasAgrupadas = computed((): iItensDevolucao[] => {
     let notasUnicas: objNotasAgrupadas = {}
@@ -25,9 +28,9 @@ export const somaTotalItens = computed((): number => {
         total += item.VALOR_TOTAL;
     });
 
-    state.dbDevolucao.VALOR = total
+    state.dbDevolucao.VALOR = total + state.dbDevolucao.VALOR_FRETE
 
-    return total;
+    return state.dbDevolucao.VALOR;
 });
 
 export const state = reactive({
@@ -35,12 +38,14 @@ export const state = reactive({
     modalSelecionarFornecedor: <iModalCreate>{},
     modalTransportadora: <iModalCreate>{},
     modalEscolherItem: <iModalCreate>{},
+    modalPreviaNF: <iModalCreate>{},
 
     modalOpened: false,
     modalLocalizarDevolucoesOpened: false,
     modalSelecionarFornecedorOpened: false,
     modalTransportadoraOpened: false,
     modalEscolherItemOpened: false,
+    modalPreviaNFOpened: false,
 
     dbDevolucao: <iDevolucao>{},
     dbItensDevolucao: <iItensDevolucao[]>[],
@@ -50,6 +55,9 @@ export const state = reactive({
     disabledBtnPrint: true,
     disabledBtnAdicionarTransportadora: true,
     disabledBtnAdicionarItens: true,
+
+    mes: ["", "Janeiro", "Fevereiro", "Marco", "Abril", "Maio", "Junho", "Julho", "Agosto",
+        "Setembro", "Outubro", "Novembro", "Dezembro"],
 
     loading: false
 })
@@ -91,7 +99,6 @@ export const actions = {
             onOpen: () => { state.modalOpened = true; state.modalEscolherItemOpened = true },
             onClose: () => { state.modalOpened = false; state.modalEscolherItemOpened = false },
         })
-
     },
 
     openModalLocalizarDevolucoes() {
@@ -257,8 +264,9 @@ export const actions = {
                 state.loading = true;
 
                 await serviceDevolucaoFornecedor.finalizarDevolucao({ param })
-
                 await actions.getDevolucao(state.dbDevolucao)
+
+                await actions.imprimirNotaDevolucaoFornecedorPDF()
 
                 state.loading = false;
             }
@@ -292,6 +300,71 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao excluir devolução!",
+            });
+        }
+    },
+
+    async emitirNotaDevolucaoFornecedorPrevia() {
+        try {
+            if (!state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP) {
+                Swal.fire({
+                    icon: "error",
+                    text: "É necessário adicionar transportadora!",
+                });
+                return false
+            }
+
+            if (state.dbItensDevolucao.length == 0) {
+                Swal.fire({
+                    icon: "error",
+                    text: "É necessário adicionar itens!",
+                })
+                return false
+            }
+
+            state.loading = true
+
+            let data = await serviceDevolucaoFornecedor.emitirNotaDevolucaoFornecedorPrevia(
+                state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR
+            )
+
+            printJS({
+                printable: data.pdf,
+                type: 'pdf',
+                base64: true,
+            })
+
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.msg || "Erro ao emitir nota de devolução!",
+            });
+        }
+    },
+
+    async imprimirNotaDevolucaoFornecedorPDF() {
+        try {
+            state.loading = true;
+
+            let chave = state.dbDevolucao.CHAVE_DEVOLUCAO
+            let ano = moment(state.dbDevolucao.DATA).year();
+            let mes = state.mes[moment(state.dbDevolucao.DATA).month() + 1]
+            let url = `${config.SERVER}:${config.PORT}/NFe/${ano}-${mes}/DevolucaoFornecedor/${chave}-nfe.pdf`;
+
+            printJS({
+                printable: url,
+                type: "pdf",
+            });
+
+            state.loading = false;
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir nota de devolução!",
             });
         }
     }

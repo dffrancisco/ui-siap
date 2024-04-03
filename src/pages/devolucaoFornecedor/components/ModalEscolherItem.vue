@@ -114,7 +114,7 @@ const actions = {
   criarModal() {
     state.modalInformarQtdItem = new xModal.create({
       el: "#modalInformarQtdItem",
-      height: 262,
+      height: 410,
       width: 715,
       theme: "xModal-blue",
       onOpen: () => {
