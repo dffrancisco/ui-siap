@@ -3,6 +3,7 @@ import {
     iFinalizarDevolucaoResponse,
     iGetDevolucoesResponse,
     iGetFornecedoresResponse,
+    iGetItensDevolucaoQTDResponse,
     iGetItensResponse,
     iGetTributosPisCofinsItemResponse,
     iInsertTransportadoraResponse,
@@ -10,6 +11,7 @@ import {
     iParamGetDevolucoes,
     iParamGetFornecedores,
     iParamGetItens,
+    iParamGetItensDevolucaoQTDFunction,
     iParamGetTributosPisCofinsItem,
     iParamInsertTransportadoraDevolucao,
     iParamUpdateInsertItemDevolucao,
@@ -32,6 +34,8 @@ type iUpdateInsertItemDevolucaoFunction = (param: iParamUpdateInsertItemDevoluca
 type iFinalizarDevolucaoFunction = (param: iParamFinalizarDevolucao) => Promise<iFinalizarDevolucaoResponse>
 type iGetTributosPisCofinsItemFunction = (param: iParamGetTributosPisCofinsItem) =>
     Promise<iGetTributosPisCofinsItemResponse>
+type iGetItensDevolucaoQTDFunction = (param: iParamGetItensDevolucaoQTDFunction) =>
+    Promise<iGetItensDevolucaoQTDResponse>
 
 const getDevolucoes: iGetDevolucoesFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -172,6 +176,14 @@ const getTributosPisCofinsItem: iGetTributosPisCofinsItemFunction = async (param
     return data
 }
 
+const getItensDevolucaoQTD: iGetItensDevolucaoQTDFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: 'getItensDevolucaoQTD',
+        param
+    })
+    return data
+}
+
 export default {
     getDevolucoes,
     getFornecedores,
@@ -189,5 +201,6 @@ export default {
     deleteDevolucao,
     finalizarDevolucao,
     emitirNotaDevolucaoFornecedorPrevia,
-    getTributosPisCofinsItem
+    getTributosPisCofinsItem,
+    getItensDevolucaoQTD
 }

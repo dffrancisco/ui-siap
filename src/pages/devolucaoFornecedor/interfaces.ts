@@ -55,7 +55,7 @@ export interface iItemDevolucao {
     PERCENTUAL_COFINS: number | string,
     COD_FABRICANTE: string,
     CHAVE: string,
-    DATA_EMISSAO: string
+    DATA_EMISSAO: string,
 }
 
 export interface iItensDevolucao {
@@ -138,6 +138,15 @@ export interface iGetTributosPisCofinsItemResponse {
     PERCENTUAL_PIS: number,
     CST_COFINS: string,
     PERCENTUAL_COFINS: number
+}
+
+export interface iParamGetItensDevolucaoQTDFunction {
+    ID_NF_ENTRADA_MANIFESTO: number,
+    ID_NF_ENTRADA_ITEM: number
+}
+
+export interface iGetItensDevolucaoQTDResponse {
+    QTD: number
 }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }

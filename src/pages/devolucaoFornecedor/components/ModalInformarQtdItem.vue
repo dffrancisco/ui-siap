@@ -122,7 +122,7 @@ const actions = {
     if (!state.dbItemDevolucao.CST_PIS) {
       Swal.fire({
         icon: "error",
-        title: "O PIS(CST) deve ser informado",
+        title: "O PIS CST deve ser informado",
       });
       return;
     }
@@ -138,7 +138,7 @@ const actions = {
     if (!state.dbItemDevolucao.CST_COFINS) {
       Swal.fire({
         icon: "error",
-        title: "O COFINS(CST) deve ser informado",
+        title: "O COFINS CST deve ser informado",
       });
       return;
     }
@@ -281,8 +281,8 @@ nextTick(async () => {
             disabled
           />
         </v-col>
-        <v-col>
-          <span>Qtd Disponível</span>
+        <v-col cols="4">
+          <span>Qtd Disponível P/ Devolução</span>
           <input
             :value="props.dbItem.QUANTIDADE"
             type="text"
@@ -292,7 +292,7 @@ nextTick(async () => {
             disabled
           />
         </v-col>
-        <v-col cols="4">
+        <v-col cols="3">
           <span>CFOP</span>
           <input
             v-model="state.dbItemDevolucao.CFOP"
@@ -321,7 +321,7 @@ nextTick(async () => {
       </v-row>
       <v-row>
         <v-col cols="10">
-          <span>CST PIS</span>
+          <span>PIS CST</span>
           <select
             v-model="state.dbItemDevolucao.CST_PIS"
             class="ss obr"
@@ -355,7 +355,7 @@ nextTick(async () => {
       </v-row>
       <v-row>
         <v-col cols="10">
-          <span>CST COFINS</span>
+          <span>COFINS CST</span>
           <select
             v-model="state.dbItemDevolucao.CST_COFINS"
             class="ss obr"

@@ -7,7 +7,7 @@ import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 
-import { iItem, iParamGetItens } from "../interfaces";
+import { iItem, iParamGetItens, iParamGetItensDevolucaoQTDFunction } from "../interfaces";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
 import ModalInformarQtdItem from "./ModalInformarQtdItem.vue";
 
@@ -89,7 +89,7 @@ const actions = {
                     <div style="display: flex; flex-direction: row; justify-content: space-between">
                         <p>Nº nota: ${r.NUM_NOTA}</p>
 
-                        <p>Qtd Disponível: ${r.QUANTIDADE}</p>
+                        <p>Qtd de Itens: ${r.QUANTIDADE}</p>
 
                         <p>${utils.formatValor(r.CUSTO)}</p>
                     </div>
@@ -138,15 +138,25 @@ const actions = {
     emit("closeModal");
   },
 
-  openModalInformarQtdItem() {
+  async openModalInformarQtdItem() {
     const item = state.gridEscolherItem.dataSource();
 
-    state.dbItem = item;
+    state.dbItem = { ...item };
 
     if (!item) {
       Swal.fire({
         icon: "warning",
         title: "Selecione um item",
+      });
+      return;
+    }
+
+    await actions.getItensDevolucaoQTD();
+
+    if (state.dbItem.QUANTIDADE <= 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Não há mais itens disponíveis para devolver!",
       });
       return;
     }
@@ -176,6 +186,29 @@ const actions = {
       Swal.fire({
         icon: "error",
         title: "Erro ao buscar os itens!",
+      });
+    }
+  },
+
+  async getItensDevolucaoQTD() {
+    try {
+      state.loading = true;
+
+      let param: iParamGetItensDevolucaoQTDFunction = {
+        ID_NF_ENTRADA_ITEM: state.dbItem.ID_ITEM,
+        ID_NF_ENTRADA_MANIFESTO: state.dbItem.ID_ENTRADA,
+      };
+
+      let data = await serviceDevolucaoFornecedor.getItensDevolucaoQTD(param);
+
+      state.dbItem.QUANTIDADE = state.dbItem.QUANTIDADE - data.QTD;
+
+      state.loading = false;
+    } catch (error) {
+      state.loading = false;
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao buscar a qtd de item já devolvida!",
       });
     }
   },
