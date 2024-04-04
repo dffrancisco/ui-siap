@@ -324,9 +324,12 @@ export const actions = {
 
             state.loading = true
 
-            let data = await serviceDevolucaoFornecedor.emitirNotaDevolucaoFornecedorPrevia(
-                state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR
-            )
+            let param = {
+                ID_DEVOLUCAO_FORNECEDOR: state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR,
+                PREVIA: true
+            }
+
+            let data = await serviceDevolucaoFornecedor.emitirNotaDevolucaoFornecedorPrevia(param)
 
             printJS({
                 printable: data.pdf,

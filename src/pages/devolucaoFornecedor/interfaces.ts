@@ -149,6 +149,15 @@ export interface iGetItensDevolucaoQTDResponse {
     QTD: number
 }
 
+export interface iParamEmitirNotaDevolucaoFornecedorPrevia {
+    ID_DEVOLUCAO_FORNECEDOR: number,
+    PREVIA: boolean
+}
+
+export interface iEmitirNotaDevolucaoFornecedorPreviaResponse {
+    pdf: string
+}
+
 export interface iGetDevolucoesResponse extends iDevolucao { }
 export interface iGetFornecedoresResponse extends iFornecedor { }
 export interface iGetItensResponse extends iItem { }
