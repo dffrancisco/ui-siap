@@ -155,7 +155,8 @@ export interface iParamEmitirNotaDevolucaoFornecedorPrevia {
 }
 
 export interface iEmitirNotaDevolucaoFornecedorPreviaResponse {
-    pdf: string
+    pdf: string,
+    xml: string
 }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }

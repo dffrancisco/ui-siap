@@ -1,7 +1,11 @@
 import { reactive, computed } from 'vue'
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal'
-
-import { iDevolucao, iItensDevolucao, objNotasAgrupadas } from './interfaces'
+import {
+    iDevolucao,
+    iItensDevolucao,
+    iParamEmitirNotaDevolucaoFornecedorPrevia,
+    objNotasAgrupadas
+} from './interfaces'
 import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
 import Swal from 'sweetalert2';
 import { msgConfirm } from '@/ts/message';
@@ -260,7 +264,7 @@ export const actions = {
             }
 
 
-            if (await msgConfirm("Confirmação", "Confirma a finalização desta devolução?")) {
+            if (await msgConfirm("Confirmação", "Tem certeza de que deseja finalizar? Essa ação não poderá ser desfeita!")) {
                 state.loading = true;
 
                 await serviceDevolucaoFornecedor.finalizarDevolucao({ param })
@@ -367,7 +371,92 @@ export const actions = {
             state.loading = false;
             Swal.fire({
                 icon: "error",
-                text: "Erro ao imprimir nota de devolução!",
+                text: "Erro ao imprimir nota de devolução pdf!",
+            });
+        }
+    },
+
+    async downloadXmlNfDevolucaoFornecedor() {
+        try {
+            state.loading = true;
+
+            let chave = state.dbDevolucao.CHAVE_DEVOLUCAO
+            let ano = moment(state.dbDevolucao.DATA).year();
+            let mes = state.mes[moment(state.dbDevolucao.DATA).month() + 1]
+            let url = `${config.SERVER}:${config.PORT}/NFe/${ano}-${mes}/DevolucaoFornecedor/${chave}-nfe.xml`;
+
+            let response = await fetch(url);
+            let xmlContent = await response.text();
+
+            let blob = new Blob([xmlContent], { type: 'text/xml' });
+
+            let link = document.createElement('a');
+            link.download = `${chave}-nfe.xml`;
+            link.href = window.URL.createObjectURL(blob);
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            document.body.removeChild(link);
+
+            state.loading = false;
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao baixa a nota de devolução xml!",
+            });
+        }
+    },
+
+    async downloadXmlPrevia() {
+        try {
+
+            if (!state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP) {
+                Swal.fire({
+                    icon: "error",
+                    text: "É necessário adicionar transportadora!",
+                });
+                return false
+            }
+
+            if (state.dbItensDevolucao.length == 0) {
+                Swal.fire({
+                    icon: "error",
+                    text: "É necessário adicionar itens!",
+                })
+                return false
+            }
+
+            state.loading = true;
+
+            let param: iParamEmitirNotaDevolucaoFornecedorPrevia = {
+                ID_DEVOLUCAO_FORNECEDOR: state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR,
+                PREVIA: true
+            }
+
+            let data = await serviceDevolucaoFornecedor.emitirNotaDevolucaoFornecedorPrevia(param)
+
+            let blob = new Blob([data.xml], { type: 'text/xml' });
+
+            let link = document.createElement('a');
+            link.download = `${state.dbDevolucao.RAZAO_SOCIAL}-previa.xml`;
+            link.href = window.URL.createObjectURL(blob);
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            document.body.removeChild(link);
+
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao baixar xml prévia!",
             });
         }
     }

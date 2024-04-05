@@ -231,7 +231,19 @@ onUnmounted(() => {
               size="24px"
               class="mr-2"
               >mdi-printer</v-icon
-            >Prévia</v-btn
+            >Prévia PDF</v-btn
+          >
+          <v-btn
+            v-if="state.dbDevolucao.STATUS != 1"
+            :disabled="state.disabledBtnPrint"
+            color="#3680AB"
+            @click="actions.downloadXmlPrevia"
+          >
+            <v-icon
+              size="24px"
+              class="mr-2"
+              >mdi-file</v-icon
+            >Prévia XML</v-btn
           >
           <v-btn
             v-if="state.dbDevolucao.STATUS == 1"
@@ -243,6 +255,17 @@ onUnmounted(() => {
               class="mr-2"
               >mdi-printer</v-icon
             >Imprimir</v-btn
+          >
+          <v-btn
+            v-if="state.dbDevolucao.STATUS == 1"
+            color="#3680AB"
+            @click="actions.downloadXmlNfDevolucaoFornecedor"
+          >
+            <v-icon
+              size="24px"
+              class="mr-2"
+              >mdi-file</v-icon
+            >XML</v-btn
           >
         </div>
         <span
