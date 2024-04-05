@@ -12,8 +12,8 @@ nextTick(async () => {
 <template>
   <v-container>
     <v-card>
-      <v-row class="pa-5">
-        <v-col>
+      <v-row class="px-12 py-8 consulta_container">
+        <div class="inputs">
           <v-autocomplete
             v-model="state.mes"
             label="Mês"
@@ -23,13 +23,11 @@ nextTick(async () => {
             id="MES"
             @keydown.enter="state.edtAno.focus()"
           ></v-autocomplete>
-        </v-col>
-        <v-col>
+
           <v-text-field
             v-model="state.ano"
             label="Ano"
-            density="default"
-            variant="filled"
+            variant="outlined"
             maxlength="4"
             v-mask="'####'"
             id="ANO"
@@ -37,14 +35,14 @@ nextTick(async () => {
             autocomplete="off"
             @keydown.enter="actions.getVendasPorMarca"
           ></v-text-field>
-        </v-col>
-        <v-col class="d-flex justify-center align-center"
-          ><v-btn
-            color="primary mr-5"
+          <v-btn
+            color="primary"
+            icon="mdi-magnify mdi-24px"
+            size="42"
             @click="actions.getVendasPorMarca"
-          >
-            <v-icon class="mr-2">mdi-magnify </v-icon>Consultar
-          </v-btn>
+          />
+        </div>
+        <div class="btn_print_container">
           <v-btn
             color="primary"
             @click="
@@ -67,12 +65,12 @@ nextTick(async () => {
           >
             <v-icon class="mr-2">mdi-printer </v-icon>Imprimir
           </v-btn>
-        </v-col>
+        </div>
       </v-row>
       <v-data-table
         :headers="state.headers"
         :items="state.dbVendasPorMarca"
-        height="500"
+        height="576"
         items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
       >
@@ -93,3 +91,23 @@ nextTick(async () => {
     ></v-progress-circular>
   </v-overlay>
 </template>
+
+<style scoped>
+.consulta_container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn_print_container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+</style>

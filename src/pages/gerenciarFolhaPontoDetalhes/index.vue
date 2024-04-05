@@ -114,9 +114,9 @@ actions.init(route);
               </div>
             </div>
 
-            <v-row>
+            <v-row class="mt-0">
               <v-col>
-                <div class="div__funcionario__card__infos pt-5">
+                <div class="div__funcionario__card__infos">
                   <v-chip
                     variant="outlined"
                     color="#b17500"
@@ -291,6 +291,13 @@ actions.init(route);
   position: relative;
 }
 
+.fc .fc-daygrid-day-top {
+  height: 20px;
+  font-size: 10px;
+  line-height: 10px;
+  z-index: 10;
+}
+
 .fc .fc-toolbar.fc-header-toolbar {
   margin: 0;
 }
@@ -416,7 +423,7 @@ actions.init(route);
   display: flex;
   align-items: center;
   justify-content: center;
-  max-height: 700px;
+  max-height: 800px;
   border-radius: 8px;
   height: calc(100vh - 48px);
 }
@@ -430,11 +437,21 @@ actions.init(route);
 }
 
 .calendario-dados {
-  height: calc(100vh - 48px);
+  height: calc(100vh - 90px);
 }
 
 .card-calendario--six-weeks {
-  height: calc(125vh - 48px);
+  height: calc(100vh - 90px);
+}
+
+@media screen and (max-height: 800px) {
+  .calendario-dados {
+    height: calc(100vh - 48px);
+  }
+
+  .card-calendario--six-weeks {
+    height: calc(125vh - 48px);
+  }
 }
 
 .calendario__horario {
