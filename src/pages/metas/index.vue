@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { state, meses, anos } from "./metas";
+import { onMounted } from "vue";
+import { state, meses, anos, vendedorOuMontador, headers, actions } from "./metas";
+import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
+import { iResponseMetasVendedores } from "./interfaces";
+
+onMounted(async () => {
+  actions.init(state.mes, state.ano);
+});
 </script>
 
 <template>
@@ -11,7 +18,7 @@ import { state, meses, anos } from "./metas";
     >
       <v-row>
         <v-col cols="12">
-          <v-card class="pa-5 cardFolhaPonto">
+          <v-card class="pa-5">
             <v-row>
               <v-col cols="3">
                 <v-select
@@ -22,6 +29,7 @@ import { state, meses, anos } from "./metas";
                   item-value="value"
                   :items="meses"
                   :clearable="false"
+                  @update:model-value="actions.getMetasVendedores(state.mes, state.ano)"
                 ></v-select>
               </v-col>
               <v-col cols="2">
@@ -31,26 +39,29 @@ import { state, meses, anos } from "./metas";
                   v-model="state.ano"
                   :items="anos"
                   :clearable="false"
+                  @update:model-value="actions.getMetasVendedores(state.mes, state.ano)"
                 ></v-text-field>
               </v-col>
               <v-col cols="5">
                 <v-select
-                  :clearable="true"
+                  :items="vendedorOuMontador.options"
+                  :clearable="false"
                   label="Tipo de meta"
-                  item-title="NOME_COMP"
-                  item-value="COD_FUNCIONARIO"
-                ></v-select>
+                  v-model="state.opcaoMeta"
+                  @update:model-value=""
+                >
+                </v-select>
               </v-col>
               <v-col cols="2">
                 <v-btn
                   title="Distribuir metas"
                   class="mr-4 mb-4"
                   color="primary"
+                  @click.prevent="actions.distribuirMetas"
                   >Distribuir metas
                 </v-btn>
               </v-col>
             </v-row>
-            <!-- <v-divider class="mt-4 mb-3"></v-divider> -->
           </v-card>
         </v-col>
       </v-row>
@@ -155,6 +166,54 @@ import { state, meses, anos } from "./metas";
         </v-col>
       </v-row>
     </div>
+    <div
+      class="pa-2 barraDeProgresso"
+      style="max-width: 1100px; margin: 0 auto"
+    >
+      <v-progress-linear
+        color="primary"
+        model-value="33"
+        :height="15"
+        style="border-radius: 5px"
+      ></v-progress-linear>
+    </div>
+
+    <div style="max-width: 1100px; margin: 0 auto">
+      <v-container>
+        <v-data-table-server
+          class="tableMetas"
+          v-model:itemsPerPage="state.itemsPerPage"
+          :headers="headers"
+          :items-length="state.totalItems"
+          :loading="state.loading"
+          :search="state.search"
+        >
+          <template #no-data>
+            <v-alert
+              :value="true"
+              icon="mdi-information"
+            >
+              Não há dados disponíveis.
+            </v-alert>
+          </template>
+        </v-data-table-server>
+      </v-container>
+    </div>
+
+    <div
+      id="modalDistribuirMetas"
+      title="Distribuir Metas"
+      style="display: none; background-color: #f0f6fa"
+    >
+      <ModalDistribuirMetas
+        :dadosParaDistribuirMetas="{
+          mes: state.mes,
+          ano: state.ano,
+          vendedores: state.vendedores as iResponseMetasVendedores[],
+        }"
+        :opened="state.modalDistribuirMetasOpened"
+      />
+    </div>
 
     <div id="pnCodigoTela">METAS</div>
     <v-overlay
@@ -211,5 +270,16 @@ import { state, meses, anos } from "./metas";
   font-size: 12px;
   font-weight: 300;
   text-align: center;
+}
+
+.barraDeProgresso {
+  width: 1070px;
+  justify-content: center;
+  text-align: center;
+}
+
+.tableMetas {
+  width: 1100px;
+  border-radius: 10px;
 }
 </style>
