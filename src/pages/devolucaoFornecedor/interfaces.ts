@@ -32,7 +32,9 @@ export interface iItem {
     BASE_ICMS_ST: number,
     PERCENTUAL_ICMS: number,
     PERCENTUAL_IPI: number,
-    UF: string
+    UF: string,
+    CHAVE: string,
+    DATA_EMISSAO: string
 }
 
 export interface iItemDevolucao {
@@ -47,6 +49,13 @@ export interface iItemDevolucao {
     BASE_ICMS_ST: number,
     PERCENTUAL_ICMS: number,
     PERCENTUAL_IPI: number,
+    CST_PIS: string,
+    PERCENTUAL_PIS: number | string,
+    CST_COFINS: string,
+    PERCENTUAL_COFINS: number | string,
+    COD_FABRICANTE: string,
+    CHAVE: string,
+    DATA_EMISSAO: string,
 }
 
 export interface iItensDevolucao {
@@ -115,6 +124,39 @@ export interface iParamFinalizarDevolucao {
 
 export interface objNotasAgrupadas {
     [key: number]: iItensDevolucao
+}
+
+export interface iParamGetTributosPisCofinsItem {
+    ANO: number,
+    MES: string,
+    CHAVE: string,
+    COD_FABRICANTE: string
+}
+
+export interface iGetTributosPisCofinsItemResponse {
+    CST_PIS: string,
+    PERCENTUAL_PIS: number,
+    CST_COFINS: string,
+    PERCENTUAL_COFINS: number
+}
+
+export interface iParamGetItensDevolucaoQTDFunction {
+    ID_NF_ENTRADA_MANIFESTO: number,
+    ID_NF_ENTRADA_ITEM: number
+}
+
+export interface iGetItensDevolucaoQTDResponse {
+    QTD: number
+}
+
+export interface iParamEmitirNotaDevolucaoFornecedorPrevia {
+    ID_DEVOLUCAO_FORNECEDOR: number,
+    PREVIA: boolean
+}
+
+export interface iEmitirNotaDevolucaoFornecedorPreviaResponse {
+    pdf: string,
+    xml: string
 }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }

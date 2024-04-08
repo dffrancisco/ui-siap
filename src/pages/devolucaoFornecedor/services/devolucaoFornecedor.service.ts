@@ -1,14 +1,20 @@
 import axios from "axios";
 import {
+    iEmitirNotaDevolucaoFornecedorPreviaResponse,
     iFinalizarDevolucaoResponse,
     iGetDevolucoesResponse,
     iGetFornecedoresResponse,
+    iGetItensDevolucaoQTDResponse,
     iGetItensResponse,
+    iGetTributosPisCofinsItemResponse,
     iInsertTransportadoraResponse,
+    iParamEmitirNotaDevolucaoFornecedorPrevia,
     iParamFinalizarDevolucao,
     iParamGetDevolucoes,
     iParamGetFornecedores,
     iParamGetItens,
+    iParamGetItensDevolucaoQTDFunction,
+    iParamGetTributosPisCofinsItem,
     iParamInsertTransportadoraDevolucao,
     iParamUpdateInsertItemDevolucao,
     iParamUpdateTransportadoraDevolucao,
@@ -28,6 +34,12 @@ type iUpdateTransportadoraDevolucaoFunction = (param: iParamUpdateTransportadora
 type iUpdateInsertItemDevolucaoFunction = (param: iParamUpdateInsertItemDevolucao) =>
     Promise<iUpdateInsertItemDevolucaoResponse>
 type iFinalizarDevolucaoFunction = (param: iParamFinalizarDevolucao) => Promise<iFinalizarDevolucaoResponse>
+type iGetTributosPisCofinsItemFunction = (param: iParamGetTributosPisCofinsItem) =>
+    Promise<iGetTributosPisCofinsItemResponse>
+type iGetItensDevolucaoQTDFunction = (param: iParamGetItensDevolucaoQTDFunction) =>
+    Promise<iGetItensDevolucaoQTDResponse>
+type iEmitirNotaDevolucaoFornecedorPreviaFunction = (param: iParamEmitirNotaDevolucaoFornecedorPrevia) =>
+    Promise<iEmitirNotaDevolucaoFornecedorPreviaResponse>
 
 const getDevolucoes: iGetDevolucoesFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -152,6 +164,30 @@ const finalizarDevolucao: iFinalizarDevolucaoFunction = async ({ param }) => {
     return data
 }
 
+const emitirNotaDevolucaoFornecedorPrevia: iEmitirNotaDevolucaoFornecedorPreviaFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: 'emitirNotaDevolucaoFornecedor',
+        param
+    })
+    return data
+}
+
+const getTributosPisCofinsItem: iGetTributosPisCofinsItemFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: 'getTributosPisCofinsItem',
+        param
+    })
+    return data
+}
+
+const getItensDevolucaoQTD: iGetItensDevolucaoQTDFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: 'getItensDevolucaoQTD',
+        param
+    })
+    return data
+}
+
 export default {
     getDevolucoes,
     getFornecedores,
@@ -167,5 +203,8 @@ export default {
     deleteItemDevolucao,
     updateInsertItemDevolucao,
     deleteDevolucao,
-    finalizarDevolucao
+    finalizarDevolucao,
+    emitirNotaDevolucaoFornecedorPrevia,
+    getTributosPisCofinsItem,
+    getItensDevolucaoQTD
 }
