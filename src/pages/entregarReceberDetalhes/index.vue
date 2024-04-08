@@ -23,7 +23,10 @@ actions.init(route);
 <template>
   <v-main>
     <v-container>
-      <v-card max-width="1000" class="mx-auto pa-3">
+      <v-card
+        max-width="1000"
+        class="mx-auto pa-3"
+      >
         <v-card-text>
           <v-btn
             color="primary"
@@ -41,6 +44,7 @@ actions.init(route);
                 label="Nº Orçamento"
                 v-model="state.edtNumOrcamento"
                 clearable
+                @click:clear="actions.getEntregarReceber"
                 @keypress.enter="actions.getEntregarReceber"
               ></v-text-field>
             </v-col>
@@ -88,7 +92,10 @@ actions.init(route);
               <div class="dados-orcamento">
                 <strong>Dados do Orçamento</strong>
                 <v-row class="mt-1">
-                  <v-col cols="8" class="dados-orcamento__cliente">
+                  <v-col
+                    cols="8"
+                    class="dados-orcamento__cliente"
+                  >
                     <span>Cliente:</span>
                     <strong class="ml-2">
                       {{ state.entregarReceber.CLIENTE }}
@@ -200,7 +207,10 @@ actions.init(route);
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="9" class="d-flex justify-space-between">
+            <v-col
+              cols="9"
+              class="d-flex justify-space-between"
+            >
               <v-btn
                 color="primary"
                 icon="mdi-printer"
