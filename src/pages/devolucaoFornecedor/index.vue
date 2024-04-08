@@ -350,13 +350,6 @@ onUnmounted(() => {
           @getDevolucao="actions.getDevolucao(state.dbDevolucao)"
         ></ModalEscolherItem>
       </div>
-
-      <div
-        id="modalPreviaNF"
-        style="display: none"
-      >
-        <ModalPreviaNF></ModalPreviaNF>
-      </div>
     </v-card>
   </v-container>
 

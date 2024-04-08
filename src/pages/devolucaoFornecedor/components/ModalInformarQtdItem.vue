@@ -68,24 +68,23 @@ const state = reactive({
   dbItemDevolucao: <iItemDevolucao>{},
   edtItemQtd: <HTMLInputElement>{},
 
-  mes: [
-    "",
-    "Janeiro",
-    "Fevereiro",
-    "Marco",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
-  ],
-
   loading: false,
 });
+
+const NOME_MESES = [
+  "Janeiro",
+  "Fevereiro",
+  "Marco",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
 
 const actions = {
   onKeyDownEnterQtdDevolucao(event) {
@@ -146,7 +145,7 @@ const actions = {
     if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_COFINS.toString()) <= 0) {
       Swal.fire({
         icon: "error",
-        title: "O COFINS Percentual deve ser informado",
+        title: "O % COFINS deve ser informado",
       });
       return;
     }
@@ -215,7 +214,7 @@ const actions = {
 
       let param: iParamGetTributosPisCofinsItem = {
         ANO: moment(state.dbItemDevolucao.DATA_EMISSAO).year(),
-        MES: state.mes[moment(state.dbItemDevolucao.DATA_EMISSAO).month() + 1],
+        MES: NOME_MESES[moment(state.dbItemDevolucao.DATA_EMISSAO).month()],
         CHAVE: state.dbItemDevolucao.CHAVE,
         COD_FABRICANTE: state.dbItemDevolucao.COD_FABRICANTE,
       };

@@ -37,19 +37,20 @@ export const somaTotalItens = computed((): number => {
     return state.dbDevolucao.VALOR;
 });
 
+const NOME_MESES = ["Janeiro", "Fevereiro", "Marco", "Abril", "Maio", "Junho", "Julho", "Agosto",
+    "Setembro", "Outubro", "Novembro", "Dezembro"]
+
 export const state = reactive({
     modalLocalizarDevolucoes: <iModalCreate>{},
     modalSelecionarFornecedor: <iModalCreate>{},
     modalTransportadora: <iModalCreate>{},
     modalEscolherItem: <iModalCreate>{},
-    modalPreviaNF: <iModalCreate>{},
 
     modalOpened: false,
     modalLocalizarDevolucoesOpened: false,
     modalSelecionarFornecedorOpened: false,
     modalTransportadoraOpened: false,
     modalEscolherItemOpened: false,
-    modalPreviaNFOpened: false,
 
     dbDevolucao: <iDevolucao>{},
     dbItensDevolucao: <iItensDevolucao[]>[],
@@ -59,9 +60,6 @@ export const state = reactive({
     disabledBtnPrint: true,
     disabledBtnAdicionarTransportadora: true,
     disabledBtnAdicionarItens: true,
-
-    mes: ["", "Janeiro", "Fevereiro", "Marco", "Abril", "Maio", "Junho", "Julho", "Agosto",
-        "Setembro", "Outubro", "Novembro", "Dezembro"],
 
     loading: false
 })
@@ -357,7 +355,7 @@ export const actions = {
 
             let chave = state.dbDevolucao.CHAVE_DEVOLUCAO
             let ano = moment(state.dbDevolucao.DATA).year();
-            let mes = state.mes[moment(state.dbDevolucao.DATA).month() + 1]
+            let mes = NOME_MESES[moment(state.dbDevolucao.DATA).month()]
             let url = `${config.SERVER}:${config.PORT}/NFe/${ano}-${mes}/DevolucaoFornecedor/${chave}-nfe.pdf`;
 
             printJS({
@@ -382,7 +380,7 @@ export const actions = {
 
             let chave = state.dbDevolucao.CHAVE_DEVOLUCAO
             let ano = moment(state.dbDevolucao.DATA).year();
-            let mes = state.mes[moment(state.dbDevolucao.DATA).month() + 1]
+            let mes = NOME_MESES[moment(state.dbDevolucao.DATA).month()]
             let url = `${config.SERVER}:${config.PORT}/NFe/${ano}-${mes}/DevolucaoFornecedor/${chave}-nfe.xml`;
 
             let response = await fetch(url);
