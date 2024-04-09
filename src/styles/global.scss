@@ -76,3 +76,34 @@
 .click {
     cursor: pointer;
 }
+
+.swal2-container {
+    z-index: 2600 !important;
+}
+
+.swal-dark {
+    background-color: #333 !important; /* cor de fundo escura */
+    color: #fff !important; /* cor do texto */
+}
+
+.swal-dark .swal-title {
+    color: #fff !important; /* cor do título */
+}
+
+.swal-dark .swal-text {
+    color: #ddd !important; /* cor do texto do conteúdo */
+}
+
+.swal-dark .swal-footer {
+    background-color: #222 !important; /* cor de fundo do rodapé */
+}
+
+.swal-dark .swal-button {
+    background-color: #444 !important; /* cor de fundo dos botões */
+    border-color: #fff !important; /* cor da borda dos botões */
+    color: #fff !important; /* cor do texto dos botões */
+}
+
+.swal-dark .swal-button:hover {
+    background-color: #555 !important; /* cor de fundo dos botões quando hover */
+}
