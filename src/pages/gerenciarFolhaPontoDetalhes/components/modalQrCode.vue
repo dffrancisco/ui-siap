@@ -207,64 +207,31 @@ async function uploadPDF(file: File, tipoDocumento: string) {
     throw new Error("Arquivo deve ser menor que 5MB");
   }
 
-  const img = new Image();
-  img.src = URL.createObjectURL(file);
+  const qrGenerate = document.getElementById("qr-generate");
+  qrGenerate.style.display = "none";
 
-  img.onload = async function () {
-    const maxWidth = 800;
-    const maxHeight = 1066;
+  let formData = new FormData();
 
-    let width = img.width;
-    let height = img.height;
+  let cpf = props.dadosParaQrCode.cpf;
+  let usuario = stateLogin.state.login.LOGIN;
+  let nomeFunc = props.dadosParaQrCode.loginFuncionario;
+  let dataDocArquivo = props.dadosParaQrCode.data;
+  dataDocArquivo = ajustarData(dataDocArquivo);
 
-    // Redimensionar tamanhos se exceder os limites especificados
-    if (width > maxWidth || height > maxHeight) {
-      const ratio = Math.min(maxWidth / width, maxHeight / height);
-      width *= ratio;
-      height *= ratio;
-    }
+  formData.append("file", file);
+  formData.append("cpf", cpf);
+  formData.append("tipoDocumento", tipoDocumento);
+  formData.append("usuario", usuario);
+  formData.append("nomeFunc", nomeFunc);
+  formData.append("dataDocArquivo", dataDocArquivo);
+  formData.append("class", "Files");
+  formData.append("call", "uploadPdf");
 
-    // Criar um novo canvas
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+  const rs = await gerenciarFolhaPontoDetalhesService.uploadPDF(formData);
 
-    // Redimensionar a imagem no canvas
-    canvas.width = width;
-    canvas.height = height;
-    ctx.drawImage(img, 0, 0, width, height);
-
-    // Converter o canvas de volta para um Blob
-    canvas.toBlob(async function (blob) {
-      const novaImagem = new File([blob], file.name, { type: file.type });
-
-      // Continuar com o processo de upload
-      const qrGenerate = document.getElementById("qr-generate");
-      qrGenerate.style.display = "none";
-
-      let formData = new FormData();
-
-      let cpf = props.dadosParaQrCode.cpf;
-      let usuario = stateLogin.state.login.LOGIN;
-      let nomeFunc = props.dadosParaQrCode.loginFuncionario;
-      let dataDocArquivo = props.dadosParaQrCode.data;
-      dataDocArquivo = ajustarData(dataDocArquivo);
-
-      formData.append("file", novaImagem);
-      formData.append("cpf", cpf);
-      formData.append("tipoDocumento", tipoDocumento);
-      formData.append("usuario", usuario);
-      formData.append("nomeFunc", nomeFunc);
-      formData.append("dataDocArquivo", dataDocArquivo);
-      formData.append("class", "Files");
-      formData.append("call", "uploadPdf");
-
-      const rs = await gerenciarFolhaPontoDetalhesService.uploadPDF(formData);
-
-      const rsObj = JSON.parse(rs);
-      const nomeDoDocumento = rsObj.log.arquivo;
-      await createRegistroAusencia(nomeDoDocumento, tipoDocumento);
-    }, file.type);
-  };
+  const rsObj = JSON.parse(rs);
+  const nomeDoDocumento = rsObj.log.arquivo;
+  await createRegistroAusencia(nomeDoDocumento, tipoDocumento);
 }
 
 async function moverArquivoTemp(nomeDoDocumento: string) {
