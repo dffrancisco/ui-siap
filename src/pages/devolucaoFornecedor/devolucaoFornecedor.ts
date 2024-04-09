@@ -270,6 +270,11 @@ export const actions = {
 
                 await actions.imprimirNotaDevolucaoFornecedorPDF()
 
+                Swal.fire({
+                    icon: "success",
+                    text: "Nota de devolução finalizada!",
+                });
+
                 state.loading = false;
             }
         } catch (error) {
@@ -293,6 +298,11 @@ export const actions = {
                 state.dbItensDevolucao = [] as iItensDevolucao[]
 
                 actions.desabilitarBtns()
+
+                Swal.fire({
+                    icon: "success",
+                    text: "Nota de devolução deletada!",
+                });
 
                 state.loading = false;
             }
