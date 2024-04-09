@@ -11,6 +11,8 @@ import { iItem, iParamGetItens, iParamGetItensDevolucaoQTDFunction } from "../in
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
 import ModalInformarQtdItem from "./ModalInformarQtdItem.vue";
 
+import produtoSemFotoImg from "../assets/sem_foto.jpg";
+
 const props = defineProps<{
   modalOpened: boolean;
   id_fornecedor: number | undefined;
@@ -61,7 +63,7 @@ const actions = {
           if (r.FOTO == "F") {
             url_foto = `http://www.reallatas.com.br/balcao/foto/${r.COD_PRODUTO}.jpg`;
           } else {
-            url_foto = `src/pages/devolucaoFornecedor/assets/sem_foto.jpg`;
+            url_foto = produtoSemFotoImg;
           }
 
           return `<div style="display: flex; height: 62px; margin-bottom: 10px; width: 100%">
