@@ -391,7 +391,7 @@ h2 {
   width: 340px;
   height: 77px;
   border-radius: 8px;
-  background-color: #d9d9d9;
+  background-color: #91d2f7;
   display: flex;
   flex-direction: column;
 }
@@ -401,7 +401,7 @@ h2 {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  color: #2d9cdb;
+  color: #000000;
   margin-bottom: 4px;
 }
 .cards {
