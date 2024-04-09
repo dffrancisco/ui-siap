@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { iMesEAno, iPropsMetas } from "../interfaces";
+import { iMesEAno, iPropsMetas, iResponseFuncionarios } from "../interfaces";
 import { setup } from "./modalDistribuirMetas";
 import utils from "@/ts/utils";
 import ModalAtribuirMetaIndividual from "./modalAtribuirMetaIndividual.vue";
 
 const props = defineProps({
+  funcionarios: {
+    type: Object as () => iResponseFuncionarios,
+  },
   dadosParaDistribuirMetas: {
     type: Object as () => iPropsMetas,
   },
@@ -22,16 +25,19 @@ const {
   state,
   vendedores,
   montadores,
-  atribuirMetaIndividual,
+  funcionarios,
   vendedorSelecionado,
   montadorSelecionado,
+  atribuirMetaIndividual,
+  funcionarioSelecionado,
+  funcionariosOrdenados,
 } = setup(props);
 </script>
 
 <template>
   <div
     class="modal-distribuir-metas"
-    style="max-width: 1000px; margin: 0 auto"
+    style="max-width: 1250px; margin: 0 auto"
   >
     <div class="mb-n2 mt-2 d-flex justify-center">
       <v-chip
@@ -61,46 +67,53 @@ const {
 
     <div class="ml-13 mt-7">
       <v-row>
-        <v-col
-          cols="12"
-          sm="8"
-        >
-          <v-text-field label="Funcionário"></v-text-field>
+        <v-col cols="9">
+          <v-autocomplete
+            :clearable="true"
+            label="Funcionário"
+            :items="funcionariosOrdenados"
+            item-title="NOME_COMP"
+            item-value="COD_FUNCIONARIO"
+            class="funcionario__input"
+          ></v-autocomplete>
         </v-col>
-        <v-col
-          cols="12"
-          sm="4"
-        >
+
+        <v-col cols="3">
           <v-btn
             title="Adicionar meta"
-            class="mr-4 mb-4 ml-10"
+            class="funcionario__btn"
             color="primary"
+            @click.prevent="atribuirMetaIndividual(funcionarios[0].COD_FUNCIONARIO)"
             >Adicionar meta
           </v-btn>
         </v-col>
       </v-row>
     </div>
 
-    <div class="mr-10 ml-10">
+    <div class="funcionarios_totalizador">
       <v-row>
-        <v-col
-          cols="12"
-          sm="8"
-        >
-          <v-chip variant="plain"> Funcionários: </v-chip>
+        <v-col cols="6">
+          <v-chip
+            class="funcionarios_subtitle"
+            variant="plain"
+          >
+            Funcionários:
+          </v-chip>
           <span class="tagSpan">12</span>
         </v-col>
-        <v-col
-          cols="12"
-          sm="4"
-        >
-          <v-chip variant="plain"> Total Distribuído: </v-chip>
+        <v-col cols="2">
+          <v-chip
+            class="funcionarios_subtitle"
+            variant="plain"
+          >
+            Total Distribuído:
+          </v-chip>
           <span class="tagSpan">134.000.00,00</span>
         </v-col>
       </v-row>
     </div>
 
-    <div class="funcionarios ml-11 mt-3">
+    <div class="funcionarios ml-7">
       <div class="funcionarios__lista">
         <div
           class="funcionarios__lista"
@@ -112,68 +125,36 @@ const {
             :key="vendedor.ID_VENDEDOR"
           >
             <div class="funcionarios__lista__card__usuario">
-              <v-avatar
-                size="50px"
-                color="primary"
-                :title="vendedor.LOGIN"
-                class="funcionarios__lista__avatar"
-              >
-                <v-img
-                  :src="actions.getFotoFuncionarioURL(vendedor.CPF)"
-                  aspect-ratio="1"
-                  cover
-                ></v-img>
-              </v-avatar>
+              <div>
+                <v-avatar
+                  size="70px"
+                  color="primary"
+                  :title="vendedor.LOGIN"
+                  class="funcionarios__lista__avatar"
+                >
+                  <v-img
+                    :src="actions.getFotoFuncionarioURL(vendedor.CPF)"
+                    aspect-ratio="1"
+                    cover
+                  ></v-img>
+                </v-avatar>
+              </div>
+
               <div class="funcionarios__lista__card__info">
-                <div class="funcionarios__lista__card__nome">{{ vendedor.LOGIN }}</div>
+                <div class="funcionarios__lista__card__nome">{{ vendedor.LOGIN }} </div>
                 <div class="funcionarios__lista__card__meta">{{ utils.formatValor(vendedor.VALOR_TOTAL) }}</div>
               </div>
-              <v-icon
-                class="funcionarios__lista__card__icon"
-                size="x-large"
-                color="primary"
-                @click.prevent="atribuirMetaIndividual(vendedor)"
-              >
-                mdi-pen
-              </v-icon>
-            </div>
-          </v-card>
-        </div>
 
-        <div
-          v-if="state.isMontadoresSelected"
-          class="funcionarios__lista"
-        >
-          <v-card
-            class="funcionarios__lista__card"
-            v-for="montador in montadores"
-            :key="montador.ID_VENDEDOR"
-          >
-            <div class="funcionarios__lista__card__usuario">
-              <v-avatar
-                size="50px"
-                color="primary"
-                :title="montador.LOGIN"
-                class="funcionarios__lista__avatar"
-              >
-                <v-img
-                  :src="actions.getFotoFuncionarioURL(montador.CPF)"
-                  aspect-ratio="1"
-                  cover
-                ></v-img>
-              </v-avatar>
-              <div class="funcionarios__lista__card__info">
-                <div class="funcionarios__lista__card__nome">{{ montador.LOGIN }}</div>
-                <div class="funcionarios__lista__card__meta">{{ utils.formatValor(montador.VALOR_TOTAL) }}</div>
+              <div class="mb-8">
+                <v-icon
+                  class="funcionarios__lista__card__icon"
+                  size="x-large"
+                  color="primary"
+                  @click.prevent="atribuirMetaIndividual(vendedor)"
+                >
+                  mdi-pen
+                </v-icon>
               </div>
-              <v-icon
-                class="funcionarios__lista__card__icon"
-                size="x-large"
-                color="primary"
-                @click.prevent="atribuirMetaIndividual(montador)"
-              >
-                > mdi-pen
-              </v-icon>
             </div>
           </v-card>
         </div>
@@ -184,7 +165,7 @@ const {
   <div
     id="modalAtribuirMetaIndividadual"
     title="Atribuir Meta"
-    style="display: none"
+    style="display: none; background-color: #f0f6fa"
   >
     <ModalAtribuirMetaIndividual
       v-if="vendedorSelecionado || montadorSelecionado"
@@ -214,13 +195,27 @@ const {
 </template>
 
 <style scoped>
+.funcionarios__lista__card__info {
+  flex-grow: 1;
+}
+
 .modal-distribuir-metas {
   padding: 5px;
+  width: 1266px;
+  height: 680px;
+  top: 15px;
+  left: 18px;
+  gap: 21px;
 }
 
 .tagSpan {
-  font-size: 16px;
   font-weight: 480;
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24.55px;
+  letter-spacing: -0.06428570300340652px;
+  text-align: right;
 }
 
 .selected {
@@ -229,49 +224,87 @@ const {
   border: 2px solid #001d7bcd;
 }
 
-.funcionarios {
-  .funcionarios__lista {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    max-height: calc(100vh - 240px);
-  }
+.funcionario__input {
+  width: 900px;
+  height: 56px;
+  top: 93px;
+  border: 1px;
+}
 
-  .funcionarios__lista__card {
-    width: 210px;
-    height: 80px;
-    border-radius: 10px;
-  }
+.funcionario__btn {
+  margin-left: 40px;
+  width: 185px;
+  height: 45px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 12px;
+}
 
-  .funcionarios__lista__avatar {
-    cursor: pointer;
-    margin-left: 5px;
-    margin-top: 5px;
-    opacity: 1;
-    border: 1px solid #0000002f;
-    flex-shrink: 0; /* Evita que o avatar afete o tamanho do card */
-  }
+.funcionarios_totalizador {
+  padding: 5px;
+  width: 1800px;
+  height: 33px;
+  gap: 21px;
+  margin-left: 40px;
+  display: flex;
+}
 
-  .funcionarios__lista__card__usuario {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px; /* Espaçamento interno */
-  }
+.funcionarios__lista {
+  padding: 10px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-height: calc(100vh - 220px);
+}
 
-  .funcionarios__lista__card__nome {
-    font-size: 13px;
-    color: #515151;
-  }
+.funcionarios__lista__card {
+  width: 280px;
+  height: 90px;
+  border-radius: 14px;
+  /* padding: 14px; */
+  gap: 12px;
+}
 
-  .funcionarios__lista__card__meta {
-    font-size: 16px;
-    font-size: 16px;
-    font-weight: 450;
-  }
+.funcionarios__lista__avatar {
+  cursor: pointer;
+  margin-left: 5px;
+  opacity: 1;
+  border: 1px solid #0000002f;
+}
 
-  .funcionarios__lista__card__icon {
-    cursor: pointer;
-  }
+.funcionarios__lista__card__usuario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px; /* Espaçamento interno */
+}
+
+.funcionarios__lista__card__nome {
+  flex-grow: 1;
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 15px;
+  color: #515151;
+}
+
+.funcionarios__lista__card__meta {
+  font-family: Nunito Sans;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 38.19px;
+  text-align: left;
+}
+
+.funcionarios__lista__card__icon {
+  cursor: pointer;
+}
+
+.funcionarios_subtitle {
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24.55px;
+  letter-spacing: -0.06428570300340652px;
+  text-align: left;
 }
 </style>

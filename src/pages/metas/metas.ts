@@ -16,6 +16,7 @@ export const state = reactive({
     opcaoMeta: "Vendedores",
     vendedores: {},
     montadores: {},
+    funcionarios: {},
     modalDistribuirMetas: <iModalCreate>(<unknown>null),
     modalDistribuirMetasOpened: false,
 })
@@ -80,6 +81,7 @@ export const actions = {
         state.loading = true;
         actions.modal();
 
+        await actions.getFuncionarios(mes, ano);
         await actions.getMetasVendedores(mes, ano);
 
         state.loading = false;
@@ -87,8 +89,8 @@ export const actions = {
 
     modal() {
         state.modalDistribuirMetas = new xModal.create({
-            height: 750,
-            width: 1100,
+            height: 680,
+            width: 1266,
             el: "#modalDistribuirMetas",
             theme: "xModal-bublue",
             onOpen: () => {
@@ -134,6 +136,25 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Ocorreu um erro ao buscar as metas dos montadores.",
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getFuncionarios(mes: number, ano: number) {
+        state.loading = true;
+
+        const param: iMesEAno = {
+            mes: mes,
+            ano: ano,
+        }
+        try {
+            state.funcionarios = await metasService.getFuncionarios(param);
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar os funcionários.",
             });
         } finally {
             state.loading = false;

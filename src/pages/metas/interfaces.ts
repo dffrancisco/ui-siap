@@ -12,7 +12,6 @@ export interface iResponseMetasVendedores {
     VALOR_TOTAL: number;
 }
 
-
 export interface iResponseMetasMontadores {
     LOGIN: string;
     CARGO: string;
@@ -20,6 +19,16 @@ export interface iResponseMetasMontadores {
     ID_MONTADOR: number;
     QTD_VENDAS: number;
     VALOR_TOTAL: number;
+}
+
+export interface iResponseFuncionarios {
+    CARGO: string;
+    COD_FUNCIONARIO: number;
+    CPF: string;
+    DELETADO: string;
+    ID_CARGO: number;
+    LOGIN: string;
+    NOME_COMP: string;
 }
 
 export interface iPropsMetas {

@@ -49,7 +49,7 @@ watch(
 </script>
 
 <template>
-  <div>
+  <div class="modal-atribuir-meta-individual">
     <v-avatar
       size="100px"
       color="primary"
