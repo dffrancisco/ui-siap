@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { dataBrasil, formatValor } from "@/ts/utils";
-import ModalNovoPedido from "./components/ModalNovoPedido.vue";
+import ModalDadosPedido from "./components/ModalDadosPedido.vue";
 
 import {
   state,
@@ -17,14 +17,18 @@ actions.init();
 <template>
   <title>Compras</title>
 
-  <div class="compras-container">
+  <div
+    class="compras-container"
+    @keydown="actions.onKeyDown"
+    tabindex="0"
+  >
     <div class="compras">
       <div class="compras__titulo">COMPRAS</div>
       <div class="compras__dashboard">
         <v-card class="compras__dashboard__card">
           <span>Pedidos Pend.</span>
           <strong class="compras__dashboard__card__titulo">
-            {{ state.compras.length }}
+            {{ comprasFiltradas.length }}
           </strong>
         </v-card>
         <v-card class="compras__dashboard__card">
@@ -45,9 +49,11 @@ actions.init();
           <div class="compras__marcas__pesquisa">
             <div class="input-group-dark">
               <input
+                id="edtMarca"
                 class="input-dark"
-                placeholder="informe a marca"
+                placeholder="informe a marca (F2)"
                 v-model="state.edtMarca"
+                @keypress.enter="actions.onKeyPressEnterMarca"
               />
             </div>
           </div>
@@ -55,6 +61,8 @@ actions.init();
             <div
               v-for="marca in marcasAgrupadas"
               class="compras__marcas__card"
+              :class="{ 'compras__marcas__card--selecionada': state.nomeMarcaSelecionada == marca.nomeMarca }"
+              @click="state.nomeMarcaSelecionada = marca.nomeMarca"
             >
               <div class="compras__marcas__card__contador"> {{ marca.qtd }} </div>
               <div class="compras__marcas__card__dados">
@@ -82,12 +90,6 @@ actions.init();
                 sortable: true,
               },
               {
-                title: 'Comprador',
-                key: 'COMPRADOR',
-                align: 'start',
-                sortable: true,
-              },
-              {
                 title: 'Marca',
                 key: 'NOME_MARCA',
                 align: 'start',
@@ -106,6 +108,12 @@ actions.init();
                 sortable: true,
               },
               {
+                title: 'Comprador',
+                key: 'COMPRADOR',
+                align: 'start',
+                sortable: true,
+              },
+              {
                 title: 'Ações',
                 key: 'ACOES',
                 align: 'center',
@@ -121,14 +129,24 @@ actions.init();
             </template>
             <template v-slot:item.ACOES="{ item }">
               <div>
-                <v-icon title="Itens do pedido">mdi mdi-cart</v-icon>
-                <v-icon title="Alterar cabeçalho">mdi mdi-pencil</v-icon>
+                <v-icon
+                  title="Itens do pedido"
+                  @click="actions.redirectToItensdoPedido(item.ID_COMPRAS)"
+                  >mdi mdi-cart</v-icon
+                >
+                <v-icon
+                  title="Alterar cabeçalho"
+                  @click="actions.onClickAlterarCompra(item)"
+                  >mdi mdi-pencil</v-icon
+                >
                 <v-icon title="Imprimir pedido">mdi mdi-printer</v-icon>
                 <v-icon
                   title="Deletar pedido"
                   class="compras__grid__btn--red"
-                  >mdi mdi-trash-can</v-icon
+                  @click="actions.onClickDeletarCompra(item)"
                 >
+                  mdi mdi-trash-can
+                </v-icon>
               </div>
             </template>
             <template v-slot:bottom> </template>
@@ -143,13 +161,17 @@ actions.init();
         </div>
       </div>
       <v-dialog
-        v-model="state.modalNovoPedidoOpened"
+        v-model="state.modalDadosPedidoOpened"
         max-width="480px"
         transition="dialog-transition"
+        :persistent="true"
       >
-        <ModalNovoPedido
+        <ModalDadosPedido
           :marcas="state.marcas"
-          @closeModal="actions.closeModalNovoPedido"
+          :compraAlterar="state.compraAlterar"
+          @insertCompra="actions.insertCompra"
+          @updateCompra="actions.updateCompra"
+          @closeModal="actions.closeModalDadosPedido"
         />
       </v-dialog>
       <v-overlay
@@ -168,7 +190,22 @@ actions.init();
   </div>
 </template>
 
-<style lang="scss">
+<style>
+::-webkit-scrollbar {
+  width: 4px;
+  height: 3px;
+}
+::-webkit-scrollbar-track-piece {
+  background-color: #000;
+}
+::-webkit-scrollbar-thumb {
+  height: 50px;
+  background-color: #666;
+  border-radius: 3px;
+}
+</style>
+
+<style lang="scss" scoped>
 .input-group-dark {
   display: flex;
   gap: 4px;
@@ -270,11 +307,17 @@ actions.init();
   display: flex;
   align-items: center;
   padding: 6px 6px;
-  background-color: var(--grey-700);
+  background-color: var(--grey-800);
   border-radius: 12px;
   font-size: 16px;
   font-weight: bold;
   color: var(--grey-100);
+  cursor: pointer;
+}
+
+.compras__marcas__card--selecionada {
+  background-color: var(--grey-700);
+  box-shadow: inset 0 0 0 2px var(--primary-600);
 }
 
 .compras__marcas__card__contador {
@@ -328,18 +371,5 @@ actions.init();
 .compras__btn-novo-pedido {
   background-color: var(--success-600);
   color: var(--grey-100);
-}
-
-::-webkit-scrollbar {
-  width: 4px;
-  height: 3px;
-}
-::-webkit-scrollbar-track-piece {
-  background-color: #000;
-}
-::-webkit-scrollbar-thumb {
-  height: 50px;
-  background-color: #666;
-  border-radius: 3px;
 }
 </style>

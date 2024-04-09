@@ -6,11 +6,43 @@ export interface iCompra {
     NOME_MARCA: string,
     OBS: string | null,
     TIPO_PAGAMENTO: string | null,
-    VALOR: number
+    VALOR: number,
+    QTD_PARCELAS: number | null,
+    PERCENTUAL_DESCONTO: number | null,
+    DIAS_PARA_PAGAR: number | null,
+    DIAS_PARA_FATURAR: number | null,
+    ADD_DESCONTO_NO_CUSTO: 'S' | 'N',
+    DATA_PAGAMENTO: string | null,
+}
+
+export interface iResponseInsertCompra {
+    ID_COMPRAS: number,
 }
 
 export interface iParamInsertCompra {
+    ID_MARCA: number,
+    OBS: string,
+    TIPO_PAGAMENTO: string | null,
+    QTD_PARCELAS: number | null,
+    PERCENTUAL_DESCONTO: number | null,
+    DIAS_PARA_PAGAR: number | null,
+    DIAS_PARA_FATURAR: number | null,
+    ADD_DESCONTO_NO_CUSTO: 'S' | 'N',
+}
 
+export interface iParamUpdateCompra {
+    ID_COMPRAS: number,
+    OBS: string,
+    TIPO_PAGAMENTO: string | null,
+    QTD_PARCELAS: number | null,
+    PERCENTUAL_DESCONTO: number | null,
+    DIAS_PARA_PAGAR: number | null,
+    DIAS_PARA_FATURAR: number | null,
+    ADD_DESCONTO_NO_CUSTO: 'S' | 'N',
+}
+
+export interface iParamDeleteCompra {
+    ID_COMPRAS: number,
 }
 
 export interface iMarca {
@@ -22,6 +54,7 @@ export interface marcaAgrupada {
     qtd: number,
     nomeMarca: string,
     valor: number,
+    selecionada: boolean,
 }
 
 export interface objMarcasAgrupadas {
