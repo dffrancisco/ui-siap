@@ -2,11 +2,16 @@
 import { onMounted } from "vue";
 import { state, meses, anos, vendedorOuMontador, headers, actions } from "./metas";
 import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
-import { iResponseMetasVendedores } from "./interfaces";
+import { iResponseMetasMontadores, iResponseMetasVendedores } from "./interfaces";
 
 onMounted(async () => {
   actions.init(state.mes, state.ano);
 });
+
+// watch(
+//   () => state.opcaoMeta,
+//   () => actions.onClickMetas()
+// );
 </script>
 
 <template>
@@ -29,7 +34,7 @@ onMounted(async () => {
                   item-value="value"
                   :items="meses"
                   :clearable="false"
-                  @update:model-value="actions.getMetasVendedores(state.mes, state.ano)"
+                  @update:model-value="actions.onClickMetas"
                 ></v-select>
               </v-col>
               <v-col cols="2">
@@ -39,7 +44,7 @@ onMounted(async () => {
                   v-model="state.ano"
                   :items="anos"
                   :clearable="false"
-                  @update:model-value="actions.getMetasVendedores(state.mes, state.ano)"
+                  @update:model-value="actions.onClickMetas"
                 ></v-text-field>
               </v-col>
               <v-col cols="5">
@@ -48,7 +53,7 @@ onMounted(async () => {
                   :clearable="false"
                   label="Tipo de meta"
                   v-model="state.opcaoMeta"
-                  @update:model-value=""
+                  @update:model-value="actions.onClickMetas"
                 >
                 </v-select>
               </v-col>
@@ -206,10 +211,13 @@ onMounted(async () => {
       style="display: none; background-color: #f0f6fa"
     >
       <ModalDistribuirMetas
-        :dadosParaDistribuirMetas="{
+        :mesEAno="{
           mes: state.mes,
           ano: state.ano,
+        }"
+        :dadosParaDistribuirMetas="{
           vendedores: state.vendedores as iResponseMetasVendedores[],
+          montadores: state.montadores as iResponseMetasMontadores[],
         }"
         :opened="state.modalDistribuirMetasOpened"
       />

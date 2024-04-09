@@ -15,6 +15,7 @@ export const state = reactive({
     search: (""),
     opcaoMeta: "Vendedores",
     vendedores: {},
+    montadores: {},
     modalDistribuirMetas: <iModalCreate>(<unknown>null),
     modalDistribuirMetasOpened: false,
 })
@@ -120,10 +121,35 @@ export const actions = {
         }
     },
 
+    async getMetasMontadores(mes: number, ano: number) {
+        state.loading = true;
+
+        const param: iMesEAno = {
+            mes: mes,
+            ano: ano,
+        }
+        try {
+            state.montadores = await metasService.getMetasMontadores(param);
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar as metas dos montadores.",
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async onClickMetas() {
+        if (state.opcaoMeta === 'Vendedores') {
+            await actions.getMetasVendedores(state.mes, state.ano);
+        } else if (state.opcaoMeta === 'Montadores') {
+            await actions.getMetasMontadores(state.mes, state.ano);
+        }
+    },
+
     distribuirMetas() {
         state.modalDistribuirMetas.open();
     }
-
-
 
 }
