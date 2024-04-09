@@ -1,5 +1,5 @@
 import xModal from "@/plugins/xModal/xModal";
-import Swal from "sweetalert2";
+import Swal, { SweetAlertIcon } from "sweetalert2";
 import $ from 'jquery'
 
 interface iShowModal {
@@ -655,19 +655,19 @@ export const SomenteNumero = (e) => {
 };
 
 export const toLowerCase = (text: string) => {
-    return text.toLowerCase()
+  return text.toLowerCase()
 };
 
 export const toCapitalize = (text: string) => {
-    var palavras = text.split(" ");
+  var palavras = text.split(" ");
 
-    var palavrasCapitalizadas = palavras.map(function(palavra) {
-        return palavra.charAt(0).toUpperCase() + palavra.slice(1)
-    });
+  var palavrasCapitalizadas = palavras.map(function (palavra) {
+    return palavra.charAt(0).toUpperCase() + palavra.slice(1)
+  });
 
-    var result = palavrasCapitalizadas.join(' ');
+  var result = palavrasCapitalizadas.join(' ');
 
-    return result
+  return result
 };
 
 export default {
@@ -697,3 +697,15 @@ export const sleep = async (timeMs: number) => {
     }, timeMs);
   })
 }
+
+export const swalDark = (icon: SweetAlertIcon, text: string) => Swal.fire({
+  icon,
+  text,
+  customClass: {
+    popup: "swal-dark",
+  }
+})
+
+export const swalDarkError = (text: string) => swalDark('error', text);
+export const swalDarkWarning = (text: string) => swalDark('warning', text);
+export const swalDarkSuccess = (text: string) => swalDark('success', text);
