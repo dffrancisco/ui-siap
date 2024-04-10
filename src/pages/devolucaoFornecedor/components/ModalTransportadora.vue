@@ -217,6 +217,7 @@ const actions = {
             :model-modifiers="{ number: true }"
             v-model.lazy="state.dbTransportadoraDevolucao.VALOR_FRETE"
             v-money3="configVMoney"
+            @keydown.enter="actions.selecionarTransportadora"
           />
         </v-col>
       </v-row>
