@@ -240,31 +240,26 @@ onUnmounted(() => {
 
 <template>
   <v-container>
-    <div class="pb-2">
-      <v-row>
-        <v-col>
-          <input
-            type="text"
-            placeholder="Pesquisar pelo nº fabricante ou descrição (F1)"
-            class="searchDevolucao pa-2"
-            v-model="state.search"
-            id="edtItemSearch"
-            autocomplete="off"
-            @keydown.enter="actions.searchItem"
-            @keydown.arrow-down="state.gridEscolherItem.focus(0)"
-          />
-        </v-col>
-        <v-col>
-          <v-btn
-            size="small"
-            class="btnSearch"
-            color="#3680AB"
-            @click="actions.searchItem"
-          >
-            <v-icon size="24px">mdi-magnify</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
+    <div class="pb-2 d-flex align-center justify-space-around">
+      <input
+        type="text"
+        placeholder="Pesquisar pelo nº fabricante ou descrição (F1)"
+        class="searchDevolucao pa-2 ss"
+        v-model="state.search"
+        id="edtItemSearch"
+        autocomplete="off"
+        @keydown.enter="actions.searchItem"
+        @keydown.arrow-down="state.gridEscolherItem.focus(0)"
+      />
+
+      <v-btn
+        size="40"
+        class="btnSearch"
+        color="#3680AB"
+        @click="actions.searchItem"
+        icon="mdi-magnify mdi-24px"
+      >
+      </v-btn>
     </div>
 
     <div id="gridEscolherItem"></div>
@@ -313,11 +308,7 @@ onUnmounted(() => {
 
 <style scoped>
 .searchDevolucao {
-  width: 558px;
-  border-radius: 8px;
-  border: 2px solid #d9d9d9;
-  height: 48px;
-  text-transform: uppercase;
+  width: 90%;
 }
 
 .btnSearch {
