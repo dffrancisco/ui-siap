@@ -3,13 +3,11 @@ import { reactive, nextTick, watch, onUnmounted } from "vue";
 import { useEventListener } from "@vueuse/core";
 
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 
 import { iItem, iParamGetItens, iParamGetItensDevolucaoQTDFunction } from "../interfaces";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
-import ModalInformarQtdItem from "./ModalInformarQtdItem.vue";
 
 import produtoSemFotoImg from "../assets/sem_foto.jpg";
 
@@ -19,7 +17,7 @@ const props = defineProps<{
   id_devolucaoFornecedor: number | undefined;
 }>();
 
-const emit = defineEmits(["closeModal", "getDevolucao"]);
+const emit = defineEmits(["closeModal", "getDevolucao", "openModalInformarQtdItem"]);
 
 watch(
   () => props.modalOpened,
@@ -38,9 +36,7 @@ watch(
 
 const state = reactive({
   gridEscolherItem: <ixGridCreate>{},
-  modalInformarQtdItem: <iModalCreate>{},
   dbItem: <iItem>{},
-  modalInformaQtdOpened: false,
 
   search: null,
   edtItemSearch: <HTMLInputElement>{},
@@ -113,22 +109,6 @@ const actions = {
     });
   },
 
-  criarModal() {
-    state.modalInformarQtdItem = new xModal.create({
-      el: "#modalInformarQtdItem",
-      height: 410,
-      width: 715,
-      theme: "xModal-blue",
-      onOpen: () => {
-        state.modalInformaQtdOpened = true;
-      },
-      onClose: () => {
-        state.modalInformaQtdOpened = false;
-        state.gridEscolherItem.focus();
-      },
-    });
-  },
-
   searchItem() {
     state.gridEscolherItem.queryOpen({
       search: state.edtItemSearch.value.toUpperCase(),
@@ -143,7 +123,7 @@ const actions = {
   async openModalInformarQtdItem() {
     const item = state.gridEscolherItem.dataSource();
 
-    state.dbItem = { ...item };
+    state.dbItem = item;
 
     if (!item) {
       Swal.fire({
@@ -163,16 +143,11 @@ const actions = {
       return;
     }
 
-    state.modalInformarQtdItem.open();
-  },
-
-  closeModalInformarQtdItem() {
-    state.modalInformarQtdItem.close();
+    emit("openModalInformarQtdItem", item);
   },
 
   getDevolucao() {
     actions.closeModalEscolherItem();
-    state.modalInformarQtdItem.close();
     emit("getDevolucao");
   },
 
@@ -228,7 +203,6 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
 
 nextTick(async () => {
   actions.criarGrids();
-  actions.criarModal();
 
   state.edtItemSearch = <any>document.getElementById("edtItemSearch");
 });
@@ -289,20 +263,6 @@ onUnmounted(() => {
       >
       </v-progress-circular>
     </v-overlay>
-
-    <div
-      id="modalInformarQtdItem"
-      style="display: none"
-      title="Informar Qtd"
-    >
-      <ModalInformarQtdItem
-        :modalInformaQtdOpened="state.modalInformaQtdOpened"
-        :dbItem="state.dbItem"
-        :id_devolucaoFornecedor="props.id_devolucaoFornecedor"
-        @closeModalInformarQtdItem="actions.closeModalInformarQtdItem"
-        @salvarItem="actions.getDevolucao"
-      ></ModalInformarQtdItem>
-    </div>
   </v-container>
 </template>
 

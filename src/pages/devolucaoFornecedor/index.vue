@@ -7,6 +7,7 @@ import ModalLocalizarDevolucao from "./components/ModalLocalizarDevolucao.vue";
 import ModalSelecionarFornecedor from "./components/ModalSelecionarFornecedor.vue";
 import ModalTransportadora from "./components/ModalTransportadora.vue";
 import ModalEscolherItem from "./components/ModalEscolherItem.vue";
+import ModalInformarQtdItem from "./components/ModalInformarQtdItem.vue";
 
 import utils from "@/ts/utils";
 import moment from "moment";
@@ -193,6 +194,12 @@ onUnmounted(() => {
               <span>{{ itens.DESCRICAO }}</span>
               <button
                 v-if="state.dbDevolucao.STATUS != 1"
+                title="ATUALIZAR ITEM"
+                @click="actions.openModalInformarQtdItem(itens)"
+                ><v-icon size="20px">mdi-pen</v-icon>
+              </button>
+              <button
+                v-if="state.dbDevolucao.STATUS != 1"
                 title="DELETAR ITEM"
                 @click="actions.deleteItemDevolucao(itens.ID_DEVOLUCAO_FORNECEDOR_ITEM)"
                 ><v-icon size="20px">mdi-delete</v-icon>
@@ -348,7 +355,23 @@ onUnmounted(() => {
           :id_devolucaoFornecedor="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
           @closeModal="actions.closeModalEscolherItem"
           @getDevolucao="actions.getDevolucao(state.dbDevolucao)"
+          @openModalInformarQtdItem="actions.openModalInformarQtdItem"
         ></ModalEscolherItem>
+      </div>
+
+      <div
+        id="modalInformarQtdItem"
+        style="display: none"
+        title="Informar Qtd"
+      >
+        <ModalInformarQtdItem
+          :modalInformaQtdOpened="state.modalInformaQtdItemOpened"
+          :dbItem="state.dbItem"
+          :id_devolucaoFornecedor="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
+          @closeModalInformarQtdItem="actions.closeModalInformarQtdItem"
+          @closeModalEscolherItem="actions.closeModalEscolherItem"
+          @salvarItem="actions.getDevolucao(state.dbDevolucao)"
+        ></ModalInformarQtdItem>
       </div>
     </v-card>
   </v-container>
