@@ -173,31 +173,26 @@ onUnmounted(() => {
 
 <template>
   <v-container>
-    <div class="pb-2">
-      <v-row>
-        <v-col>
-          <input
-            type="text"
-            placeholder="Pesquisar pelo CNPJ , razão social ou nome fantasia (F1)"
-            class="searchFornecedor pa-2"
-            v-model="state.search"
-            id="edtFornecedorSearch"
-            @keydown.enter="actions.searchFornecedor"
-            @keydown.arrow-down="state.gridFornecedores.focus(0)"
-            autocomplete="off"
-          />
-        </v-col>
-        <v-col>
-          <v-btn
-            size="small"
-            class="btnSearch"
-            color="#3680AB"
-            @click="actions.searchFornecedor"
-          >
-            <v-icon size="24px">mdi-magnify</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
+    <div class="pb-2 d-flex align-center justify-space-around">
+      <input
+        type="text"
+        placeholder="Pesquisar pelo CNPJ , razão social ou nome fantasia (F1)"
+        class="searchFornecedor pa-2 ss"
+        v-model="state.search"
+        id="edtFornecedorSearch"
+        @keydown.enter="actions.searchFornecedor"
+        @keydown.arrow-down="state.gridFornecedores.focus(0)"
+        autocomplete="off"
+      />
+
+      <v-btn
+        size="40"
+        class="btnSearch"
+        color="#3680AB"
+        @click="actions.searchFornecedor"
+        icon="mdi-magnify mdi-24px"
+      >
+      </v-btn>
     </div>
 
     <div id="gridFornecedores"></div>
@@ -232,11 +227,7 @@ onUnmounted(() => {
 
 <style scoped>
 .searchFornecedor {
-  width: 558px;
-  border-radius: 8px;
-  border: 2px solid #d9d9d9;
-  height: 48px;
-  text-transform: uppercase;
+  width: 90%;
 }
 
 .btnSearch {

@@ -1,10 +1,18 @@
 import { reactive, computed } from 'vue'
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal'
-
-import { iDevolucao, iItensDevolucao, objNotasAgrupadas } from './interfaces'
+import {
+    iDevolucao,
+    iItem,
+    iItensDevolucao,
+    iParamEmitirNotaDevolucaoFornecedorPrevia,
+    objNotasAgrupadas
+} from './interfaces'
 import serviceDevolucaoFornecedor from "./services/devolucaoFornecedor.service";
 import Swal from 'sweetalert2';
 import { msgConfirm } from '@/ts/message';
+import printJS from 'print-js';
+import config from '@/ts/config';
+import moment from 'moment';
 
 export const notasAgrupadas = computed((): iItensDevolucao[] => {
     let notasUnicas: objNotasAgrupadas = {}
@@ -25,25 +33,31 @@ export const somaTotalItens = computed((): number => {
         total += item.VALOR_TOTAL;
     });
 
-    state.dbDevolucao.VALOR = total
+    state.dbDevolucao.VALOR = total + state.dbDevolucao.VALOR_FRETE
 
-    return total;
+    return state.dbDevolucao.VALOR;
 });
+
+const NOME_MESES = ["Janeiro", "Fevereiro", "Marco", "Abril", "Maio", "Junho", "Julho", "Agosto",
+    "Setembro", "Outubro", "Novembro", "Dezembro"]
 
 export const state = reactive({
     modalLocalizarDevolucoes: <iModalCreate>{},
     modalSelecionarFornecedor: <iModalCreate>{},
     modalTransportadora: <iModalCreate>{},
     modalEscolherItem: <iModalCreate>{},
+    modalInformarQtdItem: <iModalCreate>{},
 
     modalOpened: false,
     modalLocalizarDevolucoesOpened: false,
     modalSelecionarFornecedorOpened: false,
     modalTransportadoraOpened: false,
     modalEscolherItemOpened: false,
+    modalInformaQtdItemOpened: false,
 
     dbDevolucao: <iDevolucao>{},
     dbItensDevolucao: <iItensDevolucao[]>[],
+    dbItem: <iItem>{},
 
     disabledBtnFinalizar: true,
     disabledBtnDelete: true,
@@ -92,6 +106,18 @@ export const actions = {
             onClose: () => { state.modalOpened = false; state.modalEscolherItemOpened = false },
         })
 
+        state.modalInformarQtdItem = new xModal.create({
+            el: "#modalInformarQtdItem",
+            height: 410,
+            width: 715,
+            theme: "xModal-blue",
+            onOpen: () => {
+                state.modalInformaQtdItemOpened = true;
+            },
+            onClose: () => {
+                state.modalInformaQtdItemOpened = false;
+            },
+        });
     },
 
     openModalLocalizarDevolucoes() {
@@ -124,6 +150,43 @@ export const actions = {
 
     closeModalEscolherItem() {
         state.modalEscolherItem.close();
+    },
+
+    openModalInformarQtdItem(item: iItensDevolucao) {
+        state.dbItem = item;
+
+        if (item.ID_DEVOLUCAO_FORNECEDOR_ITEM) {
+            state.dbItem = {
+                ID_DEVOLUCAO_FORNECEDOR_ITEM: item.ID_DEVOLUCAO_FORNECEDOR_ITEM,
+                ID_ENTRADA: item.ID_NF_ENTRADA_MANIFESTO,
+                ID_ITEM: item.ID_NF_ENTRADA_ITEM,
+                DESCRICAO: item.DESCRICAO,
+                NUM_NOTA: item.NUM_NOTA,
+                QUANTIDADE: item.QUANTIDADE,
+                COD_FABRICANTE: item.COD_FABRICANTE,
+                CUSTO: item.VALOR_UNITARIO,
+                COD_PRODUTO: item.COD_PRODUTO,
+                VALOR_ICMS_ST: item.VALOR_ICMS_ST,
+                CST: item.CST,
+                BASE_ICMS_ST: item.BASE_ICMS_ST,
+                PERCENTUAL_ICMS: item.PERCENTUAL_ICMS,
+                PERCENTUAL_IPI: item.PERCENTUAL_IPI,
+                UF: state.dbDevolucao.UF,
+                CHAVE: item.CHAVE,
+                DATA_EMISSAO: item.DATA_EMISSAO,
+                QTD: item.QTD,
+                CST_PIS: item.CST_PIS,
+                CST_COFINS: item.CST_COFINS,
+                PERCENTUAL_PIS: item.PERCENTUAL_PIS,
+                PERCENTUAL_COFINS: item.PERCENTUAL_COFINS,
+            }
+        }
+
+        state.modalInformarQtdItem.open();
+    },
+
+    closeModalInformarQtdItem() {
+        state.modalInformarQtdItem.close();
     },
 
     fretePorConta(tipoDeFrete: number) {
@@ -181,13 +244,8 @@ export const actions = {
 
             let data = await serviceDevolucaoFornecedor.getDevolucao(id_devolucao)
 
-            state.dbDevolucao = {
-                ...data.DEVOLUCAO
-            }
-
-            state.dbItensDevolucao = [
-                ...data.ITENS_DEVOLUCAO
-            ]
+            state.dbDevolucao = data.DEVOLUCAO
+            state.dbItensDevolucao = data.ITENS_DEVOLUCAO
 
             actions.habilitarBtns()
 
@@ -253,12 +311,18 @@ export const actions = {
             }
 
 
-            if (await msgConfirm("Confirmação", "Confirma a finalização desta devolução?")) {
+            if (await msgConfirm("Confirmação", "Tem certeza de que deseja finalizar? Essa ação não poderá ser desfeita!")) {
                 state.loading = true;
 
                 await serviceDevolucaoFornecedor.finalizarDevolucao({ param })
-
                 await actions.getDevolucao(state.dbDevolucao)
+
+                await actions.imprimirNotaDevolucaoFornecedorPDF()
+
+                Swal.fire({
+                    icon: "success",
+                    text: "Nota de devolução finalizada!",
+                });
 
                 state.loading = false;
             }
@@ -284,6 +348,11 @@ export const actions = {
 
                 actions.desabilitarBtns()
 
+                Swal.fire({
+                    icon: "success",
+                    text: "Nota de devolução deletada!",
+                });
+
                 state.loading = false;
             }
 
@@ -292,6 +361,159 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao excluir devolução!",
+            });
+        }
+    },
+
+    async emitirNotaDevolucaoFornecedorPrevia() {
+        try {
+            if (!state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP) {
+                Swal.fire({
+                    icon: "error",
+                    text: "É necessário adicionar transportadora!",
+                });
+                return false
+            }
+
+            if (state.dbItensDevolucao.length == 0) {
+                Swal.fire({
+                    icon: "error",
+                    text: "É necessário adicionar itens!",
+                })
+                return false
+            }
+
+            state.loading = true
+
+            let param = {
+                ID_DEVOLUCAO_FORNECEDOR: state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR,
+                PREVIA: true
+            }
+
+            let data = await serviceDevolucaoFornecedor.emitirNotaDevolucaoFornecedorPrevia(param)
+
+            printJS({
+                printable: data.pdf,
+                type: 'pdf',
+                base64: true,
+            })
+
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.msg || "Erro ao emitir nota de devolução!",
+            });
+        }
+    },
+
+    async imprimirNotaDevolucaoFornecedorPDF() {
+        try {
+            state.loading = true;
+
+            let chave = state.dbDevolucao.CHAVE_DEVOLUCAO
+            let ano = moment(state.dbDevolucao.DATA).year();
+            let mes = NOME_MESES[moment(state.dbDevolucao.DATA).month()]
+            let url = `${config.SERVER}:${config.PORT}/NFe/${ano}-${mes}/DevolucaoFornecedor/${chave}-nfe.pdf`;
+
+            printJS({
+                printable: url,
+                type: "pdf",
+            });
+
+            state.loading = false;
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir nota de devolução pdf!",
+            });
+        }
+    },
+
+    async downloadXmlNfDevolucaoFornecedor() {
+        try {
+            state.loading = true;
+
+            let chave = state.dbDevolucao.CHAVE_DEVOLUCAO
+            let ano = moment(state.dbDevolucao.DATA).year();
+            let mes = NOME_MESES[moment(state.dbDevolucao.DATA).month()]
+            let url = `${config.SERVER}:${config.PORT}/NFe/${ano}-${mes}/DevolucaoFornecedor/${chave}-nfe.xml`;
+
+            let response = await fetch(url);
+            let xmlContent = await response.text();
+
+            let blob = new Blob([xmlContent], { type: 'text/xml' });
+
+            let link = document.createElement('a');
+            link.download = `${chave}-nfe.xml`;
+            link.href = window.URL.createObjectURL(blob);
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            document.body.removeChild(link);
+
+            state.loading = false;
+
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao baixa a nota de devolução xml!",
+            });
+        }
+    },
+
+    async downloadXmlPrevia() {
+        try {
+
+            if (!state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP) {
+                Swal.fire({
+                    icon: "error",
+                    text: "É necessário adicionar transportadora!",
+                });
+                return false
+            }
+
+            if (state.dbItensDevolucao.length == 0) {
+                Swal.fire({
+                    icon: "error",
+                    text: "É necessário adicionar itens!",
+                })
+                return false
+            }
+
+            state.loading = true;
+
+            let param: iParamEmitirNotaDevolucaoFornecedorPrevia = {
+                ID_DEVOLUCAO_FORNECEDOR: state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR,
+                PREVIA: true
+            }
+
+            let data = await serviceDevolucaoFornecedor.emitirNotaDevolucaoFornecedorPrevia(param)
+
+            let blob = new Blob([data.xml], { type: 'text/xml' });
+
+            let link = document.createElement('a');
+            link.download = `${state.dbDevolucao.RAZAO_SOCIAL}-previa.xml`;
+            link.href = window.URL.createObjectURL(blob);
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            document.body.removeChild(link);
+
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao baixar xml prévia!",
             });
         }
     }

@@ -14,25 +14,33 @@ export interface iDevolucao {
     NOME_TRANSPORTADORA: string,
     VALOR_FRETE: number,
     TIPO_FRETE: number,
-    ID_DEVOLUCAO_FORNECEDOR_TRANSP: number
+    ID_DEVOLUCAO_FORNECEDOR_TRANSP: number,
+    UF: string
 }
 
 export interface iItem {
-    ID_ENTRADA: number,
-    ID_ITEM: number,
+    ID_DEVOLUCAO_FORNECEDOR_ITEM: number,
+    ID_ENTRADA?: number,
+    ID_ITEM?: number,
     DESCRICAO: string,
     NUM_NOTA: number,
     QUANTIDADE: number,
     COD_FABRICANTE: string,
-    CUSTO: number,
+    CUSTO?: number,
     COD_PRODUTO: number
-    CFOP: string,
     VALOR_ICMS_ST: number,
     CST: string,
     BASE_ICMS_ST: number,
     PERCENTUAL_ICMS: number,
     PERCENTUAL_IPI: number,
-    UF: string
+    UF?: string,
+    CHAVE: string,
+    DATA_EMISSAO: string,
+    QTD: number,
+    CST_PIS: string,
+    CST_COFINS: string,
+    PERCENTUAL_PIS: number,
+    PERCENTUAL_COFINS: number,
 }
 
 export interface iItemDevolucao {
@@ -47,6 +55,13 @@ export interface iItemDevolucao {
     BASE_ICMS_ST: number,
     PERCENTUAL_ICMS: number,
     PERCENTUAL_IPI: number,
+    CST_PIS: string,
+    PERCENTUAL_PIS: number | string,
+    CST_COFINS: string,
+    PERCENTUAL_COFINS: number | string,
+    COD_FABRICANTE: string,
+    CHAVE: string,
+    DATA_EMISSAO: string,
 }
 
 export interface iItensDevolucao {
@@ -59,7 +74,20 @@ export interface iItensDevolucao {
     VALOR_TOTAL: number,
     DESCRICAO: string,
     NUM_NOTA: number,
-    DATA_EMISSAO: string
+    DATA_EMISSAO: string,
+    QUANTIDADE: number,
+    COD_FABRICANTE: string,
+    COD_PRODUTO: number
+    VALOR_ICMS_ST: number,
+    CST: string,
+    BASE_ICMS_ST: number,
+    PERCENTUAL_ICMS: number,
+    PERCENTUAL_IPI: number,
+    CHAVE: string,
+    CST_PIS: string,
+    CST_COFINS: string,
+    PERCENTUAL_PIS: number,
+    PERCENTUAL_COFINS: number,
 }
 
 export interface iFornecedor {
@@ -115,6 +143,39 @@ export interface iParamFinalizarDevolucao {
 
 export interface objNotasAgrupadas {
     [key: number]: iItensDevolucao
+}
+
+export interface iParamGetTributosPisCofinsItem {
+    ANO: number,
+    MES: string,
+    CHAVE: string,
+    COD_FABRICANTE: string
+}
+
+export interface iGetTributosPisCofinsItemResponse {
+    CST_PIS: string,
+    PERCENTUAL_PIS: number,
+    CST_COFINS: string,
+    PERCENTUAL_COFINS: number
+}
+
+export interface iParamGetItensDevolucaoQTDFunction {
+    ID_NF_ENTRADA_MANIFESTO: number,
+    ID_NF_ENTRADA_ITEM: number
+}
+
+export interface iGetItensDevolucaoQTDResponse {
+    QTD: number
+}
+
+export interface iParamEmitirNotaDevolucaoFornecedorPrevia {
+    ID_DEVOLUCAO_FORNECEDOR: number,
+    PREVIA: boolean
+}
+
+export interface iEmitirNotaDevolucaoFornecedorPreviaResponse {
+    pdf: string,
+    xml: string
 }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }

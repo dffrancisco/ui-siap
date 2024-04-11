@@ -3,13 +3,13 @@ import { reactive, nextTick, watch, onUnmounted } from "vue";
 import { useEventListener } from "@vueuse/core";
 
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 
-import { iItem, iParamGetItens } from "../interfaces";
+import { iItem, iParamGetItens, iParamGetItensDevolucaoQTDFunction } from "../interfaces";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
-import ModalInformarQtdItem from "./ModalInformarQtdItem.vue";
+
+import produtoSemFotoImg from "../assets/sem_foto.jpg";
 
 const props = defineProps<{
   modalOpened: boolean;
@@ -17,7 +17,7 @@ const props = defineProps<{
   id_devolucaoFornecedor: number | undefined;
 }>();
 
-const emit = defineEmits(["closeModal", "getDevolucao"]);
+const emit = defineEmits(["closeModal", "getDevolucao", "openModalInformarQtdItem"]);
 
 watch(
   () => props.modalOpened,
@@ -36,9 +36,7 @@ watch(
 
 const state = reactive({
   gridEscolherItem: <ixGridCreate>{},
-  modalInformarQtdItem: <iModalCreate>{},
   dbItem: <iItem>{},
-  modalInformaQtdOpened: false,
 
   search: null,
   edtItemSearch: <HTMLInputElement>{},
@@ -61,7 +59,7 @@ const actions = {
           if (r.FOTO == "F") {
             url_foto = `http://www.reallatas.com.br/balcao/foto/${r.COD_PRODUTO}.jpg`;
           } else {
-            url_foto = `src/pages/devolucaoFornecedor/assets/sem_foto.jpg`;
+            url_foto = produtoSemFotoImg;
           }
 
           return `<div style="display: flex; height: 62px; margin-bottom: 10px; width: 100%">
@@ -89,7 +87,7 @@ const actions = {
                     <div style="display: flex; flex-direction: row; justify-content: space-between">
                         <p>Nº nota: ${r.NUM_NOTA}</p>
 
-                        <p>Qtd Disponível: ${r.QUANTIDADE}</p>
+                        <p>Qtd de Itens: ${r.QUANTIDADE}</p>
 
                         <p>${utils.formatValor(r.CUSTO)}</p>
                     </div>
@@ -111,22 +109,6 @@ const actions = {
     });
   },
 
-  criarModal() {
-    state.modalInformarQtdItem = new xModal.create({
-      el: "#modalInformarQtdItem",
-      height: 262,
-      width: 715,
-      theme: "xModal-blue",
-      onOpen: () => {
-        state.modalInformaQtdOpened = true;
-      },
-      onClose: () => {
-        state.modalInformaQtdOpened = false;
-        state.gridEscolherItem.focus();
-      },
-    });
-  },
-
   searchItem() {
     state.gridEscolherItem.queryOpen({
       search: state.edtItemSearch.value.toUpperCase(),
@@ -138,7 +120,7 @@ const actions = {
     emit("closeModal");
   },
 
-  openModalInformarQtdItem() {
+  async openModalInformarQtdItem() {
     const item = state.gridEscolherItem.dataSource();
 
     state.dbItem = item;
@@ -151,16 +133,21 @@ const actions = {
       return;
     }
 
-    state.modalInformarQtdItem.open();
-  },
+    await actions.getItensDevolucaoQTD();
 
-  closeModalInformarQtdItem() {
-    state.modalInformarQtdItem.close();
+    if (state.dbItem.QUANTIDADE <= 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Não há mais itens disponíveis para devolver!",
+      });
+      return;
+    }
+
+    emit("openModalInformarQtdItem", item);
   },
 
   getDevolucao() {
     actions.closeModalEscolherItem();
-    state.modalInformarQtdItem.close();
     emit("getDevolucao");
   },
 
@@ -179,6 +166,29 @@ const actions = {
       });
     }
   },
+
+  async getItensDevolucaoQTD() {
+    try {
+      state.loading = true;
+
+      let param: iParamGetItensDevolucaoQTDFunction = {
+        ID_NF_ENTRADA_ITEM: state.dbItem.ID_ITEM,
+        ID_NF_ENTRADA_MANIFESTO: state.dbItem.ID_ENTRADA,
+      };
+
+      let data = await serviceDevolucaoFornecedor.getItensDevolucaoQTD(param);
+
+      state.dbItem.QUANTIDADE = state.dbItem.QUANTIDADE - data.QTD;
+
+      state.loading = false;
+    } catch (error) {
+      state.loading = false;
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao buscar a qtd de item já devolvida!",
+      });
+    }
+  },
 };
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -193,7 +203,6 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
 
 nextTick(async () => {
   actions.criarGrids();
-  actions.criarModal();
 
   state.edtItemSearch = <any>document.getElementById("edtItemSearch");
 });
@@ -205,31 +214,26 @@ onUnmounted(() => {
 
 <template>
   <v-container>
-    <div class="pb-2">
-      <v-row>
-        <v-col>
-          <input
-            type="text"
-            placeholder="Pesquisar pelo nº fabricante ou descrição (F1)"
-            class="searchDevolucao pa-2"
-            v-model="state.search"
-            id="edtItemSearch"
-            autocomplete="off"
-            @keydown.enter="actions.searchItem"
-            @keydown.arrow-down="state.gridEscolherItem.focus(0)"
-          />
-        </v-col>
-        <v-col>
-          <v-btn
-            size="small"
-            class="btnSearch"
-            color="#3680AB"
-            @click="actions.searchItem"
-          >
-            <v-icon size="24px">mdi-magnify</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
+    <div class="pb-2 d-flex align-center justify-space-around">
+      <input
+        type="text"
+        placeholder="Pesquisar pelo nº fabricante ou descrição (F1)"
+        class="searchDevolucao pa-2 ss"
+        v-model="state.search"
+        id="edtItemSearch"
+        autocomplete="off"
+        @keydown.enter="actions.searchItem"
+        @keydown.arrow-down="state.gridEscolherItem.focus(0)"
+      />
+
+      <v-btn
+        size="40"
+        class="btnSearch"
+        color="#3680AB"
+        @click="actions.searchItem"
+        icon="mdi-magnify mdi-24px"
+      >
+      </v-btn>
     </div>
 
     <div id="gridEscolherItem"></div>
@@ -259,30 +263,12 @@ onUnmounted(() => {
       >
       </v-progress-circular>
     </v-overlay>
-
-    <div
-      id="modalInformarQtdItem"
-      style="display: none"
-      title="Informar Qtd"
-    >
-      <ModalInformarQtdItem
-        :modalInformaQtdOpened="state.modalInformaQtdOpened"
-        :dbItem="state.dbItem"
-        :id_devolucaoFornecedor="props.id_devolucaoFornecedor"
-        @closeModalInformarQtdItem="actions.closeModalInformarQtdItem"
-        @salvarItem="actions.getDevolucao"
-      ></ModalInformarQtdItem>
-    </div>
   </v-container>
 </template>
 
 <style scoped>
 .searchDevolucao {
-  width: 558px;
-  border-radius: 8px;
-  border: 2px solid #d9d9d9;
-  height: 48px;
-  text-transform: uppercase;
+  width: 90%;
 }
 
 .btnSearch {

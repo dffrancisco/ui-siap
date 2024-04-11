@@ -7,6 +7,7 @@ import ModalLocalizarDevolucao from "./components/ModalLocalizarDevolucao.vue";
 import ModalSelecionarFornecedor from "./components/ModalSelecionarFornecedor.vue";
 import ModalTransportadora from "./components/ModalTransportadora.vue";
 import ModalEscolherItem from "./components/ModalEscolherItem.vue";
+import ModalInformarQtdItem from "./components/ModalInformarQtdItem.vue";
 
 import utils from "@/ts/utils";
 import moment from "moment";
@@ -58,7 +59,7 @@ onUnmounted(() => {
       class="pa-4"
       style="margin: 0 auto"
       width="1164px"
-      height="728px"
+      height="692"
     >
       <div class="btns">
         <v-btn
@@ -76,10 +77,10 @@ onUnmounted(() => {
           Nova devolução (F2)
         </v-btn>
       </div>
-      <div class="pt-5">
+      <div class="pt-4">
         <v-row>
           <v-col cols="7">
-            <h2 class="pb-2 font-weight-regular">Dados do Fornecedor</h2>
+            <h2 class="pb-1 font-weight-regular">Dados do Fornecedor</h2>
             <div class="container"
               ><v-row>
                 <v-col cols="3">
@@ -94,14 +95,14 @@ onUnmounted(() => {
             </div>
           </v-col>
           <v-col>
-            <h2 class="pb-2 font-weight-regular">Notas vinculadas ({{ notasAgrupadas.length }})</h2>
+            <h2 class="pb-1 font-weight-regular">Notas vinculadas ({{ notasAgrupadas.length }})</h2>
             <div class="container notas_vinculadas">
               <span v-if="notasAgrupadas.length == 0">Nenhuma nota vinculada, necessário adicionar itens!</span>
               <v-card
                 v-if="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
                 v-for="notas in notasAgrupadas"
               >
-                <div class="card_nota pa-2">
+                <div class="card_nota pa-1">
                   <span>{{ notas.NUM_NOTA }}</span>
                   <p>{{ utils.dataBrasil(notas.DATA_EMISSAO) }}</p>
                 </div>
@@ -110,8 +111,8 @@ onUnmounted(() => {
           </v-col>
         </v-row>
       </div>
-      <div class="pt-5">
-        <h2 class="pb-2 font-weight-regular">Dados da Transportadora</h2>
+      <div class="pt-4">
+        <h2 class="pb-1 font-weight-regular">Dados da Transportadora</h2>
         <div class="container">
           <v-row>
             <v-col cols="6">
@@ -144,8 +145,8 @@ onUnmounted(() => {
       </div>
 
       <!-- componente dados da devolucao -->
-      <div class="pt-5">
-        <h2 class="pb-2 font-weight-regular">Dados da Devolução</h2>
+      <div class="pt-4">
+        <h2 class="pb-1 font-weight-regular">Dados da Devolução</h2>
         <div class="container">
           <v-row>
             <v-col cols="2">
@@ -168,10 +169,10 @@ onUnmounted(() => {
         </div>
       </div>
       <div
-        class="pt-5"
+        class="pt-4"
         style="min-height: 210px"
       >
-        <h2 class="pb-2 font-weight-regular">Itens</h2>
+        <h2 class="pb-1 font-weight-regular">Itens</h2>
         <div class="cards">
           <v-card
             v-if="state.dbDevolucao.STATUS != 1"
@@ -193,6 +194,12 @@ onUnmounted(() => {
               <span>{{ itens.DESCRICAO }}</span>
               <button
                 v-if="state.dbDevolucao.STATUS != 1"
+                title="ATUALIZAR ITEM"
+                @click="actions.openModalInformarQtdItem(itens)"
+                ><v-icon size="20px">mdi-pen</v-icon>
+              </button>
+              <button
+                v-if="state.dbDevolucao.STATUS != 1"
                 title="DELETAR ITEM"
                 @click="actions.deleteItemDevolucao(itens.ID_DEVOLUCAO_FORNECEDOR_ITEM)"
                 ><v-icon size="20px">mdi-delete</v-icon>
@@ -211,7 +218,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div class="btns pt-5">
+      <div class="btns pt-4">
         <div class="d-flex flex-wrap ga-2">
           <v-btn
             color="#3680AB"
@@ -222,14 +229,50 @@ onUnmounted(() => {
             ><v-icon size="24px">mdi-delete</v-icon>
           </v-btn>
           <v-btn
-            color="#3680AB"
+            v-if="state.dbDevolucao.STATUS != 1"
             :disabled="state.disabledBtnPrint"
+            color="#3680AB"
+            @click="actions.emitirNotaDevolucaoFornecedorPrevia"
           >
             <v-icon
               size="24px"
               class="mr-2"
               >mdi-printer</v-icon
-            >{{ state.dbDevolucao.STATUS == 1 ? "Imprimir" : "Prévia" }}</v-btn
+            >Prévia PDF</v-btn
+          >
+          <v-btn
+            v-if="state.dbDevolucao.STATUS != 1"
+            :disabled="state.disabledBtnPrint"
+            color="#3680AB"
+            @click="actions.downloadXmlPrevia"
+          >
+            <v-icon
+              size="24px"
+              class="mr-2"
+              >mdi-file</v-icon
+            >Prévia XML</v-btn
+          >
+          <v-btn
+            v-if="state.dbDevolucao.STATUS == 1"
+            color="#3680AB"
+            @click="actions.imprimirNotaDevolucaoFornecedorPDF"
+          >
+            <v-icon
+              size="24px"
+              class="mr-2"
+              >mdi-printer</v-icon
+            >Imprimir</v-btn
+          >
+          <v-btn
+            v-if="state.dbDevolucao.STATUS == 1"
+            color="#3680AB"
+            @click="actions.downloadXmlNfDevolucaoFornecedor"
+          >
+            <v-icon
+              size="24px"
+              class="mr-2"
+              >mdi-file</v-icon
+            >XML</v-btn
           >
         </div>
         <span
@@ -312,7 +355,23 @@ onUnmounted(() => {
           :id_devolucaoFornecedor="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
           @closeModal="actions.closeModalEscolherItem"
           @getDevolucao="actions.getDevolucao(state.dbDevolucao)"
+          @openModalInformarQtdItem="actions.openModalInformarQtdItem"
         ></ModalEscolherItem>
+      </div>
+
+      <div
+        id="modalInformarQtdItem"
+        style="display: none"
+        title="Informar Qtd"
+      >
+        <ModalInformarQtdItem
+          :modalInformaQtdOpened="state.modalInformaQtdItemOpened"
+          :dbItem="state.dbItem"
+          :id_devolucaoFornecedor="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
+          @closeModalInformarQtdItem="actions.closeModalInformarQtdItem"
+          @closeModalEscolherItem="actions.closeModalEscolherItem"
+          @salvarItem="actions.getDevolucao(state.dbDevolucao)"
+        ></ModalInformarQtdItem>
       </div>
     </v-card>
   </v-container>
@@ -355,7 +414,7 @@ h2 {
   width: 340px;
   height: 77px;
   border-radius: 8px;
-  background-color: #d9d9d9;
+  background-color: #91d2f7;
   display: flex;
   flex-direction: column;
 }
@@ -365,7 +424,7 @@ h2 {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  color: #2d9cdb;
+  color: #000000;
   margin-bottom: 4px;
 }
 .cards {
