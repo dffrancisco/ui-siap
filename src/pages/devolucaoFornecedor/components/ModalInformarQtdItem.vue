@@ -14,7 +14,7 @@ const props = defineProps<{
   modalInformaQtdOpened: boolean;
 }>();
 
-const emit = defineEmits(["salvarItem", "closeModalInformarQtdItem"]);
+const emit = defineEmits(["salvarItem", "closeModalInformarQtdItem", "closeModalEscolherItem"]);
 
 watch(
   () => props.modalInformaQtdOpened,
@@ -41,17 +41,17 @@ watch(
         ID_ENTRADA: props.dbItem.ID_ENTRADA,
         ID_ITEM: props.dbItem.ID_ITEM,
         CFOP: state.dbItemDevolucao.CFOP,
-        QTD: 0,
+        QTD: props.dbItem.QTD || 0,
         CST: props.dbItem.CST,
         VALOR_UNITARIO: props.dbItem.CUSTO,
         VALOR_ICMS_ST: props.dbItem.VALOR_ICMS_ST,
         BASE_ICMS_ST: props.dbItem.BASE_ICMS_ST,
         PERCENTUAL_ICMS: props.dbItem.PERCENTUAL_ICMS,
         PERCENTUAL_IPI: props.dbItem.PERCENTUAL_IPI,
-        CST_PIS: null,
-        PERCENTUAL_PIS: 0,
-        CST_COFINS: null,
-        PERCENTUAL_COFINS: 0,
+        CST_PIS: props.dbItem.CST_PIS,
+        PERCENTUAL_PIS: props.dbItem.PERCENTUAL_PIS || 0,
+        CST_COFINS: props.dbItem.CST_COFINS,
+        PERCENTUAL_COFINS: props.dbItem.PERCENTUAL_COFINS || 0,
         COD_FABRICANTE: props.dbItem.COD_FABRICANTE,
         CHAVE: props.dbItem.CHAVE,
         DATA_EMISSAO: props.dbItem.DATA_EMISSAO,
@@ -196,9 +196,14 @@ const actions = {
 
       await serviceDevolucaoFornecedor.updateInsertItemDevolucao({ param });
 
-      state.loading = false;
-
       emit("salvarItem");
+      emit("closeModalInformarQtdItem");
+
+      if (!props.dbItem.ID_DEVOLUCAO_FORNECEDOR_ITEM) {
+        emit("closeModalEscolherItem");
+      }
+
+      state.loading = false;
     } catch (error) {
       state.loading = false;
       Swal.fire({
