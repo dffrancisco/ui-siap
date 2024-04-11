@@ -3,24 +3,6 @@ export interface iMesEAno {
     ano: number;
 }
 
-export interface iResponseMetasVendedores {
-    LOGIN: string;
-    CARGO: string;
-    CPF: string;
-    ID_VENDEDOR: number;
-    QTD_VENDAS: number;
-    VALOR_TOTAL: number;
-}
-
-export interface iResponseMetasMontadores {
-    LOGIN: string;
-    CARGO: string;
-    CPF: string;
-    ID_MONTADOR: number;
-    QTD_VENDAS: number;
-    VALOR_TOTAL: number;
-}
-
 export interface iResponseFuncionarios {
     CARGO: string;
     COD_FUNCIONARIO: number;
@@ -31,12 +13,34 @@ export interface iResponseFuncionarios {
     NOME_COMP: string;
 }
 
-export interface iPropsMetas {
-    vendedores: iResponseMetasVendedores[]
-    montadores: iResponseMetasMontadores[]
+export interface iResponseMetaInserida {
+    cargo: string;
+    cod_funcionario: number;
+    valorMeta: number;
+    mes: number;
+    ano: number;
 }
 
-export interface iPropsAtribuirMetaIndividual {
-    vendedor: iResponseMetasVendedores
-    montador: iResponseMetasMontadores
+export interface iResponseMetasVendedores {
+    vendedores: iResponseMetaInserida[];
+}
+
+// export interface iResponseMetasMontadores {
+//     montadores: iResponseMetaInserida[];
+// }
+
+export interface iResponseGetMetasVendedores {
+    LOGIN: string;
+    CPF: string;
+    COD_FUNCIONARIO: number;
+    CARGO: string;
+    VALOR_TOTAL: number;
+    QTD_VENDAS: number;
+    MES: number;
+    ANO: number;
+    VALOR_META: number;
+    ATINGIDO: number;
+    PREVISAO: number;
+    MEDIA_DIARIA: number;
+    PROGRESSO: number;
 }

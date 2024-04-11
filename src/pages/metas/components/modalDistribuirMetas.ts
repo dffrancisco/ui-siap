@@ -1,10 +1,10 @@
 import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
 import metasService from "../services/metas.service";
-import { iMesEAno, iResponseFuncionarios, iResponseMetasMontadores, iResponseMetasVendedores } from "../interfaces";
+import { iMesEAno, iResponseFuncionarios } from "../interfaces";
 import Swal from "sweetalert2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 
-export const setup = (props: any) => {
+export const setup = (emit: any, props: any) => {
 
     const state = reactive({
         loading: false,
@@ -12,35 +12,29 @@ export const setup = (props: any) => {
         ano: 0,
         isVendedoresSelected: true,
         isMontadoresSelected: false,
-        // selectedFuncionario: <number | null>null,
         modalAtribuirMetaIndividual: <iModalCreate>(<unknown>null),
         modalAtribuirMetaIndividualOpened: false,
+        codFuncionarioSelecionado: <number>undefined,
+        funcionarioSelecionado: <iResponseFuncionarios>{}
     })
 
-    let vendedores = ref([]);
-    let montadores = ref([]);
     let funcionarios = ref([]);
 
     watch(
         () => props.opened,
-
         () => {
             if (props.opened) {
                 state.loading = true;
-                vendedores.value = props.dadosParaDistribuirMetas.vendedores;
-                montadores.value = props.dadosParaDistribuirMetas.montadores;
                 funcionarios.value = props.funcionarios;
-                state.mes = props.mesEAno.mes;
-                state.ano = props.mesEAno.ano;
-                state.loading = false;
+                state.mes = props.mes;
+                state.ano = props.ano;
+                setTimeout(() => {
+                    state.loading = false;
+                }, 1000);
             }
 
         }
     );
-
-    const vendedorSelecionado = ref<iResponseMetasVendedores | null>(null);
-    const montadorSelecionado = ref<iResponseMetasMontadores | null>(null);
-    const funcionarioSelecionado = ref<iResponseFuncionarios | null>(null);
 
     const funcionariosOrdenados = computed(() => {
         let funcionariosArray = <any[]>[];
@@ -56,17 +50,23 @@ export const setup = (props: any) => {
         return funcionariosArray;
     });
 
-    const atribuirMetaIndividual = (item: iResponseMetasVendedores | iResponseMetasMontadores) => {
-        if ("ID_VENDEDOR" in item) {
-            vendedorSelecionado.value = item;
-            montadorSelecionado.value = null;
-            state.modalAtribuirMetaIndividual.open();
-        } else {
-            montadorSelecionado.value = item;
-            vendedorSelecionado.value = null;
-            state.modalAtribuirMetaIndividual.open();
+    const atribuirMetaIndividual = () => {
+        console.log(props.funcionarios)
+
+        state.funcionarioSelecionado = props.funcionarios
+            .find(funcionario => funcionario.COD_FUNCIONARIO == state.codFuncionarioSelecionado)
+
+        if (!state.funcionarioSelecionado?.LOGIN) {
+            Swal.fire({
+                icon: "error",
+                text: "Escolha um funcionário para prosseguir.",
+            });
+            return;
         }
+
+        state.modalAtribuirMetaIndividual.open();
     };
+
 
     onMounted(() => {
         nextTick(() => {
@@ -83,22 +83,6 @@ export const setup = (props: any) => {
             }
             const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
             return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
-        },
-
-        selectVendedores() {
-            if (!state.isVendedoresSelected) {
-                state.isVendedoresSelected = true;
-                state.isMontadoresSelected = false;
-            }
-            actions.getMetasVendedores(state.mes, state.ano)
-        },
-
-        selectMontadores() {
-            if (!state.isMontadoresSelected) {
-                state.isMontadoresSelected = true;
-                state.isVendedoresSelected = false;
-            }
-            actions.getMetasMontadores(state.mes, state.ano)
         },
 
         async getMetasVendedores(mes: number, ano: number) {
@@ -160,17 +144,61 @@ export const setup = (props: any) => {
 
     }
 
+    const selecionarVendedores = () => {
+        state.loading = true;
+        state.isVendedoresSelected = true;
+        state.isMontadoresSelected = false;
+        funcionarios.value = props.funcionarios.filter((funcionario: iResponseFuncionarios) => funcionario.CARGO === 'VENDEDOR');
+        setTimeout(() => {
+            state.loading = false;
+        }, 1000);
+    };
+
+    const selecionarMontadores = () => {
+        state.loading = true;
+        state.isVendedoresSelected = false;
+        state.isMontadoresSelected = true;
+        funcionarios.value = props.funcionarios.filter((funcionario: iResponseFuncionarios) => funcionario.CARGO === 'MONTADOR');
+        setTimeout(() => {
+            state.loading = false;
+        }, 1000);
+    };
+
+    const filtrarFuncionarios = (funcionarioSelecionado: iResponseFuncionarios | null) => {
+
+        console.log(funcionarioSelecionado);
+
+
+        if (funcionarioSelecionado) {
+            funcionarios.value = props.funcionarios.filter(
+                (funcionario) => funcionario.COD_FUNCIONARIO === funcionarioSelecionado
+            );
+        } else {
+            funcionarios.value = props.funcionarios;
+        }
+    };
+
+    const enviarDadosMeta = (dadosParaInserirMeta: { funcionario: iResponseFuncionarios, valorMeta: number }) => {
+        emit("inserirMeta", dadosParaInserirMeta)
+    };
+
+    const fecharModal = () => {
+        state.modalAtribuirMetaIndividual.close();
+        emit("atualizarDadosMetas")
+    }
+
+
     return {
         actions,
         state,
-        vendedores,
-        montadores,
         funcionarios,
-        vendedorSelecionado,
-        montadorSelecionado,
+        selecionarVendedores,
+        selecionarMontadores,
+        filtrarFuncionarios,
         atribuirMetaIndividual,
-        funcionarioSelecionado,
-        funcionariosOrdenados
+        funcionariosOrdenados,
+        enviarDadosMeta,
+        fecharModal
     }
 }
 

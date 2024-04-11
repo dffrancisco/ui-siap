@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { iMesEAno, iPropsMetas, iResponseFuncionarios } from "../interfaces";
+import { iResponseFuncionarios } from "../interfaces";
 import { setup } from "./modalDistribuirMetas";
 import utils from "@/ts/utils";
 import ModalAtribuirMetaIndividual from "./modalAtribuirMetaIndividual.vue";
@@ -9,29 +9,30 @@ const props = defineProps({
   funcionarios: {
     type: Object as () => iResponseFuncionarios,
   },
-  dadosParaDistribuirMetas: {
-    type: Object as () => iPropsMetas,
+  mes: {
+    type: Number,
   },
-  mesEAno: {
-    type: Object as () => iMesEAno,
+  ano: {
+    type: Number,
   },
   opened: {
     type: Boolean,
   },
 });
 
+const emit = defineEmits(["inserirMeta", "atualizarDadosMetas"]);
+
 const {
   actions,
   state,
-  vendedores,
-  montadores,
-  funcionarios,
-  vendedorSelecionado,
-  montadorSelecionado,
+  selecionarVendedores,
+  selecionarMontadores,
+  filtrarFuncionarios,
+  enviarDadosMeta,
+  fecharModal,
   atribuirMetaIndividual,
-  funcionarioSelecionado,
   funcionariosOrdenados,
-} = setup(props);
+} = setup(emit, props);
 </script>
 
 <template>
@@ -47,7 +48,7 @@ const {
         :class="{ selected: state.isVendedoresSelected }"
         color="green"
         title="Vendedores"
-        @click.prevent="actions.selectVendedores"
+        @click.prevent="selecionarVendedores"
       >
         Vendedores
       </v-chip>
@@ -59,7 +60,7 @@ const {
         :class="{ selected: state.isMontadoresSelected }"
         color="orange"
         title="Montadores"
-        @click.prevent="actions.selectMontadores"
+        @click.prevent="selecionarMontadores"
       >
         Montadores
       </v-chip>
@@ -75,6 +76,7 @@ const {
             item-title="NOME_COMP"
             item-value="COD_FUNCIONARIO"
             class="funcionario__input"
+            v-model="state.codFuncionarioSelecionado"
           ></v-autocomplete>
         </v-col>
 
@@ -83,7 +85,7 @@ const {
             title="Adicionar meta"
             class="funcionario__btn"
             color="primary"
-            @click.prevent="atribuirMetaIndividual(funcionarios[0].COD_FUNCIONARIO)"
+            @click.prevent="atribuirMetaIndividual()"
             >Adicionar meta
           </v-btn>
         </v-col>
@@ -113,53 +115,47 @@ const {
       </v-row>
     </div>
 
-    <div class="funcionarios ml-7">
+    <!-- <div class="funcionarios ml-7">
       <div class="funcionarios__lista">
-        <div
-          class="funcionarios__lista"
-          v-if="state.isVendedoresSelected"
+        <v-card
+          v-for="funcionario in funcionariosOrdenados"
+          :key="funcionario.COD_FUNCIONARIO"
+          class="funcionarios__lista__card"
+          @click="atribuirMetaIndividual()"
         >
-          <v-card
-            class="funcionarios__lista__card"
-            v-for="vendedor in vendedores"
-            :key="vendedor.ID_VENDEDOR"
-          >
-            <div class="funcionarios__lista__card__usuario">
-              <div>
-                <v-avatar
-                  size="70px"
-                  color="primary"
-                  :title="vendedor.LOGIN"
-                  class="funcionarios__lista__avatar"
-                >
-                  <v-img
-                    :src="actions.getFotoFuncionarioURL(vendedor.CPF)"
-                    aspect-ratio="1"
-                    cover
-                  ></v-img>
-                </v-avatar>
-              </div>
-
-              <div class="funcionarios__lista__card__info">
-                <div class="funcionarios__lista__card__nome">{{ vendedor.LOGIN }} </div>
-                <div class="funcionarios__lista__card__meta">{{ utils.formatValor(vendedor.VALOR_TOTAL) }}</div>
-              </div>
-
-              <div class="mb-8">
-                <v-icon
-                  class="funcionarios__lista__card__icon"
-                  size="x-large"
-                  color="primary"
-                  @click.prevent="atribuirMetaIndividual(vendedor)"
-                >
-                  mdi-pen
-                </v-icon>
-              </div>
+          <div class="funcionarios__lista__card__usuario">
+            <div>
+              <v-avatar
+                size="70px"
+                color="primary"
+                :title="funcionario.LOGIN"
+                class="funcionarios__lista__avatar"
+              >
+                <v-img
+                  :src="actions.getFotoFuncionarioURL(funcionario.CPF)"
+                  aspect-ratio="1"
+                  cover
+                ></v-img>
+              </v-avatar>
             </div>
-          </v-card>
-        </div>
+            <div class="funcionarios__lista__card__info">
+              <div class="funcionarios__lista__card__nome">{{ funcionario.LOGIN }} </div>
+              <div class="funcionarios__lista__card__meta">{{ utils.formatValor(funcionario.VALOR_TOTAL) }}</div>
+            </div>
+            <div class="mb-8">
+              <v-icon
+                class="funcionarios__lista__card__icon"
+                size="x-large"
+                color="primary"
+                @click.prevent="atribuirMetaIndividual()"
+              >
+                mdi-pen
+              </v-icon>
+            </div>
+          </div>
+        </v-card>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <div
@@ -168,16 +164,12 @@ const {
     style="display: none; background-color: #f0f6fa"
   >
     <ModalAtribuirMetaIndividual
-      v-if="vendedorSelecionado || montadorSelecionado"
-      :mesEAno="{
-        mes: state.mes,
-        ano: state.ano,
-      }"
-      :dadosParaAtribuirMetaIndividual="{
-        vendedor: vendedorSelecionado,
-        montador: montadorSelecionado,
-      }"
+      :mes="state.mes"
+      :ano="state.ano"
+      :funcionario="state.funcionarioSelecionado"
       :opened="state.modalAtribuirMetaIndividualOpened"
+      @dadosInserirMeta.sync="enviarDadosMeta"
+      @fecharModalAtribuirMetaIndividual="fecharModal"
     />
   </div>
 
@@ -233,12 +225,10 @@ const {
 
 .funcionario__btn {
   margin-left: 40px;
-  width: 185px;
-  height: 45px;
-  font-size: 14px;
   font-weight: 600;
   text-align: center;
-  border-radius: 12px;
+  border-radius: 8px;
+  top: 5px;
 }
 
 .funcionarios_totalizador {

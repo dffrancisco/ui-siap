@@ -2,10 +2,10 @@
 import { onMounted } from "vue";
 import { state, meses, anos, vendedorOuMontador, headers, actions } from "./metas";
 import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
-import { iResponseFuncionarios, iResponseMetasMontadores, iResponseMetasVendedores } from "./interfaces";
+import { iResponseFuncionarios } from "./interfaces";
 
 onMounted(async () => {
-  actions.init(state.mes, state.ano);
+  actions.init();
 });
 </script>
 
@@ -145,6 +145,7 @@ onMounted(async () => {
           v-model:itemsPerPage="state.itemsPerPage"
           :headers="headers"
           :items-length="state.totalItems"
+          :items="state.montadoresArray"
           :loading="state.loading"
           :search="state.search"
         >
@@ -166,16 +167,12 @@ onMounted(async () => {
       style="display: none; background-color: #f0f6fa"
     >
       <ModalDistribuirMetas
-        :funcionarios="state.funcionarios as iResponseFuncionarios"
-        :mesEAno="{
-          mes: state.mes,
-          ano: state.ano,
-        }"
-        :dadosParaDistribuirMetas="{
-          vendedores: state.vendedores as iResponseMetasVendedores[],
-          montadores: state.montadores as iResponseMetasMontadores[],
-        }"
+        :mes="state.mes"
+        :ano="state.ano"
+        :funcionarios="state.funcionarios"
         :opened="state.modalDistribuirMetasOpened"
+        @inserirMeta="actions.inserirMeta"
+        @atualizarDadosMetas="actions.atualizarDadosMetas"
       />
     </div>
 
@@ -230,13 +227,9 @@ onMounted(async () => {
 }
 
 .metas_btn {
-  /* font-family: "Nunito Sans", sans-serif; */
-  font-size: 15px;
   font-weight: 600;
-  line-height: 24.55px;
-  letter-spacing: -0.06428570300340652px;
   text-align: center;
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
 .metas_tiposDeMeta_porcentagem {

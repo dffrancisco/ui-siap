@@ -1,27 +1,37 @@
 <script setup lang="ts">
 import { defineProps, reactive, watch } from "vue";
-import { iMesEAno, iPropsAtribuirMetaIndividual } from "../interfaces";
+import { iResponseFuncionarios } from "../interfaces";
 import { configVMoney } from "../../../constants/constants";
 
 const props = defineProps({
-  dadosParaAtribuirMetaIndividual: {
-    type: Object as () => iPropsAtribuirMetaIndividual,
+  funcionario: {
+    type: Object as () => iResponseFuncionarios,
   },
-  mesEAno: {
-    type: Object as () => iMesEAno,
+  mes: {
+    type: Number,
+  },
+  ano: {
+    type: Number,
   },
   opened: {
     type: Boolean,
   },
 });
 
+const emit = defineEmits(["dadosInserirMeta", "fecharModalAtribuirMetaIndividual"]);
+
 const state = reactive({
-  vendedor: props.dadosParaAtribuirMetaIndividual.vendedor,
-  montador: props.dadosParaAtribuirMetaIndividual.montador,
+  funcionario: {
+    COD_FUNCIONARIO: "" || null,
+    NOME_COMP: "" || null,
+    LOGIN: "" || null,
+    CPF: "" || null,
+    CARGO: "" || null,
+  },
   loading: false,
   inputValor: "",
-  mes: props.mesEAno.mes,
-  ano: props.mesEAno.ano,
+  mes: props.mes,
+  ano: props.ano,
 });
 
 function getFotoFuncionarioURL(cpf: string) {
@@ -32,16 +42,27 @@ function getFotoFuncionarioURL(cpf: string) {
   return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
 }
 
+const salvarMeta = async () => {
+  state.loading = true;
+  let dadosParaInserirMeta = {
+    funcionario: state.funcionario,
+    valorMeta: state.inputValor,
+  };
+
+  emit("dadosInserirMeta", dadosParaInserirMeta);
+  emit("fecharModalAtribuirMetaIndividual");
+  state.loading = false;
+};
+
 watch(
   () => props.opened,
 
   () => {
     if (props.opened) {
       state.loading = true;
-      state.vendedor = props.dadosParaAtribuirMetaIndividual.vendedor;
-      state.montador = props.dadosParaAtribuirMetaIndividual.montador;
-      state.mes = props.mesEAno.mes;
-      state.ano = props.mesEAno.ano;
+      state.funcionario = props.funcionario;
+      state.mes = props.mes;
+      state.ano = props.ano;
       state.loading = false;
     }
   }
@@ -56,17 +77,13 @@ watch(
       class="funcionarios__foto"
     >
       <v-img
-        :src="
-          getFotoFuncionarioURL(state.vendedor ? state.vendedor.CPF : state.montador ? state.montador.CPF : '')
-        "
+        :src="getFotoFuncionarioURL(state.funcionario.CPF)"
         aspect-ratio="2"
         cover
       ></v-img>
     </v-avatar>
 
-    <div class="funcionarios__nome">{{
-      state.vendedor ? state.vendedor.LOGIN : state.montador ? state.montador.LOGIN : ""
-    }}</div>
+    <div class="funcionarios__nome">{{ state.funcionario.LOGIN }}</div>
     <div class="funcionarios__valorDaMeta ml-8">Valor da Meta:</div>
   </div>
 
@@ -89,6 +106,7 @@ watch(
     title="Adicionar meta"
     class="funcionarios__btn_meta ml-3 mt-3"
     color="primary"
+    @click="salvarMeta()"
     >Salvar
   </v-btn>
 

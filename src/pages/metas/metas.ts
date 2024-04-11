@@ -1,6 +1,6 @@
 import { mesesToSelect } from "@/constants/constants";
 import { computed, reactive } from "vue";
-import { iMesEAno } from "./interfaces";
+import { iMesEAno, iResponseFuncionarios, iResponseGetMetasVendedores, iResponseMetaInserida } from "./interfaces";
 import Swal from "sweetalert2";
 import metasService from "./services/metas.service"
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -14,11 +14,13 @@ export const state = reactive({
     itemsPerPage: 5,
     search: (""),
     opcaoMeta: "Vendedores",
-    vendedores: {},
-    montadores: {},
-    funcionarios: {},
+    metaVendedores: {},
+    metaMontadores: <iResponseGetMetasVendedores>{},
+    montadoresArray: [] as any,
+    funcionarios: <iResponseFuncionarios>{},
     modalDistribuirMetas: <iModalCreate>(<unknown>null),
     modalDistribuirMetasOpened: false,
+    metaInserida: <iResponseMetaInserida>{}
 })
 
 export const meses = mesesToSelect;
@@ -77,13 +79,11 @@ export const headers = [
 
 export const actions = {
 
-    async init(mes: number, ano: number) {
+    async init() {
         state.loading = true;
         actions.modal();
-
-        await actions.getFuncionarios(mes, ano);
-        await actions.getMetasVendedores(mes, ano);
-
+        await actions.getMetasVendedores(state.mes, state.ano);
+        await actions.getMetasMontadores(state.mes, state.ano);
         state.loading = false;
     },
 
@@ -102,8 +102,38 @@ export const actions = {
         });
     },
 
-    async getMetasVendedores(mes: number, ano: number) {
+    async inserirMeta(dadosParaInserirMeta: { funcionario: iResponseFuncionarios, valorMeta: number }) {
         state.loading = true;
+
+        const param = {
+            cargo: dadosParaInserirMeta.funcionario.CARGO,
+            cod_funcionario: dadosParaInserirMeta.funcionario.COD_FUNCIONARIO,
+            valorMeta: dadosParaInserirMeta.valorMeta,
+            mes: state.mes,
+            ano: state.ano
+        }
+
+        try {
+            state.metaInserida = await metasService.inserirMeta(param);
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao inserir a meta do funcionario.",
+            });
+        } finally {
+            state.loading = false;
+        }
+
+
+    },
+
+    async atualizarDadosMetas() {
+        await actions.getMetasVendedores(state.mes, state.ano);
+        await actions.getMetasMontadores(state.mes, state.ano);
+    },
+
+    async getMetasVendedores(mes: number, ano: number) {
+        // state.loading = true;
 
 
         const param: iMesEAno = {
@@ -112,34 +142,47 @@ export const actions = {
         }
 
         try {
-            state.vendedores = await metasService.getMetasVendedores(param);
+            state.metaVendedores = await metasService.getMetasVendedores(param);
+            console.log(state.metaVendedores);
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
                 text: "Ocorreu um erro ao buscar as metas dos vendedores.",
             });
-        } finally {
-            state.loading = false;
         }
+        // finally {
+        //     state.loading = false;
+        // }
     },
 
     async getMetasMontadores(mes: number, ano: number) {
-        state.loading = true;
+        // state.loading = true;
 
         const param: iMesEAno = {
             mes: mes,
             ano: ano,
         }
         try {
-            state.montadores = await metasService.getMetasMontadores(param);
+            state.metaMontadores = await metasService.getMetasMontadores(param);
+
+            state.montadoresArray = Object.values(state.metaMontadores);
+
+
+            // state.metaMontadores = data.COD_FUNCIONARIO((montador: iResponseGetMetasVendedores) => ({
+            //     ...montador,
+            // }))
+            console.log(state.metaMontadores);
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
                 text: "Ocorreu um erro ao buscar as metas dos montadores.",
             });
-        } finally {
-            state.loading = false;
         }
+        // finally {
+        //     state.loading = false;
+        // }
     },
 
     async getFuncionarios(mes: number, ano: number) {
@@ -164,13 +207,25 @@ export const actions = {
     async onClickMetas() {
         if (state.opcaoMeta === 'Vendedores') {
             await actions.getMetasVendedores(state.mes, state.ano);
-        } else if (state.opcaoMeta === 'Montadores') {
+        } else {
             await actions.getMetasMontadores(state.mes, state.ano);
         }
     },
 
-    distribuirMetas() {
+
+
+    async distribuirMetas(mes: number, ano: number) {
+        state.loading = true;
+
+        // Verifica se a lista de funcionários está vazia ou não foi definida
+        if (!state.funcionarios || !Array.isArray(state.funcionarios) || state.funcionarios.length === 0) {
+
+            await actions.getFuncionarios(mes, ano);
+        }
+
         state.modalDistribuirMetas.open();
+
+        state.loading = false;
     }
 
 }
