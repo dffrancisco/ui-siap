@@ -1,4 +1,4 @@
-import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
+import { computed, nextTick, onMounted, reactive, watch } from "vue";
 import metasService from "../services/metas.service";
 import { iMesEAno, iResponseFuncionarios } from "../interfaces";
 import Swal from "sweetalert2";
@@ -15,19 +15,29 @@ export const setup = (emit: any, props: any) => {
         modalAtribuirMetaIndividual: <iModalCreate>(<unknown>null),
         modalAtribuirMetaIndividualOpened: false,
         codFuncionarioSelecionado: <number>undefined,
-        funcionarioSelecionado: <iResponseFuncionarios>{}
+        funcionarioSelecionado: <iResponseFuncionarios>{},
+        metaVendedores: [],
+        metaMontadores: [],
+        funcionarios: [],
+        infoFuncionario: [],
+        opcaoMeta: 0
     })
-
-    let funcionarios = ref([]);
 
     watch(
         () => props.opened,
         () => {
             if (props.opened) {
                 state.loading = true;
-                funcionarios.value = props.funcionarios;
+                state.funcionarios = props.funcionarios;
                 state.mes = props.mes;
                 state.ano = props.ano;
+                state.metaVendedores = props.metaVendedores;
+                state.metaMontadores = props.metaMontadores;
+                state.infoFuncionario = props.metaVendedores;
+                state.opcaoMeta = props.opcaoMeta
+                console.log(props.opcaoMeta);
+
+
                 setTimeout(() => {
                     state.loading = false;
                 }, 1000);
@@ -39,8 +49,8 @@ export const setup = (emit: any, props: any) => {
     const funcionariosOrdenados = computed(() => {
         let funcionariosArray = <any[]>[];
 
-        for (let indexFuncionario in funcionarios.value) {
-            funcionariosArray.push(funcionarios.value[indexFuncionario]);
+        for (let indexFuncionario in state.funcionarios) {
+            funcionariosArray.push(state.funcionarios[indexFuncionario]);
         }
 
         funcionariosArray.sort((funcionario1, funcionario2) => {
@@ -51,7 +61,6 @@ export const setup = (emit: any, props: any) => {
     });
 
     const atribuirMetaIndividual = () => {
-        console.log(props.funcionarios)
 
         state.funcionarioSelecionado = props.funcionarios
             .find(funcionario => funcionario.COD_FUNCIONARIO == state.codFuncionarioSelecionado)
@@ -76,55 +85,12 @@ export const setup = (emit: any, props: any) => {
 
     const actions = {
 
-
         getFotoFuncionarioURL(cpf: string) {
             if (!cpf) {
                 return "";
             }
             const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
             return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
-        },
-
-        async getMetasVendedores(mes: number, ano: number) {
-            state.loading = true;
-
-
-            const param: iMesEAno = {
-                mes: mes,
-                ano: ano,
-            }
-
-            try {
-                //@ts-ignore
-                vendedores.value = await metasService.getMetasVendedores(param);
-            } catch (error) {
-                Swal.fire({
-                    icon: "error",
-                    text: "Ocorreu um erro ao buscar as metas dos vendedores.",
-                });
-            } finally {
-                state.loading = false;
-            }
-        },
-
-        async getMetasMontadores(mes: number, ano: number) {
-            state.loading = true;
-
-            const param: iMesEAno = {
-                mes: mes,
-                ano: ano,
-            }
-            try {
-                //@ts-ignore
-                montadores.value = await metasService.getMetasMontadores(param);
-            } catch (error) {
-                Swal.fire({
-                    icon: "error",
-                    text: "Ocorreu um erro ao buscar as metas dos montadores.",
-                });
-            } finally {
-                state.loading = false;
-            }
         },
 
         modal() {
@@ -145,36 +111,40 @@ export const setup = (emit: any, props: any) => {
     }
 
     const selecionarVendedores = () => {
-        state.loading = true;
         state.isVendedoresSelected = true;
         state.isMontadoresSelected = false;
-        funcionarios.value = props.funcionarios.filter((funcionario: iResponseFuncionarios) => funcionario.CARGO === 'VENDEDOR');
-        setTimeout(() => {
-            state.loading = false;
-        }, 1000);
+        state.infoFuncionario = state.metaVendedores;
     };
 
+
     const selecionarMontadores = () => {
-        state.loading = true;
         state.isVendedoresSelected = false;
         state.isMontadoresSelected = true;
-        funcionarios.value = props.funcionarios.filter((funcionario: iResponseFuncionarios) => funcionario.CARGO === 'MONTADOR');
-        setTimeout(() => {
-            state.loading = false;
-        }, 1000);
+        state.infoFuncionario = state.metaMontadores;
+    };
+
+    const mostrarInfoFuncionarioSelecionado = () => {
+        if (state.codFuncionarioSelecionado) {
+            const funcionarioSelecionado = props.funcionarios.find(
+                (funcionario) => funcionario.COD_FUNCIONARIO == state.codFuncionarioSelecionado
+            );
+            if (funcionarioSelecionado) {
+                if (funcionarioSelecionado.CARGO == "VENDEDOR") {
+                    state.infoFuncionario = state.metaVendedores[funcionarioSelecionado.COD_FUNCIONARIO];
+                } else if (funcionarioSelecionado.CARGO == "MONTADOR") {
+                    state.infoFuncionario = state.metaMontadores[funcionarioSelecionado.COD_FUNCIONARIO];
+                }
+            }
+        }
     };
 
     const filtrarFuncionarios = (funcionarioSelecionado: iResponseFuncionarios | null) => {
-
-        console.log(funcionarioSelecionado);
-
-
         if (funcionarioSelecionado) {
-            funcionarios.value = props.funcionarios.filter(
+            state.funcionarios = props.funcionarios.filter(
                 (funcionario) => funcionario.COD_FUNCIONARIO === funcionarioSelecionado
             );
         } else {
-            funcionarios.value = props.funcionarios;
+            state.funcionarios = props.funcionarios;
         }
     };
 
@@ -191,14 +161,14 @@ export const setup = (emit: any, props: any) => {
     return {
         actions,
         state,
-        funcionarios,
         selecionarVendedores,
         selecionarMontadores,
         filtrarFuncionarios,
         atribuirMetaIndividual,
         funcionariosOrdenados,
         enviarDadosMeta,
-        fecharModal
+        fecharModal,
+        mostrarInfoFuncionarioSelecionado
     }
 }
 

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, meses, anos, vendedorOuMontador, headers, actions } from "./metas";
+import { state, meses, anos, vendedorOuMontador, actions } from "./metas";
 import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
-import { iResponseFuncionarios } from "./interfaces";
 
 onMounted(async () => {
   actions.init();
 });
+
+const skill = 20;
+// const knowledge = 33;
+// const power = 78;
 </script>
 
 <template>
@@ -44,10 +47,12 @@ onMounted(async () => {
             </v-col>
             <v-col cols="5">
               <v-select
-                :items="vendedorOuMontador.options"
+                v-model="state.opcaoMeta"
+                :items="vendedorOuMontador"
+                item-value="value"
+                item-title="title"
                 :clearable="false"
                 label="Tipo de meta"
-                v-model="state.opcaoMeta"
                 @update:model-value="actions.onClickMetas"
               >
               </v-select>
@@ -130,11 +135,15 @@ onMounted(async () => {
         style="max-width: 1100px; margin: 0 auto"
       >
         <v-progress-linear
+          v-model="skill"
           color="primary"
-          model-value="33"
-          :height="15"
-          style="border-radius: 5px"
-        ></v-progress-linear>
+          height="15"
+          style="border-radius: 10px"
+        >
+          <template v-slot:default="{ value }">
+            <strong>{{ Math.ceil(value) }}%</strong>
+          </template>
+        </v-progress-linear>
       </div>
     </div>
 
@@ -143,12 +152,28 @@ onMounted(async () => {
         <v-data-table-server
           class="tableMetas"
           v-model:itemsPerPage="state.itemsPerPage"
-          :headers="headers"
+          :headers="state.headers"
           :items-length="state.totalItems"
-          :items="state.montadoresArray"
+          :items="state.opcaoMeta === 0 ? state.vendedoresArray : state.montadoresArray"
           :loading="state.loading"
           :search="state.search"
         >
+          <template #item.PREVISAO="{ item }">
+            {{ actions.formatPrevisao(item.PREVISAO) }}
+          </template>
+
+          <template #item.PROGRESSO="{ item }">
+            <v-progress-linear
+              v-model="item.PROGRESSO"
+              color="primary"
+              height="20"
+              style="border-radius: 10px"
+            >
+              <template v-slot:default="{ value }">
+                <strong>{{ Math.ceil(value) }}%</strong>
+              </template>
+            </v-progress-linear>
+          </template>
           <template #no-data>
             <v-alert
               :value="true"
@@ -170,6 +195,9 @@ onMounted(async () => {
         :mes="state.mes"
         :ano="state.ano"
         :funcionarios="state.funcionarios"
+        :metaMontadores="state.montadoresArray"
+        :metaVendedores="state.vendedoresArray"
+        :optionSelect="state.opcaoMeta"
         :opened="state.modalDistribuirMetasOpened"
         @inserirMeta="actions.inserirMeta"
         @atualizarDadosMetas="actions.atualizarDadosMetas"
@@ -190,6 +218,12 @@ onMounted(async () => {
     </v-overlay>
   </v-container>
 </template>
+
+<style>
+.v-table > .v-table__wrapper > table > tbody > tr > td {
+  width: 80px !important;
+}
+</style>
 
 <style scoped>
 .metas {
@@ -242,7 +276,7 @@ onMounted(async () => {
 }
 
 .barraDeProgresso {
-  width: 1090px;
+  width: 1100px;
   justify-content: center;
   text-align: center;
 }

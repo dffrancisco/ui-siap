@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { iResponseFuncionarios } from "../interfaces";
+import { iResponseFuncionarios, iResponseMetasVendedoresEMontadores } from "../interfaces";
 import { setup } from "./modalDistribuirMetas";
 import utils from "@/ts/utils";
 import ModalAtribuirMetaIndividual from "./modalAtribuirMetaIndividual.vue";
@@ -8,6 +8,15 @@ import ModalAtribuirMetaIndividual from "./modalAtribuirMetaIndividual.vue";
 const props = defineProps({
   funcionarios: {
     type: Object as () => iResponseFuncionarios,
+  },
+  metaMontadores: {
+    type: Array as () => iResponseMetasVendedoresEMontadores[],
+  },
+  metaVendedores: {
+    type: Array as () => iResponseMetasVendedoresEMontadores[],
+  },
+  optionSelect: {
+    type: Number,
   },
   mes: {
     type: Number,
@@ -31,6 +40,7 @@ const {
   enviarDadosMeta,
   fecharModal,
   atribuirMetaIndividual,
+  mostrarInfoFuncionarioSelecionado,
   funcionariosOrdenados,
 } = setup(emit, props);
 </script>
@@ -77,6 +87,7 @@ const {
             item-value="COD_FUNCIONARIO"
             class="funcionario__input"
             v-model="state.codFuncionarioSelecionado"
+            @input="mostrarInfoFuncionarioSelecionado"
           ></v-autocomplete>
         </v-col>
 
@@ -115,21 +126,21 @@ const {
       </v-row>
     </div>
 
-    <!-- <div class="funcionarios ml-7">
+    <div class="funcionarios ml-7">
       <div class="funcionarios__lista">
         <v-card
-          v-for="funcionario in funcionariosOrdenados"
-          :key="funcionario.COD_FUNCIONARIO"
+          v-for="funcionario in state.infoFuncionario"
+          :key="funcionarios.COD_FUNCIONARIO"
+          v-if="state.infoFuncionario.length > 0"
           class="funcionarios__lista__card"
-          @click="atribuirMetaIndividual()"
         >
           <div class="funcionarios__lista__card__usuario">
             <div>
               <v-avatar
                 size="70px"
                 color="primary"
-                :title="funcionario.LOGIN"
                 class="funcionarios__lista__avatar"
+                :title="funcionario.LOGIN"
               >
                 <v-img
                   :src="actions.getFotoFuncionarioURL(funcionario.CPF)"
@@ -140,22 +151,27 @@ const {
             </div>
             <div class="funcionarios__lista__card__info">
               <div class="funcionarios__lista__card__nome">{{ funcionario.LOGIN }} </div>
-              <div class="funcionarios__lista__card__meta">{{ utils.formatValor(funcionario.VALOR_TOTAL) }}</div>
+              <div class="funcionarios__lista__card__meta">
+                {{ utils.formatValor(funcionario.VALOR_TOTAL) }}
+              </div>
             </div>
             <div class="mb-8">
               <v-icon
                 class="funcionarios__lista__card__icon"
                 size="x-large"
                 color="primary"
-                @click.prevent="atribuirMetaIndividual()"
+                @click.prevent="atribuirMetaIndividual"
               >
                 mdi-pen
               </v-icon>
             </div>
           </div>
         </v-card>
+
+        <!-- {{ props.metaMontadores }} -->
+        <!-- {{ props.metaVendedores }} -->
       </div>
-    </div> -->
+    </div>
   </div>
 
   <div

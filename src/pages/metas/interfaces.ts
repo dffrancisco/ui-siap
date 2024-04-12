@@ -21,15 +21,7 @@ export interface iResponseMetaInserida {
     ano: number;
 }
 
-export interface iResponseMetasVendedores {
-    vendedores: iResponseMetaInserida[];
-}
-
-// export interface iResponseMetasMontadores {
-//     montadores: iResponseMetaInserida[];
-// }
-
-export interface iResponseGetMetasVendedores {
+export interface iResponseMetasVendedoresEMontadores {
     LOGIN: string;
     CPF: string;
     COD_FUNCIONARIO: number;

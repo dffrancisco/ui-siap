@@ -1,26 +1,68 @@
 import { mesesToSelect } from "@/constants/constants";
 import { computed, reactive } from "vue";
-import { iMesEAno, iResponseFuncionarios, iResponseGetMetasVendedores, iResponseMetaInserida } from "./interfaces";
+import { iMesEAno, iResponseFuncionarios, iResponseMetaInserida, iResponseMetasVendedoresEMontadores } from "./interfaces";
 import Swal from "sweetalert2";
 import metasService from "./services/metas.service"
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
+import utils from "@/ts/utils";
 
 
 export const state = reactive({
     mes: new Date().getMonth() + 1,
-    ano: new Date().getFullYear(),
+    ano: 2023,
     loading: false,
     totalItems: 0,
     itemsPerPage: 5,
     search: (""),
-    opcaoMeta: "Vendedores",
-    metaVendedores: {},
-    metaMontadores: <iResponseGetMetasVendedores>{},
-    montadoresArray: [] as any,
+    opcaoMeta: 0,
+    metaVendedores: <iResponseMetasVendedoresEMontadores>{},
+    metaMontadores: <iResponseMetasVendedoresEMontadores>{},
+    montadoresArray: [],
+    vendedoresArray: [],
     funcionarios: <iResponseFuncionarios>{},
     modalDistribuirMetas: <iModalCreate>(<unknown>null),
     modalDistribuirMetasOpened: false,
-    metaInserida: <iResponseMetaInserida>{}
+    metaInserida: <iResponseMetaInserida>{},
+    headers: <any>[
+        {
+            title: "Funcionário",
+            key: "LOGIN",
+            sortable: true,
+        },
+        {
+            title: "Meta",
+            key: "VALOR_META",
+            sortable: true,
+            align: 'center',
+            value: (item: any) => utils.formatValor(item.VALOR_META)
+        },
+        {
+            title: "Atingido",
+            key: "ATINGIDO",
+            sortable: true,
+            align: 'center',
+            value: (item: any) => utils.formatValor(item.ATINGIDO)
+        },
+        {
+            title: "Previsão",
+            key: "PREVISAO",
+            sortable: true,
+            align: 'center'
+        },
+        {
+            title: "Média Diária",
+            key: "MEDIA_DIARIA",
+            sortable: true,
+            align: 'center',
+            value: (item: any) => utils.formatValor(item.MEDIA_DIARIA)
+        },
+        {
+            title: "Progresso",
+            key: "PROGRESSO",
+            sortable: true,
+            align: 'center'
+        },
+    ]
 })
 
 export const meses = mesesToSelect;
@@ -37,45 +79,11 @@ export const anos = computed(() => {
     return anosArray;
 });
 
-export const vendedorOuMontador = {
-    options: [
-        { title: 'Vendedores', value: 'Vendedores' },
-        { title: 'Montadores', value: 'Montadores' },
-    ],
-};
 
-export const headers = [
-    {
-        title: "Funcionário",
-        key: "FUNCIONARIO",
-        sortable: true,
-    },
-    {
-        title: "Meta",
-        key: "META",
-        sortable: true,
-    },
-    {
-        title: "Atingido",
-        key: "ATINGIDO",
-        sortable: true,
-    },
-    {
-        title: "Previsão",
-        key: "PREVISAO",
-        sortable: true,
-    },
-    {
-        title: "Média Diária",
-        key: "MEDIA_DIARIA",
-        sortable: true,
-    },
-    {
-        title: "Progresso",
-        key: "PROGRESSO",
-        sortable: true,
-    },
-];
+export const vendedorOuMontador = [
+    { title: 'Vendedores', value: 0 },
+    { title: 'Montadores', value: 1 },
+]
 
 export const actions = {
 
@@ -128,14 +136,13 @@ export const actions = {
     },
 
     async atualizarDadosMetas() {
-        await actions.getMetasVendedores(state.mes, state.ano);
-        await actions.getMetasMontadores(state.mes, state.ano);
+        await Promise.all([
+            actions.getMetasVendedores(state.mes, state.ano),
+            actions.getMetasMontadores(state.mes, state.ano)
+        ]);
     },
 
     async getMetasVendedores(mes: number, ano: number) {
-        // state.loading = true;
-
-
         const param: iMesEAno = {
             mes: mes,
             ano: ano,
@@ -143,7 +150,9 @@ export const actions = {
 
         try {
             state.metaVendedores = await metasService.getMetasVendedores(param);
-            console.log(state.metaVendedores);
+
+            state.vendedoresArray = Object.values(state.metaVendedores);
+            // console.log(state.metaVendedores);
 
         } catch (error) {
             Swal.fire({
@@ -151,28 +160,18 @@ export const actions = {
                 text: "Ocorreu um erro ao buscar as metas dos vendedores.",
             });
         }
-        // finally {
-        //     state.loading = false;
-        // }
     },
 
     async getMetasMontadores(mes: number, ano: number) {
-        // state.loading = true;
-
         const param: iMesEAno = {
             mes: mes,
             ano: ano,
         }
         try {
             state.metaMontadores = await metasService.getMetasMontadores(param);
-
             state.montadoresArray = Object.values(state.metaMontadores);
 
-
-            // state.metaMontadores = data.COD_FUNCIONARIO((montador: iResponseGetMetasVendedores) => ({
-            //     ...montador,
-            // }))
-            console.log(state.metaMontadores);
+            // console.log(state.metaMontadores);
 
         } catch (error) {
             Swal.fire({
@@ -180,9 +179,6 @@ export const actions = {
                 text: "Ocorreu um erro ao buscar as metas dos montadores.",
             });
         }
-        // finally {
-        //     state.loading = false;
-        // }
     },
 
     async getFuncionarios(mes: number, ano: number) {
@@ -205,14 +201,13 @@ export const actions = {
     },
 
     async onClickMetas() {
-        if (state.opcaoMeta === 'Vendedores') {
+
+        if (state.opcaoMeta === 0) {
             await actions.getMetasVendedores(state.mes, state.ano);
         } else {
             await actions.getMetasMontadores(state.mes, state.ano);
         }
     },
-
-
 
     async distribuirMetas(mes: number, ano: number) {
         state.loading = true;
@@ -226,6 +221,10 @@ export const actions = {
         state.modalDistribuirMetas.open();
 
         state.loading = false;
-    }
+    },
+
+    formatPrevisao(previsao) {
+        return previsao === 0 ? 'Não se aplica' : previsao;
+    },
 
 }

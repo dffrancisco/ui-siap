@@ -1,11 +1,11 @@
 import axios from "axios";
-import { iMesEAno, iResponseFuncionarios, iResponseGetMetasVendedores, iResponseMetaInserida, iResponseMetasVendedores } from "../interfaces"
+import { iMesEAno, iResponseFuncionarios, iResponseMetaInserida, iResponseMetasVendedoresEMontadores } from "../interfaces"
 
 
 const caminho = "siap/metas";
 
-type iGetMetasVendedores = (param: iMesEAno) => Promise<iResponseMetasVendedores>
-type iGetMetasMontadores = (param: iMesEAno) => Promise<iResponseGetMetasVendedores>
+type iGetMetasVendedores = (param: iMesEAno) => Promise<iResponseMetasVendedoresEMontadores>
+type iGetMetasMontadores = (param: iMesEAno) => Promise<iResponseMetasVendedoresEMontadores>
 type iGetFuncionarios = (param: iMesEAno) => Promise<iResponseFuncionarios>
 type iInserirMeta = (param: iResponseMetaInserida) => Promise<iResponseMetaInserida>
 
