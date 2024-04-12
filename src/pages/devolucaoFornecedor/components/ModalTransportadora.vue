@@ -58,10 +58,18 @@ const actions = {
       return false;
     }
 
-    if (utils.formatValorUSA(state.dbTransportadoraDevolucao.VALOR_FRETE.toString()) <= 0) {
+    if (state.dbTransportadoraDevolucao.ESPECIE == undefined) {
       Swal.fire({
         icon: "error",
-        title: "O campo valor deve ser maior que 0",
+        title: "Por favor, informe a espécie",
+      });
+      return false;
+    }
+
+    if (state.dbTransportadoraDevolucao.QTD == undefined) {
+      Swal.fire({
+        icon: "error",
+        title: "Por favor, informe a quantidade",
       });
       return false;
     }
@@ -93,6 +101,8 @@ const actions = {
       state.dbTransportadoraDevolucao = {
         ...data,
         VALOR_FRETE: utils.formatValor(data.VALOR_FRETE.toString()),
+        PESO_BRUTO: utils.formatValor(data.PESO_BRUTO.toString()),
+        PESO_LIQUIDO: utils.formatValor(data.PESO_LIQUIDO.toString()),
       };
 
       state.loading = false;
@@ -113,10 +123,18 @@ const actions = {
       transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR = props.id_devolucaoFornecedor;
 
       let valorFrete = utils.formatValorUSA(transportadoraDevolucao.VALOR_FRETE.toString());
+      let pesoLiquido = utils.formatValorUSA(transportadoraDevolucao.PESO_LIQUIDO.toString());
+      let pesoBruto = utils.formatValorUSA(transportadoraDevolucao.PESO_BRUTO.toString());
+      let autorizacaoCorreios = transportadoraDevolucao.AUTORIZACAO_CORREIOS.toUpperCase();
+      let especie = transportadoraDevolucao.ESPECIE.toUpperCase();
 
       let param = {
         ...transportadoraDevolucao,
         VALOR_FRETE: valorFrete,
+        PESO_LIQUIDO: pesoLiquido,
+        PESO_BRUTO: pesoBruto,
+        ESPECIE: especie,
+        AUTORIZACAO_CORREIOS: autorizacaoCorreios,
       };
 
       let data = await serviceDevolucaoFornecedor.insertTransportadoraDevolucao({ param });
@@ -147,10 +165,18 @@ const actions = {
       transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR = props.id_devolucaoFornecedor;
 
       let valorFrete = utils.formatValorUSA(transportadoraDevolucao.VALOR_FRETE.toString());
+      let pesoLiquido = utils.formatValorUSA(transportadoraDevolucao.PESO_LIQUIDO.toString());
+      let pesoBruto = utils.formatValorUSA(transportadoraDevolucao.PESO_BRUTO.toString());
+      let especie = transportadoraDevolucao.ESPECIE.toUpperCase();
+      let autorizacaoCorreios = transportadoraDevolucao.AUTORIZACAO_CORREIOS.toUpperCase();
 
       let param = {
         ...transportadoraDevolucao,
         VALOR_FRETE: valorFrete,
+        PESO_LIQUIDO: pesoLiquido,
+        PESO_BRUTO: pesoBruto,
+        ESPECIE: especie,
+        AUTORIZACAO_CORREIOS: autorizacaoCorreios,
       };
 
       await serviceDevolucaoFornecedor.updateTransportadoraDevolucao({ param });
@@ -191,7 +217,7 @@ const actions = {
             >
           </select>
         </v-col>
-        <v-col cols="9">
+        <v-col cols="8">
           <h2 class="font-weight-regular">Modalidade Frete</h2>
           <select
             class="obr ss"
@@ -207,13 +233,70 @@ const actions = {
             <option value="9">Sem transporte</option>
           </select>
         </v-col>
+        <v-col cols="2">
+          <h2 class="font-weight-regular">Espécie</h2>
+          <input
+            v-model="state.dbTransportadoraDevolucao.ESPECIE"
+            class="ss obr"
+            type="text"
+            name="ESPECIE"
+            id="ESPECIE"
+            maxlength="6"
+          />
+        </v-col>
+        <v-col cols="2">
+          <h2 class="font-weight-regular">Quantidade</h2>
+          <input
+            v-model="state.dbTransportadoraDevolucao.QTD"
+            class="ss obr"
+            type="number"
+            name="QTD"
+            id="QTD"
+          />
+        </v-col>
+        <v-col>
+          <h2 class="font-weight-regular">Peso Líquido</h2>
+          <input
+            v-model.lazy="state.dbTransportadoraDevolucao.PESO_LIQUIDO"
+            class="ss"
+            type="text"
+            name="PESO_LIQUIDO"
+            id="PESO_LIQUIDO"
+            :model-modifiers="{ number: true }"
+            v-money3="configVMoney"
+          />
+        </v-col>
+        <v-col>
+          <h2 class="font-weight-regular">Peso Bruto</h2>
+          <input
+            class="ss"
+            type="text"
+            name="PESO_BRUTO"
+            id="PESO_BRUTO"
+            :model-modifiers="{ number: true }"
+            v-model.lazy="state.dbTransportadoraDevolucao.PESO_BRUTO"
+            v-money3="configVMoney"
+          />
+        </v-col>
+        <v-col cols="5">
+          <h2 class="font-weight-regular">Autorização (Correios)</h2>
+          <input
+            v-model="state.dbTransportadoraDevolucao.AUTORIZACAO_CORREIOS"
+            class="ss"
+            type="text"
+            name="AUTORIZACAO_CORREIOS"
+            id="AUTORIZACAO_CORREIOS"
+            maxlength="20"
+          />
+        </v-col>
         <v-col>
           <h2 class="font-weight-regular">Valor</h2>
           <input
-            class="ss obr"
+            class="ss"
             type="text"
             name="VALOR_FRETE"
             id="VALOR_FRETE"
+            style="text-align: end"
             :model-modifiers="{ number: true }"
             v-model.lazy="state.dbTransportadoraDevolucao.VALOR_FRETE"
             v-money3="configVMoney"

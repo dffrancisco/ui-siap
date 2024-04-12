@@ -55,6 +55,7 @@ watch(
         COD_FABRICANTE: props.dbItem.COD_FABRICANTE,
         CHAVE: props.dbItem.CHAVE,
         DATA_EMISSAO: props.dbItem.DATA_EMISSAO,
+        CST_IPI: props.dbItem.CST_IPI,
       };
 
       await actions.getTributosPisCofinsItem();
@@ -230,6 +231,7 @@ const actions = {
       state.dbItemDevolucao.CST_COFINS = data.CST_COFINS;
       state.dbItemDevolucao.PERCENTUAL_PIS = utils.formatValor(data.PERCENTUAL_PIS);
       state.dbItemDevolucao.PERCENTUAL_COFINS = utils.formatValor(data.PERCENTUAL_COFINS);
+      state.dbItemDevolucao.CST_IPI = data.CST_IPI;
 
       state.loading = false;
     } catch (error) {
@@ -390,6 +392,33 @@ nextTick(async () => {
             v-money3="configVMoney"
             @keydown.enter="actions.onKeyDownEnterQtdDevolucao"
           />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <span>IPI CST</span>
+          <select
+            v-model="state.dbItemDevolucao.CST_IPI"
+            class="ss"
+            id="CST_IPI"
+            name="CST_IPI"
+          >
+            <option value="">SEM IPI</option>
+            <option value="00">00 - Entrada com recuperação de crédito</option>
+            <option value="01">01 - Entrada tributada com alíquota zero</option>
+            <option value="02">02 - Entrada isenta</option>
+            <option value="03">03 - Entrada não-tributada</option>
+            <option value="04">04 - Entrada imune</option>
+            <option value="05">05 - Entrada com suspensão</option>
+            <option value="49">49 - Outras entradas</option>
+            <option value="50">50 - Saída tributada</option>
+            <option value="51">51 - Saída tributada com alíquota zero</option>
+            <option value="52">52 - Saída isenta</option>
+            <option value="53">53 - Saída não-tributada</option>
+            <option value="54">54 - Saída imune</option>
+            <option value="55">55 - Saída com suspensão</option>
+            <option value="99">99 - Outras saídas</option>
+          </select>
         </v-col>
       </v-row>
     </div>

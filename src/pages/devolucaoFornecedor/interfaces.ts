@@ -41,6 +41,7 @@ export interface iItem {
     CST_COFINS: string,
     PERCENTUAL_PIS: number,
     PERCENTUAL_COFINS: number,
+    CST_IPI: string
 }
 
 export interface iItemDevolucao {
@@ -62,6 +63,7 @@ export interface iItemDevolucao {
     COD_FABRICANTE: string,
     CHAVE: string,
     DATA_EMISSAO: string,
+    CST_IPI: string
 }
 
 export interface iItensDevolucao {
@@ -88,6 +90,7 @@ export interface iItensDevolucao {
     CST_COFINS: string,
     PERCENTUAL_PIS: number,
     PERCENTUAL_COFINS: number,
+    CST_IPI: string,
 }
 
 export interface iFornecedor {
@@ -103,6 +106,11 @@ export interface iTranspordadoraDevolucao {
     NOME_TRANSPORTADORA: string,
     TIPO_FRETE: number,
     VALOR_FRETE: number,
+    ESPECIE: string,
+    QTD: number,
+    PESO_LIQUIDO: number,
+    PESO_BRUTO: number,
+    AUTORIZACAO_CORREIOS: string,
 }
 
 export interface iListaTransportadoras {
@@ -157,6 +165,7 @@ export interface iGetTributosPisCofinsItemResponse {
     PERCENTUAL_PIS: number,
     CST_COFINS: string,
     PERCENTUAL_COFINS: number
+    CST_IPI: string,
 }
 
 export interface iParamGetItensDevolucaoQTDFunction {
