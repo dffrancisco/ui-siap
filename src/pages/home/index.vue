@@ -154,6 +154,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/vendaPorVendedor')"
+              >Venda Por Vendedor</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="login.actions.confirmarSaida()"
             >
               Logout
