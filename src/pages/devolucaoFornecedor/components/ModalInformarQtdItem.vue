@@ -48,7 +48,7 @@ watch(
         BASE_ICMS_ST: props.dbItem.BASE_ICMS_ST,
         PERCENTUAL_ICMS: props.dbItem.PERCENTUAL_ICMS,
         PERCENTUAL_IPI: utils.formatValor(props.dbItem.PERCENTUAL_IPI) || 0,
-        CST_PIS: props.dbItem.CST_PIS,
+        CST_PIS: props.dbItem.CST_PIS || "",
         PERCENTUAL_PIS: utils.formatValor(props.dbItem.PERCENTUAL_PIS) || 0,
         CST_COFINS: props.dbItem.CST_COFINS,
         PERCENTUAL_COFINS: utils.formatValor(props.dbItem.PERCENTUAL_COFINS) || 0,
@@ -60,15 +60,18 @@ watch(
 
       await actions.getTributosPisCofinsItem();
 
+      actions.validarCstIpi();
+
       state.edtItemQtd.focus();
     }
   }
 );
 
-const ipiCst = ["50", "99"];
+const ipiCstComPercentual = ["50", "99"];
+const ipiCstValido = ["50", "51", "52", "53", "54", "55", "99"];
 
 const disabledPercentualIPI = computed(() => {
-  return ipiCst.includes(state.dbItemDevolucao.CST_IPI) ? false : true;
+  return ipiCstComPercentual.includes(state.dbItemDevolucao.CST_IPI) ? false : true;
 });
 
 const state = reactive({
@@ -100,8 +103,14 @@ const actions = {
     actions.salvarItemDevolucao();
   },
 
+  validarCstIpi() {
+    if (!ipiCstValido.includes(state.dbItemDevolucao.CST_IPI)) {
+      state.dbItemDevolucao.CST_IPI = props.dbItem.CST_IPI || "";
+    }
+  },
+
   definirPercentualIPIComBaseNoCST() {
-    if (ipiCst.includes(state.dbItemDevolucao.CST_IPI)) {
+    if (ipiCstComPercentual.includes(state.dbItemDevolucao.CST_IPI)) {
       state.dbItemDevolucao.PERCENTUAL_IPI = utils.formatValor(props.dbItem.PERCENTUAL_IPI);
     } else {
       state.dbItemDevolucao.PERCENTUAL_IPI = 0;
@@ -190,7 +199,7 @@ const actions = {
     }
 
     if (
-      ipiCst.includes(state.dbItemDevolucao.CST_IPI) &&
+      ipiCstComPercentual.includes(state.dbItemDevolucao.CST_IPI) &&
       utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_IPI.toString()) <= 0
     ) {
       await Swal.fire({

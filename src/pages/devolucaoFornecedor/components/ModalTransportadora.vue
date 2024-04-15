@@ -85,7 +85,7 @@ const actions = {
     if (dadosTransportadoraDevolucao.QTD <= 0) {
       await Swal.fire({
         icon: "error",
-        title: "Por favor, informe a quantidade",
+        title: "Por favor, informe a quantidade de volumes",
       });
       return false;
     }
@@ -93,7 +93,7 @@ const actions = {
     if (dadosTransportadoraDevolucao.QTD > 10000) {
       await Swal.fire({
         icon: "error",
-        title: "A quantidade deve ser menor ou igual a 10.000",
+        title: "A quantidade de volumes deve ser menor ou igual a 10.000",
       });
       return false;
     }
