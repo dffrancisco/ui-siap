@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, meses, anos, vendedorOuMontador, actions } from "./metas";
+import { state, meses, anos, vendedorOuMontador, actions, totalizadorMetas } from "./metas";
 import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
+import utils from "@/ts/utils";
 
 onMounted(async () => {
   actions.init();
@@ -83,7 +84,7 @@ const skill = 20;
                     <p class="metas_tiposDeMeta_texto">Meta</p>
 
                     <div class="metas_tiposDeMeta_valor">
-                      <p>10.400.000,00</p>
+                      <p>{{ utils.formatValor(totalizadorMetas.meta) }}</p>
                     </div>
                   </v-card>
                 </v-col>
@@ -93,10 +94,10 @@ const skill = 20;
                     <p class="metas_tiposDeMeta_texto">Meta Acumulada</p>
 
                     <div class="metas_tiposDeMeta_valor">
-                      <p>1.800.000,00</p>
+                      <p>{{ utils.formatValor(totalizadorMetas.metaAcumulada) }}</p>
                     </div>
                     <div class="metas_tiposDeMeta_porcentagem">
-                      <p>15% da meta atingida</p>
+                      <p> {{ totalizadorMetas.percentualMetaAcumulada }} % da meta atingida</p>
                     </div>
                   </v-card>
                 </v-col>
@@ -105,10 +106,10 @@ const skill = 20;
                   <v-card class="metas_tiposDeMeta">
                     <p class="metas_tiposDeMeta_texto">Meta do dia</p>
                     <div class="metas_tiposDeMeta_valor">
-                      <p>58.000,00</p>
+                      <p>{{ utils.formatValor(totalizadorMetas.metaDoDia) }}</p>
                     </div>
                     <div class="metas_tiposDeMeta_porcentagem">
-                      <p>75% da meta atingida</p>
+                      <p> {{ totalizadorMetas.percentualMetaDoDia }} % da meta atingida</p>
                     </div>
                   </v-card>
                 </v-col>
@@ -117,10 +118,10 @@ const skill = 20;
                   <v-card class="metas_tiposDeMeta">
                     <p class="metas_tiposDeMeta_texto">Meta previsão</p>
                     <div class="metas_tiposDeMeta_valor">
-                      <p>7.400.000,00</p>
+                      <p>{{ utils.formatValor(totalizadorMetas.metaPrevisao) }}</p>
                     </div>
                     <div class="metas_tiposDeMeta_porcentagem">
-                      <p>15% da meta atingida</p>
+                      <p> {{ totalizadorMetas.percentualMetaPrevisao }} % da meta atingida</p>
                     </div>
                   </v-card>
                 </v-col>
@@ -135,7 +136,7 @@ const skill = 20;
         style="max-width: 1100px; margin: 0 auto"
       >
         <v-progress-linear
-          v-model="skill"
+          v-model="totalizadorMetas.percentualMetaAcumulada"
           color="primary"
           height="15"
           style="border-radius: 10px"

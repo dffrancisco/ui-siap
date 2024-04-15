@@ -35,4 +35,5 @@ export interface iResponseMetasVendedoresEMontadores {
     PREVISAO: number;
     MEDIA_DIARIA: number;
     PROGRESSO: number;
+    META_DIARIA: number;
 }

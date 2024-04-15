@@ -85,6 +85,40 @@ export const vendedorOuMontador = [
     { title: 'Montadores', value: 1 },
 ]
 
+export const totalizadorMetas = computed(() => {
+    let arrayMeta;
+    let meta = 0;
+    let metaAcumulada = 0;
+    let metaDoDia = 0;
+    let metaPrevisao = 0;
+    let percentualMetaAcumulada = 0;
+    let percentualMetaDoDia = 0;
+    let percentualMetaPrevisao = 0;
+
+    if (state.opcaoMeta === 0) {
+        arrayMeta = state.vendedoresArray;
+    } else {
+        arrayMeta = state.montadoresArray;
+    }
+
+    arrayMeta.forEach((item) => {
+        meta += item.VALOR_META || 0;
+        metaAcumulada += item.VALOR_TOTAL || 0;
+        metaDoDia += item.META_DIARIA || 0;
+        metaPrevisao += item.PREVISAO || 0;
+    });
+
+    if (meta > 0) {
+        percentualMetaAcumulada = parseFloat(((metaAcumulada / meta) * 100).toFixed(1));
+        percentualMetaDoDia = parseFloat(((metaDoDia / meta) * 100).toFixed(1));
+        percentualMetaPrevisao = parseFloat(((metaPrevisao / meta) * 100).toFixed(1));
+    }
+
+    return { meta, metaAcumulada, metaDoDia, metaPrevisao, percentualMetaAcumulada, percentualMetaDoDia, percentualMetaPrevisao };
+});
+
+
+
 export const actions = {
 
     async init() {
@@ -150,9 +184,7 @@ export const actions = {
 
         try {
             state.metaVendedores = await metasService.getMetasVendedores(param);
-
             state.vendedoresArray = Object.values(state.metaVendedores);
-            // console.log(state.metaVendedores);
 
         } catch (error) {
             Swal.fire({
@@ -170,9 +202,6 @@ export const actions = {
         try {
             state.metaMontadores = await metasService.getMetasMontadores(param);
             state.montadoresArray = Object.values(state.metaMontadores);
-
-            // console.log(state.metaMontadores);
-
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -214,9 +243,11 @@ export const actions = {
 
         // Verifica se a lista de funcionários está vazia ou não foi definida
         if (!state.funcionarios || !Array.isArray(state.funcionarios) || state.funcionarios.length === 0) {
-
             await actions.getFuncionarios(mes, ano);
         }
+
+        await actions.getMetasVendedores(state.mes, state.ano);
+        await actions.getMetasMontadores(state.mes, state.ano);
 
         state.modalDistribuirMetas.open();
 

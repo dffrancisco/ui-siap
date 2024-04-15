@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { defineProps, reactive, watch } from "vue";
-import { iResponseFuncionarios } from "../interfaces";
+import { iResponseFuncionarios, iResponseMetasVendedoresEMontadores } from "../interfaces";
 import { configVMoney } from "../../../constants/constants";
 
 const props = defineProps({
   funcionario: {
-    type: Object as () => iResponseFuncionarios,
+    type: Object as () => iResponseMetasVendedoresEMontadores,
   },
   mes: {
     type: Number,
@@ -21,13 +21,7 @@ const props = defineProps({
 const emit = defineEmits(["dadosInserirMeta", "fecharModalAtribuirMetaIndividual"]);
 
 const state = reactive({
-  funcionario: {
-    COD_FUNCIONARIO: "" || null,
-    NOME_COMP: "" || null,
-    LOGIN: "" || null,
-    CPF: "" || null,
-    CARGO: "" || null,
-  },
+  funcionario: <iResponseMetasVendedoresEMontadores>{},
   loading: false,
   inputValor: "",
   mes: props.mes,
@@ -83,7 +77,7 @@ watch(
       ></v-img>
     </v-avatar>
 
-    <div class="funcionarios__nome">{{ state.funcionario.LOGIN }}</div>
+    <div class="funcionarios__nome">{{ state.funcionario?.LOGIN }}</div>
     <div class="funcionarios__valorDaMeta ml-8">Valor da Meta:</div>
   </div>
 

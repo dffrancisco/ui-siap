@@ -36,12 +36,11 @@ const {
   state,
   selecionarVendedores,
   selecionarMontadores,
-  filtrarFuncionarios,
   enviarDadosMeta,
   fecharModal,
   atribuirMetaIndividual,
-  mostrarInfoFuncionarioSelecionado,
   funcionariosOrdenados,
+  funcionarioFiltrado,
 } = setup(emit, props);
 </script>
 
@@ -80,14 +79,13 @@ const {
       <v-row>
         <v-col cols="9">
           <v-autocomplete
-            :clearable="true"
             label="Funcionário"
             :items="funcionariosOrdenados"
             item-title="NOME_COMP"
             item-value="COD_FUNCIONARIO"
             class="funcionario__input"
             v-model="state.codFuncionarioSelecionado"
-            @input="mostrarInfoFuncionarioSelecionado"
+            @update:search.sync="funcionarioFiltrado"
           ></v-autocomplete>
         </v-col>
 
@@ -96,7 +94,7 @@ const {
             title="Adicionar meta"
             class="funcionario__btn"
             color="primary"
-            @click.prevent="atribuirMetaIndividual()"
+            @click.prevent="atribuirMetaIndividual(state.funcionarioSelecionado)"
             >Adicionar meta
           </v-btn>
         </v-col>
@@ -140,19 +138,19 @@ const {
                 size="70px"
                 color="primary"
                 class="funcionarios__lista__avatar"
-                :title="funcionario.LOGIN"
+                :title="funcionario?.LOGIN"
               >
                 <v-img
-                  :src="actions.getFotoFuncionarioURL(funcionario.CPF)"
+                  :src="actions.getFotoFuncionarioURL(funcionario?.CPF)"
                   aspect-ratio="1"
                   cover
                 ></v-img>
               </v-avatar>
             </div>
             <div class="funcionarios__lista__card__info">
-              <div class="funcionarios__lista__card__nome">{{ funcionario.LOGIN }} </div>
+              <div class="funcionarios__lista__card__nome">{{ funcionario?.LOGIN }} </div>
               <div class="funcionarios__lista__card__meta">
-                {{ utils.formatValor(funcionario.VALOR_TOTAL) }}
+                {{ utils.formatValor(funcionario?.VALOR_META) }}
               </div>
             </div>
             <div class="mb-8">
@@ -160,16 +158,13 @@ const {
                 class="funcionarios__lista__card__icon"
                 size="x-large"
                 color="primary"
-                @click.prevent="atribuirMetaIndividual"
+                @click.prevent="atribuirMetaIndividual(funcionario)"
               >
                 mdi-pen
               </v-icon>
             </div>
           </div>
         </v-card>
-
-        <!-- {{ props.metaMontadores }} -->
-        <!-- {{ props.metaVendedores }} -->
       </div>
     </div>
   </div>
