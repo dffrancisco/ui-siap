@@ -133,13 +133,9 @@ export interface iParamGetItens {
     param: object
 }
 
-export interface iParamInsertTransportadoraDevolucao {
-    param: object
-}
+export interface iParamInsertTransportadoraDevolucao extends iTranspordadoraDevolucao { }
 
-export interface iParamUpdateTransportadoraDevolucao {
-    param: object
-}
+export interface iParamUpdateTransportadoraDevolucao extends iTranspordadoraDevolucao { }
 
 export interface iParamUpdateInsertItemDevolucao {
     param: object
