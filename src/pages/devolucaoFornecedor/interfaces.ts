@@ -55,7 +55,7 @@ export interface iItemDevolucao {
     VALOR_ICMS_ST: number,
     BASE_ICMS_ST: number,
     PERCENTUAL_ICMS: number,
-    PERCENTUAL_IPI: number,
+    PERCENTUAL_IPI: number | string,
     CST_PIS: string,
     PERCENTUAL_PIS: number | string,
     CST_COFINS: string,
@@ -162,6 +162,7 @@ export interface iGetTributosPisCofinsItemResponse {
     CST_COFINS: string,
     PERCENTUAL_COFINS: number
     CST_IPI: string,
+    PERCENTUAL_IPI: number
 }
 
 export interface iParamGetItensDevolucaoQTDFunction {

@@ -362,7 +362,7 @@ onUnmounted(() => {
       <div
         id="modalInformarQtdItem"
         style="display: none"
-        title="Informar Qtd"
+        title="Dados do item"
       >
         <ModalInformarQtdItem
           :modalInformaQtdOpened="state.modalInformaQtdItemOpened"
