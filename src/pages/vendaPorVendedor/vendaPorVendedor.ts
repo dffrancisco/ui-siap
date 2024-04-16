@@ -251,7 +251,7 @@ export const actions = {
             state.loading = false;
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao exibir as vendas!'
+                text: error?.response?.data?.msg || 'Erro ao exibir as vendas!'
             })
         }
     },
