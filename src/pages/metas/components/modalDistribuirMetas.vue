@@ -29,7 +29,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["inserirMeta", "atualizarDadosMetas"]);
+const emit = defineEmits(["inserirMeta", "opcaoCargoEscolhido"]);
 
 const {
   actions,
@@ -41,6 +41,7 @@ const {
   atribuirMetaIndividual,
   funcionariosOrdenados,
   funcionarioFiltrado,
+  totalMetas,
 } = setup(emit, props);
 </script>
 
@@ -103,23 +104,42 @@ const {
 
     <div class="funcionarios_totalizador">
       <v-row>
-        <v-col cols="6">
+        <v-col cols="3">
           <v-chip
             class="funcionarios_subtitle"
             variant="plain"
           >
             Funcionários:
           </v-chip>
-          <span class="tagSpan">12</span>
+          <span class="tagSpan">{{ totalMetas.qtdFuncionarios }}</span>
+        </v-col>
+        <v-col cols="1">
+          <v-chip
+            class="funcionarios_subtitle"
+            variant="plain"
+          >
+            Mês: {{ state.mes }}
+          </v-chip>
         </v-col>
         <v-col cols="2">
           <v-chip
             class="funcionarios_subtitle"
             variant="plain"
           >
+            Ano: {{ state.ano }}
+          </v-chip>
+        </v-col>
+        <v-col
+          cols="3"
+          style="align-items: right"
+        >
+          <v-chip
+            class="funcionarios_subtitle"
+            variant="plain"
+          >
             Total Distribuído:
           </v-chip>
-          <span class="tagSpan">134.000.00,00</span>
+          <span class="tagSpan">{{ utils.formatValor(totalMetas.totalDistribuido) }}</span>
         </v-col>
       </v-row>
     </div>

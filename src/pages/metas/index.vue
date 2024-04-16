@@ -7,10 +7,6 @@ import utils from "@/ts/utils";
 onMounted(async () => {
   actions.init();
 });
-
-const skill = 20;
-// const knowledge = 33;
-// const power = 78;
 </script>
 
 <template>
@@ -109,7 +105,10 @@ const skill = 20;
                       <p>{{ utils.formatValor(totalizadorMetas.metaDoDia) }}</p>
                     </div>
                     <div class="metas_tiposDeMeta_porcentagem">
-                      <p> {{ totalizadorMetas.percentualMetaDoDia }} % da meta atingida</p>
+                      <p v-if="totalizadorMetas.percentualMetaPrevisao === 0">
+                        {{ state.metaNaoSeAplica }}
+                      </p>
+                      <p v-else> {{ totalizadorMetas.percentualMetaDoDia }} % da meta atingida </p>
                     </div>
                   </v-card>
                 </v-col>
@@ -121,7 +120,10 @@ const skill = 20;
                       <p>{{ utils.formatValor(totalizadorMetas.metaPrevisao) }}</p>
                     </div>
                     <div class="metas_tiposDeMeta_porcentagem">
-                      <p> {{ totalizadorMetas.percentualMetaPrevisao }} % da meta atingida</p>
+                      <p v-if="totalizadorMetas.percentualMetaPrevisao === 0">
+                        {{ state.metaNaoSeAplica }}
+                      </p>
+                      <p v-else> {{ totalizadorMetas.percentualMetaPrevisao }} % da meta atingida </p>
                     </div>
                   </v-card>
                 </v-col>
@@ -132,13 +134,13 @@ const skill = 20;
       </div>
 
       <div
-        class="pa-2 pt-5 barraDeProgresso"
+        class="pa-1 pt-5 barraDeProgresso"
         style="max-width: 1100px; margin: 0 auto"
       >
         <v-progress-linear
           v-model="totalizadorMetas.percentualMetaAcumulada"
           color="primary"
-          height="15"
+          height="20"
           style="border-radius: 10px"
         >
           <template v-slot:default="{ value }">
@@ -150,9 +152,10 @@ const skill = 20;
 
     <div style="max-width: 1120px; margin: 0 auto">
       <v-container>
-        <v-data-table-server
+        <v-data-table
           class="tableMetas"
           v-model:itemsPerPage="state.itemsPerPage"
+          items-per-page-text="Itens por página"
           :headers="state.headers"
           :items-length="state.totalItems"
           :items="state.opcaoMeta === 0 ? state.vendedoresArray : state.montadoresArray"
@@ -183,7 +186,7 @@ const skill = 20;
               Não há dados disponíveis.
             </v-alert>
           </template>
-        </v-data-table-server>
+        </v-data-table>
       </v-container>
     </div>
 
@@ -201,7 +204,7 @@ const skill = 20;
         :optionSelect="state.opcaoMeta"
         :opened="state.modalDistribuirMetasOpened"
         @inserirMeta="actions.inserirMeta"
-        @atualizarDadosMetas="actions.atualizarDadosMetas"
+        @opcaoCargoEscolhido="actions.atualizarOpcaoMeta"
       />
     </div>
 

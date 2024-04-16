@@ -9,10 +9,10 @@ import utils from "@/ts/utils";
 
 export const state = reactive({
     mes: new Date().getMonth() + 1,
-    ano: 2023,
+    ano: new Date().getFullYear(),
     loading: false,
     totalItems: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 10,
     search: (""),
     opcaoMeta: 0,
     metaVendedores: <iResponseMetasVendedoresEMontadores>{},
@@ -62,7 +62,8 @@ export const state = reactive({
             sortable: true,
             align: 'center'
         },
-    ]
+    ],
+    metaNaoSeAplica: "Não se aplica."
 })
 
 export const meses = mesesToSelect;
@@ -118,7 +119,6 @@ export const totalizadorMetas = computed(() => {
 });
 
 
-
 export const actions = {
 
     async init() {
@@ -144,19 +144,45 @@ export const actions = {
         });
     },
 
-    async inserirMeta(dadosParaInserirMeta: { funcionario: iResponseFuncionarios, valorMeta: number }) {
+    atualizarOpcaoMeta(opcaoCargoEscolhido: number) {
+        state.opcaoMeta = opcaoCargoEscolhido;
+    },
+
+    async inserirMeta(dadosParaInserirMeta: { funcionario: iResponseMetasVendedoresEMontadores, valorMeta: number }) {
         state.loading = true;
 
         const param = {
-            cargo: dadosParaInserirMeta.funcionario.CARGO,
+            cargo: state.opcaoMeta,
             cod_funcionario: dadosParaInserirMeta.funcionario.COD_FUNCIONARIO,
-            valorMeta: dadosParaInserirMeta.valorMeta,
+            valorMeta: utils.formatValorUSA(dadosParaInserirMeta.valorMeta.toString()),
             mes: state.mes,
             ano: state.ano
         }
 
         try {
             state.metaInserida = await metasService.inserirMeta(param);
+
+            if (state.opcaoMeta === 1) {
+
+                setTimeout(() => {
+                    actions.atualizarDadosMetasMontadores()
+                }, 1000)
+            }
+
+            if (state.opcaoMeta === 0) {
+
+                setTimeout(() => {
+                    actions.atualizarDadosMetasVendedores()
+                }, 1000)
+            }
+
+            Swal.fire({
+                icon: "success",
+                title: "Meta inserida com sucesso.",
+                showConfirmButton: false,
+                timer: 2000,
+            });
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -166,17 +192,24 @@ export const actions = {
             state.loading = false;
         }
 
-
     },
 
-    async atualizarDadosMetas() {
+    async atualizarDadosMetasVendedores() {
         await Promise.all([
-            actions.getMetasVendedores(state.mes, state.ano),
+            actions.getMetasVendedores(state.mes, state.ano)
+        ]);
+    },
+
+
+    async atualizarDadosMetasMontadores() {
+        await Promise.all([
             actions.getMetasMontadores(state.mes, state.ano)
         ]);
     },
 
+
     async getMetasVendedores(mes: number, ano: number) {
+        state.loading = true;
         const param: iMesEAno = {
             mes: mes,
             ano: ano,
@@ -185,16 +218,20 @@ export const actions = {
         try {
             state.metaVendedores = await metasService.getMetasVendedores(param);
             state.vendedoresArray = Object.values(state.metaVendedores);
+            state.totalItems = state.vendedoresArray.length
 
         } catch (error) {
             Swal.fire({
                 icon: "error",
                 text: "Ocorreu um erro ao buscar as metas dos vendedores.",
             });
+        } finally {
+            state.loading = false;
         }
     },
 
     async getMetasMontadores(mes: number, ano: number) {
+        state.loading = true;
         const param: iMesEAno = {
             mes: mes,
             ano: ano,
@@ -207,7 +244,10 @@ export const actions = {
                 icon: "error",
                 text: "Ocorreu um erro ao buscar as metas dos montadores.",
             });
+        } finally {
+            state.loading = false;
         }
+
     },
 
     async getFuncionarios(mes: number, ano: number) {
@@ -239,9 +279,7 @@ export const actions = {
     },
 
     async distribuirMetas(mes: number, ano: number) {
-        state.loading = true;
 
-        // Verifica se a lista de funcionários está vazia ou não foi definida
         if (!state.funcionarios || !Array.isArray(state.funcionarios) || state.funcionarios.length === 0) {
             await actions.getFuncionarios(mes, ano);
         }
@@ -250,8 +288,6 @@ export const actions = {
         await actions.getMetasMontadores(state.mes, state.ano);
 
         state.modalDistribuirMetas.open();
-
-        state.loading = false;
     },
 
     formatPrevisao(previsao) {

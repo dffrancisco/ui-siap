@@ -1,8 +1,8 @@
 import { computed, nextTick, onMounted, reactive, watch } from "vue";
-import metasService from "../services/metas.service";
-import { iMesEAno, iResponseFuncionarios, iResponseMetasVendedoresEMontadores } from "../interfaces";
+import { iResponseFuncionarios, iResponseMetasVendedoresEMontadores } from "../interfaces";
 import Swal from "sweetalert2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
+import utils from "@/ts/utils";
 
 export const setup = (emit: any, props: any) => {
 
@@ -41,7 +41,7 @@ export const setup = (emit: any, props: any) => {
 
                 setTimeout(() => {
                     state.loading = false;
-                }, 1000);
+                }, 500);
             }
 
         }
@@ -63,49 +63,52 @@ export const setup = (emit: any, props: any) => {
 
     const funcionarioFiltrado = () => {
 
+
         state.funcionarioSelecionado = props.funcionarios
             .find(funcionario => funcionario.COD_FUNCIONARIO == state.codFuncionarioSelecionado)
 
-        state.infoFuncionario = [];
-        state.infoFuncionario.push(state.funcionarioSelecionado);
+
+        if (!state.funcionarioSelecionado) {
+            state.isVendedoresSelected = true;
+            state.isMontadoresSelected = false;
+            state.infoFuncionario = state.metaVendedores;
+            emit("opcaoCargoEscolhido", 0);
+        } else {
+            state.infoFuncionario = [];
+            state.infoFuncionario.push(state.funcionarioSelecionado);
+        }
+
 
         return state.infoFuncionario
     }
 
-    // const atribuirMetaIndividual = () => {
-
-    //     state.funcionarioSelecionado = props.funcionarios
-    //         .find(funcionario => funcionario.COD_FUNCIONARIO == state.codFuncionarioSelecionado)
-
-    //     if (!state.funcionarioSelecionado?.LOGIN) {
-    //         Swal.fire({
-    //             icon: "error",
-    //             text: "Escolha um funcionário para prosseguir.",
-    //         });
-    //         return;
-    //     }
-
-    //     state.modalAtribuirMetaIndividual.open();
-    // };
 
     const atribuirMetaIndividual = (funcionarioSelecionado) => {
-        // Verifica se o funcionário selecionado foi encontrado
-        if (!funcionarioSelecionado) {
+
+        if (funcionarioSelecionado.CARGO != "MONTADOR") {
+            state.isVendedoresSelected = true;
+            state.isMontadoresSelected = false;
+            emit("opcaoCargoEscolhido", 0);
+        }
+
+        if (funcionarioSelecionado.CARGO == "MONTADOR") {
+            state.isVendedoresSelected = false;
+            state.isMontadoresSelected = true;
+            emit("opcaoCargoEscolhido", 1);
+        }
+
+        if (!funcionarioSelecionado || Object.keys(funcionarioSelecionado).length == 0) {
             Swal.fire({
                 icon: "error",
-                text: "Funcionário selecionado não encontrado.",
+                text: "Escolha um funcionário.",
             });
             return;
         }
 
-        // Define o funcionário selecionado
         state.funcionarioSelecionado = funcionarioSelecionado;
 
-        // Abre o modal para atribuir a meta individual
         state.modalAtribuirMetaIndividual.open();
     };
-
-
 
     onMounted(() => {
         nextTick(() => {
@@ -141,26 +144,66 @@ export const setup = (emit: any, props: any) => {
     }
 
     const selecionarVendedores = () => {
+        state.loading = true
+
         state.isVendedoresSelected = true;
         state.isMontadoresSelected = false;
         state.infoFuncionario = state.metaVendedores;
+        setTimeout(() => {
+            state.loading = false;
+        }, 300);
+
+        emit("opcaoCargoEscolhido", 0);
     };
 
 
     const selecionarMontadores = () => {
+        state.loading = true
         state.isVendedoresSelected = false;
         state.isMontadoresSelected = true;
         state.infoFuncionario = state.metaMontadores;
+        setTimeout(() => {
+            state.loading = false;
+        }, 300);
+
+        emit("opcaoCargoEscolhido", 1);
     };
 
     const enviarDadosMeta = (dadosParaInserirMeta: { funcionario: iResponseFuncionarios, valorMeta: number }) => {
-        emit("inserirMeta", dadosParaInserirMeta)
+        const arrayAtualizaMeta = [
+            {
+                "CPF": dadosParaInserirMeta.funcionario.CPF,
+                "VALOR_META": utils.formatValorUSA(dadosParaInserirMeta.valorMeta.toString()),
+            }
+        ];
+
+        arrayAtualizaMeta.forEach((itemAtualizaMeta) => {
+            const funcionarioIndex = state.infoFuncionario.findIndex((funcionario) => funcionario.CPF === itemAtualizaMeta.CPF);
+
+            if (funcionarioIndex !== -1) {
+                state.infoFuncionario[funcionarioIndex].VALOR_META = itemAtualizaMeta.VALOR_META;
+            }
+        });
+
+        emit("inserirMeta", dadosParaInserirMeta);
     };
+
+
 
     const fecharModal = () => {
         state.modalAtribuirMetaIndividual.close();
-        emit("atualizarDadosMetas")
     }
+
+    const totalMetas = computed(() => {
+        let totalDistribuido = 0;
+        let qtdFuncionarios = state.infoFuncionario.length
+
+        state.infoFuncionario.forEach((item) => {
+            totalDistribuido += item?.VALOR_META || 0;
+        });
+
+        return { totalDistribuido, qtdFuncionarios };
+    });
 
 
     return {
@@ -173,6 +216,7 @@ export const setup = (emit: any, props: any) => {
         enviarDadosMeta,
         fecharModal,
         funcionarioFiltrado,
+        totalMetas
     }
 }
 

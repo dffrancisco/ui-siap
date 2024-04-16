@@ -14,7 +14,7 @@ export interface iResponseFuncionarios {
 }
 
 export interface iResponseMetaInserida {
-    cargo: string;
+    cargo: number;
     cod_funcionario: number;
     valorMeta: number;
     mes: number;

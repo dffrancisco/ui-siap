@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineProps, reactive, watch } from "vue";
-import { iResponseFuncionarios, iResponseMetasVendedoresEMontadores } from "../interfaces";
+import { iResponseMetasVendedoresEMontadores } from "../interfaces";
 import { configVMoney } from "../../../constants/constants";
 
 const props = defineProps({
@@ -26,6 +26,7 @@ const state = reactive({
   inputValor: "",
   mes: props.mes,
   ano: props.ano,
+  inputMeta: <HTMLInputElement>{},
 });
 
 function getFotoFuncionarioURL(cpf: string) {
@@ -35,6 +36,11 @@ function getFotoFuncionarioURL(cpf: string) {
   const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
   return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
 }
+
+const cancelar = () => {
+  emit("fecharModalAtribuirMetaIndividual");
+  state.inputValor = "";
+};
 
 const salvarMeta = async () => {
   state.loading = true;
@@ -46,6 +52,8 @@ const salvarMeta = async () => {
   emit("dadosInserirMeta", dadosParaInserirMeta);
   emit("fecharModalAtribuirMetaIndividual");
   state.loading = false;
+
+  state.inputValor = "";
 };
 
 watch(
@@ -57,6 +65,9 @@ watch(
       state.funcionario = props.funcionario;
       state.mes = props.mes;
       state.ano = props.ano;
+
+      state.inputMeta = <any>document.getElementById("inputMeta").focus();
+
       state.loading = false;
     }
   }
@@ -71,7 +82,7 @@ watch(
       class="funcionarios__foto"
     >
       <v-img
-        :src="getFotoFuncionarioURL(state.funcionario.CPF)"
+        :src="getFotoFuncionarioURL(state.funcionario?.CPF)"
         aspect-ratio="2"
         cover
       ></v-img>
@@ -83,10 +94,12 @@ watch(
 
   <div class="funcionarios__input">
     <input
+      id="inputMeta"
       :clearable="false"
       v-model.lazy="state.inputValor"
       :model-modifiers="{ number: true }"
       v-money3="configVMoney"
+      autofocus
     />
   </div>
 
@@ -94,6 +107,7 @@ watch(
     title="Cancelar"
     class="funcionarios__btn_meta ml-7 mt-3"
     color="outline"
+    @click="cancelar()"
     >Cancelar
   </v-btn>
   <v-btn
