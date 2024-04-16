@@ -2,6 +2,11 @@
 import moment from "moment";
 import { state, actions, vendasOrdenadas, dadosToPrint } from "./vendaPorVendedor";
 import printJS from "print-js";
+import { nextTick } from "vue";
+
+nextTick(() => {
+  actions.init();
+});
 </script>
 
 <template>
@@ -12,18 +17,24 @@ import printJS from "print-js";
           <span>Data Inicial</span>
           <input
             v-model="state.dataInicial"
+            id="DATA_INICIAL"
+            name="DATA_INICIAL"
             type="date"
             class="ss obr"
             :max="moment().format('YYYY-MM-DD')"
+            @keydown.enter="state.inputDataFinal.focus()"
           />
         </div>
         <div class="inputData">
           <span>Data Final</span>
           <input
             v-model="state.dataFinal"
+            id="DATA_FINAL"
+            name="DATA_FINAL"
             type="date"
             class="ss obr"
             :max="moment().format('YYYY-MM-DD')"
+            @keydown.enter.prevent="actions.pesquisarVendas"
           />
         </div>
         <div>
@@ -31,12 +42,13 @@ import printJS from "print-js";
             color="primary"
             icon="mdi-magnify mdi-24px"
             size="40"
-            @click="actions.searchVendasBtn"
+            @click="actions.pesquisarVendas"
           >
           </v-btn>
         </div>
         <div>
           <v-btn
+            :disabled="state.dbVendas.length <= 0"
             color="primary"
             icon="mdi-printer mdi-24px"
             size="40"

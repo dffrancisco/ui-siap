@@ -5,7 +5,7 @@ export interface iParamGetVendasPorVendedor {
 
 export interface iVenda {
     LOGIN: string,
-    COD_FUNCIONARIO: number,
+    COD_FUNCIONARIO?: number,
     VALOR_VENDA: number,
     VALOR_DEVOLUCAO: number,
     QTD_VENDAS: number,

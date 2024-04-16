@@ -9,25 +9,22 @@ import Swal from "sweetalert2";
 import moment from "moment";
 
 export const dadosToPrint = computed(() => {
-    let dados = []
+    let dados = state.dbVendas.map(venda => {
+        return {
+            LOGIN: venda.LOGIN,
+            LIMITE: utils.formatValor(venda.LIMITE),
+            VALOR_VENDA: utils.formatValor(venda.VALOR_VENDA),
+            VALOR_DEVOLUCAO: utils.formatValor(venda.VALOR_DEVOLUCAO),
+            VENDA_LIQUIDA: utils.formatValor(venda.VENDA_LIQUIDA),
+            TICKET_MEDIO: utils.formatValor(venda.TICKET_MEDIO),
+            QTD_MEDIA_ITENS: utils.formatValor(venda.QTD_ITENS / venda.QTD_VENDAS)
+        };
+    });
 
-    state.dbVendas.map(venda => {
-        if (venda.VALOR_VENDA > 0) {
-            dados.push({
-                LOGIN: venda.LOGIN,
-                LIMITE: utils.formatValor(venda.LIMITE),
-                VALOR_VENDA: utils.formatValor(venda.VALOR_VENDA),
-                VALOR_DEVOLUCAO: utils.formatValor(venda.VALOR_DEVOLUCAO),
-                VENDA_LIQUIDA: utils.formatValor(venda.VENDA_LIQUIDA),
-                TICKET_MEDIO: utils.formatValor(venda.TICKET_MEDIO),
-                QTD_MEDIA_ITENS: utils.formatValor(venda.QTD_ITENS / venda.QTD_VENDAS)
-            })
-        }
-    })
-})
+    return dados
+});
 
 export const vendasOrdenadas = computed(() => {
-    let vendas = []
     let totalQtdVendas = 0;
     let totalLimite = 0;
     let totalTicketMedio = 0;
@@ -37,17 +34,15 @@ export const vendasOrdenadas = computed(() => {
     let totalValorLiquido = 0;
 
     state.dbVendas.forEach(venda => {
-        if (venda.VALOR_VENDA > 0) {
-            totalQtdVendas += venda.QTD_VENDAS;
-            totalLimite += venda.LIMITE;
-            totalTicketMedio += venda.TICKET_MEDIO;
-            totalQtdItens += venda.QTD_ITENS;
-            totalDevolucoes += venda.VALOR_DEVOLUCAO;
-            totalValorVenda += venda.VALOR_VENDA;
-            totalValorLiquido += venda.VENDA_LIQUIDA;
 
-            vendas.push(venda)
-        }
+        totalQtdVendas += venda.QTD_VENDAS;
+        totalLimite += venda.LIMITE;
+        totalTicketMedio += venda.TICKET_MEDIO;
+        totalQtdItens += venda.QTD_ITENS;
+        totalDevolucoes += venda.VALOR_DEVOLUCAO;
+        totalValorVenda += venda.VALOR_VENDA;
+        totalValorLiquido += venda.VENDA_LIQUIDA;
+
     })
 
     if (state.dbVendas.length > 0) {
@@ -62,10 +57,10 @@ export const vendasOrdenadas = computed(() => {
             QTD_ITENS: totalQtdItens
         }
 
-        vendas.push(totalizador)
+        state.dbVendas.push(totalizador)
     }
 
-    return vendas
+    return state.dbVendas
 })
 
 export const state = reactive({
@@ -103,6 +98,9 @@ export const state = reactive({
     dataInicial: moment().format('YYYY-MM-DD'),
     dataFinal: moment().format('YYYY-MM-DD'),
 
+    inputDataInicial: <HTMLInputElement>{},
+    inputDataFinal: <HTMLInputElement>{},
+
     loading: false,
 })
 
@@ -113,7 +111,8 @@ export const actions = {
         return utils.formatValor(resultado)
     },
 
-    async searchVendasBtn() {
+    async pesquisarVendas() {
+
         if (moment(state.dataFinal).isAfter(moment())) {
             await Swal.fire({
                 text: "Data Inválida!",
@@ -131,6 +130,14 @@ export const actions = {
         }
 
         await actions.getVendas();
+
+    },
+
+    init() {
+        state.inputDataInicial = <any>document.getElementById("DATA_INICIAL");
+        state.inputDataFinal = <any>document.getElementById("DATA_FINAL");
+
+        state.inputDataInicial.focus();
     },
 
     async getVendas() {
