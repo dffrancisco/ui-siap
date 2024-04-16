@@ -61,7 +61,7 @@ nextTick(() => {
         items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
         class="ss custom-table"
-        height="522"
+        height="482"
         items-per-page="50"
       >
         <template v-slot:item.VALOR_DEVOLUCAO="{ value }">
@@ -82,7 +82,7 @@ nextTick(() => {
       <div class="pt-2 btnsGraficoPrint">
         <v-btn
           color="primary"
-          @click="actions.print"
+          @click="actions.imprimirVendas"
           :disabled="state.dbVendas.length <= 0"
         >
           <v-icon
@@ -95,7 +95,7 @@ nextTick(() => {
         </v-btn>
         <v-btn
           color="primary"
-          @click="actions.print"
+          @click="actions.imprimirVendas"
           :disabled="state.dbVendas.length <= 0"
         >
           <v-icon

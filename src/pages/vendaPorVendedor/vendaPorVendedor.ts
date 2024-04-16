@@ -12,22 +12,7 @@ import utils from "@/ts/utils";
 import Swal from "sweetalert2";
 import moment from "moment";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-
-export const dadosToPrint = computed(() => {
-    let dados = state.dbVendas.map(venda => {
-        return {
-            LOGIN: venda.LOGIN,
-            LIMITE: utils.formatValor(venda.LIMITE),
-            VALOR_VENDA: utils.formatValor(venda.VALOR_VENDA),
-            VALOR_DEVOLUCAO: utils.formatValor(venda.VALOR_DEVOLUCAO),
-            VENDA_LIQUIDA: utils.formatValor(venda.VENDA_LIQUIDA),
-            TICKET_MEDIO: utils.formatValor(venda.TICKET_MEDIO),
-            QTD_MEDIA_ITENS: utils.formatValor(venda.QTD_ITENS / venda.QTD_VENDAS)
-        };
-    });
-
-    return dados
-});
+import printJS from "print-js";
 
 export const dadosVendasPorDiaToGrafico = computed(() => {
     const cabecalho = [];
@@ -210,42 +195,55 @@ export const actions = {
     },
 
     async openModalVendasDetalhes(nomeVendedor: string, id_vendedor: number) {
+        state.loading = true;
+
         actions.createModal(nomeVendedor)
-
         await actions.getVendasDetalhes(id_vendedor)
-
         state.modalVendasDetalhes.open();
+
+        state.loading = false;
     },
 
-    async print() {
-        // <v-btn
-        //     :disabled="state.dbVendas.length <= 0"
-        //     color="primary"
-        //     icon="mdi-printer mdi-24px"
-        //     size="40"
-        //     @click="
-        //       printJS({
-        //         printable: dadosToPrint,
-        //         properties: [
-        //           { field: 'LOGIN', displayName: 'Vendedor' },
-        //           { field: 'LIMITE', displayName: 'Limite Crédito' },
-        //           { field: 'VALOR_VENDA', displayName: 'Venda' },
-        //           { field: 'VALOR_DEVOLUCAO', displayName: 'Devolução' },
-        //           { field: 'VENDA_LIQUIDA', displayName: 'Ved.Líquida' },
-        //           { field: 'TICKET_MEDIO', displayName: 'Ticket Médio' },
-        //           { field: 'QTD_MEDIA_ITENS', displayName: 'Qtd.Média Itens' },
-        //         ],
-        //         type: 'json',
-        //         gridHeaderStyle: 'border: 1px solid #000000',
-        //         gridStyle: 'text-align: center; border: 1px solid #000000',
-        //       })
-        //     "
-        //   >
-        //   </v-btn>
+    async imprimirVendas() {
+        try {
+            state.loading = true
 
+            let dadosToPrint = state.dbVendas.map(venda => {
+                return {
+                    LOGIN: venda.LOGIN,
+                    LIMITE: utils.formatValor(venda.LIMITE),
+                    VALOR_VENDA: utils.formatValor(venda.VALOR_VENDA),
+                    VALOR_DEVOLUCAO: utils.formatValor(venda.VALOR_DEVOLUCAO),
+                    VENDA_LIQUIDA: utils.formatValor(venda.VENDA_LIQUIDA),
+                    TICKET_MEDIO: utils.formatValor(venda.TICKET_MEDIO),
+                    QTD_MEDIA_ITENS: utils.formatValor(venda.QTD_ITENS / venda.QTD_VENDAS)
+                };
+            });
 
+            printJS({
+                printable: dadosToPrint,
+                properties: [
+                    { field: 'LOGIN', displayName: 'Vendedor' },
+                    { field: 'LIMITE', displayName: 'Limite Crédito' },
+                    { field: 'VALOR_VENDA', displayName: 'Venda' },
+                    { field: 'VALOR_DEVOLUCAO', displayName: 'Devolução' },
+                    { field: 'VENDA_LIQUIDA', displayName: 'Ved.Líquida' },
+                    { field: 'TICKET_MEDIO', displayName: 'Ticket Médio' },
+                    { field: 'QTD_MEDIA_ITENS', displayName: 'Qtd.Média Itens' },
+                ],
+                type: 'json',
+                gridHeaderStyle: 'border: 1px solid #000000',
+                gridStyle: 'text-align: center; border: 1px solid #000000',
+            })
 
-
+            state.loading = false
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                text: 'Erro ao imprimir as vendas!',
+                icon: "error"
+            })
+        }
         //     <div
         //     class="pt-5"
         //     v-if="state.dbVendas.length > 0"
@@ -341,8 +339,6 @@ export const actions = {
 
     async getVendasDetalhes(id_vendedor: number) {
         try {
-            state.loading = true;
-
             let param: iParamGetVendasDetalhes = {
                 DATA_INICIO: state.dataInicialModal,
                 DATA_FIM: state.dataFinalModal,
@@ -352,8 +348,6 @@ export const actions = {
             let data = await serviceVendasPorVendedor.getVendasDetalhes(param);
 
             state.dbVendasDetalhes = data
-
-            state.loading = false;
         } catch (error) {
             state.loading = false;
             Swal.fire({
