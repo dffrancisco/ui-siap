@@ -2,8 +2,6 @@ import { computed, reactive } from "vue";
 import {
     iVenda,
     iParamGetVendas,
-    iVendaPorDiaGrafico,
-    iVendaPorHoraGrafico,
     iParamGetVendasDetalhes,
     iGetVendasDetalhesResponse
 } from "./interfaces";
@@ -13,40 +11,6 @@ import Swal from "sweetalert2";
 import moment from "moment";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import printJS from "print-js";
-
-export const dadosVendasPorDiaToGrafico = computed(() => {
-    const cabecalho = [];
-    const dados = [];
-
-    if (state.dbVendasPorDiaGrafico.length > 0) {
-        state.dbVendasPorDiaGrafico.forEach((item) => {
-            cabecalho.push(item.DIA);
-            dados.push(item.VALOR);
-        });
-    }
-
-    return {
-        labels: cabecalho,
-        series: dados,
-    };
-});
-
-export const dadosVendasPorHoraToGrafico = computed(() => {
-    const cabecalho = [];
-    const dados = [];
-
-    if (state.dbVendasPorHoraGrafico.length > 0) {
-        state.dbVendasPorHoraGrafico.forEach((item) => {
-            cabecalho.push(item.HORA);
-            dados.push(item.VALOR);
-        });
-    }
-
-    return {
-        labels: cabecalho,
-        series: dados,
-    };
-});
 
 export const vendasOrdenadas = computed(() => {
     let totalQtdVendas = 0;
@@ -89,13 +53,14 @@ export const vendasOrdenadas = computed(() => {
 
 export const state = reactive({
     dbVendas: <iVenda[]>[],
-    dbVendasPorDiaGrafico: <iVendaPorDiaGrafico[]>[],
-    dbVendasPorHoraGrafico: <iVendaPorHoraGrafico[]>[],
 
     dbVendasDetalhes: <iGetVendasDetalhesResponse>{},
 
     modalVendasDetalhes: <iModalCreate>{},
     modalVendasDetalhesOpened: false,
+
+    modalVendasGraficos: <iModalCreate>{},
+    modalVendasGraficosOpened: false,
 
     headers: <any>[
         { title: 'Vendedor', key: 'LOGIN', width: '30%' },
@@ -176,13 +141,15 @@ export const actions = {
     },
 
     init() {
+        actions.createModais()
+
         state.inputDataInicial = <any>document.getElementById("DATA_INICIAL");
         state.inputDataFinal = <any>document.getElementById("DATA_FINAL");
 
         state.inputDataInicial.focus();
     },
 
-    createModal(nomeVendedor: string) {
+    createModalVendasDetalhes(nomeVendedor: string) {
         state.modalVendasDetalhes = new xModal.create({
             el: "#modalVendasDetalhes",
             height: 750,
@@ -192,16 +159,33 @@ export const actions = {
             onOpen: () => { state.modalVendasDetalhesOpened = true; },
             onClose: () => { state.modalVendasDetalhesOpened = false; state.modalVendasDetalhes.destroy() },
         });
+
+    },
+
+    createModais() {
+        state.modalVendasGraficos = new xModal.create({
+            el: "#modalVendasGraficos",
+            height: 700,
+            width: 850,
+            title: 'Gráficos',
+            theme: 'xModal-blue',
+            onOpen: () => { state.modalVendasGraficosOpened = true; },
+            onClose: () => { state.modalVendasGraficosOpened = false; },
+        });
     },
 
     async openModalVendasDetalhes(nomeVendedor: string, id_vendedor: number) {
         state.loading = true;
 
-        actions.createModal(nomeVendedor)
+        actions.createModalVendasDetalhes(nomeVendedor)
         await actions.getVendasDetalhes(id_vendedor)
         state.modalVendasDetalhes.open();
 
         state.loading = false;
+    },
+
+    async openModalVendasGraficos() {
+        state.modalVendasGraficos.open()
     },
 
     async imprimirVendas() {
@@ -244,69 +228,6 @@ export const actions = {
                 icon: "error"
             })
         }
-        //     <div
-        //     class="pt-5"
-        //     v-if="state.dbVendas.length > 0"
-        //   >
-        //     <span>Gráfico de Venda por Dia</span>
-
-        //     <VueApexCharts
-        //       width="100%"
-        //       height="350"
-        //       type="bar"
-        //       :options="{
-        //     chart: {
-        //       id: 'basic-bar',
-        //     },
-        //     xaxis: {
-        //       categories: dadosVendasPorDiaToGrafico.labels,
-        //     },
-        //     yaxis: {
-        //       labels: {
-        //         formatter: (value: number) => utils.formatValor(value),
-        //       },
-        //     },
-        //   }"
-        //       :series="[
-        //         {
-        //           name: 'Venda do Dia',
-        //           data: dadosVendasPorDiaToGrafico.series,
-        //         },
-        //       ]"
-        //     />
-        //   </div>
-
-        //   <div
-        //     class="pt-5"
-        //     v-if="state.dbVendas.length > 0"
-        //   >
-        //     <span>Gráfico de Venda por Hora</span>
-
-        //     <VueApexCharts
-        //       width="100%"
-        //       height="350"
-        //       type="line"
-        //       :options="{
-        //     chart: {
-        //       id: 'basic-bar',
-        //     },
-        //     xaxis: {
-        //       categories: dadosVendasPorHoraToGrafico.labels,
-        //     },
-        //     yaxis: {
-        //       labels: {
-        //         formatter: (value: number) => utils.formatValor(value),
-        //       },
-        //     },
-        //   }"
-        //       :series="[
-        //         {
-        //           name: 'Venda por Hora',
-        //           data: dadosVendasPorHoraToGrafico.series,
-        //         },
-        //       ]"
-        //     />
-        //   </div>
     },
 
     async getVendas() {
@@ -320,9 +241,7 @@ export const actions = {
 
             let data = await serviceVendasPorVendedor.getVendas(param);
 
-            state.dbVendas = data.vendas
-            state.dbVendasPorDiaGrafico = data.vendasPorDiaGrafico
-            state.dbVendasPorHoraGrafico = data.vendasPorHoraGrafico
+            state.dbVendas = data
 
             state.dataInicialModal = state.dataInicial
             state.dataFinalModal = state.dataFinal

@@ -25,11 +25,7 @@ export interface iVendaPorHoraGrafico {
     VALOR: number
 }
 
-export interface iGetVendasResponse {
-    vendas: iVenda[],
-    vendasPorDiaGrafico: iVendaPorDiaGrafico[],
-    vendasPorHoraGrafico: iVendaPorHoraGrafico[],
-}
+export interface iGetVendasResponse extends iVenda { }
 
 export interface iParamGetVendasDetalhes {
     DATA_INICIO: string;
@@ -60,3 +56,13 @@ export interface iVendaDetalhes {
 }
 
 export interface iGetVendasDetalhesResponse extends iVendaDetalhes { }
+
+export interface iParamGetVendasGraficos {
+    DATA_INICIO: string;
+    DATA_FIM: string;
+}
+
+export interface iGetVendasGraficosResponse {
+    vendasPorDiaGrafico: iVendaPorDiaGrafico[],
+    vendasPorHoraGrafico: iVendaPorHoraGrafico[]
+}

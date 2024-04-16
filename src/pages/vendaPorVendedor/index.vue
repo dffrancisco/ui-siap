@@ -3,6 +3,7 @@ import moment from "moment";
 import { state, actions, vendasOrdenadas } from "./vendaPorVendedor";
 import { nextTick } from "vue";
 import ModalVendasDetalhes from "./components/ModalVendasDetalhes.vue";
+import ModalVendasGraficos from "./components/ModalVendasGraficos.vue";
 
 nextTick(() => {
   actions.init();
@@ -82,7 +83,7 @@ nextTick(() => {
       <div class="pt-2 btnsGraficoPrint">
         <v-btn
           color="primary"
-          @click="actions.imprimirVendas"
+          @click="actions.openModalVendasGraficos"
           :disabled="state.dbVendas.length <= 0"
         >
           <v-icon
@@ -116,6 +117,17 @@ nextTick(() => {
       <ModalVendasDetalhes
         :dbVendasDetalhes="state.dbVendasDetalhes"
         :modalOpened="state.modalVendasDetalhesOpened"
+      />
+    </div>
+
+    <div
+      id="modalVendasGraficos"
+      style="display: none"
+    >
+      <ModalVendasGraficos
+        :modalOpened="state.modalVendasGraficosOpened"
+        :dataInicial="state.dataInicialModal"
+        :dataFinal="state.dataFinalModal"
       />
     </div>
 
