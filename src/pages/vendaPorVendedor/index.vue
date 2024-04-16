@@ -91,7 +91,7 @@ nextTick(() => {
         items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
         class="ss"
-        height="558"
+        height="582"
       >
         <template v-slot:item.VALOR_DEVOLUCAO="{ value }">
           <spam style="color: #bf3f3f"> -{{ value }} </spam>
