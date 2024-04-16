@@ -1,7 +1,9 @@
 import { computed, reactive } from "vue";
 import {
     iVenda,
-    iParamGetVendasPorVendedor
+    iParamGetVendasPorVendedor,
+    iVendaPorDiaGrafico,
+    iVendaPorHoraGrafico
 } from "./interfaces";
 import serviceVendasPorVendedor from './services/vendaPorVendedor.service'
 import utils from "@/ts/utils";
@@ -22,6 +24,40 @@ export const dadosToPrint = computed(() => {
     });
 
     return dados
+});
+
+export const dadosVendasPorDiaToGrafico = computed(() => {
+    const cabecalho = [];
+    const dados = [];
+
+    if (state.dbVendasPorDiaGrafico.length > 0) {
+        state.dbVendasPorDiaGrafico.forEach((item) => {
+            cabecalho.push(item.DIA);
+            dados.push(item.VALOR);
+        });
+    }
+
+    return {
+        labels: cabecalho,
+        series: dados,
+    };
+});
+
+export const dadosVendasPorHoraToGrafico = computed(() => {
+    const cabecalho = [];
+    const dados = [];
+
+    if (state.dbVendasPorHoraGrafico.length > 0) {
+        state.dbVendasPorHoraGrafico.forEach((item) => {
+            cabecalho.push(item.HORA);
+            dados.push(item.VALOR);
+        });
+    }
+
+    return {
+        labels: cabecalho,
+        series: dados,
+    };
 });
 
 export const vendasOrdenadas = computed(() => {
@@ -65,6 +101,8 @@ export const vendasOrdenadas = computed(() => {
 
 export const state = reactive({
     dbVendas: <iVenda[]>[],
+    dbVendasPorDiaGrafico: <iVendaPorDiaGrafico[]>[],
+    dbVendasPorHoraGrafico: <iVendaPorHoraGrafico[]>[],
 
     headers: <any>[
         { title: 'Vendedor', key: 'LOGIN', width: '30%' },
@@ -149,7 +187,11 @@ export const actions = {
                 DATA_FIM: state.dataFinal
             }
 
-            state.dbVendas = await serviceVendasPorVendedor.getVendas(param);
+            let data = await serviceVendasPorVendedor.getVendas(param);
+
+            state.dbVendas = data.vendas
+            state.dbVendasPorDiaGrafico = data.vendasPorDiaGrafico
+            state.dbVendasPorHoraGrafico = data.vendasPorHoraGrafico
 
             state.loading = false;
         } catch (error) {

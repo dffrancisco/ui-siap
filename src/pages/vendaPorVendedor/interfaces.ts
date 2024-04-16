@@ -15,4 +15,18 @@ export interface iVenda {
     QTD_ITENS: number
 }
 
-export interface iGetVendasPorVendedorResponse extends iVenda { }
+export interface iVendaPorDiaGrafico {
+    DIA: number;
+    VALOR: number
+}
+
+export interface iVendaPorHoraGrafico {
+    HORA: number;
+    VALOR: number
+}
+
+export interface iGetVendasPorVendedorResponse {
+    vendas: iVenda[],
+    vendasPorDiaGrafico: iVendaPorDiaGrafico[],
+    vendasPorHoraGrafico: iVendaPorHoraGrafico[],
+}

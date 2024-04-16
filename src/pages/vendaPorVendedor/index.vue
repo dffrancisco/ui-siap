@@ -1,8 +1,17 @@
 <script setup lang="ts">
 import moment from "moment";
-import { state, actions, vendasOrdenadas, dadosToPrint } from "./vendaPorVendedor";
+import {
+  state,
+  actions,
+  vendasOrdenadas,
+  dadosToPrint,
+  dadosVendasPorDiaToGrafico,
+  dadosVendasPorHoraToGrafico,
+} from "./vendaPorVendedor";
 import printJS from "print-js";
 import { nextTick } from "vue";
+import VueApexCharts from "vue3-apexcharts";
+import utils from "@/ts/utils";
 
 nextTick(() => {
   actions.init();
@@ -81,7 +90,7 @@ nextTick(() => {
         items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
         class="ss"
-        height="570"
+        height="558"
       >
         <template v-slot:item.VALOR_DEVOLUCAO="{ value }">
           <spam style="color: #bf3f3f"> -{{ value }} </spam>
@@ -98,6 +107,69 @@ nextTick(() => {
         </template>
       </v-data-table>
 
+      <div
+        class="pt-5"
+        v-if="state.dbVendas.length > 0"
+      >
+        <span>Gráfico de Venda por Dia</span>
+
+        <VueApexCharts
+          width="100%"
+          height="350"
+          type="bar"
+          :options="{
+        chart: {
+          id: 'basic-bar',
+        },
+        xaxis: {
+          categories: dadosVendasPorDiaToGrafico.labels,
+        },
+        yaxis: {
+          labels: {
+            formatter: (value: number) => utils.formatValor(value),
+          },
+        },
+      }"
+          :series="[
+            {
+              name: 'Venda do Dia',
+              data: dadosVendasPorDiaToGrafico.series,
+            },
+          ]"
+        />
+      </div>
+
+      <div
+        class="pt-5"
+        v-if="state.dbVendas.length > 0"
+      >
+        <span>Gráfico de Venda por Hora</span>
+
+        <VueApexCharts
+          width="100%"
+          height="350"
+          type="line"
+          :options="{
+        chart: {
+          id: 'basic-bar',
+        },
+        xaxis: {
+          categories: dadosVendasPorHoraToGrafico.labels,
+        },
+        yaxis: {
+          labels: {
+            formatter: (value: number) => utils.formatValor(value),
+          },
+        },
+      }"
+          :series="[
+            {
+              name: 'Venda por Hora',
+              data: dadosVendasPorHoraToGrafico.series,
+            },
+          ]"
+        />
+      </div>
       <v-overlay
         :model-value="state.loading"
         class="align-center justify-center"
@@ -110,6 +182,8 @@ nextTick(() => {
         ></v-progress-circular>
       </v-overlay>
     </v-card>
+
+    <div id="pnCodigoTela">VENDA_POR_VENDEDOR</div>
   </v-container>
 </template>
 
