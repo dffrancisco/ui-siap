@@ -12,6 +12,7 @@ import printJS from "print-js";
 import { nextTick } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import utils from "@/ts/utils";
+import ModalVendasDetalhes from "./components/ModalVendasDetalhes.vue";
 
 nextTick(() => {
   actions.init();
@@ -100,7 +101,7 @@ nextTick(() => {
             v-if="item.COD_FUNCIONARIO != null"
             size="large"
             color="primary"
-            @click="console.log('abrir modal')"
+            @click="actions.openModalVendasDetalhes(item.LOGIN, item.COD_FUNCIONARIO)"
           >
             mdi-information
           </v-icon>
@@ -170,18 +171,29 @@ nextTick(() => {
           ]"
         />
       </div>
-      <v-overlay
-        :model-value="state.loading"
-        class="align-center justify-center"
-        persistent
-      >
-        <v-progress-circular
-          color="primary"
-          indeterminate
-          size="64"
-        ></v-progress-circular>
-      </v-overlay>
     </v-card>
+
+    <div
+      id="modalVendasDetalhes"
+      style="display: none"
+    >
+      <ModalVendasDetalhes
+        :dbVendasDetalhes="state.dbVendasDetalhes"
+        :modalOpened="state.modalVendasDetalhesOpened"
+      />
+    </div>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
 
     <div id="pnCodigoTela">VENDA_POR_VENDEDOR</div>
   </v-container>

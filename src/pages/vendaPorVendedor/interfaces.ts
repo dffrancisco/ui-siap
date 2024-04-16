@@ -1,4 +1,4 @@
-export interface iParamGetVendasPorVendedor {
+export interface iParamGetVendas {
     DATA_INICIO: string;
     DATA_FIM: string;
 }
@@ -25,8 +25,38 @@ export interface iVendaPorHoraGrafico {
     VALOR: number
 }
 
-export interface iGetVendasPorVendedorResponse {
+export interface iGetVendasResponse {
     vendas: iVenda[],
     vendasPorDiaGrafico: iVendaPorDiaGrafico[],
     vendasPorHoraGrafico: iVendaPorHoraGrafico[],
 }
+
+export interface iParamGetVendasDetalhes {
+    DATA_INICIO: string;
+    DATA_FIM: string;
+    ID_VENDEDOR: number;
+}
+
+export interface iDevolucaoDetalhes {
+    NUM_ORCAMENTO: number,
+    VALOR: number,
+    VALOR_MONTAGEM: number,
+    VALOR_ORCAMENTO: number,
+    DESCONTO: number,
+    DATA: string,
+    NOME: string,
+    ID_DEVOLUCAO: number,
+    DATA_VENDA: string,
+}
+
+export interface iVendaGraficoDetalhes {
+    VALOR: number,
+    DIA: number
+}
+
+export interface iVendaDetalhes {
+    vendasDevolucoesDetalhes: iDevolucaoDetalhes[],
+    vendasGraficoDetalhes: iVendaGraficoDetalhes[]
+}
+
+export interface iGetVendasDetalhesResponse extends iVendaDetalhes { }

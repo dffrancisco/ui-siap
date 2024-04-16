@@ -1,14 +1,17 @@
 import { computed, reactive } from "vue";
 import {
     iVenda,
-    iParamGetVendasPorVendedor,
+    iParamGetVendas,
     iVendaPorDiaGrafico,
-    iVendaPorHoraGrafico
+    iVendaPorHoraGrafico,
+    iParamGetVendasDetalhes,
+    iGetVendasDetalhesResponse
 } from "./interfaces";
 import serviceVendasPorVendedor from './services/vendaPorVendedor.service'
 import utils from "@/ts/utils";
 import Swal from "sweetalert2";
 import moment from "moment";
+import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 
 export const dadosToPrint = computed(() => {
     let dados = state.dbVendas.map(venda => {
@@ -104,6 +107,11 @@ export const state = reactive({
     dbVendasPorDiaGrafico: <iVendaPorDiaGrafico[]>[],
     dbVendasPorHoraGrafico: <iVendaPorHoraGrafico[]>[],
 
+    dbVendasDetalhes: <iGetVendasDetalhesResponse>{},
+
+    modalVendasDetalhes: <iModalCreate>{},
+    modalVendasDetalhesOpened: false,
+
     headers: <any>[
         { title: 'Vendedor', key: 'LOGIN', width: '30%' },
         {
@@ -135,6 +143,9 @@ export const state = reactive({
 
     dataInicial: moment().format('YYYY-MM-DD'),
     dataFinal: moment().format('YYYY-MM-DD'),
+
+    dataInicialModal: null,
+    dataFinalModal: null,
 
     inputDataInicial: <HTMLInputElement>{},
     inputDataFinal: <HTMLInputElement>{},
@@ -178,11 +189,31 @@ export const actions = {
         state.inputDataInicial.focus();
     },
 
+    createModal(nomeVendedor: string) {
+        state.modalVendasDetalhes = new xModal.create({
+            el: "#modalVendasDetalhes",
+            height: 750,
+            width: 1000,
+            title: nomeVendedor,
+            theme: 'xModal-blue',
+            onOpen: () => { state.modalVendasDetalhesOpened = true; },
+            onClose: () => { state.modalVendasDetalhesOpened = false; state.modalVendasDetalhes.destroy() },
+        });
+    },
+
+    async openModalVendasDetalhes(nomeVendedor: string, id_vendedor: number) {
+        actions.createModal(nomeVendedor)
+
+        await actions.getVendasDetalhes(id_vendedor)
+
+        state.modalVendasDetalhes.open();
+    },
+
     async getVendas() {
         try {
             state.loading = true
 
-            let param: iParamGetVendasPorVendedor = {
+            let param: iParamGetVendas = {
                 DATA_INICIO: state.dataInicial,
                 DATA_FIM: state.dataFinal
             }
@@ -193,12 +224,39 @@ export const actions = {
             state.dbVendasPorDiaGrafico = data.vendasPorDiaGrafico
             state.dbVendasPorHoraGrafico = data.vendasPorHoraGrafico
 
+            state.dataInicialModal = state.dataInicial
+            state.dataFinalModal = state.dataFinal
+
             state.loading = false;
         } catch (error) {
             state.loading = false;
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao exibir as vendas!'
+            })
+        }
+    },
+
+    async getVendasDetalhes(id_vendedor: number) {
+        try {
+            state.loading = true;
+
+            let param: iParamGetVendasDetalhes = {
+                DATA_INICIO: state.dataInicialModal,
+                DATA_FIM: state.dataFinalModal,
+                ID_VENDEDOR: id_vendedor
+            }
+
+            let data = await serviceVendasPorVendedor.getVendasDetalhes(param);
+
+            state.dbVendasDetalhes = data
+
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao exibir os detalhes das vendas!'
             })
         }
     }

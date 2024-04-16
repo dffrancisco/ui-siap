@@ -1,13 +1,16 @@
 import axios from "axios";
 import {
-    iGetVendasPorVendedorResponse,
-    iParamGetVendasPorVendedor
+    iGetVendasResponse,
+    iParamGetVendasDetalhes,
+    iParamGetVendas,
+    iGetVendasDetalhesResponse
 } from "../interfaces";
 const caminho = 'siap/vendaPorVendedor'
 
-type iGetVendasPorVendedorFunction = (param: iParamGetVendasPorVendedor) => Promise<iGetVendasPorVendedorResponse>
+type iGetVendasFunction = (param: iParamGetVendas) => Promise<iGetVendasResponse>
+type iGetVendasDetalhesFunction = (param: iParamGetVendasDetalhes) => Promise<iGetVendasDetalhesResponse>
 
-const getVendas: iGetVendasPorVendedorFunction = async (param) => {
+const getVendas: iGetVendasFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getVendas",
         param
@@ -16,4 +19,13 @@ const getVendas: iGetVendasPorVendedorFunction = async (param) => {
     return data;
 }
 
-export default { getVendas };
+const getVendasDetalhes: iGetVendasDetalhesFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getVendasDetalhes",
+        param
+    })
+
+    return data;
+}
+
+export default { getVendas, getVendasDetalhes };
