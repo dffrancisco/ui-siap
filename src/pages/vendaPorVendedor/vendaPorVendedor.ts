@@ -178,6 +178,14 @@ export const actions = {
             return;
         }
 
+        if (!state.dataInicial || !state.dataFinal) {
+            await Swal.fire({
+                text: "Insira a data inicial e final!",
+                icon: "warning"
+            })
+            return;
+        }
+
         await actions.getVendas();
 
     },
@@ -207,6 +215,100 @@ export const actions = {
         await actions.getVendasDetalhes(id_vendedor)
 
         state.modalVendasDetalhes.open();
+    },
+
+    async print() {
+        // <v-btn
+        //     :disabled="state.dbVendas.length <= 0"
+        //     color="primary"
+        //     icon="mdi-printer mdi-24px"
+        //     size="40"
+        //     @click="
+        //       printJS({
+        //         printable: dadosToPrint,
+        //         properties: [
+        //           { field: 'LOGIN', displayName: 'Vendedor' },
+        //           { field: 'LIMITE', displayName: 'Limite Crédito' },
+        //           { field: 'VALOR_VENDA', displayName: 'Venda' },
+        //           { field: 'VALOR_DEVOLUCAO', displayName: 'Devolução' },
+        //           { field: 'VENDA_LIQUIDA', displayName: 'Ved.Líquida' },
+        //           { field: 'TICKET_MEDIO', displayName: 'Ticket Médio' },
+        //           { field: 'QTD_MEDIA_ITENS', displayName: 'Qtd.Média Itens' },
+        //         ],
+        //         type: 'json',
+        //         gridHeaderStyle: 'border: 1px solid #000000',
+        //         gridStyle: 'text-align: center; border: 1px solid #000000',
+        //       })
+        //     "
+        //   >
+        //   </v-btn>
+
+
+
+
+        //     <div
+        //     class="pt-5"
+        //     v-if="state.dbVendas.length > 0"
+        //   >
+        //     <span>Gráfico de Venda por Dia</span>
+
+        //     <VueApexCharts
+        //       width="100%"
+        //       height="350"
+        //       type="bar"
+        //       :options="{
+        //     chart: {
+        //       id: 'basic-bar',
+        //     },
+        //     xaxis: {
+        //       categories: dadosVendasPorDiaToGrafico.labels,
+        //     },
+        //     yaxis: {
+        //       labels: {
+        //         formatter: (value: number) => utils.formatValor(value),
+        //       },
+        //     },
+        //   }"
+        //       :series="[
+        //         {
+        //           name: 'Venda do Dia',
+        //           data: dadosVendasPorDiaToGrafico.series,
+        //         },
+        //       ]"
+        //     />
+        //   </div>
+
+        //   <div
+        //     class="pt-5"
+        //     v-if="state.dbVendas.length > 0"
+        //   >
+        //     <span>Gráfico de Venda por Hora</span>
+
+        //     <VueApexCharts
+        //       width="100%"
+        //       height="350"
+        //       type="line"
+        //       :options="{
+        //     chart: {
+        //       id: 'basic-bar',
+        //     },
+        //     xaxis: {
+        //       categories: dadosVendasPorHoraToGrafico.labels,
+        //     },
+        //     yaxis: {
+        //       labels: {
+        //         formatter: (value: number) => utils.formatValor(value),
+        //       },
+        //     },
+        //   }"
+        //       :series="[
+        //         {
+        //           name: 'Venda por Hora',
+        //           data: dadosVendasPorHoraToGrafico.series,
+        //         },
+        //       ]"
+        //     />
+        //   </div>
     },
 
     async getVendas() {

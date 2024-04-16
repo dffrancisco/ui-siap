@@ -1,17 +1,7 @@
 <script setup lang="ts">
 import moment from "moment";
-import {
-  state,
-  actions,
-  vendasOrdenadas,
-  dadosToPrint,
-  dadosVendasPorDiaToGrafico,
-  dadosVendasPorHoraToGrafico,
-} from "./vendaPorVendedor";
-import printJS from "print-js";
+import { state, actions, vendasOrdenadas } from "./vendaPorVendedor";
 import { nextTick } from "vue";
-import VueApexCharts from "vue3-apexcharts";
-import utils from "@/ts/utils";
 import ModalVendasDetalhes from "./components/ModalVendasDetalhes.vue";
 
 nextTick(() => {
@@ -21,8 +11,11 @@ nextTick(() => {
 
 <template>
   <v-container>
-    <v-card class="pa-5 cardContainer">
-      <div class="inputs pb-5">
+    <v-card
+      class="pa-5"
+      style="width: 876px; margin: 0 auto"
+    >
+      <div class="inputs pb-3">
         <div class="inputData">
           <span>Data Inicial</span>
           <input
@@ -31,6 +24,7 @@ nextTick(() => {
             name="DATA_INICIAL"
             type="date"
             class="ss obr"
+            maxlength="10"
             :max="moment().format('YYYY-MM-DD')"
             @keydown.enter="state.inputDataFinal.focus()"
           />
@@ -45,40 +39,16 @@ nextTick(() => {
             class="ss obr"
             :max="moment().format('YYYY-MM-DD')"
             @keydown.enter.prevent="actions.pesquisarVendas"
+            maxlength="10"
           />
         </div>
         <div>
           <v-btn
             color="primary"
-            icon="mdi-magnify mdi-24px"
-            size="40"
+            class="mt-3"
+            icon="mdi-magnify"
+            size="36px"
             @click="actions.pesquisarVendas"
-          >
-          </v-btn>
-        </div>
-        <div>
-          <v-btn
-            :disabled="state.dbVendas.length <= 0"
-            color="primary"
-            icon="mdi-printer mdi-24px"
-            size="40"
-            @click="
-              printJS({
-                printable: dadosToPrint,
-                properties: [
-                  { field: 'LOGIN', displayName: 'Vendedor' },
-                  { field: 'LIMITE', displayName: 'Limite Crédito' },
-                  { field: 'VALOR_VENDA', displayName: 'Venda' },
-                  { field: 'VALOR_DEVOLUCAO', displayName: 'Devolução' },
-                  { field: 'VENDA_LIQUIDA', displayName: 'Ved.Líquida' },
-                  { field: 'TICKET_MEDIO', displayName: 'Ticket Médio' },
-                  { field: 'QTD_MEDIA_ITENS', displayName: 'Qtd.Média Itens' },
-                ],
-                type: 'json',
-                gridHeaderStyle: 'border: 1px solid #000000',
-                gridStyle: 'text-align: center; border: 1px solid #000000',
-              })
-            "
           >
           </v-btn>
         </div>
@@ -90,8 +60,9 @@ nextTick(() => {
         style="text-transform: none"
         items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
-        class="ss"
-        height="582"
+        class="ss custom-table"
+        height="522"
+        items-per-page="50"
       >
         <template v-slot:item.VALOR_DEVOLUCAO="{ value }">
           <spam style="color: #bf3f3f"> -{{ value }} </spam>
@@ -108,68 +79,33 @@ nextTick(() => {
         </template>
       </v-data-table>
 
-      <div
-        class="pt-5"
-        v-if="state.dbVendas.length > 0"
-      >
-        <span>Gráfico de Venda por Dia</span>
-
-        <VueApexCharts
-          width="100%"
-          height="350"
-          type="bar"
-          :options="{
-        chart: {
-          id: 'basic-bar',
-        },
-        xaxis: {
-          categories: dadosVendasPorDiaToGrafico.labels,
-        },
-        yaxis: {
-          labels: {
-            formatter: (value: number) => utils.formatValor(value),
-          },
-        },
-      }"
-          :series="[
-            {
-              name: 'Venda do Dia',
-              data: dadosVendasPorDiaToGrafico.series,
-            },
-          ]"
-        />
-      </div>
-
-      <div
-        class="pt-5"
-        v-if="state.dbVendas.length > 0"
-      >
-        <span>Gráfico de Venda por Hora</span>
-
-        <VueApexCharts
-          width="100%"
-          height="350"
-          type="line"
-          :options="{
-        chart: {
-          id: 'basic-bar',
-        },
-        xaxis: {
-          categories: dadosVendasPorHoraToGrafico.labels,
-        },
-        yaxis: {
-          labels: {
-            formatter: (value: number) => utils.formatValor(value),
-          },
-        },
-      }"
-          :series="[
-            {
-              name: 'Venda por Hora',
-              data: dadosVendasPorHoraToGrafico.series,
-            },
-          ]"
-        />
+      <div class="pt-2 btnsGraficoPrint">
+        <v-btn
+          color="primary"
+          @click="actions.print"
+          :disabled="state.dbVendas.length <= 0"
+        >
+          <v-icon
+            size="20px"
+            class="mr-2"
+          >
+            mdi-chart-bar
+          </v-icon>
+          GRÁFICOS
+        </v-btn>
+        <v-btn
+          color="primary"
+          @click="actions.print"
+          :disabled="state.dbVendas.length <= 0"
+        >
+          <v-icon
+            size="20px"
+            class="mr-2"
+          >
+            mdi-printer
+          </v-icon>
+          Imprimir
+        </v-btn>
       </div>
     </v-card>
 
@@ -203,16 +139,20 @@ nextTick(() => {
 .inputs {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
-  gap: 26px;
+  gap: 12px;
 }
 
 .inputData {
-  width: 140px;
+  width: 128px;
 }
 
-.cardContainer {
-  width: 900px;
-  margin: 0 auto;
+.custom-table {
+  background-color: #f0f0f0;
+}
+
+.btnsGraficoPrint {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 </style>
