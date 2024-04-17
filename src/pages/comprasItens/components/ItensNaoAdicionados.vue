@@ -1,13 +1,25 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import { iCabecalhoCompra, iTipoVisualizacao } from "../interfaces";
+import { iProduto, iTipoVisualizacao } from "../interfaces";
+import { MAP_COL_PRODUTO } from "../constants/constants";
+import { formatValor } from "@/ts/utils";
 
 const props = defineProps({
-  cabecalho: {
-    type: Object as () => iCabecalhoCompra,
+  produto: {
+    type: Object as () => iProduto,
     default: {},
   },
+  exibirIconeAvancar: {
+    type: Boolean,
+    required: true,
+  },
+  exibirIconeVoltar: {
+    type: Boolean,
+    required: true,
+  },
 });
+
+const emit = defineEmits(["avancarItem", "voltarItem"]);
 
 const state = reactive({
   tipoVisualizacao: <iTipoVisualizacao>"unica",
@@ -23,9 +35,10 @@ const state = reactive({
           class="d-flex flex-column"
         >
           <span>Descrição</span>
-          <strong class="item-info-value">FAROL 123</strong>
+          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.DESC_PRODUTO] || "-" }}</strong>
         </v-col>
         <v-col
+          v-if="produto[MAP_COL_PRODUTO.FOTO] == 'S'"
           cols="1"
           class="d-flex align-center"
           title="Ver foto"
@@ -39,35 +52,35 @@ const state = reactive({
           class="d-flex flex-column"
         >
           <span>Carro</span>
-          <strong class="item-info-value">ARGO</strong>
+          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.DESCRICAO_CARRO] }}</strong>
         </v-col>
         <v-col
           cols="3"
           class="d-flex flex-column"
         >
           <span>Nº Fabricante</span>
-          <strong class="item-info-value">123</strong>
+          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.NUM_FABRICANTE] }}</strong>
         </v-col>
         <v-col
           cols="2"
           class="d-flex flex-column"
         >
           <span>Nº Fabricante 2</span>
-          <strong class="item-info-value">456</strong>
+          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.NUM_FABRICANTE2] || "-" }}</strong>
         </v-col>
         <v-col
           cols="2"
           class="d-flex flex-column"
         >
           <span>Curva G</span>
-          <strong class="item-info-value">A</strong>
+          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.CURVA_ABC_G] }}</strong>
         </v-col>
         <v-col
           cols="2"
           class="d-flex flex-column"
         >
           <span>Curva M</span>
-          <strong class="item-info-value">B</strong>
+          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.CURVA_ABC_M] }}</strong>
         </v-col>
       </v-row>
       <v-row class="mt-0">
@@ -76,7 +89,7 @@ const state = reactive({
           class="d-flex flex-column py-5"
         >
           <span>Marca</span>
-          <strong class="item-info-value">ARTEB</strong>
+          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.DESCRICAO_MARCA] }}</strong>
         </v-col>
         <v-col
           cols="2"
@@ -84,7 +97,7 @@ const state = reactive({
         >
           <div class="d-flex flex-column item-info-media px-2 py-1">
             <span>Média</span>
-            <strong class="item-info-value">2</strong>
+            <strong class="item-info-value">000</strong>
           </div>
         </v-col>
         <v-col
@@ -92,27 +105,39 @@ const state = reactive({
           class="d-flex flex-column py-5"
         >
           <span>Qtd. Atual</span>
-          <strong class="item-info-value">3</strong>
+          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.QUANTIDADE] }}</strong>
         </v-col>
         <v-col
           cols="2"
           class="d-flex flex-column py-5"
         >
           <span>Custo</span>
-          <strong class="item-info-value">25,00</strong>
+          <strong class="item-info-value">{{ formatValor(produto[MAP_COL_PRODUTO.CUSTO]) }}</strong>
         </v-col>
         <v-col
           cols="2"
           class="d-flex flex-column py-5"
         >
           <span>Venda</span>
-          <strong class="item-info-value">50,00</strong>
+          <strong class="item-info-value">{{ formatValor(produto[MAP_COL_PRODUTO.VENDA]) }}</strong>
         </v-col>
       </v-row>
     </div>
     <div class="item-paginacao">
-      <v-icon>mdi mdi-arrow-left</v-icon>
-      <v-icon>mdi mdi-arrow-right</v-icon>
+      <div>
+        <v-icon
+          v-if="exibirIconeVoltar"
+          @click="emit('voltarItem')"
+          >mdi mdi-arrow-left</v-icon
+        >
+      </div>
+      <div>
+        <v-icon
+          v-if="exibirIconeAvancar"
+          @click="emit('avancarItem')"
+          >mdi mdi-arrow-right</v-icon
+        >
+      </div>
     </div>
   </div>
 </template>
