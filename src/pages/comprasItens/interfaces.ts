@@ -6,17 +6,19 @@ export interface iMarca {
 export interface iCabecalhoCompra {
     ID_COMPRAS: number,
     DATA: string,
-    QTD_ITENS: number,
     VALOR: number,
     COMPRADOR: string,
-    ID_MARCA_PRINCIPAL: number,
-    MARCA_PRINCIPAL: string,
-    MARCAS: iMarca[],
+    ID_MARCA: number,
+    NOME_MARCA: string,
     OBS: string,
+    QTD_ITENS?: number,
+    MARCAS?: iMarca[],
 }
 
 export interface iHistoricoMes {
-    mes: string,
+    mesExtenso: string,
+    mes: number,
+    ano: number,
     qtd: number,
 }
 
@@ -40,6 +42,104 @@ export interface iUltimaCompra {
     MESMO_GRUPO: 0 | 1,
 }
 
-export type iTipoVisualizacao = 'unica' | 'lista';
-export type iAbaHistorico = 'vendas' | 'compras';
+export interface iCarro {
+    ID_CARRO: number,
+    NOME_CARRO: string,
+}
+export interface iParamGetDadosIniciais {
+    ID_COMPRAS: number
+}
+
+export interface iResponseGetDadosIniciais {
+    cabecalho: iCabecalhoCompra,
+    carros: iCarro[],
+    marcas: iMarca[],
+}
+
+export interface iParamGetProdutosFunction {
+    ID_MARCA: number,
+    ID_CARRO?: number,
+    DESC_PRODUTO?: string,
+    NUM_FABRICANTE?: string,
+}
+
+export interface iParamEmitBuscarProdutos {
+    ID_MARCA: number,
+    ID_CARRO?: number,
+    DESC_PRODUTO?: string,
+    NUM_FABRICANTE?: string,
+}
+
+export interface iColumnMappingProdutos {
+    [apelido: string]: string,
+}
+
+export interface iProduto {
+    A: number, // COD_PRODUTO
+    B: string, // DESC_PRODUTO
+    D: string, // FOTO
+    E: string, // NUM_FABRICANTE
+    F: string, // NUM_FABRICANTE2
+    G: number, // QUANTIDADE
+    H: string, // UNIDADE
+    I: number, // VENDA
+    J: number, // CUSTO
+    L: string, // DESCRICAO_CARRO
+    M: string, // DESCRICAO_MARCA
+    N: string, // NOVO_PRODUTO
+    CG: string, // CURVA_ABC_G
+    CM: string, // CURVA_ABC_M
+}
+export interface iProdutoObj {
+    [id: string]: iProduto
+}
+
+export interface iResponseGetProdutosFunction {
+    produtos: iProdutoObj,
+    qtdItensMarca: number,
+}
+
+export interface iUltimaVenda {
+    COD: number,
+    ORC: number,
+    CL: string,
+    VDR: string,
+    DT: string,
+    QTD: number,
+    VND: number,
+    MG: number,
+}
+
+export interface iHistoricoVendaGeral {
+    meses: {
+        [keyMesAno: string]: {
+            QTD: number,
+            MES: number,
+            ANO: number,
+        }
+    }
+    ultimasVendas: iUltimaVenda[]
+}
+
+export interface iObjHistoricoVendaGeral {
+    [codProduto: string]: iHistoricoVendaGeral
+}
+
+export interface iHistoricoCompraGeral {
+    meses: {
+        [keyMesAno: string]: {
+            QTD: number,
+            MES: number,
+            ANO: number,
+        }
+    }
+    ultimasVendas: iUltimaCompra[]
+}
+
+export interface iObjHistoricoCompraGeral {
+    [codProduto: string]: iHistoricoCompraGeral
+}
+
+export type iTipoVisualizacao = 'unica' | 'lista'
+export type iAbaHistorico = 'vendas' | 'compras'
 export type iAbaItens = 'adicionados' | 'nao_adicionados'

@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { reactive } from "vue";
+import Skeleton from "@/components/Skeleton.vue";
 import { iUltimaVenda, iTipoVisualizacao } from "../interfaces";
 import utils from "@/ts/utils";
+import { MAP_COL_ULTIMAS_VENDAS } from "../constants/constants";
 
 const props = defineProps({
+  loading: {
+    type: Boolean,
+    default: true,
+  },
   ultimasVendas: {
     type: Array as () => iUltimaVenda[],
     default: [],
@@ -43,38 +49,53 @@ const actions = {
       </div>
     </div>
     <div
-      v-if="state.tipoVisualizacao == 'unica'"
+      v-if="loading"
+      class="container-skeleton"
+    >
+      <Skeleton
+        v-for="i in 3"
+        height="24px"
+      ></Skeleton>
+    </div>
+    <div
+      v-if="!loading && ultimasVendas.length == 0"
+      class="d-flex align-center justify-center pt-8"
+    >
+      <span>Nenhuma venda :(</span>
+    </div>
+    <div
+      v-else-if="!loading && state.tipoVisualizacao == 'unica'"
       class="historico-ultima-venda-dados"
     >
       <div class="d-flex justify-space-between">
         <div>
           <span class="mr-1">Data:</span>
-          <strong>{{ utils.dataBrasil(ultimasVendas[0].DATA) }}</strong>
+          <strong>{{ utils.dataBrasil(ultimasVendas[0][MAP_COL_ULTIMAS_VENDAS.DATA]) }}</strong>
         </div>
         <div>
           <span class="mr-1">Qtd:</span>
-          <strong>{{ ultimasVendas[0].QTD }}</strong>
+          <strong>{{ ultimasVendas[0][MAP_COL_ULTIMAS_VENDAS.QTD] }}</strong>
         </div>
       </div>
       <div class="d-flex justify-space-between">
         <div>
           <span class="mr-1">Vendedor:</span>
-          <strong>{{ ultimasVendas[0].VENDEDOR }}</strong>
+          <strong>{{ ultimasVendas[0][MAP_COL_ULTIMAS_VENDAS.VENDEDOR] }}</strong>
         </div>
         <div>
           <span class="mr-1">Valor:</span>
-          <strong>{{ utils.formatValor(ultimasVendas[0].VALOR) }}</strong>
+          <strong>{{ utils.formatValor(ultimasVendas[0][MAP_COL_ULTIMAS_VENDAS.VALOR]) }}</strong>
         </div>
       </div>
       <div>
         <div>
           <span class="mr-1">Cliente:</span>
-          <strong>{{ ultimasVendas[0].CLIENTE }}</strong>
+          <strong>{{ ultimasVendas[0][MAP_COL_ULTIMAS_VENDAS.CLIENTE] }}</strong>
         </div>
       </div>
     </div>
     <div
-      v-if="state.tipoVisualizacao == 'lista'"
+      v-else-if="!loading && state.tipoVisualizacao == 'lista'"
       class="historico-ultima-venda-lista"
     >
       <div
@@ -82,19 +103,22 @@ const actions = {
         v-for="venda in ultimasVendas"
       >
         <div class="text-truncate">
-          <span>{{ venda.CLIENTE }}</span>
+          <span>{{ venda[MAP_COL_ULTIMAS_VENDAS.CLIENTE] }}</span>
         </div>
         <div class="d-flex justify-space-between">
-          <span>OR {{ venda.NUM_ORCAMENTO }}</span>
-          <span>{{ utils.dataBrasil(venda.DATA) }}</span>
-          <span>{{ utils.formatValor(venda.VALOR) }}</span>
-          <span>{{ venda.VENDEDOR }}</span>
+          <span>OR {{ venda[MAP_COL_ULTIMAS_VENDAS.NUM_ORCAMENTO] }}</span>
+          <span>{{ utils.dataBrasil(venda[MAP_COL_ULTIMAS_VENDAS.DATA]) }}</span>
+          <span>{{ utils.formatValor(venda[MAP_COL_ULTIMAS_VENDAS.VALOR]) }}</span>
+          <span>{{ venda[MAP_COL_ULTIMAS_VENDAS.VENDEDOR] }}</span>
         </div>
         <div
           class="historico-ultima-venda-lista-card-qtd"
-          :class="{ 'historico-ultima-venda-lista-card-qtd-orange': venda.MESMO_GRUPO == 1 ? true : false }"
+          :class="{
+            'historico-ultima-venda-lista-card-qtd-orange':
+              venda[MAP_COL_ULTIMAS_VENDAS.MESMO_GRUPO] == 1 ? true : false,
+          }"
         >
-          {{ venda.QTD }}
+          {{ venda[MAP_COL_ULTIMAS_VENDAS.QTD] }}
         </div>
       </div>
     </div>
@@ -125,7 +149,7 @@ const actions = {
   gap: 8px;
   flex-direction: column;
   border-radius: 8px;
-  margin-top: 12px;
+  margin-top: 8px;
   height: 175px;
 }
 
@@ -185,5 +209,13 @@ const actions = {
 
 .historico-ultima-venda-lista-card-qtd-orange {
   background-color: var(--warning-300);
+}
+
+.container-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 </style>

@@ -7,6 +7,12 @@ import HistoricoUltimasCompras from "./components/HistoricoUltimasCompras.vue";
 import ItensNaoAdicionados from "./components/ItensNaoAdicionados.vue";
 import ItensResumo from "./components/ItensResumo.vue";
 import { state, actions, computeds } from "./comprasItens";
+import ItensAdicionados from "./components/ItensAdicionados.vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+state.idCompras = parseInt(route?.query?.idCompras as string);
+state.edtMarca = parseInt(route?.query?.idMarca as string);
 
 actions.init();
 </script>
@@ -17,7 +23,12 @@ actions.init();
   <div class="compras-itens-container">
     <div class="compras-itens">
       <Cabecalho :cabecalho="state.cabecalho" />
-      <Filtros />
+      <Filtros
+        :idMarcaInicial="state.cabecalho.ID_MARCA"
+        :marcas="state.marcas"
+        :carros="state.carros"
+        @buscarProdutos="actions.buscarProdutos"
+      />
       <div class="compras-detalhes">
         <div class="compras-grupo-historico">
           <div class="historico-cabecalho">
@@ -40,19 +51,32 @@ actions.init();
             </div>
           </div>
           <HistoricoMeses
+            v-if="state.abaHistorico == 'vendas'"
             :label="`Histórico de ${state.abaHistorico}`"
             :historicoMeses="computeds.historicoMeses.value"
-            :corPadrao="state.abaHistorico == 'vendas' ? '#7dc1ff' : '#17b5bf'"
-            :corDestaque="state.abaHistorico == 'vendas' ? '#b1daff' : '#60e4ec'"
-            :corFonte="state.abaHistorico == 'vendas' ? '#005098' : '#00284c'"
+            :corPadrao="'#7dc1ff'"
+            :corDestaque="'#b1daff'"
+            :corFonte="'#005098'"
+            :loading="state.loadingHistoricoVendas"
+          />
+          <HistoricoMeses
+            v-if="state.abaHistorico == 'compras'"
+            :label="`Histórico de ${state.abaHistorico}`"
+            :historicoMeses="computeds.historicoMeses.value"
+            :corPadrao="'#17b5bf'"
+            :corDestaque="'#60e4ec'"
+            :corFonte="'#00284c'"
+            :loading="state.loadingHistoricoCompras"
           />
           <HistoricoUltimasVendas
             v-if="state.abaHistorico == 'vendas'"
-            :ultimasVendas="state.ultimasVendas"
+            :ultimasVendas="computeds.ultimasVendas.value"
+            :loading="state.loadingHistoricoVendas"
           />
           <HistoricoUltimasCompras
             v-if="state.abaHistorico == 'compras'"
             :ultimasCompras="state.ultimasCompras"
+            :loading="state.loadingHistoricoCompras"
           />
         </div>
         <div class="compras-detalhes-itens">
@@ -64,7 +88,7 @@ actions.init();
               }"
               @click="actions.setAbaItens('nao_adicionados')"
             >
-              <span>Itens não adicionados</span>
+              <span>Itens</span>
             </div>
             <div
               class="compras-detalhes-dados-item-cabecalho-opcao"
@@ -95,22 +119,39 @@ actions.init();
             v-if="state.abaItens == 'nao_adicionados'"
             class="compras-detalhes-dados-item"
           >
-            <ItensNaoAdicionados />
+            <ItensNaoAdicionados
+              :produto="computeds.produtoSelecionado.value"
+              :qtdTotalItens="state.keyProdutos.length"
+              :exibirIconeAvancar="computeds.exibirIconeAvancar.value"
+              :exibirIconeVoltar="computeds.exibirIconeVoltar.value"
+              @avancarItem="actions.onClickAvancarItem"
+              @voltarItem="actions.onClickVoltarItem"
+            />
 
             <div class="compras-detalhes-itens-progresso">
               <VProgressLinear
-                model-value="50"
+                :model-value="computeds.progressoNavegacaoItens.value"
                 color="primary"
                 :rounded-bar="true"
               />
             </div>
 
-            <ItensResumo />
+            <ItensResumo
+              :qtd-itens="state.qtdItensMarca"
+              :qtd-itens-vistos="state.qtdMaxItensVistosByMarca['marca:' + state.edtMarca] || 1"
+              :item-atual="state.indexProdutoSelecionado + 1"
+            />
 
             <div class="compras-detalhes-ultimo-item">
               <span class="mr-2">Último item adicionado: </span>
               <strong class="compras-detalhes-ultimo-item-value">FAROL ARTEB LD 00/</strong>
             </div>
+          </div>
+          <div
+            v-if="state.abaItens == 'adicionados'"
+            class="compras-detalhes-dados-item"
+          >
+            <ItensAdicionados />
           </div>
         </div>
       </div>
@@ -144,13 +185,13 @@ actions.init();
   display: flex;
   flex-direction: column;
   width: 1116px;
-  gap: 12px;
-  padding: 20px 0;
+  gap: 8px;
+  padding: 10px 0;
 }
 
 .compras-detalhes {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   color: var(--grey-100);
 }
 
@@ -162,14 +203,14 @@ actions.init();
 }
 
 .historico-cabecalho {
-  padding: 0 24px;
+  padding: 0 12px;
   background-color: var(--grey-800);
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   display: flex;
   height: 40px;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
 }
 
 .historico-cabecalho-opcao {
@@ -189,7 +230,7 @@ actions.init();
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 788px;
+  max-width: 792px;
 }
 
 .compras-detalhes-dados-item {
@@ -197,13 +238,13 @@ actions.init();
   flex-direction: column;
   flex-grow: 1;
   border-radius: 8px;
-  gap: 12px;
+  gap: 8px;
 }
 
 .compras-detalhes-dados-item-cabecalho {
   display: flex;
-  gap: 40px;
-  padding: 0 24px;
+  gap: 20px;
+  padding: 0 12px;
   background-color: var(--grey-800);
   height: 40px;
   border-top-left-radius: 8px;

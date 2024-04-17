@@ -22,6 +22,10 @@ const props = defineProps({
     type: String,
     default: "#b1daff",
   },
+  loading: {
+    type: Boolean,
+    default: true,
+  },
 });
 </script>
 
@@ -32,13 +36,21 @@ const props = defineProps({
       <div
         v-for="(historico, index) in historicoMeses"
         class="historico-meses-conteudo-card"
+        :class="{
+          'historico-meses-conteudo-card--loading': loading == true,
+        }"
         :style="{
           'background-color': index <= 2 ? corDestaque : corPadrao,
           color: corFonte,
         }"
       >
-        <span>{{ historico.mes }}</span>
-        <strong class="historico-meses-conteudo-card-qtd">{{ historico.qtd }}</strong>
+        <div
+          v-if="!loading"
+          class="d-flex flex-column align-center"
+        >
+          <span>{{ historico.mesExtenso }}</span>
+          <strong class="historico-meses-conteudo-card-qtd">{{ historico.qtd }}</strong>
+        </div>
       </div>
     </div>
   </div>
@@ -59,6 +71,7 @@ const props = defineProps({
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  justify-content: center;
 }
 
 .historico-meses-conteudo-card {
@@ -74,6 +87,31 @@ const props = defineProps({
   font-weight: 400;
 }
 
+.historico-meses-conteudo-card--loading {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--grey-800) !important;
+}
+
+.historico-meses-conteudo-card--loading::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
 .historico-meses-conteudo-card-qtd {
   font-weight: 900;
 }
