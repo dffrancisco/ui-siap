@@ -17,6 +17,7 @@ export interface iCompra {
 
 export interface iResponseInsertCompra {
     ID_COMPRAS: number,
+    ID_MARCA: number,
 }
 
 export interface iParamInsertCompra {

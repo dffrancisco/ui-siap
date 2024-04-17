@@ -101,11 +101,12 @@ export const actions = {
         state.compraAlterar = {} as iCompra;
     },
 
-    redirectToItensdoPedido: (idCompras: number) => {
+    redirectToItensdoPedido: (idCompras: number, idMarca: number) => {
         router.push({
             name: "comprasItens",
             query: {
-                idCompras
+                idCompras,
+                idMarca
             },
         });
     },
@@ -114,11 +115,11 @@ export const actions = {
         try {
             state.loading = true
 
-            const { ID_COMPRAS } = await comprasService.insertCompra(param);
+            const { ID_COMPRAS, ID_MARCA } = await comprasService.insertCompra(param);
 
             actions.closeModalDadosPedido();
 
-            actions.redirectToItensdoPedido(ID_COMPRAS);
+            actions.redirectToItensdoPedido(ID_COMPRAS, ID_MARCA);
 
         } catch (error) {
             swalDarkError(error?.response?.data?.msg || 'Ocorreu um erro ao inserir compra');

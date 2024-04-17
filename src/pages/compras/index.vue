@@ -131,7 +131,7 @@ actions.init();
               <div>
                 <v-icon
                   title="Itens do pedido"
-                  @click="actions.redirectToItensdoPedido(item.ID_COMPRAS)"
+                  @click="actions.redirectToItensdoPedido(item.ID_COMPRAS, item.ID_MARCA)"
                   >mdi mdi-cart</v-icon
                 >
                 <v-icon
