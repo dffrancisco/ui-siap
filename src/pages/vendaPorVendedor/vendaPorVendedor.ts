@@ -68,23 +68,28 @@ export const state = reactive({
         { title: 'Vendedor', key: 'LOGIN', width: '30%' },
         {
             title: 'Limite Crédito', key: 'LIMITE',
-            value: (venda: iVenda) => utils.formatValor(venda.LIMITE)
+            value: (venda: iVenda) => utils.formatValor(venda.LIMITE),
+            align: 'end'
         },
         {
             title: 'Venda', key: 'VALOR_VENDA',
-            value: (venda: iVenda) => utils.formatValor(venda.VALOR_VENDA)
+            value: (venda: iVenda) => utils.formatValor(venda.VALOR_VENDA),
+            align: 'end'
         },
         {
             title: 'Devolução', key: 'VALOR_DEVOLUCAO',
-            value: (venda: iVenda) => utils.formatValor(venda.VALOR_DEVOLUCAO)
+            value: (venda: iVenda) => utils.formatValor(venda.VALOR_DEVOLUCAO),
+            align: 'end'
         },
         {
             title: 'Ved.Líquida', key: 'VENDA_LIQUIDA',
-            value: (venda: iVenda) => utils.formatValor(venda.VENDA_LIQUIDA)
+            value: (venda: iVenda) => utils.formatValor(venda.VENDA_LIQUIDA),
+            align: 'end'
         },
         {
             title: 'Ticket Médio', key: 'TICKET_MEDIO',
-            value: (venda: iVenda) => utils.formatValor(venda.TICKET_MEDIO)
+            value: (venda: iVenda) => utils.formatValor(venda.TICKET_MEDIO),
+            align: 'end'
         },
         {
             title: 'Qtd. Média Itens', key: 'QTD_MEDIA_ITENS',
