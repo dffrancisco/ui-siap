@@ -29,7 +29,12 @@ actions.init();
         :carros="state.carros"
         @buscarProdutos="actions.buscarProdutos"
       />
-      <div class="compras-detalhes">
+      <div
+        id="compras-detalhes"
+        class="compras-detalhes"
+        tabindex="0"
+        @keydown="actions.onKeyPressContainerPrincipal"
+      >
         <div class="compras-grupo-historico">
           <div class="historico-cabecalho">
             <div
