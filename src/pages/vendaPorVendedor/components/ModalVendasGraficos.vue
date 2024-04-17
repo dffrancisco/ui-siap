@@ -110,6 +110,9 @@ const actions = {
                 formatter: (value: number) => utils.formatValor(value),
             },
             },
+            dataLabels: {
+              enabled: false,
+            }
         }"
         :series="[
           {

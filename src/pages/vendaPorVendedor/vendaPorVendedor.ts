@@ -12,6 +12,8 @@ import moment from "moment";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 
 export const vendasOrdenadas = computed(() => {
+    let vendas = [...state.dbVendas]
+
     let totalQtdVendas = 0;
     let totalLimite = 0;
     let totalTicketMedio = 0;
@@ -20,7 +22,7 @@ export const vendasOrdenadas = computed(() => {
     let totalValorVenda = 0;
     let totalValorLiquido = 0;
 
-    state.dbVendas.forEach(venda => {
+    vendas.forEach(venda => {
 
         totalQtdVendas += venda.QTD_VENDAS;
         totalLimite += venda.LIMITE;
@@ -32,7 +34,7 @@ export const vendasOrdenadas = computed(() => {
 
     })
 
-    if (state.dbVendas.length > 0) {
+    if (vendas.length > 0) {
         let totalizador = {
             LOGIN: 'Totalizador',
             LIMITE: totalLimite,
@@ -44,10 +46,10 @@ export const vendasOrdenadas = computed(() => {
             QTD_ITENS: totalQtdItens
         }
 
-        state.dbVendas.push(totalizador)
+        vendas.push(totalizador)
     }
 
-    return state.dbVendas
+    return vendas
 })
 
 export const state = reactive({
@@ -137,13 +139,13 @@ export const actions = {
         await actions.getVendas();
     },
 
-    init() {
-        actions.createModais()
-
+    async init() {
         state.inputDataInicial = <any>document.getElementById("DATA_INICIAL");
         state.inputDataFinal = <any>document.getElementById("DATA_FINAL");
 
-        state.inputDataInicial.focus();
+        actions.createModais()
+
+        await actions.getVendas();
     },
 
     createModalVendasDetalhes(nomeVendedor: string) {

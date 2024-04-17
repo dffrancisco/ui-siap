@@ -68,7 +68,7 @@ nextTick(() => {
         fixed-header
       >
         <template v-slot:item.VALOR_DEVOLUCAO="{ value }">
-          <spam style="color: #bf3f3f"> -{{ value }} </spam>
+          <span style="color: #bf3f3f"> -{{ value }} </span>
         </template>
         <template v-slot:item.inf="{ item }">
           <v-icon
@@ -138,7 +138,7 @@ nextTick(() => {
       style="display: none"
     >
       <ModalImprimirVendas
-        :vendas="vendasOrdenadas"
+        :vendas="state.dbVendas"
         :modalOpened="state.modalImprimirVendasOpened"
         :dataInicial="state.dataInicialModal"
         :dataFinal="state.dataFinalModal"
