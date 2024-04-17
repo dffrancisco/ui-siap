@@ -80,6 +80,9 @@ export const actions = {
             state.carros = dadosIniciais.carros;
             state.marcas = dadosIniciais.marcas;
             state.edtMarca = state.cabecalho.ID_MARCA
+
+            //@ts-ignore
+            document.querySelector('#compras-detalhes').focus();
         } catch (error) {
             swalDarkError(error?.response?.data.msg || 'Erro ao buscar dados do pedido');
         } finally {
@@ -135,6 +138,7 @@ export const actions = {
             state.produtos = response.produtos;
             state.qtdItensMarca = response.qtdItensMarca;
             state.keyProdutos = Object.keys(state.produtos);
+
         } catch (error) {
             if (error.__CANCEL__) return;
             swalDarkError(error?.response?.data.msg || 'Erro ao buscar produtos');
@@ -155,10 +159,23 @@ export const actions = {
         state.tipoVisualizacaoItem = tipoVisualizacaoItem
     },
 
+    onKeyPressContainerPrincipal: (e: KeyboardEvent) => {
+        if (e.key === 'ArrowLeft') {
+            actions.onClickVoltarItem()
+            e.preventDefault();
+            return;
+        }
+
+        if (e.key === 'ArrowRight') {
+            actions.onClickAvancarItem()
+            e.preventDefault();
+        }
+    },
+
     onClickAvancarItem() {
         let keyMarca = 'marca:' + state.edtMarca
         let qtdItensVisitadosMarca = state.qtdMaxItensVistosByMarca[keyMarca] || 1;
-        if (state.indexProdutoSelecionado + 1 >= qtdItensVisitadosMarca) {
+        if (state.indexProdutoSelecionado + 1 > qtdItensVisitadosMarca) {
             state.qtdMaxItensVistosByMarca[keyMarca] = qtdItensVisitadosMarca + 1
         }
 
