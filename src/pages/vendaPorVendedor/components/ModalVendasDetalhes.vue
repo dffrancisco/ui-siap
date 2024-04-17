@@ -48,7 +48,7 @@ const actions = {
     state.gridDevolucoes = new xGridV2.create({
       el: "#gridDevolucoes",
       width: 950,
-      height: 300,
+      height: 250,
       count: false,
       columns: {
         "N° Orçamento": { dataField: "NUM_ORCAMENTO" },
@@ -80,7 +80,7 @@ nextTick(() => {
 
       <VueApexCharts
         width="100%"
-        height="296"
+        height="256"
         type="bar"
         :options="{
         chart: {

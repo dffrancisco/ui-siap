@@ -10,7 +10,6 @@ import utils from "@/ts/utils";
 import Swal from "sweetalert2";
 import moment from "moment";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import printJS from "print-js";
 
 export const vendasOrdenadas = computed(() => {
     let totalQtdVendas = 0;
@@ -62,6 +61,9 @@ export const state = reactive({
     modalVendasGraficos: <iModalCreate>{},
     modalVendasGraficosOpened: false,
 
+    modalImprimirVendas: <iModalCreate>{},
+    modalImprimirVendasOpened: false,
+
     headers: <any>[
         { title: 'Vendedor', key: 'LOGIN', width: '30%' },
         {
@@ -111,8 +113,7 @@ export const actions = {
     },
 
     async pesquisarVendas() {
-
-        if (moment(state.dataFinal).isAfter(moment())) {
+        if (!state.dataInicial || !state.dataFinal) {
             await Swal.fire({
                 text: "Data Inválida!",
                 icon: "warning"
@@ -128,16 +129,7 @@ export const actions = {
             return;
         }
 
-        if (!state.dataInicial || !state.dataFinal) {
-            await Swal.fire({
-                text: "Insira a data inicial e final!",
-                icon: "warning"
-            })
-            return;
-        }
-
         await actions.getVendas();
-
     },
 
     init() {
@@ -152,7 +144,7 @@ export const actions = {
     createModalVendasDetalhes(nomeVendedor: string) {
         state.modalVendasDetalhes = new xModal.create({
             el: "#modalVendasDetalhes",
-            height: 750,
+            height: 660,
             width: 1000,
             title: nomeVendedor,
             theme: 'xModal-blue',
@@ -165,12 +157,22 @@ export const actions = {
     createModais() {
         state.modalVendasGraficos = new xModal.create({
             el: "#modalVendasGraficos",
-            height: 700,
+            height: 660,
             width: 850,
             title: 'Gráficos',
             theme: 'xModal-blue',
             onOpen: () => { state.modalVendasGraficosOpened = true; },
             onClose: () => { state.modalVendasGraficosOpened = false; },
+        });
+
+        state.modalImprimirVendas = new xModal.create({
+            el: "#modalImprimirVendas",
+            height: 600,
+            width: 1030,
+            title: 'Imprimir Consulta de Vendas',
+            theme: 'xModal-blue',
+            onOpen: () => { state.modalImprimirVendasOpened = true; },
+            onClose: () => { state.modalImprimirVendasOpened = false; },
         });
     },
 
@@ -188,46 +190,8 @@ export const actions = {
         state.modalVendasGraficos.open()
     },
 
-    async imprimirVendas() {
-        try {
-            state.loading = true
-
-            let dadosToPrint = state.dbVendas.map(venda => {
-                return {
-                    LOGIN: venda.LOGIN,
-                    LIMITE: utils.formatValor(venda.LIMITE),
-                    VALOR_VENDA: utils.formatValor(venda.VALOR_VENDA),
-                    VALOR_DEVOLUCAO: utils.formatValor(venda.VALOR_DEVOLUCAO),
-                    VENDA_LIQUIDA: utils.formatValor(venda.VENDA_LIQUIDA),
-                    TICKET_MEDIO: utils.formatValor(venda.TICKET_MEDIO),
-                    QTD_MEDIA_ITENS: utils.formatValor(venda.QTD_ITENS / venda.QTD_VENDAS)
-                };
-            });
-
-            printJS({
-                printable: dadosToPrint,
-                properties: [
-                    { field: 'LOGIN', displayName: 'Vendedor' },
-                    { field: 'LIMITE', displayName: 'Limite Crédito' },
-                    { field: 'VALOR_VENDA', displayName: 'Venda' },
-                    { field: 'VALOR_DEVOLUCAO', displayName: 'Devolução' },
-                    { field: 'VENDA_LIQUIDA', displayName: 'Ved.Líquida' },
-                    { field: 'TICKET_MEDIO', displayName: 'Ticket Médio' },
-                    { field: 'QTD_MEDIA_ITENS', displayName: 'Qtd.Média Itens' },
-                ],
-                type: 'json',
-                gridHeaderStyle: 'border: 1px solid #000000',
-                gridStyle: 'text-align: center; border: 1px solid #000000',
-            })
-
-            state.loading = false
-        } catch (error) {
-            state.loading = false;
-            Swal.fire({
-                text: 'Erro ao imprimir as vendas!',
-                icon: "error"
-            })
-        }
+    async openModalImprimirVendas() {
+        state.modalImprimirVendas.open()
     },
 
     async getVendas() {

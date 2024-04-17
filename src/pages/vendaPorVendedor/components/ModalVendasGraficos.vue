@@ -8,8 +8,8 @@ import serviceVendasPorVendedor from "../services/vendaPorVendedor.service";
 
 const props = defineProps<{
   modalOpened: boolean;
-  dataInicial: string;
-  dataFinal: string;
+  dataInicial?: string;
+  dataFinal?: string;
 }>();
 
 watch(
@@ -96,7 +96,7 @@ const actions = {
 
       <VueApexCharts
         width="100%"
-        height="264"
+        height="246"
         type="bar"
         :options="{
             chart: {
@@ -125,7 +125,7 @@ const actions = {
 
       <VueApexCharts
         width="100%"
-        height="268"
+        height="246"
         type="line"
         :options="{
             chart: {

@@ -4,6 +4,7 @@ import { state, actions, vendasOrdenadas } from "./vendaPorVendedor";
 import { nextTick } from "vue";
 import ModalVendasDetalhes from "./components/ModalVendasDetalhes.vue";
 import ModalVendasGraficos from "./components/ModalVendasGraficos.vue";
+import ModalImprimirVendas from "./components/ModalImprimirVendas.vue";
 
 nextTick(() => {
   actions.init();
@@ -64,6 +65,7 @@ nextTick(() => {
         class="ss custom-table"
         height="482"
         items-per-page="50"
+        fixed-header
       >
         <template v-slot:item.VALOR_DEVOLUCAO="{ value }">
           <spam style="color: #bf3f3f"> -{{ value }} </spam>
@@ -96,7 +98,7 @@ nextTick(() => {
         </v-btn>
         <v-btn
           color="primary"
-          @click="actions.imprimirVendas"
+          @click="actions.openModalImprimirVendas"
           :disabled="state.dbVendas.length <= 0"
         >
           <v-icon
@@ -126,6 +128,18 @@ nextTick(() => {
     >
       <ModalVendasGraficos
         :modalOpened="state.modalVendasGraficosOpened"
+        :dataInicial="state.dataInicialModal"
+        :dataFinal="state.dataFinalModal"
+      />
+    </div>
+
+    <div
+      id="modalImprimirVendas"
+      style="display: none"
+    >
+      <ModalImprimirVendas
+        :vendas="vendasOrdenadas"
+        :modalOpened="state.modalImprimirVendasOpened"
         :dataInicial="state.dataInicialModal"
         :dataFinal="state.dataFinalModal"
       />
