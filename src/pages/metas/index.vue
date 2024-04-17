@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, meses, anos, vendedorOuMontador, actions, totalizadorMetas } from "./metas";
+import { state, meses, vendedorOuMontador, actions, totalizadorMetas } from "./metas";
 import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
 import utils from "@/ts/utils";
 
@@ -37,7 +37,6 @@ onMounted(async () => {
                 type="number"
                 label="Ano"
                 v-model="state.ano"
-                :items="anos"
                 :clearable="false"
                 @update:model-value="actions.onClickMetas"
               ></v-text-field>

@@ -5,29 +5,15 @@ import { setup } from "./modalDistribuirMetas";
 import utils from "@/ts/utils";
 import ModalAtribuirMetaIndividual from "./modalAtribuirMetaIndividual.vue";
 
-const props = defineProps({
-  funcionarios: {
-    type: Object as () => iResponseFuncionarios,
-  },
-  metaMontadores: {
-    type: Array as () => iResponseMetasVendedoresEMontadores[],
-  },
-  metaVendedores: {
-    type: Array as () => iResponseMetasVendedoresEMontadores[],
-  },
-  optionSelect: {
-    type: Number,
-  },
-  mes: {
-    type: Number,
-  },
-  ano: {
-    type: Number,
-  },
-  opened: {
-    type: Boolean,
-  },
-});
+const props = defineProps<{
+  funcionarios: iResponseFuncionarios;
+  metaMontadores: iResponseMetasVendedoresEMontadores[];
+  metaVendedores: iResponseMetasVendedoresEMontadores[];
+  optionSelect: number;
+  mes: number | string;
+  ano: number | string;
+  opened: boolean;
+}>();
 
 const emit = defineEmits(["inserirMeta", "opcaoCargoEscolhido"]);
 

@@ -3,20 +3,12 @@ import { defineProps, reactive, watch } from "vue";
 import { iResponseMetasVendedoresEMontadores } from "../interfaces";
 import { configVMoney } from "../../../constants/constants";
 
-const props = defineProps({
-  funcionario: {
-    type: Object as () => iResponseMetasVendedoresEMontadores,
-  },
-  mes: {
-    type: Number,
-  },
-  ano: {
-    type: Number,
-  },
-  opened: {
-    type: Boolean,
-  },
-});
+const props = defineProps<{
+  funcionario: iResponseMetasVendedoresEMontadores | undefined;
+  mes: number | string;
+  ano: number | string;
+  opened: boolean;
+}>();
 
 const emit = defineEmits(["dadosInserirMeta", "fecharModalAtribuirMetaIndividual"]);
 

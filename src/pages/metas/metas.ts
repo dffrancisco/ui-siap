@@ -5,11 +5,12 @@ import Swal from "sweetalert2";
 import metasService from "./services/metas.service"
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import utils from "@/ts/utils";
+import moment from "moment";
 
 
 export const state = reactive({
     mes: new Date().getMonth() + 1,
-    ano: new Date().getFullYear(),
+    ano: moment().year(),
     loading: false,
     totalItems: 0,
     itemsPerPage: 10,
@@ -68,17 +69,17 @@ export const state = reactive({
 
 export const meses = mesesToSelect;
 
-export const anos = computed(() => {
-    const anosArray: number[] = [];
-    const anoAtual = new Date().getFullYear();
+// export const anos = computed(() => {
+//     const anosArray: number[] = [];
+//     const anoAtual = new Date().getFullYear();
 
-    for (let i = 0; i < 10; i++) {
-        const ano = anoAtual - 9 + i;
-        anosArray.push(ano);
-    }
+//     for (let i = 0; i < 10; i++) {
+//         const ano = anoAtual - 9 + i;
+//         anosArray.push(ano);
+//     }
 
-    return anosArray;
-});
+//     return anosArray;
+// });
 
 
 export const vendedorOuMontador = [

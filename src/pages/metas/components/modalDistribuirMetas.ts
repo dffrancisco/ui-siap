@@ -85,13 +85,13 @@ export const setup = (emit: any, props: any) => {
 
     const atribuirMetaIndividual = (funcionarioSelecionado) => {
 
-        if (funcionarioSelecionado.CARGO != "MONTADOR") {
+        if (funcionarioSelecionado?.CARGO != "MONTADOR") {
             state.isVendedoresSelected = true;
             state.isMontadoresSelected = false;
             emit("opcaoCargoEscolhido", 0);
         }
 
-        if (funcionarioSelecionado.CARGO == "MONTADOR") {
+        if (funcionarioSelecionado?.CARGO == "MONTADOR") {
             state.isVendedoresSelected = false;
             state.isMontadoresSelected = true;
             emit("opcaoCargoEscolhido", 1);
@@ -144,28 +144,17 @@ export const setup = (emit: any, props: any) => {
     }
 
     const selecionarVendedores = () => {
-        state.loading = true
-
         state.isVendedoresSelected = true;
         state.isMontadoresSelected = false;
         state.infoFuncionario = state.metaVendedores;
-        setTimeout(() => {
-            state.loading = false;
-        }, 300);
-
         emit("opcaoCargoEscolhido", 0);
     };
 
 
     const selecionarMontadores = () => {
-        state.loading = true
         state.isVendedoresSelected = false;
         state.isMontadoresSelected = true;
         state.infoFuncionario = state.metaMontadores;
-        setTimeout(() => {
-            state.loading = false;
-        }, 300);
-
         emit("opcaoCargoEscolhido", 1);
     };
 
