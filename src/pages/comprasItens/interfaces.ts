@@ -133,7 +133,7 @@ export interface iHistoricoCompraGeral {
             ANO: number,
         }
     }
-    ultimasVendas: iUltimaCompra[]
+    ultimasCompras: iUltimaCompra[]
 }
 
 export interface iObjHistoricoCompraGeral {

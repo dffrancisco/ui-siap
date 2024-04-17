@@ -1,9 +1,22 @@
 import { computed, reactive } from 'vue'
-import { iAbaHistorico, iAbaItens, iCabecalhoCompra, iCarro, iHistoricoMes, iMarca, iObjHistoricoCompraGeral, iObjHistoricoVendaGeral, iParamEmitBuscarProdutos, iProduto, iProdutoObj, iTipoVisualizacao, iUltimaCompra, iUltimaVenda } from './interfaces';
 import comprasItensService from './services/comprasItens.service';
 import { swalDarkError } from '@/ts/utils';
 import moment from 'moment';
-import { MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
+import { MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
+import {
+    iAbaHistorico,
+    iAbaItens,
+    iCabecalhoCompra,
+    iCarro,
+    iHistoricoMes,
+    iMarca,
+    iObjHistoricoCompraGeral,
+    iObjHistoricoVendaGeral,
+    iParamEmitBuscarProdutos,
+    iProduto,
+    iProdutoObj,
+    iTipoVisualizacao
+} from './interfaces';
 
 export const state = reactive(({
     loading: true,
@@ -23,13 +36,6 @@ export const state = reactive(({
     historicoComprasGeral: <iObjHistoricoCompraGeral>{},
     historicoMesesVenda: <iHistoricoMes[]>[],
     historicoMesesCompra: <iHistoricoMes[]>[],
-    ultimasCompras: <iUltimaCompra[]>[
-        { NUM_NOTA: 123, DATA: '2024-01-03', FORNECEDOR: 'FULANINHO DA SILVA FERREIRAAAAA AAA', QTD: 520, CUSTO: 200.5, VENDA: 401, MESMO_GRUPO: 0 },
-        { NUM_NOTA: 123, DATA: '2024-01-03', FORNECEDOR: 'FULANINHO DA SILVA FERREIRA', QTD: 5, CUSTO: 200.5, VENDA: 401, MESMO_GRUPO: 0 },
-        { NUM_NOTA: 123, DATA: '2024-01-03', FORNECEDOR: 'FULANINHO DA SILVA FERREIRA', QTD: 5, CUSTO: 200.5, VENDA: 401, MESMO_GRUPO: 1 },
-        { NUM_NOTA: 123, DATA: '2024-01-03', FORNECEDOR: 'FULANINHO DA SILVA FERREIRA', QTD: 5, CUSTO: 200.5, VENDA: 401, MESMO_GRUPO: 0 },
-        { NUM_NOTA: 123, DATA: '2024-01-03', FORNECEDOR: 'FULANINHO DA SILVA FERREIRA', QTD: 5, CUSTO: 200.5, VENDA: 401, MESMO_GRUPO: 0 },
-    ],
     abaHistorico: <iAbaHistorico>'vendas',
     abaItens: <iAbaItens>'nao_adicionados',
     tipoVisualizacaoItem: <iTipoVisualizacao>"unica",
@@ -108,12 +114,10 @@ export const actions = {
     buscarProdutos: async (param: iParamEmitBuscarProdutos) => {
 
         if (state.loading || state.loadingHistoricoCompras || state.loadingHistoricoVendas) {
-            console.log('aquiiii');
             comprasItensService.cancelarRequisicao();
         }
 
         state.loading = true;
-        console.log('uiiii');
         state.indexProdutoSelecionado = 0;
 
         if (param.ID_MARCA != state.edtMarca) {
@@ -196,25 +200,37 @@ export const computeds = {
         }
 
         let historicoVendaProduto = state.historicoVendasGeral[keyProdutoSelecionado]
+        let historicoCompraProduto = state.historicoComprasGeral[keyProdutoSelecionado]
 
-        let mesesVendas = [...historicoMesesDefault]
-        let mesesCompras = [...historicoMesesDefault]
+        if (state.abaHistorico == 'compras' && historicoCompraProduto) {
+            let mesesCompras = []
+            let historicoMesesCompras = state.historicoComprasGeral[keyProdutoSelecionado].meses
 
-        if (state.abaHistorico == 'compras') {
-            return state.historicoMesesCompra
+            for (let mes of historicoMesesDefault) {
+                mesesCompras.push({
+                    ...mes,
+                    qtd: historicoMesesCompras[mes.mes.toString() + mes.ano.toString()]?.QTD || 0
+                })
+            }
+
+            return mesesCompras;
         }
 
         if (state.abaHistorico == 'vendas' && historicoVendaProduto) {
+            let mesesVendas = [];
             let historicoMesesVenda = state.historicoVendasGeral[keyProdutoSelecionado].meses
 
-            for (let mes of mesesVendas) {
-                mes.qtd = historicoMesesVenda[mes.mes.toString() + mes.ano.toString()]?.QTD || 0
+            for (let mes of historicoMesesDefault) {
+                mesesVendas.push({
+                    ...mes,
+                    qtd: historicoMesesVenda[mes.mes.toString() + mes.ano.toString()]?.QTD || 0
+                })
             }
 
             return mesesVendas;
         }
 
-        return historicoMesesDefault
+        return [...historicoMesesDefault]
     }),
 
     ultimasVendas: computed(() => {
@@ -230,6 +246,22 @@ export const computeds = {
 
         return state.historicoVendasGeral[keyProdutoSelecionado].ultimasVendas.sort((a, b) => {
             return a[MAP_COL_ULTIMAS_VENDAS.POSICAO] - b[MAP_COL_ULTIMAS_VENDAS.POSICAO]
+        })
+    }),
+
+    ultimasCompras: computed(() => {
+        let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado]
+
+        if (!keyProdutoSelecionado) {
+            return []
+        }
+
+        if (!state.historicoComprasGeral[keyProdutoSelecionado]) {
+            return []
+        }
+
+        return state.historicoComprasGeral[keyProdutoSelecionado].ultimasCompras.sort((a, b) => {
+            return a[MAP_COL_ULTIMAS_COMPRAS.POSICAO] - b[MAP_COL_ULTIMAS_COMPRAS.POSICAO]
         })
     })
 }

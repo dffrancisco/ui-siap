@@ -75,7 +75,7 @@ actions.init();
           />
           <HistoricoUltimasCompras
             v-if="state.abaHistorico == 'compras'"
-            :ultimasCompras="state.ultimasCompras"
+            :ultimasCompras="computeds.ultimasCompras.value"
             :loading="state.loadingHistoricoCompras"
           />
         </div>

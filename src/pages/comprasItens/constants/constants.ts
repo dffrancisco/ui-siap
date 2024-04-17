@@ -26,3 +26,15 @@ export const MAP_COL_ULTIMAS_VENDAS = {
     'MESMO_GRUPO': 'MG',
     'POSICAO': 'POS',
 }
+
+export const MAP_COL_ULTIMAS_COMPRAS = {
+    'COD_PRODUTO': 'COD',
+    'NUM_NOTA': 'NF',
+    'FORNECEDOR': 'FOR',
+    'DATA': 'DT',
+    'QTD': 'QTD',
+    'VENDA': 'VND',
+    'CUSTO': 'CST',
+    'MESMO_GRUPO': 'MG',
+    'POSICAO': 'POS',
+}

@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { reactive } from "vue";
+import Skeleton from "@/components/Skeleton.vue";
 import { iUltimaCompra, iTipoVisualizacao } from "../interfaces";
 import utils from "@/ts/utils";
+import { MAP_COL_ULTIMAS_COMPRAS } from "../constants/constants";
 
 const props = defineProps({
+  loading: {
+    type: Boolean,
+    default: true,
+  },
   ultimasCompras: {
     type: Array as () => iUltimaCompra[],
     default: [],
@@ -43,38 +49,53 @@ const actions = {
       </div>
     </div>
     <div
-      v-if="state.tipoVisualizacao == 'unica'"
+      v-if="loading"
+      class="container-skeleton"
+    >
+      <Skeleton
+        v-for="i in 3"
+        height="24px"
+      ></Skeleton>
+    </div>
+    <div
+      v-if="!loading && ultimasCompras.length == 0"
+      class="d-flex align-center justify-center pt-8"
+    >
+      <span>Nenhuma compra :(</span>
+    </div>
+    <div
+      v-else-if="!loading && state.tipoVisualizacao == 'unica'"
       class="historico-ultima-compra-dados"
     >
       <div class="d-flex justify-space-between">
         <div>
           <span class="mr-1">Data:</span>
-          <strong>{{ utils.dataBrasil(ultimasCompras[0].DATA) }}</strong>
+          <strong>{{ utils.dataBrasil(ultimasCompras[0][MAP_COL_ULTIMAS_COMPRAS.DATA]) }}</strong>
         </div>
         <div>
           <span class="mr-1">Qtd:</span>
-          <strong>{{ ultimasCompras[0].QTD }}</strong>
+          <strong>{{ ultimasCompras[0][MAP_COL_ULTIMAS_COMPRAS.QTD] }}</strong>
         </div>
       </div>
       <div class="d-flex justify-space-between">
         <div>
           <span class="mr-1">Custo:</span>
-          <strong>{{ utils.formatValor(ultimasCompras[0].CUSTO) }}</strong>
+          <strong>{{ utils.formatValor(ultimasCompras[0][MAP_COL_ULTIMAS_COMPRAS.CUSTO]) }}</strong>
         </div>
         <div>
           <span class="mr-1">Venda:</span>
-          <strong>{{ utils.formatValor(ultimasCompras[0].VENDA) }}</strong>
+          <strong>{{ utils.formatValor(ultimasCompras[0][MAP_COL_ULTIMAS_COMPRAS.VENDA]) }}</strong>
         </div>
       </div>
       <div>
         <div>
           <span class="mr-1">Fornecedor:</span>
-          <strong>{{ ultimasCompras[0].FORNECEDOR }}</strong>
+          <strong>{{ ultimasCompras[0][MAP_COL_ULTIMAS_COMPRAS.FORNECEDOR] }}</strong>
         </div>
       </div>
     </div>
     <div
-      v-if="state.tipoVisualizacao == 'lista'"
+      v-else-if="!loading && state.tipoVisualizacao == 'lista'"
       class="historico-ultima-compra-lista"
     >
       <div
@@ -82,19 +103,22 @@ const actions = {
         v-for="compra in ultimasCompras"
       >
         <div class="text-truncate">
-          <span>{{ compra.FORNECEDOR }}</span>
+          <span>{{ compra[MAP_COL_ULTIMAS_COMPRAS.FORNECEDOR] }}</span>
         </div>
         <div class="d-flex justify-space-between">
-          <span>NF {{ compra.NUM_NOTA }}</span>
-          <span>{{ utils.dataBrasil(compra.DATA) }}</span>
-          <span>C: {{ utils.formatValor(compra.CUSTO) }}</span>
-          <span>V: {{ utils.formatValor(compra.VENDA) }}</span>
+          <span>NF {{ compra[MAP_COL_ULTIMAS_COMPRAS.NUM_NOTA] }}</span>
+          <span>{{ utils.dataBrasil(compra[MAP_COL_ULTIMAS_COMPRAS.DATA]) }}</span>
+          <span>C: {{ utils.formatValor(compra[MAP_COL_ULTIMAS_COMPRAS.CUSTO]) }}</span>
+          <span>V: {{ utils.formatValor(compra[MAP_COL_ULTIMAS_COMPRAS.VENDA]) }}</span>
         </div>
         <div
           class="historico-ultima-compra-lista-card-qtd"
-          :class="{ 'historico-ultima-compra-lista-card-qtd-orange': compra.MESMO_GRUPO == 1 ? true : false }"
+          :class="{
+            'historico-ultima-compra-lista-card-qtd-orange':
+              compra[MAP_COL_ULTIMAS_COMPRAS.MESMO_GRUPO] == '1' ? true : false,
+          }"
         >
-          {{ compra.QTD }}
+          {{ compra[MAP_COL_ULTIMAS_COMPRAS.QTD] }}
         </div>
       </div>
     </div>
@@ -125,7 +149,7 @@ const actions = {
   gap: 8px;
   flex-direction: column;
   border-radius: 8px;
-  margin-top: 12px;
+  margin-top: 8px;
   height: 175px;
 }
 
@@ -185,5 +209,13 @@ const actions = {
 
 .historico-ultima-compra-lista-card-qtd-orange {
   background-color: var(--warning-300);
+}
+
+.container-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 </style>
