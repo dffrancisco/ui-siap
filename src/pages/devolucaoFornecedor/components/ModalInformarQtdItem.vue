@@ -209,6 +209,30 @@ const actions = {
       return;
     }
 
+    if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_PIS.toString()) > 100) {
+      await Swal.fire({
+        icon: "error",
+        title: "O % PIS deve ser menor ou igual a 100",
+      });
+      return;
+    }
+
+    if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_COFINS.toString()) > 100) {
+      await Swal.fire({
+        icon: "error",
+        title: "O % COFINS deve ser menor ou igual a 100",
+      });
+      return;
+    }
+
+    if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_IPI.toString()) > 100) {
+      await Swal.fire({
+        icon: "error",
+        title: "O % IPI deve ser menor ou igual a 100",
+      });
+      return;
+    }
+
     await actions.updateInsertItemDevolucao();
   },
 
