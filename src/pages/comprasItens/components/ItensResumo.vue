@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import { iCabecalhoCompra } from "../interfaces";
-import utils from "@/ts/utils";
 
 const props = defineProps({
-  cabecalho: {
-    type: Object as () => iCabecalhoCompra,
-    default: {},
+  qtdItens: {
+    type: Number,
+    default: 0,
+  },
+  qtdItensVistos: {
+    type: Number,
+    default: 0,
+  },
+  itemAtual: {
+    type: Number,
+    default: 0,
   },
 });
 
@@ -20,29 +26,29 @@ const state = reactive({});
         cols="3"
         class="d-flex flex-column align-center"
       >
-        <span>Itens Vistos</span>
-        <strong>5</strong>
+        <span>Item Atual</span>
+        <strong>{{ itemAtual }}</strong>
       </div>
       <div
         cols="3"
         class="d-flex flex-column align-center"
       >
-        <span>Itens Atual</span>
-        <strong>5</strong>
+        <span>Itens Vistos</span>
+        <strong>{{ qtdItensVistos }}</strong>
       </div>
       <div
         cols="3"
         class="d-flex flex-column align-center"
       >
         <span>Qtd Itens</span>
-        <strong>20</strong>
+        <strong>{{ qtdItens }}</strong>
       </div>
       <div
         cols="3"
         class="d-flex flex-column align-center"
       >
         <span>Itens Restantes</span>
-        <strong>15</strong>
+        <strong>{{ qtdItens - qtdItensVistos }}</strong>
       </div>
     </div>
   </div>
