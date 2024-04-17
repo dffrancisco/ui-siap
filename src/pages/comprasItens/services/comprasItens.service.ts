@@ -19,6 +19,19 @@ type iGetProdutosFunction = (param: iParamGetProdutosFunction) => Promise<iRespo
 type iGetHistoricoVendasFunction = (param: iParamGetProdutosFunction) => Promise<iObjHistoricoVendaGeral>;
 type iGetHistoricoComprasFunction = (param: iParamGetProdutosFunction) => Promise<iObjHistoricoCompraGeral>;
 
+export const getColorCurva = (curva: string) => {
+    let objCurva = {
+        AA: '#3ec9f7',
+        A: '#24d4e0',
+        B: '#97f7fd',
+        C: '#fbe2b2',
+        D: '#97abfd',
+        E: '#ea9494',
+    }
+
+    return objCurva[curva] || '#f9baba'
+}
+
 const getDadosIniciais: iGetDadosIniciaisFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getDadosIniciais",
@@ -66,6 +79,7 @@ const cancelarRequisicao = () => {
 }
 
 export default {
+    getColorCurva,
     getDadosIniciais,
     getProdutos,
     getHistoricoVendas,

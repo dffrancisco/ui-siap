@@ -3,6 +3,7 @@ import { reactive } from "vue";
 import { iProduto, iTipoVisualizacao } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import { formatValor } from "@/ts/utils";
+import { getColorCurva } from "../services/comprasItens.service";
 
 const props = defineProps({
   produto: {
@@ -73,14 +74,22 @@ const state = reactive({
           class="d-flex flex-column"
         >
           <span>Curva G</span>
-          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.CURVA_ABC_G] }}</strong>
+          <strong
+            class="item-info-value"
+            :style="{ color: getColorCurva(produto[MAP_COL_PRODUTO.CURVA_ABC_G]) }"
+            >{{ produto[MAP_COL_PRODUTO.CURVA_ABC_G] }}</strong
+          >
         </v-col>
         <v-col
           cols="2"
           class="d-flex flex-column"
         >
           <span>Curva M</span>
-          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.CURVA_ABC_M] }}</strong>
+          <strong
+            class="item-info-value"
+            :style="{ color: getColorCurva(produto[MAP_COL_PRODUTO.CURVA_ABC_M]) }"
+            >{{ produto[MAP_COL_PRODUTO.CURVA_ABC_M] }}</strong
+          >
         </v-col>
       </v-row>
       <v-row class="mt-0">
