@@ -56,7 +56,7 @@ const state = reactive({
           </strong>
         </v-col>
         <v-col
-          v-if="produto[MAP_COL_PRODUTO.FOTO] == 'S'"
+          v-if="produto[MAP_COL_PRODUTO.FOTO] == 'F'"
           cols="1"
           class="d-flex align-center"
           title="Ver foto"
