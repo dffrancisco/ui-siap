@@ -3,12 +3,16 @@ import { reactive } from "vue";
 import { iProduto, iTipoVisualizacao } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import { formatValor } from "@/ts/utils";
-import { getColorCurva } from "../services/comprasItens.service";
+import { getColorCurva, getColorDescricao } from "../services/comprasItens.service";
 
 const props = defineProps({
   produto: {
     type: Object as () => iProduto,
     default: {},
+  },
+  qtdJaAdicionada: {
+    type: Number,
+    default: 0,
   },
   exibirIconeAvancar: {
     type: Boolean,
@@ -36,7 +40,20 @@ const state = reactive({
           class="d-flex flex-column"
         >
           <span>Descrição</span>
-          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.DESC_PRODUTO] || "-" }}</strong>
+          <strong
+            class="item-info-value"
+            :style="{ color: getColorDescricao(qtdJaAdicionada, produto[MAP_COL_PRODUTO.PRODUTO_NOVO]) }"
+          >
+            {{ produto[MAP_COL_PRODUTO.DESC_PRODUTO] || "-" }}
+            <v-chip
+              v-if="qtdJaAdicionada > 0"
+              color="primary"
+              variant="outlined"
+              size="x-small"
+              class="ml-2"
+              >{{ qtdJaAdicionada }}</v-chip
+            >
+          </strong>
         </v-col>
         <v-col
           v-if="produto[MAP_COL_PRODUTO.FOTO] == 'S'"
@@ -189,6 +206,8 @@ const state = reactive({
   font-size: 18px;
   font-weight: 700;
   line-height: 20px;
+  display: flex;
+  align-items: center;
 }
 
 .item-info-media {
