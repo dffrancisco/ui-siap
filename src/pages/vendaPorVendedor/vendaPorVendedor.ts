@@ -66,6 +66,9 @@ export const state = reactive({
     modalImprimirVendas: <iModalCreate>{},
     modalImprimirVendasOpened: false,
 
+    modalGrupoFuncionarios: <iModalCreate>{},
+    modalGrupoFuncionariosOpened: false,
+
     headers: <any>[
         { title: 'Vendedor', key: 'LOGIN', width: '30%' },
         {
@@ -181,6 +184,16 @@ export const actions = {
             onOpen: () => { state.modalImprimirVendasOpened = true; },
             onClose: () => { state.modalImprimirVendasOpened = false; },
         });
+
+        state.modalGrupoFuncionarios = new xModal.create({
+            el: "#modalGrupoFuncionarios",
+            height: 350,
+            width: 560,
+            title: 'Grupo de Funcionários',
+            theme: 'xModal-blue',
+            onOpen: () => { state.modalGrupoFuncionariosOpened = true; },
+            onClose: () => { state.modalGrupoFuncionariosOpened = false; },
+        });
     },
 
     async openModalVendasDetalhes(nomeVendedor: string, id_vendedor: number) {
@@ -199,6 +212,10 @@ export const actions = {
 
     async openModalImprimirVendas() {
         state.modalImprimirVendas.open()
+    },
+
+    async openModalGrupoFuncionarios() {
+        state.modalGrupoFuncionarios.open()
     },
 
     async getVendas() {

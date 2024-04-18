@@ -5,6 +5,7 @@ import { nextTick } from "vue";
 import ModalVendasDetalhes from "./components/ModalVendasDetalhes.vue";
 import ModalVendasGraficos from "./components/ModalVendasGraficos.vue";
 import ModalImprimirVendas from "./components/ModalImprimirVendas.vue";
+import ModalGrupoFuncionarios from "./components/ModalGrupoFuncionarios.vue";
 
 nextTick(() => {
   actions.init();
@@ -83,32 +84,33 @@ nextTick(() => {
       </v-data-table>
 
       <div class="pt-2 btnsGraficoPrint">
-        <v-btn
-          color="primary"
-          @click="actions.openModalVendasGraficos"
-          :disabled="state.dbVendas.length <= 0"
-        >
-          <v-icon
-            size="20px"
-            class="mr-2"
-          >
-            mdi-chart-bar
-          </v-icon>
-          GRÁFICOS
-        </v-btn>
+        <div>
+          <v-btn
+            color="primary"
+            @click="actions.openModalVendasGraficos"
+            :disabled="state.dbVendas.length <= 0"
+            icon="mdi-chart-bar"
+            size="36px"
+            title="GRÁFICOS"
+            class="mr-3"
+          />
+          <v-btn
+            color="primary"
+            @click="actions.openModalGrupoFuncionarios"
+            :disabled="state.dbVendas.length <= 0"
+            icon="mdi-account-multiple"
+            size="36px"
+            title="GRUPO DE FUNCIONÁRIOS"
+          />
+        </div>
         <v-btn
           color="primary"
           @click="actions.openModalImprimirVendas"
           :disabled="state.dbVendas.length <= 0"
-        >
-          <v-icon
-            size="20px"
-            class="mr-2"
-          >
-            mdi-printer
-          </v-icon>
-          Imprimir
-        </v-btn>
+          icon="mdi-printer"
+          size="36px"
+          title="IMPRIMIR"
+        />
       </div>
     </v-card>
 
@@ -145,6 +147,13 @@ nextTick(() => {
       />
     </div>
 
+    <div
+      id="modalGrupoFuncionarios"
+      style="display: none"
+    >
+      <ModalGrupoFuncionarios />
+    </div>
+
     <v-overlay
       :model-value="state.loading"
       class="align-center justify-center"
@@ -178,7 +187,7 @@ nextTick(() => {
 
 .btnsGraficoPrint {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 8px;
 }
 </style>
