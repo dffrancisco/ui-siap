@@ -1,8 +1,8 @@
 import { computed, reactive } from 'vue'
 import comprasItensService from './services/comprasItens.service';
-import { swalDarkError } from '@/ts/utils';
+import { swalDarkError, swalDarkWarning } from '@/ts/utils';
 import moment from 'moment';
-import { MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
+import { MAP_COL_PRODUTO, MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
 import {
     iAbaHistorico,
     iAbaItens,
@@ -12,8 +12,11 @@ import {
     iMarca,
     iObjHistoricoCompraGeral,
     iObjHistoricoVendaGeral,
+    iParamEmitAdicionarItem,
     iParamEmitBuscarProdutos,
+    iParamInsertItemCompra,
     iProduto,
+    iProdutoAdicionadoObj,
     iProdutoObj,
     iTipoVisualizacao
 } from './interfaces';
@@ -22,6 +25,7 @@ export const state = reactive(({
     loading: true,
     loadingHistoricoVendas: true,
     loadingHistoricoCompras: true,
+    loadingProdutosAdicionados: true,
     idCompras: undefined,
     cabecalho: <iCabecalhoCompra>{},
     carros: <iCarro[]>[],
@@ -32,6 +36,7 @@ export const state = reactive(({
     edtMarca: undefined,
     produtos: <iProdutoObj>{},
     keyProdutos: <string[]>[],
+    produtosAdicionados: <iProdutoAdicionadoObj>{},
     historicoVendasGeral: <iObjHistoricoVendaGeral>{},
     historicoComprasGeral: <iObjHistoricoCompraGeral>{},
     historicoMesesVenda: <iHistoricoMes[]>[],
@@ -42,6 +47,8 @@ export const state = reactive(({
     indexProdutoSelecionado: 0,
     qtdMaxItensVistosByMarca: {},
     qtdItensMarca: 0,
+    modalAdicionarItemOpened: false,
+    indexUltimoItemVisto: 0,
 }))
 
 const getLast12Months = () => {
@@ -73,6 +80,7 @@ export const actions = {
             })
 
             const promiseProdutos = actions.buscarProdutos({ ID_MARCA: state.edtMarca })
+            actions.buscarProdutosAdicionados(state.idCompras);
 
             const [dadosIniciais] = await Promise.all([promiseDadosIniciais, promiseProdutos])
 
@@ -81,13 +89,17 @@ export const actions = {
             state.marcas = dadosIniciais.marcas;
             state.edtMarca = state.cabecalho.ID_MARCA
 
-            //@ts-ignore
-            document.querySelector('#compras-detalhes').focus();
+            actions.focarNosItens();
         } catch (error) {
             swalDarkError(error?.response?.data.msg || 'Erro ao buscar dados do pedido');
         } finally {
             state.loading = false;
         }
+    },
+
+    focarNosItens: () => {
+        //@ts-ignore
+        document.querySelector('#compras-detalhes').focus();
     },
 
     buscarHistoricoVendas: async (param: iParamEmitBuscarProdutos) => {
@@ -114,10 +126,27 @@ export const actions = {
         }
     },
 
+    buscarProdutosAdicionados: async (idCompras: number) => {
+        try {
+            state.loading = true;
+            state.produtosAdicionados = await comprasItensService.getProdutosAdicionados(idCompras);
+        } catch (error) {
+            swalDarkError('Erro ao buscar produtos adicionados');
+        } finally {
+            state.loading = false;
+        }
+    },
+
     buscarProdutos: async (param: iParamEmitBuscarProdutos) => {
 
         if (state.loading || state.loadingHistoricoCompras || state.loadingHistoricoVendas) {
             comprasItensService.cancelarRequisicao();
+        }
+
+        console.log(param.ID_MARCA);
+
+        if (!param.ID_MARCA) {
+            return swalDarkWarning('É necessário informar a marca');
         }
 
         state.loading = true;
@@ -152,6 +181,14 @@ export const actions = {
     },
 
     setAbaItens: (abaItens: iAbaItens) => {
+        if (state.abaItens == 'nao_adicionados') {
+            state.indexUltimoItemVisto = state.indexProdutoSelecionado
+        }
+
+        if (state.abaItens == 'adicionados') {
+            actions.changeIndexProdutoSelecionado(state.indexUltimoItemVisto)
+        }
+
         state.abaItens = abaItens;
     },
 
@@ -159,7 +196,7 @@ export const actions = {
         state.tipoVisualizacaoItem = tipoVisualizacaoItem
     },
 
-    onKeyPressContainerPrincipal: (e: KeyboardEvent) => {
+    onKeydownContainerPrincipal: (e: KeyboardEvent) => {
         if (e.key === 'ArrowLeft') {
             actions.onClickVoltarItem()
             e.preventDefault();
@@ -169,7 +206,23 @@ export const actions = {
         if (e.key === 'ArrowRight') {
             actions.onClickAvancarItem()
             e.preventDefault();
+            return;
         }
+
+        if (e.key === 'Enter') {
+            state.modalAdicionarItemOpened = true;
+            e.preventDefault();
+        }
+    },
+
+    onUpdateModalAdicionarItem() {
+        setTimeout(() => {
+            actions.focarNosItens();
+        }, 100);
+    },
+
+    changeIndexProdutoSelecionado(index: number) {
+        state.indexProdutoSelecionado = index;
     },
 
     onClickAvancarItem() {
@@ -188,6 +241,40 @@ export const actions = {
         if (state.indexProdutoSelecionado > 0) {
             state.indexProdutoSelecionado -= 1
         }
+    },
+
+    async adicionarItem(param: iParamEmitAdicionarItem) {
+        try {
+            state.modalAdicionarItemOpened = false;
+            state.loading = true;
+
+            let codProduto = computeds.produtoSelecionado.value[MAP_COL_PRODUTO.COD_PRODUTO];
+
+            let dadosToInsert: iParamInsertItemCompra = {
+                ID_COMPRAS: state.cabecalho.ID_COMPRAS,
+                COD_PRODUTO: codProduto,
+                CUSTO: param.custo,
+                QUANTIDADE: param.qtd,
+            }
+
+            let response = await comprasItensService.insertItemCompra(dadosToInsert);
+
+            state.cabecalho.VALOR = response.valorTotalPedido;
+
+            state.produtosAdicionados[codProduto] = {
+                COD_PRODUTO: codProduto,
+                CUSTO: param.custo,
+                QUANTIDADE: param.qtd,
+            }
+
+            actions.onClickAvancarItem();
+            actions.focarNosItens();
+        } catch (error) {
+            swalDarkError('erro ao inserir item')
+            console.error(error)
+        } finally {
+            state.loading = false;
+        }
     }
 }
 
@@ -195,6 +282,11 @@ export const computeds = {
     produtoSelecionado: computed(() => {
         let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado];
         return state.produtos[keyProdutoSelecionado] || {} as iProduto;
+    }),
+
+    qtdJaAdicionadaItem: computed(() => {
+        let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado];
+        return state.produtosAdicionados[keyProdutoSelecionado]?.QUANTIDADE || 0
     }),
 
     exibirIconeAvancar: computed(() => {

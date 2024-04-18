@@ -6,8 +6,12 @@ import {
     iResponseGetDadosIniciais,
     iObjHistoricoVendaGeral,
     iResponseGetProdutosFunction,
-    iObjHistoricoCompraGeral
+    iObjHistoricoCompraGeral,
+    iParamInsertItemCompra,
+    iResponseInsertItemCompra,
+    iResponseGetProdutosAdicionadosFunction,
 } from "../interfaces";
+import moment from "moment";
 
 const caminho = "siap/compras";
 
@@ -16,8 +20,19 @@ let cancel;
 
 type iGetDadosIniciaisFunction = (param: iParamGetDadosIniciais) => Promise<iResponseGetDadosIniciais>;
 type iGetProdutosFunction = (param: iParamGetProdutosFunction) => Promise<iResponseGetProdutosFunction>;
+type iGetProdutosAdicionadosFunction = (idCompras: number) => Promise<iResponseGetProdutosAdicionadosFunction>;
 type iGetHistoricoVendasFunction = (param: iParamGetProdutosFunction) => Promise<iObjHistoricoVendaGeral>;
 type iGetHistoricoComprasFunction = (param: iParamGetProdutosFunction) => Promise<iObjHistoricoCompraGeral>;
+type iInsertItemCompraFunction = (param: iParamInsertItemCompra) => Promise<iResponseInsertItemCompra>;
+
+export const getColorData = (data: string) => {
+    if (!data) return "#eef0f4";
+
+    let dataLimite = moment().subtract(1, "year");
+    let dataVenda = moment(data.substring(0, 10));
+
+    return moment(dataVenda).isBefore(dataLimite) ? "#ff7da1" : "#eef0f4";
+}
 
 export const getColorCurva = (curva: string) => {
     let objCurva = {
@@ -32,6 +47,18 @@ export const getColorCurva = (curva: string) => {
     return objCurva[curva] || '#f9baba'
 }
 
+export const getColorDescricao = (qtdJaAdicionadaItem: number, novoItem: 'OLD' | 'NEW') => {
+    if (qtdJaAdicionadaItem > 0) {
+        return '#97cdff';
+    }
+
+    if (novoItem == 'NEW') {
+        return '#60f3c6';
+    }
+
+    return '#eef0f4'
+}
+
 const getDadosIniciais: iGetDadosIniciaisFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getDadosIniciais",
@@ -44,6 +71,16 @@ const getProdutos: iGetProdutosFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getProdutos",
         param,
+    });
+    return data;
+};
+
+const getProdutosAdicionados: iGetProdutosAdicionadosFunction = async (idCompras) => {
+    let { data } = await axios.post(caminho, {
+        call: "getProdutosAdicionados",
+        param: {
+            ID_COMPRAS: idCompras,
+        },
     });
     return data;
 };
@@ -72,6 +109,15 @@ const getHistoricoCompras: iGetHistoricoComprasFunction = async (param) => {
     return data;
 };
 
+const insertItemCompra: iInsertItemCompraFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "insertItemCompra",
+        param,
+    })
+
+    return data;
+};
+
 const cancelarRequisicao = () => {
     if (cancel) {
         cancel('Requisição cancelada pelo usuário.');
@@ -82,7 +128,9 @@ export default {
     getColorCurva,
     getDadosIniciais,
     getProdutos,
+    getProdutosAdicionados,
     getHistoricoVendas,
     getHistoricoCompras,
+    insertItemCompra,
     cancelarRequisicao
 };

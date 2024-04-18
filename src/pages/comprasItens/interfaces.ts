@@ -70,6 +70,17 @@ export interface iParamEmitBuscarProdutos {
     NUM_FABRICANTE?: string,
 }
 
+export interface iParamInsertItemCompra {
+    ID_COMPRAS: number,
+    COD_PRODUTO: number,
+    CUSTO: number,
+    QUANTIDADE: number,
+}
+
+export interface iResponseInsertItemCompra {
+    valorTotalPedido: number
+}
+
 export interface iColumnMappingProdutos {
     [apelido: string]: string,
 }
@@ -94,9 +105,27 @@ export interface iProdutoObj {
     [id: string]: iProduto
 }
 
+export interface iProdutoAdicionado {
+    COD_PRODUTO: number,
+    QUANTIDADE: number,
+    CUSTO: number,
+}
+export interface iProdutoAdicionadoObj {
+    [id: string]: iProdutoAdicionado
+}
+
 export interface iResponseGetProdutosFunction {
     produtos: iProdutoObj,
     qtdItensMarca: number,
+}
+export interface iResponseGetProdutosAdicionadosFunction {
+    [id: string]: iProdutoAdicionado
+}
+
+export interface iProdutoAdicionadoGrid extends iProduto {
+    COD_PRODUTO: number,
+    PEDIDO_QTD_ADICIONADA: number,
+    PEDIDO_CUSTO_ADICIONADO: number,
 }
 
 export interface iUltimaVenda {
@@ -138,6 +167,11 @@ export interface iHistoricoCompraGeral {
 
 export interface iObjHistoricoCompraGeral {
     [codProduto: string]: iHistoricoCompraGeral
+}
+
+export interface iParamEmitAdicionarItem {
+    custo: number,
+    qtd: number,
 }
 
 export type iTipoVisualizacao = 'unica' | 'lista'

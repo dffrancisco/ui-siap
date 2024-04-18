@@ -9,6 +9,8 @@ import ItensResumo from "./components/ItensResumo.vue";
 import { state, actions, computeds } from "./comprasItens";
 import ItensAdicionados from "./components/ItensAdicionados.vue";
 import { useRoute } from "vue-router";
+import ModalAdicionarItem from "./components/ModalAdicionarItem.vue";
+import { MAP_COL_PRODUTO } from "./constants/constants";
 
 const route = useRoute();
 state.idCompras = parseInt(route?.query?.idCompras as string);
@@ -33,7 +35,7 @@ actions.init();
         id="compras-detalhes"
         class="compras-detalhes"
         tabindex="0"
-        @keydown="actions.onKeyPressContainerPrincipal"
+        @keydown="actions.onKeydownContainerPrincipal"
       >
         <div class="compras-grupo-historico">
           <div class="historico-cabecalho">
@@ -129,6 +131,7 @@ actions.init();
               :qtdTotalItens="state.keyProdutos.length"
               :exibirIconeAvancar="computeds.exibirIconeAvancar.value"
               :exibirIconeVoltar="computeds.exibirIconeVoltar.value"
+              :qtdJaAdicionada="computeds.qtdJaAdicionadaItem.value"
               @avancarItem="actions.onClickAvancarItem"
               @voltarItem="actions.onClickVoltarItem"
             />
@@ -156,7 +159,12 @@ actions.init();
             v-if="state.abaItens == 'adicionados'"
             class="compras-detalhes-dados-item"
           >
-            <ItensAdicionados />
+            <ItensAdicionados
+              :objProdutos="state.produtos"
+              :objProdutosAdicionados="state.produtosAdicionados"
+              :keysProdutos="state.keyProdutos"
+              @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
+            />
           </div>
         </div>
       </div>
@@ -173,6 +181,21 @@ actions.init();
       </v-overlay>
       <div id="pnCodigoTela">comprasItens</div>
     </div>
+
+    <v-dialog
+      v-model="state.modalAdicionarItemOpened"
+      max-width="350px"
+      transition="dialog-transition"
+      @update:modelValue="actions.onUpdateModalAdicionarItem"
+    >
+      <ModalAdicionarItem
+        :qtdAtual="computeds.produtoSelecionado.value[MAP_COL_PRODUTO.QUANTIDADE]"
+        :valorVenda="computeds.produtoSelecionado.value[MAP_COL_PRODUTO.VENDA]"
+        :valorCusto="computeds.produtoSelecionado.value[MAP_COL_PRODUTO.CUSTO]"
+        :media="0"
+        @adicionarItem="actions.adicionarItem"
+      />
+    </v-dialog>
   </div>
 </template>
 

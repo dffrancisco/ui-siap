@@ -116,6 +116,7 @@ watch(
     <div class="filtros-marca">
       <label>Marca</label>
       <v-autocomplete
+        id="edtMarca"
         v-model="state.edtMarca"
         variant="outlined"
         density="compact"
