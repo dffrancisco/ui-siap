@@ -4,6 +4,7 @@ import Skeleton from "@/components/Skeleton.vue";
 import { iUltimaCompra, iTipoVisualizacao } from "../interfaces";
 import utils from "@/ts/utils";
 import { MAP_COL_ULTIMAS_COMPRAS } from "../constants/constants";
+import { getColorData } from "../services/comprasItens.service";
 
 const props = defineProps({
   loading: {
@@ -17,7 +18,7 @@ const props = defineProps({
 });
 
 const state = reactive({
-  tipoVisualizacao: <iTipoVisualizacao>"unica",
+  tipoVisualizacao: <iTipoVisualizacao>"lista",
 });
 
 const actions = {
@@ -70,7 +71,11 @@ const actions = {
       <div class="d-flex justify-space-between">
         <div>
           <span class="mr-1">Data:</span>
-          <strong>{{ utils.dataBrasil(ultimasCompras[0][MAP_COL_ULTIMAS_COMPRAS.DATA]) }}</strong>
+          <strong
+            :style="{ color: getColorData(utils.dataBrasil(ultimasCompras[0][MAP_COL_ULTIMAS_COMPRAS.DATA])) }"
+          >
+            {{ utils.dataBrasil(ultimasCompras[0][MAP_COL_ULTIMAS_COMPRAS.DATA]) }}
+          </strong>
         </div>
         <div>
           <span class="mr-1">Qtd:</span>
@@ -107,7 +112,9 @@ const actions = {
         </div>
         <div class="d-flex justify-space-between">
           <span>NF {{ compra[MAP_COL_ULTIMAS_COMPRAS.NUM_NOTA] }}</span>
-          <span>{{ utils.dataBrasil(compra[MAP_COL_ULTIMAS_COMPRAS.DATA]) }}</span>
+          <span :style="{ color: getColorData(utils.dataBrasil(compra[MAP_COL_ULTIMAS_COMPRAS.DATA])) }">
+            {{ utils.dataBrasil(compra[MAP_COL_ULTIMAS_COMPRAS.DATA]) }}
+          </span>
           <span>C: {{ utils.formatValor(compra[MAP_COL_ULTIMAS_COMPRAS.CUSTO]) }}</span>
           <span>V: {{ utils.formatValor(compra[MAP_COL_ULTIMAS_COMPRAS.VENDA]) }}</span>
         </div>

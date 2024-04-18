@@ -4,6 +4,7 @@ import Skeleton from "@/components/Skeleton.vue";
 import { iUltimaVenda, iTipoVisualizacao } from "../interfaces";
 import utils from "@/ts/utils";
 import { MAP_COL_ULTIMAS_VENDAS } from "../constants/constants";
+import { getColorData } from "../services/comprasItens.service";
 
 const props = defineProps({
   loading: {
@@ -17,7 +18,7 @@ const props = defineProps({
 });
 
 const state = reactive({
-  tipoVisualizacao: <iTipoVisualizacao>"unica",
+  tipoVisualizacao: <iTipoVisualizacao>"lista",
 });
 
 const actions = {
@@ -70,7 +71,9 @@ const actions = {
       <div class="d-flex justify-space-between">
         <div>
           <span class="mr-1">Data:</span>
-          <strong>{{ utils.dataBrasil(ultimasVendas[0][MAP_COL_ULTIMAS_VENDAS.DATA]) }}</strong>
+          <strong :style="{ color: getColorData(ultimasVendas[0][MAP_COL_ULTIMAS_VENDAS.DATA]) }">{{
+            utils.dataBrasil(ultimasVendas[0][MAP_COL_ULTIMAS_VENDAS.DATA])
+          }}</strong>
         </div>
         <div>
           <span class="mr-1">Qtd:</span>
@@ -107,7 +110,9 @@ const actions = {
         </div>
         <div class="d-flex justify-space-between">
           <span>OR {{ venda[MAP_COL_ULTIMAS_VENDAS.NUM_ORCAMENTO] }}</span>
-          <span>{{ utils.dataBrasil(venda[MAP_COL_ULTIMAS_VENDAS.DATA]) }}</span>
+          <span :style="{ color: getColorData(venda[MAP_COL_ULTIMAS_VENDAS.DATA]) }">
+            {{ utils.dataBrasil(venda[MAP_COL_ULTIMAS_VENDAS.DATA]) }}</span
+          >
           <span>{{ utils.formatValor(venda[MAP_COL_ULTIMAS_VENDAS.VALOR]) }}</span>
           <span>{{ venda[MAP_COL_ULTIMAS_VENDAS.VENDEDOR] }}</span>
         </div>
