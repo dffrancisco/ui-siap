@@ -331,7 +331,7 @@ export const actions = {
             state.loading = false;
             Swal.fire({
                 icon: "error",
-                text: "Erro ao finalizar devolução!",
+                text: error?.response?.data?.msg || "Erro ao finalizar devolução!",
             });
         }
     },
