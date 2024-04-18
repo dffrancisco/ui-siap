@@ -1,9 +1,44 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import { nextTick, reactive } from "vue";
+import { nextTick, reactive, computed } from "vue";
+import { iProdutoAdicionadoObj, iProdutoObj, iProdutoAdicionadoGrid } from "../interfaces";
+import { MAP_COL_PRODUTO } from "../constants/constants";
+import utils from "@/ts/utils";
+
+const props = defineProps({
+  objProdutos: {
+    type: Object as () => iProdutoObj,
+    default: {},
+  },
+  keysProdutos: {
+    type: Array as () => string[],
+    default: [],
+  },
+  objProdutosAdicionados: {
+    type: Object as () => iProdutoAdicionadoObj,
+    default: {},
+  },
+});
+
+const emit = defineEmits(["changeIndexProdutoSelecionado"]);
 
 const state = reactive({
   gridItensAdicionados: <ixGridCreate>{},
+});
+
+const produtos = computed(() => {
+  let produtos = [] as iProdutoAdicionadoGrid[];
+
+  Object.keys(props.objProdutosAdicionados).forEach((keyProduto) => {
+    produtos.push({
+      ...props.objProdutos[keyProduto],
+      COD_PRODUTO: parseInt(keyProduto),
+      PEDIDO_QTD_ADICIONADA: props.objProdutosAdicionados[keyProduto].QUANTIDADE,
+      PEDIDO_CUSTO_ADICIONADO: props.objProdutosAdicionados[keyProduto].CUSTO,
+    });
+  });
+
+  return produtos;
 });
 
 const actions = {
@@ -17,32 +52,24 @@ const actions = {
       theme: "x-modern-dark",
       height: "370px",
       columns: {
-        "Nº Fabricante": { dataField: "NUM_FABRICANTE" },
-        Descrição: { dataField: "DESCRICAO" },
-        Carro: { dataField: "NOME_CARRO" },
-        Marca: { dataField: "NOME_MARCA" },
-        Qtd: { dataField: "QTD", center: true },
-        Custo: { dataField: "CUSTO", center: true },
+        "Nº Fabricante": { dataField: MAP_COL_PRODUTO.NUM_FABRICANTE, width: "14%" },
+        Descrição: { dataField: MAP_COL_PRODUTO.DESC_PRODUTO },
+        Carro: { dataField: MAP_COL_PRODUTO.DESCRICAO_CARRO, width: "14%" },
+        Marca: { dataField: MAP_COL_PRODUTO.DESCRICAO_MARCA, width: "14%" },
+        Qtd: { dataField: "PEDIDO_QTD_ADICIONADA", center: true, width: "10%" },
+        Custo: { dataField: "PEDIDO_CUSTO_ADICIONADO", center: true, render: utils.formatValor, width: "10%" },
+      },
+      onSelectLine: (dados) => {
+        let indexProdutoSelecionado = props.keysProdutos.findIndex(
+          (keyProduto) => keyProduto == dados.COD_PRODUTO
+        );
+
+        emit("changeIndexProdutoSelecionado", indexProdutoSelecionado);
       },
     });
 
-    state.gridItensAdicionados.source([
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-      { DESCRICAO: "teste" },
-    ]);
+    state.gridItensAdicionados.source(produtos.value);
+    state.gridItensAdicionados.focus();
   },
 };
 
