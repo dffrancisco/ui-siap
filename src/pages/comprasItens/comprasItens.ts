@@ -1,6 +1,6 @@
 import { computed, reactive } from 'vue'
 import comprasItensService from './services/comprasItens.service';
-import { swalDarkError, swalDarkWarning } from '@/ts/utils';
+import utils, { swalDarkError, swalDarkWarning } from '@/ts/utils';
 import moment from 'moment';
 import { MAP_COL_PRODUTO, MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
 import {
@@ -54,7 +54,7 @@ export const state = reactive(({
 
 const getLast12Months = () => {
     const nomeMeses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-    const result = [];
+    const result = [] as iHistoricoMes[];
 
     for (let i = 0; i < 12; i++) {
         const date = moment().subtract(i, 'months');
@@ -333,7 +333,7 @@ export const computeds = {
         let historicoCompraProduto = state.historicoComprasGeral[keyProdutoSelecionado]
 
         if (state.abaHistorico == 'compras' && historicoCompraProduto) {
-            let mesesCompras = []
+            let mesesCompras = [] as iHistoricoMes[]
             let historicoMesesCompras = state.historicoComprasGeral[keyProdutoSelecionado].meses
 
             for (let mes of historicoMesesDefault) {
@@ -347,7 +347,7 @@ export const computeds = {
         }
 
         if (state.abaHistorico == 'vendas' && historicoVendaProduto) {
-            let mesesVendas = [];
+            let mesesVendas = [] as iHistoricoMes[];
             let historicoMesesVenda = state.historicoVendasGeral[keyProdutoSelecionado].meses
 
             for (let mes of historicoMesesDefault) {
@@ -398,6 +398,21 @@ export const computeds = {
     qtdProdutosAdicionados: computed(() => {
         let keys = Object.keys(state.produtosAdicionados)
         return keys.length;
+    }),
+
+    mediaQtdItemSelecionado: computed(() => {
+        let produtoSelecionado = computeds.produtoSelecionado.value
+
+        if (!produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO]) return 0
+
+        let ultimosTresMeses = computeds.historicoMeses.value.slice(0, 3)
+
+        let soma = 0;
+        for (let mes of ultimosTresMeses) {
+            soma += mes.qtd
+        }
+
+        return Math.round(soma / 3)
     })
 }
 

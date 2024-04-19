@@ -26,12 +26,22 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  media: {
+    type: Number,
+    default: 0,
+  },
 });
 </script>
 
 <template>
   <div class="historico-meses">
-    <strong v-if="props.label">{{ props.label }}</strong>
+    <div class="historico-cabecalho">
+      <strong v-if="props.label">{{ props.label }}</strong>
+      <div class="historico-cabecalho-media">
+        <span class="mr-1">Média:</span>
+        <strong>{{ media }}</strong>
+      </div>
+    </div>
     <div class="historico-meses-conteudo">
       <div
         v-for="(historico, index) in historicoMeses"
@@ -65,6 +75,17 @@ const props = defineProps({
   flex-direction: column;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+}
+
+.historico-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.historico-cabecalho-media {
+  font-size: 10px;
+  color: var(--grey-400);
 }
 
 .historico-meses-conteudo {

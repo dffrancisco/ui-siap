@@ -65,6 +65,7 @@ actions.init();
             :corPadrao="'#7dc1ff'"
             :corDestaque="'#b1daff'"
             :corFonte="'#005098'"
+            :media="computeds.mediaQtdItemSelecionado.value"
             :loading="state.loadingHistoricoVendas"
           />
           <HistoricoMeses
@@ -139,6 +140,7 @@ actions.init();
               :exibirIconeAvancar="computeds.exibirIconeAvancar.value"
               :exibirIconeVoltar="computeds.exibirIconeVoltar.value"
               :qtdJaAdicionada="computeds.qtdJaAdicionadaItem.value"
+              :media="computeds.mediaQtdItemSelecionado.value"
               @avancarItem="actions.onClickAvancarItem"
               @voltarItem="actions.onClickVoltarItem"
             />
