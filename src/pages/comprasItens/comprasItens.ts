@@ -49,6 +49,7 @@ export const state = reactive(({
     qtdItensMarca: 0,
     modalAdicionarItemOpened: false,
     indexUltimoItemVisto: 0,
+    indexUltimoItemAdicionado: undefined,
 }))
 
 const getLast12Months = () => {
@@ -143,8 +144,6 @@ export const actions = {
             comprasItensService.cancelarRequisicao();
         }
 
-        console.log(param.ID_MARCA);
-
         if (!param.ID_MARCA) {
             return swalDarkWarning('É necessário informar a marca');
         }
@@ -162,6 +161,7 @@ export const actions = {
             actions.buscarHistoricoCompras(param)
 
             const response = await comprasItensService.getProdutos(param)
+
 
             state.edtMarca = param.ID_MARCA;
             state.produtos = response.produtos;
@@ -222,6 +222,17 @@ export const actions = {
     },
 
     changeIndexProdutoSelecionado(index: number) {
+        let keyMarca = 'marca:' + state.edtMarca;
+        let qtdItensVisitadosMarca = state.qtdMaxItensVistosByMarca[keyMarca] || 1;
+
+        if (state.abaItens == 'nao_adicionados') {
+            let indexPosteriorAoSelecionado = index > state.indexProdutoSelecionado;
+            let indexPosteriorQtdAtualVista = index > (qtdItensVisitadosMarca - 1)
+            if (indexPosteriorAoSelecionado && indexPosteriorQtdAtualVista) {
+                state.qtdMaxItensVistosByMarca[keyMarca] = qtdItensVisitadosMarca + 1
+            }
+        }
+
         state.indexProdutoSelecionado = index;
     },
 
@@ -248,7 +259,9 @@ export const actions = {
             state.modalAdicionarItemOpened = false;
             state.loading = true;
 
-            let codProduto = computeds.produtoSelecionado.value[MAP_COL_PRODUTO.COD_PRODUTO];
+            let produtoSelecionado = computeds.produtoSelecionado.value
+
+            let codProduto = produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO];
 
             let dadosToInsert: iParamInsertItemCompra = {
                 ID_COMPRAS: state.cabecalho.ID_COMPRAS,
@@ -262,10 +275,13 @@ export const actions = {
             state.cabecalho.VALOR = response.valorTotalPedido;
 
             state.produtosAdicionados[codProduto] = {
+                ...produtoSelecionado,
                 COD_PRODUTO: codProduto,
-                CUSTO: param.custo,
-                QUANTIDADE: param.qtd,
+                PEDIDO_CUSTO_ADICIONADO: param.custo,
+                PEDIDO_QTD_ADICIONADA: param.qtd,
             }
+
+            state.indexUltimoItemAdicionado = state.indexProdutoSelecionado
 
             actions.onClickAvancarItem();
             actions.focarNosItens();
@@ -286,7 +302,12 @@ export const computeds = {
 
     qtdJaAdicionadaItem: computed(() => {
         let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado];
-        return state.produtosAdicionados[keyProdutoSelecionado]?.QUANTIDADE || 0
+        return state.produtosAdicionados[keyProdutoSelecionado]?.PEDIDO_QTD_ADICIONADA || 0
+    }),
+
+    ultimoItemAdicionado: computed(() => {
+        let keyProdutoSelecionado = state.keyProdutos[state.indexUltimoItemAdicionado];
+        return state.produtos[keyProdutoSelecionado] || {} as iProduto;
     }),
 
     exibirIconeAvancar: computed(() => {
@@ -372,6 +393,11 @@ export const computeds = {
         return state.historicoComprasGeral[keyProdutoSelecionado].ultimasCompras.sort((a, b) => {
             return a[MAP_COL_ULTIMAS_COMPRAS.POSICAO] - b[MAP_COL_ULTIMAS_COMPRAS.POSICAO]
         })
+    }),
+
+    qtdProdutosAdicionados: computed(() => {
+        let keys = Object.keys(state.produtosAdicionados)
+        return keys.length;
     })
 }
 

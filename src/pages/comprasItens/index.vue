@@ -5,6 +5,7 @@ import HistoricoMeses from "./components/HistoricoMeses.vue";
 import HistoricoUltimasVendas from "./components/HistoricoUltimasVendas.vue";
 import HistoricoUltimasCompras from "./components/HistoricoUltimasCompras.vue";
 import ItensNaoAdicionados from "./components/ItensNaoAdicionados.vue";
+import ItensNaoAdicionadosGrid from "./components/ItensNaoAdicionadosGrid.vue";
 import ItensResumo from "./components/ItensResumo.vue";
 import { state, actions, computeds } from "./comprasItens";
 import ItensAdicionados from "./components/ItensAdicionados.vue";
@@ -104,7 +105,13 @@ actions.init();
               }"
               @click="actions.setAbaItens('adicionados')"
             >
-              <span>Itens adicionados</span>
+              <span class="mr-2">Itens adicionados</span>
+              <v-chip
+                color="#95edf2"
+                size="x-small"
+              >
+                {{ computeds.qtdProdutosAdicionados.value }}
+              </v-chip>
             </div>
             <v-spacer />
             <div class="d-flex align-center">
@@ -127,13 +134,22 @@ actions.init();
             class="compras-detalhes-dados-item"
           >
             <ItensNaoAdicionados
+              v-if="state.tipoVisualizacaoItem == 'unica'"
               :produto="computeds.produtoSelecionado.value"
-              :qtdTotalItens="state.keyProdutos.length"
               :exibirIconeAvancar="computeds.exibirIconeAvancar.value"
               :exibirIconeVoltar="computeds.exibirIconeVoltar.value"
               :qtdJaAdicionada="computeds.qtdJaAdicionadaItem.value"
               @avancarItem="actions.onClickAvancarItem"
               @voltarItem="actions.onClickVoltarItem"
+            />
+
+            <ItensNaoAdicionadosGrid
+              v-if="state.tipoVisualizacaoItem == 'lista'"
+              :objProdutos="state.produtos"
+              :keysProdutos="state.keyProdutos"
+              :indexProdutoSelecionado="state.indexProdutoSelecionado"
+              :qtdProdutosAdicionados="computeds.qtdProdutosAdicionados.value"
+              @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
             />
 
             <div class="compras-detalhes-itens-progresso">
@@ -152,7 +168,9 @@ actions.init();
 
             <div class="compras-detalhes-ultimo-item">
               <span class="mr-2">Último item adicionado: </span>
-              <strong class="compras-detalhes-ultimo-item-value">FAROL ARTEB LD 00/</strong>
+              <strong class="compras-detalhes-ultimo-item-value">
+                {{ computeds.ultimoItemAdicionado.value[MAP_COL_PRODUTO.DESC_PRODUTO] }}
+              </strong>
             </div>
           </div>
           <div
