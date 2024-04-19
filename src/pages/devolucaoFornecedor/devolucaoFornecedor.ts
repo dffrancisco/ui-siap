@@ -90,7 +90,7 @@ export const actions = {
 
         state.modalTransportadora = new xModal.create({
             el: '#modalTransportadora',
-            height: 288,
+            height: 372,
             width: 784,
             theme: "xModal-blue",
             onOpen: () => { state.modalOpened = true; state.modalTransportadoraOpened = true; },
@@ -108,7 +108,7 @@ export const actions = {
 
         state.modalInformarQtdItem = new xModal.create({
             el: "#modalInformarQtdItem",
-            height: 410,
+            height: 488,
             width: 715,
             theme: "xModal-blue",
             onOpen: () => {
@@ -179,6 +179,7 @@ export const actions = {
                 CST_COFINS: item.CST_COFINS,
                 PERCENTUAL_PIS: item.PERCENTUAL_PIS,
                 PERCENTUAL_COFINS: item.PERCENTUAL_COFINS,
+                CST_IPI: item.CST_IPI
             }
         }
 
@@ -330,7 +331,7 @@ export const actions = {
             state.loading = false;
             Swal.fire({
                 icon: "error",
-                text: "Erro ao finalizar devolução!",
+                text: error?.response?.data?.msg || "Erro ao finalizar devolução!",
             });
         }
     },

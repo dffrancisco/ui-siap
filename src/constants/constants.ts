@@ -1,5 +1,3 @@
-import { computed } from "vue";
-
 export const mesesToSelect = [
     { title: 'Janeiro', value: 1 },
     { title: 'Fevereiro', value: 2 },
@@ -19,4 +17,5 @@ export const configVMoney = {
     thousands: ".",
     decimal: ",",
     precision: 2,
+    max: 999999999.99
 }

@@ -116,7 +116,7 @@ const verificarSeExisteDevolucaoFornecedor = async (id_fornecedor: number) => {
     return data
 }
 
-const insertTransportadoraDevolucao: iInsertTransportadoraDevolucaoFunction = async ({ param }) => {
+const insertTransportadoraDevolucao: iInsertTransportadoraDevolucaoFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: 'insertTransportadoraDevolucao',
         param
@@ -124,7 +124,7 @@ const insertTransportadoraDevolucao: iInsertTransportadoraDevolucaoFunction = as
     return data
 }
 
-const updateTransportadoraDevolucao: iUpdateTransportadoraDevolucaoFunction = async ({ param }) => {
+const updateTransportadoraDevolucao: iUpdateTransportadoraDevolucaoFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: 'updateTransportadoraDevolucao',
         param
