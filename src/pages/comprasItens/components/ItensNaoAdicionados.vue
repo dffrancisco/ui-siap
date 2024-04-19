@@ -14,6 +14,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  media: {
+    type: Number,
+    default: 0,
+  },
   exibirIconeAvancar: {
     type: Boolean,
     required: true,
@@ -45,6 +49,15 @@ const state = reactive({
             :style="{ color: getColorDescricao(qtdJaAdicionada, produto[MAP_COL_PRODUTO.PRODUTO_NOVO]) }"
           >
             {{ produto[MAP_COL_PRODUTO.DESC_PRODUTO] || "-" }}
+            <v-chip
+              v-if="produto[MAP_COL_PRODUTO.PRODUTO_NOVO] == 'NEW'"
+              color="success"
+              variant="outlined"
+              size="x-small"
+              class="ml-2"
+            >
+              NOVO
+            </v-chip>
             <v-chip
               v-if="qtdJaAdicionada > 0"
               color="primary"
@@ -90,23 +103,15 @@ const state = reactive({
           cols="2"
           class="d-flex flex-column"
         >
-          <span>Curva G</span>
-          <strong
-            class="item-info-value"
-            :style="{ color: getColorCurva(produto[MAP_COL_PRODUTO.CURVA_ABC_G]) }"
-            >{{ produto[MAP_COL_PRODUTO.CURVA_ABC_G] }}</strong
-          >
+          <span>Custo</span>
+          <strong class="item-info-value">{{ formatValor(produto[MAP_COL_PRODUTO.CUSTO]) }}</strong>
         </v-col>
         <v-col
           cols="2"
           class="d-flex flex-column"
         >
-          <span>Curva M</span>
-          <strong
-            class="item-info-value"
-            :style="{ color: getColorCurva(produto[MAP_COL_PRODUTO.CURVA_ABC_M]) }"
-            >{{ produto[MAP_COL_PRODUTO.CURVA_ABC_M] }}</strong
-          >
+          <span>Venda</span>
+          <strong class="item-info-value">{{ formatValor(produto[MAP_COL_PRODUTO.VENDA]) }}</strong>
         </v-col>
       </v-row>
       <v-row class="mt-0">
@@ -123,7 +128,7 @@ const state = reactive({
         >
           <div class="d-flex flex-column item-info-media px-2 py-1">
             <span>Média</span>
-            <strong class="item-info-value">000</strong>
+            <strong class="item-info-value">{{ media }}</strong>
           </div>
         </v-col>
         <v-col
@@ -137,15 +142,23 @@ const state = reactive({
           cols="2"
           class="d-flex flex-column py-5"
         >
-          <span>Custo</span>
-          <strong class="item-info-value">{{ formatValor(produto[MAP_COL_PRODUTO.CUSTO]) }}</strong>
+          <span>Curva M</span>
+          <strong
+            class="item-info-value"
+            :style="{ color: getColorCurva(produto[MAP_COL_PRODUTO.CURVA_ABC_M]) }"
+            >{{ produto[MAP_COL_PRODUTO.CURVA_ABC_M] }}</strong
+          >
         </v-col>
         <v-col
           cols="2"
           class="d-flex flex-column py-5"
         >
-          <span>Venda</span>
-          <strong class="item-info-value">{{ formatValor(produto[MAP_COL_PRODUTO.VENDA]) }}</strong>
+          <span>Curva G</span>
+          <strong
+            class="item-info-value"
+            :style="{ color: getColorCurva(produto[MAP_COL_PRODUTO.CURVA_ABC_G]) }"
+            >{{ produto[MAP_COL_PRODUTO.CURVA_ABC_G] }}</strong
+          >
         </v-col>
       </v-row>
     </div>
