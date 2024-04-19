@@ -1,6 +1,6 @@
 import { computed, reactive } from 'vue'
 import comprasItensService from './services/comprasItens.service';
-import utils, { swalDarkError, swalDarkWarning } from '@/ts/utils';
+import { swalDarkError, swalDarkWarning } from '@/ts/utils';
 import moment from 'moment';
 import { MAP_COL_PRODUTO, MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
 import {
