@@ -11,6 +11,7 @@ export interface iResponseFuncionarios {
     ID_CARGO: number;
     LOGIN: string;
     NOME_COMP: string;
+    VALOR_META: number
 }
 
 export interface iResponseMetaInserida {
@@ -26,7 +27,7 @@ export interface iResponseMetasVendedoresEMontadores {
     CPF: string;
     COD_FUNCIONARIO: number;
     CARGO: string;
-    VALOR_TOTAL: number;
+    VALOR_LIQUIDO: number;
     QTD_VENDAS: number;
     MES: number;
     ANO: number;
@@ -36,4 +37,5 @@ export interface iResponseMetasVendedoresEMontadores {
     MEDIA_DIARIA: number;
     PROGRESSO: number;
     META_DIARIA: number;
+    VALOR_DIA: number;
 }

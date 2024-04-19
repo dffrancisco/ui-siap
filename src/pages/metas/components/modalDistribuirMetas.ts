@@ -16,6 +16,7 @@ export const setup = (emit: any, props: any) => {
         modalAtribuirMetaIndividualOpened: false,
         codFuncionarioSelecionado: <number>undefined,
         funcionarioSelecionado: <iResponseMetasVendedoresEMontadores>{},
+        inputFuncionario: <HTMLInputElement>{},
         metaVendedores: [],
         metaMontadores: [],
         funcionarios: [],
@@ -28,17 +29,19 @@ export const setup = (emit: any, props: any) => {
         () => {
             if (props.opened) {
                 state.loading = true;
+                state.inputFuncionario = <any>document.getElementById("inputFuncionario").focus();
                 state.funcionarios = props.funcionarios;
+                state.metaMontadores = props.metaMontadores;
+                state.metaVendedores = props.metaVendedores;
                 state.mes = props.mes;
                 state.ano = props.ano;
-                state.metaVendedores = props.metaVendedores;
-                state.metaMontadores = props.metaMontadores;
-                state.infoFuncionario = props.metaVendedores;
+
+                state.infoFuncionario = props.metaVendedores.filter(funcionario => funcionario.VALOR_META !== 0 && funcionario.VALOR_META !== null);
+
                 state.opcaoMeta = props.optionSelect
                 if (state.opcaoMeta == 1) {
                     selecionarMontadores()
                 }
-
                 setTimeout(() => {
                     state.loading = false;
                 }, 500);
@@ -63,25 +66,23 @@ export const setup = (emit: any, props: any) => {
 
     const funcionarioFiltrado = () => {
 
-
-        state.funcionarioSelecionado = props.funcionarios
+        state.funcionarioSelecionado = state.funcionarios
             .find(funcionario => funcionario.COD_FUNCIONARIO == state.codFuncionarioSelecionado)
 
 
         if (!state.funcionarioSelecionado) {
             state.isVendedoresSelected = true;
             state.isMontadoresSelected = false;
-            state.infoFuncionario = state.metaVendedores;
+            state.infoFuncionario = props.metaVendedores.filter(funcionario => funcionario.VALOR_META !== 0 && funcionario.VALOR_META !== null);
+
             emit("opcaoCargoEscolhido", 0);
         } else {
             state.infoFuncionario = [];
             state.infoFuncionario.push(state.funcionarioSelecionado);
         }
 
-
         return state.infoFuncionario
     }
-
 
     const atribuirMetaIndividual = (funcionarioSelecionado) => {
 
@@ -106,7 +107,6 @@ export const setup = (emit: any, props: any) => {
         }
 
         state.funcionarioSelecionado = funcionarioSelecionado;
-
         state.modalAtribuirMetaIndividual.open();
     };
 
@@ -146,15 +146,14 @@ export const setup = (emit: any, props: any) => {
     const selecionarVendedores = () => {
         state.isVendedoresSelected = true;
         state.isMontadoresSelected = false;
-        state.infoFuncionario = state.metaVendedores;
+        state.infoFuncionario = props.metaVendedores.filter(funcionario => funcionario.VALOR_META !== 0 && funcionario.VALOR_META !== null);
         emit("opcaoCargoEscolhido", 0);
     };
-
 
     const selecionarMontadores = () => {
         state.isVendedoresSelected = false;
         state.isMontadoresSelected = true;
-        state.infoFuncionario = state.metaMontadores;
+        state.infoFuncionario = props.metaMontadores.filter(funcionario => funcionario.VALOR_META !== 0 && funcionario.VALOR_META !== null);
         emit("opcaoCargoEscolhido", 1);
     };
 
@@ -176,8 +175,6 @@ export const setup = (emit: any, props: any) => {
 
         emit("inserirMeta", dadosParaInserirMeta);
     };
-
-
 
     const fecharModal = () => {
         state.modalAtribuirMetaIndividual.close();

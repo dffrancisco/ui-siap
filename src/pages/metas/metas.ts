@@ -13,7 +13,7 @@ export const state = reactive({
     ano: moment().year(),
     loading: false,
     totalItems: 0,
-    itemsPerPage: 10,
+    itemsPerPage: 50,
     search: (""),
     opcaoMeta: 0,
     metaVendedores: <iResponseMetasVendedoresEMontadores>{},
@@ -48,7 +48,8 @@ export const state = reactive({
             title: "Previsão",
             key: "PREVISAO",
             sortable: true,
-            align: 'center'
+            align: 'center',
+            value: (item: any) => utils.formatValor(item.PREVISAO)
         },
         {
             title: "Média Diária",
@@ -64,22 +65,10 @@ export const state = reactive({
             align: 'center'
         },
     ],
-    metaNaoSeAplica: "Não se aplica."
+    metaNaoSeAplica: "---"
 })
 
 export const meses = mesesToSelect;
-
-// export const anos = computed(() => {
-//     const anosArray: number[] = [];
-//     const anoAtual = new Date().getFullYear();
-
-//     for (let i = 0; i < 10; i++) {
-//         const ano = anoAtual - 9 + i;
-//         anosArray.push(ano);
-//     }
-
-//     return anosArray;
-// });
 
 
 export const vendedorOuMontador = [
@@ -93,6 +82,7 @@ export const totalizadorMetas = computed(() => {
     let metaAcumulada = 0;
     let metaDoDia = 0;
     let metaPrevisao = 0;
+    let valorVendaPorDia = 0;
     let percentualMetaAcumulada = 0;
     let percentualMetaDoDia = 0;
     let percentualMetaPrevisao = 0;
@@ -103,16 +93,17 @@ export const totalizadorMetas = computed(() => {
         arrayMeta = state.montadoresArray;
     }
 
-    arrayMeta.forEach((item) => {
+    arrayMeta.forEach((item: iResponseMetasVendedoresEMontadores) => {
         meta += item.VALOR_META || 0;
-        metaAcumulada += item.VALOR_TOTAL || 0;
+        metaAcumulada += item.VALOR_LIQUIDO || 0;
         metaDoDia += item.META_DIARIA || 0;
         metaPrevisao += item.PREVISAO || 0;
+        valorVendaPorDia += item.VALOR_DIA || 0;
     });
 
     if (meta > 0) {
         percentualMetaAcumulada = parseFloat(((metaAcumulada / meta) * 100).toFixed(1));
-        percentualMetaDoDia = parseFloat(((metaDoDia / meta) * 100).toFixed(1));
+        percentualMetaDoDia = parseFloat(((valorVendaPorDia / metaDoDia) * 100).toFixed(1));
         percentualMetaPrevisao = parseFloat(((metaPrevisao / meta) * 100).toFixed(1));
     }
 
@@ -133,7 +124,7 @@ export const actions = {
     modal() {
         state.modalDistribuirMetas = new xModal.create({
             height: 680,
-            width: 1266,
+            width: 1280,
             el: "#modalDistribuirMetas",
             theme: "xModal-bublue",
             onOpen: () => {
@@ -289,10 +280,5 @@ export const actions = {
         await actions.getMetasMontadores(state.mes, state.ano);
 
         state.modalDistribuirMetas.open();
-    },
-
-    formatPrevisao(previsao) {
-        return previsao === 0 ? 'Não se aplica' : previsao;
-    },
-
+    }
 }

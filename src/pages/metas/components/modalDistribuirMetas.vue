@@ -34,7 +34,7 @@ const {
 <template>
   <div
     class="modal-distribuir-metas"
-    style="max-width: 1250px; margin: 0 auto"
+    style="max-width: 1200px; margin: 0 auto"
   >
     <div class="mb-n2 mt-2 d-flex justify-center">
       <v-chip
@@ -62,10 +62,11 @@ const {
       </v-chip>
     </div>
 
-    <div class="ml-13 mt-7">
-      <v-row>
+    <div class="mt-7">
+      <v-row style="max-width: 1200px; margin: 0 auto">
         <v-col cols="9">
           <v-autocomplete
+            id="inputFuncionario"
             label="Funcionário"
             :items="funcionariosOrdenados"
             item-title="NOME_COMP"
@@ -80,7 +81,7 @@ const {
           <v-btn
             title="Adicionar meta"
             class="funcionario__btn"
-            color="primary"
+            color="#3680AB"
             @click.prevent="atribuirMetaIndividual(state.funcionarioSelecionado)"
             >Adicionar meta
           </v-btn>
@@ -88,7 +89,10 @@ const {
       </v-row>
     </div>
 
-    <div class="funcionarios_totalizador">
+    <div
+      class="funcionarios_totalizador"
+      style="max-width: 1200px; margin: 0 auto"
+    >
       <v-row>
         <v-col cols="3">
           <v-chip
@@ -99,9 +103,9 @@ const {
           </v-chip>
           <span class="tagSpan">{{ totalMetas.qtdFuncionarios }}</span>
         </v-col>
-        <v-col cols="1">
+        <v-col cols="2">
           <v-chip
-            class="funcionarios_subtitle"
+            class="funcionarios_subtitle ml-15"
             variant="plain"
           >
             Mês: {{ state.mes }}
@@ -109,18 +113,18 @@ const {
         </v-col>
         <v-col cols="2">
           <v-chip
-            class="funcionarios_subtitle"
+            class="funcionarios_subtitle ml-15"
             variant="plain"
           >
             Ano: {{ state.ano }}
           </v-chip>
         </v-col>
         <v-col
-          cols="3"
+          cols="5"
           style="align-items: right"
         >
           <v-chip
-            class="funcionarios_subtitle"
+            class="funcionarios_subtitle ml-15 pl-15"
             variant="plain"
           >
             Total Distribuído:
@@ -130,8 +134,11 @@ const {
       </v-row>
     </div>
 
-    <div class="funcionarios ml-7">
-      <div class="funcionarios__lista">
+    <div class="funcionarios">
+      <div
+        class="funcionarios__lista"
+        :class="{ funcionarios__lista__menor: state.infoFuncionario.length < 4 }"
+      >
         <v-card
           v-for="funcionario in state.infoFuncionario"
           :key="funcionarios.COD_FUNCIONARIO"
@@ -141,7 +148,7 @@ const {
           <div class="funcionarios__lista__card__usuario">
             <div>
               <v-avatar
-                size="70px"
+                size="60px"
                 color="primary"
                 class="funcionarios__lista__avatar"
                 :title="funcionario?.LOGIN"
@@ -210,7 +217,7 @@ const {
 
 .modal-distribuir-metas {
   padding: 5px;
-  width: 1266px;
+  width: 1100px;
   height: 680px;
   top: 15px;
   left: 18px;
@@ -234,27 +241,33 @@ const {
 }
 
 .funcionario__input {
-  width: 900px;
+  width: 850px;
   height: 56px;
   top: 93px;
   border: 1px;
 }
 
 .funcionario__btn {
-  margin-left: 40px;
+  margin-left: 60px;
+  width: 200px;
   font-weight: 600;
+  height: 45px;
   text-align: center;
-  border-radius: 8px;
-  top: 5px;
 }
 
 .funcionarios_totalizador {
-  padding: 5px;
-  width: 1800px;
-  height: 33px;
-  gap: 21px;
-  margin-left: 40px;
-  display: flex;
+  width: 1100px;
+  padding-left: 30px;
+}
+
+.funcionarios__lista__menor {
+  width: 1000px;
+  margin-left: 50px;
+}
+
+.funcionarios {
+  width: 1180px;
+  padding-top: 5px;
 }
 
 .funcionarios__lista {
@@ -262,14 +275,13 @@ const {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  max-height: calc(100vh - 220px);
 }
 
 .funcionarios__lista__card {
   width: 280px;
-  height: 90px;
+  height: 80px;
+  right: 40px;
   border-radius: 14px;
-  /* padding: 14px; */
   gap: 12px;
 }
 
@@ -284,7 +296,7 @@ const {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px; /* Espaçamento interno */
+  padding: 10px;
 }
 
 .funcionarios__lista__card__nome {

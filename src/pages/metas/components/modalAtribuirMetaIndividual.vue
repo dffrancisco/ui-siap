@@ -2,6 +2,7 @@
 import { defineProps, reactive, watch } from "vue";
 import { iResponseMetasVendedoresEMontadores } from "../interfaces";
 import { configVMoney } from "../../../constants/constants";
+import utils from "@/ts/utils";
 
 const props = defineProps<{
   funcionario: iResponseMetasVendedoresEMontadores | undefined;
@@ -31,7 +32,6 @@ function getFotoFuncionarioURL(cpf: string) {
 
 const cancelar = () => {
   emit("fecharModalAtribuirMetaIndividual");
-  state.inputValor = "";
 };
 
 const salvarMeta = async () => {
@@ -41,11 +41,11 @@ const salvarMeta = async () => {
     valorMeta: state.inputValor,
   };
 
+  console.log(dadosParaInserirMeta);
+
   emit("dadosInserirMeta", dadosParaInserirMeta);
   emit("fecharModalAtribuirMetaIndividual");
   state.loading = false;
-
-  state.inputValor = "";
 };
 
 watch(
@@ -57,9 +57,8 @@ watch(
       state.funcionario = props.funcionario;
       state.mes = props.mes;
       state.ano = props.ano;
-
+      state.inputValor = utils.formatValor(props.funcionario.VALOR_META);
       state.inputMeta = <any>document.getElementById("inputMeta").focus();
-
       state.loading = false;
     }
   }
@@ -90,22 +89,24 @@ watch(
       :clearable="false"
       v-model.lazy="state.inputValor"
       :model-modifiers="{ number: true }"
-      v-money3="configVMoney"
+      v-money3="{ ...configVMoney, max: 1000000 }"
       autofocus
+      @keydown.enter="salvarMeta()"
     />
   </div>
 
   <v-btn
     title="Cancelar"
-    class="funcionarios__btn_meta ml-7 mt-3"
-    color="outline"
+    class="funcionarios__btn_meta ml-7 mt-4"
+    color="primary"
+    variant="outlined"
     @click="cancelar()"
     >Cancelar
   </v-btn>
   <v-btn
     title="Adicionar meta"
-    class="funcionarios__btn_meta ml-3 mt-3"
-    color="primary"
+    class="funcionarios__btn_meta ml-4 mt-4"
+    color="#3680AB"
     @click="salvarMeta()"
     >Salvar
   </v-btn>
@@ -145,10 +146,6 @@ watch(
   padding-top: 15px;
 }
 
-.funcionarios__btn_meta {
-  border-radius: 10px;
-}
-
 .funcionarios__input input {
   border: 1px solid rgba(0, 0, 0, 0.42);
   border-radius: 4px;
@@ -162,11 +159,11 @@ watch(
 
 .funcionarios__input input:focus {
   outline: none;
-  border-color: #1976d2; /* cor de foco padrão do Vuetify */
-  box-shadow: 0 0 0 1px #1976d2; /* sombra de foco padrão do Vuetify */
+  border-color: #1976d2;
+  box-shadow: 0 0 0 1px #1976d2;
 }
 
 .funcionarios__input input::placeholder {
-  color: rgba(0, 0, 0, 0.42); /* cor do placeholder padrão do Vuetify */
+  color: rgba(0, 0, 0, 0.42);
 }
 </style>

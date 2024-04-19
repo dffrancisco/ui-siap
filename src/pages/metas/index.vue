@@ -57,7 +57,7 @@ onMounted(async () => {
               <v-btn
                 title="Distribuir metas"
                 class="mr-4 mb-4 metas_btn"
-                color="primary"
+                color="#3680AB"
                 @click.prevent="actions.distribuirMetas"
                 >Distribuir metas
               </v-btn>
@@ -104,7 +104,7 @@ onMounted(async () => {
                       <p>{{ utils.formatValor(totalizadorMetas.metaDoDia) }}</p>
                     </div>
                     <div class="metas_tiposDeMeta_porcentagem">
-                      <p v-if="totalizadorMetas.percentualMetaPrevisao === 0">
+                      <p v-if="totalizadorMetas.percentualMetaDoDia === 0">
                         {{ state.metaNaoSeAplica }}
                       </p>
                       <p v-else> {{ totalizadorMetas.percentualMetaDoDia }} % da meta atingida </p>
@@ -116,7 +116,10 @@ onMounted(async () => {
                   <v-card class="metas_tiposDeMeta">
                     <p class="metas_tiposDeMeta_texto">Meta previsão</p>
                     <div class="metas_tiposDeMeta_valor">
-                      <p>{{ utils.formatValor(totalizadorMetas.metaPrevisao) }}</p>
+                      <p v-if="totalizadorMetas.metaPrevisao === 0">
+                        {{ state.metaNaoSeAplica }}
+                      </p>
+                      <p v-else> {{ utils.formatValor(totalizadorMetas.metaPrevisao) }} </p>
                     </div>
                     <div class="metas_tiposDeMeta_porcentagem">
                       <p v-if="totalizadorMetas.percentualMetaPrevisao === 0">
@@ -161,10 +164,6 @@ onMounted(async () => {
           :loading="state.loading"
           :search="state.search"
         >
-          <template #item.PREVISAO="{ item }">
-            {{ actions.formatPrevisao(item.PREVISAO) }}
-          </template>
-
           <template #item.PROGRESSO="{ item }">
             <v-progress-linear
               v-model="item.PROGRESSO"
@@ -266,7 +265,6 @@ onMounted(async () => {
 .metas_btn {
   font-weight: 600;
   text-align: center;
-  border-radius: 8px;
 }
 
 .metas_tiposDeMeta_porcentagem {
@@ -279,7 +277,7 @@ onMounted(async () => {
 }
 
 .barraDeProgresso {
-  width: 1100px;
+  max-width: 1100px;
   justify-content: center;
   text-align: center;
 }
