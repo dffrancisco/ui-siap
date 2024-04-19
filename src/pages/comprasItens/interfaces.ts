@@ -105,10 +105,10 @@ export interface iProdutoObj {
     [id: string]: iProduto
 }
 
-export interface iProdutoAdicionado {
+export interface iProdutoAdicionado extends iProduto {
     COD_PRODUTO: number,
-    QUANTIDADE: number,
-    CUSTO: number,
+    PEDIDO_QTD_ADICIONADA: number,
+    PEDIDO_CUSTO_ADICIONADO: number,
 }
 export interface iProdutoAdicionadoObj {
     [id: string]: iProdutoAdicionado

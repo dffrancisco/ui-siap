@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { nextTick, reactive, computed } from "vue";
-import { iProdutoAdicionadoObj, iProdutoObj, iProdutoAdicionadoGrid } from "../interfaces";
+import { iProdutoAdicionadoObj, iProdutoObj } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import utils from "@/ts/utils";
 
@@ -27,18 +27,7 @@ const state = reactive({
 });
 
 const produtos = computed(() => {
-  let produtos = [] as iProdutoAdicionadoGrid[];
-
-  Object.keys(props.objProdutosAdicionados).forEach((keyProduto) => {
-    produtos.push({
-      ...props.objProdutos[keyProduto],
-      COD_PRODUTO: parseInt(keyProduto),
-      PEDIDO_QTD_ADICIONADA: props.objProdutosAdicionados[keyProduto].QUANTIDADE,
-      PEDIDO_CUSTO_ADICIONADO: props.objProdutosAdicionados[keyProduto].CUSTO,
-    });
-  });
-
-  return produtos;
+  return Object.values(props.objProdutosAdicionados);
 });
 
 const actions = {
