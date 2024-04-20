@@ -114,7 +114,12 @@ const actions = {
             {{ utils.dataBrasil(venda[MAP_COL_ULTIMAS_VENDAS.DATA]) }}</span
           >
           <span>{{ utils.formatValor(venda[MAP_COL_ULTIMAS_VENDAS.VALOR]) }}</span>
-          <span>{{ venda[MAP_COL_ULTIMAS_VENDAS.VENDEDOR] }}</span>
+          <div
+            class="text-truncate"
+            style="width: 100px; text-align: right"
+          >
+            <span>{{ venda[MAP_COL_ULTIMAS_VENDAS.VENDEDOR] }}</span>
+          </div>
         </div>
         <div
           class="historico-ultima-venda-lista-card-qtd"
