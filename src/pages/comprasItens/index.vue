@@ -67,6 +67,8 @@ actions.init();
             :corFonte="'#005098'"
             :media="computeds.mediaQtdItemSelecionado.value"
             :loading="state.loadingHistoricoVendas"
+            :isVenda="true"
+            :corMediaVenda="computeds.corMediaVenda.value"
           />
           <HistoricoMeses
             v-if="state.abaHistorico == 'compras'"
@@ -75,6 +77,7 @@ actions.init();
             :corPadrao="'#17b5bf'"
             :corDestaque="'#60e4ec'"
             :corFonte="'#00284c'"
+            :media="computeds.mediaQtdItemSelecionado.value"
             :loading="state.loadingHistoricoCompras"
           />
           <HistoricoUltimasVendas
@@ -148,9 +151,11 @@ actions.init();
             <ItensNaoAdicionadosGrid
               v-if="state.tipoVisualizacaoItem == 'lista'"
               :objProdutos="state.produtos"
+              :objProdutosAdicionados="state.produtosAdicionados"
               :keysProdutos="state.keyProdutos"
               :indexProdutoSelecionado="state.indexProdutoSelecionado"
               :qtdProdutosAdicionados="computeds.qtdProdutosAdicionados.value"
+              :qtdJaAdicionada="computeds.qtdJaAdicionadaItem.value"
               @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
             />
 
@@ -183,6 +188,7 @@ actions.init();
               :objProdutos="state.produtos"
               :objProdutosAdicionados="state.produtosAdicionados"
               :keysProdutos="state.keyProdutos"
+              :indexProdutoSelecionado="state.indexProdutoSelecionado"
               @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
             />
           </div>
@@ -212,7 +218,8 @@ actions.init();
         :qtdAtual="computeds.produtoSelecionado.value[MAP_COL_PRODUTO.QUANTIDADE]"
         :valorVenda="computeds.produtoSelecionado.value[MAP_COL_PRODUTO.VENDA]"
         :valorCusto="computeds.produtoSelecionado.value[MAP_COL_PRODUTO.CUSTO]"
-        :media="0"
+        :media="computeds.mediaQtdItemSelecionado.value"
+        :corMediaVenda="computeds.corMediaVenda.value"
         @adicionarItem="actions.adicionarItem"
       />
     </v-dialog>

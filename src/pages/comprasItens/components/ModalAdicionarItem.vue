@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { configVMoney } from "@/constants/constants";
 import utils from "@/ts/utils";
+import { s } from "@fullcalendar/core/internal-common";
 import { nextTick, reactive } from "vue";
 
 const props = defineProps({
@@ -20,6 +21,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  corMediaVenda: {
+    type: String,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["closeModal", "adicionarItem"]);
@@ -37,7 +42,7 @@ const actions = {
 
   adicionarItem: async () => {
     if (!state.edtQtdPedido || state.edtQtdPedido == 0) {
-      actions.setFocusQtdPedido();
+      return actions.setFocusQtdPedido();
     }
 
     emit("adicionarItem", {
@@ -109,7 +114,7 @@ nextTick(() => {
     <div class="d-flex justify-center px-2 mb-4">
       <div class="media">
         <span class="mr-1">Média: </span>
-        <strong>{{ media }}</strong>
+        <strong :style="{ color: props.corMediaVenda }">{{ media }}</strong>
       </div>
       <v-btn
         variant="elevated"

@@ -59,6 +59,15 @@ export const getColorDescricao = (qtdJaAdicionadaItem: number, novoItem: 'OLD' |
     return '#eef0f4'
 }
 
+export const getColorQtdEstoque = (qtdMedia: number, qtdEstoque: number) => {
+
+    if (qtdEstoque < qtdMedia) {
+        return '#ff7da1'
+    }
+
+    return '#eef0f4'
+}
+
 const getDadosIniciais: iGetDadosIniciaisFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getDadosIniciais",
@@ -126,6 +135,9 @@ const cancelarRequisicao = () => {
 
 export default {
     getColorCurva,
+    getColorData,
+    getColorDescricao,
+    getColorQtdEstoque,
     getDadosIniciais,
     getProdutos,
     getProdutosAdicionados,

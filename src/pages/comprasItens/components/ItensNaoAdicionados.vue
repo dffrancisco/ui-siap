@@ -3,7 +3,7 @@ import { reactive } from "vue";
 import { iProduto, iTipoVisualizacao } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import { formatValor } from "@/ts/utils";
-import { getColorCurva, getColorDescricao } from "../services/comprasItens.service";
+import { getColorCurva, getColorDescricao, getColorQtdEstoque } from "../services/comprasItens.service";
 
 const props = defineProps({
   produto: {
@@ -136,7 +136,12 @@ const state = reactive({
           class="d-flex flex-column py-5"
         >
           <span>Qtd. Atual</span>
-          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.QUANTIDADE] }}</strong>
+          <strong
+            class="item-info-value"
+            :style="{ color: getColorQtdEstoque(media, produto[MAP_COL_PRODUTO.QUANTIDADE]) }"
+          >
+            {{ produto[MAP_COL_PRODUTO.QUANTIDADE] }}
+          </strong>
         </v-col>
         <v-col
           cols="2"

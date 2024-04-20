@@ -30,6 +30,14 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  isVenda: {
+    type: Boolean,
+    default: false,
+  },
+  corMediaVenda: {
+    type: String,
+    default: "",
+  },
 });
 </script>
 
@@ -38,8 +46,13 @@ const props = defineProps({
     <div class="historico-cabecalho">
       <strong v-if="props.label">{{ props.label }}</strong>
       <div class="historico-cabecalho-media">
-        <span class="mr-1">Média:</span>
-        <strong>{{ media }}</strong>
+        <span class="mr-1">Média: </span>
+        <strong
+          v-if="isVenda"
+          :style="{ color: corMediaVenda }"
+          >{{ media }}</strong
+        >
+        <strong v-else>{{ media }}</strong>
       </div>
     </div>
     <div class="historico-meses-conteudo">
@@ -84,7 +97,7 @@ const props = defineProps({
 }
 
 .historico-cabecalho-media {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--grey-400);
 }
 
