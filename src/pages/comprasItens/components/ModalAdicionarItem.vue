@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { configVMoney } from "@/constants/constants";
 import utils from "@/ts/utils";
-import { s } from "@fullcalendar/core/internal-common";
 import { nextTick, reactive } from "vue";
 
 const props = defineProps({
