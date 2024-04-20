@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { reactive } from "vue";
-import { iProduto, iTipoVisualizacao } from "../interfaces";
+import { reactive, nextTick } from "vue";
+import { iParamEmitAdicionarItem, iProduto, iTipoVisualizacao } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import { formatValor } from "@/ts/utils";
 import { getColorCurva, getColorDescricao, getColorQtdEstoque } from "../services/comprasItens.service";
+import ModalAdicionarItem from "./ModalAdicionarItem.vue";
 
 const props = defineProps({
   produto: {
@@ -18,6 +19,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  corMediaVenda: {
+    type: String,
+    required: true,
+  },
   exibirIconeAvancar: {
     type: Boolean,
     required: true,
@@ -28,15 +33,41 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["avancarItem", "voltarItem"]);
+const emit = defineEmits(["adicionarItem", "avancarItem", "voltarItem"]);
 
 const state = reactive({
   tipoVisualizacao: <iTipoVisualizacao>"unica",
+  modalAdicionarItemOpened: false,
 });
+
+const actions = {
+  async focarContainerItem() {
+    await nextTick();
+    //@ts-ignore
+    document.querySelector("#containerItem").focus();
+  },
+  adicionarItem(param: iParamEmitAdicionarItem) {
+    emit("adicionarItem", param);
+    state.modalAdicionarItemOpened = false;
+    actions.focarContainerItem();
+  },
+  onKeydownContainer(e: KeyboardEvent) {
+    console.log("aaaaa");
+    if (e.key === "Enter") {
+      state.modalAdicionarItemOpened = true;
+      e.preventDefault();
+    }
+  },
+};
 </script>
 
 <template>
-  <div class="item">
+  <div
+    id="containerItem"
+    class="item"
+    tabindex="0"
+    @keydown="actions.onKeydownContainer"
+  >
     <div class="item-info">
       <v-row>
         <v-col
@@ -183,6 +214,22 @@ const state = reactive({
         >
       </div>
     </div>
+
+    <v-dialog
+      v-model="state.modalAdicionarItemOpened"
+      max-width="350px"
+      transition="dialog-transition"
+      @update:modelValue="actions.focarContainerItem"
+    >
+      <ModalAdicionarItem
+        :qtdAtual="produto[MAP_COL_PRODUTO.QUANTIDADE]"
+        :valorVenda="produto[MAP_COL_PRODUTO.VENDA]"
+        :valorCusto="produto[MAP_COL_PRODUTO.CUSTO]"
+        :media="media"
+        :corMediaVenda="corMediaVenda"
+        @adicionarItem="actions.adicionarItem"
+      />
+    </v-dialog>
   </div>
 </template>
 
@@ -210,6 +257,13 @@ const state = reactive({
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
+}
+
+.item:focus {
+  border-left: 0.5px solid var(--info-800);
+  border-bottom: 0.5px solid var(--info-800);
+  border-right: 0.5px solid var(--info-800);
+  box-sizing: border-box;
 }
 
 .item-info {
