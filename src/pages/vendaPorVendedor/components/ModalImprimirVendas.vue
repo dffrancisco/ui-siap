@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
-import { iVenda } from "../interfaces";
+import { reactive, watch, computed } from "vue";
+import { iVenda, iGrupo } from "../interfaces";
 import utils from "@/ts/utils";
 import printJS from "print-js";
 import Swal from "sweetalert2";
@@ -17,12 +17,48 @@ watch(
   () => props.modalOpened,
   () => {
     if (props.modalOpened) {
+      state.dbVenda = props.vendas;
+
       for (const key in state.checkbox) {
         state.checkbox[key] = true;
+      }
+
+      state.grupoSelecionado = [];
+
+      state.dbGrupo = [];
+
+      for (let i = 0; i < localStorage.length; i++) {
+        let chave = localStorage.key(i);
+        state.dbGrupo.push({ nome: chave });
       }
     }
   }
 );
+
+const dadosToTable = computed(() => {
+  let vendas = [...state.dbVenda];
+
+  if (state.grupoSelecionado.length <= 0) {
+    return state.dbVenda;
+  }
+
+  vendas = [];
+
+  state.grupoSelecionado.forEach((index) => {
+    let chave = localStorage.key(index);
+    const grupo = JSON.parse(localStorage.getItem(chave))?.map((item) => item.LOGIN);
+
+    let vendedoresFiltrados = state.dbVenda.filter((venda) => {
+      return grupo.includes(venda.LOGIN);
+    });
+
+    vendas.push(...vendedoresFiltrados);
+  });
+
+  vendas.sort((a, b) => b.VALOR_VENDA - a.VALOR_VENDA);
+
+  return vendas;
+});
 
 const state = reactive({
   headers: <any>[
@@ -81,6 +117,12 @@ const state = reactive({
     QTD_MEDIA_ITENS: true,
   },
 
+  dbVenda: <iVenda[]>[],
+
+  dbGrupo: <iGrupo[]>[],
+
+  grupoSelecionado: [],
+
   loading: false,
 });
 
@@ -114,7 +156,7 @@ const actions = {
     try {
       state.loading = true;
 
-      let dadosToPrint = props.vendas.map((venda) => {
+      let dadosToPrint = dadosToTable.value.map((venda) => {
         return {
           LOGIN: venda.LOGIN,
           LIMITE: utils.formatValor(venda.LIMITE),
@@ -154,12 +196,15 @@ const actions = {
       <h3>Colunas selecionadas para impressão:</h3>
 
       <div class="pt-2 chips">
-        <v-chip-group>
+        <v-chip-group
+          multiple
+          v-model="state.grupoSelecionado"
+        >
           <v-chip
-            v-for="i in 54"
+            v-for="grupo in state.dbGrupo"
             color="primary"
             variant="tonal"
-            >BALCAO</v-chip
+            >{{ grupo.nome }}</v-chip
           >
         </v-chip-group>
       </div>
@@ -167,7 +212,7 @@ const actions = {
       <v-data-table-virtual
         class="mt-3 custom-table"
         :headers="state.headers"
-        :items="props.vendas"
+        :items="dadosToTable"
         height="436"
         fixed-header
       >

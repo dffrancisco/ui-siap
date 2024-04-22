@@ -187,7 +187,7 @@ export const actions = {
 
         state.modalImprimirVendas = new xModal.create({
             el: "#modalImprimirVendas",
-            height: 600,
+            height: 660,
             width: 1030,
             title: 'Imprimir Consulta de Vendas',
             theme: 'xModal-blue',
