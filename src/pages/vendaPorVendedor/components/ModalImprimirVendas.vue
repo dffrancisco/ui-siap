@@ -152,6 +152,18 @@ const actions = {
   <v-container>
     <div>
       <h3>Colunas selecionadas para impressão:</h3>
+
+      <div class="pt-2 chips">
+        <v-chip-group>
+          <v-chip
+            v-for="i in 54"
+            color="primary"
+            variant="tonal"
+            >BALCAO</v-chip
+          >
+        </v-chip-group>
+      </div>
+
       <v-data-table-virtual
         class="mt-3 custom-table"
         :headers="state.headers"
@@ -209,5 +221,11 @@ const actions = {
 <style scoped>
 .custom-table {
   background-color: #f0f0f0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 </style>
