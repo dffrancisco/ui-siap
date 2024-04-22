@@ -210,7 +210,6 @@ const {
 }
 
 .tagSpan {
-  font-weight: 480;
   font-family: "Nunito Sans", sans-serif;
   font-size: 18px;
   font-weight: 600;
@@ -292,7 +291,7 @@ const {
 }
 
 .funcionarios__lista__card__meta {
-  font-family: Nunito Sans;
+  font-family: "Nunito Sans", sans-serif;
   font-size: 28px;
   font-weight: 700;
   line-height: 38.19px;

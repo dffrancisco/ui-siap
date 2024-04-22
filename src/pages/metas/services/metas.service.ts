@@ -3,8 +3,8 @@ import { iFuncionario, iMesEAno, iMetaMontador, iMetaVendedor, iMetaInserida, } 
 
 const caminho = "siap/metas";
 
-type iGetMetasVendedores = (param: iMesEAno) => Promise<iMetaVendedor>
-type iGetMetasMontadores = (param: iMesEAno) => Promise<iMetaMontador>
+type iGetMetasVendedores = (param: iMesEAno) => Promise<iMetaVendedor[]>
+type iGetMetasMontadores = (param: iMesEAno) => Promise<iMetaMontador[]>
 type iGetFuncionarios = (param: iMesEAno) => Promise<iFuncionario[]>
 type iInserirMeta = (param: iMetaInserida) => Promise<iMetaInserida>
 
