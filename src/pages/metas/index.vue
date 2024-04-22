@@ -78,7 +78,7 @@ onMounted(async () => {
                   <v-card class="metas_tiposDeMeta">
                     <div class="tituloEicon">
                       <p class="metas_tiposDeMeta_texto">Meta </p>
-                      <v-icon class="pr-8">mdi-target</v-icon>
+                      <v-icon class="icones">mdi-target</v-icon>
                     </div>
 
                     <div class="metas_tiposDeMeta_valor">
@@ -91,7 +91,7 @@ onMounted(async () => {
                   <v-card class="metas_tiposDeMeta">
                     <div class="tituloEicon">
                       <p class="metas_tiposDeMeta_texto">Valor Atingido</p>
-                      <v-icon class="pr-8">mdi-trending-up</v-icon>
+                      <v-icon class="icones">mdi-trending-up</v-icon>
                     </div>
 
                     <div class="metas_tiposDeMeta_valor">
@@ -107,7 +107,7 @@ onMounted(async () => {
                   <v-card class="metas_tiposDeMeta">
                     <div class="tituloEicon">
                       <p class="metas_tiposDeMeta_texto">Meta Dia</p>
-                      <v-icon class="pr-8">mdi-clock-fast</v-icon>
+                      <v-icon class="icones">mdi-clock-fast</v-icon>
                     </div>
 
                     <div class="metas_tiposDeMeta_valor">
@@ -126,7 +126,7 @@ onMounted(async () => {
                   <v-card class="metas_tiposDeMeta">
                     <div class="tituloEicon">
                       <p class="metas_tiposDeMeta_texto">Meta Previsão</p
-                      ><v-icon class="pr-8">mdi-cash-multiple</v-icon>
+                      ><v-icon class="icones">mdi-cash-multiple</v-icon>
                     </div>
 
                     <div class="metas_tiposDeMeta_valor">
@@ -244,6 +244,10 @@ onMounted(async () => {
 <style scoped>
 .metas {
   padding-top: 5px;
+}
+
+.icones {
+  padding-right: 30px;
 }
 
 .tituloEicon {

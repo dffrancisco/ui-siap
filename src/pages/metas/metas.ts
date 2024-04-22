@@ -180,12 +180,6 @@ export const actions = {
 
     },
 
-    async atualizarDadosMetasVendedores() {
-        await Promise.all([
-            actions.getMetasVendedores(state.mes, state.ano)
-        ]);
-    },
-
     async getMetasVendedores(mes: number, ano: number) {
         state.loading = true;
         const param: iMesEAno = {
@@ -248,12 +242,8 @@ export const actions = {
     },
 
     async onClickMetas() {
-
-        if (state.opcaoMeta === 0) {
-            await actions.getMetasVendedores(state.mes, state.ano);
-        } else {
-            await actions.getMetasMontadores(state.mes, state.ano);
-        }
+        await actions.getMetasVendedores(state.mes, state.ano);
+        await actions.getMetasMontadores(state.mes, state.ano);
     },
 
     async distribuirMetas(mes: number, ano: number) {
@@ -261,9 +251,6 @@ export const actions = {
         if (!state.funcionarios || !Array.isArray(state.funcionarios) || state.funcionarios.length === 0) {
             await actions.getFuncionarios(mes, ano);
         }
-
-        await actions.getMetasVendedores(state.mes, state.ano);
-        await actions.getMetasMontadores(state.mes, state.ano);
 
         state.modalDistribuirMetas.open();
     }

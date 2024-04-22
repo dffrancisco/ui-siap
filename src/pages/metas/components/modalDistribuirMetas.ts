@@ -1,4 +1,4 @@
-import { computed, nextTick, onMounted, reactive, watch } from "vue";
+import { computed, nextTick, onMounted, reactive } from "vue";
 import { iResponseFuncionarios, iResponseMetasVendedoresEMontadores } from "../interfaces";
 import Swal from "sweetalert2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";

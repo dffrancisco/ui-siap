@@ -44,6 +44,8 @@ const salvarMeta = async () => {
   emit("dadosInserirMeta", dadosParaInserirMeta);
   emit("fecharModalAtribuirMetaIndividual");
   state.inputValor = "";
+  console.log(state.inputValor);
+
   state.loading = false;
 };
 
@@ -57,7 +59,6 @@ watch(
       state.funcionario = props.funcionario;
       state.mes = props.mes;
       state.ano = props.ano;
-      //state.inputValor = utils.formatValor(props.funcionario.VALOR_META);
       state.inputMeta = <any>document.getElementById("inputMeta").focus();
       state.loading = false;
     }
