@@ -11,7 +11,7 @@ export interface iMetaInserida {
     ano: number;
 }
 
-export interface iMetaVendedor {
+export interface iMeta {
     LOGIN: any;
     CPF: string;
     COD_FUNCIONARIO: number;
@@ -29,10 +29,13 @@ export interface iMetaVendedor {
     VALOR_DIA: number;
 }
 
-export interface iMetaMontador extends iMetaVendedor { }
+export interface iFuncionario {
+    LOGIN: any;
+    CPF: string;
+    COD_FUNCIONARIO: number;
+    CARGO: string;
+}
 
-export interface iFuncionario extends iMetaVendedor { }
+export interface iMetaVendedor extends iMeta { }
 
-export interface iMontador extends iMetaMontador { }
-
-export interface iVendedor extends iMetaVendedor { }
+export interface iMetaMontador extends iMeta { }

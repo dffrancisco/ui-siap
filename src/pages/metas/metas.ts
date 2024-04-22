@@ -1,6 +1,6 @@
 import { mesesToSelect } from "@/constants/constants";
 import { computed, reactive } from "vue";
-import { iMesEAno, iMetaInserida, iMetaVendedor, iMetaMontador, iFuncionario, iMontador, iVendedor } from "./interfaces";
+import { iMesEAno, iMetaInserida, iMetaVendedor, iMetaMontador, iFuncionario } from "./interfaces";
 import Swal from "sweetalert2";
 import metasService from "./services/metas.service"
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -18,8 +18,6 @@ export const state = reactive({
     opcaoMeta: 0,
     metaVendedores: <iMetaVendedor[]>[],
     metaMontadores: <iMetaMontador[]>[],
-    montadoresArray: <iMontador[]>[],
-    vendedoresArray: <iVendedor[]>[],
     funcionarios: <iFuncionario[]>[],
     modalDistribuirMetas: <iModalCreate>(<unknown>null),
     modalDistribuirMetasOpened: false,
@@ -77,9 +75,9 @@ export const meses = mesesToSelect;
 export const metas = computed(() => {
 
     if (state.opcaoMeta === 0) {
-        return state.vendedoresArray;
+        return state.metaVendedores;
     } else {
-        return state.montadoresArray;
+        return state.metaMontadores;
     }
 
 })
@@ -96,12 +94,12 @@ export const totalizadorMetas = computed(() => {
     let percentualMetaPrevisao = 0;
 
     if (state.opcaoMeta === 0) {
-        arrayMeta = state.vendedoresArray;
+        arrayMeta = state.metaVendedores;
     } else {
-        arrayMeta = state.montadoresArray;
+        arrayMeta = state.metaMontadores;
     }
 
-    arrayMeta.forEach((item: iFuncionario) => {
+    arrayMeta.forEach((item: iMetaVendedor | iMetaMontador) => {
         meta += item.VALOR_META || 0;
         metaAcumulada += item.VALOR_LIQUIDO || 0;
         metaDoDia += item.META_DIARIA || 0;
@@ -197,8 +195,7 @@ export const actions = {
 
         try {
             state.metaVendedores = await metasService.getMetasVendedores(param);
-            state.vendedoresArray = Object.values(state.metaVendedores);
-            state.totalItems = state.vendedoresArray.length
+            state.totalItems = state.metaVendedores.length
 
         } catch (error) {
             Swal.fire({
@@ -218,7 +215,7 @@ export const actions = {
         }
         try {
             state.metaMontadores = await metasService.getMetasMontadores(param);
-            state.montadoresArray = Object.values(state.metaMontadores);
+            state.metaMontadores = Object.values(state.metaMontadores);
         } catch (error) {
             Swal.fire({
                 icon: "error",
