@@ -66,3 +66,19 @@ export interface iGetVendasGraficosResponse {
     vendasPorDiaGrafico: iVendaPorDiaGrafico[],
     vendasPorHoraGrafico: iVendaPorHoraGrafico[]
 }
+
+export interface iFuncionario {
+    COD_FUNCIONARIO: number;
+    CPF: string;
+    LOGIN: string;
+}
+
+export interface iGetFuncionariosResponse extends iFuncionario { }
+
+export interface iListaFuncionario extends iFuncionario { }
+
+export interface iGrupo {
+    nome: string;
+}
+
+export interface iDadosGrupoEdit extends iFuncionario { }

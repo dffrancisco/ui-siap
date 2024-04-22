@@ -3,7 +3,8 @@ import {
     iVenda,
     iParamGetVendas,
     iParamGetVendasDetalhes,
-    iGetVendasDetalhesResponse
+    iGetVendasDetalhesResponse,
+    iDadosGrupoEdit
 } from "./interfaces";
 import serviceVendasPorVendedor from './services/vendaPorVendedor.service'
 import utils from "@/ts/utils";
@@ -69,6 +70,9 @@ export const state = reactive({
     modalGrupoFuncionarios: <iModalCreate>{},
     modalGrupoFuncionariosOpened: false,
 
+    modalDadosGrupo: <iModalCreate>{},
+    modalDadosGrupoOpened: false,
+
     headers: <any>[
         { title: 'Vendedor', key: 'LOGIN', width: '30%' },
         {
@@ -111,6 +115,12 @@ export const state = reactive({
 
     inputDataInicial: <HTMLInputElement>{},
     inputDataFinal: <HTMLInputElement>{},
+
+    nomeGrupoFuncionario: '',
+
+    dadosGrupoEdit: <iDadosGrupoEdit[]>[],
+    nomeGrupoEdit: '',
+    dadosGrupoEditOpened: false,
 
     loading: false,
 })
@@ -194,6 +204,22 @@ export const actions = {
             onOpen: () => { state.modalGrupoFuncionariosOpened = true; },
             onClose: () => { state.modalGrupoFuncionariosOpened = false; },
         });
+
+        state.modalDadosGrupo = new xModal.create({
+            el: "#modalDadosGrupo",
+            title: "Dados do Grupo",
+            width: 522,
+            height: 550,
+            theme: "xModal-blue",
+            onOpen: () => {
+                state.modalDadosGrupoOpened = true;
+                state.modalGrupoFuncionariosOpened = false;
+            },
+            onClose: () => {
+                state.modalDadosGrupoOpened = false;
+                state.modalGrupoFuncionariosOpened = true;
+            },
+        });
     },
 
     async openModalVendasDetalhes(nomeVendedor: string, id_vendedor: number) {
@@ -206,16 +232,44 @@ export const actions = {
         state.loading = false;
     },
 
-    async openModalVendasGraficos() {
+    openModalVendasGraficos() {
         state.modalVendasGraficos.open()
     },
 
-    async openModalImprimirVendas() {
+    openModalImprimirVendas() {
         state.modalImprimirVendas.open()
     },
 
-    async openModalGrupoFuncionarios() {
+    openModalGrupoFuncionarios() {
         state.modalGrupoFuncionarios.open()
+    },
+
+    closeModalGrupoFuncionarios() {
+        state.modalGrupoFuncionarios.close()
+    },
+
+    openModalDadosGrupo() {
+        state.dadosGrupoEditOpened = false
+
+        state.modalDadosGrupo.open()
+    },
+
+    openModalDadosGrupoEdit(nome: string) {
+        state.dadosGrupoEdit = JSON.parse(localStorage.getItem(nome));
+        state.nomeGrupoEdit = nome
+
+        state.dadosGrupoEditOpened = true
+
+        state.modalDadosGrupo.open()
+    },
+
+    closeModalDadosGrupo() {
+        state.modalDadosGrupo.close()
+    },
+
+    salvarGrupo(nomeGrupo: string) {
+        state.nomeGrupoFuncionario = nomeGrupo
+        actions.closeModalDadosGrupo();
     },
 
     async getVendas() {

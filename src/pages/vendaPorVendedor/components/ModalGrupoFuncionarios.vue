@@ -1,19 +1,58 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
+import { iGrupo } from "../interfaces";
+import { msgConfirm } from "@/ts/message";
+
+watch(
+  () => props.modalOpened,
+  () => {
+    if (props.modalOpened) {
+      state.dbGrupo = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        let chave = localStorage.key(i);
+        state.dbGrupo.push({ nome: chave });
+      }
+    }
+  }
+);
+
+const props = defineProps<{
+  modalOpened: boolean;
+}>();
+
+const emits = defineEmits(["closeModal", "openModalDadosGrupo", "editarGrupo"]);
 
 const state = reactive({
-  itens: [
-    // {
-    //   name: "teste",
-    // },
-  ],
+  dbGrupo: <iGrupo[]>[],
 });
+
+const actions = {
+  closeModal() {
+    emits("closeModal");
+  },
+
+  openModalDadosGrupo() {
+    emits("openModalDadosGrupo");
+  },
+
+  editarGrupo(nome: string) {
+    emits("editarGrupo", nome);
+  },
+
+  async deleteGrupo(nome: string) {
+    if (await msgConfirm("Confirmação", "Confirma exclusão deste grupo?")) {
+      const index = state.dbGrupo.findIndex((grupo) => grupo.nome == nome);
+      state.dbGrupo.splice(index, 1);
+      localStorage.removeItem(nome);
+    }
+  },
+};
 </script>
 
 <template>
-  <v-card :class="state.itens.length <= 0 ? 'text-center' : ''">
+  <div :class="state.dbGrupo.length <= 0 ? 'text-center' : ''">
     <span
-      v-if="state.itens.length <= 0"
+      v-if="state.dbGrupo.length <= 0"
       class="text-span"
       >Sem registros de grupos...</span
     >
@@ -22,39 +61,51 @@ const state = reactive({
       height="250"
     >
       <v-list-item
-        v-for="(item, index) in state.itens"
-        :key="item.name"
-        :title="item.name"
-        :class="index % 2 === 0 ? 'gray-bg' : 'white-bg'"
+        v-for="(grupo, index) in state.dbGrupo"
+        :key="grupo.nome"
+        :title="grupo.nome"
+        :class="index % 2 == 0 ? 'gray-bg' : 'white-bg'"
       >
         <template v-slot:append>
           <v-btn
             icon="mdi-pencil"
             variant="text"
             title="EDITAR"
+            @click="actions.editarGrupo(grupo.nome)"
           />
           <v-btn
             icon="mdi-delete"
             variant="text"
             title="DELETAR"
+            @click="actions.deleteGrupo(grupo.nome)"
           />
         </template>
       </v-list-item>
     </v-list>
-  </v-card>
+  </div>
   <div class="btns mt-3">
-    <v-btn color="primary"> Cancelar </v-btn>
-    <v-btn color="primary"> Novo Grupo </v-btn>
+    <v-btn
+      color="primary"
+      @click="actions.closeModal"
+    >
+      Cancelar
+    </v-btn>
+    <v-btn
+      color="primary"
+      @click="actions.openModalDadosGrupo"
+    >
+      Novo Grupo
+    </v-btn>
   </div>
 </template>
 
 <style scoped>
 .gray-bg {
-  background-color: #e0e0e0; /* Cinza claro mais escuro */
+  background-color: #c7c7c7;
 }
 
 .white-bg {
-  background-color: #f5f5f5; /* Branco mais escuro */
+  background-color: #eaeaea;
 }
 
 .btns {

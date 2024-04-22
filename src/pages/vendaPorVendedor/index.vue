@@ -6,6 +6,7 @@ import ModalVendasDetalhes from "./components/ModalVendasDetalhes.vue";
 import ModalVendasGraficos from "./components/ModalVendasGraficos.vue";
 import ModalImprimirVendas from "./components/ModalImprimirVendas.vue";
 import ModalGrupoFuncionarios from "./components/ModalGrupoFuncionarios.vue";
+import ModalDadosGrupo from "./components/ModalDadosGrupo.vue";
 
 nextTick(() => {
   actions.init();
@@ -151,7 +152,26 @@ nextTick(() => {
       id="modalGrupoFuncionarios"
       style="display: none"
     >
-      <ModalGrupoFuncionarios />
+      <ModalGrupoFuncionarios
+        @closeModal="actions.closeModalGrupoFuncionarios"
+        @openModalDadosGrupo="actions.openModalDadosGrupo"
+        @editarGrupo="actions.openModalDadosGrupoEdit"
+        :modalOpened="state.modalGrupoFuncionariosOpened"
+      />
+    </div>
+
+    <div
+      id="modalDadosGrupo"
+      style="display: none"
+    >
+      <ModalDadosGrupo
+        :dadosGrupoEdit="state.dadosGrupoEdit"
+        :nomeGrupoEdit="state.nomeGrupoEdit"
+        :modalOpened="state.modalDadosGrupoOpened"
+        :dadosGrupoEditOpened="state.dadosGrupoEditOpened"
+        @closeModal="actions.closeModalDadosGrupo"
+        @salvarGrupo="actions.salvarGrupo"
+      />
     </div>
 
     <v-overlay

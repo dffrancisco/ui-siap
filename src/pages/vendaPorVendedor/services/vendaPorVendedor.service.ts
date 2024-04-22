@@ -5,13 +5,15 @@ import {
     iParamGetVendas,
     iGetVendasDetalhesResponse,
     iParamGetVendasGraficos,
-    iGetVendasGraficosResponse
+    iGetVendasGraficosResponse,
+    iGetFuncionariosResponse
 } from "../interfaces";
 const caminho = 'siap/vendaPorVendedor'
 
 type iGetVendasFunction = (param: iParamGetVendas) => Promise<iGetVendasResponse[]>
 type iGetVendasDetalhesFunction = (param: iParamGetVendasDetalhes) => Promise<iGetVendasDetalhesResponse>
 type iGetVendasGraficosFunction = (param: iParamGetVendasGraficos) => Promise<iGetVendasGraficosResponse>
+type iGetFuncionariosFunction = () => Promise<iGetFuncionariosResponse[]>
 
 const getVendas: iGetVendasFunction = async (param) => {
     let { data } = await axios.post(caminho, {
@@ -40,4 +42,12 @@ const getVendasGraficos: iGetVendasGraficosFunction = async (param) => {
     return data;
 }
 
-export default { getVendas, getVendasDetalhes, getVendasGraficos };
+const getFuncionarios: iGetFuncionariosFunction = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getFuncionarios"
+    })
+
+    return data;
+}
+
+export default { getVendas, getVendasDetalhes, getVendasGraficos, getFuncionarios };
