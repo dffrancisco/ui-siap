@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { defineProps, reactive, watch } from "vue";
-import { iResponseMetasVendedoresEMontadores } from "../interfaces";
+import { iFuncionario } from "../interfaces";
 import { configVMoney } from "../../../constants/constants";
 
 const props = defineProps<{
-  funcionario: iResponseMetasVendedoresEMontadores | undefined;
+  funcionario: iFuncionario | undefined;
   mes: number | string;
   ano: number | string;
   opened: boolean;
@@ -13,7 +13,7 @@ const props = defineProps<{
 const emit = defineEmits(["dadosInserirMeta", "fecharModalAtribuirMetaIndividual"]);
 
 const state = reactive({
-  funcionario: <iResponseMetasVendedoresEMontadores>{},
+  funcionario: <iFuncionario>{},
   loading: false,
   inputValor: "",
   mes: props.mes,
@@ -44,8 +44,6 @@ const salvarMeta = async () => {
   emit("dadosInserirMeta", dadosParaInserirMeta);
   emit("fecharModalAtribuirMetaIndividual");
   state.inputValor = "";
-  console.log(state.inputValor);
-
   state.loading = false;
 };
 

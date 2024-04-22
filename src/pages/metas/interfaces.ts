@@ -3,18 +3,7 @@ export interface iMesEAno {
     ano: number;
 }
 
-export interface iResponseFuncionarios {
-    CARGO: string;
-    COD_FUNCIONARIO: number;
-    CPF: string;
-    DELETADO: string;
-    ID_CARGO: number;
-    LOGIN: string;
-    NOME_COMP: string;
-    VALOR_META: number
-}
-
-export interface iResponseMetaInserida {
+export interface iMetaInserida {
     cargo: number;
     cod_funcionario: number;
     valorMeta: number;
@@ -22,7 +11,7 @@ export interface iResponseMetaInserida {
     ano: number;
 }
 
-export interface iResponseMetasVendedoresEMontadores {
+export interface iMetaVendedor {
     LOGIN: any;
     CPF: string;
     COD_FUNCIONARIO: number;
@@ -39,3 +28,11 @@ export interface iResponseMetasVendedoresEMontadores {
     META_DIARIA: number;
     VALOR_DIA: number;
 }
+
+export interface iMetaMontador extends iMetaVendedor { }
+
+export interface iFuncionario extends iMetaVendedor { }
+
+export interface iMontador extends iMetaMontador { }
+
+export interface iVendedor extends iMetaVendedor { }

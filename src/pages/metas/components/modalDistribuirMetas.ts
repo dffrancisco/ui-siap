@@ -1,5 +1,5 @@
 import { computed, nextTick, onMounted, reactive } from "vue";
-import { iResponseFuncionarios, iResponseMetasVendedoresEMontadores } from "../interfaces";
+import { iFuncionario } from "../interfaces";
 import Swal from "sweetalert2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 
@@ -9,7 +9,6 @@ export const setup = (emit: any, props: any) => {
         modalAtribuirMetaIndividual: <iModalCreate>(<unknown>null),
         modalAtribuirMetaIndividualOpened: false,
         codFuncionarioSelecionado: <number>undefined,
-        inputFuncionario: <HTMLInputElement>{},
     })
 
     const atribuirMetaIndividual = (codFuncionario: number) => {
@@ -28,7 +27,7 @@ export const setup = (emit: any, props: any) => {
 
     onMounted(() => {
         nextTick(() => {
-            actions.modal();
+            actions.createModal();
         });
     });
 
@@ -42,7 +41,7 @@ export const setup = (emit: any, props: any) => {
             return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
         },
 
-        modal() {
+        createModal() {
             state.modalAtribuirMetaIndividual = new xModal.create({
                 width: 300,
                 height: 330,
@@ -67,7 +66,7 @@ export const setup = (emit: any, props: any) => {
         emit("opcaoCargoEscolhido", 1);
     };
 
-    const enviarDadosMeta = (dadosParaInserirMeta: { funcionario: iResponseFuncionarios, valorMeta: number }) => {
+    const enviarDadosMeta = (dadosParaInserirMeta: { funcionario: iFuncionario, valorMeta: number }) => {
         state.codFuncionarioSelecionado = undefined;
         emit("inserirMeta", dadosParaInserirMeta);
     };
@@ -113,7 +112,7 @@ export const setup = (emit: any, props: any) => {
 
     const funcionarioSelecionado = computed(() => {
         if (!state.codFuncionarioSelecionado) {
-            return {} as iResponseMetasVendedoresEMontadores
+            return {} as iFuncionario
         }
 
         return props.funcionarios.find(funcionario => funcionario.COD_FUNCIONARIO == state.codFuncionarioSelecionado)

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, meses, vendedorOuMontador, actions, totalizadorMetas } from "./metas";
+import { state, meses, actions, totalizadorMetas, metas } from "./metas";
 import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
 import utils from "@/ts/utils";
 
@@ -28,7 +28,7 @@ onMounted(async () => {
                 item-value="value"
                 :items="meses"
                 :clearable="false"
-                @update:model-value="actions.onClickMetas"
+                @update:model-value="actions.getMetas"
               ></v-select>
             </v-col>
             <v-col cols="2">
@@ -38,18 +38,18 @@ onMounted(async () => {
                 label="Ano"
                 v-model="state.ano"
                 :clearable="false"
-                @update:model-value="actions.onClickMetas"
+                @update:model-value="actions.getMetas"
               ></v-text-field>
             </v-col>
             <v-col cols="5">
               <v-select
                 v-model="state.opcaoMeta"
-                :items="vendedorOuMontador"
+                :items="state.itensTipoCargo"
                 item-value="value"
                 item-title="title"
                 :clearable="false"
                 label="Tipo de meta"
-                @update:model-value="actions.onClickMetas"
+                @update:model-value="actions.getMetas"
               >
               </v-select>
             </v-col>
@@ -174,7 +174,7 @@ onMounted(async () => {
           items-per-page-text="Itens por página"
           :headers="state.headers"
           :items-length="state.totalItems"
-          :items="state.opcaoMeta === 0 ? state.vendedoresArray : state.montadoresArray"
+          :items="metas"
           :loading="state.loading"
           :search="state.search"
         >

@@ -1,6 +1,6 @@
 import { mesesToSelect } from "@/constants/constants";
 import { computed, reactive } from "vue";
-import { iMesEAno, iResponseFuncionarios, iResponseMetaInserida, iResponseMetasVendedoresEMontadores } from "./interfaces";
+import { iMesEAno, iMetaInserida, iMetaVendedor, iMetaMontador, iFuncionario, iMontador, iVendedor } from "./interfaces";
 import Swal from "sweetalert2";
 import metasService from "./services/metas.service"
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -14,16 +14,16 @@ export const state = reactive({
     loading: false,
     totalItems: 0,
     itemsPerPage: 50,
-    search: (""),
+    search: "",
     opcaoMeta: 0,
-    metaVendedores: <iResponseMetasVendedoresEMontadores>{},
-    metaMontadores: <iResponseMetasVendedoresEMontadores>{},
-    montadoresArray: <iResponseMetasVendedoresEMontadores[]>[],
-    vendedoresArray: <iResponseMetasVendedoresEMontadores[]>[],
-    funcionarios: <iResponseFuncionarios[]>[],
+    metaVendedores: <iMetaVendedor>{},
+    metaMontadores: <iMetaMontador>{},
+    montadoresArray: <iMontador[]>[],
+    vendedoresArray: <iVendedor[]>[],
+    funcionarios: <iFuncionario[]>[],
     modalDistribuirMetas: <iModalCreate>(<unknown>null),
     modalDistribuirMetasOpened: false,
-    metaInserida: <iResponseMetaInserida>{},
+    metaInserida: <iMetaInserida>{},
     headers: <any>[
         {
             title: "Funcionário",
@@ -65,16 +65,24 @@ export const state = reactive({
             align: 'center'
         },
     ],
-    metaNaoSeAplica: "---"
+    metaNaoSeAplica: "---",
+    itensTipoCargo: [
+        { title: 'Vendedores', value: 0 },
+        { title: 'Montadores', value: 1 },
+    ]
 })
 
 export const meses = mesesToSelect;
 
+export const metas = computed(() => {
 
-export const vendedorOuMontador = [
-    { title: 'Vendedores', value: 0 },
-    { title: 'Montadores', value: 1 },
-]
+    if (state.opcaoMeta === 0) {
+        return state.vendedoresArray;
+    } else {
+        return state.montadoresArray;
+    }
+
+})
 
 export const totalizadorMetas = computed(() => {
     let arrayMeta;
@@ -93,7 +101,7 @@ export const totalizadorMetas = computed(() => {
         arrayMeta = state.montadoresArray;
     }
 
-    arrayMeta.forEach((item: iResponseMetasVendedoresEMontadores) => {
+    arrayMeta.forEach((item: iFuncionario) => {
         meta += item.VALOR_META || 0;
         metaAcumulada += item.VALOR_LIQUIDO || 0;
         metaDoDia += item.META_DIARIA || 0;
@@ -115,13 +123,13 @@ export const actions = {
 
     async init() {
         state.loading = true;
-        actions.modal();
+        actions.createModal();
         await actions.getMetasVendedores(state.mes, state.ano);
         await actions.getMetasMontadores(state.mes, state.ano);
         state.loading = false;
     },
 
-    modal() {
+    createModal() {
         state.modalDistribuirMetas = new xModal.create({
             height: 680,
             width: 1280,
@@ -140,7 +148,7 @@ export const actions = {
         state.opcaoMeta = opcaoCargoEscolhido;
     },
 
-    async inserirMeta(dadosParaInserirMeta: { funcionario: iResponseMetasVendedoresEMontadores, valorMeta: number }) {
+    async inserirMeta(dadosParaInserirMeta: { funcionario: iFuncionario, valorMeta: number }) {
         state.loading = true;
 
         const param = {
@@ -241,17 +249,16 @@ export const actions = {
         }
     },
 
-    async onClickMetas() {
+    async getMetas() {
         await actions.getMetasVendedores(state.mes, state.ano);
         await actions.getMetasMontadores(state.mes, state.ano);
     },
 
     async distribuirMetas(mes: number, ano: number) {
 
-        if (!state.funcionarios || !Array.isArray(state.funcionarios) || state.funcionarios.length === 0) {
+        if (state.funcionarios.length === 0) {
             await actions.getFuncionarios(mes, ano);
         }
-
         state.modalDistribuirMetas.open();
     }
 }

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { iResponseFuncionarios, iResponseMetasVendedoresEMontadores } from "../interfaces";
+import { iFuncionario, iMetaMontador, iMetaVendedor } from "../interfaces";
 import { setup } from "./modalDistribuirMetas";
 import utils from "@/ts/utils";
 import ModalAtribuirMetaIndividual from "./modalAtribuirMetaIndividual.vue";
 
 const props = defineProps<{
-  funcionarios: iResponseFuncionarios[];
-  metaMontadores: iResponseMetasVendedoresEMontadores[];
-  metaVendedores: iResponseMetasVendedoresEMontadores[];
+  funcionarios: iFuncionario[];
+  metaMontadores: iMetaMontador[];
+  metaVendedores: iMetaVendedor[];
   optionSelect: number;
   mes: number | string;
   ano: number | string;
@@ -66,7 +66,6 @@ const {
       <v-row style="max-width: 1200px; margin: 0 auto">
         <v-col cols="9">
           <v-autocomplete
-            id="inputFuncionario"
             label="Funcionário"
             :items="funcionarios"
             item-title="NOME_COMP"
@@ -149,10 +148,10 @@ const {
                 size="60px"
                 color="primary"
                 class="funcionarios__lista__avatar"
-                :title="funcionario?.LOGIN"
+                :title="funcionario.LOGIN"
               >
                 <v-img
-                  :src="actions.getFotoFuncionarioURL(funcionario?.CPF)"
+                  :src="actions.getFotoFuncionarioURL(funcionario.CPF)"
                   aspect-ratio="1"
                   cover
                 ></v-img>

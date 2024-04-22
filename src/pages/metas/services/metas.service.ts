@@ -1,13 +1,12 @@
 import axios from "axios";
-import { iMesEAno, iResponseFuncionarios, iResponseMetaInserida, iResponseMetasVendedoresEMontadores } from "../interfaces"
-
+import { iFuncionario, iMesEAno, iMetaMontador, iMetaVendedor, iMetaInserida, } from "../interfaces"
 
 const caminho = "siap/metas";
 
-type iGetMetasVendedores = (param: iMesEAno) => Promise<iResponseMetasVendedoresEMontadores>
-type iGetMetasMontadores = (param: iMesEAno) => Promise<iResponseMetasVendedoresEMontadores>
-type iGetFuncionarios = (param: iMesEAno) => Promise<iResponseFuncionarios[]>
-type iInserirMeta = (param: iResponseMetaInserida) => Promise<iResponseMetaInserida>
+type iGetMetasVendedores = (param: iMesEAno) => Promise<iMetaVendedor>
+type iGetMetasMontadores = (param: iMesEAno) => Promise<iMetaMontador>
+type iGetFuncionarios = (param: iMesEAno) => Promise<iFuncionario[]>
+type iInserirMeta = (param: iMetaInserida) => Promise<iMetaInserida>
 
 const getMetasVendedores: iGetMetasVendedores = async (param) => {
     let { data } = await axios.post(caminho, {
