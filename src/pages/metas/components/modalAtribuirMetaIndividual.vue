@@ -2,7 +2,6 @@
 import { defineProps, reactive, watch } from "vue";
 import { iResponseMetasVendedoresEMontadores } from "../interfaces";
 import { configVMoney } from "../../../constants/constants";
-import utils from "@/ts/utils";
 
 const props = defineProps<{
   funcionario: iResponseMetasVendedoresEMontadores | undefined;
@@ -32,6 +31,7 @@ function getFotoFuncionarioURL(cpf: string) {
 
 const cancelar = () => {
   emit("fecharModalAtribuirMetaIndividual");
+  state.inputValor = "";
 };
 
 const salvarMeta = async () => {
@@ -41,10 +41,9 @@ const salvarMeta = async () => {
     valorMeta: state.inputValor,
   };
 
-  console.log(dadosParaInserirMeta);
-
   emit("dadosInserirMeta", dadosParaInserirMeta);
   emit("fecharModalAtribuirMetaIndividual");
+  state.inputValor = "";
   state.loading = false;
 };
 
@@ -54,10 +53,11 @@ watch(
   () => {
     if (props.opened) {
       state.loading = true;
+      state.inputValor = "";
       state.funcionario = props.funcionario;
       state.mes = props.mes;
       state.ano = props.ano;
-      state.inputValor = utils.formatValor(props.funcionario.VALOR_META);
+      //state.inputValor = utils.formatValor(props.funcionario.VALOR_META);
       state.inputMeta = <any>document.getElementById("inputMeta").focus();
       state.loading = false;
     }

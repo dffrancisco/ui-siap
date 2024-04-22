@@ -6,7 +6,7 @@ const caminho = "siap/metas";
 
 type iGetMetasVendedores = (param: iMesEAno) => Promise<iResponseMetasVendedoresEMontadores>
 type iGetMetasMontadores = (param: iMesEAno) => Promise<iResponseMetasVendedoresEMontadores>
-type iGetFuncionarios = (param: iMesEAno) => Promise<iResponseFuncionarios>
+type iGetFuncionarios = (param: iMesEAno) => Promise<iResponseFuncionarios[]>
 type iInserirMeta = (param: iResponseMetaInserida) => Promise<iResponseMetaInserida>
 
 const getMetasVendedores: iGetMetasVendedores = async (param) => {

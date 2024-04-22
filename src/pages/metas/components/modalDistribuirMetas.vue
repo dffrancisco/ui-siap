@@ -6,7 +6,7 @@ import utils from "@/ts/utils";
 import ModalAtribuirMetaIndividual from "./modalAtribuirMetaIndividual.vue";
 
 const props = defineProps<{
-  funcionarios: iResponseFuncionarios;
+  funcionarios: iResponseFuncionarios[];
   metaMontadores: iResponseMetasVendedoresEMontadores[];
   metaVendedores: iResponseMetasVendedoresEMontadores[];
   optionSelect: number;
@@ -25,9 +25,9 @@ const {
   enviarDadosMeta,
   fecharModal,
   atribuirMetaIndividual,
-  funcionariosOrdenados,
-  funcionarioFiltrado,
   totalMetas,
+  metasFuncionarios,
+  funcionarioSelecionado,
 } = setup(emit, props);
 </script>
 
@@ -41,7 +41,7 @@ const {
         variant="outlined"
         append-icon="mdi-sale"
         class="ma-2"
-        :class="{ selected: state.isVendedoresSelected }"
+        :class="{ selected: optionSelect == 0 }"
         color="green"
         title="Vendedores"
         @click.prevent="selecionarVendedores"
@@ -53,7 +53,7 @@ const {
         variant="outlined"
         append-icon="mdi-wrench"
         class="ma-2"
-        :class="{ selected: state.isMontadoresSelected }"
+        :class="{ selected: optionSelect == 1 }"
         color="orange"
         title="Montadores"
         @click.prevent="selecionarMontadores"
@@ -68,12 +68,11 @@ const {
           <v-autocomplete
             id="inputFuncionario"
             label="Funcionário"
-            :items="funcionariosOrdenados"
+            :items="funcionarios"
             item-title="NOME_COMP"
             item-value="COD_FUNCIONARIO"
             class="funcionario__input"
             v-model="state.codFuncionarioSelecionado"
-            @update:search.sync="funcionarioFiltrado"
           ></v-autocomplete>
         </v-col>
 
@@ -82,7 +81,7 @@ const {
             title="Adicionar meta"
             class="funcionario__btn"
             color="#3680AB"
-            @click.prevent="atribuirMetaIndividual(state.funcionarioSelecionado)"
+            @click.prevent="atribuirMetaIndividual(state.codFuncionarioSelecionado)"
             >Adicionar meta
           </v-btn>
         </v-col>
@@ -108,7 +107,7 @@ const {
             class="funcionarios_subtitle ml-15"
             variant="plain"
           >
-            Mês: {{ state.mes }}
+            Mês: {{ mes }}
           </v-chip>
         </v-col>
         <v-col cols="2">
@@ -116,7 +115,7 @@ const {
             class="funcionarios_subtitle ml-15"
             variant="plain"
           >
-            Ano: {{ state.ano }}
+            Ano: {{ ano }}
           </v-chip>
         </v-col>
         <v-col
@@ -137,12 +136,11 @@ const {
     <div class="funcionarios">
       <div
         class="funcionarios__lista"
-        :class="{ funcionarios__lista__menor: state.infoFuncionario.length < 4 }"
+        :class="{ funcionarios__lista__menor: metasFuncionarios.length < 4 }"
       >
         <v-card
-          v-for="funcionario in state.infoFuncionario"
-          :key="funcionarios.COD_FUNCIONARIO"
-          v-if="state.infoFuncionario.length > 0"
+          v-if="metasFuncionarios.length > 0"
+          v-for="funcionario in metasFuncionarios"
           class="funcionarios__lista__card"
         >
           <div class="funcionarios__lista__card__usuario">
@@ -171,7 +169,7 @@ const {
                 class="funcionarios__lista__card__icon"
                 size="x-large"
                 color="primary"
-                @click.prevent="atribuirMetaIndividual(funcionario)"
+                @click.prevent="atribuirMetaIndividual(funcionario.COD_FUNCIONARIO)"
               >
                 mdi-pen
               </v-icon>
@@ -188,26 +186,14 @@ const {
     style="display: none; background-color: #f0f6fa"
   >
     <ModalAtribuirMetaIndividual
-      :mes="state.mes"
-      :ano="state.ano"
-      :funcionario="state.funcionarioSelecionado"
+      :mes="mes"
+      :ano="ano"
+      :funcionario="funcionarioSelecionado"
       :opened="state.modalAtribuirMetaIndividualOpened"
       @dadosInserirMeta.sync="enviarDadosMeta"
       @fecharModalAtribuirMetaIndividual="fecharModal"
     />
   </div>
-
-  <v-overlay
-    :model-value="state.loading"
-    class="align-center justify-center"
-    persistent
-  >
-    <v-progress-circular
-      color="primary"
-      indeterminate
-      size="64"
-    ></v-progress-circular>
-  </v-overlay>
 </template>
 
 <style scoped>

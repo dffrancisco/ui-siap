@@ -18,9 +18,9 @@ export const state = reactive({
     opcaoMeta: 0,
     metaVendedores: <iResponseMetasVendedoresEMontadores>{},
     metaMontadores: <iResponseMetasVendedoresEMontadores>{},
-    montadoresArray: [],
-    vendedoresArray: [],
-    funcionarios: <iResponseFuncionarios>{},
+    montadoresArray: <iResponseMetasVendedoresEMontadores[]>[],
+    vendedoresArray: <iResponseMetasVendedoresEMontadores[]>[],
+    funcionarios: <iResponseFuncionarios[]>[],
     modalDistribuirMetas: <iModalCreate>(<unknown>null),
     modalDistribuirMetasOpened: false,
     metaInserida: <iResponseMetaInserida>{},
@@ -155,17 +155,11 @@ export const actions = {
             state.metaInserida = await metasService.inserirMeta(param);
 
             if (state.opcaoMeta === 1) {
-
-                setTimeout(() => {
-                    actions.atualizarDadosMetasMontadores()
-                }, 1000)
+                await actions.getMetasMontadores(state.mes, state.ano)
             }
 
             if (state.opcaoMeta === 0) {
-
-                setTimeout(() => {
-                    actions.atualizarDadosMetasVendedores()
-                }, 1000)
+                await actions.getMetasVendedores(state.mes, state.ano)
             }
 
             Swal.fire({
@@ -191,14 +185,6 @@ export const actions = {
             actions.getMetasVendedores(state.mes, state.ano)
         ]);
     },
-
-
-    async atualizarDadosMetasMontadores() {
-        await Promise.all([
-            actions.getMetasMontadores(state.mes, state.ano)
-        ]);
-    },
-
 
     async getMetasVendedores(mes: number, ano: number) {
         state.loading = true;

@@ -76,7 +76,10 @@ onMounted(async () => {
               <v-row>
                 <v-col cols="3">
                   <v-card class="metas_tiposDeMeta">
-                    <p class="metas_tiposDeMeta_texto">Meta</p>
+                    <div class="tituloEicon">
+                      <p class="metas_tiposDeMeta_texto">Meta </p>
+                      <v-icon class="pr-8">mdi-target</v-icon>
+                    </div>
 
                     <div class="metas_tiposDeMeta_valor">
                       <p>{{ utils.formatValor(totalizadorMetas.meta) }}</p>
@@ -86,7 +89,10 @@ onMounted(async () => {
 
                 <v-col cols="3">
                   <v-card class="metas_tiposDeMeta">
-                    <p class="metas_tiposDeMeta_texto">Meta Acumulada</p>
+                    <div class="tituloEicon">
+                      <p class="metas_tiposDeMeta_texto">Valor Atingido</p>
+                      <v-icon class="pr-8">mdi-trending-up</v-icon>
+                    </div>
 
                     <div class="metas_tiposDeMeta_valor">
                       <p>{{ utils.formatValor(totalizadorMetas.metaAcumulada) }}</p>
@@ -99,7 +105,11 @@ onMounted(async () => {
 
                 <v-col cols="3">
                   <v-card class="metas_tiposDeMeta">
-                    <p class="metas_tiposDeMeta_texto">Meta do dia</p>
+                    <div class="tituloEicon">
+                      <p class="metas_tiposDeMeta_texto">Meta Dia</p>
+                      <v-icon class="pr-8">mdi-clock-fast</v-icon>
+                    </div>
+
                     <div class="metas_tiposDeMeta_valor">
                       <p>{{ utils.formatValor(totalizadorMetas.metaDoDia) }}</p>
                     </div>
@@ -114,7 +124,11 @@ onMounted(async () => {
 
                 <v-col cols="3">
                   <v-card class="metas_tiposDeMeta">
-                    <p class="metas_tiposDeMeta_texto">Meta previsão</p>
+                    <div class="tituloEicon">
+                      <p class="metas_tiposDeMeta_texto">Meta Previsão</p
+                      ><v-icon class="pr-8">mdi-cash-multiple</v-icon>
+                    </div>
+
                     <div class="metas_tiposDeMeta_valor">
                       <p v-if="totalizadorMetas.metaPrevisao === 0">
                         {{ state.metaNaoSeAplica }}
@@ -230,6 +244,11 @@ onMounted(async () => {
 <style scoped>
 .metas {
   padding-top: 5px;
+}
+
+.tituloEicon {
+  display: flex;
+  justify-content: space-between;
 }
 
 .metas_tiposDeMeta {

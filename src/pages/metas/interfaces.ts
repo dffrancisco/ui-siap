@@ -23,7 +23,7 @@ export interface iResponseMetaInserida {
 }
 
 export interface iResponseMetasVendedoresEMontadores {
-    LOGIN: string;
+    LOGIN: any;
     CPF: string;
     COD_FUNCIONARIO: number;
     CARGO: string;
