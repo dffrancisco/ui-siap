@@ -10,7 +10,6 @@ import ItensResumo from "./components/ItensResumo.vue";
 import { state, actions, computeds } from "./comprasItens";
 import ItensAdicionados from "./components/ItensAdicionados.vue";
 import { useRoute } from "vue-router";
-import ModalAdicionarItem from "./components/ModalAdicionarItem.vue";
 import { MAP_COL_PRODUTO } from "./constants/constants";
 
 const route = useRoute();
@@ -35,7 +34,6 @@ actions.init();
       <div
         id="compras-detalhes"
         class="compras-detalhes"
-        tabindex="0"
         @keydown="actions.onKeydownContainerPrincipal"
       >
         <div class="compras-grupo-historico">
@@ -110,6 +108,21 @@ actions.init();
               @click="actions.setAbaItens('adicionados')"
             >
               <span class="mr-2">Itens adicionados</span>
+            </div>
+            <v-spacer />
+            <div class="compras-detalhes-dados-item-cabecalho-contagem">
+              <v-chip
+                color="#ff7da1"
+                size="x-small"
+              >
+                {{ computeds.qtdProdutosAdicionados.value }}
+              </v-chip>
+              <v-chip
+                color="#ffc045"
+                size="x-small"
+              >
+                {{ computeds.qtdProdutosAdicionados.value }}
+              </v-chip>
               <v-chip
                 color="#95edf2"
                 size="x-small"
@@ -117,7 +130,6 @@ actions.init();
                 {{ computeds.qtdProdutosAdicionados.value }}
               </v-chip>
             </div>
-            <v-spacer />
             <div class="d-flex align-center">
               <v-icon
                 v-if="state.tipoVisualizacaoItem == 'unica'"
@@ -144,6 +156,8 @@ actions.init();
               :exibirIconeVoltar="computeds.exibirIconeVoltar.value"
               :qtdJaAdicionada="computeds.qtdJaAdicionadaItem.value"
               :media="computeds.mediaQtdItemSelecionado.value"
+              :corMediaVenda="computeds.corMediaVenda.value"
+              @adicionarItem="actions.adicionarItem"
               @avancarItem="actions.onClickAvancarItem"
               @voltarItem="actions.onClickVoltarItem"
             />
@@ -156,7 +170,10 @@ actions.init();
               :indexProdutoSelecionado="state.indexProdutoSelecionado"
               :qtdProdutosAdicionados="computeds.qtdProdutosAdicionados.value"
               :qtdJaAdicionada="computeds.qtdJaAdicionadaItem.value"
+              :media="computeds.mediaQtdItemSelecionado.value"
+              :corMediaVenda="computeds.corMediaVenda.value"
               @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
+              @adicionarItem="actions.adicionarItem"
             />
 
             <div class="compras-detalhes-itens-progresso">
@@ -207,22 +224,6 @@ actions.init();
       </v-overlay>
       <div id="pnCodigoTela">comprasItens</div>
     </div>
-
-    <v-dialog
-      v-model="state.modalAdicionarItemOpened"
-      max-width="350px"
-      transition="dialog-transition"
-      @update:modelValue="actions.onUpdateModalAdicionarItem"
-    >
-      <ModalAdicionarItem
-        :qtdAtual="computeds.produtoSelecionado.value[MAP_COL_PRODUTO.QUANTIDADE]"
-        :valorVenda="computeds.produtoSelecionado.value[MAP_COL_PRODUTO.VENDA]"
-        :valorCusto="computeds.produtoSelecionado.value[MAP_COL_PRODUTO.CUSTO]"
-        :media="computeds.mediaQtdItemSelecionado.value"
-        :corMediaVenda="computeds.corMediaVenda.value"
-        @adicionarItem="actions.adicionarItem"
-      />
-    </v-dialog>
   </div>
 </template>
 
@@ -319,6 +320,13 @@ actions.init();
 .compras-detalhes-dados-item-cabecalho-opcao-selecionada {
   color: var(--primary-500);
   border-bottom: 1px solid var(--primary-500);
+}
+
+.compras-detalhes-dados-item-cabecalho-contagem {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-right: 6px;
 }
 
 .compras-detalhes-ultimo-item {

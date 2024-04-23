@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import { nextTick, reactive, computed } from "vue";
+import { nextTick, reactive, computed, watch } from "vue";
 import { iProdutoAdicionadoObj, iProdutoObj } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import utils from "@/ts/utils";
@@ -18,6 +18,10 @@ const props = defineProps({
     type: Object as () => iProdutoAdicionadoObj,
     default: {},
   },
+  indexProdutoSelecionado: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const emit = defineEmits(["changeIndexProdutoSelecionado"]);
@@ -29,6 +33,22 @@ const state = reactive({
 const produtos = computed(() => {
   return Object.values(props.objProdutosAdicionados);
 });
+
+watch(
+  () => props.objProdutosAdicionados,
+  () => {
+    state.gridItensAdicionados.source(produtos.value);
+
+    let keyProdutoSelecionado = props.keysProdutos[props.indexProdutoSelecionado];
+    let linhaParaFocar = Object.keys(props.objProdutosAdicionados).findIndex(
+      (keyProduto) => keyProduto == keyProdutoSelecionado
+    );
+    state.gridItensAdicionados.focus(linhaParaFocar);
+  },
+  {
+    deep: true,
+  }
+);
 
 const actions = {
   init: () => {
@@ -49,11 +69,11 @@ const actions = {
         Custo: { dataField: "PEDIDO_CUSTO_ADICIONADO", center: true, render: utils.formatValor, width: "10%" },
       },
       onSelectLine: (dados) => {
-        let indexProdutoSelecionado = props.keysProdutos.findIndex(
+        let indexProdutoSelecionadoGrid = props.keysProdutos.findIndex(
           (keyProduto) => keyProduto == dados.COD_PRODUTO
         );
 
-        emit("changeIndexProdutoSelecionado", indexProdutoSelecionado);
+        emit("changeIndexProdutoSelecionado", indexProdutoSelecionadoGrid);
       },
     });
 

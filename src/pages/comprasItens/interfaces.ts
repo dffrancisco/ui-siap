@@ -128,6 +128,12 @@ export interface iProdutoAdicionadoGrid extends iProduto {
     PEDIDO_CUSTO_ADICIONADO: number,
 }
 
+export interface iProdutoNaoAdicionadoGrid extends iProduto {
+    COD_PRODUTO: number,
+    PEDIDO_QTD_ADICIONADA: number,
+    PEDIDO_CUSTO_ADICIONADO: number,
+}
+
 export interface iUltimaVenda {
     COD: number,
     ORC: number,

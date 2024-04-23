@@ -1,5 +1,5 @@
-import { computed, reactive } from 'vue'
-import comprasItensService from './services/comprasItens.service';
+import { computed, nextTick, reactive } from 'vue'
+import comprasItensService, { getColorQtdEstoque } from './services/comprasItens.service';
 import { swalDarkError, swalDarkWarning } from '@/ts/utils';
 import moment from 'moment';
 import { MAP_COL_PRODUTO, MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
@@ -197,22 +197,17 @@ export const actions = {
     },
 
     onKeydownContainerPrincipal: (e: KeyboardEvent) => {
-        if (e.key === 'ArrowLeft') {
+        if (e.key === 'ArrowLeft' && state.abaItens == 'nao_adicionados') {
             actions.onClickVoltarItem()
             e.preventDefault();
             return;
         }
 
-        if (e.key === 'ArrowRight') {
+        if (e.key === 'ArrowRight' && state.abaItens == 'nao_adicionados') {
             actions.onClickAvancarItem()
             e.preventDefault();
-            return;
         }
 
-        if (e.key === 'Enter') {
-            state.modalAdicionarItemOpened = true;
-            e.preventDefault();
-        }
     },
 
     onUpdateModalAdicionarItem() {
@@ -274,6 +269,10 @@ export const actions = {
 
             state.cabecalho.VALOR = response.valorTotalPedido;
 
+            /* Adicionado para impactar a computed qtdProdutosAdicionados e fazer com que o grid avance a linha após atualizar dados */
+            delete state.produtosAdicionados[codProduto];
+            await nextTick()
+
             state.produtosAdicionados[codProduto] = {
                 ...produtoSelecionado,
                 COD_PRODUTO: codProduto,
@@ -281,9 +280,11 @@ export const actions = {
                 PEDIDO_QTD_ADICIONADA: param.qtd,
             }
 
-            state.indexUltimoItemAdicionado = state.indexProdutoSelecionado
+            if (state.abaItens == 'nao_adicionados') {
+                state.indexUltimoItemAdicionado = state.indexProdutoSelecionado
+                actions.onClickAvancarItem();
+            }
 
-            actions.onClickAvancarItem();
             actions.focarNosItens();
         } catch (error) {
             swalDarkError('erro ao inserir item')
@@ -413,7 +414,11 @@ export const computeds = {
         }
 
         return Math.round(soma / 3)
-    })
+    }),
+
+    corMediaVenda: computed(() => {
+        return getColorQtdEstoque(computeds.mediaQtdItemSelecionado.value, computeds.produtoSelecionado.value[MAP_COL_PRODUTO.QUANTIDADE])
+    }),
 }
 
 export default { state, actions, computeds }

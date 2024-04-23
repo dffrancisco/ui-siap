@@ -1,13 +1,24 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import { nextTick, reactive, computed, watch } from "vue";
-import { iProdutoObj } from "../interfaces";
-import { MAP_COL_PRODUTO } from "../constants/constants";
 import utils from "@/ts/utils";
+import { nextTick, reactive, computed } from "vue";
+import {
+  iParamEmitAdicionarItem,
+  iProdutoAdicionadoObj,
+  iProdutoNaoAdicionadoGrid,
+  iProdutoObj,
+} from "../interfaces";
+import { MAP_COL_PRODUTO } from "../constants/constants";
+import { getColorDescricao } from "../services/comprasItens.service";
+import ModalAdicionarItem from "./ModalAdicionarItem.vue";
 
 const props = defineProps({
   objProdutos: {
     type: Object as () => iProdutoObj,
+    default: {},
+  },
+  objProdutosAdicionados: {
+    type: Object as () => iProdutoAdicionadoObj,
     default: {},
   },
   keysProdutos: {
@@ -22,25 +33,34 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  media: {
+    type: Number,
+    default: 0,
+  },
+  corMediaVenda: {
+    type: String,
+    required: true,
+  },
 });
 
-const emit = defineEmits(["changeIndexProdutoSelecionado"]);
+const emit = defineEmits(["changeIndexProdutoSelecionado", "adicionarItem"]);
 
 const state = reactive({
   gridItens: <ixGridCreate>{},
+  modalAdicionarItemOpened: false,
 });
 
 const produtos = computed(() => {
-  return Object.values(props.objProdutos);
-});
-
-watch(
-  () => [props.keysProdutos, props.qtdProdutosAdicionados],
-  () => {
-    state.gridItens.source(produtos.value);
-    state.gridItens.focus(props.indexProdutoSelecionado);
+  let produtosTratados: iProdutoNaoAdicionadoGrid[] = [];
+  for (let keyProduto in props.objProdutos) {
+    produtosTratados.push({
+      ...props.objProdutos[keyProduto],
+      ...props.objProdutosAdicionados[keyProduto],
+    });
   }
-);
+
+  return produtosTratados;
+});
 
 const actions = {
   init: () => {
@@ -53,24 +73,47 @@ const actions = {
       theme: "x-modern-dark",
       height: "240px",
       columns: {
-        Descrição: { dataField: MAP_COL_PRODUTO.DESC_PRODUTO },
+        Descrição: { dataField: MAP_COL_PRODUTO.DESC_PRODUTO, compare: "colorirDescricao" },
+        "Qtd. Est": { dataField: MAP_COL_PRODUTO.QUANTIDADE, center: true, width: "10%" },
+        Custo: { dataField: MAP_COL_PRODUTO.CUSTO, center: true, render: utils.formatValor, width: "10%" },
         "Nº Fabricante": { dataField: MAP_COL_PRODUTO.NUM_FABRICANTE, width: "14%" },
         Carro: { dataField: MAP_COL_PRODUTO.DESCRICAO_CARRO, width: "14%" },
         Marca: { dataField: MAP_COL_PRODUTO.DESCRICAO_MARCA, width: "14%" },
-        "Qtd. Est": { dataField: MAP_COL_PRODUTO.QUANTIDADE, center: true, width: "10%" },
-        Custo: { dataField: MAP_COL_PRODUTO.CUSTO, center: true, render: utils.formatValor, width: "10%" },
+      },
+      compare: {
+        colorirDescricao: (r) => {
+          let color = getColorDescricao(r["PEDIDO_QTD_ADICIONADA"], r[MAP_COL_PRODUTO.PRODUTO_NOVO]);
+          return `<span style='color: ${color}'>${r[MAP_COL_PRODUTO.DESC_PRODUTO]}</span>`;
+        },
       },
       onSelectLine: (dados) => {
-        let indexProdutoSelecionado = props.keysProdutos.findIndex(
-          (keyProduto) => keyProduto == dados[MAP_COL_PRODUTO.COD_PRODUTO]
-        );
-
-        emit("changeIndexProdutoSelecionado", indexProdutoSelecionado);
+        actions.changeIndexProdutoSelecionado(dados[MAP_COL_PRODUTO.COD_PRODUTO]);
+      },
+      onKeyDown: {
+        13: (dados) => {
+          state.modalAdicionarItemOpened = true;
+        },
       },
     });
 
     state.gridItens.source(produtos.value);
     state.gridItens.focus(props.indexProdutoSelecionado);
+  },
+  changeIndexProdutoSelecionado(codProduto: string) {
+    let indexProdutoSelecionado = props.keysProdutos.findIndex((keyProduto) => keyProduto == codProduto);
+
+    emit("changeIndexProdutoSelecionado", indexProdutoSelecionado);
+  },
+  async focarLinhaGrid() {
+    await nextTick();
+    state.gridItens.focus(props.indexProdutoSelecionado);
+  },
+  adicionarItem(param: iParamEmitAdicionarItem) {
+    emit("adicionarItem", param);
+    state.modalAdicionarItemOpened = false;
+    setTimeout(() => {
+      actions.focarLinhaGrid();
+    }, 100);
   },
 };
 
@@ -85,6 +128,22 @@ nextTick(() => {
       id="gridItens"
       class="grid-itens"
     ></div>
+
+    <v-dialog
+      v-model="state.modalAdicionarItemOpened"
+      max-width="350px"
+      transition="dialog-transition"
+      @update:modelValue="actions.focarLinhaGrid"
+    >
+      <ModalAdicionarItem
+        :qtdAtual="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.QUANTIDADE]"
+        :valorVenda="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.VENDA]"
+        :valorCusto="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.CUSTO]"
+        :media="media"
+        :corMediaVenda="corMediaVenda"
+        @adicionarItem="actions.adicionarItem"
+      />
+    </v-dialog>
   </div>
 </template>
 
