@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import { nextTick, reactive, computed, watch } from "vue";
-import { iProdutoAdicionadoObj, iProdutoObj } from "../interfaces";
-import { MAP_COL_PRODUTO } from "../constants/constants";
 import utils from "@/ts/utils";
+import { nextTick, reactive, computed, watch } from "vue";
+import { iParamEmitAdicionarItem, iProdutoAdicionadoObj, iProdutoObj } from "../interfaces";
+import { MAP_COL_PRODUTO } from "../constants/constants";
+import ModalAdicionarItem from "./ModalAdicionarItem.vue";
 
 const props = defineProps({
   objProdutos: {
@@ -22,12 +23,21 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  media: {
+    type: Number,
+    default: 0,
+  },
+  corMediaVenda: {
+    type: String,
+    required: true,
+  },
 });
 
-const emit = defineEmits(["changeIndexProdutoSelecionado"]);
+const emit = defineEmits(["changeIndexProdutoSelecionado", "adicionarItem"]);
 
 const state = reactive({
   gridItensAdicionados: <ixGridCreate>{},
+  modalAdicionarItemOpened: false,
 });
 
 const produtos = computed(() => {
@@ -75,10 +85,28 @@ const actions = {
 
         emit("changeIndexProdutoSelecionado", indexProdutoSelecionadoGrid);
       },
+      onKeyDown: {
+        13: (dados) => {
+          state.modalAdicionarItemOpened = true;
+        },
+      },
     });
 
     state.gridItensAdicionados.source(produtos.value);
     state.gridItensAdicionados.focus();
+  },
+
+  async focarLinhaGrid() {
+    await nextTick();
+    state.gridItensAdicionados.focus(props.indexProdutoSelecionado);
+  },
+
+  adicionarItem(param: iParamEmitAdicionarItem) {
+    emit("adicionarItem", param);
+    state.modalAdicionarItemOpened = false;
+    setTimeout(() => {
+      actions.focarLinhaGrid();
+    }, 100);
   },
 };
 
@@ -93,6 +121,22 @@ nextTick(() => {
       id="gridItensAdicionados"
       class="grid-itens-adicionados"
     ></div>
+
+    <v-dialog
+      v-model="state.modalAdicionarItemOpened"
+      max-width="350px"
+      transition="dialog-transition"
+      @update:modelValue="actions.focarLinhaGrid"
+    >
+      <ModalAdicionarItem
+        :qtdAtual="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.QUANTIDADE]"
+        :valorVenda="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.VENDA]"
+        :valorCusto="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.CUSTO]"
+        :media="media"
+        :corMediaVenda="corMediaVenda"
+        @adicionarItem="actions.adicionarItem"
+      />
+    </v-dialog>
   </div>
 </template>
 

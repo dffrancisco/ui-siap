@@ -206,7 +206,10 @@ actions.init();
               :objProdutosAdicionados="state.produtosAdicionados"
               :keysProdutos="state.keyProdutos"
               :indexProdutoSelecionado="state.indexProdutoSelecionado"
+              :media="computeds.mediaQtdItemSelecionado.value"
+              :corMediaVenda="computeds.corMediaVenda.value"
               @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
+              @adicionarItem="actions.adicionarItem"
             />
           </div>
         </div>
