@@ -17,7 +17,7 @@ watch(
   () => props.modalOpened,
   () => {
     if (props.modalOpened) {
-      state.dbVenda = props.vendas;
+      state.dbVenda = [...props.vendas];
 
       for (const key in state.checkbox) {
         state.checkbox[key] = true;
@@ -26,6 +26,8 @@ watch(
       state.grupoSelecionado = [];
 
       state.dbGrupo = [];
+
+      state.selectColunas = "VALOR_VENDA";
 
       for (let i = 0; i < localStorage.length; i++) {
         let chave = localStorage.key(i);
@@ -36,6 +38,14 @@ watch(
 );
 
 const dadosToTable = computed(() => {
+  state.dbVenda.sort((a, b) => {
+    if (state.selectColunas == "LOGIN") {
+      return a[state.selectColunas].localeCompare(b[state.selectColunas]);
+    }
+
+    return b[state.selectColunas] - a[state.selectColunas];
+  });
+
   let vendas = [...state.dbVenda];
 
   if (state.grupoSelecionado.length <= 0) {
@@ -54,8 +64,6 @@ const dadosToTable = computed(() => {
 
     vendas.push(...vendedoresFiltrados);
   });
-
-  vendas.sort((a, b) => b.VALOR_VENDA - a.VALOR_VENDA);
 
   return vendas;
 });
@@ -122,6 +130,8 @@ const state = reactive({
   dbGrupo: <iGrupo[]>[],
 
   grupoSelecionado: [],
+
+  selectColunas: "VALOR_VENDA",
 
   loading: false,
 });
@@ -193,9 +203,11 @@ const actions = {
 <template>
   <v-container>
     <div>
-      <h3>Colunas selecionadas para impressão:</h3>
-
-      <div class="pt-2 chips">
+      <div
+        class="chips pb-2"
+        v-if="state.dbGrupo.length > 0"
+      >
+        <h3>Grupos selecionados para impressão:</h3>
         <v-chip-group
           multiple
           v-model="state.grupoSelecionado"
@@ -209,11 +221,25 @@ const actions = {
         </v-chip-group>
       </div>
 
+      <div id="pnCampos">
+        <h3>Ordenar por:</h3>
+        <select
+          class="ss select_colunas"
+          v-model="state.selectColunas"
+        >
+          <option
+            v-for="coluna in state.headers"
+            :value="coluna.key"
+            >{{ coluna.title }}</option
+          >
+        </select>
+      </div>
+
       <v-data-table-virtual
         class="mt-3 custom-table"
         :headers="state.headers"
         :items="dadosToTable"
-        height="436"
+        :height="state.dbGrupo.length > 0 ? 388 : 472"
         fixed-header
       >
         <template v-slot:headers="{ columns }">
@@ -238,6 +264,7 @@ const actions = {
       <v-btn
         color="primary"
         @click="actions.btnPrint"
+        :disabled="dadosToTable.length <= 0"
       >
         <v-icon
           size="20px"
@@ -270,7 +297,12 @@ const actions = {
 
 .chips {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   gap: 4px;
+}
+
+.select_colunas {
+  width: 200px;
 }
 </style>

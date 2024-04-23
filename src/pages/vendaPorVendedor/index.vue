@@ -20,7 +20,7 @@ nextTick(() => {
       style="width: 876px; margin: 0 auto"
     >
       <div class="inputs pb-3">
-        <div class="inputData">
+        <div class="input_data">
           <span>Data Inicial</span>
           <input
             v-model="state.dataInicial"
@@ -33,7 +33,7 @@ nextTick(() => {
             @keydown.enter="state.inputDataFinal.focus()"
           />
         </div>
-        <div class="inputData">
+        <div class="input_data">
           <span>Data Final</span>
           <input
             v-model="state.dataFinal"
@@ -57,7 +57,6 @@ nextTick(() => {
           </v-btn>
         </div>
       </div>
-
       <v-data-table
         :headers="state.headers"
         :items="vendasOrdenadas"
@@ -92,7 +91,7 @@ nextTick(() => {
             :disabled="state.dbVendas.length <= 0"
             icon="mdi-chart-bar"
             size="36px"
-            title="GRÁFICOS"
+            title="Gráficos"
             class="mr-3"
           />
           <v-btn
@@ -101,7 +100,7 @@ nextTick(() => {
             :disabled="state.dbVendas.length <= 0"
             icon="mdi-account-multiple"
             size="36px"
-            title="GRUPO DE FUNCIONÁRIOS"
+            title="Grupo de Funcionários"
           />
         </div>
         <v-btn
@@ -110,7 +109,7 @@ nextTick(() => {
           :disabled="state.dbVendas.length <= 0"
           icon="mdi-printer"
           size="36px"
-          title="IMPRIMIR"
+          title="Imprimir"
         />
       </div>
     </v-card>
@@ -197,8 +196,8 @@ nextTick(() => {
   gap: 12px;
 }
 
-.inputData {
-  width: 128px;
+.input_data {
+  width: 126px;
 }
 
 .custom-table {

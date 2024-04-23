@@ -102,7 +102,8 @@ export const state = reactive({
         },
         {
             title: 'Qtd. Média Itens', key: 'QTD_MEDIA_ITENS',
-            value: (venda: iVenda) => actions.calcularQtdMediaItens(venda.QTD_ITENS, venda.QTD_VENDAS)
+            value: (venda: iVenda) => actions.calcularQtdMediaItens(venda.QTD_ITENS, venda.QTD_VENDAS),
+            align: 'end'
         },
         { title: 'Inf', key: 'inf', sortable: false, align: 'center', },
     ],
@@ -209,7 +210,7 @@ export const actions = {
             el: "#modalDadosGrupo",
             title: "Dados do Grupo",
             width: 522,
-            height: 550,
+            height: 564,
             theme: "xModal-blue",
             onOpen: () => {
                 state.modalDadosGrupoOpened = true;

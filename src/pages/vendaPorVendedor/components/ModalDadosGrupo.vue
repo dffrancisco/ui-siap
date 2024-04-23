@@ -94,6 +94,16 @@ const actions = {
     }
 
     if (props.dadosGrupoEditOpened) {
+      if (state.nomeGrupo.toUpperCase() != props.nomeGrupoEdit) {
+        if (localStorage.getItem(state.nomeGrupo.toUpperCase())) {
+          await Swal.fire({
+            icon: "warning",
+            title: "Este nome já está sendo utilizado em outro grupo!",
+          });
+          return;
+        }
+      }
+
       actions.editarGrupo();
       return;
     }
@@ -150,11 +160,10 @@ const actions = {
 <template>
   <v-container>
     <div>
-      <span class="text-size">Nome do Grupo</span>
-      <input
+      <span class="text-size">Nome do Grupo*</span>
+      <v-text-field
         v-model="state.nomeGrupo"
-        type="text"
-        class="ss obr"
+        class="text-field"
       />
     </div>
     <div class="mt-5">
@@ -167,6 +176,7 @@ const actions = {
           item-title="LOGIN"
           item-value="COD_FUNCIONARIO"
           @update:model-value="actions.addFuncionario"
+          clearable
         />
       </div>
     </div>
@@ -277,5 +287,12 @@ const actions = {
   display: flex;
   justify-content: flex-end;
   gap: 4px;
+}
+</style>
+
+<style>
+.text-field input {
+  text-transform: uppercase;
+  font-size: 14px;
 }
 </style>
