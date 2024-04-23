@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import utils from "@/ts/utils";
+import utils, { swalDarkError } from "@/ts/utils";
 import { nextTick, reactive, computed, watch } from "vue";
 import { iParamEmitAdicionarItem, iProdutoAdicionadoObj, iProdutoObj } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import ModalAdicionarItem from "./ModalAdicionarItem.vue";
+import comprasItensService from "../services/comprasItens.service";
 
 const props = defineProps({
+  idCompras: {
+    type: Number,
+    default: undefined,
+  },
   objProdutos: {
     type: Object as () => iProdutoObj,
     default: {},
@@ -33,11 +38,12 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["changeIndexProdutoSelecionado", "adicionarItem"]);
+const emit = defineEmits(["changeIndexProdutoSelecionado", "adicionarItem", "deletarItem"]);
 
 const state = reactive({
   gridItensAdicionados: <ixGridCreate>{},
   modalAdicionarItemOpened: false,
+  loading: false,
 });
 
 const produtos = computed(() => {
@@ -46,14 +52,12 @@ const produtos = computed(() => {
 
 watch(
   () => props.objProdutosAdicionados,
-  () => {
+  async () => {
     state.gridItensAdicionados.source(produtos.value);
 
-    let keyProdutoSelecionado = props.keysProdutos[props.indexProdutoSelecionado];
-    let linhaParaFocar = Object.keys(props.objProdutosAdicionados).findIndex(
-      (keyProduto) => keyProduto == keyProdutoSelecionado
-    );
-    state.gridItensAdicionados.focus(linhaParaFocar);
+    await nextTick();
+
+    actions.focarLinhaGrid();
   },
   {
     deep: true,
@@ -89,6 +93,15 @@ const actions = {
         13: (dados) => {
           state.modalAdicionarItemOpened = true;
         },
+        46: (dados, e) => {
+          utils.confirmaCodigo({
+            msg: "Deseja realmente deletar o item do pedido?",
+            theme: "xModal-dark-square",
+            call: async () => {
+              actions.deletarItemCompra(dados[MAP_COL_PRODUTO.COD_PRODUTO]);
+            },
+          });
+        },
       },
     });
 
@@ -96,17 +109,35 @@ const actions = {
     state.gridItensAdicionados.focus();
   },
 
+  async deletarItemCompra(codProduto: number) {
+    try {
+      state.loading = true;
+
+      await comprasItensService.deleteItemCompra({ ID_COMPRAS: props.idCompras, COD_PRODUTO: codProduto });
+
+      state.gridItensAdicionados.deleteLine();
+
+      emit("deletarItem", codProduto);
+    } catch (error) {
+      swalDarkError(error?.response?.data?.msg || "Ocorreu um erro ao deletar o item");
+    } finally {
+      state.loading = false;
+    }
+  },
+
   async focarLinhaGrid() {
     await nextTick();
-    state.gridItensAdicionados.focus(props.indexProdutoSelecionado);
+
+    let keyProdutoSelecionado = props.keysProdutos[props.indexProdutoSelecionado];
+    let linhaParaFocar = Object.keys(props.objProdutosAdicionados).findIndex(
+      (keyProduto) => keyProduto == keyProdutoSelecionado
+    );
+    state.gridItensAdicionados.focus(linhaParaFocar);
   },
 
   adicionarItem(param: iParamEmitAdicionarItem) {
     emit("adicionarItem", param);
     state.modalAdicionarItemOpened = false;
-    setTimeout(() => {
-      actions.focarLinhaGrid();
-    }, 100);
   },
 };
 
@@ -137,6 +168,18 @@ nextTick(() => {
         @adicionarItem="actions.adicionarItem"
       />
     </v-dialog>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </div>
 </template>
 

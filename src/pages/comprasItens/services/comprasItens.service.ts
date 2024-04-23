@@ -10,6 +10,7 @@ import {
     iParamInsertItemCompra,
     iResponseInsertItemCompra,
     iResponseGetProdutosAdicionadosFunction,
+    iParamDeleteItemCompra,
 } from "../interfaces";
 import moment from "moment";
 
@@ -24,6 +25,7 @@ type iGetProdutosAdicionadosFunction = (idCompras: number) => Promise<iResponseG
 type iGetHistoricoVendasFunction = (param: iParamGetProdutosFunction) => Promise<iObjHistoricoVendaGeral>;
 type iGetHistoricoComprasFunction = (param: iParamGetProdutosFunction) => Promise<iObjHistoricoCompraGeral>;
 type iInsertItemCompraFunction = (param: iParamInsertItemCompra) => Promise<iResponseInsertItemCompra>;
+type iDeleteItemCompraFunction = (param: iParamDeleteItemCompra) => Promise<void>;
 
 export const getColorData = (data: string) => {
     if (!data) return "#eef0f4";
@@ -127,6 +129,14 @@ const insertItemCompra: iInsertItemCompraFunction = async (param) => {
     return data;
 };
 
+const deleteItemCompra: iDeleteItemCompraFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "deleteItemCompra",
+        param,
+    });
+    return data;
+};
+
 const cancelarRequisicao = () => {
     if (cancel) {
         cancel('Requisição cancelada pelo usuário.');
@@ -144,5 +154,6 @@ export default {
     getHistoricoVendas,
     getHistoricoCompras,
     insertItemCompra,
+    deleteItemCompra,
     cancelarRequisicao
 };

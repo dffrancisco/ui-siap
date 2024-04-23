@@ -42,8 +42,6 @@ const updateCompra: iUpdateCompraFunction = async (param) => {
 };
 
 const deleteCompra: iDeleteCompraFunction = async (param) => {
-    console.log('aaaaaa');
-    console.log(param);
     let { data } = await axios.post(caminho, {
         call: "deleteCompra",
         param,

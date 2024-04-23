@@ -202,6 +202,7 @@ actions.init();
             class="compras-detalhes-dados-item"
           >
             <ItensAdicionados
+              :idCompras="state.cabecalho.ID_COMPRAS"
               :objProdutos="state.produtos"
               :objProdutosAdicionados="state.produtosAdicionados"
               :keysProdutos="state.keyProdutos"
@@ -210,6 +211,7 @@ actions.init();
               :corMediaVenda="computeds.corMediaVenda.value"
               @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
               @adicionarItem="actions.adicionarItem"
+              @deletarItem="actions.deletarItem"
             />
           </div>
         </div>

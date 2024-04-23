@@ -47,7 +47,6 @@ export const state = reactive(({
     indexProdutoSelecionado: 0,
     qtdMaxItensVistosByMarca: {},
     qtdItensMarca: 0,
-    modalAdicionarItemOpened: false,
     indexUltimoItemVisto: 0,
     indexUltimoItemAdicionado: undefined,
 }))
@@ -150,6 +149,7 @@ export const actions = {
 
         state.loading = true;
         state.indexProdutoSelecionado = 0;
+        state.abaItens = 'nao_adicionados';
 
         if (param.ID_MARCA != state.edtMarca) {
             let keyMarca = 'marca:' + state.edtMarca
@@ -251,7 +251,6 @@ export const actions = {
 
     async adicionarItem(param: iParamEmitAdicionarItem) {
         try {
-            state.modalAdicionarItemOpened = false;
             state.loading = true;
 
             let produtoSelecionado = computeds.produtoSelecionado.value
@@ -292,6 +291,13 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    async deletarItem(codProduto: number) {
+        delete state.produtosAdicionados[codProduto];
+        await nextTick()
+
+        actions.onClickVoltarItem();
     }
 }
 

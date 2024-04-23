@@ -77,6 +77,11 @@ export interface iParamInsertItemCompra {
     QUANTIDADE: number,
 }
 
+export interface iParamDeleteItemCompra {
+    ID_COMPRAS: number,
+    COD_PRODUTO: number,
+}
+
 export interface iResponseInsertItemCompra {
     valorTotalPedido: number
 }
