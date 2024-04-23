@@ -129,7 +129,7 @@ export const actions = {
 
     createModal() {
         state.modalDistribuirMetas = new xModal.create({
-            height: 680,
+            height: 620,
             width: 1280,
             el: "#modalDistribuirMetas",
             theme: "xModal-bublue",

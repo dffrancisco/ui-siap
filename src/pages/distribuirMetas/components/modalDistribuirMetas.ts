@@ -13,7 +13,7 @@ export const setup = (emit: any, props: any) => {
 
     const atribuirMetaIndividual = (codFuncionario: number) => {
 
-        if (!codFuncionario) {
+        if (codFuncionario == undefined) {
             Swal.fire({
                 icon: "error",
                 text: "Escolha um funcionário.",
@@ -111,7 +111,7 @@ export const setup = (emit: any, props: any) => {
     });
 
     const funcionarioSelecionado = computed(() => {
-        if (!state.codFuncionarioSelecionado) {
+        if (state.codFuncionarioSelecionado == undefined) {
             return {} as iFuncionario
         }
 
