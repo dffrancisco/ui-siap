@@ -2,7 +2,7 @@ import { mesesToSelect } from "@/constants/constants";
 import { computed, reactive } from "vue";
 import { iMesEAno, iMetaInserida, iMetaVendedor, iMetaMontador, iFuncionario } from "./interfaces";
 import Swal from "sweetalert2";
-import metasService from "./services/metas.service"
+import metasService from "./services/distribuirMetas.service"
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import utils from "@/ts/utils";
 import moment from "moment";

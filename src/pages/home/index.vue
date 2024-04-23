@@ -154,8 +154,8 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/metas')"
-              >Metas</v-btn
+              @click="router.push('/distribuirMetas')"
+              >Distribuir Metas</v-btn
             >
 
             <v-btn

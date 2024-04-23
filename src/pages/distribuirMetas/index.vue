@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, meses, actions, totalizadorMetas, metas } from "./metas";
+import { state, meses, actions, totalizadorMetas, metas } from "./distribuirMetas";
 import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
 import utils from "@/ts/utils";
 
@@ -310,3 +310,4 @@ onMounted(async () => {
   border-radius: 10px;
 }
 </style>
+./distribuirMetas
