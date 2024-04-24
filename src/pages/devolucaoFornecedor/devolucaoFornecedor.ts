@@ -2,6 +2,7 @@ import { reactive, computed } from 'vue'
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal'
 import {
     iDevolucao,
+    iItem,
     iItensDevolucao,
     iParamEmitirNotaDevolucaoFornecedorPrevia,
     objNotasAgrupadas
@@ -45,15 +46,18 @@ export const state = reactive({
     modalSelecionarFornecedor: <iModalCreate>{},
     modalTransportadora: <iModalCreate>{},
     modalEscolherItem: <iModalCreate>{},
+    modalInformarQtdItem: <iModalCreate>{},
 
     modalOpened: false,
     modalLocalizarDevolucoesOpened: false,
     modalSelecionarFornecedorOpened: false,
     modalTransportadoraOpened: false,
     modalEscolherItemOpened: false,
+    modalInformaQtdItemOpened: false,
 
     dbDevolucao: <iDevolucao>{},
     dbItensDevolucao: <iItensDevolucao[]>[],
+    dbItem: <iItem>{},
 
     disabledBtnFinalizar: true,
     disabledBtnDelete: true,
@@ -86,7 +90,7 @@ export const actions = {
 
         state.modalTransportadora = new xModal.create({
             el: '#modalTransportadora',
-            height: 288,
+            height: 372,
             width: 784,
             theme: "xModal-blue",
             onOpen: () => { state.modalOpened = true; state.modalTransportadoraOpened = true; },
@@ -101,6 +105,19 @@ export const actions = {
             onOpen: () => { state.modalOpened = true; state.modalEscolherItemOpened = true },
             onClose: () => { state.modalOpened = false; state.modalEscolherItemOpened = false },
         })
+
+        state.modalInformarQtdItem = new xModal.create({
+            el: "#modalInformarQtdItem",
+            height: 488,
+            width: 715,
+            theme: "xModal-blue",
+            onOpen: () => {
+                state.modalInformaQtdItemOpened = true;
+            },
+            onClose: () => {
+                state.modalInformaQtdItemOpened = false;
+            },
+        });
     },
 
     openModalLocalizarDevolucoes() {
@@ -133,6 +150,44 @@ export const actions = {
 
     closeModalEscolherItem() {
         state.modalEscolherItem.close();
+    },
+
+    openModalInformarQtdItem(item: iItensDevolucao) {
+        state.dbItem = item;
+
+        if (item.ID_DEVOLUCAO_FORNECEDOR_ITEM) {
+            state.dbItem = {
+                ID_DEVOLUCAO_FORNECEDOR_ITEM: item.ID_DEVOLUCAO_FORNECEDOR_ITEM,
+                ID_ENTRADA: item.ID_NF_ENTRADA_MANIFESTO,
+                ID_ITEM: item.ID_NF_ENTRADA_ITEM,
+                DESCRICAO: item.DESCRICAO,
+                NUM_NOTA: item.NUM_NOTA,
+                QUANTIDADE: item.QUANTIDADE,
+                COD_FABRICANTE: item.COD_FABRICANTE,
+                CUSTO: item.VALOR_UNITARIO,
+                COD_PRODUTO: item.COD_PRODUTO,
+                VALOR_ICMS_ST: item.VALOR_ICMS_ST,
+                CST: item.CST,
+                BASE_ICMS_ST: item.BASE_ICMS_ST,
+                PERCENTUAL_ICMS: item.PERCENTUAL_ICMS,
+                PERCENTUAL_IPI: item.PERCENTUAL_IPI,
+                UF: state.dbDevolucao.UF,
+                CHAVE: item.CHAVE,
+                DATA_EMISSAO: item.DATA_EMISSAO,
+                QTD: item.QTD,
+                CST_PIS: item.CST_PIS,
+                CST_COFINS: item.CST_COFINS,
+                PERCENTUAL_PIS: item.PERCENTUAL_PIS,
+                PERCENTUAL_COFINS: item.PERCENTUAL_COFINS,
+                CST_IPI: item.CST_IPI
+            }
+        }
+
+        state.modalInformarQtdItem.open();
+    },
+
+    closeModalInformarQtdItem() {
+        state.modalInformarQtdItem.close();
     },
 
     fretePorConta(tipoDeFrete: number) {
@@ -190,13 +245,8 @@ export const actions = {
 
             let data = await serviceDevolucaoFornecedor.getDevolucao(id_devolucao)
 
-            state.dbDevolucao = {
-                ...data.DEVOLUCAO
-            }
-
-            state.dbItensDevolucao = [
-                ...data.ITENS_DEVOLUCAO
-            ]
+            state.dbDevolucao = data.DEVOLUCAO
+            state.dbItensDevolucao = data.ITENS_DEVOLUCAO
 
             actions.habilitarBtns()
 
@@ -270,13 +320,18 @@ export const actions = {
 
                 await actions.imprimirNotaDevolucaoFornecedorPDF()
 
+                Swal.fire({
+                    icon: "success",
+                    text: "Nota de devolução finalizada!",
+                });
+
                 state.loading = false;
             }
         } catch (error) {
             state.loading = false;
             Swal.fire({
                 icon: "error",
-                text: "Erro ao finalizar devolução!",
+                text: error?.response?.data?.msg || "Erro ao finalizar devolução!",
             });
         }
     },
@@ -293,6 +348,11 @@ export const actions = {
                 state.dbItensDevolucao = [] as iItensDevolucao[]
 
                 actions.desabilitarBtns()
+
+                Swal.fire({
+                    icon: "success",
+                    text: "Nota de devolução deletada!",
+                });
 
                 state.loading = false;
             }

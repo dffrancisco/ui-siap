@@ -14,27 +14,34 @@ export interface iDevolucao {
     NOME_TRANSPORTADORA: string,
     VALOR_FRETE: number,
     TIPO_FRETE: number,
-    ID_DEVOLUCAO_FORNECEDOR_TRANSP: number
+    ID_DEVOLUCAO_FORNECEDOR_TRANSP: number,
+    UF: string
 }
 
 export interface iItem {
-    ID_ENTRADA: number,
-    ID_ITEM: number,
+    ID_DEVOLUCAO_FORNECEDOR_ITEM: number,
+    ID_ENTRADA?: number,
+    ID_ITEM?: number,
     DESCRICAO: string,
     NUM_NOTA: number,
     QUANTIDADE: number,
     COD_FABRICANTE: string,
-    CUSTO: number,
+    CUSTO?: number,
     COD_PRODUTO: number
-    CFOP: string,
     VALOR_ICMS_ST: number,
     CST: string,
     BASE_ICMS_ST: number,
     PERCENTUAL_ICMS: number,
     PERCENTUAL_IPI: number,
-    UF: string,
+    UF?: string,
     CHAVE: string,
-    DATA_EMISSAO: string
+    DATA_EMISSAO: string,
+    QTD: number,
+    CST_PIS: string,
+    CST_COFINS: string,
+    PERCENTUAL_PIS: number,
+    PERCENTUAL_COFINS: number,
+    CST_IPI: string
 }
 
 export interface iItemDevolucao {
@@ -48,7 +55,7 @@ export interface iItemDevolucao {
     VALOR_ICMS_ST: number,
     BASE_ICMS_ST: number,
     PERCENTUAL_ICMS: number,
-    PERCENTUAL_IPI: number,
+    PERCENTUAL_IPI: number | string,
     CST_PIS: string,
     PERCENTUAL_PIS: number | string,
     CST_COFINS: string,
@@ -56,6 +63,7 @@ export interface iItemDevolucao {
     COD_FABRICANTE: string,
     CHAVE: string,
     DATA_EMISSAO: string,
+    CST_IPI: string
 }
 
 export interface iItensDevolucao {
@@ -68,7 +76,21 @@ export interface iItensDevolucao {
     VALOR_TOTAL: number,
     DESCRICAO: string,
     NUM_NOTA: number,
-    DATA_EMISSAO: string
+    DATA_EMISSAO: string,
+    QUANTIDADE: number,
+    COD_FABRICANTE: string,
+    COD_PRODUTO: number
+    VALOR_ICMS_ST: number,
+    CST: string,
+    BASE_ICMS_ST: number,
+    PERCENTUAL_ICMS: number,
+    PERCENTUAL_IPI: number,
+    CHAVE: string,
+    CST_PIS: string,
+    CST_COFINS: string,
+    PERCENTUAL_PIS: number,
+    PERCENTUAL_COFINS: number,
+    CST_IPI: string,
 }
 
 export interface iFornecedor {
@@ -84,6 +106,11 @@ export interface iTranspordadoraDevolucao {
     NOME_TRANSPORTADORA: string,
     TIPO_FRETE: number,
     VALOR_FRETE: number,
+    ESPECIE: string,
+    QTD: number,
+    PESO_LIQUIDO: number,
+    PESO_BRUTO: number,
+    AUTORIZACAO_CORREIOS: string,
 }
 
 export interface iListaTransportadoras {
@@ -106,13 +133,9 @@ export interface iParamGetItens {
     param: object
 }
 
-export interface iParamInsertTransportadoraDevolucao {
-    param: object
-}
+export interface iParamInsertTransportadoraDevolucao extends iTranspordadoraDevolucao { }
 
-export interface iParamUpdateTransportadoraDevolucao {
-    param: object
-}
+export interface iParamUpdateTransportadoraDevolucao extends iTranspordadoraDevolucao { }
 
 export interface iParamUpdateInsertItemDevolucao {
     param: object
@@ -138,6 +161,8 @@ export interface iGetTributosPisCofinsItemResponse {
     PERCENTUAL_PIS: number,
     CST_COFINS: string,
     PERCENTUAL_COFINS: number
+    CST_IPI: string,
+    PERCENTUAL_IPI: number
 }
 
 export interface iParamGetItensDevolucaoQTDFunction {

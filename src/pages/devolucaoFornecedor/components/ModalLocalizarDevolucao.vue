@@ -139,31 +139,25 @@ onUnmounted(() => {
 
 <template>
   <v-container>
-    <div class="pb-2">
-      <v-row>
-        <v-col>
-          <input
-            type="text"
-            placeholder="Pesquisar pelo n° nota devolução , chave ou fornecedor (F1)"
-            class="searchDevolucao pa-2"
-            v-model="state.search"
-            id="edtDevolucaoSearch"
-            @keydown.enter="actions.searchDevolucao"
-            @keydown.arrow-down="state.gridDevolucoes.focus(0)"
-            autocomplete="off"
-          />
-        </v-col>
-        <v-col>
-          <v-btn
-            size="small"
-            class="btnSearch"
-            color="#3680AB"
-            @click="actions.searchDevolucao"
-          >
-            <v-icon size="24px">mdi-magnify</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
+    <div class="pb-2 d-flex align-center justify-space-around">
+      <input
+        type="text"
+        placeholder="Pesquisar pelo n° nota devolução , chave ou fornecedor (F1)"
+        class="searchDevolucao ss pa-2"
+        v-model="state.search"
+        id="edtDevolucaoSearch"
+        @keydown.enter="actions.searchDevolucao"
+        @keydown.arrow-down="state.gridDevolucoes.focus(0)"
+        autocomplete="off"
+      />
+      <v-btn
+        size="40"
+        class="btnSearch"
+        color="#3680AB"
+        @click="actions.searchDevolucao"
+        icon="mdi-magnify mdi-24px"
+      >
+      </v-btn>
     </div>
 
     <div id="gridDevolucoes"></div>
@@ -198,16 +192,7 @@ onUnmounted(() => {
 
 <style scoped>
 .searchDevolucao {
-  width: 558px;
-  border-radius: 8px;
-  border: 2px solid #d9d9d9;
-  height: 48px;
-  text-transform: uppercase;
-}
-
-.btnSearch {
-  border-radius: 50px;
-  height: 50px;
+  width: 90%;
 }
 
 .btns {
