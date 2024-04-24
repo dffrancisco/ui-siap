@@ -1,29 +1,23 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
-import { iGrupo } from "../interfaces";
+import { reactive } from "vue";
+import { iGrupo, iParamDeleteGrupoImpressao } from "../interfaces";
+import Swal from "sweetalert2";
+import serviceVendasPorVendedor from "../services/vendaPorVendedor.service";
 import { msgConfirm } from "@/ts/message";
 
-watch(
-  () => props.modalOpened,
-  () => {
-    if (props.modalOpened) {
-      state.dbGrupo = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        let chave = localStorage.key(i);
-        state.dbGrupo.push({ nome: chave });
-      }
-    }
-  }
-);
-
 const props = defineProps<{
-  modalOpened: boolean;
+  grupo: iGrupo[];
 }>();
 
-const emits = defineEmits(["closeModal", "openModalDadosGrupo", "editarGrupo"]);
+const emits = defineEmits([
+  "closeModal",
+  "openModalDadosGrupo",
+  "openModalDadosGrupoEdit",
+  "openModalAddFuncionarioGrupo",
+]);
 
 const state = reactive({
-  dbGrupo: <iGrupo[]>[],
+  loading: false,
 });
 
 const actions = {
@@ -35,24 +29,45 @@ const actions = {
     emits("openModalDadosGrupo");
   },
 
-  editarGrupo(nome: string) {
-    emits("editarGrupo", nome);
+  openModalDadosGrupoEdit(id_grupoImpressao: number, nome: string) {
+    emits("openModalDadosGrupoEdit", id_grupoImpressao, nome);
   },
 
-  async deleteGrupo(nome: string) {
-    if (await msgConfirm("Confirmação", "Confirma exclusão deste grupo?")) {
-      const index = state.dbGrupo.findIndex((grupo) => grupo.nome == nome);
-      state.dbGrupo.splice(index, 1);
-      localStorage.removeItem(nome);
+  openModalAddFuncionarioGrupo(id_grupoImpressao: number) {
+    emits("openModalAddFuncionarioGrupo", id_grupoImpressao);
+  },
+
+  async deleteGrupoImpressao(id_grupoImpressao: number) {
+    try {
+      let param: iParamDeleteGrupoImpressao = {
+        ID_GRUPO_IMPRESSAO: id_grupoImpressao,
+      };
+
+      if (await msgConfirm("Confirmação", "Confirma exclusão deste grupo?")) {
+        state.loading = true;
+
+        await serviceVendasPorVendedor.deleteGrupoImpressao(param);
+
+        const index = props.grupo.findIndex((grupo) => grupo.ID_GRUPO_IMPRESSAO == id_grupoImpressao);
+        props.grupo.splice(index, 1);
+
+        state.loading = false;
+      }
+    } catch (error) {
+      state.loading = false;
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao excluir o grupo!",
+      });
     }
   },
 };
 </script>
 
 <template>
-  <div :class="state.dbGrupo.length <= 0 ? 'text-center' : ''">
+  <div :class="props.grupo.length <= 0 ? 'text-center' : ''">
     <span
-      v-if="state.dbGrupo.length <= 0"
+      v-if="props.grupo.length <= 0"
       class="text-span"
       >Sem registros de grupos...</span
     >
@@ -61,23 +76,29 @@ const actions = {
       height="250"
     >
       <v-list-item
-        v-for="(grupo, index) in state.dbGrupo"
-        :key="grupo.nome"
-        :title="grupo.nome"
+        v-for="(grupo, index) in props.grupo"
+        :key="grupo.NOME"
+        :title="grupo.NOME"
         :class="index % 2 == 0 ? 'gray-bg' : 'white-bg'"
       >
         <template v-slot:append>
           <v-btn
+            icon="mdi-account-multiple"
+            variant="text"
+            title="Adicionar Funcionários"
+            @click="actions.openModalAddFuncionarioGrupo(grupo.ID_GRUPO_IMPRESSAO)"
+          />
+          <v-btn
             icon="mdi-pencil"
             variant="text"
-            title="EDITAR"
-            @click="actions.editarGrupo(grupo.nome)"
+            title="Editar"
+            @click="actions.openModalDadosGrupoEdit(grupo.ID_GRUPO_IMPRESSAO, grupo.NOME)"
           />
           <v-btn
             icon="mdi-delete"
             variant="text"
-            title="DELETAR"
-            @click="actions.deleteGrupo(grupo.nome)"
+            title="Deletar"
+            @click="actions.deleteGrupoImpressao(grupo.ID_GRUPO_IMPRESSAO)"
           />
         </template>
       </v-list-item>
@@ -97,6 +118,18 @@ const actions = {
       Novo Grupo
     </v-btn>
   </div>
+
+  <v-overlay
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
 
 <style scoped>

@@ -78,7 +78,36 @@ export interface iGetFuncionariosResponse extends iFuncionario { }
 export interface iListaFuncionario extends iFuncionario { }
 
 export interface iGrupo {
-    nome: string;
+    NOME: string;
+    ID_GRUPO_IMPRESSAO: number
 }
 
 export interface iDadosGrupoEdit extends iFuncionario { }
+
+export interface iParamInsertGrupoImpressao {
+    NOME: string;
+}
+
+export interface iParamUpdateGrupoImpressao {
+    NOME: string;
+    ID_GRUPO_IMPRESSAO: number
+}
+
+export interface iParamDeleteGrupoImpressao {
+    ID_GRUPO_IMPRESSAO: number
+}
+
+export interface iGetGruposImpressaoResponse {
+    ID_GRUPO_IMPRESSAO: number;
+    NOME: string;
+}
+
+export interface iInsertGrupoImpressaoResponse {
+    ID_GRUPO_IMPRESSAO: number;
+}
+
+export interface iUpdateGrupoImpressaoResponse extends iInsertGrupoImpressaoResponse { }
+
+export interface iDeleteGrupoImpressaoResponse {
+    OK: string
+}
