@@ -5,9 +5,6 @@ import { nextTick } from "vue";
 import ModalVendasDetalhes from "./components/ModalVendasDetalhes.vue";
 import ModalVendasGraficos from "./components/ModalVendasGraficos.vue";
 import ModalImprimirVendas from "./components/ModalImprimirVendas.vue";
-import ModalGrupoFuncionarios from "./components/ModalGrupoFuncionarios.vue";
-import ModalDadosGrupo from "./components/ModalDadosGrupo.vue";
-import ModalAddFuncionariosGrupo from "./components/ModalAddFuncionariosGrupo.vue";
 
 nextTick(() => {
   actions.init();
@@ -95,13 +92,6 @@ nextTick(() => {
             title="Gráficos"
             class="mr-3"
           />
-          <v-btn
-            color="primary"
-            @click="actions.openModalGrupoFuncionarios"
-            icon="mdi-account-multiple"
-            size="36px"
-            title="Grupo de Funcionários"
-          />
         </div>
         <v-btn
           color="primary"
@@ -145,39 +135,6 @@ nextTick(() => {
         :dataInicial="state.dataInicialModal"
         :dataFinal="state.dataFinalModal"
       />
-    </div>
-
-    <div
-      id="modalGrupoFuncionarios"
-      style="display: none"
-    >
-      <ModalGrupoFuncionarios
-        @closeModal="actions.closeModalGrupoFuncionarios"
-        @openModalDadosGrupo="actions.openModalDadosGrupo"
-        @openModalDadosGrupoEdit="actions.openModalDadosGrupoEdit"
-        @openModalAddFuncionarioGrupo="actions.openModalAddFuncionariosGrupo"
-        :grupo="state.dbGrupo"
-      />
-    </div>
-
-    <div
-      id="modalDadosGrupo"
-      style="display: none"
-    >
-      <ModalDadosGrupo
-        :id_grupo="state.id_grupoEdit"
-        :nomeGrupo="state.nomeGrupoEdit"
-        :modalOpened="state.modalDadosGrupoOpened"
-        @closeModal="actions.closeModalDadosGrupo"
-        @salvarGrupo="actions.salvarGrupo"
-      />
-    </div>
-
-    <div
-      id="modalAddFuncionariosGrupo"
-      style="display: none"
-    >
-      <ModalAddFuncionariosGrupo />
     </div>
 
     <v-overlay

@@ -4,7 +4,6 @@ import {
     iParamGetVendas,
     iParamGetVendasDetalhes,
     iGetVendasDetalhesResponse,
-    iGrupo
 } from "./interfaces";
 import serviceVendasPorVendedor from './services/vendaPorVendedor.service'
 import utils from "@/ts/utils";
@@ -56,7 +55,6 @@ export const vendasOrdenadas = computed(() => {
 export const state = reactive({
     dbVendas: <iVenda[]>[],
     dbVendasDetalhes: <iGetVendasDetalhesResponse>{},
-    dbGrupo: <iGrupo[]>[],
 
     modalVendasDetalhes: <iModalCreate>{},
     modalVendasDetalhesOpened: false,
@@ -66,13 +64,6 @@ export const state = reactive({
 
     modalImprimirVendas: <iModalCreate>{},
     modalImprimirVendasOpened: false,
-
-    modalGrupoFuncionarios: <iModalCreate>{},
-
-    modalDadosGrupo: <iModalCreate>{},
-    modalDadosGrupoOpened: false,
-
-    modalAddFuncionariosGrupo: <iModalCreate>{},
 
     headers: <any>[
         { title: 'Vendedor', key: 'LOGIN', width: '30%' },
@@ -117,9 +108,6 @@ export const state = reactive({
 
     inputDataInicial: <HTMLInputElement>{},
     inputDataFinal: <HTMLInputElement>{},
-
-    id_grupoEdit: null,
-    nomeGrupoEdit: '',
 
     loading: false,
 })
@@ -194,32 +182,6 @@ export const actions = {
             onClose: () => { state.modalImprimirVendasOpened = false; },
         });
 
-        state.modalGrupoFuncionarios = new xModal.create({
-            el: "#modalGrupoFuncionarios",
-            height: 350,
-            width: 560,
-            title: 'Grupo de Funcionários',
-            theme: 'xModal-blue',
-
-        });
-
-        state.modalDadosGrupo = new xModal.create({
-            el: "#modalDadosGrupo",
-            title: "Dados do Grupo",
-            width: 522,
-            height: 180,
-            theme: "xModal-blue",
-            onOpen: () => { state.modalDadosGrupoOpened = true; },
-            onClose: () => { state.modalDadosGrupoOpened = false; },
-        });
-
-        state.modalAddFuncionariosGrupo = new xModal.create({
-            el: "#modalAddFuncionariosGrupo",
-            title: "Adicionar Funcionários ao Grupo",
-            width: 522,
-            height: 568,
-            theme: "xModal-blue",
-        })
     },
 
     async openModalVendasDetalhes(nomeVendedor: string, id_vendedor: number) {
@@ -238,49 +200,6 @@ export const actions = {
 
     openModalImprimirVendas() {
         state.modalImprimirVendas.open()
-    },
-
-    async openModalGrupoFuncionarios() {
-        await actions.getGruposImpressao();
-
-        state.modalGrupoFuncionarios.open()
-    },
-
-    closeModalGrupoFuncionarios() {
-        state.modalGrupoFuncionarios.close()
-    },
-
-    openModalDadosGrupo() {
-        state.id_grupoEdit = null
-
-        state.modalDadosGrupo.open()
-    },
-
-    openModalDadosGrupoEdit(id_grupo: number, nome: string) {
-        state.id_grupoEdit = id_grupo
-
-        if (id_grupo) {
-            state.nomeGrupoEdit = nome
-        }
-
-        state.modalDadosGrupo.open()
-    },
-
-    closeModalDadosGrupo() {
-        state.modalDadosGrupo.close()
-    },
-
-    openModalAddFuncionariosGrupo() {
-        state.modalAddFuncionariosGrupo.open()
-    },
-
-    closeModalAddFuncionariosGrupo() {
-        state.modalAddFuncionariosGrupo.close()
-    },
-
-    async salvarGrupo() {
-        await actions.getGruposImpressao();
-        state.modalDadosGrupo.close()
     },
 
     async getVendas() {
@@ -326,23 +245,6 @@ export const actions = {
                 icon: 'error',
                 text: 'Erro ao exibir os detalhes das vendas!'
             })
-        }
-    },
-
-    async getGruposImpressao() {
-        try {
-            state.loading = true;
-
-            const data = await serviceVendasPorVendedor.getGruposImpressao();
-            state.dbGrupo = data;
-
-            state.loading = false;
-        } catch (error) {
-            state.loading = false;
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao buscar os grupos!",
-            });
         }
     },
 }
