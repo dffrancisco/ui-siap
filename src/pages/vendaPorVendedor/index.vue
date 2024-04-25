@@ -108,7 +108,7 @@ nextTick(() => {
           <v-btn
             color="primary"
             @click="actions.openModalVendasGraficos"
-            :disabled="state.dbVenda.length <= 0"
+            :disabled="vendasOrdenadas.length <= 0"
             icon="mdi-chart-bar"
             size="36px"
             title="Gráficos"
