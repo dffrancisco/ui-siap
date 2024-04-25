@@ -118,7 +118,7 @@ nextTick(() => {
         <v-btn
           color="primary"
           @click="actions.openModalImprimirVendas"
-          :disabled="state.dbVenda.length <= 0"
+          :disabled="vendasOrdenadas.length <= 0"
           icon="mdi-printer"
           size="36px"
           title="Imprimir"
