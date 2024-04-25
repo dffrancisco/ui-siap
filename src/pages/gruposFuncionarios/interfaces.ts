@@ -24,3 +24,9 @@ export interface iParamGetDuplicityGrupoImpressao {
 export interface iGetDuplicityGrupoImpressaoResponse {
     NOME: string
 }
+
+export interface iParamInsertGrupoImpressao extends iGetDuplicityGrupoImpressaoResponse { }
+
+export interface iInsertGrupoImpressaoResponse {
+    ID_GRUPO_IMPRESSAO: number
+}

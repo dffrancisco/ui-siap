@@ -1,5 +1,12 @@
 import axios from "axios";
-import { iGetDuplicityGrupoImpressaoResponse, iGetGruposImpressaoResponse, iParamGetDuplicityGrupoImpressao, iParamGetGruposImpressao } from "../interfaces";
+import {
+    iGetDuplicityGrupoImpressaoResponse,
+    iGetGruposImpressaoResponse,
+    iInsertGrupoImpressaoResponse,
+    iParamGetDuplicityGrupoImpressao,
+    iParamGetGruposImpressao,
+    iParamInsertGrupoImpressao
+} from "../interfaces";
 
 const caminho = 'siap/gruposFuncionarios'
 
@@ -7,6 +14,8 @@ type iGetGruposImpressaoFunction = ({ offset, param }: iParamGetGruposImpressao)
     Promise<iGetGruposImpressaoResponse>
 type iGetDuplicityGrupoImpressaoFunction = ({ field, value }: iParamGetDuplicityGrupoImpressao) =>
     Promise<iGetDuplicityGrupoImpressaoResponse>
+type iInsertGrupoImpressaoFunction = (param: iParamInsertGrupoImpressao) =>
+    Promise<iInsertGrupoImpressaoResponse>
 
 const getGruposImpressao: iGetGruposImpressaoFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -26,4 +35,16 @@ const getDuplicityGrupoImpressao: iGetDuplicityGrupoImpressaoFunction = async ({
     return data;
 }
 
-export default { getGruposImpressao, getDuplicityGrupoImpressao }
+const insertGrupoImpressao: iInsertGrupoImpressaoFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "insertGrupoImpressao",
+        param
+    })
+    return data;
+}
+
+export default {
+    getGruposImpressao,
+    getDuplicityGrupoImpressao,
+    insertGrupoImpressao
+}

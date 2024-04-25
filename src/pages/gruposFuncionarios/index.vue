@@ -33,6 +33,18 @@ nextTick(async () => {
         </div>
       </div>
 
+      <v-overlay
+        :model-value="state.loading"
+        class="align-center justify-center"
+        persistent
+      >
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-overlay>
+
       <div id="gridGruposFuncionarios"></div>
 
       <div
@@ -40,6 +52,12 @@ nextTick(async () => {
         class="mt-3"
         style="text-align: center"
       ></div>
+
+      <div
+        id="modalAddFuncionariosGrupo"
+        style="display: none"
+      >
+      </div>
     </v-card>
     <div id="pnCodigoTela">GRUPOS_FUNCIONARIOS</div>
   </v-container>
