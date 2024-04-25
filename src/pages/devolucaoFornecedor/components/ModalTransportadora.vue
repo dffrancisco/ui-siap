@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { watch, reactive } from "vue";
-import { iTranspordadoraDevolucao, iListaTransportadoras } from "../interfaces";
+import {
+  iTranspordadoraDevolucao,
+  iListaTransportadoras,
+  iParamInsertTransportadoraDevolucao,
+  iParamUpdateTransportadoraDevolucao,
+} from "../interfaces";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
@@ -42,35 +47,62 @@ const actions = {
   },
 
   async selecionarTransportadora() {
-    if (state.dbTransportadoraDevolucao.ID_TRANSPORTADORA == undefined) {
-      Swal.fire({
+    let dadosTransportadoraDevolucao = {
+      ...state.dbTransportadoraDevolucao,
+      ID_DEVOLUCAO_FORNECEDOR: props.id_devolucaoFornecedor,
+      ID_DEVOLUCAO_FORNECEDOR_TRANSP: props.id_devolucaoFornecedorTransp,
+      VALOR_FRETE: utils.formatValorUSA(state.dbTransportadoraDevolucao.VALOR_FRETE.toString()),
+      PESO_LIQUIDO: utils.formatValorUSA(state.dbTransportadoraDevolucao.PESO_LIQUIDO.toString()),
+      PESO_BRUTO: utils.formatValorUSA(state.dbTransportadoraDevolucao.PESO_BRUTO.toString()),
+      ESPECIE: state.dbTransportadoraDevolucao.ESPECIE?.toUpperCase(),
+      AUTORIZACAO_CORREIOS: state.dbTransportadoraDevolucao.AUTORIZACAO_CORREIOS?.toUpperCase(),
+    };
+
+    if (dadosTransportadoraDevolucao.ID_TRANSPORTADORA == undefined) {
+      await Swal.fire({
         icon: "error",
         title: "Por favor, selecione uma transportadora",
       });
       return false;
     }
 
-    if (state.dbTransportadoraDevolucao.TIPO_FRETE == undefined) {
-      Swal.fire({
+    if (dadosTransportadoraDevolucao.TIPO_FRETE == undefined) {
+      await Swal.fire({
         icon: "error",
         title: "Por favor, selecione uma modalidade de frete",
       });
       return false;
     }
 
-    if (utils.formatValorUSA(state.dbTransportadoraDevolucao.VALOR_FRETE.toString()) <= 0) {
-      Swal.fire({
+    if (dadosTransportadoraDevolucao.ESPECIE == undefined) {
+      await Swal.fire({
         icon: "error",
-        title: "O campo valor deve ser maior que 0",
+        title: "Por favor, informe a espécie",
+      });
+      return false;
+    }
+
+    if (dadosTransportadoraDevolucao.QTD <= 0) {
+      await Swal.fire({
+        icon: "error",
+        title: "Por favor, informe a quantidade de volumes",
+      });
+      return false;
+    }
+
+    if (dadosTransportadoraDevolucao.QTD > 10000) {
+      await Swal.fire({
+        icon: "error",
+        title: "A quantidade de volumes deve ser menor ou igual a 10.000",
       });
       return false;
     }
 
     if (props.id_devolucaoFornecedorTransp) {
-      return await actions.updateTransportadoraDevolucao();
+      return await actions.updateTransportadoraDevolucao(dadosTransportadoraDevolucao);
     }
 
-    await actions.insertTransportadoraDevolucao();
+    await actions.insertTransportadoraDevolucao(dadosTransportadoraDevolucao);
   },
 
   async getTransportadoras() {
@@ -93,6 +125,8 @@ const actions = {
       state.dbTransportadoraDevolucao = {
         ...data,
         VALOR_FRETE: utils.formatValor(data.VALOR_FRETE.toString()),
+        PESO_BRUTO: utils.formatValor(data.PESO_BRUTO.toString()),
+        PESO_LIQUIDO: utils.formatValor(data.PESO_LIQUIDO.toString()),
       };
 
       state.loading = false;
@@ -104,26 +138,13 @@ const actions = {
     }
   },
 
-  async insertTransportadoraDevolucao() {
+  async insertTransportadoraDevolucao(param: iParamInsertTransportadoraDevolucao) {
     try {
       state.loading = true;
 
-      let transportadoraDevolucao = state.dbTransportadoraDevolucao;
+      await serviceDevolucaoFornecedor.insertTransportadoraDevolucao(param);
 
-      transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR = props.id_devolucaoFornecedor;
-
-      let valorFrete = utils.formatValorUSA(transportadoraDevolucao.VALOR_FRETE.toString());
-
-      let param = {
-        ...transportadoraDevolucao,
-        VALOR_FRETE: valorFrete,
-      };
-
-      let data = await serviceDevolucaoFornecedor.insertTransportadoraDevolucao({ param });
-
-      state.dbTransportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP = data.ID_DEVOLUCAO_FORNECEDOR_TRANSP;
-
-      emits("selecionarTransportadoraDevolucao", transportadoraDevolucao);
+      emits("selecionarTransportadoraDevolucao", param);
 
       actions.closeModalTransportadoras();
 
@@ -137,25 +158,13 @@ const actions = {
     }
   },
 
-  async updateTransportadoraDevolucao() {
+  async updateTransportadoraDevolucao(param: iParamUpdateTransportadoraDevolucao) {
     try {
       state.loading = true;
 
-      let transportadoraDevolucao = state.dbTransportadoraDevolucao;
+      await serviceDevolucaoFornecedor.updateTransportadoraDevolucao(param);
 
-      transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR_TRANSP = props.id_devolucaoFornecedorTransp;
-      transportadoraDevolucao.ID_DEVOLUCAO_FORNECEDOR = props.id_devolucaoFornecedor;
-
-      let valorFrete = utils.formatValorUSA(transportadoraDevolucao.VALOR_FRETE.toString());
-
-      let param = {
-        ...transportadoraDevolucao,
-        VALOR_FRETE: valorFrete,
-      };
-
-      await serviceDevolucaoFornecedor.updateTransportadoraDevolucao({ param });
-
-      emits("selecionarTransportadoraDevolucao", transportadoraDevolucao);
+      emits("selecionarTransportadoraDevolucao", param);
 
       actions.closeModalTransportadoras();
 
@@ -191,7 +200,7 @@ const actions = {
             >
           </select>
         </v-col>
-        <v-col cols="9">
+        <v-col cols="8">
           <h2 class="font-weight-regular">Modalidade Frete</h2>
           <select
             class="obr ss"
@@ -207,13 +216,72 @@ const actions = {
             <option value="9">Sem transporte</option>
           </select>
         </v-col>
+        <v-col cols="2">
+          <h2 class="font-weight-regular">Espécie</h2>
+          <input
+            v-model="state.dbTransportadoraDevolucao.ESPECIE"
+            class="ss obr"
+            type="text"
+            name="ESPECIE"
+            id="ESPECIE"
+            maxlength="6"
+          />
+        </v-col>
+        <v-col cols="2">
+          <h2 class="font-weight-regular">Qtd. Volumes</h2>
+          <input
+            v-model="state.dbTransportadoraDevolucao.QTD"
+            class="ss obr"
+            type="number"
+            name="QTD"
+            id="QTD"
+            max="10000"
+          />
+        </v-col>
+        <v-col cols="6">
+          <h2 class="font-weight-regular">Autorização (Correios)</h2>
+          <input
+            v-model="state.dbTransportadoraDevolucao.AUTORIZACAO_CORREIOS"
+            class="ss"
+            type="text"
+            name="AUTORIZACAO_CORREIOS"
+            id="AUTORIZACAO_CORREIOS"
+            maxlength="20"
+          />
+        </v-col>
+        <v-col cols="2">
+          <h2 class="font-weight-regular">Peso Bruto</h2>
+          <input
+            class="ss"
+            type="text"
+            name="PESO_BRUTO"
+            id="PESO_BRUTO"
+            :model-modifiers="{ number: true }"
+            v-model.lazy="state.dbTransportadoraDevolucao.PESO_BRUTO"
+            v-money3="configVMoney"
+          />
+        </v-col>
+        <v-col cols="2">
+          <h2 class="font-weight-regular">Peso Líquido</h2>
+          <input
+            v-model.lazy="state.dbTransportadoraDevolucao.PESO_LIQUIDO"
+            class="ss"
+            type="text"
+            name="PESO_LIQUIDO"
+            id="PESO_LIQUIDO"
+            :model-modifiers="{ number: true }"
+            v-money3="configVMoney"
+          />
+        </v-col>
+
         <v-col>
           <h2 class="font-weight-regular">Valor</h2>
           <input
-            class="ss obr"
+            class="ss"
             type="text"
             name="VALOR_FRETE"
             id="VALOR_FRETE"
+            style="text-align: end"
             :model-modifiers="{ number: true }"
             v-model.lazy="state.dbTransportadoraDevolucao.VALOR_FRETE"
             v-money3="configVMoney"
@@ -232,7 +300,7 @@ const actions = {
       <v-btn
         color="#3680AB"
         @click="actions.selecionarTransportadora"
-        >Selecionar</v-btn
+        >Salvar</v-btn
       >
     </div>
   </v-container>
