@@ -1,8 +1,10 @@
 import axios from "axios";
 import {
+    iDeleteGrupoImpressaoResponse,
     iGetDuplicityGrupoImpressaoResponse,
     iGetGruposImpressaoResponse,
     iInsertGrupoImpressaoResponse,
+    iParamDeleteGrupoImpressao,
     iParamGetDuplicityGrupoImpressao,
     iParamGetGruposImpressao,
     iParamInsertGrupoImpressao,
@@ -18,6 +20,7 @@ type iGetDuplicityGrupoImpressaoFunction = ({ field, value }: iParamGetDuplicity
     Promise<iGetDuplicityGrupoImpressaoResponse>
 type iInsertGrupoImpressaoFunction = (param: iParamInsertGrupoImpressao) => Promise<iInsertGrupoImpressaoResponse>
 type iUpdateGrupoImpressaoFunction = (param: iParamUpdateGrupoImpressao) => Promise<iUpdateGrupoImpressaoResponse>
+type iDeleteGrupoImpressaoFunction = (param: iParamDeleteGrupoImpressao) => Promise<iDeleteGrupoImpressaoResponse>
 
 const getGruposImpressao: iGetGruposImpressaoFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -53,9 +56,18 @@ const updateGrupoImpressao: iUpdateGrupoImpressaoFunction = async (param) => {
     return data;
 }
 
+const deleteGrupoImpressao: iDeleteGrupoImpressaoFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "deleteGrupoImpressao",
+        param
+    })
+    return data;
+}
+
 export default {
     getGruposImpressao,
     getDuplicityGrupoImpressao,
     insertGrupoImpressao,
     updateGrupoImpressao,
+    deleteGrupoImpressao,
 }

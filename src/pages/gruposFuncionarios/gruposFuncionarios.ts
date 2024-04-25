@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import { iGrupo, iParamGetDuplicityGrupoImpressao, iParamGetGruposImpressao, iParamInsertGrupoImpressao, iParamUpdateGrupoImpressao } from "./interfaces";
+import { iGrupo, iParamDeleteGrupoImpressao, iParamGetDuplicityGrupoImpressao, iParamGetGruposImpressao, iParamInsertGrupoImpressao, iParamUpdateGrupoImpressao } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceGruposFuncionarios from './services/gruposFuncionarios.service'
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
@@ -162,7 +162,7 @@ export const actions = {
         }
 
         if (await msgConfirm("Confirmação", "Confirma exclusão deste registro?")) {
-            // await actions.toDelete()
+            await actions.deleteGrupoImpressao();
             state.gridGruposFuncionarios.focus();
         }
     },
@@ -227,7 +227,7 @@ export const actions = {
                 NOME: state.dbGrupo.NOME.toUpperCase()
             }
 
-            let data = await serviceGruposFuncionarios.insertGrupoImpressao(param);
+            const data = await serviceGruposFuncionarios.insertGrupoImpressao(param);
 
             state.gridGruposFuncionarios.insertLine({
                 ...param,
@@ -256,7 +256,7 @@ export const actions = {
                 NOME: state.dbGrupo.NOME.toUpperCase()
             }
 
-            let data = await serviceGruposFuncionarios.updateGrupoImpressao(param);
+            const data = await serviceGruposFuncionarios.updateGrupoImpressao(param);
 
             state.gridGruposFuncionarios.dataSource({
                 ...param
@@ -270,6 +270,28 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao alterar o grupo!"
+            })
+        }
+    },
+
+    async deleteGrupoImpressao() {
+        try {
+            state.loading = true
+
+            let param: iParamDeleteGrupoImpressao = {
+                ID_GRUPO_IMPRESSAO: state.dbGrupo.ID_GRUPO_IMPRESSAO
+            }
+
+            await serviceGruposFuncionarios.deleteGrupoImpressao(param);
+
+            state.gridGruposFuncionarios.deleteLine();
+
+            state.loading = false
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao excluir o grupo!"
             })
         }
     }

@@ -39,3 +39,9 @@ export interface iParamUpdateGrupoImpressao {
 export interface iUpdateGrupoImpressaoResponse {
     ID_GRUPO_IMPRESSAO: number
 }
+
+export interface iParamDeleteGrupoImpressao extends iUpdateGrupoImpressaoResponse { }
+
+export interface iDeleteGrupoImpressaoResponse {
+    msg: string
+}
