@@ -8,11 +8,12 @@ export interface iVenda {
     COD_FUNCIONARIO?: number,
     VALOR_VENDA: number,
     VALOR_DEVOLUCAO: number,
-    QTD_VENDAS: number,
     VENDA_LIQUIDA: number,
     TICKET_MEDIO: number,
     LIMITE: number,
-    QTD_ITENS: number
+    QTD_MEDIA_ITENS?: number
+    QTD_ITENS?: number
+    QTD_VENDAS?: number,
 }
 
 export interface iVendaPorDiaGrafico {
@@ -25,7 +26,17 @@ export interface iVendaPorHoraGrafico {
     VALOR: number
 }
 
-export interface iGetVendasResponse extends iVenda { }
+export interface iGetVendasResponse {
+    LOGIN: string,
+    COD_FUNCIONARIO?: number,
+    VALOR_VENDA: number,
+    VALOR_DEVOLUCAO: number,
+    VENDA_LIQUIDA: number,
+    TICKET_MEDIO: number,
+    LIMITE: number,
+    QTD_ITENS: number
+    QTD_VENDAS: number,
+}
 
 export interface iParamGetVendasDetalhes {
     DATA_INICIO: string;
@@ -66,3 +77,14 @@ export interface iGetVendasGraficosResponse {
     vendasPorDiaGrafico: iVendaPorDiaGrafico[],
     vendasPorHoraGrafico: iVendaPorHoraGrafico[]
 }
+
+export interface iGrupoImpressao {
+    ID_GRUPO_IMPRESSAO: number,
+    NOME: string,
+    FUNCIONARIOS: [{
+        ID_GRUPO_IMPRESSAO: number,
+        COD_FUNCIONARIO: number
+    }]
+}
+
+export interface iGetGruposImpressaoResponse extends iGrupoImpressao { }

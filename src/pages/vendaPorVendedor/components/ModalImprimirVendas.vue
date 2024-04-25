@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch, computed } from "vue";
-import { iVenda, iGrupo } from "../interfaces";
+import { iVenda } from "../interfaces";
 import utils from "@/ts/utils";
 import printJS from "print-js";
 import Swal from "sweetalert2";
@@ -23,16 +23,7 @@ watch(
         state.checkbox[key] = true;
       }
 
-      state.grupoSelecionado = [];
-
-      state.dbGrupo = [];
-
       state.selectColunas = "VALOR_VENDA";
-
-      for (let i = 0; i < localStorage.length; i++) {
-        let chave = localStorage.key(i);
-        state.dbGrupo.push({ nome: chave });
-      }
     }
   }
 );
@@ -47,23 +38,6 @@ const dadosToTable = computed(() => {
   });
 
   let vendas = [...state.dbVenda];
-
-  if (state.grupoSelecionado.length <= 0) {
-    return state.dbVenda;
-  }
-
-  vendas = [];
-
-  state.grupoSelecionado.forEach((index) => {
-    let chave = localStorage.key(index);
-    const grupo = JSON.parse(localStorage.getItem(chave))?.map((item) => item.LOGIN);
-
-    let vendedoresFiltrados = state.dbVenda.filter((venda) => {
-      return grupo.includes(venda.LOGIN);
-    });
-
-    vendas.push(...vendedoresFiltrados);
-  });
 
   return vendas;
 });
@@ -109,7 +83,7 @@ const state = reactive({
     {
       title: "Qtd. Média Itens",
       key: "QTD_MEDIA_ITENS",
-      value: (venda: iVenda) => actions.calcularQtdMediaItens(venda.QTD_ITENS, venda.QTD_VENDAS),
+      value: (venda: iVenda) => utils.formatValor(venda.QTD_MEDIA_ITENS),
       removable: true,
       align: "center",
     },
@@ -127,22 +101,12 @@ const state = reactive({
 
   dbVenda: <iVenda[]>[],
 
-  dbGrupo: <iGrupo[]>[],
-
-  grupoSelecionado: [],
-
-  selectColunas: "VALOR_VENDA",
+  selectColunas: "",
 
   loading: false,
 });
 
 const actions = {
-  calcularQtdMediaItens(qtdItens: number, qtdVendas: number) {
-    let resultado = qtdItens / qtdVendas;
-
-    return utils.formatValor(resultado);
-  },
-
   async btnPrint() {
     const colunasSelecionadas = Object.keys(state.checkbox).filter((key) => state.checkbox[key]);
 
@@ -174,7 +138,7 @@ const actions = {
           VALOR_DEVOLUCAO: utils.formatValor(venda.VALOR_DEVOLUCAO),
           VENDA_LIQUIDA: utils.formatValor(venda.VENDA_LIQUIDA),
           TICKET_MEDIO: utils.formatValor(venda.TICKET_MEDIO),
-          QTD_MEDIA_ITENS: utils.formatValor(venda.QTD_ITENS / venda.QTD_VENDAS),
+          QTD_MEDIA_ITENS: utils.formatValor(venda.QTD_MEDIA_ITENS),
         };
       });
 
@@ -203,24 +167,6 @@ const actions = {
 <template>
   <v-container>
     <div>
-      <div
-        class="chips pb-2"
-        v-if="state.dbGrupo.length > 0"
-      >
-        <h3>Grupos selecionados para impressão:</h3>
-        <v-chip-group
-          multiple
-          v-model="state.grupoSelecionado"
-        >
-          <v-chip
-            v-for="grupo in state.dbGrupo"
-            color="primary"
-            variant="tonal"
-            >{{ grupo.nome }}</v-chip
-          >
-        </v-chip-group>
-      </div>
-
       <div id="pnCampos">
         <h3>Ordenar por:</h3>
         <select
@@ -239,7 +185,7 @@ const actions = {
         class="mt-3 custom-table"
         :headers="state.headers"
         :items="dadosToTable"
-        :height="state.dbGrupo.length > 0 ? 388 : 472"
+        height="468"
         fixed-header
       >
         <template v-slot:headers="{ columns }">
@@ -264,7 +210,6 @@ const actions = {
       <v-btn
         color="primary"
         @click="actions.btnPrint"
-        :disabled="dadosToTable.length <= 0"
       >
         <v-icon
           size="20px"
@@ -293,13 +238,6 @@ const actions = {
 <style scoped>
 .custom-table {
   background-color: #f0f0f0;
-}
-
-.chips {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  gap: 4px;
 }
 
 .select_colunas {

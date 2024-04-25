@@ -4,6 +4,7 @@ import {
     iParamGetVendas,
     iParamGetVendasDetalhes,
     iGetVendasDetalhesResponse,
+    iGrupoImpressao,
 } from "./interfaces";
 import serviceVendasPorVendedor from './services/vendaPorVendedor.service'
 import utils from "@/ts/utils";
@@ -12,27 +13,47 @@ import moment from "moment";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 
 export const vendasOrdenadas = computed(() => {
-    let vendas = [...state.dbVendas]
+    let vendas = [];
 
-    let totalQtdVendas = 0;
+    if (state.grupoSelecionado.length > 0) {
+        let vendasGrupo = [];
+
+        state.grupoSelecionado.forEach(index => {
+            let funcionarios = state.dbGrupoImpressao[index].FUNCIONARIOS;
+
+            funcionarios.forEach(funcionario => {
+                let vendasFuncionario = state.dbVenda.filter(venda =>
+                    venda.COD_FUNCIONARIO == funcionario.COD_FUNCIONARIO
+                );
+
+                vendasGrupo = vendasGrupo.concat(vendasFuncionario);
+            })
+
+        });
+
+        vendas = [...vendasGrupo];
+    } else {
+        vendas = [...state.dbVenda];
+    }
+
     let totalLimite = 0;
-    let totalTicketMedio = 0;
-    let totalQtdItens = 0;
     let totalDevolucoes = 0;
     let totalValorVenda = 0;
     let totalValorLiquido = 0;
+    let totalQtdItens = 0;
+    let totalQtdVendas = 0;
 
     vendas.forEach(venda => {
 
-        totalQtdVendas += venda.QTD_VENDAS;
         totalLimite += venda.LIMITE;
-        totalTicketMedio += venda.TICKET_MEDIO;
-        totalQtdItens += venda.QTD_ITENS;
         totalDevolucoes += venda.VALOR_DEVOLUCAO;
         totalValorVenda += venda.VALOR_VENDA;
         totalValorLiquido += venda.VENDA_LIQUIDA;
+        totalQtdItens += venda.QTD_ITENS;
+        totalQtdVendas += venda.QTD_VENDAS;
+    });
 
-    })
+    vendas.sort((a, b) => b.VALOR_VENDA - a.VALOR_VENDA);
 
     if (vendas.length > 0) {
         let totalizador = {
@@ -40,21 +61,27 @@ export const vendasOrdenadas = computed(() => {
             LIMITE: totalLimite,
             VALOR_VENDA: totalValorVenda,
             VALOR_DEVOLUCAO: totalDevolucoes,
-            QTD_VENDAS: totalQtdVendas,
             VENDA_LIQUIDA: totalValorLiquido,
-            TICKET_MEDIO: totalTicketMedio,
-            QTD_ITENS: totalQtdItens
-        }
+            TICKET_MEDIO: totalValorLiquido / totalQtdVendas,
+            QTD_MEDIA_ITENS: totalQtdItens / totalQtdVendas
+        };
 
-        vendas.push(totalizador)
+        vendas.push(totalizador);
     }
 
-    return vendas
-})
+    return vendas;
+});
+
+export const dadosToPrint = computed(() => {
+    let dadosFiltrados = vendasOrdenadas.value.filter(venda => venda.LOGIN != 'Totalizador');
+
+    return dadosFiltrados;
+});
 
 export const state = reactive({
-    dbVendas: <iVenda[]>[],
+    dbVenda: <iVenda[]>[],
     dbVendasDetalhes: <iGetVendasDetalhesResponse>{},
+    dbGrupoImpressao: <iGrupoImpressao[]>[],
 
     modalVendasDetalhes: <iModalCreate>{},
     modalVendasDetalhesOpened: false,
@@ -94,7 +121,7 @@ export const state = reactive({
         },
         {
             title: 'Qtd. Média Itens', key: 'QTD_MEDIA_ITENS',
-            value: (venda: iVenda) => actions.calcularQtdMediaItens(venda.QTD_ITENS, venda.QTD_VENDAS),
+            value: (venda: iVenda) => utils.formatValor(venda.QTD_MEDIA_ITENS),
             align: 'end'
         },
         { title: 'Inf', key: 'inf', sortable: false, align: 'center', },
@@ -109,16 +136,12 @@ export const state = reactive({
     inputDataInicial: <HTMLInputElement>{},
     inputDataFinal: <HTMLInputElement>{},
 
+    grupoSelecionado: [],
+
     loading: false,
 })
 
 export const actions = {
-    calcularQtdMediaItens(qtdItens: number, qtdVendas: number) {
-        let resultado = qtdItens / qtdVendas
-
-        return utils.formatValor(resultado)
-    },
-
     async pesquisarVendas() {
         if (!state.dataInicial || !state.dataFinal) {
             await Swal.fire({
@@ -145,6 +168,7 @@ export const actions = {
 
         actions.createModais()
 
+        await actions.getGruposImpressao();
         await actions.getVendas();
     },
 
@@ -213,7 +237,22 @@ export const actions = {
 
             let data = await serviceVendasPorVendedor.getVendas(param);
 
-            state.dbVendas = data
+            state.dbVenda = []
+
+            data.map(venda => {
+                state.dbVenda.push({
+                    LOGIN: venda.LOGIN,
+                    COD_FUNCIONARIO: venda.COD_FUNCIONARIO,
+                    VALOR_VENDA: venda.VALOR_VENDA,
+                    VALOR_DEVOLUCAO: venda.VALOR_DEVOLUCAO,
+                    VENDA_LIQUIDA: venda.VENDA_LIQUIDA,
+                    TICKET_MEDIO: venda.TICKET_MEDIO,
+                    LIMITE: venda.LIMITE,
+                    QTD_ITENS: venda.QTD_ITENS,
+                    QTD_VENDAS: venda.QTD_VENDAS,
+                    QTD_MEDIA_ITENS: venda.QTD_ITENS / venda.QTD_VENDAS
+                })
+            })
 
             state.dataInicialModal = state.dataInicial
             state.dataFinalModal = state.dataFinal
@@ -247,6 +286,21 @@ export const actions = {
             })
         }
     },
+
+    async getGruposImpressao() {
+        try {
+            state.loading = true;
+            const data = await serviceVendasPorVendedor.getGruposImpressao();
+            state.dbGrupoImpressao = data
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao exibir os grupos de impressão!'
+            })
+        }
+    }
 }
 
 export default { state, actions }
