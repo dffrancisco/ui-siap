@@ -30,3 +30,12 @@ export interface iParamInsertGrupoImpressao extends iGetDuplicityGrupoImpressaoR
 export interface iInsertGrupoImpressaoResponse {
     ID_GRUPO_IMPRESSAO: number
 }
+
+export interface iParamUpdateGrupoImpressao {
+    ID_GRUPO_IMPRESSAO: number,
+    NOME: string
+}
+
+export interface iUpdateGrupoImpressaoResponse {
+    ID_GRUPO_IMPRESSAO: number
+}

@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import { iGrupo, iParamGetDuplicityGrupoImpressao, iParamGetGruposImpressao, iParamInsertGrupoImpressao } from "./interfaces";
+import { iGrupo, iParamGetDuplicityGrupoImpressao, iParamGetGruposImpressao, iParamInsertGrupoImpressao, iParamUpdateGrupoImpressao } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceGruposFuncionarios from './services/gruposFuncionarios.service'
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
@@ -177,9 +177,9 @@ export const actions = {
         }
 
         if (state.gridGruposFuncionarios.dataSource() == false) {
-            await actions.insertGrupoImpressao();
+            actions.insertGrupoImpressao();
         } else {
-            // actions.toUpdate();
+            await actions.updateGrupoImpressao();
         }
 
         state.gridGruposFuncionarios.enable();
@@ -234,6 +234,7 @@ export const actions = {
                 ID_GRUPO_IMPRESSAO: data.ID_GRUPO_IMPRESSAO
             })
 
+
             state.loading = false
 
             return data
@@ -242,6 +243,33 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao inserir o grupo!"
+            })
+        }
+    },
+
+    async updateGrupoImpressao() {
+        try {
+            state.loading = true;
+
+            let param: iParamUpdateGrupoImpressao = {
+                ID_GRUPO_IMPRESSAO: state.dbGrupo.ID_GRUPO_IMPRESSAO,
+                NOME: state.dbGrupo.NOME.toUpperCase()
+            }
+
+            let data = await serviceGruposFuncionarios.updateGrupoImpressao(param);
+
+            state.gridGruposFuncionarios.dataSource({
+                ...param
+            })
+
+            state.loading = false
+
+            return data
+        } catch (error) {
+            state.loading = false
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao alterar o grupo!"
             })
         }
     }
