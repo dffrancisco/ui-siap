@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+    iDeleteGrupoImpressaoFuncionarioResponse,
     iDeleteGrupoImpressaoResponse,
     iGetDuplicityGrupoImpressaoResponse,
     iGetFuncionariosResponse,
@@ -7,6 +8,7 @@ import {
     iInsertGrupoImpressaoFuncionarioResponse,
     iInsertGrupoImpressaoResponse,
     iParamDeleteGrupoImpressao,
+    iParamDeleteGrupoImpressaoFuncionario,
     iParamGetDuplicityGrupoImpressao,
     iParamGetGruposImpressao,
     iParamInsertGrupoImpressao,
@@ -27,7 +29,8 @@ type iDeleteGrupoImpressaoFunction = (param: iParamDeleteGrupoImpressao) => Prom
 type iGetFuncionariosFunction = () => Promise<iGetFuncionariosResponse[]>
 type iInsertGrupoImpressaoFuncionarioFunction = (param: iParamInsertGrupoImpressaoFuncionario) =>
     Promise<iInsertGrupoImpressaoFuncionarioResponse>
-
+type iDeleteGrupoImpressaoFuncionarioFunction = (param: iParamDeleteGrupoImpressaoFuncionario) =>
+    Promise<iDeleteGrupoImpressaoFuncionarioResponse>
 
 const getGruposImpressao: iGetGruposImpressaoFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -86,6 +89,14 @@ const insertGrupoImpressaoFuncionario: iInsertGrupoImpressaoFuncionarioFunction 
     return data;
 }
 
+const deleteGrupoImpressaoFuncionario: iDeleteGrupoImpressaoFuncionarioFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "deleteGrupoImpressaoFuncionario",
+        param
+    })
+    return data;
+}
+
 export default {
     getGruposImpressao,
     getDuplicityGrupoImpressao,
@@ -93,5 +104,6 @@ export default {
     updateGrupoImpressao,
     deleteGrupoImpressao,
     getFuncionarios,
-    insertGrupoImpressaoFuncionario
+    insertGrupoImpressaoFuncionario,
+    deleteGrupoImpressaoFuncionario
 }

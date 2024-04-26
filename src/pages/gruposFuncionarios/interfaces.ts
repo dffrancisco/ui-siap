@@ -64,3 +64,12 @@ export interface iParamInsertGrupoImpressaoFuncionario extends iFuncionarioGrupo
 export interface iInsertGrupoImpressaoFuncionarioResponse {
     COD_FUNCIONARIO: number,
 }
+
+export interface iParamDeleteGrupoImpressaoFuncionario {
+    COD_FUNCIONARIO: number,
+    ID_GRUPO_IMPRESSAO: number
+}
+
+export interface iDeleteGrupoImpressaoFuncionarioResponse {
+    msg: string
+}
