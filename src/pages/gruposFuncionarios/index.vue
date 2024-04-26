@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { nextTick } from "vue";
 import { state, actions } from "./gruposFuncionarios";
+import ModalAddFuncionariosGrupo from "./components/ModalAddFuncionariosGrupo.vue";
 
 nextTick(async () => {
   actions.init();
@@ -57,6 +58,10 @@ nextTick(async () => {
         id="modalAddFuncionariosGrupo"
         style="display: none"
       >
+        <ModalAddFuncionariosGrupo
+          :modalOpened="state.modalAddFuncionariosGrupoOpened"
+          :funcionarioGrupo="state.dbGrupo.FUNCIONARIOS"
+        />
       </div>
     </v-card>
     <div id="pnCodigoTela">GRUPOS_FUNCIONARIOS</div>

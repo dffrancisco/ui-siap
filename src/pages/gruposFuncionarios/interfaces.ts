@@ -45,3 +45,22 @@ export interface iParamDeleteGrupoImpressao extends iUpdateGrupoImpressaoRespons
 export interface iDeleteGrupoImpressaoResponse {
     msg: string
 }
+
+export interface iListaFuncionario {
+    CPF: string,
+    COD_FUNCIONARIO: number,
+    LOGIN: string
+}
+
+export interface iGetFuncionariosResponse extends iListaFuncionario { }
+
+export interface iFuncionarioGrupo {
+    COD_FUNCIONARIO?: number,
+    ID_GRUPO_IMPRESSAO?: number
+}
+
+export interface iParamInsertGrupoImpressaoFuncionario extends iFuncionarioGrupo { }
+
+export interface iInsertGrupoImpressaoFuncionarioResponse {
+    COD_FUNCIONARIO: number,
+}

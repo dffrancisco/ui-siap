@@ -2,12 +2,15 @@ import axios from "axios";
 import {
     iDeleteGrupoImpressaoResponse,
     iGetDuplicityGrupoImpressaoResponse,
+    iGetFuncionariosResponse,
     iGetGruposImpressaoResponse,
+    iInsertGrupoImpressaoFuncionarioResponse,
     iInsertGrupoImpressaoResponse,
     iParamDeleteGrupoImpressao,
     iParamGetDuplicityGrupoImpressao,
     iParamGetGruposImpressao,
     iParamInsertGrupoImpressao,
+    iParamInsertGrupoImpressaoFuncionario,
     iParamUpdateGrupoImpressao,
     iUpdateGrupoImpressaoResponse
 } from "../interfaces";
@@ -21,6 +24,10 @@ type iGetDuplicityGrupoImpressaoFunction = ({ field, value }: iParamGetDuplicity
 type iInsertGrupoImpressaoFunction = (param: iParamInsertGrupoImpressao) => Promise<iInsertGrupoImpressaoResponse>
 type iUpdateGrupoImpressaoFunction = (param: iParamUpdateGrupoImpressao) => Promise<iUpdateGrupoImpressaoResponse>
 type iDeleteGrupoImpressaoFunction = (param: iParamDeleteGrupoImpressao) => Promise<iDeleteGrupoImpressaoResponse>
+type iGetFuncionariosFunction = () => Promise<iGetFuncionariosResponse[]>
+type iInsertGrupoImpressaoFuncionarioFunction = (param: iParamInsertGrupoImpressaoFuncionario) =>
+    Promise<iInsertGrupoImpressaoFuncionarioResponse>
+
 
 const getGruposImpressao: iGetGruposImpressaoFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -64,10 +71,27 @@ const deleteGrupoImpressao: iDeleteGrupoImpressaoFunction = async (param) => {
     return data;
 }
 
+const getFuncionarios: iGetFuncionariosFunction = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getFuncionarios"
+    })
+    return data;
+}
+
+const insertGrupoImpressaoFuncionario: iInsertGrupoImpressaoFuncionarioFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "insertGrupoImpressaoFuncionario",
+        param
+    })
+    return data;
+}
+
 export default {
     getGruposImpressao,
     getDuplicityGrupoImpressao,
     insertGrupoImpressao,
     updateGrupoImpressao,
     deleteGrupoImpressao,
+    getFuncionarios,
+    insertGrupoImpressaoFuncionario
 }

@@ -1,5 +1,12 @@
 import { reactive } from "vue";
-import { iGrupo, iParamDeleteGrupoImpressao, iParamGetDuplicityGrupoImpressao, iParamGetGruposImpressao, iParamInsertGrupoImpressao, iParamUpdateGrupoImpressao } from "./interfaces";
+import {
+    iGrupo,
+    iParamDeleteGrupoImpressao,
+    iParamGetDuplicityGrupoImpressao,
+    iParamGetGruposImpressao,
+    iParamInsertGrupoImpressao,
+    iParamUpdateGrupoImpressao
+} from "./interfaces";
 import Swal from "sweetalert2";
 import serviceGruposFuncionarios from './services/gruposFuncionarios.service'
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
@@ -105,8 +112,8 @@ export const actions = {
         state.modalAddFuncionariosGrupo = new xModal.create({
             el: "#modalAddFuncionariosGrupo",
             title: "Adicionar Funcionários ao Grupo",
-            height: 400,
-            width: 600,
+            height: 580,
+            width: 524,
             theme: "xModal-blue",
             onOpen: () => { state.modalAddFuncionariosGrupoOpened = true },
             onClose: () => { state.modalAddFuncionariosGrupoOpened = false }
