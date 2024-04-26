@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import moment from "moment";
-import { state, actions, vendasOrdenadas, dadosToPrint } from "./vendaPorVendedor";
+import { state, actions, vendasOrdenadas, dadosToPrint, dataHoje } from "./vendaPorVendedor";
 import { nextTick } from "vue";
 import ModalVendasDetalhes from "./components/ModalVendasDetalhes.vue";
 import ModalVendasGraficos from "./components/ModalVendasGraficos.vue";
@@ -48,7 +47,7 @@ nextTick(() => {
               type="date"
               class="ss obr"
               maxlength="10"
-              :max="state.dataHoje"
+              :max="dataHoje"
               @keydown.enter="state.inputDataFinal.focus()"
             />
           </div>
@@ -60,7 +59,7 @@ nextTick(() => {
               name="DATA_FINAL"
               type="date"
               class="ss obr"
-              :max="state.dataHoje"
+              :max="dataHoje"
               @keydown.enter.prevent="actions.pesquisarVendas"
               maxlength="10"
             />
