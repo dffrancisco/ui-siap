@@ -59,8 +59,10 @@ nextTick(async () => {
         style="display: none"
       >
         <ModalAddFuncionariosGrupo
+          :idGrupoImpressao="state.dbGrupo.ID_GRUPO_IMPRESSAO"
           :modalOpened="state.modalAddFuncionariosGrupoOpened"
           :funcionarioGrupo="state.dbGrupo.FUNCIONARIOS"
+          @closeModal="actions.closeModalAddFuncionariosGrupo"
         />
       </div>
     </v-card>

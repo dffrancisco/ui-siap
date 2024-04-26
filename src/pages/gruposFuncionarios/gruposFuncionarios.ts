@@ -1,5 +1,6 @@
 import { reactive } from "vue";
 import {
+    iFuncionarioGrupo,
     iGrupo,
     iParamDeleteGrupoImpressao,
     iParamGetDuplicityGrupoImpressao,
@@ -115,6 +116,7 @@ export const actions = {
             height: 580,
             width: 524,
             theme: "xModal-blue",
+            closeBtn: false,
             onOpen: () => { state.modalAddFuncionariosGrupoOpened = true },
             onClose: () => { state.modalAddFuncionariosGrupoOpened = false }
         });
@@ -195,6 +197,16 @@ export const actions = {
 
     btnCancel() {
         state.gridGruposFuncionarios.enable();
+    },
+
+    async closeModalAddFuncionariosGrupo(funcionarios: iFuncionarioGrupo) {
+        await state.gridGruposFuncionarios.dataSource({
+            FUNCIONARIOS: funcionarios
+        })
+
+        state.gridGruposFuncionarios.focus()
+
+        state.modalAddFuncionariosGrupo.close();
     },
 
     async getGruposImpressao({ offset, param }: iParamGetGruposImpressao) {

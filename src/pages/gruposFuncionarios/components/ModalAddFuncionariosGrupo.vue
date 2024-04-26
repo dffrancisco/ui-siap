@@ -3,19 +3,29 @@ import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceGruposFuncionarios from "../services/gruposFuncionarios.service";
 import { watch } from "vue";
-import { iListaFuncionario, iFuncionarioGrupo } from "../interfaces";
+import {
+  iListaFuncionario,
+  iFuncionarioGrupo,
+  iFuncionarioGrupoOrdenado,
+  iParamInsertGrupoImpressaoFuncionario,
+  iParamDeleteGrupoImpressaoFuncionario,
+} from "../interfaces";
+import { computed } from "vue";
+import { nextTick } from "vue";
 
 const props = defineProps<{
   modalOpened: boolean;
-  funcionarioGrupo: iFuncionarioGrupo[];
+  funcionarioGrupo: iFuncionarioGrupo[] | undefined;
+  idGrupoImpressao: number | undefined;
 }>();
+
+const emits = defineEmits(["closeModal"]);
 
 watch(
   () => props.modalOpened,
   () => {
     if (props.modalOpened) {
-      actions.getFuncionarios();
-
+      state.selectFuncionario = null;
       state.dbFuncionarioGrupo = [];
 
       state.dbFuncionarioGrupo = [...props.funcionarioGrupo];
@@ -23,18 +33,44 @@ watch(
   }
 );
 
+const funcionariosGrupoOrdenados = computed(() => {
+  let funcionariosGrupo: iFuncionarioGrupoOrdenado[] = [];
+
+  state.dbFuncionarioGrupo.forEach((grupo) => {
+    const funcionario = state.listaFuncionarios.find(
+      (funcionario) => funcionario.COD_FUNCIONARIO == grupo.COD_FUNCIONARIO
+    );
+
+    if (funcionario) {
+      funcionariosGrupo.push(funcionario);
+    }
+  });
+
+  funcionariosGrupo.sort((a, b) => {
+    return a.LOGIN.localeCompare(b.LOGIN);
+  });
+
+  return funcionariosGrupo;
+});
+
 const state = reactive({
   dbFuncionarioGrupo: <iFuncionarioGrupo[]>[],
 
   listaFuncionarios: <iListaFuncionario[]>[],
 
+  selectFuncionario: null,
+
   loading: false,
 });
 
 const actions = {
-  getUrlFotoFuncionario: (cpf: string) => {
+  getUrlFotoFuncionario(cpf: string) {
     let cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
     return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=https://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
+  },
+
+  closeModal() {
+    emits("closeModal", state.dbFuncionarioGrupo);
   },
 
   async getFuncionarios() {
@@ -51,7 +87,71 @@ const actions = {
       });
     }
   },
+
+  async insertGrupoImpressaoFuncionario() {
+    try {
+      if (state.selectFuncionario == null) {
+        return;
+      }
+
+      state.loading = true;
+
+      const funcionarioExistente = state.dbFuncionarioGrupo.find(
+        (funcionario) => funcionario.COD_FUNCIONARIO == state.selectFuncionario.COD_FUNCIONARIO
+      );
+
+      if (funcionarioExistente) {
+        return;
+      }
+
+      let param: iParamInsertGrupoImpressaoFuncionario = {
+        ID_GRUPO_IMPRESSAO: props.idGrupoImpressao,
+        COD_FUNCIONARIO: state.selectFuncionario,
+      };
+
+      state.dbFuncionarioGrupo.push(param);
+
+      await serviceGruposFuncionarios.insertGrupoImpressaoFuncionario(param);
+
+      state.loading = false;
+    } catch (error) {
+      state.loading = false;
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao inserir o funcionário!",
+      });
+    }
+  },
+
+  async deleteGrupoImpressaoFuncionario(codFuncionario: number) {
+    try {
+      state.loading = true;
+
+      state.dbFuncionarioGrupo = state.dbFuncionarioGrupo.filter(
+        (funcionario) => funcionario.COD_FUNCIONARIO != codFuncionario
+      );
+
+      let param: iParamDeleteGrupoImpressaoFuncionario = {
+        ID_GRUPO_IMPRESSAO: props.idGrupoImpressao,
+        COD_FUNCIONARIO: codFuncionario,
+      };
+
+      await serviceGruposFuncionarios.deleteGrupoImpressaoFuncionario(param);
+
+      state.loading = false;
+    } catch (error) {
+      state.loading = false;
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao deletar o funcionário!",
+      });
+    }
+  },
 };
+
+nextTick(async () => {
+  await actions.getFuncionarios();
+});
 </script>
 
 <template>
@@ -59,16 +159,18 @@ const actions = {
     <div>
       <v-autocomplete
         label="Funcionários"
+        v-model="state.selectFuncionario"
         :items="state.listaFuncionarios"
         item-title="LOGIN"
         item-value="COD_FUNCIONARIO"
+        @update:model-value="actions.insertGrupoImpressaoFuncionario"
         clearable
       />
     </div>
     <div class="card-box mt-5">
       <div class="card-container">
         <v-card
-          v-for="funcionario in state.dbFuncionarioGrupo"
+          v-for="funcionario in funcionariosGrupoOrdenados"
           class="card-funcionario"
         >
           <v-row class="dados-funcionario">
@@ -79,7 +181,7 @@ const actions = {
               >
                 <v-img
                   cover
-                  :src="actions.getUrlFotoFuncionario('090.479.381-86')"
+                  :src="actions.getUrlFotoFuncionario(funcionario.CPF)"
                 >
                   <template v-slot:error>
                     <v-icon
@@ -95,13 +197,14 @@ const actions = {
               cols="6"
               class="d-flex justify-center"
             >
-              <span>VINICIUS MEDEIR</span>
+              <span>{{ funcionario.LOGIN }}</span>
             </v-col>
             <v-col cols="3">
               <v-btn
                 variant="text"
                 icon="mdi-close"
                 title="DELETAR"
+                @click="actions.deleteGrupoImpressaoFuncionario(funcionario.COD_FUNCIONARIO)"
               />
             </v-col>
           </v-row>
@@ -111,12 +214,16 @@ const actions = {
         class="span-sem-funcionarios"
         v-if="state.dbFuncionarioGrupo.length <= 0"
         :class="{ 'centered-span-sem-funcionarios': state.dbFuncionarioGrupo.length <= 0 }"
-        >Sem funcionários...</span
       >
+        Sem funcionários...
+      </span>
     </div>
-    <div class="btns mt-5">
-      <v-btn color="primary">cancelar</v-btn>
-      <v-btn color="primary">salvar</v-btn>
+    <div class="btn mt-5">
+      <v-btn
+        @click="actions.closeModal"
+        color="primary"
+        >fechar</v-btn
+      >
     </div>
 
     <v-overlay
@@ -134,7 +241,7 @@ const actions = {
 </template>
 
 <style scoped>
-.btns {
+.btn {
   display: flex;
   justify-content: flex-end;
   gap: 4px;

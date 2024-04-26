@@ -73,3 +73,9 @@ export interface iParamDeleteGrupoImpressaoFuncionario {
 export interface iDeleteGrupoImpressaoFuncionarioResponse {
     msg: string
 }
+
+export interface iFuncionarioGrupoOrdenado {
+    CPF: string,
+    COD_FUNCIONARIO: number,
+    LOGIN: string
+}
