@@ -1,22 +1,20 @@
 <script lang="ts" setup>
 import Swal from "sweetalert2";
-import { reactive } from "vue";
+import { reactive, watch, computed } from "vue";
 import serviceGruposFuncionarios from "../services/gruposFuncionarios.service";
-import { watch } from "vue";
 import {
-  iListaFuncionario,
   iFuncionarioGrupo,
   iFuncionarioGrupoOrdenado,
   iParamInsertGrupoImpressaoFuncionario,
   iParamDeleteGrupoImpressaoFuncionario,
+  iListaFuncionario,
 } from "../interfaces";
-import { computed } from "vue";
-import { nextTick } from "vue";
 
 const props = defineProps<{
   modalOpened: boolean;
   funcionarioGrupo: iFuncionarioGrupo[] | undefined;
   idGrupoImpressao: number | undefined;
+  listaFuncionarios: iListaFuncionario[];
 }>();
 
 const emits = defineEmits(["closeModal"]);
@@ -37,7 +35,7 @@ const funcionariosGrupoOrdenados = computed(() => {
   let funcionariosGrupo: iFuncionarioGrupoOrdenado[] = [];
 
   state.dbFuncionarioGrupo.forEach((grupo) => {
-    const funcionario = state.listaFuncionarios.find(
+    const funcionario = props.listaFuncionarios.find(
       (funcionario) => funcionario.COD_FUNCIONARIO == grupo.COD_FUNCIONARIO
     );
 
@@ -56,8 +54,6 @@ const funcionariosGrupoOrdenados = computed(() => {
 const state = reactive({
   dbFuncionarioGrupo: <iFuncionarioGrupo[]>[],
 
-  listaFuncionarios: <iListaFuncionario[]>[],
-
   selectFuncionario: null,
 
   loading: false,
@@ -71,21 +67,6 @@ const actions = {
 
   closeModal() {
     emits("closeModal", state.dbFuncionarioGrupo);
-  },
-
-  async getFuncionarios() {
-    try {
-      state.loading = true;
-      const data = await serviceGruposFuncionarios.getFuncionarios();
-      state.listaFuncionarios = data;
-      state.loading = false;
-    } catch (error) {
-      state.loading = false;
-      Swal.fire({
-        icon: "error",
-        text: "Erro ao buscar os funcionários!",
-      });
-    }
   },
 
   async insertGrupoImpressaoFuncionario() {
@@ -148,10 +129,6 @@ const actions = {
     }
   },
 };
-
-nextTick(async () => {
-  await actions.getFuncionarios();
-});
 </script>
 
 <template>
@@ -160,7 +137,7 @@ nextTick(async () => {
       <v-autocomplete
         label="Funcionários"
         v-model="state.selectFuncionario"
-        :items="state.listaFuncionarios"
+        :items="props.listaFuncionarios"
         item-title="LOGIN"
         item-value="COD_FUNCIONARIO"
         @update:model-value="actions.insertGrupoImpressaoFuncionario"
@@ -263,7 +240,7 @@ nextTick(async () => {
   border: 2px solid #9ab5e5;
   background-color: #c1d8ff;
   border-radius: 15px;
-  width: 222px;
+  width: 244px;
   height: 52px;
 }
 .avatar {

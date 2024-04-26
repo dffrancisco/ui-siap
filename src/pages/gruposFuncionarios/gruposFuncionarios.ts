@@ -2,6 +2,7 @@ import { reactive } from "vue";
 import {
     iFuncionarioGrupo,
     iGrupo,
+    iListaFuncionario,
     iParamDeleteGrupoImpressao,
     iParamGetDuplicityGrupoImpressao,
     iParamGetGruposImpressao,
@@ -22,6 +23,7 @@ export const state = reactive({
     modalAddFuncionariosGrupoOpened: false,
 
     dbGrupo: <iGrupo>{},
+    listaFuncionarios: <iListaFuncionario[]>[],
 
     loading: false,
 })
@@ -114,7 +116,7 @@ export const actions = {
             el: "#modalAddFuncionariosGrupo",
             title: "Adicionar Funcionários ao Grupo",
             height: 580,
-            width: 524,
+            width: 568,
             theme: "xModal-blue",
             closeBtn: false,
             onOpen: () => { state.modalAddFuncionariosGrupoOpened = true },
@@ -125,6 +127,7 @@ export const actions = {
     init() {
         actions.criarGrid()
         actions.criarModal()
+        actions.getFuncionarios()
 
         state.gridGruposFuncionarios.queryOpen({ DESCRICAO: "" }, () => {
             state.gridGruposFuncionarios.focus();
@@ -313,7 +316,22 @@ export const actions = {
                 text: "Erro ao excluir o grupo!"
             })
         }
-    }
+    },
+
+    async getFuncionarios() {
+        try {
+            state.loading = true;
+            const data = await serviceGruposFuncionarios.getFuncionarios();
+            state.listaFuncionarios = data;
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os funcionários!",
+            });
+        }
+    },
 }
 
 export default { state, actions }

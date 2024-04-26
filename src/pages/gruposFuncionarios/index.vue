@@ -63,6 +63,7 @@ nextTick(async () => {
           :modalOpened="state.modalAddFuncionariosGrupoOpened"
           :funcionarioGrupo="state.dbGrupo.FUNCIONARIOS"
           @closeModal="actions.closeModalAddFuncionariosGrupo"
+          :listaFuncionarios="state.listaFuncionarios"
         />
       </div>
     </v-card>
