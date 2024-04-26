@@ -96,6 +96,7 @@ nextTick(() => {
             v-if="item.COD_FUNCIONARIO != null"
             size="large"
             color="primary"
+            title="Ver detalhes"
             @click="actions.openModalVendasDetalhes(item.LOGIN, item.COD_FUNCIONARIO)"
           >
             mdi-information
