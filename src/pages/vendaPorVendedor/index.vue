@@ -48,7 +48,7 @@ nextTick(() => {
               type="date"
               class="ss obr"
               maxlength="10"
-              :max="moment().format('YYYY-MM-DD')"
+              :max="state.dataHoje"
               @keydown.enter="state.inputDataFinal.focus()"
             />
           </div>
@@ -60,7 +60,7 @@ nextTick(() => {
               name="DATA_FINAL"
               type="date"
               class="ss obr"
-              :max="moment().format('YYYY-MM-DD')"
+              :max="state.dataHoje"
               @keydown.enter.prevent="actions.pesquisarVendas"
               maxlength="10"
             />

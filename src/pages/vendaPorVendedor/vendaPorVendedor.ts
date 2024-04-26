@@ -127,6 +127,8 @@ export const state = reactive({
         { title: 'Inf', key: 'inf', sortable: false, align: 'center', },
     ],
 
+    dataHoje: moment().format('YYYY-MM-DD'),
+
     dataInicial: moment().format('YYYY-MM-DD'),
     dataFinal: moment().format('YYYY-MM-DD'),
 
