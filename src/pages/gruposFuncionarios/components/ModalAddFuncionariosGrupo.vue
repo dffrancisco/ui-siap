@@ -26,7 +26,9 @@ watch(
       state.selectFuncionario = null;
       state.dbFuncionarioGrupo = [];
 
-      state.dbFuncionarioGrupo = [...props.funcionarioGrupo];
+      if (Array.isArray(props.funcionarioGrupo)) {
+        state.dbFuncionarioGrupo = [...props.funcionarioGrupo];
+      }
     }
   }
 );
@@ -75,15 +77,15 @@ const actions = {
         return;
       }
 
-      state.loading = true;
-
-      const funcionarioExistente = state.dbFuncionarioGrupo.find(
-        (funcionario) => funcionario.COD_FUNCIONARIO == state.selectFuncionario.COD_FUNCIONARIO
+      const funcionarioExistente = state.dbFuncionarioGrupo.some(
+        (funcionario) => funcionario.COD_FUNCIONARIO == state.selectFuncionario
       );
 
       if (funcionarioExistente) {
         return;
       }
+
+      state.loading = true;
 
       let param: iParamInsertGrupoImpressaoFuncionario = {
         ID_GRUPO_IMPRESSAO: props.idGrupoImpressao,

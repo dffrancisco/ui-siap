@@ -1,6 +1,7 @@
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import {
     iFuncionarioGrupo,
+    iFuncionarioGrupoOrdenado,
     iGrupo,
     iListaFuncionario,
     iParamDeleteGrupoImpressao,
@@ -16,6 +17,30 @@ import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 
+
+export const funcionariosGrupoOrdenados = computed(() => {
+    let funcionariosGrupo: iFuncionarioGrupoOrdenado[] = [];
+
+    if (Array.isArray(state.dbGrupo.FUNCIONARIOS)) {
+        state.dbGrupo.FUNCIONARIOS.forEach((grupo) => {
+            const funcionario = state.listaFuncionarios.find(
+                (funcionario) => funcionario.COD_FUNCIONARIO == grupo.COD_FUNCIONARIO
+            );
+
+            if (funcionario) {
+                funcionariosGrupo.push(funcionario);
+            }
+        });
+    }
+
+    funcionariosGrupo.sort((a, b) => {
+        return a.LOGIN.localeCompare(b.LOGIN);
+    });
+
+    return funcionariosGrupo;
+});
+
+
 export const state = reactive({
     gridGruposFuncionarios: <ixGridCreate>{},
 
@@ -24,6 +49,8 @@ export const state = reactive({
 
     dbGrupo: <iGrupo>{},
     listaFuncionarios: <iListaFuncionario[]>[],
+
+    searchDisabled: false,
 
     loading: false,
 })
@@ -107,7 +134,8 @@ export const actions = {
                 }
             }, enter: function () {
                 document.getElementById('btnUpdate').click()
-            }
+            },
+            dblClick: actions.btnAddFuncionarios
         });
     },
 
@@ -119,6 +147,7 @@ export const actions = {
             width: 568,
             theme: "xModal-blue",
             closeBtn: false,
+            esc: false,
             onOpen: () => { state.modalAddFuncionariosGrupoOpened = true },
             onClose: () => { state.modalAddFuncionariosGrupoOpened = false }
         });
@@ -134,10 +163,19 @@ export const actions = {
         });
     },
 
-    btnInsert() {
+    getUrlFotoFuncionario(cpf: string) {
+        let cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
+        return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=https://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
+    },
+
+    async btnInsert() {
         state.gridGruposFuncionarios.disable();
         state.gridGruposFuncionarios.focusField();
         state.gridGruposFuncionarios.clearElementSideBySide();
+
+
+        state.searchDisabled = true
+
     },
 
     btnUpdate() {
@@ -148,6 +186,8 @@ export const actions = {
             })
             return false;
         }
+
+        state.searchDisabled = true;
         state.gridGruposFuncionarios.disable();
         state.gridGruposFuncionarios.focusField();
     },
@@ -194,16 +234,19 @@ export const actions = {
             await actions.updateGrupoImpressao();
         }
 
+        state.searchDisabled = false;
         state.gridGruposFuncionarios.enable();
         state.gridGruposFuncionarios.focus();
     },
 
     btnCancel() {
+        state.searchDisabled = false
         state.gridGruposFuncionarios.enable();
     },
 
-    async closeModalAddFuncionariosGrupo(funcionarios: iFuncionarioGrupo) {
-        await state.gridGruposFuncionarios.dataSource({
+    closeModalAddFuncionariosGrupo(funcionarios: iFuncionarioGrupo) {
+
+        state.gridGruposFuncionarios.dataSource({
             FUNCIONARIOS: funcionarios
         })
 
@@ -253,9 +296,9 @@ export const actions = {
 
             state.gridGruposFuncionarios.insertLine({
                 ...param,
-                ID_GRUPO_IMPRESSAO: data.ID_GRUPO_IMPRESSAO
+                ID_GRUPO_IMPRESSAO: data.ID_GRUPO_IMPRESSAO,
+                FUNCIONARIOS: []
             })
-
 
             state.loading = false
 
