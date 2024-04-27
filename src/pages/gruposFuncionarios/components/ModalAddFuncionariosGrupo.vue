@@ -12,8 +12,8 @@ import {
 
 const props = defineProps<{
   modalOpened: boolean;
-  funcionarioGrupo: iFuncionarioGrupo[] | undefined;
-  idGrupoImpressao: number | undefined;
+  funcionarioGrupo?: iFuncionarioGrupo[];
+  idGrupoImpressao?: number;
   listaFuncionarios: iListaFuncionario[];
 }>();
 
@@ -26,7 +26,7 @@ watch(
       state.selectFuncionario = null;
       state.dbFuncionarioGrupo = [];
 
-      if (Array.isArray(props.funcionarioGrupo)) {
+      if (props.funcionarioGrupo) {
         state.dbFuncionarioGrupo = [...props.funcionarioGrupo];
       }
     }

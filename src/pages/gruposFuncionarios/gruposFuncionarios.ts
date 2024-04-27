@@ -21,7 +21,7 @@ import utils from "@/ts/utils";
 export const funcionariosGrupoOrdenados = computed(() => {
     let funcionariosGrupo: iFuncionarioGrupoOrdenado[] = [];
 
-    if (Array.isArray(state.dbGrupo.FUNCIONARIOS)) {
+    if (state.dbGrupo?.FUNCIONARIOS) {
         state.dbGrupo.FUNCIONARIOS.forEach((grupo) => {
             const funcionario = state.listaFuncionarios.find(
                 (funcionario) => funcionario.COD_FUNCIONARIO == grupo.COD_FUNCIONARIO

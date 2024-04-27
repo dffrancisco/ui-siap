@@ -44,6 +44,13 @@ onUnmounted(() => {
       </div>
 
       <div class="card-box mt-2">
+        <span
+          v-if="state.dbGrupo.FUNCIONARIOS?.length <= 0"
+          class="span-sem-funcionarios"
+        >
+          Sem funcionários...
+        </span>
+
         <div class="card-container">
           <v-card
             v-for="funcionario in funcionariosGrupoOrdenados"
@@ -169,5 +176,14 @@ onUnmounted(() => {
 .dados-funcionario {
   display: flex;
   align-items: center;
+}
+
+.span-sem-funcionarios {
+  font-size: 20px;
+  color: gray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
 }
 </style>
