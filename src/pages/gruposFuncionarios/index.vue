@@ -30,7 +30,7 @@ onUnmounted(() => {
     >
       <div id="pnCampos">
         <div>
-          <span>Nome</span>
+          <span>Nome do Grupo</span>
           <input
             type="text"
             v-model="state.dbGrupo.NOME"
