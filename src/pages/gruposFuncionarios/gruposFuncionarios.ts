@@ -1,4 +1,4 @@
-import { computed, reactive } from "vue";
+import { computed, nextTick, reactive } from "vue";
 import {
     iFuncionarioGrupo,
     iFuncionarioGrupoOrdenado,
@@ -51,6 +51,8 @@ export const state = reactive({
     listaFuncionarios: <iListaFuncionario[]>[],
 
     searchDisabled: false,
+
+    inputSearch: <HTMLInputElement>{},
 
     loading: false,
 })
@@ -158,8 +160,15 @@ export const actions = {
         actions.criarModal()
         actions.getFuncionarios()
 
+        state.inputSearch = <any>document.getElementById("edtSearch")
+
         state.gridGruposFuncionarios.queryOpen({ DESCRICAO: "" }, () => {
             state.gridGruposFuncionarios.focus();
+        });
+    },
+
+    searchGrupos() {
+        state.gridGruposFuncionarios.queryOpen({ DESCRICAO: state.inputSearch.value.toUpperCase() }, () => {
         });
     },
 
@@ -169,16 +178,15 @@ export const actions = {
     },
 
     async btnInsert() {
+        state.searchDisabled = true
+        state.dbGrupo = {} as iGrupo
+        await nextTick();
+
         state.gridGruposFuncionarios.disable();
         state.gridGruposFuncionarios.focusField();
-        state.gridGruposFuncionarios.clearElementSideBySide();
-
-
-        state.searchDisabled = true
-
     },
 
-    btnUpdate() {
+    async btnUpdate() {
         if (state.gridGruposFuncionarios.dataSource() == false) {
             Swal.fire({
                 icon: "warning",
@@ -188,6 +196,8 @@ export const actions = {
         }
 
         state.searchDisabled = true;
+        await nextTick()
+
         state.gridGruposFuncionarios.disable();
         state.gridGruposFuncionarios.focusField();
     },
@@ -234,14 +244,21 @@ export const actions = {
             await actions.updateGrupoImpressao();
         }
 
+
         state.searchDisabled = false;
+        await nextTick();
+
         state.gridGruposFuncionarios.enable();
         state.gridGruposFuncionarios.focus();
     },
 
-    btnCancel() {
+    async btnCancel() {
         state.searchDisabled = false
+        let linhaGrid = <any>state.gridGruposFuncionarios.getIndex()
+        await nextTick();
+
         state.gridGruposFuncionarios.enable();
+        state.gridGruposFuncionarios.focus(linhaGrid);
     },
 
     closeModalAddFuncionariosGrupo(funcionarios: iFuncionarioGrupo) {

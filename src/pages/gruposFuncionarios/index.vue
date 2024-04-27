@@ -1,16 +1,28 @@
 <script setup lang="ts">
-import { nextTick } from "vue";
+import { nextTick, onUnmounted } from "vue";
 import { state, actions, funcionariosGrupoOrdenados } from "./gruposFuncionarios";
 import ModalAddFuncionariosGrupo from "./components/ModalAddFuncionariosGrupo.vue";
+import { useEventListener } from "@vueuse/core";
+
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key == "F1" && !state.modalAddFuncionariosGrupoOpened) {
+    state.inputSearch.select();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
 
 nextTick(async () => {
   actions.init();
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
 });
 </script>
 
 <template>
   <v-container>
-    {{ state.dbGrupo }}
     <v-card
       width="700"
       class="pa-5"
@@ -77,12 +89,15 @@ nextTick(async () => {
           id="edtSearch"
           class="ss"
           :disabled="state.searchDisabled"
+          @keyup.arrow-down="state.gridGruposFuncionarios.focus(0)"
+          @keydown.enter="actions.searchGrupos"
         />
         <v-btn
           size="small"
           class="ml-2 mt-1 elevation-0"
           color="primary"
           :disabled="state.searchDisabled"
+          @click="actions.searchGrupos"
         >
           Localizar
         </v-btn>
