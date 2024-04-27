@@ -3,7 +3,9 @@ import { RouteLocationNormalizedLoaded } from "vue-router";
 import {
     iDadosDocumento,
     iGetDadosParaImpressaoIndividual,
+    iListaCodFuncionario,
     iParamDocumentoAusencia,
+    iParamGetListaCodFuncionarios,
     iPonto,
     iTipoFaltas,
     iTotalizadorDeFaltas,
@@ -48,7 +50,10 @@ export const state = reactive({
     modalImprimirFolhaPontoOpened: false,
     dadosParaModalImpressao: {},
     totalizadorFaltas: <iTotalizadorDeFaltas[]>[],
-    loadingTotais: false
+    loadingTotais: false,
+    listaCodFuncionarios: <iListaCodFuncionario[]>[],
+    nextFuncionarioBtnDisabled: false,
+    backFuncionarioBtnDisabled: false
 });
 
 export const anos = computed(() => {
@@ -341,8 +346,42 @@ export const actions = {
             state.ano = Number(route.query.ano);
             state.initialDate = new Date(state.ano, state.mes - 1, 1);
 
+            actions.getListaCodFuncionarios();
+
             actions.carregarDados();
         });
+    },
+
+    nextFuncionario() {
+        const currentIndex = state.listaCodFuncionarios.findIndex(funcionario =>
+            funcionario.COD_FUNCIONARIO == state.codFuncionario
+        );
+
+        const nextIndex = currentIndex + 1;
+
+        state.codFuncionario = state.listaCodFuncionarios[nextIndex].COD_FUNCIONARIO;
+        state.nextFuncionarioBtnDisabled = nextIndex === state.listaCodFuncionarios.length - 1
+
+        state.backFuncionarioBtnDisabled = false;
+
+        actions.carregarDados();
+
+
+    },
+
+    backFuncionario() {
+        const currentIndex = state.listaCodFuncionarios.findIndex(funcionario =>
+            funcionario.COD_FUNCIONARIO == state.codFuncionario
+        );
+
+        const nextIndex = currentIndex - 1;
+
+        state.codFuncionario = state.listaCodFuncionarios[nextIndex].COD_FUNCIONARIO;
+        state.backFuncionarioBtnDisabled = currentIndex == 1
+
+        state.nextFuncionarioBtnDisabled = false
+
+        actions.carregarDados();
     },
 
     async carregarDados() {
@@ -371,6 +410,36 @@ export const actions = {
             });
         }
     },
+
+    async getListaCodFuncionarios() {
+        try {
+            state.loading = true;
+
+            let param: iParamGetListaCodFuncionarios = {
+                mes: state.mes,
+                ano: state.ano,
+            };
+
+            state.listaCodFuncionarios = await gerenciarFolhaPontoDetalhesService.getListaCodFuncionarios(param);
+
+            const currentIndex = state.listaCodFuncionarios.findIndex(funcionario =>
+                funcionario.COD_FUNCIONARIO == state.codFuncionario
+            );
+
+            if (currentIndex != -1) {
+                state.nextFuncionarioBtnDisabled = currentIndex == state.listaCodFuncionarios.length - 1;
+                state.backFuncionarioBtnDisabled = currentIndex == 0;
+            }
+
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar a lista de funcionários",
+            });
+        }
+    }
 };
 
 export const isSixWeeks = computed(() => {
