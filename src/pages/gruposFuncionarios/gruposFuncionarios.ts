@@ -168,8 +168,7 @@ export const actions = {
     },
 
     searchGrupos() {
-        state.gridGruposFuncionarios.queryOpen({ DESCRICAO: state.inputSearch.value.toUpperCase() }, () => {
-        });
+        state.gridGruposFuncionarios.queryOpen({ DESCRICAO: state.inputSearch.value.toUpperCase() }, () => { });
     },
 
     getUrlFotoFuncionario(cpf: string) {
