@@ -93,7 +93,7 @@ actions.init(route);
                   <v-btn
                     icon="mdi-arrow-left"
                     color="primary"
-                    variant="text"
+                    size="x-small"
                     :disabled="state.backFuncionarioBtnDisabled"
                     @click="actions.backFuncionario"
                   />
@@ -115,8 +115,8 @@ actions.init(route);
                 <div>
                   <v-btn
                     icon="mdi-arrow-right"
+                    size="x-small"
                     color="primary"
-                    variant="text"
                     :disabled="state.nextFuncionarioBtnDisabled"
                     @click="actions.nextFuncionario"
                   />
@@ -515,5 +515,6 @@ actions.init(route);
 .avatar-container {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 </style>
