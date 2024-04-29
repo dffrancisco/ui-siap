@@ -131,7 +131,7 @@ const actions = {
     }
   },
 
-  definirPercentualPISComBaseNoCST() {
+  zerarPercentualPISComBaseNoCST() {
     if (pisCofinsCstComPercentual.includes(state.dbItemDevolucao.CST_PIS)) {
       state.dbItemDevolucao.PERCENTUAL_PIS = utils.formatValor(props.dbItem.PERCENTUAL_PIS);
     } else {
@@ -139,7 +139,7 @@ const actions = {
     }
   },
 
-  definirPercentualCOFINSComBaseNoCST() {
+  zerarPercentualCOFINSComBaseNoCST() {
     if (pisCofinsCstComPercentual.includes(state.dbItemDevolucao.CST_COFINS)) {
       state.dbItemDevolucao.PERCENTUAL_COFINS = utils.formatValor(props.dbItem.PERCENTUAL_COFINS);
     } else {
@@ -147,7 +147,7 @@ const actions = {
     }
   },
 
-  definirPercentualIPIComBaseNoCST() {
+  zerarPercentualIPIComBaseNoCST() {
     if (ipiCstComPercentual.includes(state.dbItemDevolucao.CST_IPI)) {
       state.dbItemDevolucao.PERCENTUAL_IPI = utils.formatValor(props.dbItem.PERCENTUAL_IPI);
     } else {
@@ -208,6 +208,14 @@ const actions = {
       return;
     }
 
+    if (!state.dbItemDevolucao.CST_PIS) {
+      await Swal.fire({
+        icon: "error",
+        title: "O CST PIS deve ser informado",
+      });
+      return;
+    }
+
     if (
       pisCofinsCstComPercentual.includes(state.dbItemDevolucao.CST_PIS) &&
       utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_PIS.toString()) <= 0 &&
@@ -224,6 +232,14 @@ const actions = {
       await Swal.fire({
         icon: "error",
         title: "O % PIS deve ser menor ou igual a 100",
+      });
+      return;
+    }
+
+    if (!state.dbItemDevolucao.CST_COFINS) {
+      await Swal.fire({
+        icon: "error",
+        title: "O CST COFINS deve ser informado",
       });
       return;
     }
@@ -409,7 +425,7 @@ nextTick(async () => {
             class="ss obr"
             id="CST_PIS"
             name="CST_PIS"
-            @update:model-value="actions.definirPercentualPISComBaseNoCST"
+            @update:model-value="actions.zerarPercentualPISComBaseNoCST"
           >
             <option value="01">01 - Operação Tributável com Alíquota Básica</option>
             <option value="02">02 - Operação Tributável com Alíquota Diferenciada</option>
@@ -446,7 +462,7 @@ nextTick(async () => {
             class="ss obr"
             id="CST_COFINS"
             name="CST_COFINS"
-            @update:model-value="actions.definirPercentualCOFINSComBaseNoCST"
+            @update:model-value="actions.zerarPercentualCOFINSComBaseNoCST"
           >
             <option value="01">01 - Operação Tributável com Alíquota Básica</option>
             <option value="02">02 - Operação Tributável com Alíquota Diferenciada</option>
@@ -483,7 +499,7 @@ nextTick(async () => {
             class="ss obr"
             id="CST_IPI"
             name="CST_IPI"
-            @update:model-value="actions.definirPercentualIPIComBaseNoCST"
+            @update:model-value="actions.zerarPercentualIPIComBaseNoCST"
           >
             <option
               value=""
