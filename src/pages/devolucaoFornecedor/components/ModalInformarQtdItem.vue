@@ -211,7 +211,7 @@ const actions = {
     if (!state.dbItemDevolucao.CST_PIS) {
       await Swal.fire({
         icon: "error",
-        title: "O CST PIS deve ser informado",
+        title: "O PIS CST deve ser informado",
       });
       return;
     }
@@ -239,7 +239,7 @@ const actions = {
     if (!state.dbItemDevolucao.CST_COFINS) {
       await Swal.fire({
         icon: "error",
-        title: "O CST COFINS deve ser informado",
+        title: "O COFINS CST deve ser informado",
       });
       return;
     }
