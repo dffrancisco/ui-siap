@@ -245,7 +245,6 @@ export const actions = {
         let isSabado = moment(dataInicio).weekday() == 6;
         let pontosBatidosPar = qtdPontosDia % 2 == 0;
 
-
         if (titulo == null && isSabado == true && pontosBatidosPar) {
             titulo = "---------";
             cor = "#acc8fb";
@@ -273,9 +272,25 @@ export const actions = {
 
     formatarHora(hora) {
         if (hora) {
-            return new Date(hora).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            return moment(hora).format('HH:mm');
         } else {
             return null;
+        }
+    },
+
+    verificarAtrasoOuSaídaMaisCedo(hora) {
+        let horaFormatada = moment(hora).format('HH:mm:ss');
+
+        console.log();
+
+
+        let atraso = moment(horaFormatada, 'HH:mm:ss').isAfter(moment('08:04:59', 'HH:mm:ss'))
+        let saidaMaisCedo = moment(horaFormatada, 'HH:mm:ss').isBefore(moment('17:54:59', 'HH:mm:ss'))
+
+        if (atraso || saidaMaisCedo) {
+            return true
+        } else {
+            return false
         }
     },
 
@@ -360,13 +375,11 @@ export const actions = {
         const nextIndex = currentIndex + 1;
 
         state.codFuncionario = state.listaCodFuncionarios[nextIndex].COD_FUNCIONARIO;
-        state.nextFuncionarioBtnDisabled = nextIndex === state.listaCodFuncionarios.length - 1
+        state.nextFuncionarioBtnDisabled = nextIndex == state.listaCodFuncionarios.length - 1
 
         state.backFuncionarioBtnDisabled = false;
 
         actions.carregarDados();
-
-
     },
 
     backFuncionario() {
@@ -466,9 +479,17 @@ export const pontosCalendario = computed(() => {
             if (HORA_ALMOCO_FINAL) qtdPontosDia++;
             if (HORA_SAIDA) qtdPontosDia++;
 
+            let cor = '#6495ED'
+
             let jaFoiJustificado = HORA_CHEGADA == null && TIPO == 9;
+            let atraso = actions.verificarAtrasoOuSaídaMaisCedo(HORA_CHEGADA)
+
+            if (atraso) {
+                cor = '#f15500'
+            }
+
             let horaFormatada = actions.formatarHora(HORA_CHEGADA);
-            let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
+            let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, cor);
 
             eventos.push(eventoFormatado);
 
