@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import { iItem, iItemDevolucao, iParamGetTributosPisCofinsItem } from "../interfaces";
+import {
+  iItem,
+  iItemDevolucao,
+  iParamGetTributosItemNota,
+  iParamBaixarNFeEntradaGetTributosItemNota,
+} from "../interfaces";
 import { reactive, watch, nextTick, computed } from "vue";
 import globalState from "@/store/globalState";
 import Swal from "sweetalert2";
@@ -58,7 +63,7 @@ watch(
         CST_IPI: props.dbItem.CST_IPI || "",
       };
 
-      await actions.getTributosPisCofinsItem();
+      await actions.getTributosItemNota();
 
       actions.validarCstIpi();
 
@@ -305,18 +310,41 @@ const actions = {
     }
   },
 
-  async getTributosPisCofinsItem() {
+  async getTributosItemNota() {
     try {
       state.loading = true;
 
-      let param: iParamGetTributosPisCofinsItem = {
+      let param: iParamGetTributosItemNota = {
         ANO: moment(state.dbItemDevolucao.DATA_EMISSAO).year(),
         MES: NOME_MESES[moment(state.dbItemDevolucao.DATA_EMISSAO).month()],
         CHAVE: state.dbItemDevolucao.CHAVE,
         COD_FABRICANTE: state.dbItemDevolucao.COD_FABRICANTE,
       };
 
-      let data = await serviceDevolucaoFornecedor.getTributosPisCofinsItem(param);
+      const data = await serviceDevolucaoFornecedor.getTributosItemNota(param);
+
+      state.dbItemDevolucao.CST_PIS = data.CST_PIS;
+      state.dbItemDevolucao.CST_COFINS = data.CST_COFINS;
+      state.dbItemDevolucao.PERCENTUAL_PIS = utils.formatValor(data.PERCENTUAL_PIS);
+      state.dbItemDevolucao.PERCENTUAL_COFINS = utils.formatValor(data.PERCENTUAL_COFINS);
+      state.dbItemDevolucao.CST_IPI = data.CST_IPI;
+      state.dbItemDevolucao.PERCENTUAL_IPI = utils.formatValor(data.PERCENTUAL_IPI);
+
+      state.loading = false;
+    } catch (error) {
+      console.error(error?.response?.data?.msg);
+      await actions.baixarNFeEntradaGetTributosItemNota();
+    }
+  },
+
+  async baixarNFeEntradaGetTributosItemNota() {
+    try {
+      let param: iParamBaixarNFeEntradaGetTributosItemNota = {
+        CHAVE: state.dbItemDevolucao.CHAVE,
+        COD_FABRICANTE: state.dbItemDevolucao.COD_FABRICANTE,
+      };
+
+      const data = await serviceDevolucaoFornecedor.baixarNFeEntradaGetTributosItemNota(param);
 
       state.dbItemDevolucao.CST_PIS = data.CST_PIS;
       state.dbItemDevolucao.CST_COFINS = data.CST_COFINS;
@@ -328,6 +356,7 @@ const actions = {
       state.loading = false;
     } catch (error) {
       state.loading = false;
+      console.error(error?.response?.data?.msg);
     }
   },
 };
