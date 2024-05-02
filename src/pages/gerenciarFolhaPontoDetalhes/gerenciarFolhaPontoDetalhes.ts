@@ -278,21 +278,30 @@ export const actions = {
         }
     },
 
-    verificarAtrasoOuSaídaMaisCedo(hora) {
+    verificarAtraso(hora) {
         let horaFormatada = moment(hora).format('HH:mm:ss');
 
-        console.log();
-
-
         let atraso = moment(horaFormatada, 'HH:mm:ss').isAfter(moment('08:04:59', 'HH:mm:ss'))
-        let saidaMaisCedo = moment(horaFormatada, 'HH:mm:ss').isBefore(moment('17:54:59', 'HH:mm:ss'))
 
-        if (atraso || saidaMaisCedo) {
+        if (atraso) {
             return true
         } else {
             return false
         }
     },
+
+    verificarSaidaMaisCedo(hora) {
+        let horaFormatada = moment(hora).format('HH:mm:ss');
+
+        let saidaMaisCedo = moment(horaFormatada, 'HH:mm:ss').isBefore(moment('17:54:59', 'HH:mm:ss'))
+
+        if (saidaMaisCedo) {
+            return true
+        } else {
+            return false
+        }
+    },
+
 
     formatarData(data) {
         const partesData = data.split("/");
@@ -482,7 +491,7 @@ export const pontosCalendario = computed(() => {
             let cor = '#6495ED'
 
             let jaFoiJustificado = HORA_CHEGADA == null && TIPO == 9;
-            let atraso = actions.verificarAtrasoOuSaídaMaisCedo(HORA_CHEGADA)
+            let atraso = actions.verificarAtraso(HORA_CHEGADA)
 
             if (atraso) {
                 cor = '#f15500'
@@ -506,8 +515,14 @@ export const pontosCalendario = computed(() => {
             eventos.push(eventoFormatado);
 
             jaFoiJustificado = HORA_SAIDA == null && TIPO == 9;
+            let saidaMaisCedo = actions.verificarSaidaMaisCedo(HORA_SAIDA)
+
+            if (saidaMaisCedo) {
+                cor = '#f15500'
+            }
+
             horaFormatada = actions.formatarHora(HORA_SAIDA);
-            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
+            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, cor);
 
             eventos.push(eventoFormatado);
 
