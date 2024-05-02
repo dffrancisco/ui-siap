@@ -488,7 +488,7 @@ export const pontosCalendario = computed(() => {
             if (HORA_ALMOCO_FINAL) qtdPontosDia++;
             if (HORA_SAIDA) qtdPontosDia++;
 
-            let cor = '#6495ED'
+            let cor
 
             let jaFoiJustificado = HORA_CHEGADA == null && TIPO == 9;
             let atraso = actions.verificarAtraso(HORA_CHEGADA)
