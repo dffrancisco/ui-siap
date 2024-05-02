@@ -295,6 +295,8 @@ export const actions = {
 
         let saidaMaisCedo = moment(horaFormatada, 'HH:mm:ss').isBefore(moment('17:54:59', 'HH:mm:ss'))
 
+        console.log(horaFormatada, "-----", saidaMaisCedo);
+
         if (saidaMaisCedo) {
             return true
         } else {
@@ -516,6 +518,8 @@ export const pontosCalendario = computed(() => {
 
             jaFoiJustificado = HORA_SAIDA == null && TIPO == 9;
             let saidaMaisCedo = actions.verificarSaidaMaisCedo(HORA_SAIDA)
+
+            cor = '#6495ED'
 
             if (saidaMaisCedo) {
                 cor = '#f15500'
