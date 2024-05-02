@@ -48,42 +48,36 @@ const state = reactive({
     {
       title: "Limite Crédito",
       key: "LIMITE",
-      value: (venda: iVenda) => utils.formatValor(venda.LIMITE),
       removable: true,
       align: "end",
     },
     {
       title: "Venda",
       key: "VALOR_VENDA",
-      value: (venda: iVenda) => utils.formatValor(venda.VALOR_VENDA),
       removable: true,
       align: "end",
     },
     {
       title: "Devolução",
       key: "VALOR_DEVOLUCAO",
-      value: (venda: iVenda) => utils.formatValor(venda.VALOR_DEVOLUCAO),
       removable: true,
       align: "end",
     },
     {
       title: "Ved.Líquida",
       key: "VENDA_LIQUIDA",
-      value: (venda: iVenda) => utils.formatValor(venda.VENDA_LIQUIDA),
       removable: true,
       align: "end",
     },
     {
       title: "Ticket Médio",
       key: "TICKET_MEDIO",
-      value: (venda: iVenda) => utils.formatValor(venda.TICKET_MEDIO),
       removable: true,
       align: "end",
     },
     {
       title: "Qtd. Média Itens",
       key: "QTD_MEDIA_ITENS",
-      value: (venda: iVenda) => utils.formatValor(venda.QTD_MEDIA_ITENS),
       removable: true,
       align: "end",
     },
@@ -182,7 +176,7 @@ const actions = {
       </div>
 
       <v-data-table-virtual
-        class="mt-3 custom-table"
+        class="mt-3"
         :headers="state.headers"
         :items="dadosToTable"
         height="468"
@@ -202,6 +196,19 @@ const actions = {
                 />
               </td>
             </template>
+          </tr>
+        </template>
+        <template v-slot:item="{ item, index }">
+          <tr :style="{ backgroundColor: index % 2 === 0 ? '#fff' : '#f0f0f0', textAlign: 'end' }">
+            <td style="text-align: start">{{ item.LOGIN }}</td>
+            <td>{{ utils.formatValor(item.LIMITE) }}</td>
+            <td>{{ utils.formatValor(item.VALOR_VENDA) }}</td>
+            <td
+              ><span style="color: #bf3f3f"> -{{ utils.formatValor(item.VALOR_DEVOLUCAO) }} </span></td
+            >
+            <td>{{ utils.formatValor(item.VENDA_LIQUIDA) }}</td>
+            <td>{{ utils.formatValor(item.TICKET_MEDIO) }}</td>
+            <td>{{ utils.formatValor(item.QTD_MEDIA_ITENS) }}</td>
           </tr>
         </template>
       </v-data-table-virtual>
@@ -236,10 +243,6 @@ const actions = {
 </template>
 
 <style scoped>
-.custom-table {
-  background-color: #f0f0f0;
-}
-
 .select_colunas {
   width: 200px;
 }
