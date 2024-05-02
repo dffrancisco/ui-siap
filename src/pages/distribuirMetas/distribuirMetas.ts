@@ -1,6 +1,6 @@
 import { mesesToSelect } from "@/constants/constants";
 import { computed, reactive } from "vue";
-import { iMesEAno, iMetaInserida, iMetaVendedor, iMetaMontador, iFuncionario } from "./interfaces";
+import { iMesEAno, iMetaInserida, iMetaVendedor, iMetaMontador, iFuncionario, iGruposFuncionarios } from "./interfaces";
 import Swal from "sweetalert2";
 import metasService from "./services/distribuirMetas.service"
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -19,6 +19,8 @@ export const state = reactive({
     metaVendedores: <iMetaVendedor[]>[],
     metaMontadores: <iMetaMontador[]>[],
     funcionarios: <iFuncionario[]>[],
+    gruposFuncionarios: <iGruposFuncionarios[]>[],
+    selectedGrupoFuncionario: "Nenhum grupo Selecionado",
     modalDistribuirMetas: <iModalCreate>(<unknown>null),
     modalDistribuirMetasOpened: false,
     metaInserida: <iMetaInserida>{},
@@ -73,14 +75,42 @@ export const state = reactive({
 export const meses = mesesToSelect;
 
 export const metas = computed(() => {
+    let metasFiltradas = [];
 
-    if (state.opcaoMeta === 0) {
-        return state.metaVendedores;
+    if (state.selectedGrupoFuncionario === "Nenhum grupo Selecionado" || state.selectedGrupoFuncionario == "") {
+        if (state.opcaoMeta === 0) {
+            metasFiltradas = state.metaVendedores;
+        } else {
+            metasFiltradas = state.metaMontadores;
+        }
     } else {
-        return state.metaMontadores;
+        const codFuncionariosDoGrupo = state.gruposFuncionarios
+            .filter(grupo => grupo.NOME_GRUPO === state.selectedGrupoFuncionario)
+            .map(grupo => grupo.COD_FUNCIONARIO);
+        if (state.opcaoMeta === 0) {
+            metasFiltradas = state.metaVendedores.filter(meta => codFuncionariosDoGrupo.includes(meta.COD_FUNCIONARIO));
+        } else {
+            metasFiltradas = state.metaMontadores.filter(meta => codFuncionariosDoGrupo.includes(meta.COD_FUNCIONARIO));
+        }
     }
 
-})
+    return metasFiltradas;
+});
+
+export const grupoFuncionarios = computed(() => {
+    const gruposSet = new Set<string>();
+    state.gruposFuncionarios.forEach(grupo => {
+        gruposSet.add(grupo.NOME_GRUPO);
+    });
+    const gruposArray = Array.from(gruposSet);
+    gruposArray.unshift("Nenhum grupo Selecionado");
+    return gruposArray;
+});
+
+export const alterarGrupoFuncionarios = (grupo: string) => {
+    state.selectedGrupoFuncionario = grupo;
+};
+
 
 export const totalizadorMetas = computed(() => {
     let arrayMeta;
@@ -97,6 +127,14 @@ export const totalizadorMetas = computed(() => {
         arrayMeta = state.metaVendedores;
     } else {
         arrayMeta = state.metaMontadores;
+    }
+
+    if (state.selectedGrupoFuncionario !== "Nenhum grupo Selecionado") {
+        const codFuncionariosDoGrupo = state.gruposFuncionarios
+            .filter(grupo => grupo.NOME_GRUPO === state.selectedGrupoFuncionario)
+            .map(grupo => grupo.COD_FUNCIONARIO);
+
+        arrayMeta = arrayMeta.filter(item => codFuncionariosDoGrupo.includes(item.COD_FUNCIONARIO));
     }
 
     arrayMeta.forEach((item: iMetaVendedor | iMetaMontador) => {
@@ -124,6 +162,7 @@ export const actions = {
         actions.createModal();
         await actions.getMetasVendedores(state.mes, state.ano);
         await actions.getMetasMontadores(state.mes, state.ano);
+        await actions.getGruposFuncionarios();
         state.loading = false;
     },
 
@@ -246,9 +285,24 @@ export const actions = {
         }
     },
 
+    async getGruposFuncionarios() {
+        try {
+            state.gruposFuncionarios = await metasService.getGruposFuncionarios();
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar os grupos de funcionários.",
+            });
+        }
+    },
+
     async getMetas() {
         await actions.getMetasVendedores(state.mes, state.ano);
         await actions.getMetasMontadores(state.mes, state.ano);
+
+        if (state.opcaoMeta === 1 || state.opcaoMeta === 0) {
+            state.selectedGrupoFuncionario = "Nenhum grupo Selecionado";
+        }
     },
 
     async distribuirMetas(mes: number, ano: number) {
