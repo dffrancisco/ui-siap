@@ -295,8 +295,6 @@ export const actions = {
 
         let saidaMaisCedo = moment(horaFormatada, 'HH:mm:ss').isBefore(moment('17:54:59', 'HH:mm:ss'))
 
-        console.log(horaFormatada, "-----", saidaMaisCedo);
-
         if (saidaMaisCedo) {
             return true
         } else {
