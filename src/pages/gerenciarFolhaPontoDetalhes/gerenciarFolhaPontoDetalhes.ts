@@ -607,25 +607,24 @@ export const tipoFaltaModal = computed(() => {
 
     let tipoFaltas: iTipoFaltas[] = [...state.tipoFaltas];
 
-    let temAlgumPontoBatido = HORA_CHEGADA || HORA_ALMOCO_INICIAL || HORA_ALMOCO_FINAL || HORA_SAIDA;
+    const temAlgumPontoBatido = [HORA_CHEGADA, HORA_ALMOCO_INICIAL, HORA_ALMOCO_FINAL, HORA_SAIDA];
 
-    if (!pontosDiaSelecionado.value) {
-        let tipoFaltasFiltrado = tipoFaltas.filter((tipoFalta) => {
-            return tipoFalta.TIPO != 9;
-        });
+    const pontosBatidos = temAlgumPontoBatido.filter(ponto => ponto);
 
-        return tipoFaltasFiltrado;
+    if (pontosBatidos.length == 4) {
+        return tipoFaltas.filter(tipoFalta => [14].includes(tipoFalta.TIPO));
     }
 
-    if (temAlgumPontoBatido) {
-        return tipoFaltas;
-    } else {
+    if (pontosBatidos.length == 3) {
+        return tipoFaltas.filter(tipoFalta => ![11, 12, 13, 14].includes(tipoFalta.TIPO));
+    }
 
-        let tipoFaltasFiltrado = tipoFaltas.filter((tipoFalta) => {
-            return tipoFalta.TIPO != 9;
-        });
+    if (pontosBatidos.length == 1 || pontosBatidos.length == 2) {
+        return tipoFaltas.filter(tipoFalta => ![13, 14].includes(tipoFalta.TIPO));
+    }
 
-        return tipoFaltasFiltrado;
+    if (pontosBatidos.length == 0) {
+        return tipoFaltas.filter(tipoFalta => ![9, 11, 12, 14].includes(tipoFalta.TIPO));
     }
 });
 
