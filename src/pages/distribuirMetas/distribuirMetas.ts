@@ -21,7 +21,7 @@ export const state = reactive({
     funcionarios: <iFuncionario[]>[],
     gruposFuncionarios: <iGruposFuncionarios[]>[],
     selectedGrupoFuncionario: "Nenhum grupo Selecionado",
-    modalDistribuirMetas: <iModalCreate>(<unknown>null),
+    modalDistribuirMetas: <iModalCreate>{},
     modalDistribuirMetasOpened: false,
     metaInserida: <iMetaInserida>{},
     headers: <any>[
@@ -158,12 +158,10 @@ export const totalizadorMetas = computed(() => {
 export const actions = {
 
     async init() {
-        state.loading = true;
         actions.createModal();
         await actions.getMetasVendedores(state.mes, state.ano);
         await actions.getMetasMontadores(state.mes, state.ano);
         await actions.getGruposFuncionarios();
-        state.loading = false;
     },
 
     createModal() {
@@ -266,15 +264,11 @@ export const actions = {
 
     },
 
-    async getFuncionarios(mes: number, ano: number) {
+    async getFuncionarios() {
         state.loading = true;
 
-        const param: iMesEAno = {
-            mes: mes,
-            ano: ano,
-        }
         try {
-            state.funcionarios = await metasService.getFuncionarios(param);
+            state.funcionarios = await metasService.getFuncionarios();
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -286,6 +280,8 @@ export const actions = {
     },
 
     async getGruposFuncionarios() {
+        state.loading = true;
+
         try {
             state.gruposFuncionarios = await metasService.getGruposFuncionarios();
         } catch (error) {
@@ -293,6 +289,8 @@ export const actions = {
                 icon: "error",
                 text: "Ocorreu um erro ao buscar os grupos de funcionários.",
             });
+        } finally {
+            state.loading = false;
         }
     },
 
@@ -305,10 +303,10 @@ export const actions = {
         }
     },
 
-    async distribuirMetas(mes: number, ano: number) {
+    async distribuirMetas() {
 
         if (state.funcionarios.length === 0) {
-            await actions.getFuncionarios(mes, ano);
+            await actions.getFuncionarios();
         }
         state.modalDistribuirMetas.open();
     }
