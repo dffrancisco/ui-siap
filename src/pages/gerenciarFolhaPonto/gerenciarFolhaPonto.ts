@@ -56,6 +56,9 @@ export const totalizador = computed(() => {
         QTD_PONTOS_INCOMPLETOS: 0,
         QTD_PONTOS_NAO_BATIDOS: 0,
         QTD_PONTOS_BATIDOS: 0,
+        QTD_FUNCIONARIOS: 0,
+        QTD_FUNCIONARIOS_COM_PONTOS_INCOMPLETOS: 0,
+        QTD_FUNCIONARIOS_COM_PONTOS_COMPLETOS: 0
     };
 
     let funcionarios: iFuncionario[] = Object.values(state.funcionarios);
@@ -66,10 +69,17 @@ export const totalizador = computed(() => {
         total.QTD_PONTOS_INCOMPLETOS += func.QTD_PONTOS_INCOMPLETOS;
         total.QTD_PONTOS_NAO_BATIDOS += func.QTD_PONTOS_NAO_BATIDOS;
         total.QTD_PONTOS_BATIDOS += func.QTD_PONTOS_BATIDOS;
+
+        total.QTD_FUNCIONARIOS++;
+
+        if (func.QTD_PONTOS_INCOMPLETOS > 0) {
+            total.QTD_FUNCIONARIOS_COM_PONTOS_INCOMPLETOS++;
+        } else {
+            total.QTD_FUNCIONARIOS_COM_PONTOS_COMPLETOS++;
+        }
     }
 
-    total.QTD_A_JUSTIFICAR = total.QTD_PONTOS_INCOMPLETOS + total.QTD_PONTOS_NAO_BATIDOS - total.QTD_FALTAS_JUSTIFICADAS
-
+    total.QTD_A_JUSTIFICAR = total.QTD_PONTOS_INCOMPLETOS + total.QTD_PONTOS_NAO_BATIDOS - total.QTD_FALTAS_JUSTIFICADAS;
 
     return total;
 });

@@ -72,7 +72,17 @@ onMounted(async () => {
 
             <v-divider class="mt-4 mb-3"></v-divider>
 
-            <div class="mb-n2 d-flex justify-center">
+            <div class="d-flex justify-space-around">
+              <span class="totalizador_funcionario">Funcionários: {{ totalizador.QTD_FUNCIONARIOS }} </span>
+              <span class="totalizador_funcionario">
+                Funcionários com pontos completos: {{ totalizador.QTD_FUNCIONARIOS_COM_PONTOS_COMPLETOS }}
+              </span>
+              <span class="totalizador_funcionario">
+                Funcionários com pontos incompletos: {{ totalizador.QTD_FUNCIONARIOS_COM_PONTOS_INCOMPLETOS }}
+              </span>
+            </div>
+
+            <div class="mb-n2 mt-4 d-flex justify-space-around">
               <span
                 class="funcionarios__lista__card__totalizador"
                 style="color: #b17500"
@@ -287,15 +297,6 @@ onMounted(async () => {
   }
 }
 
-.funcionarios__lista__totalizador {
-  height: 50px;
-  width: 97%;
-  flex-direction: row;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .funcionarios__lista__card__totalizador {
   font-size: 16px;
   font-weight: bold;
@@ -337,5 +338,11 @@ onMounted(async () => {
 
 .btnSearch {
   margin-top: 5px;
+}
+
+.totalizador_funcionario {
+  font-weight: bold;
+  font-size: 14px;
+  color: gray;
 }
 </style>

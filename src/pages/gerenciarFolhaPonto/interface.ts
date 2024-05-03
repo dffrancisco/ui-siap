@@ -23,6 +23,9 @@ export interface iTotalizador {
     QTD_PONTOS_INCOMPLETOS: number;
     QTD_PONTOS_NAO_BATIDOS: number;
     QTD_PONTOS_BATIDOS: number
+    QTD_FUNCIONARIOS: number,
+    QTD_FUNCIONARIOS_COM_PONTOS_INCOMPLETOS: number,
+    QTD_FUNCIONARIOS_COM_PONTOS_COMPLETOS: number
 }
 
 export interface iGetDadosParaImpressao {
