@@ -93,7 +93,7 @@ actions.init(route);
                   <v-btn
                     icon="mdi-arrow-left"
                     color="primary"
-                    size="x-small"
+                    size="28"
                     :disabled="state.backFuncionarioBtnDisabled"
                     @click="actions.backFuncionario"
                   />
@@ -115,7 +115,7 @@ actions.init(route);
                 <div>
                   <v-btn
                     icon="mdi-arrow-right"
-                    size="x-small"
+                    size="28"
                     color="primary"
                     :disabled="state.nextFuncionarioBtnDisabled"
                     @click="actions.nextFuncionario"

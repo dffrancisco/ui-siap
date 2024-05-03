@@ -240,7 +240,7 @@ export const actions = {
         }
     },
 
-    formatarEvento(titulo: string, dataInicio: string, dataFim: string, jaFoiJustificado: boolean, qtdPontosDia: number, cor = "#6495ED") {
+    formatarEvento(titulo: string, dataInicio: string, dataFim: string, jaFoiJustificado: boolean, qtdPontosDia: number, status: string, cor = "#6495ED") {
 
         let isSabado = moment(dataInicio).weekday() == 6;
         let pontosBatidosPar = qtdPontosDia % 2 == 0;
@@ -250,6 +250,10 @@ export const actions = {
             cor = "#acc8fb";
         }
 
+        if (titulo == null && status) {
+            titulo = status;
+            cor = actions.setarCorFalta(status)
+        }
 
         if (titulo == null) {
             titulo = "---------";
@@ -358,6 +362,35 @@ export const actions = {
                 state.modalImprimirFolhaPontoOpened = false;
             },
         });
+    },
+
+    setarCorFalta(status: string) {
+        switch (status) {
+            case "Atestado":
+                return "#33691E";
+            case "Falta Abonada":
+                return "#7e57c2";
+            case "Falta":
+                return "#7e57c2";
+            case "Falta Justificada":
+                return "#7e57c2";
+            case "Suspenso":
+                return "#dd2c00";
+            case "Feriado":
+                return "#4caf50";
+            case "Dia de Folga":
+                return "#4caf50";
+            case "Em outra Loja":
+                return "#c494f3";
+            case "Meia Falta":
+                return "#7e57c2";
+            case "Meio Afastamento":
+                return "#33691E";
+            case "Atraso Justificado":
+                return "#127071";
+            default:
+                return "#8d6e63";
+        }
     },
 
     init(route: RouteLocationNormalizedLoaded) {
@@ -478,7 +511,10 @@ export const pontosCalendario = computed(() => {
         let dataInicio = moment(ponto.DATA).format('YYYY-MM-DD');
         let dataFim = moment(ponto.DATA).format('YYYY-MM-DD');
 
-        const { HORA_CHEGADA, HORA_ALMOCO_FINAL, HORA_ALMOCO_INICIAL, HORA_SAIDA, TIPO, STATUS } = ponto;
+        const { HORA_CHEGADA, HORA_ALMOCO_FINAL, HORA_ALMOCO_INICIAL, HORA_SAIDA, TIPO } = ponto;
+
+        const STATUS = state.tipoFaltas.find(tipo => tipo.TIPO == TIPO)?.DESCRICAO
+
         let qtdPontosDia = 0
 
         if (HORA_CHEGADA || HORA_ALMOCO_INICIAL || HORA_ALMOCO_FINAL || HORA_SAIDA) {
@@ -498,19 +534,19 @@ export const pontosCalendario = computed(() => {
             }
 
             let horaFormatada = actions.formatarHora(HORA_CHEGADA);
-            let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, cor);
+            let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, STATUS, cor);
 
             eventos.push(eventoFormatado);
 
             jaFoiJustificado = HORA_ALMOCO_INICIAL == null && TIPO == 9;
             horaFormatada = actions.formatarHora(HORA_ALMOCO_INICIAL);
-            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
+            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, STATUS);
 
             eventos.push(eventoFormatado);
 
             jaFoiJustificado = HORA_ALMOCO_FINAL == null && TIPO == 9;
             horaFormatada = actions.formatarHora(HORA_ALMOCO_FINAL);
-            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
+            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, STATUS);
 
             eventos.push(eventoFormatado);
 
@@ -524,43 +560,16 @@ export const pontosCalendario = computed(() => {
             }
 
             horaFormatada = actions.formatarHora(HORA_SAIDA);
-            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, cor);
+            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, STATUS, cor);
 
             eventos.push(eventoFormatado);
 
         }
 
+        if (STATUS && TIPO != 9 && qtdPontosDia == 0 || TIPO == 14) {
+            let cor = actions.setarCorFalta(STATUS)
 
-        if (STATUS && TIPO != 9) {
-            let cor;
-
-            switch (STATUS) {
-                case "Atestado":
-                    cor = "#33691E";
-                    break;
-                case "Falta Abonada":
-                    cor = "#7e57c2"; // deep purple
-                    break;
-                case "Falta":
-                    cor = "#7e57c2"; // deep purple
-                    break;
-                case "Falta Justificada":
-                    cor = "#7e57c2"; // deep purple
-                    break;
-                case "Suspenso":
-                    cor = "#dd2c00"; // deep orange
-                    break;
-                case "Feriado":
-                    cor = "#4caf50"; // green
-                    break;
-                case "Dia de Folga":
-                    cor = "#4caf50"; // green
-                    break;
-                default:
-                    cor = "#8d6e63"; // brown
-                    break;
-            }
-            let eventoFormatado = actions.formatarEvento(STATUS, dataInicio, dataFim, false, qtdPontosDia, cor);
+            let eventoFormatado = actions.formatarEvento(STATUS, dataInicio, dataFim, false, qtdPontosDia, STATUS, cor);
 
             eventos.push(eventoFormatado);
         }
@@ -616,11 +625,11 @@ export const tipoFaltaModal = computed(() => {
     }
 
     if (pontosBatidos.length == 3) {
-        return tipoFaltas.filter(tipoFalta => ![11, 12, 13, 14].includes(tipoFalta.TIPO));
+        return tipoFaltas.filter(tipoFalta => ![7, 10, 11, 12, 13, 14].includes(tipoFalta.TIPO));
     }
 
     if (pontosBatidos.length == 1 || pontosBatidos.length == 2) {
-        return tipoFaltas.filter(tipoFalta => ![13, 14].includes(tipoFalta.TIPO));
+        return tipoFaltas.filter(tipoFalta => ![7, 10, 13, 14].includes(tipoFalta.TIPO));
     }
 
     if (pontosBatidos.length == 0) {
