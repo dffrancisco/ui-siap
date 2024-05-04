@@ -61,9 +61,6 @@ export const totalizador = computed(() => {
 
     let funcionarios: iFuncionario[] = Object.values(state.funcionarios);
 
-    console.log(funcionarios);
-
-
     for (const func of funcionarios) {
 
         total.QTD_FALTAS_JUSTIFICADAS += func.QTD_FALTAS_JUSTIFICADAS;
