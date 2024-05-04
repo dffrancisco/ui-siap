@@ -72,13 +72,13 @@ onMounted(async () => {
 
             <v-divider class="mt-4 mb-3"></v-divider>
 
-            <div class="d-flex justify-space-around">
+            <div class="d-flex justify-space-between mx-2">
               <span class="totalizador_funcionario">Funcionários: {{ totalizador.QTD_FUNCIONARIOS }} </span>
               <span class="totalizador_funcionario">
-                Funcionários com pontos completos: {{ totalizador.QTD_FUNCIONARIOS_COM_PONTOS_COMPLETOS }}
+                Funcionários em dia: {{ totalizador.QTD_FUNCIONARIOS_SEM_PENDENCIAS }}
               </span>
               <span class="totalizador_funcionario">
-                Funcionários com pontos incompletos: {{ totalizador.QTD_FUNCIONARIOS_COM_PONTOS_INCOMPLETOS }}
+                Funcionários pendentes: {{ totalizador.QTD_FUNCIONARIOS_COM_PENDENCIAS }}
               </span>
             </div>
 
@@ -341,8 +341,7 @@ onMounted(async () => {
 }
 
 .totalizador_funcionario {
-  font-weight: bold;
-  font-size: 14px;
+  font-size: 16px;
   color: gray;
 }
 </style>

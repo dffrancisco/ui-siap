@@ -6,8 +6,6 @@ import router from "@/router";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { mesesToSelect } from "@/constants/constants";
 import { iEmpresa } from "@/models/interfaces";
-// import globalState from '@/store/globalState'
-
 
 export const state = reactive({
     funcionarios: {},
@@ -57,11 +55,14 @@ export const totalizador = computed(() => {
         QTD_PONTOS_NAO_BATIDOS: 0,
         QTD_PONTOS_BATIDOS: 0,
         QTD_FUNCIONARIOS: 0,
-        QTD_FUNCIONARIOS_COM_PONTOS_INCOMPLETOS: 0,
-        QTD_FUNCIONARIOS_COM_PONTOS_COMPLETOS: 0
+        QTD_FUNCIONARIOS_COM_PENDENCIAS: 0,
+        QTD_FUNCIONARIOS_SEM_PENDENCIAS: 0
     };
 
     let funcionarios: iFuncionario[] = Object.values(state.funcionarios);
+
+    console.log(funcionarios);
+
 
     for (const func of funcionarios) {
 
@@ -72,10 +73,12 @@ export const totalizador = computed(() => {
 
         total.QTD_FUNCIONARIOS++;
 
-        if (func.QTD_PONTOS_INCOMPLETOS > 0) {
-            total.QTD_FUNCIONARIOS_COM_PONTOS_INCOMPLETOS++;
+        let pendencia = func.QTD_PONTOS_INCOMPLETOS + func.QTD_PONTOS_NAO_BATIDOS - func.QTD_FALTAS_JUSTIFICADAS;
+
+        if (pendencia > 0) {
+            total.QTD_FUNCIONARIOS_COM_PENDENCIAS++;
         } else {
-            total.QTD_FUNCIONARIOS_COM_PONTOS_COMPLETOS++;
+            total.QTD_FUNCIONARIOS_SEM_PENDENCIAS++;
         }
     }
 
