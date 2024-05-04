@@ -277,9 +277,9 @@ export const actions = {
     formatarHora(hora) {
         if (hora) {
             return moment(hora).format('HH:mm');
-        } else {
-            return null;
         }
+
+        return null;
     },
 
     verificarAtraso(hora) {
@@ -289,9 +289,9 @@ export const actions = {
 
         if (atraso) {
             return true
-        } else {
-            return false
         }
+
+        return false
     },
 
     verificarSaidaMaisCedo(hora) {
@@ -301,9 +301,9 @@ export const actions = {
 
         if (saidaMaisCedo) {
             return true
-        } else {
-            return false
         }
+
+        return false
     },
 
 
