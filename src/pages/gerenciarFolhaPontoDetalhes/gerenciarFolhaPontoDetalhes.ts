@@ -84,7 +84,7 @@ export const actions = {
     async atualizarTela() {
         state.modalJustificarFalta.close();
         state.loading = true;
-        await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
+        await actions.carregarDados();
         state.loading = false;
     },
 
@@ -100,7 +100,6 @@ export const actions = {
 
         let diasNoMes = dataFim.diff(dataInicio, 'days') + 1
 
-
         for (let dia = 1; dia <= diasNoMes; dia++) {
             if (state.pontos[`Dia:${dia}`] == undefined) {
                 let data = moment({ year: state.ano, month: state.mes - 1, day: dia });
@@ -113,11 +112,12 @@ export const actions = {
             }
         }
 
-        diasSemPonto.forEach((data) => {
-            const elemento = document.querySelector(`td[data-date='${data}']`);
-            elemento.classList.add('calendario_data_sem_ponto');
-        })
-
+        if (diasSemPonto.length > 0) {
+            diasSemPonto.forEach((data) => {
+                const elemento = document.querySelector(`td[data-date='${data}']`);
+                elemento.classList.add('calendario_data_sem_ponto');
+            })
+        }
     },
 
     async btnMesSeguinte() {
@@ -177,8 +177,6 @@ export const actions = {
 
             await nextTick();
             state.initialDate = new Date(state.ano, state.mes - 1, 1);
-
-
         } catch (error) {
             console.error(error);
             Swal.fire({
@@ -189,10 +187,6 @@ export const actions = {
             state.loading = false;
             state.loadingCalendar = false;
         }
-
-        setTimeout(() => {
-            actions.preencherBackgroundColorDataIncompleta()
-        }, 100)
     },
 
     async getTotalizadorFuncionario(cod_funcionario: number, mes: number, ano: number) {
@@ -402,13 +396,12 @@ export const actions = {
             state.ano = Number(route.query.ano);
             state.initialDate = new Date(state.ano, state.mes - 1, 1);
 
+            await actions.carregarDados();
             actions.getListaCodFuncionarios();
-
-            actions.carregarDados();
         });
     },
 
-    nextFuncionario() {
+    async nextFuncionario() {
         const currentIndex = state.listaCodFuncionarios.findIndex(funcionario =>
             funcionario.COD_FUNCIONARIO == state.codFuncionario
         );
@@ -420,10 +413,10 @@ export const actions = {
 
         state.backFuncionarioBtnDisabled = false;
 
-        actions.carregarDados();
+        await actions.carregarDados();
     },
 
-    backFuncionario() {
+    async backFuncionario() {
         const currentIndex = state.listaCodFuncionarios.findIndex(funcionario =>
             funcionario.COD_FUNCIONARIO == state.codFuncionario
         );
@@ -435,12 +428,16 @@ export const actions = {
 
         state.nextFuncionarioBtnDisabled = false
 
-        actions.carregarDados();
+        await actions.carregarDados();
     },
 
     async carregarDados() {
         await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
         await actions.getTotalizadorFuncionario(state.codFuncionario, state.mes, state.ano);
+
+        setTimeout(() => {
+            actions.preencherBackgroundColorDataIncompleta()
+        }, 100)
     },
 
     imprimirFolhaPonto() {
@@ -449,6 +446,8 @@ export const actions = {
     },
 
     async dadosParaImpressao(mes: number, ano: number) {
+        state.loading = true
+
         const param: iGetDadosParaImpressaoIndividual = {
             cod_funcionario: state.codFuncionario,
             mes: mes,
@@ -462,6 +461,8 @@ export const actions = {
                 icon: "error",
                 text: "Ocorreu um erro ao buscar os dados para impressão",
             });
+        } finally {
+            state.loading = false;
         }
     },
 
