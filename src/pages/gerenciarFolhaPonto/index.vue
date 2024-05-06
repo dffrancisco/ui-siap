@@ -70,9 +70,7 @@ onMounted(async () => {
               </v-col>
             </v-row>
 
-            <v-divider class="mt-4 mb-3"></v-divider>
-
-            <div class="d-flex justify-space-between mx-3">
+            <div class="d-flex justify-space-between mt-4">
               <span class="totalizador_funcionario">Funcionários: {{ totalizador.QTD_FUNCIONARIOS }} </span>
               <span class="totalizador_funcionario">
                 Funcionários em dia: {{ totalizador.QTD_FUNCIONARIOS_SEM_PENDENCIAS }}
@@ -81,8 +79,9 @@ onMounted(async () => {
                 Funcionários pendentes: {{ totalizador.QTD_FUNCIONARIOS_COM_PENDENCIAS }}
               </span>
             </div>
-
-            <div class="mb-n2 mt-4 d-flex justify-space-around">
+          </v-card>
+          <v-card class="mt-4 py-4 px-1">
+            <div class="d-flex justify-space-around">
               <span
                 class="funcionarios__lista__card__totalizador"
                 style="color: #b17500"
@@ -255,7 +254,7 @@ onMounted(async () => {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
-    max-height: calc(100vh - 240px);
+    max-height: calc(100vh - 300px);
     overflow-y: scroll;
   }
 
