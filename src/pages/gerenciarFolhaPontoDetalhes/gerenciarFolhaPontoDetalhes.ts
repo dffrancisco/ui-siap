@@ -175,6 +175,8 @@ export const actions = {
             state.loginFuncionario = state.dadosFuncionario.LOGIN;
             state.dataAdmissao = state.dadosFuncionario.DATA_ADMISSAO;
 
+            await actions.getTotalizadorFuncionario(state.codFuncionario, state.mes, state.ano)
+
             await nextTick();
             state.initialDate = new Date(state.ano, state.mes - 1, 1);
         } catch (error) {
@@ -190,8 +192,6 @@ export const actions = {
     },
 
     async getTotalizadorFuncionario(cod_funcionario: number, mes: number, ano: number) {
-        state.loading = true;
-
         try {
             const totais = await gerenciarFolhaPontoDetalhesService.getTotalizadorFuncionario({
                 cod_funcionario,
@@ -208,8 +208,6 @@ export const actions = {
 
         } catch (error) {
             console.error(error)
-        } finally {
-            state.loading = false;
         }
     },
 
@@ -433,7 +431,6 @@ export const actions = {
 
     async carregarDados() {
         await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
-        await actions.getTotalizadorFuncionario(state.codFuncionario, state.mes, state.ano);
 
         setTimeout(() => {
             actions.preencherBackgroundColorDataIncompleta()
