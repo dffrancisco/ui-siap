@@ -217,14 +217,14 @@ export interface iGetDadosParaImpressaoPDFResponse {
     totalizadorDeFaltas: iTotalizadorDeFaltas[];
 }
 
-export interface iParamGetListaCodFuncionarios {
+export interface iParamGetFuncionarios {
     mes: number;
     ano: number;
 }
 
-export interface iListaCodFuncionario {
+export interface iListaFuncionario {
     COD_FUNCIONARIO: number,
     NOME_COMP: string
 }
 
-export interface iGetListaCodFuncionariosResponse extends iListaCodFuncionario { }
+export interface iGetFuncionariosResponse extends iListaFuncionario { }

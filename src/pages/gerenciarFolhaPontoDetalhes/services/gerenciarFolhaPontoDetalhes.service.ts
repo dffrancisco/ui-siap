@@ -12,11 +12,11 @@ import {
     iGetDadosParaImpressaoPDFResponse,
     iGetDetalhes,
     iGetDetalhesResponse,
-    iGetListaCodFuncionariosResponse,
+    iGetFuncionariosResponse,
     iGetTotalizadorFuncionarioResponse,
     iInserirRegistroAusenciaResponse,
     iParamDocumentoAusencia,
-    iParamGetListaCodFuncionarios,
+    iParamGetFuncionarios,
     iRegistrarDocumentoAusencia,
     iRegistrarFalta,
     iSetFaltaResponse,
@@ -37,8 +37,8 @@ type iInserirRegistroAusencia = (param: iRegistrarDocumentoAusencia) => Promise<
 type iGetDocumentoAusencia = (param: iParamDocumentoAusencia) => Promise<iDadosDocumento[]>;
 type iGetDadosParaImpressaoPDF = (param: iGetDadosParaImpressaoIndividual) =>
     Promise<iGetDadosParaImpressaoPDFResponse>;
-type iGetListaCodFuncionariosFunction = (param: iParamGetListaCodFuncionarios) =>
-    Promise<iGetListaCodFuncionariosResponse[]>
+type iGetFuncionariosFunction = (param: iParamGetFuncionarios) =>
+    Promise<iGetFuncionariosResponse[]>
 
 const getDetalhes: igetDetalhes = async (param) => {
     let { data } = await axios.post(caminho, {
@@ -182,9 +182,9 @@ const getDadosParaImpressao: iGetDadosParaImpressaoPDF = async (param) => {
     return data;
 };
 
-const getListaCodFuncionarios: iGetListaCodFuncionariosFunction = async (param) => {
+const getFuncionarios: iGetFuncionariosFunction = async (param) => {
     let { data } = await axios.post(caminho, {
-        call: "getListaCodFuncionarios",
+        call: "getFuncionarios",
         param,
     });
 
@@ -205,5 +205,5 @@ export default {
     verificarArquivos,
     moverArquivoTemp,
     getDadosParaImpressao,
-    getListaCodFuncionarios,
+    getFuncionarios,
 };

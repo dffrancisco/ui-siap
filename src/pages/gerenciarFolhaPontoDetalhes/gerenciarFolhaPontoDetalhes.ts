@@ -3,9 +3,9 @@ import { RouteLocationNormalizedLoaded } from "vue-router";
 import {
     iDadosDocumento,
     iGetDadosParaImpressaoIndividual,
-    iListaCodFuncionario,
+    iListaFuncionario,
     iParamDocumentoAusencia,
-    iParamGetListaCodFuncionarios,
+    iParamGetFuncionarios,
     iPonto,
     iTipoFaltas,
     iTotalizadorDeFaltas,
@@ -50,7 +50,7 @@ export const state = reactive({
     modalImprimirFolhaPontoOpened: false,
     dadosParaModalImpressao: {},
     totalizadorFaltas: <iTotalizadorDeFaltas[]>[],
-    listaCodFuncionarios: <iListaCodFuncionario[]>[],
+    listaCodFuncionarios: <iListaFuncionario[]>[],
     nextFuncionarioBtnDisabled: false,
     backFuncionarioBtnDisabled: false
 });
@@ -397,7 +397,7 @@ export const actions = {
             state.initialDate = new Date(state.ano, state.mes - 1, 1);
 
             await actions.carregarDados();
-            actions.getListaCodFuncionarios();
+            actions.getFuncionarios();
         });
     },
 
@@ -466,16 +466,16 @@ export const actions = {
         }
     },
 
-    async getListaCodFuncionarios() {
+    async getFuncionarios() {
         try {
             state.loading = true;
 
-            let param: iParamGetListaCodFuncionarios = {
+            let param: iParamGetFuncionarios = {
                 mes: state.mes,
                 ano: state.ano,
             };
 
-            state.listaCodFuncionarios = await gerenciarFolhaPontoDetalhesService.getListaCodFuncionarios(param);
+            state.listaCodFuncionarios = await gerenciarFolhaPontoDetalhesService.getFuncionarios(param);
 
             const currentIndex = state.listaCodFuncionarios.findIndex(funcionario =>
                 funcionario.COD_FUNCIONARIO == state.codFuncionario
