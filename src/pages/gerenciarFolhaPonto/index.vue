@@ -72,7 +72,7 @@ onMounted(async () => {
 
             <v-divider class="mt-4 mb-3"></v-divider>
 
-            <div class="d-flex justify-space-between mx-2">
+            <div class="d-flex justify-space-between mx-3">
               <span class="totalizador_funcionario">Funcionários: {{ totalizador.QTD_FUNCIONARIOS }} </span>
               <span class="totalizador_funcionario">
                 Funcionários em dia: {{ totalizador.QTD_FUNCIONARIOS_SEM_PENDENCIAS }}

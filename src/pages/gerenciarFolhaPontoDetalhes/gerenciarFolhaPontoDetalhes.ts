@@ -50,7 +50,6 @@ export const state = reactive({
     modalImprimirFolhaPontoOpened: false,
     dadosParaModalImpressao: {},
     totalizadorFaltas: <iTotalizadorDeFaltas[]>[],
-    loadingTotais: false,
     listaCodFuncionarios: <iListaCodFuncionario[]>[],
     nextFuncionarioBtnDisabled: false,
     backFuncionarioBtnDisabled: false
@@ -197,7 +196,7 @@ export const actions = {
     },
 
     async getTotalizadorFuncionario(cod_funcionario: number, mes: number, ano: number) {
-        state.loadingTotais = true;
+        state.loading = true;
 
         try {
             const totais = await gerenciarFolhaPontoDetalhesService.getTotalizadorFuncionario({
@@ -216,7 +215,7 @@ export const actions = {
         } catch (error) {
             console.error(error)
         } finally {
-            state.loadingTotais = false;
+            state.loading = false;
         }
     },
 
@@ -440,8 +439,8 @@ export const actions = {
     },
 
     async carregarDados() {
-        actions.getTotalizadorFuncionario(state.codFuncionario, state.mes, state.ano);
         await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
+        await actions.getTotalizadorFuncionario(state.codFuncionario, state.mes, state.ano);
     },
 
     imprimirFolhaPonto() {

@@ -287,7 +287,7 @@ actions.init(route);
 
     <div id="pnCodigoTela">FOLHA_PONTO_DETALHES</div>
     <v-overlay
-      :model-value="state.loading || state.loadingCalendar"
+      :model-value="state.loading"
       class="align-center justify-center"
       persistent
     >
