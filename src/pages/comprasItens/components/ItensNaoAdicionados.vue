@@ -268,7 +268,6 @@ const actions = {
       v-model="state.modalFotoProdutoOpened"
       max-width="500px"
       transition="dialog-transition"
-      @update:modelValue="actions.focarContainerItem"
     >
       <ModalFotoProduto
         :listaFotoProduto="state.listaFotoProduto"

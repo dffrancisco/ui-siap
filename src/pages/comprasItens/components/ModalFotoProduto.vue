@@ -23,11 +23,11 @@ const actions = {
 
 <template>
   <v-card class="card-foto-produto">
-    <div class="card-header px-6 pt-5">
-      <v-card-title> Foto do Produto </v-card-title>
+    <div class="card-header px-6 py-6">
+      <span class="title-modal"> Foto do Produto </span>
       <v-icon
         @click="actions.fecharModal"
-        size="32"
+        size="28"
         >mdi-close</v-icon
       >
     </div>
@@ -86,5 +86,11 @@ const actions = {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.title-modal {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--grey-100);
 }
 </style>
