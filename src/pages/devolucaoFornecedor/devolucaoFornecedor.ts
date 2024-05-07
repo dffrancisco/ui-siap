@@ -514,7 +514,7 @@ export const actions = {
             state.loading = false;
             Swal.fire({
                 icon: "error",
-                text: "Erro ao baixar xml prévia!",
+                text: error?.response?.data?.msg || "Erro ao baixar xml prévia!",
             });
         }
     }
