@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, meses, actions, totalizadorMetas, metas } from "./distribuirMetas";
+import {
+  state,
+  meses,
+  actions,
+  totalizadorMetas,
+  metas,
+  grupoFuncionarios,
+  alterarGrupoFuncionarios,
+} from "./distribuirMetas";
 import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
 import utils from "@/ts/utils";
 
@@ -19,7 +27,7 @@ onMounted(async () => {
       <div>
         <v-col cols="12">
           <v-row>
-            <v-col cols="3">
+            <v-col cols="2">
               <v-select
                 id="mes"
                 label="Mês"
@@ -41,7 +49,7 @@ onMounted(async () => {
                 @update:model-value="actions.getMetas"
               ></v-text-field>
             </v-col>
-            <v-col cols="5">
+            <v-col cols="2">
               <v-select
                 v-model="state.opcaoMeta"
                 :items="state.itensTipoCargo"
@@ -50,6 +58,18 @@ onMounted(async () => {
                 :clearable="false"
                 label="Tipo de meta"
                 @update:model-value="actions.getMetas"
+              >
+              </v-select>
+            </v-col>
+            <v-col cols="4">
+              <v-select
+                v-model="state.selectedGrupoFuncionario"
+                :items="grupoFuncionarios"
+                item-value="value"
+                item-title="title"
+                :clearable="false"
+                label="Grupo Funcionários"
+                @update:model-value="alterarGrupoFuncionarios"
               >
               </v-select>
             </v-col>
@@ -257,8 +277,8 @@ onMounted(async () => {
 
 .metas_tiposDeMeta {
   width: auto;
-  height: 120px;
-  padding-top: 20px;
+  height: 100px;
+  padding: 7px;
   flex-direction: column;
   justify-content: center;
   border-radius: 14px;
@@ -310,4 +330,3 @@ onMounted(async () => {
   border-radius: 10px;
 }
 </style>
-./distribuirMetas

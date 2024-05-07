@@ -1,12 +1,13 @@
 import axios from "axios";
-import { iFuncionario, iMesEAno, iMetaMontador, iMetaVendedor, iMetaInserida, } from "../interfaces"
+import { iFuncionario, iMesEAno, iMetaMontador, iMetaVendedor, iMetaInserida, iGruposFuncionarios, } from "../interfaces"
 
 const caminho = "siap/distribuirMetas";
 
 type iGetMetasVendedores = (param: iMesEAno) => Promise<iMetaVendedor[]>
 type iGetMetasMontadores = (param: iMesEAno) => Promise<iMetaMontador[]>
-type iGetFuncionarios = (param: iMesEAno) => Promise<iFuncionario[]>
+type iGetFuncionarios = () => Promise<iFuncionario[]>
 type iInserirMeta = (param: iMetaInserida) => Promise<iMetaInserida>
+type iGetGruposFuncionarios = () => Promise<iGruposFuncionarios[]>
 
 const getMetasVendedores: iGetMetasVendedores = async (param) => {
     let { data } = await axios.post(caminho, {
@@ -26,10 +27,9 @@ const getMetasMontadores: iGetMetasMontadores = async (param) => {
     return data;
 }
 
-const getFuncionarios: iGetFuncionarios = async (param) => {
+const getFuncionarios: iGetFuncionarios = async () => {
     let { data } = await axios.post(caminho, {
         call: "getFuncionarios",
-        param,
     });
 
     return data;
@@ -43,9 +43,18 @@ const inserirMeta: iInserirMeta = async (param) => {
     return data;
 };
 
+const getGruposFuncionarios: iGetGruposFuncionarios = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getGruposFuncionarios",
+    });
+
+    return data;
+}
+
 export default {
     getMetasVendedores,
     getMetasMontadores,
     getFuncionarios,
-    inserirMeta
+    inserirMeta,
+    getGruposFuncionarios
 }
