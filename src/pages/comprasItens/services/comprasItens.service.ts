@@ -11,6 +11,7 @@ import {
     iResponseInsertItemCompra,
     iResponseGetProdutosAdicionadosFunction,
     iParamDeleteItemCompra,
+    iGetListaFotoJsonResponse,
 } from "../interfaces";
 import moment from "moment";
 
@@ -26,6 +27,7 @@ type iGetHistoricoVendasFunction = (param: iParamGetProdutosFunction) => Promise
 type iGetHistoricoComprasFunction = (param: iParamGetProdutosFunction) => Promise<iObjHistoricoCompraGeral>;
 type iInsertItemCompraFunction = (param: iParamInsertItemCompra) => Promise<iResponseInsertItemCompra>;
 type iDeleteItemCompraFunction = (param: iParamDeleteItemCompra) => Promise<void>;
+type iGetListaFotoJsonFunction = (codProduto: number) => Promise<iGetListaFotoJsonResponse[]>
 
 export const getColorData = (data: string) => {
     if (!data) return "#eef0f4";
@@ -143,6 +145,14 @@ const cancelarRequisicao = () => {
     }
 }
 
+const getListaFotoJson: iGetListaFotoJsonFunction = async (codProduto: number) => {
+    let { data } = await axios.post(
+        `http://www.reallatas.com.br/balcao/getListaFotoJson.php?id_sociedade=&img=${codProduto}`
+    );
+
+    return data;
+}
+
 export default {
     getColorCurva,
     getColorData,
@@ -155,5 +165,6 @@ export default {
     getHistoricoCompras,
     insertItemCompra,
     deleteItemCompra,
-    cancelarRequisicao
+    cancelarRequisicao,
+    getListaFotoJson
 };
