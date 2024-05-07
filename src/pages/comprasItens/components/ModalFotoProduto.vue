@@ -59,11 +59,19 @@ const actions = {
 .v-window--show-arrows-on-hover .v-window__left {
   background-color: #2196f3 !important;
   color: #fff;
+  width: 36px;
+  height: 36px;
 }
 
 .v-window--show-arrows-on-hover .v-window__right {
   background-color: #2196f3 !important;
   color: #fff;
+  width: 36px;
+  height: 36px;
+}
+
+.v-carousel__controls {
+  background: rgba(var(--v-theme-surface-variant), 0.6) !important;
 }
 </style>
 
