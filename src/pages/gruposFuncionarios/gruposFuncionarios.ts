@@ -110,11 +110,6 @@ export const actions = {
                             click: actions.btnUpdate,
                             id: "btnUpdate",
                         },
-                        addFuncionario: {
-                            html: "Adicionar Funcionários",
-                            state: "select",
-                            click: actions.btnAddFuncionarios
-                        },
                         excluir: {
                             html: "Excluir",
                             state: "delete",
@@ -131,6 +126,11 @@ export const actions = {
                             html: "Cancelar",
                             state: "cancel",
                             click: actions.btnCancel
+                        },
+                        addFuncionario: {
+                            html: "Add. Funcionários",
+                            state: "select",
+                            click: actions.btnAddFuncionarios
                         },
                     }
                 }
