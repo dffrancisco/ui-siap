@@ -37,7 +37,7 @@ export interface iFuncionario {
 }
 
 export interface iGruposFuncionarios {
-    ID_GRUPO_IMPRESSAO: number;
+    ID_GRUPO_IMPRESSAO: number | '';
     NOME_GRUPO: string;
     COD_FUNCIONARIO: number;
 }

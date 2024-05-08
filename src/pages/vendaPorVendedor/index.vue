@@ -80,10 +80,8 @@ nextTick(() => {
       <v-data-table-virtual
         :headers="state.headers"
         :items="vendasOrdenadas"
-        style="text-transform: none"
         items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
-        class="ss"
         height="480"
         items-per-page="50"
         fixed-header

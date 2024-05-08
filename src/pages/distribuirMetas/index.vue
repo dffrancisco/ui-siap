@@ -49,24 +49,24 @@ onMounted(async () => {
                 @update:model-value="actions.getMetas"
               ></v-text-field>
             </v-col>
-            <v-col cols="2">
+            <v-col cols="3">
               <v-select
                 v-model="state.opcaoMeta"
                 :items="state.itensTipoCargo"
                 item-value="value"
                 item-title="title"
                 :clearable="false"
-                label="Tipo de meta"
+                label="Tipo Meta"
                 @update:model-value="actions.getMetas"
               >
               </v-select>
             </v-col>
-            <v-col cols="4">
+            <v-col cols="3">
               <v-select
                 v-model="state.selectedGrupoFuncionario"
                 :items="grupoFuncionarios"
-                item-value="value"
-                item-title="title"
+                item-value="ID_GRUPO_IMPRESSAO"
+                item-title="NOME_GRUPO"
                 :clearable="false"
                 label="Grupo Funcionários"
                 @update:model-value="alterarGrupoFuncionarios"
@@ -240,7 +240,7 @@ onMounted(async () => {
       />
     </div>
 
-    <div id="pnCodigoTela">METAS</div>
+    <div id="pnCodigoTela">distribuirMetas</div>
     <v-overlay
       :model-value="state.loading"
       class="align-center justify-center"

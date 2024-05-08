@@ -20,7 +20,7 @@ export const state = reactive({
     metaMontadores: <iMetaMontador[]>[],
     funcionarios: <iFuncionario[]>[],
     gruposFuncionarios: <iGruposFuncionarios[]>[],
-    selectedGrupoFuncionario: "Nenhum grupo Selecionado",
+    selectedGrupoFuncionario: '',
     modalDistribuirMetas: <iModalCreate>{},
     modalDistribuirMetasOpened: false,
     metaInserida: <iMetaInserida>{},
@@ -77,34 +77,43 @@ export const meses = mesesToSelect;
 export const metas = computed(() => {
     let metasFiltradas = [];
 
-    if (state.selectedGrupoFuncionario === "Nenhum grupo Selecionado" || state.selectedGrupoFuncionario == "") {
-        if (state.opcaoMeta === 0) {
-            metasFiltradas = state.metaVendedores;
-        } else {
-            metasFiltradas = state.metaMontadores;
-        }
+    if (state.opcaoMeta === 0) {
+        metasFiltradas = state.metaVendedores;
     } else {
-        const codFuncionariosDoGrupo = state.gruposFuncionarios
-            .filter(grupo => grupo.NOME_GRUPO === state.selectedGrupoFuncionario)
-            .map(grupo => grupo.COD_FUNCIONARIO);
-        if (state.opcaoMeta === 0) {
-            metasFiltradas = state.metaVendedores.filter(meta => codFuncionariosDoGrupo.includes(meta.COD_FUNCIONARIO));
-        } else {
-            metasFiltradas = state.metaMontadores.filter(meta => codFuncionariosDoGrupo.includes(meta.COD_FUNCIONARIO));
-        }
+        metasFiltradas = state.metaMontadores;
     }
+
+    if (state.selectedGrupoFuncionario == "") return metasFiltradas;
+
+    const codFuncionariosDoGrupo = state.gruposFuncionarios
+        .filter(grupo => grupo.ID_GRUPO_IMPRESSAO.toString() == state.selectedGrupoFuncionario)
+        .map(grupo => grupo.COD_FUNCIONARIO);
+
+    metasFiltradas = metasFiltradas.filter(meta => codFuncionariosDoGrupo.includes(meta.COD_FUNCIONARIO))
 
     return metasFiltradas;
 });
 
 export const grupoFuncionarios = computed(() => {
-    const gruposSet = new Set<string>();
+    let objGrupos: { [key: string]: iGruposFuncionarios } = {};
+
     state.gruposFuncionarios.forEach(grupo => {
-        gruposSet.add(grupo.NOME_GRUPO);
+        objGrupos[grupo.ID_GRUPO_IMPRESSAO] = grupo;
     });
-    const gruposArray = Array.from(gruposSet);
-    gruposArray.unshift("Nenhum grupo Selecionado");
-    return gruposArray;
+
+    let arrayGrupos = Object.values(objGrupos).map(grupo => {
+        return {
+            ID_GRUPO_IMPRESSAO: grupo.ID_GRUPO_IMPRESSAO,
+            NOME_GRUPO: grupo.NOME_GRUPO,
+        }
+    })
+
+    arrayGrupos.unshift({
+        ID_GRUPO_IMPRESSAO: '',
+        NOME_GRUPO: "Nenhum",
+    });
+
+    return arrayGrupos;
 });
 
 export const alterarGrupoFuncionarios = (grupo: string) => {
@@ -129,7 +138,7 @@ export const totalizadorMetas = computed(() => {
         arrayMeta = state.metaMontadores;
     }
 
-    if (state.selectedGrupoFuncionario !== "Nenhum grupo Selecionado") {
+    if (state.selectedGrupoFuncionario != '') {
         const codFuncionariosDoGrupo = state.gruposFuncionarios
             .filter(grupo => grupo.NOME_GRUPO === state.selectedGrupoFuncionario)
             .map(grupo => grupo.COD_FUNCIONARIO);
@@ -299,7 +308,7 @@ export const actions = {
         await actions.getMetasMontadores(state.mes, state.ano);
 
         if (state.opcaoMeta === 1 || state.opcaoMeta === 0) {
-            state.selectedGrupoFuncionario = "Nenhum grupo Selecionado";
+            state.selectedGrupoFuncionario = "";
         }
     },
 
