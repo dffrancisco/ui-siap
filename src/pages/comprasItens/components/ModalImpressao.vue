@@ -1,24 +1,45 @@
+<script setup lang="ts">
+import { reactive } from "vue";
+
+const emits = defineEmits(["fecharModal"]);
+
+const state = reactive({
+  tipoImpressao: 0,
+});
+
+const actions = {
+  fecharModal() {
+    emits("fecharModal");
+  },
+};
+</script>
+
 <template>
   <v-card class="card-container">
     <div class="card-header px-6 pt-4">
       <span class="title-modal"> Imprimir </span>
-      <v-icon size="28">mdi-close</v-icon>
+      <v-icon
+        size="28"
+        @click="actions.fecharModal"
+        >mdi-close</v-icon
+      >
     </div>
     <div class="card-body px-6 pb-6 d-flex ga-5 flex-column">
       <v-radio-group
+        v-model="state.tipoImpressao"
         inline
         class="d-flex justify-center"
       >
         <div class="radio mr-2">
           <v-radio
-            value="one"
+            :value="0"
             color="primary"
           ></v-radio>
           <span>Produto</span>
         </div>
         <div class="radio ml-2">
           <v-radio
-            value="two"
+            :value="1"
             color="primary"
           ></v-radio>
           <span>Cotação</span>

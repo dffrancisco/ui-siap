@@ -159,7 +159,7 @@ watch(
     max-width="480px"
     transition="dialog-transition"
   >
-    <ModalImpressao />
+    <ModalImpressao @fecharModal="actions.fecharModalImpressao" />
   </v-dialog>
 </template>
 
