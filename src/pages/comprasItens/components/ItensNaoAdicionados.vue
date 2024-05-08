@@ -136,9 +136,8 @@ const actions = {
           cols="1"
           class="d-flex align-center"
           title="Ver foto"
-          @click="actions.abrirModalFotoProduto"
         >
-          <v-icon>mdi mdi-camera</v-icon>
+          <v-icon @click="actions.abrirModalFotoProduto">mdi mdi-camera</v-icon>
         </v-col>
       </v-row>
       <v-row class="mt-0">

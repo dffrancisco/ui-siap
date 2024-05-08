@@ -144,12 +144,9 @@ watch(
         width="50"
         min-width="50"
         class="pa-0"
+        @click="actions.abrirModalImpressao"
       >
-        <v-icon
-          size="x-large"
-          @click="actions.abrirModalImpressao"
-          >mdi mdi-printer</v-icon
-        >
+        <v-icon size="x-large">mdi mdi-printer</v-icon>
       </v-btn>
     </div>
   </div>
