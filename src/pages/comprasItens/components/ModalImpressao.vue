@@ -58,12 +58,12 @@ const actions = {
       <div class="pt-4 d-flex justify-center ga-2">
         <v-btn
           height="40"
-          color="primary"
+          class="btn-visualizar"
           ><v-icon class="mr-1">mdi-magnify</v-icon>visualizar</v-btn
         >
         <v-btn
           height="40"
-          color="success"
+          class="btn-imprimir"
           ><v-icon class="mr-1">mdi-printer</v-icon>imprimir</v-btn
         >
       </div>
@@ -99,5 +99,15 @@ const actions = {
   font-size: 12px;
   color: var(--grey-100);
   font-weight: 600;
+}
+
+.btn-visualizar {
+  background-color: var(--primary-700);
+  color: #fff;
+}
+
+.btn-imprimir {
+  background-color: var(--success-600);
+  color: #fff;
 }
 </style>
