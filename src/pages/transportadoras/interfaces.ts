@@ -1,4 +1,4 @@
-export interface iTranspordadora{
+export interface iTranspordadora {
     ID_TRANSPORTADORA: number;
     RAZAO_SOCIAL: string;
     CGC_TRANSPORTADORA: string;
@@ -11,7 +11,6 @@ export interface iTranspordadora{
     EMAIL: string;
     OBS: string;
     DELETADO: string;
-
     COD_CIDADE: number;
     CIDADE: string;
 }
@@ -41,6 +40,6 @@ export interface iGetInsertResponse {
     ID_TRANSPORTADORA: number;
 }
 
-export interface iGetTransportadorasResponse extends iTranspordadora{}
-export interface iParamToInsert extends iTranspordadora{}
-export interface iParamToUpdate extends iTranspordadora{}
+export interface iGetTransportadorasResponse extends iTranspordadora { }
+export interface iParamToInsert extends iTranspordadora { }
+export interface iParamToUpdate extends iTranspordadora { }

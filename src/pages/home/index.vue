@@ -154,8 +154,20 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/vendaPorVendedor')"
+              >Venda Por Vendedor</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/distribuirMetas')"
               >Distribuir Metas</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/gruposFuncionarios')"
+              >Grupos Funcionarios</v-btn
             >
 
             <v-btn

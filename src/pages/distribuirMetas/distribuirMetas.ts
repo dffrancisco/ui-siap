@@ -1,6 +1,6 @@
 import { mesesToSelect } from "@/constants/constants";
 import { computed, reactive } from "vue";
-import { iMesEAno, iMetaInserida, iMetaVendedor, iMetaMontador, iFuncionario } from "./interfaces";
+import { iMesEAno, iMetaInserida, iMetaVendedor, iMetaMontador, iFuncionario, iGruposFuncionarios } from "./interfaces";
 import Swal from "sweetalert2";
 import metasService from "./services/distribuirMetas.service"
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -19,7 +19,9 @@ export const state = reactive({
     metaVendedores: <iMetaVendedor[]>[],
     metaMontadores: <iMetaMontador[]>[],
     funcionarios: <iFuncionario[]>[],
-    modalDistribuirMetas: <iModalCreate>(<unknown>null),
+    gruposFuncionarios: <iGruposFuncionarios[]>[],
+    selectedGrupoFuncionario: '',
+    modalDistribuirMetas: <iModalCreate>{},
     modalDistribuirMetasOpened: false,
     metaInserida: <iMetaInserida>{},
     headers: <any>[
@@ -73,14 +75,51 @@ export const state = reactive({
 export const meses = mesesToSelect;
 
 export const metas = computed(() => {
+    let metasFiltradas = [];
 
     if (state.opcaoMeta === 0) {
-        return state.metaVendedores;
+        metasFiltradas = state.metaVendedores;
     } else {
-        return state.metaMontadores;
+        metasFiltradas = state.metaMontadores;
     }
 
-})
+    if (state.selectedGrupoFuncionario == "") return metasFiltradas;
+
+    const codFuncionariosDoGrupo = state.gruposFuncionarios
+        .filter(grupo => grupo.ID_GRUPO_IMPRESSAO.toString() == state.selectedGrupoFuncionario)
+        .map(grupo => grupo.COD_FUNCIONARIO);
+
+    metasFiltradas = metasFiltradas.filter(meta => codFuncionariosDoGrupo.includes(meta.COD_FUNCIONARIO))
+
+    return metasFiltradas;
+});
+
+export const grupoFuncionarios = computed(() => {
+    let objGrupos: { [key: string]: iGruposFuncionarios } = {};
+
+    state.gruposFuncionarios.forEach(grupo => {
+        objGrupos[grupo.ID_GRUPO_IMPRESSAO] = grupo;
+    });
+
+    let arrayGrupos = Object.values(objGrupos).map(grupo => {
+        return {
+            ID_GRUPO_IMPRESSAO: grupo.ID_GRUPO_IMPRESSAO,
+            NOME_GRUPO: grupo.NOME_GRUPO,
+        }
+    })
+
+    arrayGrupos.unshift({
+        ID_GRUPO_IMPRESSAO: '',
+        NOME_GRUPO: "Nenhum",
+    });
+
+    return arrayGrupos;
+});
+
+export const alterarGrupoFuncionarios = (grupo: string) => {
+    state.selectedGrupoFuncionario = grupo;
+};
+
 
 export const totalizadorMetas = computed(() => {
     let arrayMeta;
@@ -97,6 +136,14 @@ export const totalizadorMetas = computed(() => {
         arrayMeta = state.metaVendedores;
     } else {
         arrayMeta = state.metaMontadores;
+    }
+
+    if (state.selectedGrupoFuncionario != '') {
+        const codFuncionariosDoGrupo = state.gruposFuncionarios
+            .filter(grupo => grupo.NOME_GRUPO === state.selectedGrupoFuncionario)
+            .map(grupo => grupo.COD_FUNCIONARIO);
+
+        arrayMeta = arrayMeta.filter(item => codFuncionariosDoGrupo.includes(item.COD_FUNCIONARIO));
     }
 
     arrayMeta.forEach((item: iMetaVendedor | iMetaMontador) => {
@@ -120,11 +167,10 @@ export const totalizadorMetas = computed(() => {
 export const actions = {
 
     async init() {
-        state.loading = true;
         actions.createModal();
         await actions.getMetasVendedores(state.mes, state.ano);
         await actions.getMetasMontadores(state.mes, state.ano);
-        state.loading = false;
+        await actions.getGruposFuncionarios();
     },
 
     createModal() {
@@ -227,15 +273,11 @@ export const actions = {
 
     },
 
-    async getFuncionarios(mes: number, ano: number) {
+    async getFuncionarios() {
         state.loading = true;
 
-        const param: iMesEAno = {
-            mes: mes,
-            ano: ano,
-        }
         try {
-            state.funcionarios = await metasService.getFuncionarios(param);
+            state.funcionarios = await metasService.getFuncionarios();
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -246,15 +288,34 @@ export const actions = {
         }
     },
 
+    async getGruposFuncionarios() {
+        state.loading = true;
+
+        try {
+            state.gruposFuncionarios = await metasService.getGruposFuncionarios();
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar os grupos de funcionários.",
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
     async getMetas() {
         await actions.getMetasVendedores(state.mes, state.ano);
         await actions.getMetasMontadores(state.mes, state.ano);
+
+        if (state.opcaoMeta === 1 || state.opcaoMeta === 0) {
+            state.selectedGrupoFuncionario = "";
+        }
     },
 
-    async distribuirMetas(mes: number, ano: number) {
+    async distribuirMetas() {
 
         if (state.funcionarios.length === 0) {
-            await actions.getFuncionarios(mes, ano);
+            await actions.getFuncionarios();
         }
         state.modalDistribuirMetas.open();
     }

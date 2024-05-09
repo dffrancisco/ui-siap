@@ -36,6 +36,12 @@ export interface iFuncionario {
     CARGO: string;
 }
 
+export interface iGruposFuncionarios {
+    ID_GRUPO_IMPRESSAO: number | '';
+    NOME_GRUPO: string;
+    COD_FUNCIONARIO: number;
+}
+
 export interface iMetaVendedor extends iMeta { }
 
 export interface iMetaMontador extends iMeta { }
