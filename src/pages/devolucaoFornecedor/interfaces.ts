@@ -63,7 +63,8 @@ export interface iItemDevolucao {
     COD_FABRICANTE: string,
     CHAVE: string,
     DATA_EMISSAO: string,
-    CST_IPI: string
+    CST_IPI: string,
+    PERCENTUAL_REDUCAO_BASE_ICMS: number | string,
 }
 
 export interface iItensDevolucao {
@@ -158,7 +159,8 @@ export interface iTributosItem {
     CST_COFINS: string,
     PERCENTUAL_COFINS: number
     CST_IPI: string,
-    PERCENTUAL_IPI: number
+    PERCENTUAL_IPI: number,
+    PERCENTUAL_REDUCAO_BASE_ICMS: number
 }
 
 export interface iGetTributosItemNotaResponse extends iTributosItem { }
