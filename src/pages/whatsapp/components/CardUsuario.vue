@@ -27,12 +27,12 @@ const actions = {
 </script>
 
 <template>
-  <div
-    v-if="conversas.length > 0"
-    class="card-usuario"
-  >
-    <div class="card-usuario__titulo">
-      <strong>{{ nome }}</strong>
+  <div class="card-usuario">
+    <div
+      class="card-usuario__titulo"
+      :class="{ 'card-usuario__titulo--red': conversas.length > 20 }"
+    >
+      <strong :class="{ 'text-error': conversas.length > 20 }">{{ nome }}</strong>
     </div>
     <div class="card-usuario__corpo">
       <div
@@ -63,7 +63,10 @@ const actions = {
         </div>
       </div>
     </div>
-    <div class="card-usuario__rodape">
+    <div
+      class="card-usuario__rodape"
+      :class="{ 'card-usuario__rodape--red': conversas.length > 20 }"
+    >
       <span
         >Total conversa abertas: <strong>{{ conversas.length }}</strong></span
       >
@@ -85,6 +88,12 @@ const actions = {
   padding: 8px;
   border-bottom: 1px solid rgba(82, 101, 140, 0.15);
   background-color: rgb(249, 251, 255);
+  text-transform: capitalize;
+}
+
+.card-usuario__titulo--red {
+  background-color: #f7bbbb;
+  border: 1px solid #f7bbbb;
 }
 
 .card-usuario__corpo {
@@ -126,5 +135,14 @@ const actions = {
   padding: 8px;
   border-top: 1px solid rgba(82, 101, 140, 0.15);
   background-color: rgb(249, 251, 255);
+}
+
+.card-usuario__rodape--red {
+  background-color: #f7bbbb;
+  border: 1px solid #f7bbbb;
+
+  strong {
+    color: red;
+  }
 }
 </style>

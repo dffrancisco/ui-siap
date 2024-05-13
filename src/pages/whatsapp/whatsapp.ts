@@ -8,6 +8,7 @@ export const state = reactive({
     loading: false,
     usuarios: <iUsuario[]>[],
     conversasAbertas: <iConversaAberta[]>[],
+    lastUpdate: '00:00:00'
 })
 
 export const actions = {
@@ -29,6 +30,7 @@ export const actions = {
         try {
             state.loading = true;
             state.conversasAbertas = await whatsappService.getConversasAbertas();
+            state.lastUpdate = moment().format("HH:mm:ss");
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -39,9 +41,22 @@ export const actions = {
         }
     },
 
+    async atualizarDados() {
+        await actions.getConversasAbertas();
+    },
+
+    formatarTempoEmMinutos(tempo: number) {
+        return whatsappService.formatarTempoEmMinutos(tempo);
+    },
+
     async init() {
         await actions.getUsuarios();
         await actions.getConversasAbertas();
+
+        const TRINTA_SEGUNDOS = 30000;
+        setInterval(async () => {
+            await actions.atualizarDados();
+        }, TRINTA_SEGUNDOS);
     },
 }
 
@@ -85,7 +100,7 @@ export const computeds = {
             }
         })
 
-        return whatsappService.formatarTempoEmMinutos(maisLongo)
+        return maisLongo
     }),
 
     tempoMedioEsperaFila: computed(() => {
@@ -100,7 +115,11 @@ export const computeds = {
 
         let qtd = computeds.conversasSemUsuario.value.length;
 
-        return whatsappService.formatarTempoEmMinutos(somaTempo / qtd)
+        if (qtd == 0) {
+            return 0;
+        }
+
+        return somaTempo / qtd
     })
 }
 

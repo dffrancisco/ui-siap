@@ -15,16 +15,28 @@ nextTick(async () => {
       class="pa-5"
       style="margin: 0 auto"
     >
-      <div class="mb-4 d-flex justify-space-between">
+      <div class="mb-4 d-flex justify-space-between align-center">
         <span>
-          Tempo espera mais longo: <strong>{{ computeds.tempoEsperaMaisLongo }}</strong>
+          Tempo espera mais longo:
+          <strong :class="{ 'text-error': computeds.tempoEsperaMaisLongo.value > 60 }">{{
+            actions.formatarTempoEmMinutos(computeds.tempoEsperaMaisLongo.value)
+          }}</strong>
         </span>
         <span>
-          Tempo médio espera fila: <strong>{{ computeds.tempoMedioEsperaFila }}</strong>
+          Tempo médio espera fila:
+          <strong :class="{ 'text-error': computeds.tempoMedioEsperaFila.value > 30 }">{{
+            actions.formatarTempoEmMinutos(computeds.tempoMedioEsperaFila.value)
+          }}</strong>
         </span>
         <span>
           Conversas em aberto: <strong>{{ state.conversasAbertas.length }}</strong>
         </span>
+        <v-btn
+          color="primary"
+          size="small"
+          @click="actions.atualizarDados"
+          >Atualizar</v-btn
+        >
       </div>
       <div class="mb-4"> </div>
       <div class="container-usuarios">
@@ -51,7 +63,12 @@ nextTick(async () => {
         ></v-progress-circular>
       </v-overlay>
     </v-card>
-    <div id="pnCodigoTela">whatsapp</div>
+    <div class="d-flex justify-space-between mt-1 mx-10">
+      <div id="pnCodigoTela">whatsapp</div>
+      <span class="ultima-atualizacao">
+        Última atualização: <strong>{{ state.lastUpdate }}</strong>
+      </span>
+    </div>
   </v-container>
 </template>
 
@@ -62,5 +79,11 @@ nextTick(async () => {
   gap: 16px;
   max-height: calc(100vh - 140px);
   overflow-y: auto;
+}
+
+.ultima-atualizacao {
+  font-size: 10px;
+  font-weight: 500;
+  color: #495057;
 }
 </style>
