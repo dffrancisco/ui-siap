@@ -34,6 +34,11 @@ const formatarTempoEmMinutos = (minutos) => {
     }
     if (minutosRestantes > 0) {
         if (resultado !== '') resultado += ' ';
+
+        if (minutosRestantes % 1 !== 0) {
+            minutosRestantes = Math.round(minutosRestantes);
+        }
+
         resultado += minutosRestantes + 'min';
     }
 
