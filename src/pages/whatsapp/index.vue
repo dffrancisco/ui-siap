@@ -60,7 +60,7 @@ nextTick(async () => {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  max-height: 550px;
+  max-height: 480px;
   overflow-y: auto;
 }
 </style>
