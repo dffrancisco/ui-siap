@@ -32,7 +32,7 @@ const actions = {
     class="card-usuario"
   >
     <div class="card-usuario__titulo">
-      <span>{{ nome }}</span>
+      <strong>{{ nome }}</strong>
     </div>
     <div class="card-usuario__corpo">
       <div
