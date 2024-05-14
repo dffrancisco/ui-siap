@@ -110,7 +110,7 @@ export const computeds = {
             let dataHoraAberto = moment(conversa.data_hora_aberto)
             let now = moment()
 
-            somaTempo = now.diff(dataHoraAberto, 'minutes');
+            somaTempo += now.diff(dataHoraAberto, 'minutes');
         })
 
         let qtd = computeds.conversasSemUsuario.value.length;
