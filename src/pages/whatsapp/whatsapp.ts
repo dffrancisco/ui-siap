@@ -9,7 +9,8 @@ export const state = reactive({
     loading: false,
     usuarios: <iUsuario[]>[],
     conversasAbertas: <iConversaAberta[]>[],
-    lastUpdate: '00:00:00'
+    lastUpdate: '00:00:00',
+    interval: undefined,
 })
 
 export const actions = {
@@ -59,7 +60,7 @@ export const actions = {
         await actions.getConversasAbertas();
 
         const TRINTA_SEGUNDOS = 30000;
-        setInterval(async () => {
+        state.interval = setInterval(async () => {
             await actions.atualizarDados();
         }, TRINTA_SEGUNDOS);
     },

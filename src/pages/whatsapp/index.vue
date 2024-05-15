@@ -2,9 +2,14 @@
 import { nextTick } from "vue";
 import { state, actions, computeds } from "./whatsapp";
 import CardUsuario from "./components/CardUsuario.vue";
+import { onUnmounted } from "vue";
 
 nextTick(async () => {
   actions.init();
+});
+
+onUnmounted(() => {
+  clearInterval(state.interval);
 });
 </script>
 

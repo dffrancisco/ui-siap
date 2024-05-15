@@ -96,7 +96,7 @@ nextTick(async () => {
             }"
             :options="{
               title: {
-                text: 'Atendimentos iniciados',
+                text: 'Atendimentos Iniciados',
               },
               chart: {
                 type: 'bar',
