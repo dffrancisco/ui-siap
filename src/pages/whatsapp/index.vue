@@ -54,7 +54,7 @@ nextTick(async () => {
       <div class="mb-4"> </div>
       <div class="container-usuarios">
         <CardUsuario
-          :nome="'Não atribuído'"
+          :nome="'Não iniciado'"
           :conversas="computeds.conversasSemUsuario.value"
         />
         <CardUsuario
