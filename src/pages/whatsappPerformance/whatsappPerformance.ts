@@ -66,6 +66,8 @@ export const computeds = {
         state.atendimentosIniciados
             .sort((atendimentoA, atendimentoB) => atendimentoB.qtd_total - atendimentoA.qtd_total)
             .forEach(atendimento => {
+                if (!atendimento.assigned_user) return;
+
                 seriesQtdRecebida.push(atendimento.qtd_recebida);
                 seriesQtdEnviada.push(atendimento.qtd_enviada);
                 usuarios.push(atendimento.nome);
