@@ -76,7 +76,7 @@ const actions = {
 
 <style scoped lang="scss">
 .card-usuario {
-  width: 248px;
+  width: 246px;
   border: 1px solid rgba(82, 101, 140, 0.15);
   border-radius: 4px;
 }

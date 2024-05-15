@@ -3,6 +3,7 @@ import { reactive, computed } from "vue";
 import whatsappService from "./services/whatsapp.service";
 import { iConversaAberta, iUsuario } from "./interfaces";
 import moment from "moment";
+import router from "@/router";
 
 export const state = reactive({
     loading: false,
@@ -47,6 +48,10 @@ export const actions = {
 
     formatarTempoEmMinutos(tempo: number) {
         return whatsappService.formatarTempoEmMinutos(tempo);
+    },
+
+    redirectToWhatsappPerformance() {
+        router.push('/whatsappPerformance');
     },
 
     async init() {

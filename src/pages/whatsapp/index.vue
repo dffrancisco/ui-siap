@@ -9,12 +9,25 @@ nextTick(async () => {
 </script>
 
 <template>
-  <v-container>
-    <v-card
-      width="1100"
-      class="pa-5"
-      style="margin: 0 auto"
-    >
+  <v-container style="width: 1100px">
+    <div class="mb-2">
+      <v-btn
+        color="primary"
+        class="mr-2"
+      >
+        <v-icon class="mr-1">mdi-clock</v-icon>
+        Tempo real
+      </v-btn>
+      <v-btn
+        color="primary"
+        variant="outlined"
+        @click="actions.redirectToWhatsappPerformance()"
+      >
+        <v-icon>mdi-chart-areaspline</v-icon>
+        Performance
+      </v-btn>
+    </div>
+    <v-card class="pa-2">
       <div class="mb-4 d-flex justify-space-between align-center">
         <span>
           Tempo espera mais longo:
@@ -77,7 +90,7 @@ nextTick(async () => {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  max-height: calc(100vh - 140px);
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
 }
 
