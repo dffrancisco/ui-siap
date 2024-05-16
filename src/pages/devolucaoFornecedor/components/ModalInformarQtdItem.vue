@@ -61,6 +61,7 @@ watch(
         CHAVE: props.dbItem.CHAVE,
         DATA_EMISSAO: props.dbItem.DATA_EMISSAO,
         CST_IPI: props.dbItem.CST_IPI || "",
+        PERCENTUAL_REDUCAO_BASE_ICMS: null,
       };
 
       await actions.getTributosItemNota();
@@ -283,12 +284,16 @@ const actions = {
       let pisPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_PIS.toString());
       let cofinsPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_COFINS.toString());
       let ipiPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_IPI.toString());
+      let icmsPercentualReducaoBase = utils.formatValorUSA(
+        state.dbItemDevolucao.PERCENTUAL_REDUCAO_BASE_ICMS.toString()
+      );
 
       let param = {
         ...state.dbItemDevolucao,
         PERCENTUAL_PIS: pisPercentual,
         PERCENTUAL_COFINS: cofinsPercentual,
         PERCENTUAL_IPI: ipiPercentual,
+        PERCENTUAL_REDUCAO_BASE_ICMS: icmsPercentualReducaoBase,
       };
 
       await serviceDevolucaoFornecedor.updateInsertItemDevolucao({ param });
@@ -329,6 +334,7 @@ const actions = {
       state.dbItemDevolucao.PERCENTUAL_COFINS = utils.formatValor(data.PERCENTUAL_COFINS);
       state.dbItemDevolucao.CST_IPI = data.CST_IPI;
       state.dbItemDevolucao.PERCENTUAL_IPI = utils.formatValor(data.PERCENTUAL_IPI);
+      state.dbItemDevolucao.PERCENTUAL_REDUCAO_BASE_ICMS = utils.formatValor(data.PERCENTUAL_REDUCAO_BASE_ICMS);
 
       state.loading = false;
     } catch (error) {
@@ -352,6 +358,7 @@ const actions = {
       state.dbItemDevolucao.PERCENTUAL_COFINS = utils.formatValor(data.PERCENTUAL_COFINS);
       state.dbItemDevolucao.CST_IPI = data.CST_IPI;
       state.dbItemDevolucao.PERCENTUAL_IPI = utils.formatValor(data.PERCENTUAL_IPI);
+      state.dbItemDevolucao.PERCENTUAL_REDUCAO_BASE_ICMS = utils.formatValor(data.PERCENTUAL_REDUCAO_BASE_ICMS);
 
       state.loading = false;
     } catch (error) {
