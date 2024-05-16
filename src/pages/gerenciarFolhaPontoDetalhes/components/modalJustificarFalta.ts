@@ -122,7 +122,6 @@ export const setup = (emit: any, props: any) => {
     const showBtnDelete = computed(() => {
         if (
             props.dadosDocumento.length > 0 ||
-            props.pontos.TIPO == TIPO_FERIADO ||
             props.pontos.TIPO == TIPO_DIA_FOLGA ||
             props.pontos.TIPO == TIPO_EM_OUTRA_LOJA ||
             props.pontos.TIPO == TIPO_ATRASO_JUSTIFICADO

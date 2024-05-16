@@ -527,7 +527,7 @@ export const pontosCalendario = computed(() => {
             let atraso = actions.verificarAtraso(HORA_CHEGADA)
 
             if (atraso) {
-                cor = '#f15500'
+                cor = '#d33700'
             }
 
             let horaFormatada = actions.formatarHora(HORA_CHEGADA);
@@ -553,7 +553,7 @@ export const pontosCalendario = computed(() => {
             cor = '#6495ED'
 
             if (saidaMaisCedo) {
-                cor = '#f15500'
+                cor = '#d33700'
             }
 
             horaFormatada = actions.formatarHora(HORA_SAIDA);
