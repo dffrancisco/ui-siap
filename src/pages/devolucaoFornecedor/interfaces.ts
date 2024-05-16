@@ -63,7 +63,8 @@ export interface iItemDevolucao {
     COD_FABRICANTE: string,
     CHAVE: string,
     DATA_EMISSAO: string,
-    CST_IPI: string
+    CST_IPI: string,
+    PERCENTUAL_REDUCAO_BASE_ICMS: number | string,
 }
 
 export interface iItensDevolucao {
@@ -118,20 +119,16 @@ export interface iListaTransportadoras {
     NOME_TRANSPORTADORA: string,
 }
 
-export interface iParamGetDevolucoes {
+export interface iGridQuery {
     offset: number,
     param: object
 }
 
-export interface iParamGetFornecedores {
-    offset: number,
-    param: object
-}
+export interface iParamGetDevolucoes extends iGridQuery { }
 
-export interface iParamGetItens {
-    offset: number,
-    param: object
-}
+export interface iParamGetFornecedores extends iGridQuery { }
+
+export interface iParamGetItens extends iGridQuery { }
 
 export interface iParamInsertTransportadoraDevolucao extends iTranspordadoraDevolucao { }
 
@@ -149,21 +146,25 @@ export interface objNotasAgrupadas {
     [key: number]: iItensDevolucao
 }
 
-export interface iParamGetTributosPisCofinsItem {
+export interface iParamGetTributosItemNota {
     ANO: number,
     MES: string,
     CHAVE: string,
     COD_FABRICANTE: string
 }
 
-export interface iGetTributosPisCofinsItemResponse {
+export interface iTributosItem {
     CST_PIS: string,
     PERCENTUAL_PIS: number,
     CST_COFINS: string,
     PERCENTUAL_COFINS: number
     CST_IPI: string,
-    PERCENTUAL_IPI: number
+    PERCENTUAL_IPI: number,
+    PERCENTUAL_REDUCAO_BASE_ICMS: number
 }
+
+export interface iGetTributosItemNotaResponse extends iTributosItem { }
+export interface iBaixarNFeEntradaGetTributosItemNotaResponse extends iTributosItem { }
 
 export interface iParamGetItensDevolucaoQTDFunction {
     ID_NF_ENTRADA_MANIFESTO: number,
@@ -182,6 +183,11 @@ export interface iParamEmitirNotaDevolucaoFornecedorPrevia {
 export interface iEmitirNotaDevolucaoFornecedorPreviaResponse {
     pdf: string,
     xml: string
+}
+
+export interface iParamBaixarNFeEntradaGetTributosItemNota {
+    CHAVE: string,
+    COD_FABRICANTE: string
 }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }

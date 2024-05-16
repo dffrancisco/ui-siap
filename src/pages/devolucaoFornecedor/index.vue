@@ -196,7 +196,7 @@ onUnmounted(() => {
                 v-if="state.dbDevolucao.STATUS != 1"
                 title="ATUALIZAR ITEM"
                 @click="actions.openModalInformarQtdItem(itens)"
-                ><v-icon size="20px">mdi-pen</v-icon>
+                ><v-icon size="20px">mdi-pencil</v-icon>
               </button>
               <button
                 v-if="state.dbDevolucao.STATUS != 1"
