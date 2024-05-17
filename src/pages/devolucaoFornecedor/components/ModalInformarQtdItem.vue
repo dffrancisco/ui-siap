@@ -25,27 +25,11 @@ watch(
   () => props.modalInformaQtdOpened,
   async () => {
     if (props.modalInformaQtdOpened) {
-      if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF == globalState.empresa.UF) {
-        state.dbItemDevolucao.CFOP = "5411";
-      }
-
-      if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF != globalState.empresa.UF) {
-        state.dbItemDevolucao.CFOP = "6411";
-      }
-
-      if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF == globalState.empresa.UF) {
-        state.dbItemDevolucao.CFOP = "5202";
-      }
-
-      if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF != globalState.empresa.UF) {
-        state.dbItemDevolucao.CFOP = "6202";
-      }
-
       state.dbItemDevolucao = {
         ID_DEVOLUCAO_FORNECEDOR: props.id_devolucaoFornecedor,
         ID_ENTRADA: props.dbItem.ID_ENTRADA,
         ID_ITEM: props.dbItem.ID_ITEM,
-        CFOP: state.dbItemDevolucao.CFOP,
+        CFOP: props.dbItem.CFOP_DEVOLUCAO,
         QTD: props.dbItem.QTD || 0,
         CST: props.dbItem.CST,
         VALOR_UNITARIO: props.dbItem.CUSTO,
@@ -64,7 +48,9 @@ watch(
         PERCENTUAL_REDUCAO_BASE_ICMS: null,
       };
 
-      await actions.getTributosItemNota();
+      if (!props.dbItem.ID_DEVOLUCAO_FORNECEDOR_ITEM) {
+        await actions.buscarTributos();
+      }
 
       actions.validarCstIpi();
 
@@ -159,6 +145,26 @@ const actions = {
     } else {
       state.dbItemDevolucao.PERCENTUAL_IPI = 0;
     }
+  },
+
+  async buscarTributos() {
+    if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF == globalState.empresa.UF) {
+      state.dbItemDevolucao.CFOP = "5411";
+    }
+
+    if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF != globalState.empresa.UF) {
+      state.dbItemDevolucao.CFOP = "6411";
+    }
+
+    if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF == globalState.empresa.UF) {
+      state.dbItemDevolucao.CFOP = "5202";
+    }
+
+    if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF != globalState.empresa.UF) {
+      state.dbItemDevolucao.CFOP = "6202";
+    }
+
+    await actions.getTributosItemNota();
   },
 
   async salvarItemDevolucao() {
@@ -284,9 +290,14 @@ const actions = {
       let pisPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_PIS.toString());
       let cofinsPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_COFINS.toString());
       let ipiPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_IPI.toString());
-      let icmsPercentualReducaoBase = utils.formatValorUSA(
-        state.dbItemDevolucao.PERCENTUAL_REDUCAO_BASE_ICMS.toString()
-      );
+
+      let icmsPercentualReducaoBase = null;
+
+      if (state.dbItemDevolucao.PERCENTUAL_REDUCAO_BASE_ICMS) {
+        icmsPercentualReducaoBase = utils.formatValorUSA(
+          state.dbItemDevolucao.PERCENTUAL_REDUCAO_BASE_ICMS.toString()
+        );
+      }
 
       let param = {
         ...state.dbItemDevolucao,
@@ -570,16 +581,27 @@ nextTick(async () => {
     </div>
 
     <div class="btns">
-      <v-btn
-        style="color: #3680ab; border: 1px solid #3680ab"
-        @click="actions.closeModalInformarQtdItem"
-        >Cancelar</v-btn
-      >
-      <v-btn
-        color="#3680AB"
-        @click="actions.salvarItemDevolucao"
-        >Salvar</v-btn
-      >
+      <div>
+        <v-btn
+          color="primary"
+          @click="actions.buscarTributos"
+        >
+          <v-icon class="mr-1">mdi-cached</v-icon>
+          buscar tributos
+        </v-btn>
+      </div>
+      <div class="d-flex ga-2">
+        <v-btn
+          style="color: #3680ab; border: 1px solid #3680ab"
+          @click="actions.closeModalInformarQtdItem"
+          >Cancelar</v-btn
+        >
+        <v-btn
+          color="#3680AB"
+          @click="actions.salvarItemDevolucao"
+          >Salvar</v-btn
+        >
+      </div>
     </div>
 
     <v-overlay
@@ -604,9 +626,8 @@ span {
 
 .btns {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-top: 10px;
-  gap: 8px;
 }
 
 .disabled {

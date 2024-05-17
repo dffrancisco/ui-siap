@@ -41,7 +41,8 @@ export interface iItem {
     CST_COFINS: string,
     PERCENTUAL_PIS: number,
     PERCENTUAL_COFINS: number,
-    CST_IPI: string
+    CST_IPI: string,
+    CFOP_DEVOLUCAO: string
 }
 
 export interface iItemDevolucao {
@@ -92,6 +93,7 @@ export interface iItensDevolucao {
     PERCENTUAL_PIS: number,
     PERCENTUAL_COFINS: number,
     CST_IPI: string,
+    CFOP_DEVOLUCAO: string
 }
 
 export interface iFornecedor {

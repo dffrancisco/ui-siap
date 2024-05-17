@@ -179,7 +179,8 @@ export const actions = {
                 CST_COFINS: item.CST_COFINS,
                 PERCENTUAL_PIS: item.PERCENTUAL_PIS,
                 PERCENTUAL_COFINS: item.PERCENTUAL_COFINS,
-                CST_IPI: item.CST_IPI
+                CST_IPI: item.CST_IPI,
+                CFOP_DEVOLUCAO: item.CFOP_DEVOLUCAO
             }
         }
 
