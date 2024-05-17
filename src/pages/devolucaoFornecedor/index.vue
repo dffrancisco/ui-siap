@@ -367,6 +367,7 @@ onUnmounted(() => {
         <ModalInformarQtdItem
           :modalInformaQtdOpened="state.modalInformaQtdItemOpened"
           :dbItem="state.dbItem"
+          :dbEmpresa="state.dbEmpresa"
           :id_devolucaoFornecedor="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
           @closeModalInformarQtdItem="actions.closeModalInformarQtdItem"
           @closeModalEscolherItem="actions.closeModalEscolherItem"

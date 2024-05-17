@@ -22,6 +22,7 @@ import {
     iParamUpdateTransportadoraDevolucao,
     iUpdateInsertItemDevolucaoResponse,
     iUpdateTransportadoraResponse,
+    iGetEmpresaResponse
 } from "../interfaces";
 
 const caminho = 'siap/devolucaoFornecedor'
@@ -44,6 +45,7 @@ type iEmitirNotaDevolucaoFornecedorPreviaFunction = (param: iParamEmitirNotaDevo
     Promise<iEmitirNotaDevolucaoFornecedorPreviaResponse>
 type iBaixarNFeEntradaGetTributosItemNotaFunction = (param: iParamBaixarNFeEntradaGetTributosItemNota) =>
     Promise<iBaixarNFeEntradaGetTributosItemNotaResponse>
+type iGetEmpresaFunction = () => Promise<iGetEmpresaResponse>
 
 const getDevolucoes: iGetDevolucoesFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -200,6 +202,13 @@ const baixarNFeEntradaGetTributosItemNota: iBaixarNFeEntradaGetTributosItemNotaF
     return data
 }
 
+const getEmpresa: iGetEmpresaFunction = async () => {
+    let { data } = await axios.post(caminho, {
+        call: 'getEmpresa'
+    })
+    return data
+}
+
 export default {
     getDevolucoes,
     getFornecedores,
@@ -219,5 +228,6 @@ export default {
     emitirNotaDevolucaoFornecedorPrevia,
     getTributosItemNota,
     getItensDevolucaoQTD,
-    baixarNFeEntradaGetTributosItemNota
+    baixarNFeEntradaGetTributosItemNota,
+    getEmpresa
 }

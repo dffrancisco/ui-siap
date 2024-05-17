@@ -2,6 +2,7 @@ import { reactive, computed } from 'vue'
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal'
 import {
     iDevolucao,
+    iEmpresa,
     iItem,
     iItensDevolucao,
     iParamEmitirNotaDevolucaoFornecedorPrevia,
@@ -58,6 +59,7 @@ export const state = reactive({
     dbDevolucao: <iDevolucao>{},
     dbItensDevolucao: <iItensDevolucao[]>[],
     dbItem: <iItem>{},
+    dbEmpresa: <iEmpresa>{},
 
     disabledBtnFinalizar: true,
     disabledBtnDelete: true,
@@ -236,6 +238,7 @@ export const actions = {
 
     init() {
         actions.criarModais();
+        actions.getEmpresa();
     },
 
     async getDevolucao(devolucao: iDevolucao) {
@@ -518,7 +521,25 @@ export const actions = {
                 text: error?.response?.data?.msg || "Erro ao baixar xml prévia!",
             });
         }
-    }
+    },
+
+    async getEmpresa() {
+        try {
+            state.loading = true;
+
+            const data = await serviceDevolucaoFornecedor.getEmpresa();
+
+            state.dbEmpresa = data;
+
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar a empresa!",
+            });
+        }
+    },
 
 }
 

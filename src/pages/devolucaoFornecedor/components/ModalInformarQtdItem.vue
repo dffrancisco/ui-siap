@@ -5,9 +5,9 @@ import {
   iItemDevolucao,
   iParamGetTributosItemNota,
   iParamBaixarNFeEntradaGetTributosItemNota,
+  iEmpresa,
 } from "../interfaces";
 import { reactive, watch, nextTick, computed } from "vue";
-import globalState from "@/store/globalState";
 import Swal from "sweetalert2";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
 import { configVMoney } from "../../../constants/constants";
@@ -17,6 +17,7 @@ const props = defineProps<{
   dbItem: iItem;
   id_devolucaoFornecedor: number | undefined;
   modalInformaQtdOpened: boolean;
+  dbEmpresa: iEmpresa;
 }>();
 
 const emit = defineEmits(["salvarItem", "closeModalInformarQtdItem", "closeModalEscolherItem"]);
@@ -148,19 +149,19 @@ const actions = {
   },
 
   async buscarTributos() {
-    if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF == globalState.empresa.UF) {
+    if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF == props.dbEmpresa.UF) {
       state.dbItemDevolucao.CFOP = "5411";
     }
 
-    if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF != globalState.empresa.UF) {
+    if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF != props.dbEmpresa.UF) {
       state.dbItemDevolucao.CFOP = "6411";
     }
 
-    if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF == globalState.empresa.UF) {
+    if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF == props.dbEmpresa.UF) {
       state.dbItemDevolucao.CFOP = "5202";
     }
 
-    if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF != globalState.empresa.UF) {
+    if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF != props.dbEmpresa.UF) {
       state.dbItemDevolucao.CFOP = "6202";
     }
 

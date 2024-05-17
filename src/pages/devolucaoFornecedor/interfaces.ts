@@ -192,6 +192,14 @@ export interface iParamBaixarNFeEntradaGetTributosItemNota {
     COD_FABRICANTE: string
 }
 
+export interface iEmpresa {
+    CNPJ_CPF: string,
+    RAZAO_SOCIAL: string,
+    UF: string,
+}
+
+export interface iGetEmpresaResponse extends iEmpresa { }
+
 export interface iGetDevolucoesResponse extends iDevolucao { }
 export interface iGetFornecedoresResponse extends iFornecedor { }
 export interface iGetItensResponse extends iItem { }
