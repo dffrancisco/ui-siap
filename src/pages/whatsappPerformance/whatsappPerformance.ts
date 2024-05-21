@@ -145,21 +145,21 @@ export const computeds = {
         }
     }),
 
-    qtdAtendimentoOrdenado: computed(() => {
-        if (state.totalizadores.qtdAtendimentosPorEstado) {
-            let labels = Object.keys(state.totalizadores.qtdAtendimentosPorEstado);
-            let series = Object.values(state.totalizadores.qtdAtendimentosPorEstado);
-
-            return {
-                labels: labels,
-                series: series,
-            };
-        } else {
+    qtdAtendimentosPorEstadoOrdenado: computed(() => {
+        if (!state.totalizadores.qtdAtendimentosPorEstado) {
             return {
                 labels: [],
                 series: [],
             };
         }
+
+        let labels = Object.keys(state.totalizadores.qtdAtendimentosPorEstado);
+        let series = Object.values(state.totalizadores.qtdAtendimentosPorEstado);
+
+        return {
+            labels: labels,
+            series: series,
+        };
     }),
 
     tempoMedioFormatado: computed(() => {

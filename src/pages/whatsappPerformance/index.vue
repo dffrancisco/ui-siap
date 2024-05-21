@@ -71,12 +71,12 @@ nextTick(async () => {
                 chart: {
                   type: 'pie',
                 },
-                labels: computeds.qtdAtendimentoOrdenado.value.labels,
+                labels: computeds.qtdAtendimentosPorEstadoOrdenado.value.labels,
                 legend: {
                   position: 'bottom',
                 },
               }"
-              :series="computeds.qtdAtendimentoOrdenado.value.series"
+              :series="computeds.qtdAtendimentosPorEstadoOrdenado.value.series"
             />
           </v-card>
         </v-col>
