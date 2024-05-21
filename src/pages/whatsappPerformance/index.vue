@@ -34,15 +34,18 @@ nextTick(async () => {
             hide-details
             :clearable="false"
             v-model="state.edtDataInicio"
+            @keydown.enter.prevent="state.inputDataFim.focus()"
           ></v-text-field>
         </v-col>
         <v-col cols="3">
           <v-text-field
             type="date"
             label="Data Fim"
+            id="inputDataFim"
             hide-details
             :clearable="false"
             v-model="state.edtDataFim"
+            @keydown.enter.prevent="actions.buscarDados"
           ></v-text-field>
         </v-col>
         <v-col cols="3">
@@ -64,7 +67,7 @@ nextTick(async () => {
                 height="250"
                 :options="{
                   title: {
-                    text: 'Quantidade de Atendimentos por Estado',
+                    text: 'Atendimentos por Estado',
                   },
                   chart: {
                     type: 'pie',
@@ -126,7 +129,7 @@ nextTick(async () => {
             <v-card>
               <v-card-text class="d-flex flex-column align-center">
                 <strong>{{ computeds.tempoMedioFormatado.value }}</strong>
-                <span>Tempo Médio de Atendimento</span>
+                <span>Tempo Médio de Espera</span>
               </v-card-text>
             </v-card>
           </div>

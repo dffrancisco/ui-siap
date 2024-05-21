@@ -12,11 +12,21 @@ export const state = reactive({
     edtDataInicio: moment().format('YYYY-MM-DD'),
     edtDataFim: moment().format('YYYY-MM-DD'),
     totalizadores: <iTotalizadores>{},
+    inputDataFim: <HTMLInputElement>{},
 })
 
 export const actions = {
     async buscarDados() {
+        if (moment(state.edtDataInicio).isAfter(moment(state.edtDataFim))) {
+            await Swal.fire({
+                icon: 'error',
+                text: 'Data inicial não pode ser maior que data final.',
+            })
+            return;
+        }
+
         state.loading = true;
+
         try {
             let promise1 = actions.getRelatorioAtendimentosIniciados();
             let promise2 = actions.getRelatorioAtendimentosFinalizados();
@@ -67,6 +77,7 @@ export const actions = {
     },
 
     async init() {
+        state.inputDataFim = <any>document.getElementById("inputDataFim");
         actions.buscarDados();
     },
 }
