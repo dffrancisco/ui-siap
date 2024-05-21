@@ -2,7 +2,7 @@ import Swal from "sweetalert2";
 import { reactive, computed } from "vue";
 import whatsappPerformanceService from "./services/whatsappPerformance.service";
 import moment from "moment";
-import { iAtendimentoIniciado, iAtendimentoFinalizado } from "./interfaces";
+import { iAtendimentoIniciado, iAtendimentoFinalizado, iTotalizadores } from "./interfaces";
 import router from "@/router";
 
 export const state = reactive({
@@ -11,6 +11,7 @@ export const state = reactive({
     atendimentosFinalizados: <iAtendimentoFinalizado[]>[],
     edtDataInicio: moment().format('YYYY-MM-DD'),
     edtDataFim: moment().format('YYYY-MM-DD'),
+    totalizadores: <iTotalizadores>{},
 })
 
 export const actions = {
@@ -19,8 +20,9 @@ export const actions = {
         try {
             let promise1 = actions.getRelatorioAtendimentosIniciados();
             let promise2 = actions.getRelatorioAtendimentosFinalizados();
+            let promise3 = actions.getTotalizadores();
 
-            await Promise.all([promise1, promise2])
+            await Promise.all([promise1, promise2, promise3])
         } finally {
             state.loading = false;
         }
@@ -44,6 +46,18 @@ export const actions = {
             Swal.fire({
                 icon: 'error',
                 text: 'Ocorreu um erro ao buscar relatório atendimentos finalizados.',
+            })
+        }
+    },
+
+    async getTotalizadores() {
+        try {
+            const data = await whatsappPerformanceService.getTotalizadores(state.edtDataInicio, state.edtDataFim);
+            state.totalizadores = data;
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Ocorreu um erro ao buscar os totalizadores.',
             })
         }
     },
@@ -118,6 +132,32 @@ export const computeds = {
             enviada: qtdTotalEnviada,
             recebida: qtdTotalRecebida,
         }
+    }),
+
+    qtdAtendimentoOrdenado: computed(() => {
+        if (state.totalizadores.qtdAtendimentosPorEstado) {
+            let labels = Object.keys(state.totalizadores.qtdAtendimentosPorEstado);
+            let series = Object.values(state.totalizadores.qtdAtendimentosPorEstado);
+
+            return {
+                labels: labels,
+                series: series,
+            };
+        } else {
+            return {
+                labels: [],
+                series: [],
+            };
+        }
+    }),
+
+    tempoMedioFormatado: computed(() => {
+        const minutos = state.totalizadores.tempoMedioAtendimento;
+        const duracao = moment.duration(minutos, 'minutes');
+        const horas = duracao.hours();
+        const minutosRestantes = duracao.minutes();
+
+        return `${horas}h ${minutosRestantes}min`;
     })
 }
 
