@@ -34,15 +34,18 @@ nextTick(async () => {
             hide-details
             :clearable="false"
             v-model="state.edtDataInicio"
+            @keydown.enter.prevent="state.inputDataFim.focus()"
           ></v-text-field>
         </v-col>
         <v-col cols="3">
           <v-text-field
             type="date"
             label="Data Fim"
+            id="inputDataFim"
             hide-details
             :clearable="false"
             v-model="state.edtDataFim"
+            @keydown.enter.prevent="actions.buscarDados"
           ></v-text-field>
         </v-col>
         <v-col cols="3">
@@ -54,32 +57,76 @@ nextTick(async () => {
         </v-col>
       </v-row>
     </v-card>
-    <v-row class="py-2">
-      <v-col cols="4">
-        <v-card>
-          <v-card-text class="d-flex flex-column align-center">
-            <strong>{{ computeds.totalizadores.value.totalGeral }}</strong>
-            <span>Total Conversas</span>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card>
-          <v-card-text class="d-flex flex-column align-center">
-            <strong>{{ computeds.totalizadores.value.recebida }}</strong>
-            <span>Conversas Recebidas</span>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card>
-          <v-card-text class="d-flex flex-column align-center">
-            <strong>{{ computeds.totalizadores.value.enviada }}</strong>
-            <span>Conversas Enviadas</span>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <div>
+      <v-row class="py-2">
+        <v-col cols="4">
+          <v-card class="py-2">
+            <VueApexCharts
+              type="pie"
+              height="250"
+              :options="{
+                title: {
+                  text: 'Atendimentos por Estado',
+                },
+                chart: {
+                  type: 'pie',
+                },
+                labels: computeds.qtdAtendimentosPorEstadoOrdenado.value.labels,
+                legend: {
+                  position: 'bottom',
+                },
+              }"
+              :series="computeds.qtdAtendimentosPorEstadoOrdenado.value.series"
+            />
+          </v-card>
+        </v-col>
+        <v-col cols="8">
+          <v-row>
+            <v-col>
+              <div class="d-flex flex-column ga-2">
+                <v-card>
+                  <v-card-text class="d-flex flex-column align-center">
+                    <strong>{{ computeds.totalizadores.value.totalGeral }}</strong>
+                    <span>Total Conversas</span>
+                  </v-card-text>
+                </v-card>
+                <v-card>
+                  <v-card-text class="d-flex flex-column align-center">
+                    <strong>{{ computeds.totalizadores.value.recebida }}</strong>
+                    <span>Conversas Recebidas</span>
+                  </v-card-text>
+                </v-card>
+              </div>
+            </v-col>
+            <v-col>
+              <div class="d-flex flex-column ga-2">
+                <v-card>
+                  <v-card-text class="d-flex flex-column align-center">
+                    <strong>{{ computeds.totalizadores.value.enviada }}</strong>
+                    <span>Conversas Enviadas</span>
+                  </v-card-text>
+                </v-card>
+
+                <v-card>
+                  <v-card-text class="d-flex flex-column align-center">
+                    <strong>{{ state.totalizadores.qtdAds }}</strong>
+                    <span>ADS (Tráfego Pago)</span>
+                  </v-card-text>
+                </v-card>
+              </div>
+            </v-col>
+          </v-row>
+          <div class="mt-2 d-flex justify-center">
+            <v-card>
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ computeds.tempoMedioFormatado.value }}</strong>
+                <span>Tempo Médio de Espera</span>
+              </v-card-text>
+            </v-card>
+          </div>
+        </v-col>
+      </v-row>
+    </div>
     <v-card class="pt-2">
       <div
         class="d-flex"

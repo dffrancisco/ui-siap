@@ -13,3 +13,13 @@ export interface iAtendimentoFinalizado {
     qtd_recebida: number,
     qtd_total: number
 }
+
+export interface iTotalizadores {
+    qtdAtendimentosPorEstado: {
+        DF: number,
+        GOIANIA: number,
+        'OUTRO ESTADO': number
+    },
+    qtdAds: number,
+    tempoMedioAtendimento: string
+}
