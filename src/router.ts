@@ -12,7 +12,6 @@ const router = createRouter({
     routes,
 });
 
-console.log(routes);
 
 router.beforeEach((to, from, next) => {
 
