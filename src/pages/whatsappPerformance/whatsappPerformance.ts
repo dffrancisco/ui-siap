@@ -144,23 +144,54 @@ export const computeds = {
             recebida: qtdTotalRecebida,
         }
     }),
-
     qtdAtendimentosPorEstadoOrdenado: computed(() => {
-        if (!state.totalizadores.qtdAtendimentosPorEstado) {
+        if (!state.totalizadores.tagsAtendimento) {
             return {
                 labels: [],
                 series: [],
             };
         }
 
-        let labels = Object.keys(state.totalizadores.qtdAtendimentosPorEstado);
-        let series = Object.values(state.totalizadores.qtdAtendimentosPorEstado);
+        let atendimentosPorEstado = {
+            DF: 0,
+            GOIANIA: 0,
+            'OUTRO ESTADO': 0,
+            DESCONHECIDO: 0
+        };
+
+        state.totalizadores.tagsAtendimento.forEach(item => {
+            let tag = item.tags;
+
+            if (tag.includes('DF')) {
+                atendimentosPorEstado['DF']++;
+            }
+
+            if (tag.includes('GOIANIA')) {
+                atendimentosPorEstado['GOIANIA']++;
+            }
+
+            if (tag.includes('OUTRO ESTADO')) {
+                atendimentosPorEstado['OUTRO ESTADO']++;
+            }
+        });
+
+        let totalGeral = state.totalizadores.tagsAtendimento.length;
+
+        atendimentosPorEstado['DESCONHECIDO'] = totalGeral - (
+            atendimentosPorEstado['DF'] +
+            atendimentosPorEstado['GOIANIA'] +
+            atendimentosPorEstado['OUTRO ESTADO']
+        );
+
+        let labels = Object.keys(atendimentosPorEstado);
+        let series = Object.values(atendimentosPorEstado);
 
         return {
             labels: labels,
             series: series,
         };
     }),
+
 
     tempoMedioFormatado: computed(() => {
         const minutos = state.totalizadores.tempoMedioAtendimento;
