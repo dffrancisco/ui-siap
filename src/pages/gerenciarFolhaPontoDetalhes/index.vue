@@ -88,19 +88,39 @@ actions.init(route);
             </div>
 
             <div class="funcionario pt-5">
-              <div>
-                <v-avatar
-                  size="80px"
-                  color="primary"
-                  class="funcionario__avatar"
-                >
-                  <v-img
-                    :src="actions.getFotoFuncionarioURL(state.cpf)"
-                    aspect-ratio="1"
-                    cover
+              <div class="avatar-container">
+                <div>
+                  <v-btn
+                    icon="mdi-arrow-left"
+                    color="primary"
+                    size="28"
+                    :disabled="state.backFuncionarioBtnDisabled"
+                    @click="actions.backFuncionario"
+                  />
+                </div>
+                <div>
+                  <v-avatar
+                    size="80px"
+                    color="primary"
+                    class="funcionario__avatar"
                   >
-                  </v-img>
-                </v-avatar>
+                    <v-img
+                      :src="actions.getFotoFuncionarioURL(state.cpf)"
+                      aspect-ratio="1"
+                      cover
+                    >
+                    </v-img>
+                  </v-avatar>
+                </div>
+                <div>
+                  <v-btn
+                    icon="mdi-arrow-right"
+                    size="28"
+                    color="primary"
+                    :disabled="state.nextFuncionarioBtnDisabled"
+                    @click="actions.nextFuncionario"
+                  />
+                </div>
               </div>
 
               <div class="funcionario__card__usuario">
@@ -267,7 +287,7 @@ actions.init(route);
 
     <div id="pnCodigoTela">FOLHA_PONTO_DETALHES</div>
     <v-overlay
-      :model-value="state.loading || state.loadingCalendar"
+      :model-value="state.loading"
       class="align-center justify-center"
       persistent
     >
@@ -490,5 +510,11 @@ actions.init(route);
   .cardFolhaPontoDetalhes {
     width: 100%;
   }
+}
+
+.avatar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 </style>

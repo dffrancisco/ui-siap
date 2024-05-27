@@ -41,7 +41,8 @@ export interface iItem {
     CST_COFINS: string,
     PERCENTUAL_PIS: number,
     PERCENTUAL_COFINS: number,
-    CST_IPI: string
+    CST_IPI: string,
+    CFOP_DEVOLUCAO: string
 }
 
 export interface iItemDevolucao {
@@ -92,6 +93,7 @@ export interface iItensDevolucao {
     PERCENTUAL_PIS: number,
     PERCENTUAL_COFINS: number,
     CST_IPI: string,
+    CFOP_DEVOLUCAO: string
 }
 
 export interface iFornecedor {
@@ -189,6 +191,14 @@ export interface iParamBaixarNFeEntradaGetTributosItemNota {
     CHAVE: string,
     COD_FABRICANTE: string
 }
+
+export interface iEmpresa {
+    CNPJ_CPF: string,
+    RAZAO_SOCIAL: string,
+    UF: string,
+}
+
+export interface iGetEmpresaResponse extends iEmpresa { }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }
 export interface iGetFornecedoresResponse extends iFornecedor { }
