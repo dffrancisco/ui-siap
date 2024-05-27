@@ -185,7 +185,7 @@ const computeds = {
 .chip-qtd-errors {
   border: 1px solid #ff0000;
   border-radius: 15px;
-  padding: 3px 6px;
+  padding: 2px 6px;
   background-color: #fde7e7;
 }
 
