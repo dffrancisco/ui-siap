@@ -33,6 +33,14 @@ const actions = {
 
     return diffHoras > 30 && conversa.data_hora_humano == null && conversa.assigned_user ? true : false;
   },
+
+  countDiasConversa(conversa: iConversaAberta) {
+    let dataHoraAgora = moment();
+    let dataHoraInicioConversa = moment(conversa.data_hora_aberto);
+    let diffDias = dataHoraAgora.diff(dataHoraInicioConversa, "days");
+
+    return diffDias;
+  },
 };
 
 const computeds = {
@@ -88,12 +96,21 @@ const computeds = {
         </div>
         <div class="d-flex justify-space-between">
           <span class="card-usuario__conversa__telefone">{{ conversa.telefone }}</span>
-          <v-icon
-            v-if="actions.showIconAlert(conversa)"
-            color="#D32F2F"
-            title="Operador não começou o atendimento"
-            >mdi-alert-circle</v-icon
-          >
+          <div class="d-flex ga-1">
+            <div
+              class="chip-qtd-dias"
+              v-if="actions.countDiasConversa(conversa) > 0"
+              :title="'Conversa aberta há ' + actions.countDiasConversa(conversa) + ' dias.'"
+            >
+              <strong class="chip-qtd-dias__count">{{ actions.countDiasConversa(conversa) }}d</strong>
+            </div>
+            <v-icon
+              v-if="actions.showIconAlert(conversa)"
+              color="#D32F2F"
+              title="Operador não começou o atendimento"
+              >mdi-alert-circle</v-icon
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -184,12 +201,23 @@ const computeds = {
 
 .chip-qtd-errors {
   border: 1px solid #ff0000;
-  border-radius: 15px;
+  border-radius: 10px;
   padding: 2px 6px;
   background-color: #fde7e7;
 }
 
 .chip-qtd-errors__count {
   color: #ff0000;
+}
+
+.chip-qtd-dias {
+  border: 1px solid #ff0000;
+  border-radius: 10px;
+  padding: 0px 3px;
+}
+
+.chip-qtd-dias__count {
+  color: #ff0000;
+  font-size: 10px;
 }
 </style>
