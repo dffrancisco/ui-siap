@@ -4,8 +4,8 @@ import { iConversaAberta, iUsuario } from "../interfaces";
 type iGetUsuariosFunction = () => Promise<iUsuario[]>
 type iGetConversasAbertasFunction = () => Promise<iConversaAberta[]>
 
-// const urlServerWhatsapp = "http://localhost:2836"
-const urlServerWhatsapp = "http://181.215.134.232:2836"
+const urlServerWhatsapp = "http://localhost:2836"
+// const urlServerWhatsapp = "http://181.215.134.232:2836"
 
 const getUsuarios: iGetUsuariosFunction = async () => {
     let { data } = await axios.get(`${urlServerWhatsapp}/usuarios`)

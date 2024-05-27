@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { nextTick } from "vue";
+import { nextTick, onUnmounted } from "vue";
 import { state, actions, computeds } from "./whatsapp";
 import CardUsuario from "./components/CardUsuario.vue";
-import { onUnmounted } from "vue";
 
 nextTick(async () => {
   actions.init();

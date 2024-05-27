@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { iConversaAberta } from "../interfaces";
+import moment from "moment";
 
 const props = defineProps({
   nome: {
@@ -23,6 +25,26 @@ const actions = {
 
     return `${dia}/${mes} ${hora}:${minutos}`;
   },
+
+  showIconAlert(conversa: iConversaAberta) {
+    let dataHoraAgora = moment();
+    let dataHoraInicioConversa = moment(conversa.data_hora_aberto);
+    let diffHoras = dataHoraAgora.diff(dataHoraInicioConversa, "minutes");
+
+    return diffHoras > 30 && conversa.data_hora_humano == null && conversa.assigned_user ? true : false;
+  },
+};
+
+const computeds = {
+  countErrors: computed(() => {
+    let errorCount = 0;
+    for (let conversa of props.conversas) {
+      if (actions.showIconAlert(conversa)) {
+        errorCount++;
+      }
+    }
+    return errorCount;
+  }),
 };
 </script>
 
@@ -33,6 +55,12 @@ const actions = {
       :class="{ 'card-usuario__titulo--red': conversas.length > 20 }"
     >
       <strong :class="{ 'text-error': conversas.length > 20 }">{{ nome }}</strong>
+      <div
+        v-if="computeds.countErrors.value > 0"
+        class="chip-qtd-errors"
+      >
+        <span class="chip-qtd-errors__count">{{ computeds.countErrors.value }}</span>
+      </div>
     </div>
     <div class="card-usuario__corpo">
       <div
@@ -58,8 +86,14 @@ const actions = {
             <span>{{ actions.formatarDataHora(conversa.data_hora_aberto) }}</span>
           </div>
         </div>
-        <div>
+        <div class="d-flex justify-space-between">
           <span class="card-usuario__conversa__telefone">{{ conversa.telefone }}</span>
+          <v-icon
+            v-if="actions.showIconAlert(conversa)"
+            color="#D32F2F"
+            title="Operador não começou o atendimento"
+            >mdi-alert-circle</v-icon
+          >
         </div>
       </div>
     </div>
@@ -89,6 +123,8 @@ const actions = {
   border-bottom: 1px solid rgba(82, 101, 140, 0.15);
   background-color: rgb(249, 251, 255);
   text-transform: capitalize;
+  justify-content: space-between;
+  gap: 4px;
 }
 
 .card-usuario__titulo--red {
@@ -144,5 +180,16 @@ const actions = {
   strong {
     color: red;
   }
+}
+
+.chip-qtd-errors {
+  border: 1px solid #ff0000;
+  border-radius: 15px;
+  padding: 3px 6px;
+  background-color: #fde7e7;
+}
+
+.chip-qtd-errors__count {
+  color: #ff0000;
 }
 </style>
