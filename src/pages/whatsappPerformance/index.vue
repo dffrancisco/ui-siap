@@ -63,7 +63,6 @@ nextTick(async () => {
           <v-card class="py-2">
             <VueApexCharts
               type="pie"
-              height="250"
               :options="{
                 title: {
                   text: 'Atendimentos por Estado',
@@ -80,7 +79,10 @@ nextTick(async () => {
             />
           </v-card>
         </v-col>
-        <v-col cols="8">
+        <v-col
+          cols="8"
+          class="d-flex align-center"
+        >
           <v-row>
             <v-col>
               <div class="d-flex flex-column ga-2">
@@ -94,6 +96,12 @@ nextTick(async () => {
                   <v-card-text class="d-flex flex-column align-center">
                     <strong>{{ computeds.totalizadores.value.recebida }}</strong>
                     <span>Conversas Recebidas</span>
+                  </v-card-text>
+                </v-card>
+                <v-card>
+                  <v-card-text class="d-flex flex-column align-center">
+                    <strong>{{ computeds.tempoMedioEsperaFormatado.value }}</strong>
+                    <span>Tempo Médio de Espera</span>
                   </v-card-text>
                 </v-card>
               </div>
@@ -113,17 +121,15 @@ nextTick(async () => {
                     <span>ADS (Tráfego Pago)</span>
                   </v-card-text>
                 </v-card>
+                <v-card>
+                  <v-card-text class="d-flex flex-column align-center">
+                    <strong>{{ computeds.tempoMedioAtendimentoFormatado.value }}</strong>
+                    <span>Tempo Médio de Atendimento</span>
+                  </v-card-text>
+                </v-card>
               </div>
             </v-col>
           </v-row>
-          <div class="mt-2 d-flex justify-center">
-            <v-card>
-              <v-card-text class="d-flex flex-column align-center">
-                <strong>{{ computeds.tempoMedioFormatado.value }}</strong>
-                <span>Tempo Médio de Espera</span>
-              </v-card-text>
-            </v-card>
-          </div>
         </v-col>
       </v-row>
     </div>

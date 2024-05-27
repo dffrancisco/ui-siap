@@ -193,7 +193,16 @@ export const computeds = {
     }),
 
 
-    tempoMedioFormatado: computed(() => {
+    tempoMedioEsperaFormatado: computed(() => {
+        const minutos = state.totalizadores.tempoMedioEspera;
+        const duracao = moment.duration(minutos, 'minutes');
+        const horas = duracao.hours();
+        const minutosRestantes = duracao.minutes();
+
+        return `${horas}h ${minutosRestantes}min`;
+    }),
+
+    tempoMedioAtendimentoFormatado: computed(() => {
         const minutos = state.totalizadores.tempoMedioAtendimento;
         const duracao = moment.duration(minutos, 'minutes');
         const horas = duracao.hours();
