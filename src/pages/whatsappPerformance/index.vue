@@ -57,82 +57,87 @@ nextTick(async () => {
         </v-col>
       </v-row>
     </v-card>
-    <div>
-      <v-row class="py-2">
-        <v-col cols="4">
-          <v-card class="py-2">
-            <VueApexCharts
-              type="pie"
-              :options="{
-                title: {
-                  text: 'Atendimentos por Estado',
-                },
-                chart: {
-                  type: 'pie',
-                },
-                labels: computeds.qtdAtendimentosPorEstadoOrdenado.value.labels,
-                legend: {
-                  position: 'bottom',
-                },
-              }"
-              :series="computeds.qtdAtendimentosPorEstadoOrdenado.value.series"
-            />
-          </v-card>
-        </v-col>
-        <v-col
-          cols="8"
-          class="d-flex align-center"
-        >
-          <v-row>
-            <v-col>
-              <div class="d-flex flex-column ga-2">
-                <v-card>
-                  <v-card-text class="d-flex flex-column align-center">
-                    <strong>{{ computeds.totalizadores.value.totalGeral }}</strong>
-                    <span>Total Conversas</span>
-                  </v-card-text>
-                </v-card>
-                <v-card>
-                  <v-card-text class="d-flex flex-column align-center">
-                    <strong>{{ computeds.totalizadores.value.recebida }}</strong>
-                    <span>Conversas Recebidas</span>
-                  </v-card-text>
-                </v-card>
-                <v-card>
-                  <v-card-text class="d-flex flex-column align-center">
-                    <strong>{{ computeds.tempoMedioEsperaFormatado.value }}</strong>
-                    <span>Tempo Médio de Espera</span>
-                  </v-card-text>
-                </v-card>
-              </div>
-            </v-col>
-            <v-col>
-              <div class="d-flex flex-column ga-2">
-                <v-card>
-                  <v-card-text class="d-flex flex-column align-center">
-                    <strong>{{ computeds.totalizadores.value.enviada }}</strong>
-                    <span>Conversas Enviadas</span>
-                  </v-card-text>
-                </v-card>
 
-                <v-card>
-                  <v-card-text class="d-flex flex-column align-center">
-                    <strong>{{ state.totalizadores.qtdAds }}</strong>
-                    <span>ADS (Tráfego Pago)</span>
-                  </v-card-text>
-                </v-card>
-                <v-card>
-                  <v-card-text class="d-flex flex-column align-center">
-                    <strong>{{ computeds.tempoMedioAtendimentoFormatado.value }}</strong>
-                    <span>Tempo Médio de Atendimento</span>
-                  </v-card-text>
-                </v-card>
-              </div>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-    </div>
+    <v-row class="py-2">
+      <v-col cols="4">
+        <v-card class="py-2">
+          <VueApexCharts
+            type="pie"
+            :options="{
+              title: {
+                text: 'Atendimentos por Estado',
+              },
+              chart: {
+                type: 'pie',
+              },
+              labels: computeds.qtdAtendimentosPorEstadoOrdenado.value.labels,
+              legend: {
+                position: 'bottom',
+              },
+            }"
+            :series="computeds.qtdAtendimentosPorEstadoOrdenado.value.series"
+          />
+        </v-card>
+      </v-col>
+      <v-col
+        cols="8"
+        class="d-flex"
+      >
+        <v-row>
+          <v-col>
+            <div
+              class="d-flex flex-column ga-2"
+              style="height: 100%"
+            >
+              <v-card class="flex-grow-1 d-flex align-center">
+                <v-card-text class="d-flex flex-column align-center">
+                  <strong>{{ computeds.totalizadores.value.totalGeral }}</strong>
+                  <span>Total Conversas</span>
+                </v-card-text>
+              </v-card>
+              <v-card class="flex-grow-1 d-flex align-center">
+                <v-card-text class="d-flex flex-column align-center">
+                  <strong>{{ computeds.totalizadores.value.recebida }}</strong>
+                  <span>Conversas Recebidas</span>
+                </v-card-text>
+              </v-card>
+              <v-card class="flex-grow-1 d-flex align-center">
+                <v-card-text class="d-flex flex-column align-center">
+                  <strong>{{ computeds.tempoMedioEsperaFormatado.value }}</strong>
+                  <span>Tempo Médio de Espera</span>
+                </v-card-text>
+              </v-card>
+            </div>
+          </v-col>
+          <v-col>
+            <div
+              class="d-flex flex-column ga-2"
+              style="height: 100%"
+            >
+              <v-card class="flex-grow-1 d-flex align-center">
+                <v-card-text class="d-flex flex-column align-center">
+                  <strong>{{ computeds.totalizadores.value.enviada }}</strong>
+                  <span>Conversas Enviadas</span>
+                </v-card-text>
+              </v-card>
+              <v-card class="flex-grow-1 d-flex align-center">
+                <v-card-text class="d-flex flex-column align-center">
+                  <strong>{{ state.totalizadores.qtdAds }}</strong>
+                  <span>ADS (Tráfego Pago)</span>
+                </v-card-text>
+              </v-card>
+              <v-card class="flex-grow-1 d-flex align-center">
+                <v-card-text class="d-flex flex-column align-center">
+                  <strong>{{ computeds.tempoMedioAtendimentoFormatado.value }}</strong>
+                  <span>Tempo Médio de Atendimento</span>
+                </v-card-text>
+              </v-card>
+            </div>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+
     <v-card class="pt-2">
       <div
         class="d-flex"
