@@ -28,11 +28,11 @@ export const actions = {
         state.loading = true;
 
         try {
-            let promise1 = actions.getRelatorioAtendimentosIniciados();
-            let promise2 = actions.getRelatorioAtendimentosFinalizados();
-            let promise3 = actions.getTotalizadores();
-
-            await Promise.all([promise1, promise2, promise3])
+            await Promise.all([
+                actions.getRelatorioAtendimentosIniciados(),
+                actions.getRelatorioAtendimentosFinalizados(),
+                actions.getTotalizadores(),
+            ])
         } finally {
             state.loading = false;
         }
@@ -144,6 +144,7 @@ export const computeds = {
             recebida: qtdTotalRecebida,
         }
     }),
+
     qtdAtendimentosPorEstadoOrdenado: computed(() => {
         if (!state.totalizadores.tagsAtendimento) {
             return {
@@ -156,32 +157,28 @@ export const computeds = {
             DF: 0,
             GOIANIA: 0,
             'OUTRO ESTADO': 0,
-            DESCONHECIDO: 0
         };
 
         state.totalizadores.tagsAtendimento.forEach(item => {
             let tag = item.tags;
+            let telefone = item.telefone;
 
-            if (tag.includes('DF')) {
+            let prefixoTelefone = telefone.substring(0, 4);
+
+            if (tag.includes('DF') || prefixoTelefone == '5561') {
                 atendimentosPorEstado['DF']++;
+                return
             }
 
-            if (tag.includes('GOIANIA')) {
+            if (tag.includes('GOIANIA') || prefixoTelefone == '5562') {
                 atendimentosPorEstado['GOIANIA']++;
+                return
             }
 
-            if (tag.includes('OUTRO ESTADO')) {
+            if (tag.includes('OUTRO ESTADO') || (prefixoTelefone != '5561' && prefixoTelefone != '5562')) {
                 atendimentosPorEstado['OUTRO ESTADO']++;
             }
         });
-
-        let totalGeral = state.totalizadores.tagsAtendimento.length;
-
-        atendimentosPorEstado['DESCONHECIDO'] = totalGeral - (
-            atendimentosPorEstado['DF'] +
-            atendimentosPorEstado['GOIANIA'] +
-            atendimentosPorEstado['OUTRO ESTADO']
-        );
 
         let labels = Object.keys(atendimentosPorEstado);
         let series = Object.values(atendimentosPorEstado);
@@ -191,7 +188,6 @@ export const computeds = {
             series: series,
         };
     }),
-
 
     tempoMedioEsperaFormatado: computed(() => {
         const minutos = state.totalizadores.tempoMedioEspera;

@@ -16,7 +16,8 @@ export interface iAtendimentoFinalizado {
 
 export interface iTotalizadores {
     tagsAtendimento: [{
-        tags: string
+        tags: string,
+        telefone: string
     }],
     qtdAds: number,
     tempoMedioEspera: string,
