@@ -66,7 +66,7 @@ const computeds = {
       <div
         v-if="computeds.countErrors.value > 0"
         class="chip-qtd-errors"
-        :title="computeds.countErrors.value + ' conversas que o operador não começou o atendimento'"
+        title="Conversas que o operador não começou o atendimento"
       >
         <span class="chip-qtd-errors__count">{{ computeds.countErrors.value }}</span>
       </div>

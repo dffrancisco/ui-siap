@@ -79,60 +79,67 @@ nextTick(async () => {
           />
         </v-card>
       </v-col>
-      <v-col
-        cols="8"
-        class="d-flex"
-      >
+      <v-col class="d-flex flex-column">
         <v-row>
-          <v-col>
-            <div
-              class="d-flex flex-column ga-2"
-              style="height: 100%"
-            >
-              <v-card class="flex-grow-1 d-flex align-center">
-                <v-card-text class="d-flex flex-column align-center">
-                  <strong>{{ computeds.totalizadores.value.totalGeral }}</strong>
-                  <span>Total Conversas</span>
-                </v-card-text>
-              </v-card>
-              <v-card class="flex-grow-1 d-flex align-center">
-                <v-card-text class="d-flex flex-column align-center">
-                  <strong>{{ computeds.totalizadores.value.recebida }}</strong>
-                  <span>Conversas Recebidas</span>
-                </v-card-text>
-              </v-card>
-              <v-card class="flex-grow-1 d-flex align-center">
-                <v-card-text class="d-flex flex-column align-center">
-                  <strong>{{ computeds.tempoMedioEsperaFormatado.value }}</strong>
-                  <span>Tempo Médio de Espera</span>
-                </v-card-text>
-              </v-card>
-            </div>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ computeds.totalizadores.value.totalGeral }}</strong>
+                <span>Total Conversas</span>
+              </v-card-text>
+            </v-card>
           </v-col>
-          <v-col>
-            <div
-              class="d-flex flex-column ga-2"
-              style="height: 100%"
-            >
-              <v-card class="flex-grow-1 d-flex align-center">
-                <v-card-text class="d-flex flex-column align-center">
-                  <strong>{{ computeds.totalizadores.value.enviada }}</strong>
-                  <span>Conversas Enviadas</span>
-                </v-card-text>
-              </v-card>
-              <v-card class="flex-grow-1 d-flex align-center">
-                <v-card-text class="d-flex flex-column align-center">
-                  <strong>{{ state.totalizadores.qtdAds }}</strong>
-                  <span>ADS (Tráfego Pago)</span>
-                </v-card-text>
-              </v-card>
-              <v-card class="flex-grow-1 d-flex align-center">
-                <v-card-text class="d-flex flex-column align-center">
-                  <strong>{{ computeds.tempoMedioAtendimentoFormatado.value }}</strong>
-                  <span>Tempo Médio de Atendimento</span>
-                </v-card-text>
-              </v-card>
-            </div>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ computeds.totalizadores.value.recebida }}</strong>
+                <span>Conversas Recebidas</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ computeds.totalizadores.value.enviada }}</strong>
+                <span>Conversas Enviadas</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ computeds.tempoMedioEsperaFormatado.value }}</strong>
+                <span>Tempo Médio de Espera</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ computeds.tempoMedioAtendimentoFormatado.value }}</strong>
+                <span>Tempo Médio de Atendimento</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ state.totalizadores.qtdAds }}</strong>
+                <span>ADS (Tráfego Pago)</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ state.totalizadores.conversasEncerradasSemAtendimento }}</strong>
+                <span>Conversas Encerradas sem Atendimento</span>
+              </v-card-text>
+            </v-card>
           </v-col>
         </v-row>
       </v-col>

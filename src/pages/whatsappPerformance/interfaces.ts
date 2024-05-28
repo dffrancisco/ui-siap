@@ -20,5 +20,6 @@ export interface iTotalizadores {
     }],
     qtdAds: number,
     tempoMedioEspera: string,
-    tempoMedioAtendimento: string
+    tempoMedioAtendimento: string,
+    conversasEncerradasSemAtendimento: number
 }
