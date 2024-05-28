@@ -165,6 +165,11 @@ export const computeds = {
 
             let prefixoTelefone = telefone.substring(0, 4);
 
+            if (tag.includes('OUTRO ESTADO') || (prefixoTelefone != '5561' && prefixoTelefone != '5562')) {
+                atendimentosPorEstado['OUTRO ESTADO']++;
+                return
+            }
+
             if (tag.includes('DF') || prefixoTelefone == '5561') {
                 atendimentosPorEstado['DF']++;
                 return
@@ -172,11 +177,6 @@ export const computeds = {
 
             if (tag.includes('GOIANIA') || prefixoTelefone == '5562') {
                 atendimentosPorEstado['GOIANIA']++;
-                return
-            }
-
-            if (tag.includes('OUTRO ESTADO') || (prefixoTelefone != '5561' && prefixoTelefone != '5562')) {
-                atendimentosPorEstado['OUTRO ESTADO']++;
             }
         });
 
