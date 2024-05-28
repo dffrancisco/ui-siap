@@ -11,6 +11,7 @@ export const state = reactive({
     conversasAbertas: <iConversaAberta[]>[],
     lastUpdate: '00:00:00',
     interval: undefined,
+    modalUltimasConversasOpened: false
 })
 
 export const actions = {
@@ -53,6 +54,10 @@ export const actions = {
 
     redirectToWhatsappPerformance() {
         router.push('/whatsappPerformance');
+    },
+
+    openModalUltimasConversas() {
+        state.modalUltimasConversasOpened = true;
     },
 
     async init() {

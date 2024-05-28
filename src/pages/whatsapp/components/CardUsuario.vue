@@ -201,24 +201,23 @@ const computeds = {
 }
 
 .chip-qtd-errors {
-  border: 1px solid #ff0000;
   border-radius: 10px;
   padding: 0px 6px;
-  background-color: #fde7e7;
+  background-color: #d32f2f;
 }
 
 .chip-qtd-errors__count {
-  color: #ff0000;
+  color: #fff;
 }
 
 .chip-qtd-dias {
-  border: 1px solid #ff0000;
+  background-color: #d32f2f;
   border-radius: 10px;
   padding: 0px 3px;
 }
 
 .chip-qtd-dias__count {
-  color: #ff0000;
+  color: #fff;
   font-size: 10px;
 }
 </style>

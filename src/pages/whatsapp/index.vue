@@ -2,6 +2,7 @@
 import { nextTick, onUnmounted } from "vue";
 import { state, actions, computeds } from "./whatsapp";
 import CardUsuario from "./components/CardUsuario.vue";
+import ModalUltimasConversas from "./components/ModalUltimasConversas.vue";
 
 nextTick(async () => {
   actions.init();
@@ -33,7 +34,7 @@ onUnmounted(() => {
     </div>
     <v-card class="pa-2">
       <div class="mb-4 d-flex justify-space-between align-center">
-        <span>
+        <span @click="actions.openModalUltimasConversas">
           Tempo espera mais longo:
           <strong :class="{ 'text-error': computeds.tempoEsperaMaisLongo.value > 60 }">{{
             actions.formatarTempoEmMinutos(computeds.tempoEsperaMaisLongo.value)
@@ -67,19 +68,28 @@ onUnmounted(() => {
           :conversas="computeds.conversasAbertasPorUsuario.value[usuario.assigned_user] || []"
         />
       </div>
-
-      <v-overlay
-        :model-value="state.loading"
-        class="align-center justify-center"
-        persistent
-      >
-        <v-progress-circular
-          color="primary"
-          indeterminate
-          size="64"
-        ></v-progress-circular>
-      </v-overlay>
     </v-card>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
+
+    <v-dialog
+      v-model="state.modalUltimasConversasOpened"
+      style="margin: 0 auto"
+      width="375"
+    >
+      <ModalUltimasConversas />
+    </v-dialog>
+
     <div class="d-flex justify-space-between mt-1 mx-10">
       <div id="pnCodigoTela">whatsapp</div>
       <span class="ultima-atualizacao">
