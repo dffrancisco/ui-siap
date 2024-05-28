@@ -66,6 +66,7 @@ const computeds = {
       <div
         v-if="computeds.countErrors.value > 0"
         class="chip-qtd-errors"
+        :title="computeds.countErrors.value + ' conversas que o operador não começou o atendimento'"
       >
         <span class="chip-qtd-errors__count">{{ computeds.countErrors.value }}</span>
       </div>
@@ -202,7 +203,7 @@ const computeds = {
 .chip-qtd-errors {
   border: 1px solid #ff0000;
   border-radius: 10px;
-  padding: 2px 6px;
+  padding: 0px 6px;
   background-color: #fde7e7;
 }
 
