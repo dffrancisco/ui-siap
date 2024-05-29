@@ -61,14 +61,24 @@ onUnmounted(() => {
         <CardUsuario
           :nome="'Não iniciado'"
           :conversas="computeds.conversasSemUsuario.value"
+          @openModalUltimasConversas="actions.openModalUltimasConversas"
         />
         <CardUsuario
           v-for="usuario in state.usuarios"
           :nome="usuario.nome"
           :conversas="computeds.conversasAbertasPorUsuario.value[usuario.assigned_user] || []"
+          @openModalUltimasConversas="actions.openModalUltimasConversas"
         />
       </div>
     </v-card>
+
+    <v-dialog
+      v-model="state.modalUltimasConversasOpened"
+      style="margin: 0 auto"
+      width="375"
+    >
+      <ModalUltimasConversas @closeModalUltimasConversas="actions.closeModalUltimasConversas" />
+    </v-dialog>
 
     <v-overlay
       :model-value="state.loading"
@@ -81,14 +91,6 @@ onUnmounted(() => {
         size="64"
       ></v-progress-circular>
     </v-overlay>
-
-    <v-dialog
-      v-model="state.modalUltimasConversasOpened"
-      style="margin: 0 auto"
-      width="375"
-    >
-      <ModalUltimasConversas />
-    </v-dialog>
 
     <div class="d-flex justify-space-between mt-1 mx-10">
       <div id="pnCodigoTela">whatsapp</div>

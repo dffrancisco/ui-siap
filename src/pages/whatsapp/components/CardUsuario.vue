@@ -14,6 +14,8 @@ const props = defineProps({
   },
 });
 
+const emits = defineEmits(["openModalUltimasConversas", "closeModalUltimasConversas"]);
+
 const actions = {
   formatarDataHora: (data_hora: string) => {
     if (!data_hora) return "";
@@ -40,6 +42,14 @@ const actions = {
     let diffDias = dataHoraAgora.diff(dataHoraInicioConversa, "days");
 
     return diffDias;
+  },
+
+  openModalUltimasConversas(uuid: string) {
+    emits("openModalUltimasConversas", uuid);
+  },
+
+  closeModalUltimasConversas() {
+    emits("closeModalUltimasConversas");
   },
 };
 
@@ -81,6 +91,7 @@ const computeds = {
       <div
         v-for="conversa in conversas"
         class="card-usuario__conversa"
+        @click="actions.openModalUltimasConversas(conversa.uuid_contato)"
       >
         <div class="d-flex">
           <div class="card-usuario__conversa__nome">
@@ -168,6 +179,7 @@ const computeds = {
   border-bottom: 1px solid rgba(82, 101, 140, 0.15);
   flex-direction: column;
   widows: 100%;
+  cursor: pointer;
 }
 
 .card-usuario__conversa__nome {

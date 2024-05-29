@@ -60,6 +60,10 @@ export const actions = {
         state.modalUltimasConversasOpened = true;
     },
 
+    closeModalUltimasConversas() {
+        state.modalUltimasConversasOpened = false;
+    },
+
     async init() {
         await actions.getUsuarios();
         await actions.getConversasAbertas();
