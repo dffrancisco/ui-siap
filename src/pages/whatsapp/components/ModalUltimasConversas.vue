@@ -68,7 +68,7 @@ const actions = {
 }
 
 .container-chat {
-  background-image: url("https://s3-alpha-sig.figma.com/img/351a/cdb5/ea7901e17f7cb0d61068f0f1d8f1f95d?Expires=1717977600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=on1xqvitfl9vfI6Cvn7iCm4m78OlcQC4Dhw~lsSn~lPAnos8sqJ17hSvLRjAXTVGJA~YfpQu7e3WHGixHHLFmUY5jH51O4ExHlPkMxmxtfV8Zp0~9uMUIFscKjq0U3uhxrlpDvbezV25RsXPXOO1ylfEwiawinSnkuRqf0dD4ILidDePzZgvkpmW0zV1WgOodmkEUBa8Ao46mT4YecCXUMWmnfu24trAn95HDgJ4d06ALi9tq0h5pr50fgWI2Nak9C04aYs-o--vGQR7ZtdsYYhgnpeLPuT7yXC2qzI2rNciAnJctOQlQrteH0f4jVuz2k0ajnSg4TUFz4e-nP-OQg__") !important;
+  background-image: url("../assets/background_chat.png");
   background-size: cover;
   flex-grow: 1;
 }
