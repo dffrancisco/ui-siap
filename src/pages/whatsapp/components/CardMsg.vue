@@ -41,6 +41,10 @@ const actions = {
   openURL(url: string) {
     window.open(url, "_blank");
   },
+
+  formatarQuebrasDeLinha(texto: string) {
+    return texto.replace(/\n/g, "<br>");
+  },
 };
 
 const computeds = {
@@ -118,7 +122,10 @@ const computeds = {
     class="container-nota"
   >
     <div class="nota pa-2">
-      <span class="nota__text">{{ computeds.formatarMsg.value.text }}</span>
+      <span
+        class="nota__text"
+        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
+      ></span>
     </div>
   </div>
 
@@ -129,7 +136,10 @@ const computeds = {
   >
     <div class="msg-enviada">
       <strong class="msg-enviada__user px-2 pb-1">{{ computeds.formatarMsg.value.user }}</strong>
-      <span class="msg-enviada__textMsg px-2"> {{ computeds.formatarMsg.value.text }}</span>
+      <span
+        class="msg-enviada__textMsg px-2"
+        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
+      ></span>
       <span class="msg-enviada__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
     </div>
   </div>
@@ -150,9 +160,8 @@ const computeds = {
       <span
         v-if="computeds.formatarMsg.value.text && computeds.formatarMsg.value.text != ''"
         class="msg-enviada__textMsg px-2"
-      >
-        {{ computeds.formatarMsg.value.text }}</span
-      >
+        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
+      ></span>
       <span class="msg-enviada__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
     </div>
   </div>
@@ -163,7 +172,10 @@ const computeds = {
     class="container-msg-recebida"
   >
     <div class="msg-recebida">
-      <span class="msg-recebida__textMsg px-2"> {{ computeds.formatarMsg.value.text }} </span>
+      <span
+        class="msg-recebida__textMsg px-2"
+        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
+      ></span>
       <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
     </div>
   </div>
@@ -180,7 +192,10 @@ const computeds = {
           class="msg-recebida-foto__img"
         />
       </div>
-      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
+      <span
+        class="msg-recebida__hora px-2"
+        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
+      ></span>
     </div>
   </div>
 </template>
