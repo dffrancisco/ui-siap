@@ -1,5 +1,16 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { iDadosContatos } from "../interfaces";
 import CardMsg from "./CardMsg.vue";
+import moment from "moment";
+
+const props = defineProps({
+  msgsCallbell: {
+    type: Object as () => iDadosContatos,
+    required: true,
+    default: null,
+  },
+});
 
 const emits = defineEmits(["closeModalUltimasConversas"]);
 
@@ -7,6 +18,36 @@ const actions = {
   closeModalUltimasConversas() {
     emits("closeModalUltimasConversas");
   },
+
+  formatarTelefone(telefone: string) {
+    if (telefone.length == 12) {
+      const codigoPais = telefone.slice(0, 2);
+      const codigoArea = telefone.slice(2, 4);
+      const numero = telefone.slice(4);
+
+      return `+${codigoPais} (${codigoArea}) ${numero.slice(0, 4)}-${numero.slice(4)}`;
+    } else {
+      return telefone;
+    }
+  },
+};
+
+const computeds = {
+  ordenarMsgs: computed(() => {
+    const msgs = props.msgsCallbell.msgs;
+    let ultimaData = null;
+    let msgsOrdenadas = [];
+
+    msgs.forEach((msg) => {
+      let dataMsg = moment(msg.createdAt).format("DD/MM/YYYY");
+
+      msgsOrdenadas.push({ msg, dataMsg });
+
+      ultimaData = dataMsg;
+    });
+
+    return msgsOrdenadas;
+  }),
 };
 </script>
 
@@ -23,8 +64,8 @@ const actions = {
         >mdi-chevron-left</v-icon
       >
       <div class="container-contato">
-        <strong>FULANO DE TAL</strong>
-        <span class="container-contato__numero">+55 (61) 99999-9999</span>
+        <strong>{{ props.msgsCallbell.nome }}</strong>
+        <span class="container-contato__numero">{{ actions.formatarTelefone(props.msgsCallbell.telefone) }}</span>
       </div>
 
       <v-icon
@@ -38,7 +79,22 @@ const actions = {
 
     <div class="container-chat pt-2">
       <div class="container-msgs px-2 ga-3">
-        <CardMsg v-for="card in 20" />
+        <template
+          v-for="(item, index) in computeds.ordenarMsgs.value"
+          :key="index"
+        >
+          <CardMsg :msgCallbell="item.msg" />
+          <div
+            v-if="
+              index == computeds.ordenarMsgs.value.length - 1 ||
+              (computeds.ordenarMsgs.value[index + 1] &&
+                item.dataMsg != computeds.ordenarMsgs.value[index + 1].dataMsg)
+            "
+            class="chip-data"
+          >
+            <span class="chip-data__content px-2 py-1">{{ item.dataMsg }}</span>
+          </div>
+        </template>
       </div>
     </div>
   </v-card>
@@ -47,6 +103,18 @@ const actions = {
 <style scoped>
 .container-principal {
   background-color: #f2f2f2;
+}
+
+.chip-data {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.chip-data__content {
+  background-color: #233142;
+  color: #f2f2f2;
+  border-radius: 8px;
 }
 
 .header {

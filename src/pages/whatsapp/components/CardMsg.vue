@@ -1,62 +1,191 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { iMsgCallbell, iMsgFormatada } from "../interfaces";
+import moment from "moment";
+
+const MSG_RECEBIDA_TEXTO = 0;
+const MSG_RECEBIDA_IMG = 1;
+const MSG_RECEBIDA_AUDIO = 2;
+const MSG_ENVIADA_TEXTO = 3;
+const MSG_ENVIADA_IMG = 4;
+const MSG_ENVIADA_AUDIO = 5;
+const NOTA = 6;
+
+const props = defineProps({
+  msgCallbell: {
+    type: Object as () => iMsgCallbell,
+    required: true,
+    default: null,
+  },
+});
+
+const actions = {
+  extrairNomesUsuarios(texto: string) {
+    const condicao = /\*([^*]+)\*:\s*([\s\S]+)/;
+    const resultado = condicao.exec(texto);
+
+    if (resultado) {
+      const usuario = resultado[1].trim();
+      const mensagem = resultado[2].trim();
+      return {
+        usuario: usuario,
+        mensagem: mensagem,
+      };
+    }
+    return {
+      usuario: "ROBÔ",
+      mensagem: texto,
+    };
+  },
+
+  openURL(url: string) {
+    window.open(url, "_blank");
+  },
+};
+
+const computeds = {
+  formatarMsg: computed(() => {
+    const msg = props.msgCallbell;
+
+    let msgFormatada: iMsgFormatada = {
+      text: "",
+      type: null,
+      hora: null,
+    };
+
+    if (msg.status == "sent" && msg.text && msg.text != "" && !msg.attachments) {
+      let mensagem_usuario = actions.extrairNomesUsuarios(msg.text);
+
+      msgFormatada = {
+        user: mensagem_usuario.usuario,
+        text: mensagem_usuario.mensagem,
+        type: MSG_ENVIADA_TEXTO,
+        hora: moment(msg.createdAt).format("HH:mm"),
+      };
+    }
+
+    if (msg.status == "sent" && msg.attachments?.[0]?.type === "image") {
+      let mensagem_usuario = actions.extrairNomesUsuarios(msg.text);
+
+      msgFormatada = {
+        user: mensagem_usuario.usuario,
+        text: msg.attachments[0].payload.meta.caption,
+        type: MSG_ENVIADA_IMG,
+        url: msg.attachments[0].payload.url,
+        hora: moment(msg.createdAt).format("HH:mm"),
+      };
+    }
+
+    if (msg.status == "received" && msg.text && msg.text != "" && !msg.attachments) {
+      msgFormatada = {
+        text: msg.text,
+        type: MSG_RECEBIDA_TEXTO,
+        hora: moment(msg.createdAt).format("HH:mm"),
+      };
+    }
+
+    if (msg.status == "received" && msg.attachments?.[0] != null && msg.attachments?.[0]?.type === "image") {
+      msgFormatada = {
+        text: msg.attachments[0].payload.meta.caption,
+        type: MSG_RECEBIDA_IMG,
+        url: msg.attachments[0].payload.url,
+        hora: moment(msg.createdAt).format("HH:mm"),
+      };
+    }
+
+    if (msg.status == "note") {
+      if (msg.text.includes("Bot performed actions")) {
+        msgFormatada = {
+          text: null,
+        };
+      } else {
+        msgFormatada = {
+          text: msg.text,
+          type: NOTA,
+        };
+      }
+    }
+
+    return msgFormatada;
+  }),
+};
+</script>
+
 <template>
-  <div class="container-nota">
+  <!-- NOTA -->
+  <div
+    v-if="computeds.formatarMsg.value.type == NOTA"
+    class="container-nota"
+  >
     <div class="nota pa-2">
-      <span class="nota__text">nota nota nota nota nota nota nota nota nota nota nota nota nota </span>
+      <span class="nota__text">{{ computeds.formatarMsg.value.text }}</span>
     </div>
   </div>
-  <div class="container-msg-enviada">
+
+  <!-- MSG ENVIADA TEXTO -->
+  <div
+    v-if="computeds.formatarMsg.value.type == MSG_ENVIADA_TEXTO"
+    class="container-msg-enviada"
+  >
     <div class="msg-enviada">
-      <strong class="msg-enviada__user px-2 pb-1">VINICIUS M</strong>
-      <div class="msg-enviada-foto px-2"
-        ><img
-          src="https://api.contentstack.io/v2/assets/575e4d1c0342dfd738264a1f/download?uid=bltada7771f270d08f6"
+      <strong class="msg-enviada__user px-2 pb-1">{{ computeds.formatarMsg.value.user }}</strong>
+      <span class="msg-enviada__textMsg px-2"> {{ computeds.formatarMsg.value.text }}</span>
+      <span class="msg-enviada__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
+    </div>
+  </div>
+
+  <!-- MSG ENVIADO FOTO -->
+  <div
+    v-if="computeds.formatarMsg.value.type == MSG_ENVIADA_IMG"
+    class="container-msg-enviada"
+  >
+    <div class="msg-enviada">
+      <div class="msg-enviada-foto px-2">
+        <img
+          :src="computeds.formatarMsg.value.url"
           class="msg-enviada-foto__img"
-      /></div>
-      <span class="msg-enviada__hora px-2">12:00</span>
+          @click="actions.openURL(computeds.formatarMsg.value.url)"
+        />
+      </div>
+      <span
+        v-if="computeds.formatarMsg.value.text && computeds.formatarMsg.value.text != ''"
+        class="msg-enviada__textMsg px-2"
+      >
+        {{ computeds.formatarMsg.value.text }}</span
+      >
+      <span class="msg-enviada__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
     </div>
   </div>
-  <div class="container-msg-recebida">
+
+  <!-- MSG RECEBIDA TEXTO -->
+  <div
+    v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_TEXTO"
+    class="container-msg-recebida"
+  >
     <div class="msg-recebida">
-      <div class="msg-recebida-foto px-2"
-        ><img
-          src="https://www.researchgate.net/publication/353422038/figure/fig2/AS:1048906112700416@1627090113328/Image-7-4-3-2-5-9-3-11-45-3-0-2-4-0-1-7.ppm"
-          alt=""
+      <span class="msg-recebida__textMsg px-2"> {{ computeds.formatarMsg.value.text }} </span>
+      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
+    </div>
+  </div>
+
+  <!-- MSG RECEBIDA FOTO -->
+  <div
+    v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_IMG"
+    class="container-msg-recebida"
+  >
+    <div class="msg-recebida">
+      <div class="msg-recebida-foto px-2">
+        <img
+          :src="computeds.formatarMsg.value.url"
           class="msg-recebida-foto__img"
-      /></div>
-      <span class="msg-recebida__hora px-2">12:00</span>
+        />
+      </div>
+      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
     </div>
-  </div>
-  <div class="container-msg-recebida">
-    <div class="msg-recebida">
-      <span class="msg-recebida__textMsg px-2"> Olá bem vindo a real acessórios! A sua loja de autopeças. </span>
-      <span class="msg-recebida__hora px-2">12:00</span>
-    </div>
-  </div>
-  <div class="container-msg-enviada">
-    <div class="msg-enviada">
-      <strong class="msg-enviada__user px-2 pb-1">VINICIUS M</strong>
-      <span class="msg-enviada__textMsg px-2"> Olá bem vindo a real acessórios! A sua loja de autopeças. </span>
-      <span class="msg-enviada__hora px-2">12:00</span>
-    </div>
-  </div>
-  <div class="chip-data">
-    <span class="chip-data__content px-2 py-1">28/05/2024</span>
   </div>
 </template>
 
 <style scoped>
-.chip-data {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.chip-data__content {
-  background-color: #233142;
-  color: #f2f2f2;
-  border-radius: 8px;
-}
-
 .container-msg-enviada {
   display: flex;
   justify-content: end;
@@ -82,7 +211,9 @@
 
 .msg-enviada__textMsg {
   font-size: 14px;
-  max-width: 250px;
+  max-width: 266px;
+  min-width: 60px;
+  width: 100%;
   text-align: justify;
   background-color: #dcf7c5;
 }
@@ -114,7 +245,8 @@
 
 .msg-recebida__textMsg {
   font-size: 14px;
-  max-width: 250px;
+  max-width: 266px;
+  min-width: 60px;
   text-align: justify;
   background-color: #f2f2f2;
 }
@@ -135,6 +267,7 @@
 .msg-enviada-foto__img {
   width: 250px;
   height: 200px;
+  cursor: pointer;
 }
 
 .msg-recebida-foto {

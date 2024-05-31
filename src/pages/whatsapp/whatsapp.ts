@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import { reactive, computed } from "vue";
 import whatsappService from "./services/whatsapp.service";
-import { iConversaAberta, iUsuario } from "./interfaces";
+import { iConversaAberta, iUsuario, iDadosContatos } from "./interfaces";
 import moment from "moment";
 import router from "@/router";
 
@@ -11,7 +11,8 @@ export const state = reactive({
     conversasAbertas: <iConversaAberta[]>[],
     lastUpdate: '00:00:00',
     interval: undefined,
-    modalUltimasConversasOpened: false
+    modalUltimasConversasOpened: false,
+    msgsCallbell: <iDadosContatos>{}
 })
 
 export const actions = {
@@ -44,6 +45,27 @@ export const actions = {
         }
     },
 
+    async getMsgsCallbell(conversa: iConversaAberta) {
+        try {
+            state.loading = true;
+            const data = await whatsappService.getMsgsCallbell(conversa.uuid_contato);
+
+            state.msgsCallbell = {
+                telefone: conversa.telefone,
+                nome: conversa.nome,
+                msgs: data
+            }
+
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Ocorreu um erro ao buscar as mensagens.',
+            })
+        } finally {
+            state.loading = false;
+        }
+    },
+
     async atualizarDados() {
         await actions.getConversasAbertas();
     },
@@ -56,7 +78,8 @@ export const actions = {
         router.push('/whatsappPerformance');
     },
 
-    openModalUltimasConversas() {
+    async openModalUltimasConversas(conversa: iConversaAberta) {
+        await actions.getMsgsCallbell(conversa)
         state.modalUltimasConversasOpened = true;
     },
 

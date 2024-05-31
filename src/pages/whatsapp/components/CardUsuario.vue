@@ -44,8 +44,8 @@ const actions = {
     return diffDias;
   },
 
-  openModalUltimasConversas(uuid: string) {
-    emits("openModalUltimasConversas", uuid);
+  openModalUltimasConversas(conversa: iConversaAberta) {
+    emits("openModalUltimasConversas", conversa);
   },
 
   closeModalUltimasConversas() {
@@ -91,7 +91,7 @@ const computeds = {
       <div
         v-for="conversa in conversas"
         class="card-usuario__conversa"
-        @click="actions.openModalUltimasConversas(conversa.uuid_contato)"
+        @click="actions.openModalUltimasConversas(conversa)"
       >
         <div class="d-flex">
           <div class="card-usuario__conversa__nome">

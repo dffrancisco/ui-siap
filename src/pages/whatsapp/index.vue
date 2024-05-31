@@ -60,6 +60,7 @@ onUnmounted(() => {
       <div class="container-usuarios">
         <CardUsuario
           :nome="'Não iniciado'"
+          :msgsCallbell="state.msgsCallbell"
           :conversas="computeds.conversasSemUsuario.value"
           @openModalUltimasConversas="actions.openModalUltimasConversas"
         />
@@ -77,7 +78,10 @@ onUnmounted(() => {
       style="margin: 0 auto"
       width="375"
     >
-      <ModalUltimasConversas @closeModalUltimasConversas="actions.closeModalUltimasConversas" />
+      <ModalUltimasConversas
+        @closeModalUltimasConversas="actions.closeModalUltimasConversas"
+        :msgsCallbell="state.msgsCallbell"
+      />
     </v-dialog>
 
     <v-overlay
