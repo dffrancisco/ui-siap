@@ -23,6 +23,11 @@ const getMsgsCallbell: iGetMsgsCallbellFunction = async (uuid) => {
     return data;
 }
 
+const fecharConversa = async (uuid: string) => {
+    let { data } = await axios.get(`${urlServerWhatsapp}/fechar-conversa?uuid=${uuid}`);
+    return data;
+}
+
 const formatarTempoEmMinutos = (minutos) => {
     let dias = Math.floor(minutos / (24 * 60));
     let horas = Math.floor((minutos % (24 * 60)) / 60);
@@ -55,5 +60,6 @@ export default {
     getUsuarios,
     getConversasAbertas,
     formatarTempoEmMinutos,
-    getMsgsCallbell
+    getMsgsCallbell,
+    fecharConversa
 }

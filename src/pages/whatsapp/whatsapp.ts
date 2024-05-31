@@ -53,6 +53,7 @@ export const actions = {
             state.msgsCallbell = {
                 telefone: conversa.telefone,
                 nome: conversa.nome,
+                uuid_contato: conversa.uuid_contato,
                 msgs: data
             }
 
@@ -84,6 +85,11 @@ export const actions = {
     },
 
     closeModalUltimasConversas() {
+        state.modalUltimasConversasOpened = false;
+    },
+
+    async fecharConversa() {
+        await actions.atualizarDados()
         state.modalUltimasConversasOpened = false;
     },
 

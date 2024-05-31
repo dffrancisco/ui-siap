@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { iDadosContatos } from "../interfaces";
+import whatsappService from "../services/whatsapp.service";
 import CardMsg from "./CardMsg.vue";
 import moment from "moment";
+import { msgConfirm } from "@/ts/message";
+import Swal from "sweetalert2";
 
 const props = defineProps({
   msgsCallbell: {
@@ -12,7 +15,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["closeModalUltimasConversas"]);
+const emits = defineEmits(["closeModalUltimasConversas", "fecharConversa"]);
 
 const actions = {
   closeModalUltimasConversas() {
@@ -28,6 +31,24 @@ const actions = {
       return `+${codigoPais} (${codigoArea}) ${numero.slice(0, 4)}-${numero.slice(4)}`;
     } else {
       return telefone;
+    }
+  },
+
+  async fecharConversa(uuid_contato: string) {
+    try {
+      await whatsappService.fecharConversa(uuid_contato);
+      emits("fecharConversa");
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao fechar conversa",
+      });
+    }
+  },
+
+  async btnFecharConversa(uuid_contato: string) {
+    if (await msgConfirm("Confirmação", "Confirma fechar esta conversa?")) {
+      await actions.fecharConversa(uuid_contato);
     }
   },
 };
@@ -72,8 +93,9 @@ const computeds = {
         color="#D32F2F"
         size="32"
         title="Fechar conversa"
+        @click="actions.btnFecharConversa(props.msgsCallbell.uuid_contato)"
       >
-        mdi-account-remove</v-icon
+        > mdi-account-remove</v-icon
       >
     </div>
 

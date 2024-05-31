@@ -16,6 +16,7 @@ export interface iConversaAberta {
 export interface iDadosContatos {
     telefone: string,
     nome: string;
+    uuid_contato: string;
     msgs: iMsgCallbell[]
 }
 
