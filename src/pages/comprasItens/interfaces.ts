@@ -185,6 +185,18 @@ export interface iParamEmitAdicionarItem {
     qtd: number,
 }
 
+export interface iListaFotoProduto {
+    foto: string,
+    nome: string,
+    loja: string,
+    publicacao: string,
+    w: number,
+    h: number,
+    cpf: string
+}
+
+export interface iGetListaFotoJsonResponse extends iListaFotoProduto { }
+
 export type iTipoVisualizacao = 'unica' | 'lista'
 export type iAbaHistorico = 'vendas' | 'compras'
 export type iAbaItens = 'adicionados' | 'nao_adicionados'

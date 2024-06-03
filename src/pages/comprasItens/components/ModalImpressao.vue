@@ -1,0 +1,113 @@
+<script setup lang="ts">
+import { reactive } from "vue";
+
+const emits = defineEmits(["fecharModal"]);
+
+const state = reactive({
+  tipoImpressao: 0,
+});
+
+const actions = {
+  fecharModal() {
+    emits("fecharModal");
+  },
+};
+</script>
+
+<template>
+  <v-card class="card-container">
+    <div class="card-header px-6 pt-4">
+      <span class="title-modal"> Imprimir </span>
+      <v-icon
+        size="28"
+        @click="actions.fecharModal"
+        >mdi-close</v-icon
+      >
+    </div>
+    <div class="card-body px-6 pb-6 d-flex ga-5 flex-column">
+      <v-radio-group
+        v-model="state.tipoImpressao"
+        inline
+        class="d-flex justify-center"
+      >
+        <div class="radio mr-2">
+          <v-radio
+            :value="0"
+            color="primary"
+          ></v-radio>
+          <span>Produto</span>
+        </div>
+        <div class="radio ml-2">
+          <v-radio
+            :value="1"
+            color="primary"
+          ></v-radio>
+          <span>Cotação</span>
+        </div>
+      </v-radio-group>
+      <div>
+        <span class="title-transportadora">Transportadora</span>
+        <v-autocomplete
+          bg-color="#3B4758"
+          variant="solo"
+          density="comfortable"
+          placeholder="Informe uma transportadora"
+        >
+        </v-autocomplete>
+      </div>
+      <div class="pt-4 d-flex justify-center ga-2">
+        <v-btn
+          height="40"
+          class="btn-visualizar"
+          ><v-icon class="mr-1">mdi-magnify</v-icon>visualizar</v-btn
+        >
+        <v-btn
+          height="40"
+          class="btn-imprimir"
+          ><v-icon class="mr-1">mdi-printer</v-icon>imprimir</v-btn
+        >
+      </div>
+    </div>
+  </v-card>
+</template>
+
+<style scoped>
+.card-container {
+  background-color: var(--grey-900);
+  color: var(--grey-100);
+  height: 274px;
+}
+
+.title-modal {
+  font-size: 16px;
+  color: var(--grey-100);
+  font-weight: bold;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+}
+
+.title-transportadora {
+  font-size: 12px;
+  color: var(--grey-100);
+  font-weight: 600;
+}
+
+.btn-visualizar {
+  background-color: var(--primary-700);
+  color: #fff;
+}
+
+.btn-imprimir {
+  background-color: var(--success-600);
+  color: #fff;
+}
+</style>

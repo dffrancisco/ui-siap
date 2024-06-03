@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch } from "vue";
 import { iCarro, iMarca } from "../interfaces";
+import ModalImpressao from "./ModalImpressao.vue";
 
 const props = defineProps({
   idMarcaInicial: {
@@ -27,6 +28,7 @@ const state = reactive({
   edtCarro: undefined,
   edtMarca: undefined,
   tempoNovaBusca: 1000,
+  modalImpressaoOpened: false,
 });
 
 const actions = {
@@ -39,6 +41,13 @@ const actions = {
       DESC_PRODUTO: state.edtDescricao,
       NUM_FABRICANTE: state.edtNumFabricante,
     });
+  },
+
+  async abrirModalImpressao() {
+    state.modalImpressaoOpened = true;
+  },
+  fecharModalImpressao() {
+    state.modalImpressaoOpened = false;
   },
 };
 
@@ -135,11 +144,20 @@ watch(
         width="50"
         min-width="50"
         class="pa-0"
+        @click="actions.abrirModalImpressao"
       >
         <v-icon size="x-large">mdi mdi-printer</v-icon>
       </v-btn>
     </div>
   </div>
+
+  <v-dialog
+    v-model="state.modalImpressaoOpened"
+    max-width="480px"
+    transition="dialog-transition"
+  >
+    <ModalImpressao @fecharModal="actions.fecharModalImpressao" />
+  </v-dialog>
 </template>
 
 <style lang="scss" scoped>

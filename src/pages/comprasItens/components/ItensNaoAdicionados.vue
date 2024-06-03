@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { reactive, nextTick } from "vue";
-import { iParamEmitAdicionarItem, iProduto, iTipoVisualizacao } from "../interfaces";
+import { iListaFotoProduto, iParamEmitAdicionarItem, iProduto, iTipoVisualizacao } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import { formatValor } from "@/ts/utils";
-import { getColorCurva, getColorDescricao, getColorQtdEstoque } from "../services/comprasItens.service";
+import comprasItensService, {
+  getColorCurva,
+  getColorDescricao,
+  getColorQtdEstoque,
+} from "../services/comprasItens.service";
 import ModalAdicionarItem from "./ModalAdicionarItem.vue";
+import ModalFotoProduto from "./ModalFotoProduto.vue";
 
 const props = defineProps({
   produto: {
@@ -38,6 +43,8 @@ const emit = defineEmits(["adicionarItem", "avancarItem", "voltarItem"]);
 const state = reactive({
   tipoVisualizacao: <iTipoVisualizacao>"unica",
   modalAdicionarItemOpened: false,
+  modalFotoProdutoOpened: false,
+  listaFotoProduto: <iListaFotoProduto[]>[],
 });
 
 const actions = {
@@ -46,6 +53,11 @@ const actions = {
     //@ts-ignore
     document.querySelector("#containerItem").focus();
   },
+  async desfocarContainerItem() {
+    await nextTick();
+    //@ts-ignore
+    document.querySelector("#containerItem").blur();
+  },
   adicionarItem(param: iParamEmitAdicionarItem) {
     emit("adicionarItem", param);
     state.modalAdicionarItemOpened = false;
@@ -53,9 +65,29 @@ const actions = {
   },
   onKeydownContainer(e: KeyboardEvent) {
     console.log("aaaaa");
+
     if (e.key === "Enter") {
       state.modalAdicionarItemOpened = true;
       e.preventDefault();
+    }
+  },
+  async abrirModalFotoProduto() {
+    await actions.getListaFotoJson();
+    state.modalFotoProdutoOpened = true;
+    actions.desfocarContainerItem();
+  },
+  fecharModalFotoProduto() {
+    state.modalFotoProdutoOpened = false;
+    actions.focarContainerItem();
+  },
+  async getListaFotoJson() {
+    try {
+      let codProduto = props.produto[MAP_COL_PRODUTO.COD_PRODUTO];
+      const data = await comprasItensService.getListaFotoJson(codProduto);
+
+      state.listaFotoProduto = data;
+    } catch (error) {
+      console.log(error);
     }
   },
 };
@@ -105,7 +137,7 @@ const actions = {
           class="d-flex align-center"
           title="Ver foto"
         >
-          <v-icon>mdi mdi-camera</v-icon>
+          <v-icon @click="actions.abrirModalFotoProduto">mdi mdi-camera</v-icon>
         </v-col>
       </v-row>
       <v-row class="mt-0">
@@ -228,6 +260,17 @@ const actions = {
         :media="media"
         :corMediaVenda="corMediaVenda"
         @adicionarItem="actions.adicionarItem"
+      />
+    </v-dialog>
+
+    <v-dialog
+      v-model="state.modalFotoProdutoOpened"
+      max-width="500px"
+      transition="dialog-transition"
+    >
+      <ModalFotoProduto
+        :listaFotoProduto="state.listaFotoProduto"
+        @fecharModal="actions.fecharModalFotoProduto"
       />
     </v-dialog>
   </div>
