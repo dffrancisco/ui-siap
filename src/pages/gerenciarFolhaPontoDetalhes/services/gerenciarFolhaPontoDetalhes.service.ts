@@ -12,9 +12,11 @@ import {
     iGetDadosParaImpressaoPDFResponse,
     iGetDetalhes,
     iGetDetalhesResponse,
+    iGetFuncionariosResponse,
     iGetTotalizadorFuncionarioResponse,
     iInserirRegistroAusenciaResponse,
     iParamDocumentoAusencia,
+    iParamGetFuncionarios,
     iRegistrarDocumentoAusencia,
     iRegistrarFalta,
     iSetFaltaResponse,
@@ -24,7 +26,8 @@ import {
 const caminho = "siap/gerenciarFolhaPonto";
 
 type igetDetalhes = (param: iGetDetalhes) => Promise<iGetDetalhesResponse>;
-type iGetTotalizadorFuncionarioFunction = (param: paramGetTotalizadorFuncionarios) => Promise<iGetTotalizadorFuncionarioResponse>;
+type iGetTotalizadorFuncionarioFunction = (param: paramGetTotalizadorFuncionarios) =>
+    Promise<iGetTotalizadorFuncionarioResponse>;
 type iSetFeriadoFolga = (param: iFaltaFeriadoFolga) => Promise<iSetFeriadoFolgaResponse>;
 type iSetFalta = (param: iRegistrarFalta) => Promise<iSetFaltaResponse>;
 type iDeleteFalta = (param: iDeletarFalta) => Promise<iDeleteFaltaResponse>;
@@ -32,9 +35,10 @@ type iDeleteDocumento = (param: iDeletarDocumento) => Promise<iDeleteDocumentoRe
 type iDeleteArquivo = (param: iDeletarArquivo) => Promise<iDeleteArquivoResponse>;
 type iInserirRegistroAusencia = (param: iRegistrarDocumentoAusencia) => Promise<iInserirRegistroAusenciaResponse>;
 type iGetDocumentoAusencia = (param: iParamDocumentoAusencia) => Promise<iDadosDocumento[]>;
-type iGetDadosParaImpressaoPDF = (
-    param: iGetDadosParaImpressaoIndividual
-) => Promise<iGetDadosParaImpressaoPDFResponse>;
+type iGetDadosParaImpressaoPDF = (param: iGetDadosParaImpressaoIndividual) =>
+    Promise<iGetDadosParaImpressaoPDFResponse>;
+type iGetFuncionariosFunction = (param: iParamGetFuncionarios) =>
+    Promise<iGetFuncionariosResponse[]>
 
 const getDetalhes: igetDetalhes = async (param) => {
     let { data } = await axios.post(caminho, {
@@ -178,6 +182,15 @@ const getDadosParaImpressao: iGetDadosParaImpressaoPDF = async (param) => {
     return data;
 };
 
+const getFuncionarios: iGetFuncionariosFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getFuncionarios",
+        param,
+    });
+
+    return data;
+}
+
 export default {
     getDetalhes,
     getTotalizadorFuncionario,
@@ -192,4 +205,5 @@ export default {
     verificarArquivos,
     moverArquivoTemp,
     getDadosParaImpressao,
+    getFuncionarios,
 };

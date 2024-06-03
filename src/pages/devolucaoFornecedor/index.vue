@@ -196,7 +196,7 @@ onUnmounted(() => {
                 v-if="state.dbDevolucao.STATUS != 1"
                 title="ATUALIZAR ITEM"
                 @click="actions.openModalInformarQtdItem(itens)"
-                ><v-icon size="20px">mdi-pen</v-icon>
+                ><v-icon size="20px">mdi-pencil</v-icon>
               </button>
               <button
                 v-if="state.dbDevolucao.STATUS != 1"
@@ -362,11 +362,12 @@ onUnmounted(() => {
       <div
         id="modalInformarQtdItem"
         style="display: none"
-        title="Informar Qtd"
+        title="Dados do item"
       >
         <ModalInformarQtdItem
           :modalInformaQtdOpened="state.modalInformaQtdItemOpened"
           :dbItem="state.dbItem"
+          :dbEmpresa="state.dbEmpresa"
           :id_devolucaoFornecedor="state.dbDevolucao.ID_DEVOLUCAO_FORNECEDOR"
           @closeModalInformarQtdItem="actions.closeModalInformarQtdItem"
           @closeModalEscolherItem="actions.closeModalEscolherItem"

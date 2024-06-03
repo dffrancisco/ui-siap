@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import { iItem, iItemDevolucao, iParamGetTributosPisCofinsItem } from "../interfaces";
-import { reactive, watch, nextTick } from "vue";
-import globalState from "@/store/globalState";
+import {
+  iItem,
+  iItemDevolucao,
+  iParamGetTributosItemNota,
+  iParamBaixarNFeEntradaGetTributosItemNota,
+  iEmpresa,
+} from "../interfaces";
+import { reactive, watch, nextTick, computed } from "vue";
 import Swal from "sweetalert2";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
 import { configVMoney } from "../../../constants/constants";
@@ -12,6 +17,7 @@ const props = defineProps<{
   dbItem: iItem;
   id_devolucaoFornecedor: number | undefined;
   modalInformaQtdOpened: boolean;
+  dbEmpresa: iEmpresa;
 }>();
 
 const emit = defineEmits(["salvarItem", "closeModalInformarQtdItem", "closeModalEscolherItem"]);
@@ -20,49 +26,68 @@ watch(
   () => props.modalInformaQtdOpened,
   async () => {
     if (props.modalInformaQtdOpened) {
-      if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF == globalState.empresa.UF) {
-        state.dbItemDevolucao.CFOP = "5411";
-      }
-
-      if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF != globalState.empresa.UF) {
-        state.dbItemDevolucao.CFOP = "6411";
-      }
-
-      if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF == globalState.empresa.UF) {
-        state.dbItemDevolucao.CFOP = "5202";
-      }
-
-      if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF != globalState.empresa.UF) {
-        state.dbItemDevolucao.CFOP = "6202";
-      }
-
       state.dbItemDevolucao = {
         ID_DEVOLUCAO_FORNECEDOR: props.id_devolucaoFornecedor,
         ID_ENTRADA: props.dbItem.ID_ENTRADA,
         ID_ITEM: props.dbItem.ID_ITEM,
-        CFOP: state.dbItemDevolucao.CFOP,
+        CFOP: props.dbItem.CFOP_DEVOLUCAO,
         QTD: props.dbItem.QTD || 0,
         CST: props.dbItem.CST,
         VALOR_UNITARIO: props.dbItem.CUSTO,
         VALOR_ICMS_ST: props.dbItem.VALOR_ICMS_ST,
         BASE_ICMS_ST: props.dbItem.BASE_ICMS_ST,
         PERCENTUAL_ICMS: props.dbItem.PERCENTUAL_ICMS,
-        PERCENTUAL_IPI: props.dbItem.PERCENTUAL_IPI,
-        CST_PIS: props.dbItem.CST_PIS,
-        PERCENTUAL_PIS: props.dbItem.PERCENTUAL_PIS || 0,
+        PERCENTUAL_IPI: utils.formatValor(props.dbItem.PERCENTUAL_IPI) || 0,
+        CST_PIS: props.dbItem.CST_PIS || "",
+        PERCENTUAL_PIS: utils.formatValor(props.dbItem.PERCENTUAL_PIS) || 0,
         CST_COFINS: props.dbItem.CST_COFINS,
-        PERCENTUAL_COFINS: props.dbItem.PERCENTUAL_COFINS || 0,
+        PERCENTUAL_COFINS: utils.formatValor(props.dbItem.PERCENTUAL_COFINS) || 0,
         COD_FABRICANTE: props.dbItem.COD_FABRICANTE,
         CHAVE: props.dbItem.CHAVE,
         DATA_EMISSAO: props.dbItem.DATA_EMISSAO,
+        CST_IPI: props.dbItem.CST_IPI || "",
+        PERCENTUAL_REDUCAO_BASE_ICMS: null,
       };
 
-      await actions.getTributosPisCofinsItem();
+      if (!props.dbItem.ID_DEVOLUCAO_FORNECEDOR_ITEM) {
+        await actions.buscarTributos();
+      }
+
+      actions.validarCstIpi();
 
       state.edtItemQtd.focus();
     }
   }
 );
+
+const pisCofinsCstComPercentual = ["01", "02", "03", "05"];
+
+const disabledPercentualPIS = computed(() => {
+  if (state.dbItemDevolucao.CST_PIS == "99") {
+    return false;
+  }
+
+  return pisCofinsCstComPercentual.includes(state.dbItemDevolucao.CST_PIS) ? false : true;
+});
+
+const disabledPercentualCofins = computed(() => {
+  if (state.dbItemDevolucao.CST_COFINS == "99") {
+    return false;
+  }
+
+  return pisCofinsCstComPercentual.includes(state.dbItemDevolucao.CST_COFINS) ? false : true;
+});
+
+const ipiCstComPercentual = ["50"];
+const ipiCstValido = ["50", "51", "52", "53", "54", "55", "99"];
+
+const disabledPercentualIPI = computed(() => {
+  if (state.dbItemDevolucao.CST_IPI == "99") {
+    return false;
+  }
+
+  return ipiCstComPercentual.includes(state.dbItemDevolucao.CST_IPI) ? false : true;
+});
 
 const state = reactive({
   dbItemDevolucao: <iItemDevolucao>{},
@@ -93,6 +118,56 @@ const actions = {
     actions.salvarItemDevolucao();
   },
 
+  validarCstIpi() {
+    if (!ipiCstValido.includes(state.dbItemDevolucao.CST_IPI)) {
+      state.dbItemDevolucao.CST_IPI = props.dbItem.CST_IPI || "";
+    }
+  },
+
+  zerarPercentualPISComBaseNoCST() {
+    if (pisCofinsCstComPercentual.includes(state.dbItemDevolucao.CST_PIS)) {
+      state.dbItemDevolucao.PERCENTUAL_PIS = utils.formatValor(props.dbItem.PERCENTUAL_PIS);
+    } else {
+      state.dbItemDevolucao.PERCENTUAL_PIS = 0;
+    }
+  },
+
+  zerarPercentualCOFINSComBaseNoCST() {
+    if (pisCofinsCstComPercentual.includes(state.dbItemDevolucao.CST_COFINS)) {
+      state.dbItemDevolucao.PERCENTUAL_COFINS = utils.formatValor(props.dbItem.PERCENTUAL_COFINS);
+    } else {
+      state.dbItemDevolucao.PERCENTUAL_COFINS = 0;
+    }
+  },
+
+  zerarPercentualIPIComBaseNoCST() {
+    if (ipiCstComPercentual.includes(state.dbItemDevolucao.CST_IPI)) {
+      state.dbItemDevolucao.PERCENTUAL_IPI = utils.formatValor(props.dbItem.PERCENTUAL_IPI);
+    } else {
+      state.dbItemDevolucao.PERCENTUAL_IPI = 0;
+    }
+  },
+
+  async buscarTributos() {
+    if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF == props.dbEmpresa.UF) {
+      state.dbItemDevolucao.CFOP = "5411";
+    }
+
+    if (props.dbItem.VALOR_ICMS_ST != 0 && props.dbItem.UF != props.dbEmpresa.UF) {
+      state.dbItemDevolucao.CFOP = "6411";
+    }
+
+    if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF == props.dbEmpresa.UF) {
+      state.dbItemDevolucao.CFOP = "5202";
+    }
+
+    if (props.dbItem.VALOR_ICMS_ST == 0 && props.dbItem.UF != props.dbEmpresa.UF) {
+      state.dbItemDevolucao.CFOP = "6202";
+    }
+
+    await actions.getTributosItemNota();
+  },
+
   async salvarItemDevolucao() {
     if (state.dbItemDevolucao.QTD <= 0) {
       await Swal.fire({
@@ -103,7 +178,7 @@ const actions = {
     }
 
     if (state.dbItemDevolucao.QTD > props.dbItem.QUANTIDADE) {
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
         title: "A quantidade deve ser menor ou igual a quantidade do item",
       });
@@ -111,65 +186,93 @@ const actions = {
     }
 
     if (!state.dbItemDevolucao.CFOP) {
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
         title: "O CFOP deve ser informado",
       });
       return;
     }
 
-    if (!state.dbItemDevolucao.CST_PIS) {
-      Swal.fire({
-        icon: "error",
-        title: "O PIS CST deve ser informado",
-      });
-      return;
-    }
-
-    if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_PIS.toString()) <= 0) {
-      Swal.fire({
-        icon: "error",
-        title: "O % PIS deve ser informado",
-      });
-      return;
-    }
-
-    if (!state.dbItemDevolucao.CST_COFINS) {
-      Swal.fire({
-        icon: "error",
-        title: "O COFINS CST deve ser informado",
-      });
-      return;
-    }
-
-    if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_COFINS.toString()) <= 0) {
-      Swal.fire({
-        icon: "error",
-        title: "O % COFINS deve ser informado",
-      });
-      return;
-    }
-
     if (state.dbItemDevolucao.CFOP.length < 4) {
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
         title: "O CFOP deve conter 4 dígitos",
       });
       return;
     }
 
-    if (!state.dbItemDevolucao.CST_PIS) {
-      Swal.fire({
+    if (
+      ipiCstComPercentual.includes(state.dbItemDevolucao.CST_IPI) &&
+      utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_IPI.toString()) <= 0 &&
+      state.dbItemDevolucao.CST_IPI != "99"
+    ) {
+      await Swal.fire({
         icon: "error",
-        title: "O CST PIS deve ser informado",
+        title: "O % IPI deve ser informado",
+      });
+      return;
+    }
+
+    if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_IPI.toString()) > 100) {
+      await Swal.fire({
+        icon: "error",
+        title: "O % IPI deve ser menor ou igual a 100",
+      });
+      return;
+    }
+
+    if (!state.dbItemDevolucao.CST_PIS) {
+      await Swal.fire({
+        icon: "error",
+        title: "O PIS CST deve ser informado",
+      });
+      return;
+    }
+
+    if (
+      pisCofinsCstComPercentual.includes(state.dbItemDevolucao.CST_PIS) &&
+      utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_PIS.toString()) <= 0 &&
+      state.dbItemDevolucao.CST_PIS != "99"
+    ) {
+      await Swal.fire({
+        icon: "error",
+        title: "O % PIS deve ser informado",
+      });
+      return;
+    }
+
+    if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_PIS.toString()) > 100) {
+      await Swal.fire({
+        icon: "error",
+        title: "O % PIS deve ser menor ou igual a 100",
       });
       return;
     }
 
     if (!state.dbItemDevolucao.CST_COFINS) {
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
-        title: "O CST COFINS deve ser informado",
+        title: "O COFINS CST deve ser informado",
+      });
+      return;
+    }
+
+    if (
+      pisCofinsCstComPercentual.includes(state.dbItemDevolucao.CST_COFINS) &&
+      utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_COFINS.toString()) <= 0 &&
+      state.dbItemDevolucao.CST_COFINS != "99"
+    ) {
+      await Swal.fire({
+        icon: "error",
+        title: "O % COFINS deve ser informado",
+      });
+      return;
+    }
+
+    if (utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_COFINS.toString()) > 100) {
+      await Swal.fire({
+        icon: "error",
+        title: "O % COFINS deve ser menor ou igual a 100",
       });
       return;
     }
@@ -187,11 +290,22 @@ const actions = {
 
       let pisPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_PIS.toString());
       let cofinsPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_COFINS.toString());
+      let ipiPercentual = utils.formatValorUSA(state.dbItemDevolucao.PERCENTUAL_IPI.toString());
+
+      let icmsPercentualReducaoBase = null;
+
+      if (state.dbItemDevolucao.PERCENTUAL_REDUCAO_BASE_ICMS) {
+        icmsPercentualReducaoBase = utils.formatValorUSA(
+          state.dbItemDevolucao.PERCENTUAL_REDUCAO_BASE_ICMS.toString()
+        );
+      }
 
       let param = {
         ...state.dbItemDevolucao,
         PERCENTUAL_PIS: pisPercentual,
         PERCENTUAL_COFINS: cofinsPercentual,
+        PERCENTUAL_IPI: ipiPercentual,
+        PERCENTUAL_REDUCAO_BASE_ICMS: icmsPercentualReducaoBase,
       };
 
       await serviceDevolucaoFornecedor.updateInsertItemDevolucao({ param });
@@ -213,27 +327,55 @@ const actions = {
     }
   },
 
-  async getTributosPisCofinsItem() {
+  async getTributosItemNota() {
     try {
       state.loading = true;
 
-      let param: iParamGetTributosPisCofinsItem = {
+      let param: iParamGetTributosItemNota = {
         ANO: moment(state.dbItemDevolucao.DATA_EMISSAO).year(),
         MES: NOME_MESES[moment(state.dbItemDevolucao.DATA_EMISSAO).month()],
         CHAVE: state.dbItemDevolucao.CHAVE,
         COD_FABRICANTE: state.dbItemDevolucao.COD_FABRICANTE,
       };
 
-      let data = await serviceDevolucaoFornecedor.getTributosPisCofinsItem(param);
+      const data = await serviceDevolucaoFornecedor.getTributosItemNota(param);
 
       state.dbItemDevolucao.CST_PIS = data.CST_PIS;
       state.dbItemDevolucao.CST_COFINS = data.CST_COFINS;
       state.dbItemDevolucao.PERCENTUAL_PIS = utils.formatValor(data.PERCENTUAL_PIS);
       state.dbItemDevolucao.PERCENTUAL_COFINS = utils.formatValor(data.PERCENTUAL_COFINS);
+      state.dbItemDevolucao.CST_IPI = data.CST_IPI;
+      state.dbItemDevolucao.PERCENTUAL_IPI = utils.formatValor(data.PERCENTUAL_IPI);
+      state.dbItemDevolucao.PERCENTUAL_REDUCAO_BASE_ICMS = utils.formatValor(data.PERCENTUAL_REDUCAO_BASE_ICMS);
+
+      state.loading = false;
+    } catch (error) {
+      console.error(error?.response?.data?.msg);
+      await actions.baixarNFeEntradaGetTributosItemNota();
+    }
+  },
+
+  async baixarNFeEntradaGetTributosItemNota() {
+    try {
+      let param: iParamBaixarNFeEntradaGetTributosItemNota = {
+        CHAVE: state.dbItemDevolucao.CHAVE,
+        COD_FABRICANTE: state.dbItemDevolucao.COD_FABRICANTE,
+      };
+
+      const data = await serviceDevolucaoFornecedor.baixarNFeEntradaGetTributosItemNota(param);
+
+      state.dbItemDevolucao.CST_PIS = data.CST_PIS;
+      state.dbItemDevolucao.CST_COFINS = data.CST_COFINS;
+      state.dbItemDevolucao.PERCENTUAL_PIS = utils.formatValor(data.PERCENTUAL_PIS);
+      state.dbItemDevolucao.PERCENTUAL_COFINS = utils.formatValor(data.PERCENTUAL_COFINS);
+      state.dbItemDevolucao.CST_IPI = data.CST_IPI;
+      state.dbItemDevolucao.PERCENTUAL_IPI = utils.formatValor(data.PERCENTUAL_IPI);
+      state.dbItemDevolucao.PERCENTUAL_REDUCAO_BASE_ICMS = utils.formatValor(data.PERCENTUAL_REDUCAO_BASE_ICMS);
 
       state.loading = false;
     } catch (error) {
       state.loading = false;
+      console.error(error?.response?.data?.msg);
     }
   },
 };
@@ -331,6 +473,7 @@ nextTick(async () => {
             class="ss obr"
             id="CST_PIS"
             name="CST_PIS"
+            @update:model-value="actions.zerarPercentualPISComBaseNoCST"
           >
             <option value="01">01 - Operação Tributável com Alíquota Básica</option>
             <option value="02">02 - Operação Tributável com Alíquota Diferenciada</option>
@@ -349,11 +492,13 @@ nextTick(async () => {
           <input
             v-model.lazy="state.dbItemDevolucao.PERCENTUAL_PIS"
             type="text"
-            class="ss obr"
+            class="ss"
             id="PERCENTUAL_PIS"
             name="PERCENTUAL_PIS"
             :model-modifiers="{ number: true }"
             v-money3="configVMoney"
+            :class="disabledPercentualPIS ? 'disabled' : state.dbItemDevolucao.CST_PIS != '99' ? 'obr' : ''"
+            :disabled="disabledPercentualPIS"
           />
         </v-col>
       </v-row>
@@ -365,6 +510,7 @@ nextTick(async () => {
             class="ss obr"
             id="CST_COFINS"
             name="CST_COFINS"
+            @update:model-value="actions.zerarPercentualCOFINSComBaseNoCST"
           >
             <option value="01">01 - Operação Tributável com Alíquota Básica</option>
             <option value="02">02 - Operação Tributável com Alíquota Diferenciada</option>
@@ -383,9 +529,50 @@ nextTick(async () => {
           <input
             type="text"
             v-model.lazy="state.dbItemDevolucao.PERCENTUAL_COFINS"
-            class="ss obr"
+            class="ss"
             id="PERCENTUAL_COFINS"
             name="PERCENTUAL_COFINS"
+            :model-modifiers="{ number: true }"
+            v-money3="configVMoney"
+            :class="disabledPercentualCofins ? 'disabled' : state.dbItemDevolucao.CST_COFINS != '99' ? 'obr' : ''"
+            :disabled="disabledPercentualCofins"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="10">
+          <span>IPI CST</span>
+          <select
+            v-model="state.dbItemDevolucao.CST_IPI"
+            class="ss obr"
+            id="CST_IPI"
+            name="CST_IPI"
+            @update:model-value="actions.zerarPercentualIPIComBaseNoCST"
+          >
+            <option
+              value=""
+              selected
+              >SEM IPI</option
+            >
+            <option value="50">50 - Saída tributada</option>
+            <option value="51">51 - Saída tributada com alíquota zero</option>
+            <option value="52">52 - Saída isenta</option>
+            <option value="53">53 - Saída não-tributada</option>
+            <option value="54">54 - Saída imune</option>
+            <option value="55">55 - Saída com suspensão</option>
+            <option value="99">99 - Outras saídas</option>
+          </select>
+        </v-col>
+        <v-col>
+          <span>% IPI</span>
+          <input
+            type="text"
+            v-model.lazy="state.dbItemDevolucao.PERCENTUAL_IPI"
+            class="ss"
+            :class="disabledPercentualIPI ? 'disabled' : state.dbItemDevolucao.CST_IPI != '99' ? 'obr' : ''"
+            :disabled="disabledPercentualIPI"
+            id="PERCENTUAL_IPI"
+            name="PERCENTUAL_IPI"
             :model-modifiers="{ number: true }"
             v-money3="configVMoney"
             @keydown.enter="actions.onKeyDownEnterQtdDevolucao"
@@ -395,16 +582,27 @@ nextTick(async () => {
     </div>
 
     <div class="btns">
-      <v-btn
-        style="color: #3680ab; border: 1px solid #3680ab"
-        @click="actions.closeModalInformarQtdItem"
-        >Cancelar</v-btn
-      >
-      <v-btn
-        color="#3680AB"
-        @click="actions.salvarItemDevolucao"
-        >Salvar</v-btn
-      >
+      <div>
+        <v-btn
+          color="primary"
+          @click="actions.buscarTributos"
+        >
+          <v-icon class="mr-1">mdi-cached</v-icon>
+          buscar tributos
+        </v-btn>
+      </div>
+      <div class="d-flex ga-2">
+        <v-btn
+          style="color: #3680ab; border: 1px solid #3680ab"
+          @click="actions.closeModalInformarQtdItem"
+          >Cancelar</v-btn
+        >
+        <v-btn
+          color="#3680AB"
+          @click="actions.salvarItemDevolucao"
+          >Salvar</v-btn
+        >
+      </div>
     </div>
 
     <v-overlay
@@ -429,9 +627,8 @@ span {
 
 .btns {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-top: 10px;
-  gap: 8px;
 }
 
 .disabled {

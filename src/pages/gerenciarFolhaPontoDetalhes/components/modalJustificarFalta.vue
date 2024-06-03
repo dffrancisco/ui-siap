@@ -49,7 +49,7 @@ const {
   jaJustificado,
   desativarBtn,
   desativarBtnVerDoc,
-  desativarBtnDelete,
+  showBtnDelete,
   desabilitarBtnSalvar,
   dadosDocumentoAusencia,
 } = setup(emit, props);
@@ -145,7 +145,7 @@ onMounted(() => {
             label="Tipo de Ausência"
             class="pb-2"
             v-model="state.selectedTipoFalta"
-            :disabled="desativarBtn || jaJustificado"
+            :disabled="jaJustificado"
             @update:model-value="actions.preencherJustificativa"
           ></v-select>
         </v-row>
@@ -157,7 +157,7 @@ onMounted(() => {
               v-if="state.showCIDAutocomplete"
               label="CID"
               v-model="state.selectedCID"
-              :disabled="desativarBtn || jaJustificado"
+              :disabled="jaJustificado"
             >
             </v-text-field>
           </div>
@@ -175,7 +175,7 @@ onMounted(() => {
       </div>
       <div class="pt-5"
         ><v-btn
-          v-if="desativarBtnDelete"
+          v-if="showBtnDelete"
           label="Deletar Falta"
           color="primary"
           class="btnDelete"

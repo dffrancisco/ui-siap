@@ -17,4 +17,5 @@ export const configVMoney = {
   thousands: ".",
   decimal: ",",
   precision: 2,
+  max: 999999999.99
 }

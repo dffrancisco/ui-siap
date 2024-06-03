@@ -3,7 +3,9 @@ import { RouteLocationNormalizedLoaded } from "vue-router";
 import {
     iDadosDocumento,
     iGetDadosParaImpressaoIndividual,
+    iListaFuncionario,
     iParamDocumentoAusencia,
+    iParamGetFuncionarios,
     iPonto,
     iTipoFaltas,
     iTotalizadorDeFaltas,
@@ -48,7 +50,9 @@ export const state = reactive({
     modalImprimirFolhaPontoOpened: false,
     dadosParaModalImpressao: {},
     totalizadorFaltas: <iTotalizadorDeFaltas[]>[],
-    loadingTotais: false
+    listaCodFuncionarios: <iListaFuncionario[]>[],
+    nextFuncionarioBtnDisabled: false,
+    backFuncionarioBtnDisabled: false
 });
 
 export const anos = computed(() => {
@@ -80,7 +84,7 @@ export const actions = {
     async atualizarTela() {
         state.modalJustificarFalta.close();
         state.loading = true;
-        await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
+        await actions.carregarDados();
         state.loading = false;
     },
 
@@ -96,7 +100,6 @@ export const actions = {
 
         let diasNoMes = dataFim.diff(dataInicio, 'days') + 1
 
-
         for (let dia = 1; dia <= diasNoMes; dia++) {
             if (state.pontos[`Dia:${dia}`] == undefined) {
                 let data = moment({ year: state.ano, month: state.mes - 1, day: dia });
@@ -109,11 +112,12 @@ export const actions = {
             }
         }
 
-        diasSemPonto.forEach((data) => {
-            const elemento = document.querySelector(`td[data-date='${data}']`);
-            elemento.classList.add('calendario_data_sem_ponto');
-        })
-
+        if (diasSemPonto.length > 0) {
+            diasSemPonto.forEach((data) => {
+                const elemento = document.querySelector(`td[data-date='${data}']`);
+                elemento.classList.add('calendario_data_sem_ponto');
+            })
+        }
     },
 
     async btnMesSeguinte() {
@@ -171,10 +175,10 @@ export const actions = {
             state.loginFuncionario = state.dadosFuncionario.LOGIN;
             state.dataAdmissao = state.dadosFuncionario.DATA_ADMISSAO;
 
+            await actions.getTotalizadorFuncionario(state.codFuncionario, state.mes, state.ano)
+
             await nextTick();
             state.initialDate = new Date(state.ano, state.mes - 1, 1);
-
-
         } catch (error) {
             console.error(error);
             Swal.fire({
@@ -185,15 +189,9 @@ export const actions = {
             state.loading = false;
             state.loadingCalendar = false;
         }
-
-        setTimeout(() => {
-            actions.preencherBackgroundColorDataIncompleta()
-        }, 100)
     },
 
     async getTotalizadorFuncionario(cod_funcionario: number, mes: number, ano: number) {
-        state.loadingTotais = true;
-
         try {
             const totais = await gerenciarFolhaPontoDetalhesService.getTotalizadorFuncionario({
                 cod_funcionario,
@@ -210,8 +208,6 @@ export const actions = {
 
         } catch (error) {
             console.error(error)
-        } finally {
-            state.loadingTotais = false;
         }
     },
 
@@ -235,17 +231,20 @@ export const actions = {
         }
     },
 
-    formatarEvento(titulo: string, dataInicio: string, dataFim: string, jaFoiJustificado: boolean, qtdPontosDia: number, cor = "#6495ED") {
+    formatarEvento(titulo: string, dataInicio: string, dataFim: string, jaFoiJustificado: boolean, qtdPontosDia: number, status: string, cor = "#6495ED") {
 
         let isSabado = moment(dataInicio).weekday() == 6;
         let pontosBatidosPar = qtdPontosDia % 2 == 0;
-
 
         if (titulo == null && isSabado == true && pontosBatidosPar) {
             titulo = "---------";
             cor = "#acc8fb";
         }
 
+        if (titulo == null && status) {
+            titulo = status;
+            cor = actions.setarCorFalta(status)
+        }
 
         if (titulo == null) {
             titulo = "---------";
@@ -268,11 +267,36 @@ export const actions = {
 
     formatarHora(hora) {
         if (hora) {
-            return new Date(hora).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-        } else {
-            return null;
+            return moment(hora).format('HH:mm');
         }
+
+        return null;
     },
+
+    verificarAtraso(hora) {
+        let horaFormatada = moment(hora).format('HH:mm:ss');
+
+        let atraso = moment(horaFormatada, 'HH:mm:ss').isAfter(moment('08:04:59', 'HH:mm:ss'))
+
+        if (atraso) {
+            return true
+        }
+
+        return false
+    },
+
+    verificarSaidaMaisCedo(hora) {
+        let horaFormatada = moment(hora).format('HH:mm:ss');
+
+        let saidaMaisCedo = moment(horaFormatada, 'HH:mm:ss').isBefore(moment('17:54:59', 'HH:mm:ss'))
+
+        if (saidaMaisCedo) {
+            return true
+        }
+
+        return false
+    },
+
 
     formatarData(data) {
         const partesData = data.split("/");
@@ -331,6 +355,35 @@ export const actions = {
         });
     },
 
+    setarCorFalta(status: string) {
+        switch (status) {
+            case "Atestado":
+                return "#33691E";
+            case "Falta Abonada":
+                return "#7e57c2";
+            case "Falta":
+                return "#7e57c2";
+            case "Falta Justificada":
+                return "#7e57c2";
+            case "Suspenso":
+                return "#dd2c00";
+            case "Feriado":
+                return "#4caf50";
+            case "Dia de Folga":
+                return "#4caf50";
+            case "Em outra Loja":
+                return "#c494f3";
+            case "Meia Falta":
+                return "#7e57c2";
+            case "Meio Afastamento":
+                return "#33691E";
+            case "Atraso Justificado":
+                return "#127071";
+            default:
+                return "#8d6e63";
+        }
+    },
+
     init(route: RouteLocationNormalizedLoaded) {
         nextTick(async () => {
 
@@ -341,13 +394,47 @@ export const actions = {
             state.ano = Number(route.query.ano);
             state.initialDate = new Date(state.ano, state.mes - 1, 1);
 
-            actions.carregarDados();
+            await actions.carregarDados();
+            actions.getFuncionarios();
         });
     },
 
+    async nextFuncionario() {
+        const currentIndex = state.listaCodFuncionarios.findIndex(funcionario =>
+            funcionario.COD_FUNCIONARIO == state.codFuncionario
+        );
+
+        const nextIndex = currentIndex + 1;
+
+        state.codFuncionario = state.listaCodFuncionarios[nextIndex].COD_FUNCIONARIO;
+        state.nextFuncionarioBtnDisabled = nextIndex == state.listaCodFuncionarios.length - 1
+
+        state.backFuncionarioBtnDisabled = false;
+
+        await actions.carregarDados();
+    },
+
+    async backFuncionario() {
+        const currentIndex = state.listaCodFuncionarios.findIndex(funcionario =>
+            funcionario.COD_FUNCIONARIO == state.codFuncionario
+        );
+
+        const nextIndex = currentIndex - 1;
+
+        state.codFuncionario = state.listaCodFuncionarios[nextIndex].COD_FUNCIONARIO;
+        state.backFuncionarioBtnDisabled = currentIndex == 1
+
+        state.nextFuncionarioBtnDisabled = false
+
+        await actions.carregarDados();
+    },
+
     async carregarDados() {
-        actions.getTotalizadorFuncionario(state.codFuncionario, state.mes, state.ano);
         await actions.getDetalhes(state.codFuncionario, state.mes, state.ano);
+
+        setTimeout(() => {
+            actions.preencherBackgroundColorDataIncompleta()
+        }, 100)
     },
 
     imprimirFolhaPonto() {
@@ -356,6 +443,8 @@ export const actions = {
     },
 
     async dadosParaImpressao(mes: number, ano: number) {
+        state.loading = true
+
         const param: iGetDadosParaImpressaoIndividual = {
             cod_funcionario: state.codFuncionario,
             mes: mes,
@@ -369,8 +458,40 @@ export const actions = {
                 icon: "error",
                 text: "Ocorreu um erro ao buscar os dados para impressão",
             });
+        } finally {
+            state.loading = false;
         }
     },
+
+    async getFuncionarios() {
+        try {
+            state.loading = true;
+
+            let param: iParamGetFuncionarios = {
+                mes: state.mes,
+                ano: state.ano,
+            };
+
+            state.listaCodFuncionarios = await gerenciarFolhaPontoDetalhesService.getFuncionarios(param);
+
+            const currentIndex = state.listaCodFuncionarios.findIndex(funcionario =>
+                funcionario.COD_FUNCIONARIO == state.codFuncionario
+            );
+
+            if (currentIndex != -1) {
+                state.nextFuncionarioBtnDisabled = currentIndex == state.listaCodFuncionarios.length - 1;
+                state.backFuncionarioBtnDisabled = currentIndex == 0;
+            }
+
+            state.loading = false;
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar a lista de funcionários",
+            });
+        }
+    }
 };
 
 export const isSixWeeks = computed(() => {
@@ -387,7 +508,10 @@ export const pontosCalendario = computed(() => {
         let dataInicio = moment(ponto.DATA).format('YYYY-MM-DD');
         let dataFim = moment(ponto.DATA).format('YYYY-MM-DD');
 
-        const { HORA_CHEGADA, HORA_ALMOCO_FINAL, HORA_ALMOCO_INICIAL, HORA_SAIDA, TIPO, STATUS } = ponto;
+        const { HORA_CHEGADA, HORA_ALMOCO_FINAL, HORA_ALMOCO_INICIAL, HORA_SAIDA, TIPO } = ponto;
+
+        const STATUS = state.tipoFaltas.find(tipo => tipo.TIPO == TIPO)?.DESCRICAO
+
         let qtdPontosDia = 0
 
         if (HORA_CHEGADA || HORA_ALMOCO_INICIAL || HORA_ALMOCO_FINAL || HORA_SAIDA) {
@@ -397,63 +521,52 @@ export const pontosCalendario = computed(() => {
             if (HORA_ALMOCO_FINAL) qtdPontosDia++;
             if (HORA_SAIDA) qtdPontosDia++;
 
+            let cor
+
             let jaFoiJustificado = HORA_CHEGADA == null && TIPO == 9;
+            let atraso = actions.verificarAtraso(HORA_CHEGADA)
+
+            if (atraso) {
+                cor = '#d33700'
+            }
+
             let horaFormatada = actions.formatarHora(HORA_CHEGADA);
-            let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
+            let eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, STATUS, cor);
 
             eventos.push(eventoFormatado);
 
             jaFoiJustificado = HORA_ALMOCO_INICIAL == null && TIPO == 9;
             horaFormatada = actions.formatarHora(HORA_ALMOCO_INICIAL);
-            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
+            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, STATUS);
 
             eventos.push(eventoFormatado);
 
             jaFoiJustificado = HORA_ALMOCO_FINAL == null && TIPO == 9;
             horaFormatada = actions.formatarHora(HORA_ALMOCO_FINAL);
-            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
+            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, STATUS);
 
             eventos.push(eventoFormatado);
 
             jaFoiJustificado = HORA_SAIDA == null && TIPO == 9;
+            let saidaMaisCedo = actions.verificarSaidaMaisCedo(HORA_SAIDA)
+
+            cor = '#6495ED'
+
+            if (saidaMaisCedo) {
+                cor = '#d33700'
+            }
+
             horaFormatada = actions.formatarHora(HORA_SAIDA);
-            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia);
+            eventoFormatado = actions.formatarEvento(horaFormatada, dataInicio, dataFim, jaFoiJustificado, qtdPontosDia, STATUS, cor);
 
             eventos.push(eventoFormatado);
 
         }
 
+        if (STATUS && TIPO != 9 && qtdPontosDia == 0 || TIPO == 14) {
+            let cor = actions.setarCorFalta(STATUS)
 
-        if (STATUS && TIPO != 9) {
-            let cor;
-
-            switch (STATUS) {
-                case "Atestado":
-                    cor = "#33691E";
-                    break;
-                case "Falta Abonada":
-                    cor = "#7e57c2"; // deep purple
-                    break;
-                case "Falta":
-                    cor = "#7e57c2"; // deep purple
-                    break;
-                case "Falta Justificada":
-                    cor = "#7e57c2"; // deep purple
-                    break;
-                case "Suspenso":
-                    cor = "#dd2c00"; // deep orange
-                    break;
-                case "Feriado":
-                    cor = "#4caf50"; // green
-                    break;
-                case "Dia de Folga":
-                    cor = "#4caf50"; // green
-                    break;
-                default:
-                    cor = "#8d6e63"; // brown
-                    break;
-            }
-            let eventoFormatado = actions.formatarEvento(STATUS, dataInicio, dataFim, false, qtdPontosDia, cor);
+            let eventoFormatado = actions.formatarEvento(STATUS, dataInicio, dataFim, false, qtdPontosDia, STATUS, cor);
 
             eventos.push(eventoFormatado);
         }
@@ -500,25 +613,24 @@ export const tipoFaltaModal = computed(() => {
 
     let tipoFaltas: iTipoFaltas[] = [...state.tipoFaltas];
 
-    let temAlgumPontoBatido = HORA_CHEGADA || HORA_ALMOCO_INICIAL || HORA_ALMOCO_FINAL || HORA_SAIDA;
+    const temAlgumPontoBatido = [HORA_CHEGADA, HORA_ALMOCO_INICIAL, HORA_ALMOCO_FINAL, HORA_SAIDA];
 
-    if (!pontosDiaSelecionado.value) {
-        let tipoFaltasFiltrado = tipoFaltas.filter((tipoFalta) => {
-            return tipoFalta.TIPO != 9;
-        });
+    const pontosBatidos = temAlgumPontoBatido.filter(ponto => ponto);
 
-        return tipoFaltasFiltrado;
+    if (pontosBatidos.length == 4) {
+        return tipoFaltas.filter(tipoFalta => [14].includes(tipoFalta.TIPO));
     }
 
-    if (temAlgumPontoBatido) {
-        return tipoFaltas;
-    } else {
+    if (pontosBatidos.length == 3) {
+        return tipoFaltas.filter(tipoFalta => ![7, 10, 11, 12, 13, 14].includes(tipoFalta.TIPO));
+    }
 
-        let tipoFaltasFiltrado = tipoFaltas.filter((tipoFalta) => {
-            return tipoFalta.TIPO != 9;
-        });
+    if (pontosBatidos.length == 1 || pontosBatidos.length == 2) {
+        return tipoFaltas.filter(tipoFalta => ![7, 10, 13, 14].includes(tipoFalta.TIPO));
+    }
 
-        return tipoFaltasFiltrado;
+    if (pontosBatidos.length == 0) {
+        return tipoFaltas.filter(tipoFalta => ![9, 11, 12, 14].includes(tipoFalta.TIPO));
     }
 });
 
