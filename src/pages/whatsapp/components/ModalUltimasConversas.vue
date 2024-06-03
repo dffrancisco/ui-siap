@@ -15,7 +15,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["closeModalUltimasConversas", "fecharConversa"]);
+const emits = defineEmits(["closeModalUltimasConversas", "fecharConversa", "buscarConversaAntiga"]);
 
 const actions = {
   closeModalUltimasConversas() {
@@ -50,6 +50,13 @@ const actions = {
     if (await msgConfirm("Confirmação", "Confirma fechar esta conversa?")) {
       await actions.fecharConversa(uuid_contato);
     }
+  },
+
+  buscarConversaAntiga() {
+    let uuid_contato = props.msgsCallbell.uuid_contato;
+    let page = props.msgsCallbell.meta.page + 1;
+
+    emits("buscarConversaAntiga", uuid_contato, page);
   },
 };
 
@@ -117,6 +124,18 @@ const computeds = {
             <span class="chip-data__content px-2 py-1">{{ item.dataMsg }}</span>
           </div>
         </template>
+        <div
+          class="btn-msgs-antigas"
+          v-if="props.msgsCallbell.meta.page != props.msgsCallbell.meta.pages"
+        >
+          <v-btn
+            color="primary"
+            icon="mdi-refresh"
+            size="36"
+            title="Carregar conversas antigas"
+            @click="actions.buscarConversaAntiga"
+          />
+        </div>
       </div>
     </div>
   </v-card>
@@ -169,5 +188,12 @@ const computeds = {
   flex-direction: column-reverse;
   overflow: auto;
   max-height: 620px;
+}
+
+.btn-msgs-antigas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 </style>

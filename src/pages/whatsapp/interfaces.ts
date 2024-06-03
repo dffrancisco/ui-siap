@@ -17,7 +17,11 @@ export interface iDadosContatos {
     telefone: string,
     nome: string;
     uuid_contato: string;
-    msgs: iMsgCallbell[]
+    msgs: iMsgCallbell[],
+    meta: {
+        page: number;
+        pages: number;
+    }
 }
 
 export interface iMsgCallbell {
@@ -36,6 +40,14 @@ export interface iMsgCallbell {
     channel: string,
     from: string,
     to: string
+}
+
+export interface iGetMsgsCallbellResponse {
+    messages: iMsgCallbell[];
+    meta: {
+        page: number;
+        pages: number;
+    }
 }
 
 export interface iMsgFormatada {

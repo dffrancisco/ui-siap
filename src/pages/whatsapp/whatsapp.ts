@@ -45,17 +45,41 @@ export const actions = {
         }
     },
 
-    async getMsgsCallbell(conversa: iConversaAberta) {
+    async getMsgsCallbell(conversa: iConversaAberta, page: number = 1) {
         try {
             state.loading = true;
-            const data = await whatsappService.getMsgsCallbell(conversa.uuid_contato);
+            const data = await whatsappService.getMsgsCallbell(conversa.uuid_contato, page);
 
             state.msgsCallbell = {
                 telefone: conversa.telefone,
                 nome: conversa.nome,
                 uuid_contato: conversa.uuid_contato,
-                msgs: data
+                msgs: data.messages,
+                meta: data.meta
             }
+
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Ocorreu um erro ao buscar as mensagens.',
+            })
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getMsgsCallbellAntigas(uuid_contato: string, page: number) {
+        try {
+            state.loading = true;
+
+            const data = await whatsappService.getMsgsCallbell(uuid_contato, page);
+
+            state.msgsCallbell.msgs = [
+                ...state.msgsCallbell.msgs,
+                ...data.messages
+            ]
+
+            state.msgsCallbell.meta = data.meta;
 
         } catch (error) {
             Swal.fire({
@@ -91,6 +115,10 @@ export const actions = {
     async fecharConversa() {
         await actions.atualizarDados()
         state.modalUltimasConversasOpened = false;
+    },
+
+    async buscarMsgsCallbellAntigas(uuid_contato: string, page: number) {
+        await actions.getMsgsCallbellAntigas(uuid_contato, page)
     },
 
     async init() {

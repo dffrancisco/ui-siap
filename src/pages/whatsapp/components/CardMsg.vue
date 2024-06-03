@@ -10,6 +10,7 @@ const MSG_ENVIADA_TEXTO = 3;
 const MSG_ENVIADA_IMG = 4;
 const MSG_ENVIADA_AUDIO = 5;
 const NOTA = 6;
+const MSG_RECEBIDA_INVALIDA = 7;
 
 const props = defineProps({
   msgCallbell: {
@@ -38,6 +39,27 @@ const actions = {
     };
   },
 
+  tratarUrl(url) {
+    if (url.includes(".jpg") || url.includes(".png") || url.includes(".gif")) {
+      return {
+        type: MSG_RECEBIDA_IMG,
+        url: url,
+      };
+    }
+
+    if (url.includes(".mp3")) {
+      return {
+        type: MSG_RECEBIDA_AUDIO,
+        url: url,
+      };
+    }
+
+    return {
+      type: MSG_RECEBIDA_INVALIDA,
+      url: url,
+    };
+  },
+
   openURL(url: string) {
     window.open(url, "_blank");
   },
@@ -57,57 +79,56 @@ const computeds = {
       hora: null,
     };
 
-    if (msg.status == "sent" && msg.text && msg.text != "" && (msg.attachments?.[0] == null || !msg.attachments)) {
-      let mensagem_usuario = actions.extrairNomesUsuarios(msg.text);
+    if (msg.status == "sent") {
+      if (msg.text && msg.text != "" && (msg.attachments?.[0] == null || !msg.attachments)) {
+        let mensagem_usuario = actions.extrairNomesUsuarios(msg.text);
 
-      msgFormatada = {
-        user: mensagem_usuario.usuario,
-        text: mensagem_usuario.mensagem,
-        type: MSG_ENVIADA_TEXTO,
-        hora: moment(msg.createdAt).format("HH:mm"),
-      };
+        msgFormatada = {
+          user: mensagem_usuario.usuario,
+          text: mensagem_usuario.mensagem,
+          type: MSG_ENVIADA_TEXTO,
+          hora: moment(msg.createdAt).format("HH:mm"),
+        };
+      }
+
+      if (msg.attachments?.[0]?.type === "image") {
+        msgFormatada = {
+          text: msg.attachments[0].payload?.meta?.caption,
+          type: MSG_ENVIADA_IMG,
+          url: msg.attachments[0].payload.url,
+          hora: moment(msg.createdAt).format("HH:mm"),
+        };
+      }
+
+      if (msg.attachments?.[0]?.type === "audio") {
+        msgFormatada = {
+          type: MSG_ENVIADA_AUDIO,
+          url: msg.attachments[0].payload.url,
+          hora: moment(msg.createdAt).format("HH:mm"),
+        };
+      }
     }
 
-    if (msg.status == "sent" && msg.attachments?.[0]?.type === "image") {
-      msgFormatada = {
-        text: msg.attachments[0].payload.meta.caption,
-        type: MSG_ENVIADA_IMG,
-        url: msg.attachments[0].payload.url,
-        hora: moment(msg.createdAt).format("HH:mm"),
-      };
-    }
+    if (msg.status == "received") {
+      if (msg.text && msg.text != "" && !msg.attachments) {
+        msgFormatada = {
+          text: msg.text,
+          type: MSG_RECEBIDA_TEXTO,
+          hora: moment(msg.createdAt).format("HH:mm"),
+        };
+      }
 
-    if (msg.status == "sent" && msg.attachments?.[0]?.type === "audio") {
-      msgFormatada = {
-        type: MSG_ENVIADA_AUDIO,
-        url: msg.attachments[0].payload.url,
-        hora: moment(msg.createdAt).format("HH:mm"),
-      };
-    }
+      if (msg.attachments) {
+        let url = msg.attachments[0];
+        let urlTratada = actions.tratarUrl(url);
 
-    if (msg.status == "received" && msg.text && msg.text != "" && !msg.attachments) {
-      msgFormatada = {
-        text: msg.text,
-        type: MSG_RECEBIDA_TEXTO,
-        hora: moment(msg.createdAt).format("HH:mm"),
-      };
-    }
-
-    if (msg.status == "received" && msg.attachments?.[0]?.type === "image") {
-      msgFormatada = {
-        text: msg.attachments[0].payload.meta.caption,
-        type: MSG_RECEBIDA_IMG,
-        url: msg.attachments[0].payload.url,
-        hora: moment(msg.createdAt).format("HH:mm"),
-      };
-    }
-
-    if (msg.status == "received" && msg.attachments?.[0]?.type === "audio") {
-      msgFormatada = {
-        type: MSG_RECEBIDA_AUDIO,
-        url: msg.attachments[0].payload.url,
-        hora: moment(msg.createdAt).format("HH:mm"),
-      };
+        msgFormatada = {
+          text: msg.text,
+          type: urlTratada.type,
+          url: urlTratada.url,
+          hora: moment(msg.createdAt).format("HH:mm"),
+        };
+      }
     }
 
     if (msg.status == "note") {
@@ -163,13 +184,11 @@ const computeds = {
     class="container-msg-enviada"
   >
     <div class="msg-enviada">
-      <div
-        class="msg-enviada__audio px-1 pb-1"
-        @click="actions.openURL(computeds.formatarMsg.value.url)"
-      >
-        <v-card class="pa-2">
-          <span><v-icon class="mr-1">mdi-music-note</v-icon>Mensagem de voz</span>
-        </v-card>
+      <div class="msg-enviada__audio px-1 pb-1">
+        <audio
+          controls
+          :src="computeds.formatarMsg.value.url"
+        ></audio>
       </div>
     </div>
   </div>
@@ -210,19 +229,17 @@ const computeds = {
     </div>
   </div>
 
-  <!-- MSG ENVIADA AUDIO -->
+  <!-- MSG RECEBIDA AUDIO -->
   <div
     v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_AUDIO"
     class="container-msg-recebida"
   >
     <div class="msg-recebida">
-      <div
-        class="msg-recebida__audio px-1 pb-1"
-        @click="actions.openURL(computeds.formatarMsg.value.url)"
-      >
-        <v-card class="pa-2">
-          <span><v-icon class="mr-1">mdi-music-note</v-icon>Mensagem de voz</span>
-        </v-card>
+      <div class="msg-recebida__audio px-1 pb-1">
+        <audio
+          controls
+          :src="computeds.formatarMsg.value.url"
+        ></audio>
       </div>
     </div>
   </div>
@@ -231,6 +248,7 @@ const computeds = {
   <div
     v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_IMG"
     class="container-msg-recebida"
+    @click="actions.openURL(computeds.formatarMsg.value.url)"
   >
     <div class="msg-recebida">
       <div class="msg-recebida-foto px-2">
@@ -240,9 +258,30 @@ const computeds = {
         />
       </div>
       <span
-        class="msg-recebida__hora px-2"
+        v-if="computeds.formatarMsg.value.text && computeds.formatarMsg.value.text != ''"
+        class="msg-recebida__textMsg px-2"
         v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
       ></span>
+      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
+    </div>
+  </div>
+
+  <!-- MSG INVALIDA -->
+  <div
+    v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_INVALIDA"
+    class="container-msg-recebida"
+    @click="actions.openURL(computeds.formatarMsg.value.url)"
+    style="cursor: pointer"
+  >
+    <div class="msg-recebida">
+      <span class="msg-recebida__textMsg px-2 d-flex align-center"
+        ><v-icon
+          color="warning"
+          class="mr-1"
+          >mdi-alert</v-icon
+        >Mensagem Inválida</span
+      >
+      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
     </div>
   </div>
 </template>
@@ -309,6 +348,7 @@ const computeds = {
   font-size: 14px;
   max-width: 266px;
   min-width: 60px;
+  width: 100%;
   text-align: justify;
   background-color: #f2f2f2;
 }
@@ -334,6 +374,7 @@ const computeds = {
 
 .msg-recebida-foto {
   background-color: #f2f2f2;
+  cursor: pointer;
 }
 
 .msg-recebida-foto__img {

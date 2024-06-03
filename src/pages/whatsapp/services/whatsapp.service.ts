@@ -1,9 +1,9 @@
 import axios from "axios";
-import { iConversaAberta, iMsgCallbell, iUsuario } from "../interfaces";
+import { iConversaAberta, iGetMsgsCallbellResponse, iUsuario } from "../interfaces";
 
 type iGetUsuariosFunction = () => Promise<iUsuario[]>
 type iGetConversasAbertasFunction = () => Promise<iConversaAberta[]>
-type iGetMsgsCallbellFunction = (uuid: string) => Promise<iMsgCallbell[]>
+type iGetMsgsCallbellFunction = (uuid: string, page: number) => Promise<iGetMsgsCallbellResponse>
 
 const urlServerWhatsapp = "http://localhost:2836"
 // const urlServerWhatsapp = "http://181.215.134.232:2836"
@@ -18,8 +18,8 @@ const getConversasAbertas: iGetConversasAbertasFunction = async () => {
     return data;
 }
 
-const getMsgsCallbell: iGetMsgsCallbellFunction = async (uuid) => {
-    let { data } = await axios.get(`${urlServerWhatsapp}/msgs-callbell?uuid=${uuid}`);
+const getMsgsCallbell: iGetMsgsCallbellFunction = async (uuid, page) => {
+    let { data } = await axios.get(`${urlServerWhatsapp}/msgs-callbell?uuid=${uuid}&page=${page}`);
     return data;
 }
 

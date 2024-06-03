@@ -81,6 +81,7 @@ onUnmounted(() => {
     >
       <ModalUltimasConversas
         @fecharConversa="actions.fecharConversa"
+        @buscarConversaAntiga="actions.buscarMsgsCallbellAntigas"
         @closeModalUltimasConversas="actions.closeModalUltimasConversas"
         :msgsCallbell="state.msgsCallbell"
       />
