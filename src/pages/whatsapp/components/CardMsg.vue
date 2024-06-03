@@ -200,11 +200,13 @@ const computeds = {
   >
     <div class="msg-enviada">
       <div class="msg-enviada-foto px-2">
-        <img
-          :src="computeds.formatarMsg.value.url"
-          class="msg-enviada-foto__img"
-          @click="actions.openURL(computeds.formatarMsg.value.url)"
-        />
+        <PhotoProvider :default-backdrop-opacity="0.8">
+          <PhotoConsumer :src="computeds.formatarMsg.value.url">
+            <img
+              :src="computeds.formatarMsg.value.url"
+              class="view-box msg-enviada-foto__img"
+          /></PhotoConsumer>
+        </PhotoProvider>
       </div>
       <span
         v-if="computeds.formatarMsg.value.text && computeds.formatarMsg.value.text != ''"
@@ -248,14 +250,16 @@ const computeds = {
   <div
     v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_IMG"
     class="container-msg-recebida"
-    @click="actions.openURL(computeds.formatarMsg.value.url)"
   >
     <div class="msg-recebida">
       <div class="msg-recebida-foto px-2">
-        <img
-          :src="computeds.formatarMsg.value.url"
-          class="msg-recebida-foto__img"
-        />
+        <PhotoProvider :default-backdrop-opacity="0.8">
+          <PhotoConsumer :src="computeds.formatarMsg.value.url">
+            <img
+              :src="computeds.formatarMsg.value.url"
+              class="view-box msg-recebida-foto__img"
+          /></PhotoConsumer>
+        </PhotoProvider>
       </div>
       <span
         v-if="computeds.formatarMsg.value.text && computeds.formatarMsg.value.text != ''"
@@ -368,18 +372,18 @@ const computeds = {
 
 .msg-enviada-foto__img {
   width: 250px;
-  height: 200px;
+  max-height: 200px;
   cursor: pointer;
 }
 
 .msg-recebida-foto {
   background-color: #f2f2f2;
-  cursor: pointer;
 }
 
 .msg-recebida-foto__img {
   width: 250px;
-  height: 200px;
+  max-height: 200px;
+  cursor: pointer;
 }
 
 .container-nota {
