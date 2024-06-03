@@ -57,7 +57,7 @@ const computeds = {
       hora: null,
     };
 
-    if (msg.status == "sent" && msg.text && msg.text != "" && !msg.attachments) {
+    if (msg.status == "sent" && msg.text && msg.text != "" && (msg.attachments?.[0] == null || !msg.attachments)) {
       let mensagem_usuario = actions.extrairNomesUsuarios(msg.text);
 
       msgFormatada = {
