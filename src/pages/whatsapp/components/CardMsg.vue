@@ -35,7 +35,7 @@ const actions = {
       };
     }
     return {
-      usuario: "ROBÔ",
+      usuario: "",
       mensagem: texto,
     };
   },
@@ -368,7 +368,7 @@ const computeds = {
   max-width: 266px;
   min-width: 60px;
   width: 100%;
-  text-align: justify;
+  text-align: left;
   background-color: #dcf7c5;
 }
 
@@ -402,7 +402,7 @@ const computeds = {
   max-width: 266px;
   min-width: 60px;
   width: 100%;
-  text-align: justify;
+  text-align: left;
   background-color: #f2f2f2;
 }
 

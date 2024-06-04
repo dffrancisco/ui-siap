@@ -125,16 +125,13 @@ const computeds = {
           </div>
         </template>
         <div
-          class="btn-msgs-antigas"
+          class="container-btn-msgs-antigas"
           v-if="props.msgsCallbell.meta.page != props.msgsCallbell.meta.pages"
         >
-          <v-icon
-            size="24"
-            color="#FFFFFF"
-            class="btn-msgs-antigas__v-icon pa-5"
-            title="Carregar conversas antigas"
+          <div
+            class="btn-msgs-antigas px-4 py-2"
             @click="actions.buscarConversaAntiga"
-            >mdi-refresh</v-icon
+            >VER MAIS CONVERSAS</div
           >
         </div>
       </div>
@@ -191,7 +188,7 @@ const computeds = {
   max-height: 620px;
 }
 
-.btn-msgs-antigas {
+.container-btn-msgs-antigas {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -199,9 +196,18 @@ const computeds = {
   z-index: 1000;
 }
 
-.btn-msgs-antigas__v-icon {
+.btn-msgs-antigas {
   background-color: #3c8dbc;
-  border-radius: 50px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #ffffff;
   cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.btn-msgs-antigas:hover {
+  background-color: #4b92c2;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
 }
 </style>
