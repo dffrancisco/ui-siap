@@ -128,13 +128,14 @@ const computeds = {
           class="btn-msgs-antigas"
           v-if="props.msgsCallbell.meta.page != props.msgsCallbell.meta.pages"
         >
-          <v-btn
-            color="primary"
-            icon="mdi-refresh"
-            size="36"
+          <v-icon
+            size="24"
+            color="#FFFFFF"
+            class="btn-msgs-antigas__v-icon pa-5"
             title="Carregar conversas antigas"
             @click="actions.buscarConversaAntiga"
-          />
+            >mdi-refresh</v-icon
+          >
         </div>
       </div>
     </div>
@@ -195,5 +196,12 @@ const computeds = {
   align-items: center;
   justify-content: center;
   width: 100%;
+  z-index: 1000;
+}
+
+.btn-msgs-antigas__v-icon {
+  background-color: #3c8dbc;
+  border-radius: 50px;
+  cursor: pointer;
 }
 </style>

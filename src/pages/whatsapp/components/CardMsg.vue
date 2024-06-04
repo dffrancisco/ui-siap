@@ -11,6 +11,7 @@ const MSG_ENVIADA_IMG = 4;
 const MSG_ENVIADA_AUDIO = 5;
 const NOTA = 6;
 const MSG_RECEBIDA_INVALIDA = 7;
+const MSG_RECEBIDA_VIDEO = 8;
 
 const props = defineProps({
   msgCallbell: {
@@ -50,6 +51,13 @@ const actions = {
     if (url.includes(".mp3")) {
       return {
         type: MSG_RECEBIDA_AUDIO,
+        url: url,
+      };
+    }
+
+    if (url.includes(".mp4")) {
+      return {
+        type: MSG_RECEBIDA_VIDEO,
         url: url,
       };
     }
@@ -270,6 +278,31 @@ const computeds = {
     </div>
   </div>
 
+  <!-- MSG RECEBIDA VIDEO -->
+  <div
+    class="container-msg-recebida"
+    v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_VIDEO"
+  >
+    <div class="msg-recebida">
+      <div class="msg-recebida-video px-2">
+        <video
+          class="msg-recebida-video__video"
+          width="250"
+          height="200"
+          :src="computeds.formatarMsg.value.url"
+          controls
+        >
+        </video>
+      </div>
+      <span
+        v-if="computeds.formatarMsg.value.text && computeds.formatarMsg.value.text != ''"
+        class="msg-recebida__textMsg px-2"
+        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
+      ></span>
+      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
+    </div>
+  </div>
+
   <!-- MSG INVALIDA -->
   <div
     v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_INVALIDA"
@@ -289,6 +322,22 @@ const computeds = {
     </div>
   </div>
 </template>
+
+<style>
+.PhotoSlider__Wrapper .PhotoSlider__BannerWrap {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__BannerRight svg:nth-child(1),
+.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__BannerRight svg:nth-child(4),
+.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__BannerRight svg:nth-child(5) {
+  display: none;
+}
+
+.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__Counter {
+  color: transparent;
+}
+</style>
 
 <style scoped>
 .container-msg-enviada {
@@ -357,6 +406,21 @@ const computeds = {
   background-color: #f2f2f2;
 }
 
+.msg-recebida-video {
+  background-color: #f2f2f2;
+  overflow: hidden;
+}
+
+.msg-recebida-video__video {
+  border-radius: 8px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.msg-recebida-video__video:fullscreen {
+  object-fit: contain;
+}
+
 .msg-recebida__hora {
   font-size: 10px;
   color: gray;
@@ -368,22 +432,28 @@ const computeds = {
 
 .msg-enviada-foto {
   background-color: #dcf7c5;
+  overflow: hidden;
 }
 
 .msg-enviada-foto__img {
   width: 250px;
   max-height: 200px;
+  object-fit: cover;
+  object-position: top;
   cursor: pointer;
 }
 
 .msg-recebida-foto {
   background-color: #f2f2f2;
+  overflow: hidden;
 }
 
 .msg-recebida-foto__img {
   width: 250px;
   max-height: 200px;
   cursor: pointer;
+  object-fit: cover;
+  object-position: top;
 }
 
 .container-nota {
