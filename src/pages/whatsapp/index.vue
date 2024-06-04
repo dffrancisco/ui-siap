@@ -34,7 +34,7 @@ onUnmounted(() => {
     </div>
     <v-card class="pa-2">
       <div class="mb-4 d-flex justify-space-between align-center">
-        <span @click="actions.openModalUltimasConversas">
+        <span>
           Tempo espera mais longo:
           <strong :class="{ 'text-error': computeds.tempoEsperaMaisLongo.value > 60 }">{{
             actions.formatarTempoEmMinutos(computeds.tempoEsperaMaisLongo.value)
