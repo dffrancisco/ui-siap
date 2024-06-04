@@ -61,7 +61,7 @@ const actions = {
 };
 
 const computeds = {
-  ordenarMsgs: computed(() => {
+  msgsAgrupadasPorData: computed(() => {
     const msgs = props.msgsCallbell.msgs;
     let ultimaData = null;
     let msgsOrdenadas = [];
@@ -109,15 +109,15 @@ const computeds = {
     <div class="container-chat pt-2">
       <div class="container-msgs px-2 ga-3">
         <template
-          v-for="(item, index) in computeds.ordenarMsgs.value"
+          v-for="(item, index) in computeds.msgsAgrupadasPorData.value"
           :key="index"
         >
           <CardMsg :msgCallbell="item.msg" />
           <div
             v-if="
-              index == computeds.ordenarMsgs.value.length - 1 ||
-              (computeds.ordenarMsgs.value[index + 1] &&
-                item.dataMsg != computeds.ordenarMsgs.value[index + 1].dataMsg)
+              index == computeds.msgsAgrupadasPorData.value.length - 1 ||
+              (computeds.msgsAgrupadasPorData.value[index + 1] &&
+                item.dataMsg != computeds.msgsAgrupadasPorData.value[index + 1].dataMsg)
             "
             class="chip-data"
           >
