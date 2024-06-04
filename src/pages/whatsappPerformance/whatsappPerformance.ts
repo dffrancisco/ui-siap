@@ -28,11 +28,11 @@ export const actions = {
         state.loading = true;
 
         try {
-            let promise1 = actions.getRelatorioAtendimentosIniciados();
-            let promise2 = actions.getRelatorioAtendimentosFinalizados();
-            let promise3 = actions.getTotalizadores();
-
-            await Promise.all([promise1, promise2, promise3])
+            await Promise.all([
+                actions.getRelatorioAtendimentosIniciados(),
+                actions.getRelatorioAtendimentosFinalizados(),
+                actions.getTotalizadores(),
+            ])
         } finally {
             state.loading = false;
         }
@@ -146,15 +146,42 @@ export const computeds = {
     }),
 
     qtdAtendimentosPorEstadoOrdenado: computed(() => {
-        if (!state.totalizadores.qtdAtendimentosPorEstado) {
+        if (!state.totalizadores.tagsAtendimento) {
             return {
                 labels: [],
                 series: [],
             };
         }
 
-        let labels = Object.keys(state.totalizadores.qtdAtendimentosPorEstado);
-        let series = Object.values(state.totalizadores.qtdAtendimentosPorEstado);
+        let atendimentosPorEstado = {
+            DF: 0,
+            GOIANIA: 0,
+            'OUTRO ESTADO': 0,
+        };
+
+        state.totalizadores.tagsAtendimento.forEach(item => {
+            let tag = item.tags;
+            let telefone = item.telefone;
+
+            let prefixoTelefone = telefone.substring(0, 4);
+
+            if (tag.includes('OUTRO ESTADO') || (prefixoTelefone != '5561' && prefixoTelefone != '5562')) {
+                atendimentosPorEstado['OUTRO ESTADO']++;
+                return
+            }
+
+            if (tag.includes('DF') || prefixoTelefone == '5561') {
+                atendimentosPorEstado['DF']++;
+                return
+            }
+
+            if (tag.includes('GOIANIA') || prefixoTelefone == '5562') {
+                atendimentosPorEstado['GOIANIA']++;
+            }
+        });
+
+        let labels = Object.keys(atendimentosPorEstado);
+        let series = Object.values(atendimentosPorEstado);
 
         return {
             labels: labels,
@@ -162,7 +189,16 @@ export const computeds = {
         };
     }),
 
-    tempoMedioFormatado: computed(() => {
+    tempoMedioEsperaFormatado: computed(() => {
+        const minutos = state.totalizadores.tempoMedioEspera;
+        const duracao = moment.duration(minutos, 'minutes');
+        const horas = duracao.hours();
+        const minutosRestantes = duracao.minutes();
+
+        return `${horas}h ${minutosRestantes}min`;
+    }),
+
+    tempoMedioAtendimentoFormatado: computed(() => {
         const minutos = state.totalizadores.tempoMedioAtendimento;
         const duracao = moment.duration(minutos, 'minutes');
         const horas = duracao.hours();

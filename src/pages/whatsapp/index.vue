@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { nextTick } from "vue";
+import { nextTick, onUnmounted } from "vue";
 import { state, actions, computeds } from "./whatsapp";
 import CardUsuario from "./components/CardUsuario.vue";
-import { onUnmounted } from "vue";
+import ModalUltimasConversas from "./components/ModalUltimasConversas.vue";
 
 nextTick(async () => {
   actions.init();
@@ -60,27 +60,47 @@ onUnmounted(() => {
       <div class="container-usuarios">
         <CardUsuario
           :nome="'Não iniciado'"
+          :msgsCallbell="state.msgsCallbell"
           :conversas="computeds.conversasSemUsuario.value"
+          @openModalUltimasConversas="actions.openModalUltimasConversas"
         />
         <CardUsuario
           v-for="usuario in state.usuarios"
           :nome="usuario.nome"
           :conversas="computeds.conversasAbertasPorUsuario.value[usuario.assigned_user] || []"
+          @openModalUltimasConversas="actions.openModalUltimasConversas"
         />
       </div>
-
-      <v-overlay
-        :model-value="state.loading"
-        class="align-center justify-center"
-        persistent
-      >
-        <v-progress-circular
-          color="primary"
-          indeterminate
-          size="64"
-        ></v-progress-circular>
-      </v-overlay>
     </v-card>
+
+    <v-dialog
+      v-model="state.modalUltimasConversasOpened"
+      style="margin: 0 auto"
+      width="375"
+      persistent
+      :no-click-animation="true"
+      z-index="1000"
+    >
+      <ModalUltimasConversas
+        @fecharConversa="actions.fecharConversa"
+        @buscarConversaAntiga="actions.buscarMsgsCallbellAntigas"
+        @closeModalUltimasConversas="actions.closeModalUltimasConversas"
+        :msgsCallbell="state.msgsCallbell"
+      />
+    </v-dialog>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
+
     <div class="d-flex justify-space-between mt-1 mx-10">
       <div id="pnCodigoTela">whatsapp</div>
       <span class="ultima-atualizacao">

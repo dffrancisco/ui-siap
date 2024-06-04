@@ -1,8 +1,9 @@
 import axios from "axios";
-import { iConversaAberta, iUsuario } from "../interfaces";
+import { iConversaAberta, iGetMsgsCallbellResponse, iUsuario } from "../interfaces";
 
 type iGetUsuariosFunction = () => Promise<iUsuario[]>
 type iGetConversasAbertasFunction = () => Promise<iConversaAberta[]>
+type iGetMsgsCallbellFunction = (uuid: string, page: number) => Promise<iGetMsgsCallbellResponse>
 
 // const urlServerWhatsapp = "http://localhost:2836"
 const urlServerWhatsapp = "http://181.215.134.232:2836"
@@ -14,6 +15,16 @@ const getUsuarios: iGetUsuariosFunction = async () => {
 
 const getConversasAbertas: iGetConversasAbertasFunction = async () => {
     let { data } = await axios.get(`${urlServerWhatsapp}/conversas-abertas`)
+    return data;
+}
+
+const getMsgsCallbell: iGetMsgsCallbellFunction = async (uuid, page) => {
+    let { data } = await axios.get(`${urlServerWhatsapp}/msgs-callbell?uuid=${uuid}&page=${page}`);
+    return data;
+}
+
+const fecharConversa = async (uuid: string) => {
+    let { data } = await axios.get(`${urlServerWhatsapp}/fechar-conversa?uuid=${uuid}`);
     return data;
 }
 
@@ -49,4 +60,6 @@ export default {
     getUsuarios,
     getConversasAbertas,
     formatarTempoEmMinutos,
+    getMsgsCallbell,
+    fecharConversa
 }
