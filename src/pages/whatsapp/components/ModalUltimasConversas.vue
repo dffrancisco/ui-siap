@@ -81,58 +81,62 @@ const computeds = {
 
 <template>
   <v-card
-    height="700"
-    class="container-principal"
+    height="650"
+    class="card-container"
   >
-    <div class="header px-2 pt-3 pb-2">
-      <v-icon
-        color="primary"
-        size="32"
-        @click="actions.closeModalUltimasConversas"
-        >mdi-chevron-left</v-icon
-      >
-      <div class="container-contato">
-        <strong>{{ props.msgsCallbell.nome }}</strong>
-        <span class="container-contato__numero">{{ actions.formatarTelefone(props.msgsCallbell.telefone) }}</span>
+    <div class="container-principal">
+      <div class="header px-2 pt-3 pb-2">
+        <v-icon
+          color="primary"
+          size="32"
+          @click="actions.closeModalUltimasConversas"
+          >mdi-chevron-left</v-icon
+        >
+        <div class="container-contato">
+          <strong>{{ props.msgsCallbell.nome }}</strong>
+          <span class="container-contato__numero">{{
+            actions.formatarTelefone(props.msgsCallbell.telefone)
+          }}</span>
+        </div>
+
+        <v-icon
+          color="#D32F2F"
+          size="32"
+          title="Fechar conversa"
+          @click="actions.btnFecharConversa(props.msgsCallbell.uuid_contato)"
+        >
+          > mdi-account-remove</v-icon
+        >
       </div>
 
-      <v-icon
-        color="#D32F2F"
-        size="32"
-        title="Fechar conversa"
-        @click="actions.btnFecharConversa(props.msgsCallbell.uuid_contato)"
-      >
-        > mdi-account-remove</v-icon
-      >
-    </div>
-
-    <div class="container-chat pt-2">
-      <div class="container-msgs px-2 ga-3">
-        <template
-          v-for="(item, index) in computeds.msgsAgrupadasPorData.value"
-          :key="index"
-        >
-          <CardMsg :msgCallbell="item.msg" />
-          <div
-            v-if="
-              index == computeds.msgsAgrupadasPorData.value.length - 1 ||
-              (computeds.msgsAgrupadasPorData.value[index + 1] &&
-                item.dataMsg != computeds.msgsAgrupadasPorData.value[index + 1].dataMsg)
-            "
-            class="chip-data"
+      <div class="container-chat pt-2 pb-2">
+        <div class="container-msgs px-2 ga-3">
+          <template
+            v-for="(item, index) in computeds.msgsAgrupadasPorData.value"
+            :key="index"
           >
-            <span class="chip-data__content px-2 py-1">{{ item.dataMsg }}</span>
+            <CardMsg :msgCallbell="item.msg" />
+            <div
+              v-if="
+                index == computeds.msgsAgrupadasPorData.value.length - 1 ||
+                (computeds.msgsAgrupadasPorData.value[index + 1] &&
+                  item.dataMsg != computeds.msgsAgrupadasPorData.value[index + 1].dataMsg)
+              "
+              class="chip-data"
+            >
+              <span class="chip-data__content px-2 py-1">{{ item.dataMsg }}</span>
+            </div>
+          </template>
+          <div
+            class="container-btn-msgs-antigas"
+            v-if="props.msgsCallbell.meta.page != props.msgsCallbell.meta.pages"
+          >
+            <div
+              class="btn-msgs-antigas px-4 py-2"
+              @click="actions.buscarConversaAntiga"
+              >VER MAIS CONVERSAS</div
+            >
           </div>
-        </template>
-        <div
-          class="container-btn-msgs-antigas"
-          v-if="props.msgsCallbell.meta.page != props.msgsCallbell.meta.pages"
-        >
-          <div
-            class="btn-msgs-antigas px-4 py-2"
-            @click="actions.buscarConversaAntiga"
-            >VER MAIS CONVERSAS</div
-          >
         </div>
       </div>
     </div>
@@ -140,8 +144,14 @@ const computeds = {
 </template>
 
 <style scoped>
-.container-principal {
+.card-container {
   background-color: #f2f2f2;
+}
+
+.container-principal {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .chip-data {
@@ -177,6 +187,7 @@ const computeds = {
 .container-chat {
   background-image: url("../assets/background_chat.png");
   background-size: cover;
+  overflow: auto;
   flex-grow: 1;
 }
 
@@ -184,8 +195,6 @@ const computeds = {
   display: flex;
   align-items: end;
   flex-direction: column-reverse;
-  overflow: auto;
-  max-height: 620px;
 }
 
 .container-btn-msgs-antigas {
