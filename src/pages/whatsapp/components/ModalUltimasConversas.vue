@@ -188,12 +188,13 @@ const computeds = {
   background-image: url("../assets/background_chat.png");
   background-size: cover;
   overflow: auto;
+  display: flex;
+  flex-direction: column-reverse;
   flex-grow: 1;
 }
 
 .container-msgs {
   display: flex;
-  align-items: end;
   flex-direction: column-reverse;
 }
 
