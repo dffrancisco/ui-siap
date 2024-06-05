@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { iMsgCallbell, iMsgFormatada } from "../interfaces";
 import moment from "moment";
 import CardMsgTexto from "./CardMsgTexto.vue";
+import CardMsgImg from "./CardMsgImg.vue";
 
 const MSG_RECEBIDA_TEXTO = 0;
 const MSG_RECEBIDA_IMG = 1;
@@ -169,7 +170,7 @@ const computeds = {
     </div>
   </div>
 
-  <!-- MSG ENVIADA TEXTO -->
+  <!-- MSG TEXTO -->
   <div
     v-if="
       computeds.formatarMsg.value.type == MSG_ENVIADA_TEXTO ||
@@ -183,19 +184,18 @@ const computeds = {
     <CardMsgTexto :msgFormatada="computeds.formatarMsg.value" />
   </div>
 
-  <!-- MSG RECEBIDA TEXTO -->
-  <!-- <div
-    v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_TEXTO"
-    class="container-msg-recebida"
+  <!-- MSG IMG -->
+  <div
+    v-if="
+      computeds.formatarMsg.value.type == MSG_ENVIADA_IMG || computeds.formatarMsg.value.type == MSG_RECEBIDA_IMG
+    "
+    class="container-msg"
+    :class="
+      computeds.formatarMsg.value.type == MSG_ENVIADA_IMG ? 'container-msg-enviada' : 'container-msg-recebida'
+    "
   >
-    <div class="msg-recebida">
-      <span
-        class="msg-recebida__textMsg px-2"
-        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
-      ></span>
-      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
-    </div>
-  </div> -->
+    <CardMsgImg :msgFormatada="computeds.formatarMsg.value" />
+  </div>
 
   <!-- MSG ENVIADA AUDIO -->
   <div
@@ -212,30 +212,6 @@ const computeds = {
     </div>
   </div>
 
-  <!-- MSG ENVIADA FOTO -->
-  <div
-    v-if="computeds.formatarMsg.value.type == MSG_ENVIADA_IMG"
-    class="container-msg-enviada"
-  >
-    <div class="msg-enviada">
-      <div class="msg-enviada-foto px-2">
-        <PhotoProvider :default-backdrop-opacity="0.8">
-          <PhotoConsumer :src="computeds.formatarMsg.value.url">
-            <img
-              :src="computeds.formatarMsg.value.url"
-              class="view-box msg-enviada-foto__img"
-          /></PhotoConsumer>
-        </PhotoProvider>
-      </div>
-      <span
-        v-if="computeds.formatarMsg.value.text && computeds.formatarMsg.value.text != ''"
-        class="msg-enviada__textMsg px-2"
-        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
-      ></span>
-      <span class="msg-enviada__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
-    </div>
-  </div>
-
   <!-- MSG RECEBIDA AUDIO -->
   <div
     v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_AUDIO"
@@ -248,30 +224,6 @@ const computeds = {
           :src="computeds.formatarMsg.value.url"
         ></audio>
       </div>
-    </div>
-  </div>
-
-  <!-- MSG RECEBIDA FOTO -->
-  <div
-    v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_IMG"
-    class="container-msg-recebida"
-  >
-    <div class="msg-recebida">
-      <div class="msg-recebida-foto px-2">
-        <PhotoProvider :default-backdrop-opacity="0.8">
-          <PhotoConsumer :src="computeds.formatarMsg.value.url">
-            <img
-              :src="computeds.formatarMsg.value.url"
-              class="view-box msg-recebida-foto__img"
-          /></PhotoConsumer>
-        </PhotoProvider>
-      </div>
-      <span
-        v-if="computeds.formatarMsg.value.text && computeds.formatarMsg.value.text != ''"
-        class="msg-recebida__textMsg px-2"
-        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
-      ></span>
-      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
     </div>
   </div>
 
@@ -320,22 +272,6 @@ const computeds = {
   </div>
 </template>
 
-<style>
-.PhotoSlider__Wrapper .PhotoSlider__BannerWrap {
-  background-color: rgba(0, 0, 0, 0);
-}
-
-.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__BannerRight svg:nth-child(1),
-.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__BannerRight svg:nth-child(4),
-.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__BannerRight svg:nth-child(5) {
-  display: none;
-}
-
-.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__Counter {
-  color: transparent;
-}
-</style>
-
 <style scoped>
 .container-msg {
   display: flex;
@@ -350,68 +286,6 @@ const computeds = {
   justify-content: start;
 }
 
-/* .msg-enviada {
-  border-radius: 8px 0px 0px 0px;
-  border-right: 10px solid transparent;
-  border-top: 8px solid #dcf7c5;
-  display: flex;
-  align-items: end;
-  flex-direction: column;
-}
-
-.msg-enviada__user {
-  font-size: 12px;
-  color: #5585b5;
-  background-color: #dcf7c5;
-  width: 100%;
-  text-align: start;
-}
-
-.msg-enviada__textMsg {
-  font-size: 14px;
-  max-width: 266px;
-  min-width: 60px;
-  width: 100%;
-  text-align: left;
-  background-color: #dcf7c5;
-}
-
-.msg-enviada__hora {
-  font-size: 10px;
-  color: gray;
-  background-color: #dcf7c5;
-  width: 100%;
-  text-align: end;
-  border-radius: 0px 0px 8px 8px;
-} */
-
-/* .msg-recebida {
-  border-radius: 0px 8px 0px 0px;
-  border-left: 10px solid transparent;
-  border-top: 8px solid #f2f2f2;
-  display: flex;
-  align-items: end;
-  flex-direction: column;
-}
-
-.msg-recebida__textMsg {
-  font-size: 14px;
-  max-width: 266px;
-  min-width: 60px;
-  width: 100%;
-  text-align: left;
-  background-color: #f2f2f2;
-} */
-
-/* .msg-recebida__hora {
-  font-size: 10px;
-  color: gray;
-  background-color: #f2f2f2;
-  width: 100%;
-  text-align: end;
-  border-radius: 0px 0px 8px 8px;
-} */
-
 .msg-recebida-video {
   background-color: #f2f2f2;
   overflow: hidden;
@@ -425,32 +299,6 @@ const computeds = {
 
 .msg-recebida-video__video:fullscreen {
   object-fit: contain;
-}
-
-.msg-enviada-foto {
-  background-color: #dcf7c5;
-  overflow: hidden;
-}
-
-.msg-enviada-foto__img {
-  width: 250px;
-  max-height: 200px;
-  object-fit: cover;
-  object-position: top;
-  cursor: pointer;
-}
-
-.msg-recebida-foto {
-  background-color: #f2f2f2;
-  overflow: hidden;
-}
-
-.msg-recebida-foto__img {
-  width: 250px;
-  max-height: 200px;
-  cursor: pointer;
-  object-fit: cover;
-  object-position: top;
 }
 
 .container-nota {
