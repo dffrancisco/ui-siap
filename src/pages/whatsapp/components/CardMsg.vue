@@ -182,7 +182,12 @@ const computeds = {
       computeds.formatarMsg.value.type == MSG_ENVIADA_TEXTO ? 'container-msg-enviada' : 'container-msg-recebida'
     "
   >
-    <CardMsgTexto :msgFormatada="computeds.formatarMsg.value" />
+    <div
+      class="msg"
+      :class="computeds.formatarMsg.value.type == MSG_ENVIADA_TEXTO ? 'msg-enviada' : 'msg-recebida'"
+    >
+      <CardMsgTexto :msgFormatada="computeds.formatarMsg.value" />
+    </div>
   </div>
 
   <!-- MSG IMG -->
@@ -195,7 +200,12 @@ const computeds = {
       computeds.formatarMsg.value.type == MSG_ENVIADA_IMG ? 'container-msg-enviada' : 'container-msg-recebida'
     "
   >
-    <CardMsgImg :msgFormatada="computeds.formatarMsg.value" />
+    <div
+      class="msg"
+      :class="computeds.formatarMsg.value.type == MSG_ENVIADA_IMG ? 'msg-enviada' : 'msg-recebida'"
+    >
+      <CardMsgImg :msgFormatada="computeds.formatarMsg.value" />
+    </div>
   </div>
 
   <!-- MSG AUDIO -->
@@ -209,7 +219,12 @@ const computeds = {
       computeds.formatarMsg.value.type == MSG_ENVIADA_AUDIO ? 'container-msg-enviada' : 'container-msg-recebida'
     "
   >
-    <CardMsgAudio :msgFormatada="computeds.formatarMsg.value" />
+    <div
+      class="msg"
+      :class="computeds.formatarMsg.value.type == MSG_ENVIADA_AUDIO ? 'msg-enviada' : 'msg-recebida'"
+    >
+      <CardMsgAudio :msgFormatada="computeds.formatarMsg.value" />
+    </div>
   </div>
 
   <!-- MSG RECEBIDA VIDEO -->
@@ -258,6 +273,20 @@ const computeds = {
 </template>
 
 <style scoped>
+.container-nota {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.nota {
+  background-color: #f8f398;
+  flex-direction: column;
+  display: flex;
+  max-width: 300px;
+  text-align: center;
+}
+
 .container-msg {
   display: flex;
   width: 100%;
@@ -269,6 +298,24 @@ const computeds = {
 
 .container-msg-recebida {
   justify-content: start;
+}
+
+.msg {
+  display: flex;
+  align-items: end;
+  flex-direction: column;
+}
+
+.msg-enviada {
+  border-radius: 8px 0px 0px 0px;
+  border-right: 10px solid transparent;
+  border-top: 8px solid #dcf7c5;
+}
+
+.msg-recebida {
+  border-radius: 0px 8px 0px 0px;
+  border-left: 10px solid transparent;
+  border-top: 8px solid #f2f2f2;
 }
 
 .msg-recebida-video {
@@ -284,19 +331,5 @@ const computeds = {
 
 .msg-recebida-video__video:fullscreen {
   object-fit: contain;
-}
-
-.container-nota {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.nota {
-  background-color: #f8f398;
-  flex-direction: column;
-  display: flex;
-  max-width: 300px;
-  text-align: center;
 }
 </style>

@@ -14,40 +14,17 @@ const props = defineProps({
 
 <template>
   <div
-    class="msg"
-    :class="props.msgFormatada.type == MSG_ENVIADA_AUDIO ? 'msg-enviada' : 'msg-recebida'"
+    class="audio px-1 pb-1"
+    :class="props.msgFormatada.type == MSG_ENVIADA_AUDIO ? 'audio-enviada' : 'audio-recebida'"
   >
-    <div
-      class="audio px-1 pb-1"
-      :class="props.msgFormatada.type == MSG_ENVIADA_AUDIO ? 'audio-enviada' : 'audio-recebida'"
-    >
-      <audio
-        controls
-        :src="props.msgFormatada.url"
-      ></audio>
-    </div>
+    <audio
+      controls
+      :src="props.msgFormatada.url"
+    ></audio>
   </div>
 </template>
 
 <style scoped>
-.msg {
-  display: flex;
-  align-items: end;
-  flex-direction: column;
-}
-
-.msg-enviada {
-  border-radius: 8px 0px 0px 0px;
-  border-right: 10px solid transparent;
-  border-top: 8px solid #dcf7c5;
-}
-
-.msg-recebida {
-  border-radius: 0px 8px 0px 0px;
-  border-left: 10px solid transparent;
-  border-top: 8px solid #f2f2f2;
-}
-
 .audio {
   cursor: pointer;
   border-radius: 0 0 8px 8px;

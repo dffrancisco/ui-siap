@@ -20,33 +20,28 @@ const actions = {
 
 <template>
   <div
-    class="msg"
-    :class="props.msgFormatada.type == MSG_ENVIADA_IMG ? 'msg-enviada' : 'msg-recebida'"
+    class="img px-2"
+    :class="props.msgFormatada.type == MSG_ENVIADA_IMG ? 'img-enviada' : 'img-recebida'"
   >
-    <div
-      class="img px-2"
-      :class="props.msgFormatada.type == MSG_ENVIADA_IMG ? 'img-enviada' : 'img-recebida'"
-    >
-      <PhotoProvider :default-backdrop-opacity="0.8">
-        <PhotoConsumer :src="props.msgFormatada.url">
-          <img
-            :src="props.msgFormatada.url"
-            class="view-box img-miniatura"
-        /></PhotoConsumer>
-      </PhotoProvider>
-    </div>
-    <span
-      v-if="props.msgFormatada.text && props.msgFormatada.text != ''"
-      class="msg-texto px-2"
-      :class="props.msgFormatada.type == MSG_ENVIADA_IMG ? 'msg-texto-enviada' : 'msg-texto-recebida'"
-      v-html="actions.formatarQuebrasDeLinha(props.msgFormatada.text)"
-    ></span>
-    <span
-      class="msg-hora px-2"
-      :class="props.msgFormatada.type == MSG_ENVIADA_IMG ? 'msg-hora-enviada' : 'msg-hora-recebida'"
-      >{{ props.msgFormatada.hora }}</span
-    >
+    <PhotoProvider :default-backdrop-opacity="0.8">
+      <PhotoConsumer :src="props.msgFormatada.url">
+        <img
+          :src="props.msgFormatada.url"
+          class="view-box img-miniatura"
+      /></PhotoConsumer>
+    </PhotoProvider>
   </div>
+  <span
+    v-if="props.msgFormatada.text && props.msgFormatada.text != ''"
+    class="texto px-2"
+    :class="props.msgFormatada.type == MSG_ENVIADA_IMG ? 'texto-enviada' : 'texto-recebida'"
+    v-html="actions.formatarQuebrasDeLinha(props.msgFormatada.text)"
+  ></span>
+  <span
+    class="hora px-2"
+    :class="props.msgFormatada.type == MSG_ENVIADA_IMG ? 'hora-enviada' : 'hora-recebida'"
+    >{{ props.msgFormatada.hora }}</span
+  >
 </template>
 
 <style>
@@ -66,24 +61,6 @@ const actions = {
 </style>
 
 <style scoped>
-.msg {
-  display: flex;
-  align-items: end;
-  flex-direction: column;
-}
-
-.msg-enviada {
-  border-radius: 8px 0px 0px 0px;
-  border-right: 10px solid transparent;
-  border-top: 8px solid #dcf7c5;
-}
-
-.msg-recebida {
-  border-radius: 0px 8px 0px 0px;
-  border-left: 10px solid transparent;
-  border-top: 8px solid #f2f2f2;
-}
-
 .img {
   overflow: hidden;
 }
@@ -104,7 +81,7 @@ const actions = {
   cursor: pointer;
 }
 
-.msg-texto {
+.texto {
   font-size: 14px;
   max-width: 266px;
   min-width: 60px;
@@ -112,15 +89,15 @@ const actions = {
   text-align: left;
 }
 
-.msg-texto-enviada {
+.texto-enviada {
   background-color: #dcf7c5;
 }
 
-.msg-texto-recebida {
+.texto-recebida {
   background-color: #f2f2f2;
 }
 
-.msg-hora {
+.hora {
   font-size: 10px;
   color: gray;
   width: 100%;
@@ -128,11 +105,11 @@ const actions = {
   border-radius: 0px 0px 8px 8px;
 }
 
-.msg-hora-enviada {
+.hora-enviada {
   background-color: #dcf7c5;
 }
 
-.msg-hora-recebida {
+.hora-recebida {
   background-color: #f2f2f2;
 }
 </style>
