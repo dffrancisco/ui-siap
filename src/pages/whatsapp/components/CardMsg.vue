@@ -4,6 +4,7 @@ import { iMsgCallbell, iMsgFormatada } from "../interfaces";
 import moment from "moment";
 import CardMsgTexto from "./CardMsgTexto.vue";
 import CardMsgImg from "./CardMsgImg.vue";
+import CardMsgAudio from "./CardMsgAudio.vue";
 
 const MSG_RECEBIDA_TEXTO = 0;
 const MSG_RECEBIDA_IMG = 1;
@@ -197,34 +198,18 @@ const computeds = {
     <CardMsgImg :msgFormatada="computeds.formatarMsg.value" />
   </div>
 
-  <!-- MSG ENVIADA AUDIO -->
+  <!-- MSG AUDIO -->
   <div
-    v-if="computeds.formatarMsg.value.type == MSG_ENVIADA_AUDIO"
-    class="container-msg-enviada"
+    v-if="
+      computeds.formatarMsg.value.type == MSG_ENVIADA_AUDIO ||
+      computeds.formatarMsg.value.type == MSG_RECEBIDA_AUDIO
+    "
+    class="container-msg"
+    :class="
+      computeds.formatarMsg.value.type == MSG_ENVIADA_AUDIO ? 'container-msg-enviada' : 'container-msg-recebida'
+    "
   >
-    <div class="msg-enviada">
-      <div class="msg-enviada__audio px-1 pb-1">
-        <audio
-          controls
-          :src="computeds.formatarMsg.value.url"
-        ></audio>
-      </div>
-    </div>
-  </div>
-
-  <!-- MSG RECEBIDA AUDIO -->
-  <div
-    v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_AUDIO"
-    class="container-msg-recebida"
-  >
-    <div class="msg-recebida">
-      <div class="msg-recebida__audio px-1 pb-1">
-        <audio
-          controls
-          :src="computeds.formatarMsg.value.url"
-        ></audio>
-      </div>
-    </div>
+    <CardMsgAudio :msgFormatada="computeds.formatarMsg.value" />
   </div>
 
   <!-- MSG RECEBIDA VIDEO -->
@@ -313,17 +298,5 @@ const computeds = {
   display: flex;
   max-width: 300px;
   text-align: center;
-}
-
-.msg-enviada__audio {
-  background-color: #dcf7c5;
-  cursor: pointer;
-  border-radius: 0 0 8px 8px;
-}
-
-.msg-recebida__audio {
-  background-color: #f2f2f2;
-  cursor: pointer;
-  border-radius: 0 0 8px 8px;
 }
 </style>
