@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { iMsgCallbell, iMsgFormatada } from "../interfaces";
 import moment from "moment";
+import CardMsgTexto from "./CardMsgTexto.vue";
 
 const MSG_RECEBIDA_TEXTO = 0;
 const MSG_RECEBIDA_IMG = 1;
@@ -164,27 +165,37 @@ const computeds = {
     class="container-nota"
   >
     <div class="nota pa-2">
-      <span
-        class="nota__text"
-        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
-      ></span>
+      <span v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"></span>
     </div>
   </div>
 
   <!-- MSG ENVIADA TEXTO -->
   <div
-    v-if="computeds.formatarMsg.value.type == MSG_ENVIADA_TEXTO"
-    class="container-msg-enviada"
+    v-if="
+      computeds.formatarMsg.value.type == MSG_ENVIADA_TEXTO ||
+      computeds.formatarMsg.value.type == MSG_RECEBIDA_TEXTO
+    "
+    class="container-msg"
+    :class="
+      computeds.formatarMsg.value.type == MSG_ENVIADA_TEXTO ? 'container-msg-enviada' : 'container-msg-recebida'
+    "
   >
-    <div class="msg-enviada">
-      <strong class="msg-enviada__user px-2 pb-1">{{ computeds.formatarMsg.value.user }}</strong>
+    <CardMsgTexto :msgFormatada="computeds.formatarMsg.value" />
+  </div>
+
+  <!-- MSG RECEBIDA TEXTO -->
+  <!-- <div
+    v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_TEXTO"
+    class="container-msg-recebida"
+  >
+    <div class="msg-recebida">
       <span
-        class="msg-enviada__textMsg px-2"
+        class="msg-recebida__textMsg px-2"
         v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
       ></span>
-      <span class="msg-enviada__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
+      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
     </div>
-  </div>
+  </div> -->
 
   <!-- MSG ENVIADA AUDIO -->
   <div
@@ -222,20 +233,6 @@ const computeds = {
         v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
       ></span>
       <span class="msg-enviada__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
-    </div>
-  </div>
-
-  <!-- MSG RECEBIDA TEXTO -->
-  <div
-    v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_TEXTO"
-    class="container-msg-recebida"
-  >
-    <div class="msg-recebida">
-      <span
-        class="msg-recebida__textMsg px-2"
-        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
-      ></span>
-      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
     </div>
   </div>
 
@@ -340,13 +337,20 @@ const computeds = {
 </style>
 
 <style scoped>
-.container-msg-enviada {
+.container-msg {
   display: flex;
-  justify-content: end;
   width: 100%;
 }
 
-.msg-enviada {
+.container-msg-enviada {
+  justify-content: end;
+}
+
+.container-msg-recebida {
+  justify-content: start;
+}
+
+/* .msg-enviada {
   border-radius: 8px 0px 0px 0px;
   border-right: 10px solid transparent;
   border-top: 8px solid #dcf7c5;
@@ -379,16 +383,9 @@ const computeds = {
   width: 100%;
   text-align: end;
   border-radius: 0px 0px 8px 8px;
-}
+} */
 
-.container-msg-recebida {
-  display: flex;
-  justify-content: start;
-  width: 100%;
-}
-
-.msg-recebida {
-  background-color: transparent;
+/* .msg-recebida {
   border-radius: 0px 8px 0px 0px;
   border-left: 10px solid transparent;
   border-top: 8px solid #f2f2f2;
@@ -404,7 +401,16 @@ const computeds = {
   width: 100%;
   text-align: left;
   background-color: #f2f2f2;
-}
+} */
+
+/* .msg-recebida__hora {
+  font-size: 10px;
+  color: gray;
+  background-color: #f2f2f2;
+  width: 100%;
+  text-align: end;
+  border-radius: 0px 0px 8px 8px;
+} */
 
 .msg-recebida-video {
   background-color: #f2f2f2;
@@ -419,15 +425,6 @@ const computeds = {
 
 .msg-recebida-video__video:fullscreen {
   object-fit: contain;
-}
-
-.msg-recebida__hora {
-  font-size: 10px;
-  color: gray;
-  background-color: #f2f2f2;
-  width: 100%;
-  text-align: end;
-  border-radius: 0px 0px 8px 8px;
 }
 
 .msg-enviada-foto {
