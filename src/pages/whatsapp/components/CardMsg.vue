@@ -7,6 +7,7 @@ import CardMsgImg from "./CardMsgImg.vue";
 import CardMsgAudio from "./CardMsgAudio.vue";
 import CardMsgVideo from "./CardMsgVideo.vue";
 import CardMsgInvalida from "./CardMsgInvalida.vue";
+import CardNota from "./CardNota.vue";
 
 const MSG_RECEBIDA_TEXTO = 0;
 const MSG_RECEBIDA_IMG = 1;
@@ -75,10 +76,6 @@ const actions = {
 
   openURL(url: string) {
     window.open(url, "_blank");
-  },
-
-  formatarQuebrasDeLinha(texto: string) {
-    return texto.replace(/\n/g, "<br>");
   },
 };
 
@@ -164,14 +161,10 @@ const computeds = {
 
 <template>
   <!-- NOTA -->
-  <div
+  <CardNota
     v-if="computeds.formatarMsg.value.type == NOTA"
-    class="container-nota"
-  >
-    <div class="nota pa-2">
-      <span v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"></span>
-    </div>
-  </div>
+    :msgFormatada="computeds.formatarMsg.value"
+  />
 
   <!-- MSG TEXTO -->
   <div
@@ -253,20 +246,6 @@ const computeds = {
 </template>
 
 <style scoped>
-.container-nota {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.nota {
-  background-color: #f8f398;
-  flex-direction: column;
-  display: flex;
-  max-width: 300px;
-  text-align: center;
-}
-
 .container-msg {
   display: flex;
   width: 100%;
