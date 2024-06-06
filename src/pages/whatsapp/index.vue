@@ -75,11 +75,10 @@ onUnmounted(() => {
 
     <v-dialog
       v-model="state.modalUltimasConversasOpened"
-      style="margin: 0 auto"
+      style="margin: 0 auto; z-index: 1000"
       width="375"
       persistent
       :no-click-animation="true"
-      z-index="1000"
     >
       <ModalUltimasConversas
         @fecharConversa="actions.fecharConversa"

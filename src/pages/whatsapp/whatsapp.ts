@@ -58,6 +58,8 @@ export const actions = {
                 meta: data.meta
             }
 
+            state.modalUltimasConversasOpened = true
+
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -84,7 +86,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                text: 'Ocorreu um erro ao buscar as mensagens.',
+                text: 'Ocorreu um erro ao buscar as mensagens antigas.',
             })
         } finally {
             state.loading = false;
@@ -105,7 +107,6 @@ export const actions = {
 
     async openModalUltimasConversas(conversa: iConversaAberta) {
         await actions.getMsgsCallbell(conversa)
-        state.modalUltimasConversasOpened = true;
     },
 
     closeModalUltimasConversas() {
