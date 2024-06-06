@@ -6,6 +6,7 @@ import CardMsgTexto from "./CardMsgTexto.vue";
 import CardMsgImg from "./CardMsgImg.vue";
 import CardMsgAudio from "./CardMsgAudio.vue";
 import CardMsgVideo from "./CardMsgVideo.vue";
+import CardMsgInvalida from "./CardMsgInvalida.vue";
 
 const MSG_RECEBIDA_TEXTO = 0;
 const MSG_RECEBIDA_IMG = 1;
@@ -228,7 +229,7 @@ const computeds = {
     </div>
   </div>
 
-  <!-- MSG RECEBIDA VIDEO -->
+  <!-- MSG VIDEO -->
   <div
     class="container-msg container-msg-recebida"
     v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_VIDEO"
@@ -241,19 +242,12 @@ const computeds = {
   <!-- MSG INVALIDA -->
   <div
     v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_INVALIDA"
-    class="container-msg-recebida"
+    class="container-msg container-msg-recebida"
     @click="actions.openURL(computeds.formatarMsg.value.url)"
     style="cursor: pointer"
   >
-    <div class="msg-recebida">
-      <span class="msg-recebida__textMsg px-2 d-flex align-center"
-        ><v-icon
-          color="warning"
-          class="mr-1"
-          >mdi-alert</v-icon
-        >Mensagem Inválida</span
-      >
-      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
+    <div class="msg msg-recebida">
+      <CardMsgInvalida :msgFormatada="computeds.formatarMsg.value" />
     </div>
   </div>
 </template>
