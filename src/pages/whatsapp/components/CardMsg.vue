@@ -5,6 +5,7 @@ import moment from "moment";
 import CardMsgTexto from "./CardMsgTexto.vue";
 import CardMsgImg from "./CardMsgImg.vue";
 import CardMsgAudio from "./CardMsgAudio.vue";
+import CardMsgVideo from "./CardMsgVideo.vue";
 
 const MSG_RECEBIDA_TEXTO = 0;
 const MSG_RECEBIDA_IMG = 1;
@@ -229,26 +230,11 @@ const computeds = {
 
   <!-- MSG RECEBIDA VIDEO -->
   <div
-    class="container-msg-recebida"
+    class="container-msg container-msg-recebida"
     v-if="computeds.formatarMsg.value.type == MSG_RECEBIDA_VIDEO"
   >
-    <div class="msg-recebida">
-      <div class="msg-recebida-video px-2">
-        <video
-          class="msg-recebida-video__video"
-          width="250"
-          height="200"
-          :src="computeds.formatarMsg.value.url"
-          controls
-        >
-        </video>
-      </div>
-      <span
-        v-if="computeds.formatarMsg.value.text && computeds.formatarMsg.value.text != ''"
-        class="msg-recebida__textMsg px-2"
-        v-html="actions.formatarQuebrasDeLinha(computeds.formatarMsg.value.text)"
-      ></span>
-      <span class="msg-recebida__hora px-2">{{ computeds.formatarMsg.value.hora }}</span>
+    <div class="msg msg-recebida">
+      <CardMsgVideo :msgFormatada="computeds.formatarMsg.value" />
     </div>
   </div>
 
@@ -316,20 +302,5 @@ const computeds = {
   border-radius: 0px 8px 0px 0px;
   border-left: 10px solid transparent;
   border-top: 8px solid #f2f2f2;
-}
-
-.msg-recebida-video {
-  background-color: #f2f2f2;
-  overflow: hidden;
-}
-
-.msg-recebida-video__video {
-  border-radius: 8px;
-  object-fit: cover;
-  object-position: center;
-}
-
-.msg-recebida-video__video:fullscreen {
-  object-fit: contain;
 }
 </style>
