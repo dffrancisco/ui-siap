@@ -94,7 +94,7 @@ export const actions = {
     },
 
     searchGrupos() {
-        state.gridNotificacoes.queryOpen({ titulo: state.inputSearch.value.toUpperCase(), checkbox: state.checkboxNotificacoesInativadas }, () => { });
+        state.gridNotificacoes.queryOpen({ titulo: state.inputSearch.value.toUpperCase(), checkbox: state.checkboxNotificacoesInativadas });
     },
 
     async btnInsert() {
@@ -148,6 +148,9 @@ export const actions = {
     async showNotificacoesInativas() {
         state.gridNotificacoes.queryOpen({
             titulo: '', checkbox: state.checkboxNotificacoesInativadas
+        }, () => {
+            state.gridNotificacoes.focus();
+            state.inputSearch.value = "";
         });
 
         if (state.checkboxNotificacoesInativadas) {

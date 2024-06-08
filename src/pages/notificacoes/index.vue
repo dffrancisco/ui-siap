@@ -1,9 +1,22 @@
 <script setup lang="ts">
-import { nextTick } from "vue";
+import { nextTick, onUnmounted } from "vue";
 import { state, actions } from "./notificacoes";
+import { useEventListener } from "@vueuse/core";
+
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key == "F1") {
+    state.inputSearch.select();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
 
 nextTick(() => {
   actions.init();
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
 });
 </script>
 
@@ -59,15 +72,18 @@ nextTick(() => {
             <input
               type="text"
               style="margin: 5px 0 5px"
-              autofocus
-              placeholder="F1 - Localizar"
+              placeholder="F1 - Localizar (Titulo)"
               id="edtSearch"
               class="ss"
+              :disabled="state.searchDisabled"
+              @keyup.arrow-down="state.gridNotificacoes.focus(0)"
+              @keydown.enter="actions.searchGrupos"
             />
             <v-btn
               size="small"
               class="ml-2 mt-1 elevation-0"
               color="primary"
+              @click="actions.searchGrupos"
             >
               Localizar
             </v-btn>
