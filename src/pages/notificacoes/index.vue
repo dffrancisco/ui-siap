@@ -83,6 +83,7 @@ onUnmounted(() => {
               size="small"
               class="ml-2 mt-1 elevation-0"
               color="primary"
+              :disabled="state.searchDisabled"
               @click="actions.searchGrupos"
             >
               Localizar

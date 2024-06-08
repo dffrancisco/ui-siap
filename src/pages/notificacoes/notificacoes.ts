@@ -50,7 +50,8 @@ export const actions = {
                         novo: {
                             html: "Novo",
                             state: "insert",
-                            click: actions.btnInsert
+                            click: actions.btnInsert,
+                            id: "btnInsert"
                         },
                         update: {
                             html: "Alterar",
@@ -94,7 +95,9 @@ export const actions = {
     },
 
     searchGrupos() {
-        state.gridNotificacoes.queryOpen({ titulo: state.inputSearch.value.toUpperCase(), checkbox: state.checkboxNotificacoesInativadas });
+        state.gridNotificacoes.queryOpen({
+            titulo: state.inputSearch.value.toUpperCase(), checkbox: state.checkboxNotificacoesInativadas
+        });
     },
 
     async btnInsert() {
@@ -155,8 +158,12 @@ export const actions = {
 
         if (state.checkboxNotificacoesInativadas) {
             $('#btnInativarReativar').text('Reativar')
+            $('#btnInsert').prop('disabled', true);
+            $('#btnUpdate').prop('disabled', true);
         } else {
             $('#btnInativarReativar').text('Inativar')
+            $('#btnInsert').prop('disabled', false);
+            $('#btnUpdate').prop('disabled', false);
         }
     },
 
@@ -176,7 +183,6 @@ export const actions = {
         await nextTick();
 
         state.gridNotificacoes.enable();
-        state.gridNotificacoes.focus();
     },
 
     async btnCancel() {
