@@ -229,7 +229,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao inserir as notificações"
+                text: "Erro ao inserir a notificação"
             })
         } finally {
             state.loading = false
