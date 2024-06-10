@@ -175,7 +175,7 @@ export const actions = {
         if (state.gridNotificacoes.dataSource() == false) {
             actions.insertNotificacao();
         } else {
-            await actions.updateGrupoImpressao();
+            await actions.updateNotificacao();
         }
 
 
@@ -236,7 +236,7 @@ export const actions = {
         }
     },
 
-    async updateGrupoImpressao() {
+    async updateNotificacao() {
         try {
             state.loading = true
 
