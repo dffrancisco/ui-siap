@@ -12,6 +12,7 @@ export const state = reactive({
     dbNotificacao: <iNotificacao>{},
     checkboxNotificacoesInativadas: false,
     searchDisabled: false,
+    checkboxDisabled: false,
     inputSearch: <HTMLInputElement>{},
     loading: false,
 })
@@ -102,6 +103,7 @@ export const actions = {
 
     async btnInsert() {
         state.searchDisabled = true
+        state.checkboxDisabled = true
         state.dbNotificacao = {} as iNotificacao
         await nextTick();
 
@@ -119,6 +121,7 @@ export const actions = {
         }
 
         state.searchDisabled = true;
+        state.checkboxDisabled = true;
         await nextTick()
 
         state.gridNotificacoes.disable();
@@ -180,6 +183,7 @@ export const actions = {
 
 
         state.searchDisabled = false;
+        state.checkboxDisabled = false;
         await nextTick();
 
         state.gridNotificacoes.enable();
@@ -187,6 +191,7 @@ export const actions = {
 
     async btnCancel() {
         state.searchDisabled = false
+        state.checkboxDisabled = false;
         let linhaGrid = <any>state.gridNotificacoes.getIndex()
         await nextTick();
 

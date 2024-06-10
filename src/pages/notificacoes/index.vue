@@ -62,6 +62,7 @@ onUnmounted(() => {
         <v-col cols="3">
           <v-checkbox
             v-model="state.checkboxNotificacoesInativadas"
+            :disabled="state.checkboxDisabled"
             color="primary"
             label="Exibir Inativos"
             @update:model-value="actions.showNotificacoesInativas"
