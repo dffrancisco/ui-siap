@@ -40,13 +40,21 @@ const formatarDadosTable = (funcionario) => {
         ? funcionario.faltas.find((falta) => new Date(falta.DATA).getDate() === dia)
         : null;
 
-    // Definindo os valores de entrada/saída e justificativa/status
-    const entrada1 = pontoDia ? new Date(pontoDia.HORA_CHEGADA).toLocaleTimeString() : "-";
-    const saida1 = pontoDia?.HORA_ALMOCO_INICIAL
-      ? new Date(pontoDia.HORA_ALMOCO_INICIAL).toLocaleTimeString()
-      : "-";
-    const entrada2 = pontoDia?.HORA_ALMOCO_FINAL ? new Date(pontoDia.HORA_ALMOCO_FINAL).toLocaleTimeString() : "-";
-    const saida2 = pontoDia?.HORA_SAIDA ? new Date(pontoDia.HORA_SAIDA).toLocaleTimeString() : "-";
+    // Função auxiliar para verificar e formatar hora
+    const formatarHora = (hora) => {
+      if (hora) {
+        const dataHora = new Date(hora);
+        if (!isNaN(dataHora as any)) {
+          return dataHora.toLocaleTimeString();
+        }
+      }
+      return "-";
+    };
+
+    const entrada1 = formatarHora(pontoDia?.HORA_CHEGADA);
+    const saida1 = formatarHora(pontoDia?.HORA_ALMOCO_INICIAL);
+    const entrada2 = formatarHora(pontoDia?.HORA_ALMOCO_FINAL);
+    const saida2 = formatarHora(pontoDia?.HORA_SAIDA);
 
     const justificativa = pontoDia?.JUSTIFICATIVA || faltaDia?.STATUS || faltaDia?.JUSTIFICATIVA || "";
 
