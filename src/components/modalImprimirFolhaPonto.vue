@@ -40,13 +40,10 @@ const formatarDadosTable = (funcionario) => {
         ? funcionario.faltas.find((falta) => new Date(falta.DATA).getDate() === dia)
         : null;
 
-    // Função auxiliar para verificar e formatar hora
     const formatarHora = (hora) => {
       if (hora) {
         const dataHora = new Date(hora);
-        if (!isNaN(dataHora as any)) {
-          return dataHora.toLocaleTimeString();
-        }
+        return dataHora.toLocaleTimeString();
       }
       return "-";
     };
