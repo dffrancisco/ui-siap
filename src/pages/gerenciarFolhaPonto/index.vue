@@ -249,51 +249,49 @@ onMounted(async () => {
   margin-left: 30%;
 }
 
-.funcionarios {
-  .funcionarios__lista {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    max-height: calc(100vh - 300px);
-    overflow-y: scroll;
-  }
+.funcionarios__lista {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-height: calc(100vh - 300px);
+  overflow-y: scroll;
+}
 
-  .funcionarios__lista__avatar {
-    margin-left: 8px;
-    cursor: pointer;
-    opacity: 1;
-    border: 1px solid #0000002f;
-  }
+.funcionarios__lista__avatar {
+  margin-left: 8px;
+  cursor: pointer;
+  opacity: 1;
+  border: 1px solid #0000002f;
+}
 
-  .funcionarios__lista__avatar--red {
-    border: 2px solid red;
-  }
+.funcionarios__lista__avatar--red {
+  border: 2px solid red;
+}
 
-  .funcionarios__lista__card__usuario {
-    display: flex;
-    flex-direction: row;
-    gap: 12px;
-    width: 330px;
-    height: 90px;
-  }
+.funcionarios__lista__card__usuario {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  width: 330px;
+  height: 90px;
+}
 
-  .funcionarios__lista__card__cargo {
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #5a6069;
-  }
+.funcionarios__lista__card__cargo {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #5a6069;
+}
 
-  .funcionarios__lista__card__nome {
-    font-size: 14px;
-    font-weight: bold;
-    width: 222px;
-    color: #202224;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.funcionarios__lista__card__nome {
+  font-size: 14px;
+  font-weight: bold;
+  width: 222px;
+  color: #202224;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .funcionarios__lista__card__totalizador {
