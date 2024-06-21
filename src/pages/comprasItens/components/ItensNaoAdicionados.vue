@@ -64,8 +64,6 @@ const actions = {
     actions.focarContainerItem();
   },
   onKeydownContainer(e: KeyboardEvent) {
-    console.log("aaaaa");
-
     if (e.key === "Enter") {
       state.modalAdicionarItemOpened = true;
       e.preventDefault();
@@ -303,9 +301,9 @@ const actions = {
 }
 
 .item:focus {
-  border-left: 0.5px solid var(--info-800);
-  border-bottom: 0.5px solid var(--info-800);
-  border-right: 0.5px solid var(--info-800);
+  border-left: 2px solid var(--info-700);
+  border-bottom: 2px solid var(--info-700);
+  border-right: 2px solid var(--info-700);
   box-sizing: border-box;
 }
 

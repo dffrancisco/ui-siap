@@ -1,6 +1,6 @@
 import { computed, nextTick, reactive } from 'vue'
 import comprasItensService, { getColorQtdEstoque } from './services/comprasItens.service';
-import { swalDarkError, swalDarkWarning } from '@/ts/utils';
+import { sleep, swalDarkError, swalDarkWarning } from '@/ts/utils';
 import moment from 'moment';
 import { MAP_COL_PRODUTO, MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
 import {
@@ -9,12 +9,12 @@ import {
     iCabecalhoCompra,
     iCarro,
     iHistoricoMes,
+    iItemFila,
     iMarca,
     iObjHistoricoCompraGeral,
     iObjHistoricoVendaGeral,
     iParamEmitAdicionarItem,
     iParamEmitBuscarProdutos,
-    iParamInsertItemCompra,
     iProduto,
     iProdutoAdicionadoObj,
     iProdutoObj,
@@ -26,14 +26,14 @@ export const state = reactive(({
     loadingHistoricoVendas: true,
     loadingHistoricoCompras: true,
     loadingProdutosAdicionados: true,
-    idCompras: undefined,
+    idCompras: <number | undefined>undefined,
     cabecalho: <iCabecalhoCompra>{},
     carros: <iCarro[]>[],
     marcas: <iMarca[]>[],
     edtNumFabricante: undefined,
     edtDescricao: undefined,
     edtCarro: undefined,
-    edtMarca: undefined,
+    edtMarca: <number | undefined>undefined,
     produtos: <iProdutoObj>{},
     keyProdutos: <string[]>[],
     produtosAdicionados: <iProdutoAdicionadoObj>{},
@@ -49,7 +49,33 @@ export const state = reactive(({
     qtdItensMarca: 0,
     indexUltimoItemVisto: 0,
     indexUltimoItemAdicionado: undefined,
+    filaItens: <iItemFila[]>[],
+    persistindoItem: false,
+    modalImpressaoOpened: false,
+    transportadoras: [],
 }))
+
+setInterval(async () => {
+
+    if (state.persistindoItem) return;
+
+    if (state.filaItens.length == 0) return;
+
+    let item = state.filaItens[0];
+
+    if (item.ACAO == 'ADD' && item.TENTATIVAS <= 3) {
+        state.persistindoItem = true;
+        await actions.persistirItemFilaADD(item, 0);
+        state.persistindoItem = false;
+    }
+
+    if (item.ACAO == 'REM' && item.TENTATIVAS <= 3) {
+        state.persistindoItem = true;
+        await actions.persistirItemFilaREM(item, 0);
+        state.persistindoItem = false;
+    }
+
+}, 1000);
 
 const getLast12Months = () => {
     const nomeMeses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
@@ -87,14 +113,22 @@ export const actions = {
             state.cabecalho = dadosIniciais.cabecalho;
             state.carros = dadosIniciais.carros;
             state.marcas = dadosIniciais.marcas;
-            state.edtMarca = state.cabecalho.ID_MARCA
-
+            state.edtMarca = state.cabecalho.ID_MARCA;
+            state.transportadoras = dadosIniciais.transportadoras;
             actions.focarNosItens();
         } catch (error) {
             swalDarkError(error?.response?.data.msg || 'Erro ao buscar dados do pedido');
         } finally {
             state.loading = false;
         }
+    },
+
+    async abrirModalImpressao() {
+        state.modalImpressaoOpened = true;
+    },
+
+    fecharModalImpressao() {
+        state.modalImpressaoOpened = false;
     },
 
     focarNosItens: () => {
@@ -196,18 +230,97 @@ export const actions = {
         state.tipoVisualizacaoItem = tipoVisualizacaoItem
     },
 
-    onKeydownContainerPrincipal: (e: KeyboardEvent) => {
-        if (e.key === 'ArrowLeft' && state.abaItens == 'nao_adicionados') {
-            actions.onClickVoltarItem()
+    async focarContainerItem() {
+        await sleep(100);
+        // @ts-ignore
+        document.querySelector("#containerItem").focus();
+    },
+
+    onKeydownContainerPrincipal: async (e: KeyboardEvent) => {
+        if (state.abaItens == 'nao_adicionados' && state.tipoVisualizacaoItem == 'unica') {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                actions.onClickVoltarItem()
+                e.preventDefault();
+                return;
+            }
+
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                actions.onClickAvancarItem()
+                e.preventDefault();
+                return;
+            }
+        }
+
+        if (e.key == 'F1') {
+            let elemento = document.getElementById('edtNumFabricante')
+            elemento.click();
             e.preventDefault();
             return;
         }
 
-        if (e.key === 'ArrowRight' && state.abaItens == 'nao_adicionados') {
-            actions.onClickAvancarItem()
+        if (e.key == 'F2') {
+            let elemento = document.getElementById('edtDescricao')
+            elemento.click();
             e.preventDefault();
+            return;
         }
 
+        if (e.key == 'F3') {
+            let elemento = document.getElementById('edtCarro')
+            elemento.click();
+            e.preventDefault();
+            return;
+        }
+
+        if (e.key == 'F6') {
+            let elemento = document.getElementById('edtMarca')
+            elemento.click();
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'A' || e.key == 'a')) {
+            state.abaItens = 'adicionados';
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'I' || e.key == 'i')) {
+            state.abaItens = 'nao_adicionados';
+            await nextTick();
+            actions.focarContainerItem();
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'M' || e.key == 'm')) {
+            if (state.tipoVisualizacaoItem == 'lista') {
+                actions.setTipoVisualizacaoItem('unica')
+                actions.focarContainerItem();
+            } else {
+                actions.setTipoVisualizacaoItem('lista')
+            }
+
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'V' || e.key == 'v')) {
+            actions.setAbaHistorico('vendas')
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'C' || e.key == 'c')) {
+            actions.setAbaHistorico('compras')
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'P' || e.key == 'p')) {
+            actions.abrirModalImpressao();
+            e.preventDefault();
+        }
     },
 
     onUpdateModalAdicionarItem() {
@@ -249,24 +362,74 @@ export const actions = {
         }
     },
 
+    addItemFila(item: iItemFila) {
+
+        state.filaItens.push(item);
+        localStorage.setItem(`siap:comprasItens-${item.ID_COMPRAS}`, JSON.stringify(state.filaItens));
+
+    },
+
+    async persistirItemFilaADD(item: iItemFila, indexFilaItem: number) {
+        try {
+            let response = await comprasItensService.insertItemCompra({
+                COD_PRODUTO: item.COD_PRODUTO,
+                CUSTO: item.CUSTO,
+                QUANTIDADE: item.QUANTIDADE,
+                ID_COMPRAS: item.ID_COMPRAS,
+            });
+
+            state.cabecalho.VALOR = response.valorTotalPedido;
+            actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
+        } catch (error) {
+            item.TENTATIVAS++;
+            console.error('erro ao persistir dados do item: ', item.COD_PRODUTO)
+        }
+    },
+
+    async persistirItemFilaREM(item: iItemFila, indexFilaItem: number) {
+        try {
+            state.loading = true;
+
+            let response = await comprasItensService.deleteItemCompra({ ID_COMPRAS: item.ID_COMPRAS, COD_PRODUTO: item.COD_PRODUTO });
+
+            state.cabecalho.VALOR = response.valorTotalPedido;
+            actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
+        } catch (error) {
+            item.TENTATIVAS++;
+            swalDarkError(error?.response?.data?.msg || "Ocorreu um erro ao deletar o item");
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    removerItemFila(idCompras: number, indexFilaItem: number) {
+
+        state.filaItens.splice(indexFilaItem, 1);
+
+        if (state.filaItens.length > 0) {
+            localStorage.setItem(`siap:comprasItens-${idCompras}`, JSON.stringify(state.filaItens));
+        } else {
+            localStorage.removeItem(`siap:comprasItens-${idCompras}`);
+        }
+
+    },
+
     async adicionarItem(param: iParamEmitAdicionarItem) {
         try {
             state.loading = true;
 
             let produtoSelecionado = computeds.produtoSelecionado.value
 
-            let codProduto = produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO];
+            let codProduto = produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO]
 
-            let dadosToInsert: iParamInsertItemCompra = {
+            actions.addItemFila({
                 ID_COMPRAS: state.cabecalho.ID_COMPRAS,
                 COD_PRODUTO: codProduto,
                 CUSTO: param.custo,
                 QUANTIDADE: param.qtd,
-            }
-
-            let response = await comprasItensService.insertItemCompra(dadosToInsert);
-
-            state.cabecalho.VALOR = response.valorTotalPedido;
+                ACAO: 'ADD',
+                TENTATIVAS: 0,
+            })
 
             /* Adicionado para impactar a computed qtdProdutosAdicionados e fazer com que o grid avance a linha após atualizar dados */
             delete state.produtosAdicionados[codProduto];
@@ -294,11 +457,26 @@ export const actions = {
     },
 
     async deletarItem(codProduto: number) {
+        actions.addItemFila({
+            ID_COMPRAS: state.cabecalho.ID_COMPRAS,
+            COD_PRODUTO: codProduto,
+            CUSTO: 0,
+            QUANTIDADE: 0,
+            ACAO: 'REM',
+            TENTATIVAS: 0,
+        })
+
+        let keysProdutosSelecionados = Object.keys(state.produtosAdicionados)
+        let indexProdutoSelecionado = keysProdutosSelecionados.findIndex(key => parseInt(key) == codProduto);
+
         delete state.produtosAdicionados[codProduto];
         await nextTick()
 
-        actions.onClickVoltarItem();
-    }
+        let keyNextItem = keysProdutosSelecionados[indexProdutoSelecionado + 1]
+
+        state.indexProdutoSelecionado = state.keyProdutos.findIndex(key => key == keyNextItem);
+    },
+
 }
 
 export const computeds = {
@@ -402,11 +580,6 @@ export const computeds = {
         })
     }),
 
-    qtdProdutosAdicionados: computed(() => {
-        let keys = Object.keys(state.produtosAdicionados)
-        return keys.length;
-    }),
-
     mediaQtdItemSelecionado: computed(() => {
         let produtoSelecionado = computeds.produtoSelecionado.value
 
@@ -425,6 +598,31 @@ export const computeds = {
     corMediaVenda: computed(() => {
         return getColorQtdEstoque(computeds.mediaQtdItemSelecionado.value, computeds.produtoSelecionado.value[MAP_COL_PRODUTO.QUANTIDADE])
     }),
+
+    contadorItens: computed(() => {
+        let qtdItensFila = state.filaItens.length;
+        let qtdItensFilaSemErro = state.filaItens.filter(item => item.TENTATIVAS == 0).length
+        let qtdItensFilaErro = qtdItensFila - qtdItensFilaSemErro
+        let qtdProdutosAdicionados = Object.keys(state.produtosAdicionados).length;
+
+        return {
+            qtdProdutosAdicionados: qtdProdutosAdicionados - qtdItensFila,
+            qtdProcessando: qtdItensFilaSemErro,
+            qtdErro: qtdItensFilaErro,
+        }
+    }),
+
+    marcasPedido: computed(() => {
+        let marcas = [];
+
+        let produtosAdicionadosArray = Object.values(state.produtosAdicionados);
+        let grupoMarcas = Object.groupBy(produtosAdicionadosArray, item => item[MAP_COL_PRODUTO.DESCRICAO_MARCA]);
+        let nomeMarcas = Object.keys(grupoMarcas);
+
+        marcas.push(...nomeMarcas)
+
+        return marcas
+    })
 }
 
 export default { state, actions, computeds }

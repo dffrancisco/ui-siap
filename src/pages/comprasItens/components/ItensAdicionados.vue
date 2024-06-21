@@ -98,7 +98,9 @@ const actions = {
             msg: "Deseja realmente deletar o item do pedido?",
             theme: "xModal-dark-square",
             call: async () => {
-              actions.deletarItemCompra(dados[MAP_COL_PRODUTO.COD_PRODUTO]);
+              emit("deletarItem", dados[MAP_COL_PRODUTO.COD_PRODUTO]);
+              state.gridItensAdicionados.deleteLine();
+              state.gridItensAdicionados.focus(1);
             },
           });
         },
@@ -109,22 +111,6 @@ const actions = {
     state.gridItensAdicionados.focus();
   },
 
-  async deletarItemCompra(codProduto: number) {
-    try {
-      state.loading = true;
-
-      await comprasItensService.deleteItemCompra({ ID_COMPRAS: props.idCompras, COD_PRODUTO: codProduto });
-
-      state.gridItensAdicionados.deleteLine();
-
-      emit("deletarItem", codProduto);
-    } catch (error) {
-      swalDarkError(error?.response?.data?.msg || "Ocorreu um erro ao deletar o item");
-    } finally {
-      state.loading = false;
-    }
-  },
-
   async focarLinhaGrid() {
     await nextTick();
 
@@ -132,6 +118,8 @@ const actions = {
     let linhaParaFocar = Object.keys(props.objProdutosAdicionados).findIndex(
       (keyProduto) => keyProduto == keyProdutoSelecionado
     );
+
+    console.log(linhaParaFocar, keyProdutoSelecionado);
     state.gridItensAdicionados.focus(linhaParaFocar);
   },
 

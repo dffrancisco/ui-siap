@@ -11,6 +11,7 @@ import { state, actions, computeds } from "./comprasItens";
 import ItensAdicionados from "./components/ItensAdicionados.vue";
 import { useRoute } from "vue-router";
 import { MAP_COL_PRODUTO } from "./constants/constants";
+import ModalImpressao from "./components/ModalImpressao.vue";
 
 const route = useRoute();
 state.idCompras = parseInt(route?.query?.idCompras as string);
@@ -25,15 +26,19 @@ actions.init();
   <div class="compras-itens-container">
     <div class="compras-itens">
       <Cabecalho :cabecalho="state.cabecalho" />
+
+      {{ computeds.marcasPedido.value }}
       <Filtros
         :idMarcaInicial="state.cabecalho.ID_MARCA"
         :marcas="state.marcas"
         :carros="state.carros"
+        @abrirModalImpressao="actions.abrirModalImpressao"
         @buscarProdutos="actions.buscarProdutos"
       />
       <div
         id="compras-detalhes"
         class="compras-detalhes"
+        tabindex="0"
         @keydown="actions.onKeydownContainerPrincipal"
       >
         <div class="compras-grupo-historico">
@@ -43,14 +48,14 @@ actions.init();
               :class="{ 'historico-cabecalho-opcao-selecionada': state.abaHistorico == 'vendas' }"
               @click="actions.setAbaHistorico('vendas')"
             >
-              <span>Vendas</span>
+              <span><u>V</u>endas</span>
             </div>
             <div
               class="historico-cabecalho-opcao click"
               :class="{ 'historico-cabecalho-opcao-selecionada': state.abaHistorico == 'compras' }"
               @click="actions.setAbaHistorico('compras')"
             >
-              <span>Compras</span>
+              <span><u>C</u>ompras</span>
             </div>
             <div class="d-flex flex-grow-1 justify-end">
               <v-icon>mdi mdi-cog</v-icon>
@@ -98,7 +103,7 @@ actions.init();
               }"
               @click="actions.setAbaItens('nao_adicionados')"
             >
-              <span>Itens</span>
+              <span><u>I</u>tens</span>
             </div>
             <div
               class="compras-detalhes-dados-item-cabecalho-opcao"
@@ -107,7 +112,7 @@ actions.init();
               }"
               @click="actions.setAbaItens('adicionados')"
             >
-              <span class="mr-2">Itens adicionados</span>
+              <span class="mr-2">Itens <u>a</u>dicionados</span>
             </div>
             <v-spacer />
             <div class="compras-detalhes-dados-item-cabecalho-contagem">
@@ -115,31 +120,32 @@ actions.init();
                 color="#ff7da1"
                 size="x-small"
               >
-                {{ computeds.qtdProdutosAdicionados.value }}
+                {{ computeds.contadorItens.value.qtdErro }}
               </v-chip>
               <v-chip
                 color="#ffc045"
                 size="x-small"
               >
-                {{ computeds.qtdProdutosAdicionados.value }}
+                {{ computeds.contadorItens.value.qtdProcessando }}
               </v-chip>
               <v-chip
                 color="#95edf2"
                 size="x-small"
+                title="Itens adicionados"
               >
-                {{ computeds.qtdProdutosAdicionados.value }}
+                {{ computeds.contadorItens.value.qtdProdutosAdicionados }}
               </v-chip>
             </div>
             <div class="d-flex align-center">
               <v-icon
                 v-if="state.tipoVisualizacaoItem == 'unica'"
-                title="Modo Grid"
+                title="Modo Grid (Alt + M)"
                 @click="actions.setTipoVisualizacaoItem('lista')"
                 >mdi mdi-menu</v-icon
               >
               <v-icon
                 v-if="state.tipoVisualizacaoItem == 'lista'"
-                title="Modo Individual"
+                title="Modo Individual (Alt + M)"
                 @click="actions.setTipoVisualizacaoItem('unica')"
                 >mdi mdi-id-card</v-icon
               >
@@ -168,7 +174,7 @@ actions.init();
               :objProdutosAdicionados="state.produtosAdicionados"
               :keysProdutos="state.keyProdutos"
               :indexProdutoSelecionado="state.indexProdutoSelecionado"
-              :qtdProdutosAdicionados="computeds.qtdProdutosAdicionados.value"
+              :qtdProdutosAdicionados="computeds.contadorItens.value.qtdProdutosAdicionados"
               :qtdJaAdicionada="computeds.qtdJaAdicionadaItem.value"
               :media="computeds.mediaQtdItemSelecionado.value"
               :corMediaVenda="computeds.corMediaVenda.value"
@@ -216,6 +222,16 @@ actions.init();
           </div>
         </div>
       </div>
+      <v-dialog
+        v-model="state.modalImpressaoOpened"
+        max-width="480px"
+        transition="dialog-transition"
+      >
+        <ModalImpressao
+          :transportadoras="state.transportadoras"
+          @fecharModal="actions.fecharModalImpressao"
+        />
+      </v-dialog>
       <v-overlay
         :model-value="state.loading"
         class="align-center justify-center"
@@ -254,6 +270,7 @@ actions.init();
   display: flex;
   gap: 8px;
   color: var(--grey-100);
+  z-index: 0;
 }
 
 .compras-grupo-historico {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch } from "vue";
 import { iCarro, iMarca } from "../interfaces";
-import ModalImpressao from "./ModalImpressao.vue";
 
 const props = defineProps({
   idMarcaInicial: {
@@ -18,9 +17,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["buscarProdutos"]);
-
-const invertalBusca = setInterval(() => actions.callEmitBuscarProdutos, 1000);
+const emit = defineEmits(["buscarProdutos", "abrirModalImpressao"]);
 
 const state = reactive({
   edtNumFabricante: undefined,
@@ -43,11 +40,40 @@ const actions = {
     });
   },
 
-  async abrirModalImpressao() {
-    state.modalImpressaoOpened = true;
-  },
-  fecharModalImpressao() {
-    state.modalImpressaoOpened = false;
+  onKeydownContainerFiltro(e: KeyboardEvent): void {
+    console.log("aaaaaaaaa");
+    if (e.key == "F1") {
+      let elemento = document.getElementById("edtNumFabricante");
+      elemento.click();
+      e.preventDefault();
+      return;
+    }
+
+    if (e.key == "F2") {
+      let elemento = document.getElementById("edtDescricao");
+      elemento.click();
+      e.preventDefault();
+      return;
+    }
+
+    if (e.key == "F3") {
+      let elemento = document.getElementById("edtCarro");
+      elemento.click();
+      e.preventDefault();
+      return;
+    }
+
+    if (e.key == "F6") {
+      let elemento = document.getElementById("edtMarca");
+      elemento.click();
+      e.preventDefault();
+      return;
+    }
+
+    if (e.altKey && (e.key == "P" || e.key == "p")) {
+      emit("abrirModalImpressao");
+      e.preventDefault();
+    }
   },
 };
 
@@ -88,10 +114,15 @@ watch(
 </script>
 
 <template>
-  <div class="filtros">
+  <div
+    class="filtros"
+    tabindex="0"
+    @keydown="actions.onKeydownContainerFiltro"
+  >
     <div class="filtros-fabricante">
-      <label>Nº Fabricante</label>
+      <label>Nº Fabricante (F1)</label>
       <v-text-field
+        id="edtNumFabricante"
         v-model="state.edtNumFabricante"
         variant="outlined"
         density="compact"
@@ -100,8 +131,9 @@ watch(
       ></v-text-field>
     </div>
     <div class="filtros-descricao">
-      <label>Descrição</label>
+      <label>Descrição (F2)</label>
       <v-text-field
+        id="edtDescricao"
         v-model="state.edtDescricao"
         variant="outlined"
         density="compact"
@@ -110,8 +142,9 @@ watch(
       ></v-text-field>
     </div>
     <div class="filtros-carro">
-      <label>Carro</label>
+      <label>Carro (F3)</label>
       <v-autocomplete
+        id="edtCarro"
         v-model="state.edtCarro"
         variant="outlined"
         density="compact"
@@ -123,7 +156,7 @@ watch(
       ></v-autocomplete>
     </div>
     <div class="filtros-marca">
-      <label>Marca</label>
+      <label>Marca (F6)</label>
       <v-autocomplete
         id="edtMarca"
         v-model="state.edtMarca"
@@ -144,20 +177,13 @@ watch(
         width="50"
         min-width="50"
         class="pa-0"
-        @click="actions.abrirModalImpressao"
+        title="Imprimir (Alt+P)"
+        @click="emit('abrirModalImpressao')"
       >
         <v-icon size="x-large">mdi mdi-printer</v-icon>
       </v-btn>
     </div>
   </div>
-
-  <v-dialog
-    v-model="state.modalImpressaoOpened"
-    max-width="480px"
-    transition="dialog-transition"
-  >
-    <ModalImpressao @fecharModal="actions.fecharModalImpressao" />
-  </v-dialog>
 </template>
 
 <style lang="scss" scoped>

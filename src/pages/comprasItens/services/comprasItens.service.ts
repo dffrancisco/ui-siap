@@ -12,6 +12,7 @@ import {
     iResponseGetProdutosAdicionadosFunction,
     iParamDeleteItemCompra,
     iGetListaFotoJsonResponse,
+    iResponseDeleteItemCompra,
 } from "../interfaces";
 import moment from "moment";
 
@@ -26,7 +27,7 @@ type iGetProdutosAdicionadosFunction = (idCompras: number) => Promise<iResponseG
 type iGetHistoricoVendasFunction = (param: iParamGetProdutosFunction) => Promise<iObjHistoricoVendaGeral>;
 type iGetHistoricoComprasFunction = (param: iParamGetProdutosFunction) => Promise<iObjHistoricoCompraGeral>;
 type iInsertItemCompraFunction = (param: iParamInsertItemCompra) => Promise<iResponseInsertItemCompra>;
-type iDeleteItemCompraFunction = (param: iParamDeleteItemCompra) => Promise<void>;
+type iDeleteItemCompraFunction = (param: iParamDeleteItemCompra) => Promise<iResponseDeleteItemCompra>;
 type iGetListaFotoJsonFunction = (codProduto: number) => Promise<iGetListaFotoJsonResponse[]>
 
 export const getColorData = (data: string) => {

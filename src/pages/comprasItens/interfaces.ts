@@ -50,10 +50,16 @@ export interface iParamGetDadosIniciais {
     ID_COMPRAS: number
 }
 
+export interface iTransportadora {
+    ID_TRANSPORTADORA: number,
+    RAZAO_SOCIAL: string,
+}
+
 export interface iResponseGetDadosIniciais {
     cabecalho: iCabecalhoCompra,
     carros: iCarro[],
     marcas: iMarca[],
+    transportadoras: iTransportadora[],
 }
 
 export interface iParamGetProdutosFunction {
@@ -77,12 +83,25 @@ export interface iParamInsertItemCompra {
     QUANTIDADE: number,
 }
 
+export interface iItemFila {
+    ID_COMPRAS: number,
+    COD_PRODUTO: number,
+    CUSTO: number,
+    QUANTIDADE: number,
+    ACAO: 'ADD' | 'REM'
+    TENTATIVAS: number,
+}
+
 export interface iParamDeleteItemCompra {
     ID_COMPRAS: number,
     COD_PRODUTO: number,
 }
 
 export interface iResponseInsertItemCompra {
+    valorTotalPedido: number
+}
+
+export interface iResponseDeleteItemCompra {
     valorTotalPedido: number
 }
 

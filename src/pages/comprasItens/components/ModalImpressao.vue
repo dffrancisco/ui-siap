@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { reactive } from "vue";
+import { iTransportadora } from "../interfaces";
 
 const emits = defineEmits(["fecharModal"]);
+
+const props = defineProps({
+  transportadoras: {
+    required: true,
+    type: Array as () => iTransportadora[],
+  },
+});
 
 const state = reactive({
   tipoImpressao: 0,
@@ -52,6 +60,9 @@ const actions = {
           variant="solo"
           density="comfortable"
           placeholder="Informe uma transportadora"
+          :items="transportadoras"
+          item-value="ID_TRANSPORTADORA"
+          item-title="RAZAO_SOCIAL"
         >
         </v-autocomplete>
       </div>
