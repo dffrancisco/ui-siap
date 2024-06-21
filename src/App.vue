@@ -142,6 +142,7 @@ const installApp = () => {
 @import "@/assets/index.scss";
 @import "animate.css";
 @import "@/styles/global.scss";
+@import "vue3-photo-preview/dist/index.css";
 
 #pnCalk .xModal-modal-content {
   margin: 0 !important;

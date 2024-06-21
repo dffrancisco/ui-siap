@@ -57,76 +57,94 @@ nextTick(async () => {
         </v-col>
       </v-row>
     </v-card>
-    <div>
-      <v-row class="py-2">
-        <v-col cols="4">
-          <v-card class="py-2">
-            <VueApexCharts
-              type="pie"
-              height="250"
-              :options="{
-                title: {
-                  text: 'Atendimentos por Estado',
-                },
-                chart: {
-                  type: 'pie',
-                },
-                labels: computeds.qtdAtendimentosPorEstadoOrdenado.value.labels,
-                legend: {
-                  position: 'bottom',
-                },
-              }"
-              :series="computeds.qtdAtendimentosPorEstadoOrdenado.value.series"
-            />
-          </v-card>
-        </v-col>
-        <v-col cols="8">
-          <v-row>
-            <v-col>
-              <div class="d-flex flex-column ga-2">
-                <v-card>
-                  <v-card-text class="d-flex flex-column align-center">
-                    <strong>{{ computeds.totalizadores.value.totalGeral }}</strong>
-                    <span>Total Conversas</span>
-                  </v-card-text>
-                </v-card>
-                <v-card>
-                  <v-card-text class="d-flex flex-column align-center">
-                    <strong>{{ computeds.totalizadores.value.recebida }}</strong>
-                    <span>Conversas Recebidas</span>
-                  </v-card-text>
-                </v-card>
-              </div>
-            </v-col>
-            <v-col>
-              <div class="d-flex flex-column ga-2">
-                <v-card>
-                  <v-card-text class="d-flex flex-column align-center">
-                    <strong>{{ computeds.totalizadores.value.enviada }}</strong>
-                    <span>Conversas Enviadas</span>
-                  </v-card-text>
-                </v-card>
 
-                <v-card>
-                  <v-card-text class="d-flex flex-column align-center">
-                    <strong>{{ state.totalizadores.qtdAds }}</strong>
-                    <span>ADS (Tráfego Pago)</span>
-                  </v-card-text>
-                </v-card>
-              </div>
-            </v-col>
-          </v-row>
-          <div class="mt-2 d-flex justify-center">
-            <v-card>
+    <v-row class="py-2">
+      <v-col cols="4">
+        <v-card class="py-2">
+          <VueApexCharts
+            type="pie"
+            :options="{
+              title: {
+                text: 'Atendimentos por Estado',
+              },
+              chart: {
+                type: 'pie',
+              },
+              labels: computeds.qtdAtendimentosPorEstadoOrdenado.value.labels,
+              legend: {
+                position: 'bottom',
+              },
+            }"
+            :series="computeds.qtdAtendimentosPorEstadoOrdenado.value.series"
+          />
+        </v-card>
+      </v-col>
+      <v-col class="d-flex flex-column">
+        <v-row>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
               <v-card-text class="d-flex flex-column align-center">
-                <strong>{{ computeds.tempoMedioFormatado.value }}</strong>
+                <strong>{{ computeds.totalizadores.value.totalGeral }}</strong>
+                <span>Total Conversas</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ computeds.totalizadores.value.recebida }}</strong>
+                <span>Conversas Recebidas</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ computeds.totalizadores.value.enviada }}</strong>
+                <span>Conversas Enviadas</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ computeds.tempoMedioEsperaFormatado.value }}</strong>
                 <span>Tempo Médio de Espera</span>
               </v-card-text>
             </v-card>
-          </div>
-        </v-col>
-      </v-row>
-    </div>
+          </v-col>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ computeds.tempoMedioAtendimentoFormatado.value }}</strong>
+                <span>Tempo Médio de Atendimento</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ state.totalizadores.qtdAds }}</strong>
+                <span>ADS (Tráfego Pago)</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col class="d-flex">
+            <v-card class="flex-grow-1">
+              <v-card-text class="d-flex flex-column align-center">
+                <strong>{{ state.totalizadores.conversasEncerradasSemAtendimento }}</strong>
+                <span>Conversas Encerradas sem Atendimento</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+
     <v-card class="pt-2">
       <div
         class="d-flex"
@@ -218,6 +236,19 @@ nextTick(async () => {
         </div>
       </div>
     </v-card>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
+
     <div id="pnCodigoTela">whatsappPerformance</div>
   </v-container>
 </template>
