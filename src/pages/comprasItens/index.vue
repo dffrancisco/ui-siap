@@ -229,6 +229,7 @@ actions.init();
       >
         <ModalImpressao
           :transportadoras="state.transportadoras"
+          :objProdutosAdicionados="state.produtosAdicionados"
           @fecharModal="actions.fecharModalImpressao"
         />
       </v-dialog>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import { iTransportadora } from "../interfaces";
+import { iProdutoAdicionadoObj, iTransportadora } from "../interfaces";
+import printJS from "print-js";
+import { MAP_COL_PRODUTO } from "../constants/constants";
 
 const emits = defineEmits(["fecharModal"]);
 
@@ -8,6 +10,10 @@ const props = defineProps({
   transportadoras: {
     required: true,
     type: Array as () => iTransportadora[],
+  },
+  objProdutosAdicionados: {
+    required: true,
+    type: Object as () => iProdutoAdicionadoObj,
   },
 });
 
@@ -18,6 +24,24 @@ const state = reactive({
 const actions = {
   fecharModal() {
     emits("fecharModal");
+  },
+  imprimirArquivo() {
+    let dados = Object.values(props.objProdutosAdicionados);
+
+    printJS({
+      printable: dados,
+      properties: [
+        { field: MAP_COL_PRODUTO["NUM_FABRICANTE"], displayName: "Nº Fabricante" },
+        { field: MAP_COL_PRODUTO["NUM_FABRICANTE2"], displayName: "Nº Fabricante 2" },
+        { field: MAP_COL_PRODUTO["DESC_PRODUTO"], displayName: "Descrição" },
+        { field: MAP_COL_PRODUTO["DESCRICAO_CARRO"], displayName: "Carro" },
+        { field: MAP_COL_PRODUTO["DESCRICAO_MARCA"], displayName: "Marca" },
+        { field: MAP_COL_PRODUTO["QUANTIDADE"], displayName: "Qtd" },
+      ],
+      type: "json",
+      gridHeaderStyle: "border: 1px solid #000000",
+      gridStyle: "text-align: center; border: 1px solid #000000",
+    });
   },
 };
 </script>
@@ -75,7 +99,15 @@ const actions = {
         <v-btn
           height="40"
           class="btn-imprimir"
-          ><v-icon class="mr-1">mdi-printer</v-icon>imprimir</v-btn
+          @click="actions.imprimirArquivo"
+        >
+          <v-icon class="mr-1">mdi-printer</v-icon>
+          <span>imprimir</span>
+        </v-btn>
+        <v-btn
+          height="40"
+          class="btn-file"
+          ><v-icon class="mr-1">mdi-file</v-icon>Arquivo</v-btn
         >
       </div>
     </div>
@@ -115,10 +147,18 @@ const actions = {
 .btn-visualizar {
   background-color: var(--primary-700);
   color: #fff;
+  min-width: 135px;
 }
 
 .btn-imprimir {
   background-color: var(--success-600);
   color: #fff;
+  min-width: 135px;
+}
+
+.btn-file {
+  background-color: var(--info-700);
+  color: #fff;
+  min-width: 135px;
 }
 </style>
