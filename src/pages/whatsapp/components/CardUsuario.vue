@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { iConversaAberta } from "../interfaces";
+import moment from "moment";
 
 const props = defineProps({
   nome: {
@@ -12,6 +14,8 @@ const props = defineProps({
   },
 });
 
+const emits = defineEmits(["openModalUltimasConversas", "closeModalUltimasConversas"]);
+
 const actions = {
   formatarDataHora: (data_hora: string) => {
     if (!data_hora) return "";
@@ -23,6 +27,42 @@ const actions = {
 
     return `${dia}/${mes} ${hora}:${minutos}`;
   },
+
+  showIconAlert(conversa: iConversaAberta) {
+    let dataHoraAgora = moment();
+    let dataHoraInicioConversa = moment(conversa.data_hora_aberto);
+    let diffHoras = dataHoraAgora.diff(dataHoraInicioConversa, "minutes");
+
+    return diffHoras > 30 && conversa.data_hora_humano == null && conversa.assigned_user ? true : false;
+  },
+
+  countDiasConversa(conversa: iConversaAberta) {
+    let dataHoraAgora = moment();
+    let dataHoraInicioConversa = moment(conversa.data_hora_aberto);
+    let diffDias = dataHoraAgora.diff(dataHoraInicioConversa, "days");
+
+    return diffDias;
+  },
+
+  openModalUltimasConversas(conversa: iConversaAberta) {
+    emits("openModalUltimasConversas", conversa);
+  },
+
+  closeModalUltimasConversas() {
+    emits("closeModalUltimasConversas");
+  },
+};
+
+const computeds = {
+  countErrors: computed(() => {
+    let errorCount = 0;
+    for (let conversa of props.conversas) {
+      if (actions.showIconAlert(conversa)) {
+        errorCount++;
+      }
+    }
+    return errorCount;
+  }),
 };
 </script>
 
@@ -33,6 +73,13 @@ const actions = {
       :class="{ 'card-usuario__titulo--red': conversas.length > 20 }"
     >
       <strong :class="{ 'text-error': conversas.length > 20 }">{{ nome }}</strong>
+      <div
+        v-if="computeds.countErrors.value > 0"
+        class="chip-qtd-errors"
+        title="Conversas que o operador não começou o atendimento"
+      >
+        <span class="chip-qtd-errors__count">{{ computeds.countErrors.value }}</span>
+      </div>
     </div>
     <div class="card-usuario__corpo">
       <div
@@ -44,6 +91,7 @@ const actions = {
       <div
         v-for="conversa in conversas"
         class="card-usuario__conversa"
+        @click="actions.openModalUltimasConversas(conversa)"
       >
         <div class="d-flex">
           <div class="card-usuario__conversa__nome">
@@ -58,8 +106,23 @@ const actions = {
             <span>{{ actions.formatarDataHora(conversa.data_hora_aberto) }}</span>
           </div>
         </div>
-        <div>
+        <div class="d-flex justify-space-between">
           <span class="card-usuario__conversa__telefone">{{ conversa.telefone }}</span>
+          <div class="d-flex ga-1">
+            <div
+              class="chip-qtd-dias"
+              v-if="actions.countDiasConversa(conversa) > 0"
+              :title="'Conversa aberta há ' + actions.countDiasConversa(conversa) + ' dias.'"
+            >
+              <strong class="chip-qtd-dias__count">{{ actions.countDiasConversa(conversa) }}d</strong>
+            </div>
+            <v-icon
+              v-if="actions.showIconAlert(conversa)"
+              color="#D32F2F"
+              title="Operador não começou o atendimento"
+              >mdi-alert-circle</v-icon
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -89,6 +152,8 @@ const actions = {
   border-bottom: 1px solid rgba(82, 101, 140, 0.15);
   background-color: rgb(249, 251, 255);
   text-transform: capitalize;
+  justify-content: space-between;
+  gap: 4px;
 }
 
 .card-usuario__titulo--red {
@@ -114,6 +179,7 @@ const actions = {
   border-bottom: 1px solid rgba(82, 101, 140, 0.15);
   flex-direction: column;
   widows: 100%;
+  cursor: pointer;
 }
 
 .card-usuario__conversa__nome {
@@ -144,5 +210,26 @@ const actions = {
   strong {
     color: red;
   }
+}
+
+.chip-qtd-errors {
+  border-radius: 10px;
+  padding: 0px 6px;
+  background-color: #d32f2f;
+}
+
+.chip-qtd-errors__count {
+  color: #fff;
+}
+
+.chip-qtd-dias {
+  background-color: #d32f2f;
+  border-radius: 10px;
+  padding: 0px 3px;
+}
+
+.chip-qtd-dias__count {
+  color: #fff;
+  font-size: 10px;
 }
 </style>
