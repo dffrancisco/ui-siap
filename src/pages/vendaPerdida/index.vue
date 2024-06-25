@@ -14,28 +14,23 @@ nextTick(async () => {
       class="pa-5"
       style="width: 876px; margin: 0 auto"
     >
-      <div
-        class="divInputs"
-        style=""
-      >
+      <div class="divInputs">
         <div style="display: flex; gap: 16px">
           <v-select
             id="mes"
             label="Mês"
-            class="obr"
+            class="obr mes"
             v-model="state.mes"
             item-title="title"
             item-value="value"
-            style="width: 200px"
             :items="meses"
             :clearable="false"
           ></v-select>
 
           <v-text-field
             id="ano"
-            class="obr"
+            class="obr ano"
             type="number"
-            style="width: 200px"
             label="Ano"
             v-model="state.ano"
             :clearable="false"
@@ -158,5 +153,11 @@ nextTick(async () => {
 .btnPesquisar {
   margin-top: -12px;
   margin-left: 10px;
+}
+
+.mes,
+.ano {
+  width: 200px;
+  border-radius: 6px;
 }
 </style>

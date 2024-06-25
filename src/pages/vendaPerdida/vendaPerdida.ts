@@ -7,10 +7,14 @@ import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { iGetDetalhesResponse, iGetVendasPerdidasResponse, iParamDetalhes, iParamGetVendasPerdidas } from "./interfaces";
 import printJS from "print-js";
 
+export const meses = mesesToSelect;
+const ano = moment().year();
+const mes = moment().month() + 1;
+
 export const state = reactive({
     loading: false,
-    mes: new Date().getMonth() + 1,
-    ano: moment().year() || "",
+    mes: mes,
+    ano: ano || "",
     totalItems: 0,
     vendasPerdidas: <iGetVendasPerdidasResponse[]>[],
     vendaPerdidaDetalhada: <iGetDetalhesResponse[]>[],
@@ -64,9 +68,6 @@ export const state = reactive({
     ]
 })
 
-export const meses = mesesToSelect;
-const ano = moment().year();
-const mes = moment().month() + 1;
 
 export const actions = {
     async init() {
@@ -158,36 +159,36 @@ export const actions = {
         state.loading = false;
     },
 
+    formatarDadosImpressao(data) {
+        return data.map(item => ({
+            ...item,
+            NUM_FABRICANTE: item.NUM_FABRICANTE ? item.NUM_FABRICANTE : '',
+            NUM_FABRICANTE2: item.NUM_FABRICANTE2 ? item.NUM_FABRICANTE2 : '',
+        }))
+    },
+
     async imprimirVendasPerdidas() {
-        const tableHtml = `
-        <table style="border-collapse: collapse; width: 100%; margin: 20px 0;">
-          <thead>
-            <tr>
-              ${state.headers
-                .filter((header: any) => header.key !== 'inf')
-                .map((header: any) => `<th style="border: 1px solid #ddd; padding: 8px;">${header.title}</th>`)
-                .join('')}
-            </tr>
-          </thead>
-          <tbody>
-            ${state.vendasPerdidas.map((item: iGetVendasPerdidasResponse, index: number) => `   
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.DESC_PRODUTO}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.NUM_FABRICANTE ?? ''}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.NUM_FABRICANTE2 ?? ''}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.DESC_MARCA ?? ''}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.QUANTIDADE ?? ''}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.QUANTIDADE_PERDIDA}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-        `;
+        state.loading = true;
+
+        const vendasPerdidasImpressao = actions.formatarDadosImpressao(state.vendasPerdidas)
 
         printJS({
-            printable: tableHtml,
-            type: 'raw-html',
-            documentTitle: 'Vendas Perdidas - Período: ' + state.mes + '/' + state.ano
+            printable: vendasPerdidasImpressao,
+            type: "json",
+            documentTitle: 'Vendas Perdidas - Período: ' + state.mes + '/' + state.ano,
+            gridHeaderStyle: "border: 1px solid #000000;",
+            gridStyle: "text-align: center; padding: 5px; border: 1px solid #000000",
+            properties: [
+                { field: 'DESC_PRODUTO', displayName: 'Descrição do Produto' },
+                { field: 'NUM_FABRICANTE', displayName: 'Número do Fabricante' },
+                { field: 'NUM_FABRICANTE2', displayName: 'Número do Fabricante 2' },
+                { field: 'DESC_MARCA', displayName: 'Marca' },
+                { field: 'QUANTIDADE', displayName: 'Qtd atual em estoque ' },
+                { field: 'QUANTIDADE_PERDIDA', displayName: 'Vendas Perdidas' }
+            ]
         });
+
+        state.loading = false;
     },
 
     getClassCorLinha(dados: any) {
