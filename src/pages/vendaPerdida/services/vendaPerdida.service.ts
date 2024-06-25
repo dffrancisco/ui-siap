@@ -1,9 +1,10 @@
 import axios from "axios";
-import { iGetVendasPerdidasResponse, iParamGetVendasPerdidas } from "../interfaces";
+import { iGetDetalhesResponse, iGetVendasPerdidasResponse, iParamDetalhes, iParamGetVendasPerdidas } from "../interfaces";
 
 const caminho = 'siap/vendaPerdida'
 
 type iGetVendasPerdidasFunction = (param: iParamGetVendasPerdidas) => Promise<iGetVendasPerdidasResponse[]>;
+type iGetDetalhesFunction = (param: iParamDetalhes) => Promise<iGetDetalhesResponse[]>
 
 const getVendasPerdidas: iGetVendasPerdidasFunction = async (param) => {
     let { data } = await axios.post(caminho, {
@@ -13,6 +14,15 @@ const getVendasPerdidas: iGetVendasPerdidasFunction = async (param) => {
     return data;
 }
 
+const getVendaPerdidaDetalhes: iGetDetalhesFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getVendaPerdidaDetalhes",
+        param
+    });
+    return data;
+}
+
 export default {
-    getVendasPerdidas
+    getVendasPerdidas,
+    getVendaPerdidaDetalhes
 }

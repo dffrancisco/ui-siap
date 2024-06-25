@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { nextTick, reactive, watch, computed } from "vue";
-import { iGetVendasPerdidasResponse } from "../interfaces";
+import { nextTick, reactive, watch } from "vue";
+import { iGetDetalhesResponse } from "../interfaces";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import utils from "@/ts/utils";
 import moment from "moment";
 
 const props = defineProps<{
-  vendaPerdidaDetalhada: iGetVendasPerdidasResponse;
+  vendaPerdidaDetalhada: iGetDetalhesResponse[];
   modalOpened: boolean;
 }>();
 
@@ -14,34 +14,13 @@ watch(
   () => props.modalOpened,
   () => {
     if (props.modalOpened) {
-      state.gridDetalhesVendaPerdida.source(vendaPerdidaDetalhadaArray.value);
+      state.gridDetalhesVendaPerdida.source(props.vendaPerdidaDetalhada);
     }
   }
 );
 
 const state = reactive({
   gridDetalhesVendaPerdida: <ixGridCreate>{},
-});
-
-const vendaPerdidaDetalhadaArray = computed(() => {
-  const detalhe = props.vendaPerdidaDetalhada;
-  const arrayDeObjetos = detalhe.DATA?.map((data, index) => ({
-    COD_PRODUTO: detalhe.COD_PRODUTO,
-    NUM_FABRICANTE: detalhe.NUM_FABRICANTE,
-    NUM_FABRICANTE2: detalhe.NUM_FABRICANTE2,
-    QUANTIDADE: detalhe.QUANTIDADE,
-    DESC_PRODUTO: detalhe.DESC_PRODUTO,
-    DESC_PRODUTO_COMPLETA: detalhe.DESC_PRODUTO_COMPLETA,
-    ID_MARCA: detalhe.ID_MARCA,
-    DESC_MARCA: detalhe.DESC_MARCA,
-    QUANTIDADE_PERDIDA: detalhe.QUANTIDADE_PERDIDA,
-    DATA: data,
-    HORA: detalhe.HORA[index],
-    COD_FUNCIONARIO: detalhe.COD_FUNCIONARIO[index],
-    NOME_COMP: detalhe.NOME_COMP[index],
-    LOGIN: detalhe.LOGIN[index],
-  }));
-  return arrayDeObjetos;
 });
 
 function formatarHora(hora) {
@@ -62,28 +41,21 @@ const actions = {
       columns: {
         "Cod. Produto": {
           dataField: "COD_PRODUTO",
-          width: "10%",
+          center: true,
         },
         Data: {
           dataField: "DATA",
           render: utils.dataBrasil,
-          width: "10%",
-        },
-        Descrição: {
-          dataField: "DESC_PRODUTO",
-          width: "40%",
-        },
-        Marca: {
-          dataField: "DESC_MARCA",
+          center: true,
         },
         Hora: {
           dataField: "HORA",
           render: formatarHora,
-          width: "10%",
+          center: true,
         },
         Funcionario: {
           dataField: "LOGIN",
-          width: "20%",
+          center: true,
         },
       },
     });

@@ -14,60 +14,56 @@ nextTick(async () => {
       class="pa-5"
       style="width: 876px; margin: 0 auto"
     >
-      <div>
-        <v-col cols="12">
-          <v-row>
-            <v-col cols="7">
-              <v-select
-                id="mes"
-                label="Mês"
-                v-model="state.mes"
-                item-title="title"
-                item-value="value"
-                :items="meses"
-                :clearable="false"
-                @update:model-value="actions.getVendasPerdidas"
-              ></v-select>
-            </v-col>
-            <v-col cols="5">
-              <v-text-field
-                id="ano"
-                type="number"
-                label="Ano"
-                v-model="state.ano"
-                :clearable="false"
-                @update:model-value="actions.getVendasPerdidas"
-              ></v-text-field>
-            </v-col>
-            <!-- <v-col cols="2">
-              <div>
-                <v-btn
-                  color="primary"
-                  class="mt-3"
-                  icon="mdi-magnify"
-                  size="36px"
-                  @click=""
-                >
-                </v-btn>
-              </div>
-            </v-col> -->
-          </v-row>
-        </v-col>
+      <div
+        class="divInputs"
+        style=""
+      >
+        <div style="display: flex; gap: 16px">
+          <v-select
+            id="mes"
+            label="Mês"
+            class="obr"
+            v-model="state.mes"
+            item-title="title"
+            item-value="value"
+            style="width: 200px"
+            :items="meses"
+            :clearable="false"
+          ></v-select>
+
+          <v-text-field
+            id="ano"
+            class="obr"
+            type="number"
+            style="width: 200px"
+            label="Ano"
+            v-model="state.ano"
+            :clearable="false"
+          ></v-text-field>
+        </div>
+        <div class="btnPesquisar">
+          <v-btn
+            color="primary"
+            class="mt-3"
+            icon="mdi-magnify"
+            size="36px"
+            @click="actions.getVendasPerdidas"
+          >
+          </v-btn>
+        </div>
       </div>
 
-      <v-data-table-virtual
+      <v-data-table
         class="tableVendaPerdida"
-        v-model:itemsPerPage="state.itemsPerPage"
-        items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
+        v-model:itemsPerPage="state.totalItems"
         style="border-radius: 5px"
         height="560"
         fixed-header
-        :items-length="state.totalItems"
         :headers="state.headers"
         :loading="state.loading"
-        :search="state.search"
         :items="state.vendasPerdidas"
+        :row-props="actions.getClassCorLinha"
       >
         <template v-slot:item.inf="{ item }">
           <v-icon
@@ -79,38 +75,8 @@ nextTick(async () => {
             mdi-information
           </v-icon>
         </template>
-        <template v-slot:item="{ item, index }">
-          <tr :style="{ backgroundColor: index % 2 === 0 ? '#fff' : '#f0f0f0', textAlign: 'end' }">
-            <td style="text-align: start">{{ item.DESC_PRODUTO }}</td>
-            <td>{{ item.NUM_FABRICANTE }}</td>
-            <td>{{ item.NUM_FABRICANTE2 }}</td>
-            <td>{{ item.DESC_MARCA }}</td>
-
-            <td
-              ><span class="qtdEstoque">{{ item.QUANTIDADE }}</span></td
-            >
-            <td
-              ><span
-                style="color: #bf3f3f"
-                class="qtdVendaPerdida"
-              >
-                {{ item.QUANTIDADE_PERDIDA }}
-              </span></td
-            >
-
-            <td>
-              <v-icon
-                size="large"
-                color="primary"
-                title="Ver detalhes"
-                @click="actions.openModalDetalhesVendaPerdida(item)"
-              >
-                mdi-information
-              </v-icon>
-            </td>
-          </tr>
-        </template>
-      </v-data-table-virtual>
+        <template #bottom></template>
+      </v-data-table>
       <div class="pt-2 btnPrint">
         <v-btn
           color="primary"
@@ -152,6 +118,14 @@ nextTick(async () => {
 .v-overlay__scrim {
   background-color: black;
 }
+
+.cor-zebrada-1 {
+  background-color: #f0f0f0;
+}
+
+.cor-zebrada-2 {
+  background-color: #fff;
+}
 </style>
 
 <style scoped>
@@ -168,5 +142,21 @@ nextTick(async () => {
 
 .qtdEstoque {
   margin-right: 10px;
+}
+
+.tableVendaPerdida {
+  margin-top: 20px;
+}
+
+.divInputs {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.btnPesquisar {
+  margin-top: -12px;
+  margin-left: 10px;
 }
 </style>

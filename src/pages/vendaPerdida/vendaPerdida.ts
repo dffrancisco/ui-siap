@@ -1,21 +1,19 @@
 import Swal from "sweetalert2";
-import { computed, reactive } from "vue";
+import { reactive } from "vue";
 import serviceVendasPerdidas from './services/vendaPerdida.service';
 import moment from "moment";
 import { mesesToSelect } from "@/constants/constants";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import { iGetVendasPerdidasResponse, iParamGetVendasPerdidas } from "./interfaces";
+import { iGetDetalhesResponse, iGetVendasPerdidasResponse, iParamDetalhes, iParamGetVendasPerdidas } from "./interfaces";
 import printJS from "print-js";
 
 export const state = reactive({
     loading: false,
     mes: new Date().getMonth() + 1,
-    ano: moment().year(),
+    ano: moment().year() || "",
     totalItems: 0,
-    itemsPerPage: 50,
-    vendasPerdidas: [],
-    search: "",
-    vendaPerdidaDetalhada: <iGetVendasPerdidasResponse>{},
+    vendasPerdidas: <iGetVendasPerdidasResponse[]>[],
+    vendaPerdidaDetalhada: <iGetDetalhesResponse[]>[],
     modalDetalhesVendaPerdida: <iModalCreate>{},
     modalDetalhesVendaPerdidaOpened: false,
     headers: <any>[
@@ -25,35 +23,37 @@ export const state = reactive({
             sortable: true,
         },
         {
-            title: "Fabricante",
+            title: "Nº Fabricante",
             key: "NUM_FABRICANTE",
             sortable: true,
-            align: 'end'
+            align: 'center',
+            width: '130px'
         },
         {
-            title: "Fabricante2",
+            title: "Nº Fabricante 2",
             key: "NUM_FABRICANTE2",
             sortable: true,
-            align: 'end'
+            align: 'center',
+            width: '130px'
         },
         {
             title: "Marca",
             key: "DESC_MARCA",
             sortable: true,
-            align: 'end'
+            align: 'start'
         },
         {
-            title: "Qtd em estoque",
+            title: "Qtd atual estoque",
             key: "QUANTIDADE",
             sortable: true,
-            align: 'end'
+            align: 'center'
         },
         {
             title: "Vendas perdidas",
             key: "QUANTIDADE_PERDIDA",
             sortable: true,
-            sortBy: "desc"
-
+            sortBy: "desc",
+            align: 'center'
         },
         {
             title: 'Inf',
@@ -65,17 +65,33 @@ export const state = reactive({
 })
 
 export const meses = mesesToSelect;
-
-export const vendasPerdidas = computed(() => {
-
-});
+const ano = moment().year();
+const mes = moment().month() + 1;
 
 export const actions = {
     async init() {
         await actions.getVendasPerdidas()
+        await actions.createModalDetalhesVendaPerdida()
     },
 
     async getVendasPerdidas() {
+
+        if (state.ano === "" || state.ano > ano.toString()) {
+            Swal.fire({
+                icon: "error",
+                text: "Insira um ano válido para continuar"
+            });
+            return
+        }
+
+        if (state.mes > mes) {
+            Swal.fire({
+                icon: "error",
+                text: "Insira um mês válido para continuar"
+            });
+            return
+        }
+
         try {
             state.loading = true;
             let dataInicio = moment(`${state.ano}-${state.mes}-01`, 'YYYY-MM-DD').startOf('month').format('YYYY-MM-DD');
@@ -88,6 +104,7 @@ export const actions = {
 
             let data = await serviceVendasPerdidas.getVendasPerdidas(param);
             state.vendasPerdidas = data;
+            state.totalItems = data.length;
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -106,17 +123,36 @@ export const actions = {
             title: 'Detalhes venda perdida',
             theme: 'xModal-blue',
             onOpen: () => { state.modalDetalhesVendaPerdidaOpened = true; },
-            onClose: () => { state.modalDetalhesVendaPerdidaOpened = false; state.modalDetalhesVendaPerdida.destroy() },
+            onClose: () => { state.modalDetalhesVendaPerdidaOpened = false; },
         });
-
     },
 
     async openModalDetalhesVendaPerdida(item: iGetVendasPerdidasResponse) {
         state.loading = true;
 
-        state.vendaPerdidaDetalhada = item
+        try {
+            state.loading = true;
+            let dataInicio = moment(`${state.ano}-${state.mes}-01`, 'YYYY-MM-DD').startOf('month').format('YYYY-MM-DD');
+            let dataFim = moment(`${state.ano}-${state.mes}-01`, 'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD');
 
-        actions.createModalDetalhesVendaPerdida()
+            let param: iParamDetalhes = {
+                DATA_INICIO: dataInicio,
+                DATA_FIM: dataFim,
+                COD_PRODUTO: item.COD_PRODUTO
+            }
+
+            let data = await serviceVendasPerdidas.getVendaPerdidaDetalhes(param);
+            state.vendaPerdidaDetalhada = data;
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao exibir os detalhes da venda perdida."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
+
         state.modalDetalhesVendaPerdida.open();
 
         state.loading = false;
@@ -134,8 +170,7 @@ export const actions = {
             </tr>
           </thead>
           <tbody>
-            ${state.vendasPerdidas.map((item: iGetVendasPerdidasResponse, index: number) => `
-              <tr style="background-color: ${index % 2 === 0 ? '#fff' : '#f0f0f0'};">
+            ${state.vendasPerdidas.map((item: iGetVendasPerdidasResponse, index: number) => `   
                 <td style="border: 1px solid #ddd; padding: 8px;">${item.DESC_PRODUTO}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">${item.NUM_FABRICANTE ?? ''}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">${item.NUM_FABRICANTE2 ?? ''}</td>
@@ -151,7 +186,13 @@ export const actions = {
         printJS({
             printable: tableHtml,
             type: 'raw-html',
+            documentTitle: 'Vendas Perdidas - Período: ' + state.mes + '/' + state.ano
         });
+    },
+
+    getClassCorLinha(dados: any) {
+        let classe = dados.index % 2 == 0 ? 'cor-zebrada-1' : 'cor-zebrada-2'
+        return { class: classe }
     }
 
 }
