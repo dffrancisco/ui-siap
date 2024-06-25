@@ -20,6 +20,7 @@ nextTick(() => {
             v-model="state.dataInicio"
             :max="dataHoje"
             maxlength="10"
+            @keyup.enter="state.inputElementDataFim.focus"
           />
         </div>
 
@@ -28,16 +29,18 @@ nextTick(() => {
           <input
             type="date"
             class="ss obr"
+            id="DATA_FIM"
             v-model="state.dataFim"
             :max="dataHoje"
             maxlength="10"
+            @keyup.enter="actions.buscarDevolucoes"
           />
         </div>
         <v-btn
           icon="mdi-magnify"
           color="primary"
           size="36"
-          @click="actions.getDevolucoes"
+          @click="actions.buscarDevolucoes"
         />
       </div>
 

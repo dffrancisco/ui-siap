@@ -11,7 +11,7 @@ export const state = reactive({
     dataFim: moment().format('YYYY-MM-DD'),
     loading: false,
     dbDevolucoes: <iDevolucao[]>[],
-    totalItens: 0,
+    inputElementDataFim: <HTMLInputElement>{},
     headers: <any>[
         {
             title: 'N° Devolução', key: 'NUM_DEVOLUCAO',
@@ -27,15 +27,15 @@ export const state = reactive({
         },
         {
             title: 'Valor Devolução', key: 'VALOR',
-            align: 'end'
+            align: 'center'
         },
         {
             title: 'Crédito', key: 'CREDITO',
-            align: 'end'
+            align: 'center'
         },
         {
             title: 'Gerente', key: 'LOGIN',
-            align: 'start'
+            align: 'center'
         },
         {
             title: 'Status', key: 'STATUS',
@@ -47,6 +47,30 @@ export const state = reactive({
 export const actions = {
     async init() {
         actions.getDevolucoes()
+        state.inputElementDataFim = <any>document.getElementById('DATA_FIM')
+    },
+
+    async buscarDevolucoes() {
+        let dataInicio = state.dataInicio ? moment(state.dataInicio) : null
+        let dataFim = state.dataFim ? moment(state.dataFim) : null
+
+        if (!dataInicio || !dataFim) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Por favor, insira uma data válida.',
+            })
+            return
+        }
+
+        if (dataInicio.isAfter(dataFim)) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'A data inicial deve ser menor que a data final.',
+            })
+            return;
+        }
+
+        await actions.getDevolucoes()
     },
 
     async getDevolucoes() {
@@ -59,7 +83,6 @@ export const actions = {
             const data = await serviceDevolucaodePecas.getDevolucoes({ dataInicio, dataFim })
 
             state.dbDevolucoes = data
-            state.totalItens = data.length
         } catch (error) {
             Swal.fire({
                 icon: "error",
