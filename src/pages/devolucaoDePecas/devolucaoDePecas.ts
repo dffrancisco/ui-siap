@@ -3,7 +3,6 @@ import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceDevolucaodePecas from "./services/devolucaoDePecas.service";
 import { iDevolucao } from "./interfaces";
-import utils from "@/ts/utils";
 
 export const dataHoje = moment().format('YYYY-MM-DD')
 
@@ -16,34 +15,33 @@ export const state = reactive({
     headers: <any>[
         {
             title: 'N° Devolução', key: 'NUM_DEVOLUCAO',
-            align: 'end',
+            align: 'center'
         },
         {
             title: 'N° Orçamento', key: 'NUM_ORCAMENTO',
-            align: 'end',
-
+            align: 'center'
         },
         {
             title: 'Data Orçamento', key: 'DATA',
-            align: 'center',
-            value: (devolucao: iDevolucao) => utils.dataBrasil(devolucao.DATA)
+            align: 'center'
         },
         {
-            title: 'Valor Dev.', key: 'VALOR',
-            align: 'end',
-            value: (devolucao: iDevolucao) => utils.formatValor(devolucao.VALOR)
+            title: 'Valor Devolução', key: 'VALOR',
+            align: 'end'
         },
         {
             title: 'Crédito', key: 'CREDITO',
-            align: 'end',
-            value: (devolucao: iDevolucao) => utils.formatValor(devolucao.CREDITO)
+            align: 'end'
         },
         {
             title: 'Gerente', key: 'LOGIN',
+            align: 'start'
+        },
+        {
+            title: 'Status', key: 'STATUS',
             align: 'center'
         },
     ],
-    pageTable: 1
 })
 
 export const actions = {
@@ -57,9 +55,8 @@ export const actions = {
 
             let dataInicio = moment(state.dataInicio).format('YYYY-MM-DD');
             let dataFim = moment(state.dataFim).format('YYYY-MM-DD');
-            let page = state.pageTable - 1;
 
-            const data = await serviceDevolucaodePecas.getDevolucoes({ dataInicio, dataFim, page })
+            const data = await serviceDevolucaodePecas.getDevolucoes({ dataInicio, dataFim })
 
             state.dbDevolucoes = data
             state.totalItens = data.length

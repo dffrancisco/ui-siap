@@ -41,7 +41,7 @@ nextTick(() => {
         />
       </div>
 
-      <v-data-table-virtual
+      <v-data-table
         :headers="state.headers"
         :items="state.dbDevolucoes"
         items-per-page-text="Itens por página"
@@ -53,19 +53,28 @@ nextTick(() => {
       >
         <template v-slot:item="{ item, index }">
           <tr :style="{ backgroundColor: index % 2 === 0 ? '#fff' : '#f2f2f2', textAlign: 'end' }">
-            <td>{{ item.NUM_DEVOLUCAO }}</td>
-            <td>{{ item.NUM_ORCAMENTO }}</td>
+            <td style="text-align: center">{{ item.NUM_DEVOLUCAO }}</td>
+            <td style="text-align: center">{{ item.NUM_ORCAMENTO }}</td>
             <td style="text-align: center">{{ utils.dataBrasil(item.DATA) }}</td>
             <td>{{ utils.formatValor(item.VALOR) }}</td>
             <td>{{ item.CREDITO != null ? utils.formatValor(item.CREDITO) : null }}</td>
             <td style="text-align: start">{{ item.LOGIN }}</td>
+            <td style="text-align: center">{{ item.STATUS }}</td>
           </tr>
         </template>
-      </v-data-table-virtual>
+      </v-data-table>
 
-      <span class="text-subtitle-1"
-        >Valor do Crédito igual a 0,00 (zero) significa que o cliente já usou o crédito</span
-      >
+      <div class="d-flex justify-space-between align-center">
+        <span class="text-subtitle-1">
+          Valor do Crédito igual a 0,00 (zero) significa que o cliente já usou o crédito
+        </span>
+        <v-btn
+          icon="mdi-printer"
+          color="primary"
+          size="36"
+          title="IMPRIMIR"
+        />
+      </div>
     </v-card>
 
     <div id="pnCodigoTela">devolucaoDePecas</div>
@@ -87,7 +96,7 @@ nextTick(() => {
 <style scoped>
 .main-card {
   margin: 0 auto;
-  width: 800px;
+  width: 850px;
 }
 
 .container-data {

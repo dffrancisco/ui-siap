@@ -1,7 +1,6 @@
 export interface iParamGetDevolucoes {
     dataInicio: string;
     dataFim: string;
-    page: number;
 }
 
 export interface iDevolucao {
@@ -11,7 +10,8 @@ export interface iDevolucao {
     VALOR: number,
     NF_DEVOLUCAO: string,
     CREDITO: number,
-    LOGIN: string
+    LOGIN: string,
+    STATUS: 'ABERTA' | 'FINALIZADA'
 }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }
