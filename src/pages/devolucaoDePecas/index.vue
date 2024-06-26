@@ -53,17 +53,12 @@ nextTick(() => {
         items-per-page="50"
         fixed-header
         class="pb-4"
+        :row-props="actions.getClassCorLinha"
       >
-        <template v-slot:item="{ item, index }">
-          <tr :style="{ backgroundColor: index % 2 === 0 ? '#fff' : '#f2f2f2', textAlign: 'end' }">
-            <td style="text-align: center">{{ item.NUM_DEVOLUCAO }}</td>
-            <td style="text-align: center">{{ item.NUM_ORCAMENTO }}</td>
-            <td style="text-align: center">{{ utils.dataBrasil(item.DATA) }}</td>
-            <td>{{ utils.formatValor(item.VALOR) }}</td>
-            <td>{{ item.CREDITO != null ? utils.formatValor(item.CREDITO) : null }}</td>
-            <td style="text-align: start">{{ item.LOGIN }}</td>
-            <td style="text-align: center">{{ item.STATUS }}</td>
-          </tr>
+        <template v-slot:item.NF_DEVOLUCAO="{ item }">
+          <div style="word-wrap: break-word; white-space: normal; width: 130px; /* Defina a largura desejada */">{{
+            item.NF_DEVOLUCAO
+          }}</div>
         </template>
       </v-data-table>
 
@@ -76,6 +71,8 @@ nextTick(() => {
           color="primary"
           size="36"
           title="IMPRIMIR"
+          :disabled="state.dbDevolucoes.length == 0"
+          @click="actions.btnPrint"
         />
       </div>
     </v-card>
@@ -96,10 +93,16 @@ nextTick(() => {
   </v-overlay>
 </template>
 
+<style>
+.cor-zebrada {
+  background-color: #f5f5f5;
+}
+</style>
+
 <style scoped>
 .main-card {
   margin: 0 auto;
-  width: 850px;
+  width: 1000px;
 }
 
 .container-data {

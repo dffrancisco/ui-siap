@@ -3,6 +3,8 @@ import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceDevolucaodePecas from "./services/devolucaoDePecas.service";
 import { iDevolucao } from "./interfaces";
+import utils from "@/ts/utils";
+import printJS from "print-js";
 
 export const dataHoje = moment().format('YYYY-MM-DD')
 
@@ -23,18 +25,25 @@ export const state = reactive({
         },
         {
             title: 'Data Orçamento', key: 'DATA',
-            align: 'center'
+            align: 'center',
+            value: (item: iDevolucao) => utils.dataBrasil(item.DATA)
         },
         {
-            title: 'Valor Devolução', key: 'VALOR',
-            align: 'center'
+            title: 'Valor', key: 'VALOR',
+            align: 'center',
+            value: (item: iDevolucao) => utils.formatValor(item.VALOR)
+        },
+        {
+            title: 'NF-e', key: 'NF_DEVOLUCAO',
+            align: 'center',
         },
         {
             title: 'Crédito', key: 'CREDITO',
-            align: 'center'
+            align: 'center',
+            value: (item: iDevolucao) => utils.formatValor(item.CREDITO)
         },
         {
-            title: 'Gerente', key: 'LOGIN',
+            title: 'Funcionário', key: 'LOGIN',
             align: 'center'
         },
         {
@@ -48,6 +57,11 @@ export const actions = {
     async init() {
         actions.getDevolucoes()
         state.inputElementDataFim = <any>document.getElementById('DATA_FIM')
+    },
+
+    getClassCorLinha(dados: any) {
+        let classe = dados.index % 2 == 0 ? '' : 'cor-zebrada'
+        return { class: classe }
     },
 
     async buscarDevolucoes() {
@@ -73,6 +87,49 @@ export const actions = {
         await actions.getDevolucoes()
     },
 
+    async btnPrint() {
+        try {
+
+            state.loading = true;
+
+            let campos = state.headers.map((header) => ({
+                field: header.key,
+                displayName: header.title
+            }))
+
+            let dadosToPrint = state.dbDevolucoes.map((devolucao) => {
+                return {
+                    NUM_DEVOLUCAO: devolucao.NUM_DEVOLUCAO,
+                    NUM_ORCAMENTO: devolucao.NUM_ORCAMENTO,
+                    DATA: utils.dataBrasil(devolucao.DATA),
+                    VALOR: utils.formatValor(devolucao.VALOR),
+                    NF_DEVOLUCAO: devolucao.NF_DEVOLUCAO,
+                    CREDITO: utils.formatValor(devolucao.CREDITO),
+                    LOGIN: devolucao.LOGIN,
+                    STATUS: devolucao.STATUS,
+                };
+            });
+
+            printJS({
+                printable: dadosToPrint,
+                properties: campos,
+                documentTitle: `Devolução de Peças - Data: ${moment(state.dataInicio).format("DD/MM/YYYY")} até
+              ${moment(state.dataFim).format("DD/MM/YYYY")}`,
+                type: "json",
+                gridHeaderStyle: "border: 1px solid #000000",
+                gridStyle: "text-align: center; border: 1px solid #000000;",
+            });
+
+        } catch (error) {
+            Swal.fire({
+                text: "Erro ao imprimir as vendas!",
+                icon: "error",
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
     async getDevolucoes() {
         try {
             state.loading = true;
@@ -86,7 +143,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao buscar as devoluções!"
+                text: error?.response?.data?.msg || "Erro ao buscar as devoluções!"
             })
         } finally {
             state.loading = false;
