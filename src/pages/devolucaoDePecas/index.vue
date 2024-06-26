@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { nextTick } from "vue";
 import { actions, dataHoje, state } from "./devolucaoDePecas";
-import utils from "@/ts/utils";
 
 nextTick(() => {
   actions.init();
@@ -56,9 +55,7 @@ nextTick(() => {
         :row-props="actions.getClassCorLinha"
       >
         <template v-slot:item.NF_DEVOLUCAO="{ item }">
-          <div style="word-wrap: break-word; white-space: normal; width: 130px; /* Defina a largura desejada */">{{
-            item.NF_DEVOLUCAO
-          }}</div>
+          <div class="nf-container">{{ item.NF_DEVOLUCAO }}</div>
         </template>
       </v-data-table>
 
@@ -96,6 +93,12 @@ nextTick(() => {
 <style>
 .cor-zebrada {
   background-color: #f5f5f5;
+}
+
+.nf-container {
+  word-wrap: break-word;
+  white-space: normal;
+  width: 130px;
 }
 </style>
 
