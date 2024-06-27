@@ -56,7 +56,7 @@ export const state = reactive({
 export const actions = {
     async init() {
         actions.getDevolucoes()
-        state.inputElementDataFim = <any>document.getElementById('DATA_FIM')
+        state.inputElementDataFim = <HTMLInputElement>document.getElementById('DATA_FIM')
     },
 
     getClassCorLinha(dados: any) {
@@ -104,7 +104,7 @@ export const actions = {
                     DATA: utils.dataBrasil(devolucao.DATA),
                     VALOR: utils.formatValor(devolucao.VALOR),
                     NF_DEVOLUCAO: devolucao.NF_DEVOLUCAO,
-                    CREDITO: utils.formatValor(devolucao.CREDITO),
+                    CREDITO: devolucao.CREDITO != null ? utils.formatValor(devolucao.CREDITO) : '',
                     LOGIN: devolucao.LOGIN,
                     STATUS: devolucao.STATUS,
                 };
