@@ -47,10 +47,11 @@ nextTick(async () => {
         </div>
       </div>
 
-      <v-data-table
+      <v-data-table-server
         class="tableHistoricoConsultaLojas"
-        no-data-text="Não há dados disponíveis"
-        v-model:itemsPerPage="state.totalItems"
+        items-per-page-text="Itens por página"
+        v-model:itemsPerPage="state.itemsPerPage"
+        :items-length="state.totalItems"
         style="border-radius: 5px"
         height="560"
         fixed-header
@@ -58,9 +59,18 @@ nextTick(async () => {
         :loading="state.loading"
         :items="state.historicoConsultaLojas"
         :row-props="actions.getClassCorLinha"
+        @update:page="actions.updatePage"
       >
-        <template #bottom></template>
-      </v-data-table>
+        <template #no-data>
+          <v-alert
+            :value="true"
+            icon="mdi-information"
+            style="background-color: #ffffff"
+          >
+            Não há dados disponíveis.
+          </v-alert>
+        </template>
+      </v-data-table-server>
       <div class="pt-2 btnPrint">
         <v-btn
           color="primary"
@@ -99,6 +109,15 @@ nextTick(async () => {
 
 .cor-zebrada-2 {
   background-color: #fff;
+}
+
+.v-data-table-footer {
+  max-height: 2px;
+  margin-top: 20px;
+}
+
+.v-data-table-footer__pagination {
+  padding-right: 50px;
 }
 </style>
 

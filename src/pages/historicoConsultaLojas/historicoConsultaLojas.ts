@@ -3,7 +3,7 @@ import serviceHistoricoConsultaLojas from './services/historicoConsultaLojas.ser
 import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
-import { iGetHistoricoConsultaLojasResponse, iMesEAno } from "./interfaces";
+import { iGetHistoricoConsultaLojasResponse } from "./interfaces";
 import printJS from "print-js";
 
 export const meses = mesesToSelect;
@@ -15,6 +15,8 @@ export const state = reactive({
     mes: mes,
     ano: ano || "",
     totalItems: 0,
+    itemsPerPage: 30,
+    page: 1,
     historicoConsultaLojas: <iGetHistoricoConsultaLojasResponse[]>[],
     headers: <any>[
         {
@@ -49,7 +51,7 @@ export const state = reactive({
             align: 'center'
         },
         {
-            title: "Qtd consulta lojas",
+            title: "Qtd consultas lojas",
             key: "QTD_CONSULTA_LOJAS",
             sortable: true,
             sortBy: "desc",
@@ -84,14 +86,16 @@ export const actions = {
         try {
             state.loading = true;
 
-            let param: iMesEAno = {
+            const itemsPerPage = state.itemsPerPage === -1 ? state.totalItems : state.itemsPerPage;
+
+            const data = await serviceHistoricoConsultaLojas.getHistoricoConsultaLojas({
+                page: state.page,
+                itemsPerPage: itemsPerPage,
                 mes: state.mes,
                 ano: state.ano,
-            }
-
-            let data = await serviceHistoricoConsultaLojas.getHistoricoConsultaLojas(param);
-            state.historicoConsultaLojas = data;
-            state.totalItems = data.length;
+            });
+            state.historicoConsultaLojas = data.historicoConsultaLojas;
+            state.totalItems = data.total[0].TOTAL;
 
         } catch (error) {
             Swal.fire({
@@ -101,6 +105,11 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    updatePage(newPage: number) {
+        state.page = newPage;
+        actions.getHistoricoConsultaLojas();
     },
 
     getClassCorLinha(dados: any) {

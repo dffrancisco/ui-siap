@@ -1,4 +1,6 @@
-export interface iMesEAno {
+export interface iParams {
+    page: number;
+    itemsPerPage: number;
     mes: number;
     ano: number | string;
 }
@@ -11,4 +13,11 @@ export interface iGetHistoricoConsultaLojasResponse {
     NUM_FABRICANTE2: string;
     QTD_CONSULTA_LOJAS: number;
     QUANTIDADE: number;
+}
+
+export interface iHistoricoConsultaLojas {
+    historicoConsultaLojas: iGetHistoricoConsultaLojasResponse[];
+    total: {
+        TOTAL: number;
+    }[]
 }

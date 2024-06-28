@@ -1,9 +1,9 @@
 import axios from "axios";
-import { iGetHistoricoConsultaLojasResponse, iMesEAno } from "../interfaces";
+import { iHistoricoConsultaLojas, iParams } from "../interfaces";
 
 const caminho = 'siap/historicoConsultaLojas'
 
-type iGetHistoricoConsultaLojasFunction = (param: iMesEAno) => Promise<iGetHistoricoConsultaLojasResponse[]>;
+type iGetHistoricoConsultaLojasFunction = (param: iParams) => Promise<iHistoricoConsultaLojas>;
 
 const getHistoricoConsultaLojas: iGetHistoricoConsultaLojasFunction = async (param) => {
     let { data } = await axios.post(caminho, {
