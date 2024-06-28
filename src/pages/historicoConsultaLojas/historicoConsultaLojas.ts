@@ -45,13 +45,13 @@ export const state = reactive({
             align: 'start'
         },
         {
-            title: "Qtd atual estoque",
+            title: "Qtd Atual Estoque",
             key: "QUANTIDADE",
             sortable: true,
             align: 'center'
         },
         {
-            title: "Qtd consultas lojas",
+            title: "Qtd Consultas",
             key: "QTD_CONSULTA_LOJAS",
             sortable: true,
             sortBy: "desc",
