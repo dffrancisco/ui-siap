@@ -61,3 +61,55 @@ export interface marcaAgrupada {
 export interface objMarcasAgrupadas {
     [nomeMarca: string]: marcaAgrupada
 }
+
+export interface iTransportadora {
+    ID_TRANSPORTADORA: number,
+    RAZAO_SOCIAL: string,
+    TELEFONE1: string,
+    TELEFONE2: string,
+}
+
+export interface iProduto {
+    A: number, // COD_PRODUTO
+    B: string, // DESC_PRODUTO
+    D: string, // FOTO
+    E: string, // NUM_FABRICANTE
+    F: string, // NUM_FABRICANTE2
+    G: number, // QUANTIDADE
+    H: string, // UNIDADE
+    I: number, // VENDA
+    J: number, // CUSTO
+    L: string, // DESCRICAO_CARRO
+    M: string, // DESCRICAO_MARCA
+    N: string, // NOVO_PRODUTO
+    CG: string, // CURVA_ABC_G
+    CM: string, // CURVA_ABC_M
+}
+export interface iProdutoObj {
+    [id: string]: iProduto
+}
+
+export interface iProdutoAdicionado extends iProduto {
+    COD_PRODUTO: number,
+    PEDIDO_QTD_ADICIONADA: number,
+    PEDIDO_CUSTO_ADICIONADO: number,
+}
+export interface iProdutoAdicionadoObj {
+    [id: string]: iProdutoAdicionado
+}
+
+export interface iResponseGetProdutosAdicionadosFunction {
+    [id: string]: iProdutoAdicionado
+}
+
+export interface iTransportadora {
+    ID_TRANSPORTADORA: number,
+    RAZAO_SOCIAL: string,
+    TELEFONE1: string,
+    TELEFONE2: string,
+}
+
+export interface iDadosImpressao {
+    NOME_MARCA: string,
+    OBSERVACAO?: string,
+}

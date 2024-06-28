@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
-    iCompra, iMarca, iParamDeleteCompra, iParamInsertCompra, iParamUpdateCompra, iResponseInsertCompra,
+    iCompra, iMarca, iParamDeleteCompra, iParamInsertCompra, iParamUpdateCompra,
+    iResponseInsertCompra, iResponseGetProdutosAdicionadosFunction, iTransportadora
 } from "../interfaces";
 
 const caminho = "siap/compras";
@@ -10,6 +11,8 @@ type iGetMarcasFunction = () => Promise<iMarca[]>;
 type iInsertCompraFunction = (param: iParamInsertCompra) => Promise<iResponseInsertCompra>;
 type iUpdateCompraFunction = (param: iParamUpdateCompra) => Promise<void>;
 type iDeleteCompraFunction = (param: iParamDeleteCompra) => Promise<void>;
+type iGetProdutosAdicionadosFunction = (idCompras: number) => Promise<iResponseGetProdutosAdicionadosFunction>;
+type iGetTransportadorasFunction = () => Promise<iTransportadora[]>;
 
 const getCompras: iGetComprasFunction = async () => {
     let { data } = await axios.post(caminho, {
@@ -49,10 +52,29 @@ const deleteCompra: iDeleteCompraFunction = async (param) => {
     return data;
 };
 
+const getProdutosAdicionados: iGetProdutosAdicionadosFunction = async (idCompras) => {
+    let { data } = await axios.post(caminho, {
+        call: "getProdutosAdicionados",
+        param: {
+            ID_COMPRAS: idCompras,
+        },
+    });
+    return data;
+};
+
+const getTransportadoras: iGetTransportadorasFunction = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getTransportadoras",
+    });
+    return data;
+};
+
 export default {
     getCompras,
     getMarcas,
     insertCompra,
     updateCompra,
     deleteCompra,
+    getProdutosAdicionados,
+    getTransportadoras,
 };

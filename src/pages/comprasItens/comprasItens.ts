@@ -1,6 +1,6 @@
 import { computed, nextTick, reactive } from 'vue'
 import comprasItensService, { getColorQtdEstoque } from './services/comprasItens.service';
-import { printComCabecalho, sleep, swalDarkError, swalDarkWarning } from '@/ts/utils';
+import { sleep, swalDarkError, swalDarkWarning } from '@/ts/utils';
 import moment from 'moment';
 import { MAP_COL_PRODUTO, MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
 import {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { dataBrasil, formatValor } from "@/ts/utils";
 import ModalDadosPedido from "./components/ModalDadosPedido.vue";
+import ModalImpressao from "./components/ModalImpressao.vue";
 
 import {
   state,
@@ -131,18 +132,26 @@ actions.init();
               <div>
                 <v-icon
                   title="Itens do pedido"
+                  size="x-large"
                   @click="actions.redirectToItensdoPedido(item.ID_COMPRAS, item.ID_MARCA)"
                   >mdi mdi-cart</v-icon
                 >
                 <v-icon
                   title="Alterar cabeçalho"
+                  size="x-large"
                   @click="actions.onClickAlterarCompra(item)"
                   >mdi mdi-pencil</v-icon
                 >
-                <v-icon title="Imprimir pedido">mdi mdi-printer</v-icon>
+                <v-icon
+                  size="x-large"
+                  title="Imprimir pedido"
+                  @click="actions.onClickImprimir(item)"
+                  >mdi mdi-printer</v-icon
+                >
                 <v-icon
                   title="Deletar pedido"
                   class="compras__grid__btn--red"
+                  size="x-large"
                   @click="actions.onClickDeletarCompra(item)"
                 >
                   mdi mdi-trash-can
@@ -172,6 +181,19 @@ actions.init();
           @insertCompra="actions.insertCompra"
           @updateCompra="actions.updateCompra"
           @closeModal="actions.closeModalDadosPedido"
+        />
+      </v-dialog>
+      <v-dialog
+        v-model="state.modalImpressaoOpened"
+        max-width="480px"
+        transition="dialog-transition"
+      >
+        <ModalImpressao
+          :transportadoras="state.transportadoras"
+          :objProdutosAdicionados="state.objProdutosAdicionados"
+          :marca="state.dadosImpressao?.NOME_MARCA"
+          :observacao="state.dadosImpressao?.OBSERVACAO"
+          @fecharModal="actions.closeModalImpressao"
         />
       </v-dialog>
       <v-overlay

@@ -1,9 +1,13 @@
 import { computed, reactive } from 'vue'
 import comprasService from './services/compras.service'
-import { iCompra, iMarca, iParamInsertCompra, iParamUpdateCompra, objMarcasAgrupadas } from './interfaces'
+import {
+    iCompra, iMarca, iParamInsertCompra, iParamUpdateCompra,
+    iProdutoAdicionadoObj, objMarcasAgrupadas, iTransportadora,
+    iDadosImpressao
+} from './interfaces'
 import moment from 'moment'
-import utils, { swalDarkError, swalDarkSuccess } from '@/ts/utils'
-import router from '@/router'
+import utils, { swalDarkError, swalDarkSuccess } from '../../ts/utils'
+import router from '../../router'
 
 const TODAS_AS_MARCAS = 'TODAS AS MARCAS';
 
@@ -13,8 +17,12 @@ export const state = reactive(({
     marcas: <iMarca[]>[],
     loading: false,
     modalDadosPedidoOpened: false,
+    modalImpressaoOpened: false,
     compraAlterar: <iCompra>{},
-    nomeMarcaSelecionada: TODAS_AS_MARCAS
+    nomeMarcaSelecionada: TODAS_AS_MARCAS,
+    objProdutosAdicionados: <iProdutoAdicionadoObj>{},
+    transportadoras: <iTransportadora[]>[],
+    dadosImpressao: <iDadosImpressao>{},
 }))
 
 export const actions = {
@@ -96,9 +104,39 @@ export const actions = {
         })
     },
 
+    onClickImprimir: async (compra: iCompra) => {
+        state.loading = true;
+        try {
+            state.objProdutosAdicionados = await comprasService.getProdutosAdicionados(compra.ID_COMPRAS);
+        } catch (error) {
+            swalDarkError(error?.response?.data?.msg || 'Ocorreu um erro ao buscar itens do pedido')
+        } finally {
+            state.loading = false;
+        }
+
+        if (state.transportadoras.length == 0) {
+            try {
+                state.transportadoras = await comprasService.getTransportadoras();
+            } catch (error) {
+                swalDarkError(error?.response?.data?.msg || 'Ocorreu um erro ao buscar transportadoras')
+            } finally {
+                state.loading = false;
+            }
+        }
+
+        state.dadosImpressao.NOME_MARCA = compra.NOME_MARCA;
+        state.dadosImpressao.OBSERVACAO = compra.OBS || '';
+        state.modalImpressaoOpened = true;
+    },
+
     closeModalDadosPedido: () => {
         state.modalDadosPedidoOpened = false;
         state.compraAlterar = {} as iCompra;
+    },
+
+    closeModalImpressao: () => {
+        state.modalImpressaoOpened = false;
+        state.objProdutosAdicionados = {} as iProdutoAdicionadoObj;
     },
 
     redirectToItensdoPedido: (idCompras: number, idMarca: number) => {
