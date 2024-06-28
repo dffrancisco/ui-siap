@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import { iProdutoAdicionadoObj, iTransportadora } from "../interfaces";
-import printJS from "print-js";
 import { MAP_COL_PRODUTO } from "../constants/constants";
+import utils from "../../../ts/utils";
+import type { iColumnPrint } from "../../../ts/utils";
+import { swalDarkError } from "@/ts/utils";
 
 const emits = defineEmits(["fecharModal"]);
 
@@ -15,33 +17,125 @@ const props = defineProps({
     required: true,
     type: Object as () => iProdutoAdicionadoObj,
   },
+  marca: {
+    required: true,
+    type: String,
+  },
+  observacao: {
+    type: String,
+    default: "",
+  },
 });
 
 const state = reactive({
-  tipoImpressao: 0,
+  tipoImpressao: <"cotacao" | "pedido">"pedido",
+  transportadora: <iTransportadora | undefined>undefined,
 });
 
 const actions = {
   fecharModal() {
     emits("fecharModal");
   },
-  imprimirArquivo() {
-    let dados = Object.values(props.objProdutosAdicionados);
-
-    printJS({
-      printable: dados,
-      properties: [
-        { field: MAP_COL_PRODUTO["NUM_FABRICANTE"], displayName: "Nº Fabricante" },
-        { field: MAP_COL_PRODUTO["NUM_FABRICANTE2"], displayName: "Nº Fabricante 2" },
-        { field: MAP_COL_PRODUTO["DESC_PRODUTO"], displayName: "Descrição" },
-        { field: MAP_COL_PRODUTO["DESCRICAO_CARRO"], displayName: "Carro" },
-        { field: MAP_COL_PRODUTO["DESCRICAO_MARCA"], displayName: "Marca" },
-        { field: MAP_COL_PRODUTO["QUANTIDADE"], displayName: "Qtd" },
-      ],
-      type: "json",
-      gridHeaderStyle: "border: 1px solid #000000",
-      gridStyle: "text-align: center; border: 1px solid #000000",
+  getDadosImpresaoArquivo() {
+    let dadosToPrint = Object.values(props.objProdutosAdicionados).map((ln) => {
+      return {
+        ...ln,
+        VALOR: "____",
+      };
     });
+
+    let columns: iColumnPrint[] = [
+      {
+        key: MAP_COL_PRODUTO["NUM_FABRICANTE"],
+        label: "Nº Fabricante",
+        width: "15%",
+      },
+      {
+        key: MAP_COL_PRODUTO["NUM_FABRICANTE2"],
+        label: "Nº Fabricante 2",
+        width: "15%",
+      },
+      {
+        key: MAP_COL_PRODUTO["DESC_PRODUTO"],
+        label: "Descrição",
+      },
+      {
+        key: MAP_COL_PRODUTO["DESCRICAO_CARRO"],
+        label: "Carro",
+        width: "15%",
+      },
+      {
+        key: MAP_COL_PRODUTO["DESCRICAO_MARCA"],
+        label: "Marca",
+        width: "15%",
+        align: "center",
+      },
+      {
+        key: "PEDIDO_QTD_ADICIONADA",
+        label: "Qtd",
+        width: "15%",
+        align: "center",
+      },
+    ];
+
+    if (state.tipoImpressao == "cotacao") {
+      columns.push({
+        key: "VALOR",
+        label: "Valor",
+        width: "10%",
+        align: "center",
+      });
+    }
+
+    return { columns, dadosToPrint };
+  },
+  async imprimir() {
+    let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
+
+    let titulo = `
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+        <span>&nbsp;</span>
+        <strong style="font-size: 20px">${state.tipoImpressao == "cotacao" ? "COTAÇÃO" : "PEDIDO"} - ${
+      props.marca
+    }</strong>
+        <span>Qtd de itens: ${dadosToPrint.length}</span>
+      </div>
+    `;
+
+    let rodape = `
+      <div style="margin-top: 10px">
+        <span>Obs.: ${props.observacao || ""}</span>
+      </div>
+      <div style="margin-top: 10px">
+        <span>Transportadora: ${state.transportadora?.RAZAO_SOCIAL || ""}</span>
+      </div>
+      <div>
+        <span style="margin-right: 15px">Telefones: </span>
+        <span style="margin-right: 50px">${state.transportadora?.TELEFONE1 || ""}</span>
+        <span>${state.transportadora?.TELEFONE2 || ""}</span>
+      </div>
+    `;
+
+    try {
+      await utils.printComCabecalho(columns, dadosToPrint, titulo, rodape);
+    } catch (error) {
+      swalDarkError(error);
+    }
+  },
+  async gerarArquivo() {
+    let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
+
+    let fileName = props.marca;
+
+    let titulo = state.tipoImpressao == "cotacao" ? "COTAÇÃO" : "PEDIDO" + " - " + props.marca;
+
+    let rodape = "oiii";
+
+    try {
+      await utils.gerarPlanilhaComCabecalho(columns, dadosToPrint, fileName, titulo, rodape);
+    } catch (error) {
+      swalDarkError(error);
+    }
   },
 };
 </script>
@@ -64,14 +158,14 @@ const actions = {
       >
         <div class="radio mr-2">
           <v-radio
-            :value="0"
+            value="pedido"
             color="primary"
           ></v-radio>
-          <span>Produto</span>
+          <span>Pedido</span>
         </div>
         <div class="radio ml-2">
           <v-radio
-            :value="1"
+            value="cotacao"
             color="primary"
           ></v-radio>
           <span>Cotação</span>
@@ -87,19 +181,17 @@ const actions = {
           :items="transportadoras"
           item-value="ID_TRANSPORTADORA"
           item-title="RAZAO_SOCIAL"
+          :return-object="true"
+          v-model="state.transportadora"
         >
         </v-autocomplete>
       </div>
       <div class="pt-4 d-flex justify-center ga-2">
         <v-btn
           height="40"
-          class="btn-visualizar"
-          ><v-icon class="mr-1">mdi-magnify</v-icon>visualizar</v-btn
-        >
-        <v-btn
-          height="40"
           class="btn-imprimir"
-          @click="actions.imprimirArquivo"
+          primary
+          @click="actions.imprimir"
         >
           <v-icon class="mr-1">mdi-printer</v-icon>
           <span>imprimir</span>
@@ -107,8 +199,10 @@ const actions = {
         <v-btn
           height="40"
           class="btn-file"
-          ><v-icon class="mr-1">mdi-file</v-icon>Arquivo</v-btn
+          @click="actions.gerarArquivo"
         >
+          <v-icon class="mr-1">mdi-file</v-icon>Arquivo
+        </v-btn>
       </div>
     </div>
   </v-card>
@@ -144,20 +238,14 @@ const actions = {
   font-weight: 600;
 }
 
-.btn-visualizar {
+.btn-imprimir {
   background-color: var(--primary-700);
   color: #fff;
   min-width: 135px;
 }
 
-.btn-imprimir {
-  background-color: var(--success-600);
-  color: #fff;
-  min-width: 135px;
-}
-
 .btn-file {
-  background-color: var(--info-700);
+  background-color: var(--success-700);
   color: #fff;
   min-width: 135px;
 }

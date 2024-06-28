@@ -25,9 +25,11 @@ actions.init();
 
   <div class="compras-itens-container">
     <div class="compras-itens">
-      <Cabecalho :cabecalho="state.cabecalho" />
-
-      {{ computeds.marcasPedido.value }}
+      <Cabecalho
+        :cabecalho="state.cabecalho"
+        :marcas="computeds.marcasPedido.value"
+        :qtdItens="computeds.contadorItens.value.qtdProdutosAdicionados"
+      />
       <Filtros
         :idMarcaInicial="state.cabecalho.ID_MARCA"
         :marcas="state.marcas"
@@ -230,6 +232,8 @@ actions.init();
         <ModalImpressao
           :transportadoras="state.transportadoras"
           :objProdutosAdicionados="state.produtosAdicionados"
+          :marca="state.cabecalho.NOME_MARCA"
+          :observacao="state.cabecalho.OBS"
           @fecharModal="actions.fecharModalImpressao"
         />
       </v-dialog>

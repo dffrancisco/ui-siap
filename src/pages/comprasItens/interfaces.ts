@@ -11,8 +11,6 @@ export interface iCabecalhoCompra {
     ID_MARCA: number,
     NOME_MARCA: string,
     OBS: string,
-    QTD_ITENS?: number,
-    MARCAS?: iMarca[],
 }
 
 export interface iHistoricoMes {
@@ -53,6 +51,8 @@ export interface iParamGetDadosIniciais {
 export interface iTransportadora {
     ID_TRANSPORTADORA: number,
     RAZAO_SOCIAL: string,
+    TELEFONE1: string,
+    TELEFONE2: string,
 }
 
 export interface iResponseGetDadosIniciais {

@@ -1,6 +1,11 @@
 import xModal from "@/plugins/xModal/xModal";
 import Swal, { SweetAlertIcon } from "sweetalert2";
 import $ from 'jquery'
+import axios from 'axios'
+import moment from 'moment'
+import printJS from "print-js";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 interface iShowModal {
   msg: string;
@@ -670,26 +675,6 @@ export const toCapitalize = (text: string) => {
   return result
 };
 
-export default {
-  validMail,
-  formatValor,
-  formatValorUSA,
-  dataBrasil,
-  aguarde,
-  confirma,
-  confirmaCodigo,
-  show,
-  block,
-  unlock,
-  validaOBR,
-  formatarChaveNF,
-  base64_decode,
-  base64_encode,
-  SomenteNumero,
-  toLowerCase,
-  toCapitalize
-};
-
 export const sleep = async (timeMs: number) => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -709,3 +694,209 @@ export const swalDark = (icon: SweetAlertIcon, text: string) => Swal.fire({
 export const swalDarkError = (text: string) => swalDark('error', text);
 export const swalDarkWarning = (text: string) => swalDark('warning', text);
 export const swalDarkSuccess = (text: string) => swalDark('success', text);
+
+export interface iColumnPrint {
+  label: string;
+  key: string
+  align?: 'left' | 'center' | 'right';
+  width?: string;
+}
+
+export interface iDataPrint {
+  [key: string]: any;
+}
+
+interface iEmpresaPrint {
+  CGC_EMPRESA: string;
+  RAZAO_SOCIAL: string;
+  NOME_FANTAZIA: string;
+  ENDERECO: string;
+  COD_CIDADE: number;
+  TELEFONE1: string;
+  TELEFONE2: string;
+  INSCRICAO: string;
+  BAIRRO: string;
+  CEP: string;
+  CIDADE: string;
+  UF: string;
+}
+
+const getEmpresaPrint = async (): Promise<iEmpresaPrint> => {
+  const { data } = await axios.post("empresa", {
+    call: "getEmpresaPrint",
+  });
+
+  return data;
+}
+
+const validarCabecalho = (columns: iColumnPrint[]) => {
+  const valid = columns.every((column) => {
+    return !!column.label && !!column.key;
+  });
+
+  if (!valid) {
+    throw new Error("Todos os itens do cabeçalho devem ter label e key");
+  }
+}
+
+export const printComCabecalho = async (columns: iColumnPrint[], data: iDataPrint[], htmlHeader: string = '', htmlFooter: string = '') => {
+  let empresa: iEmpresaPrint;
+
+  validarCabecalho(columns);
+
+  try {
+    empresa = await getEmpresaPrint();
+  } catch (error) {
+    throw new Error('Ocorreu um erro ao buscar empresa')
+  }
+
+  let htmlContent = `
+      <div style="text-align: center; display: flex; align-items: center">
+        <img src="../public/Logo-Real-Shop-Car-menor.png" alt="Logo" style="height: 90px; margin-right: 10px"/>
+        <div style="display: flex; flex-direction: column; gap: 4px; align-items: start; width: 100%">
+            <div style="display: flex; justify-content: space-between; width: 100%">
+              <strong>${empresa.RAZAO_SOCIAL}</strong>
+              <span>${moment().format('DD/MM/YYYY HH:mm:ss')}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; width: 100%">
+                <span>${empresa.ENDERECO}</span>
+                <span>${empresa.CGC_EMPRESA}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; width: 100%">
+                <span>Cidade: ${empresa.CIDADE}</span>
+                <span>Bairro: ${empresa.BAIRRO}</span>
+                <span>CEP: ${empresa.CEP}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; width: 100%">
+                <span>CNPJ: ${empresa.CGC_EMPRESA}</span>
+                <span>Telefone: ${empresa.TELEFONE1}</span>
+            </div>
+        </div>
+      </div>
+      ${htmlHeader}
+      <table border="1" style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px">
+        <thead>
+          <tr>
+    `;
+
+  // Add table headers dynamically
+  columns.forEach((column) => {
+    column.align = column.align || 'left';
+    column.width = column.width || '100%';
+    htmlContent += `<th style="text-align: ${column.align}; width: ${column.width}">${column.label}</th>`;
+  });
+
+  htmlContent += `</tr></thead><tbody>`;
+
+  // Add table data dynamically
+  data.forEach((row) => {
+    htmlContent += `<tr>`;
+    columns.forEach((column) => {
+      htmlContent += `<td style="text-align: ${column.align}">${row[column.key]}</td>`;
+    });
+    htmlContent += `</tr>`;
+  });
+
+  htmlContent += `</tbody></table>`;
+
+  htmlContent += htmlFooter;
+
+  printJS({
+    printable: htmlContent,
+    type: "raw-html",
+    documentTitle: '&nbsp;',
+    style: `
+        table { font-family: Arial, sans-serif; border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #dddddd; text-align: left; padding: 8px; }
+        th { background-color: #f2f2f2; }
+      `,
+  });
+}
+
+export const gerarPlanilhaComCabecalho = async (columns: iColumnPrint[], data: iDataPrint[], fileName = 'arquivo', xlsHeader: string | string[] = undefined, xlsFooter: string | string[] | string[][] = undefined) => {
+  let empresa: iEmpresaPrint;
+
+  validarCabecalho(columns);
+
+  try {
+    empresa = await getEmpresaPrint();
+  } catch (error) {
+    throw new Error('Ocorreu um erro ao buscar empresa');
+  }
+
+  // Create the header content
+  const headerContent = [
+    [empresa.RAZAO_SOCIAL, '', '', '', moment().format('DD/MM/YYYY HH:mm:ss')],
+    [empresa.ENDERECO, '', '', '', empresa.CGC_EMPRESA],
+    [`Cidade: ${empresa.CIDADE}`, `Bairro: ${empresa.BAIRRO}`, `CEP: ${empresa.CEP}`],
+    [`CNPJ: ${empresa.CGC_EMPRESA}`, `Telefone: ${empresa.TELEFONE1}`],
+    []
+  ];
+
+  if (xlsHeader && Array.isArray(xlsHeader)) {
+    headerContent.push(xlsHeader);
+  }
+  else if (xlsHeader && !Array.isArray(xlsHeader)) {
+    headerContent.push(['', '', xlsHeader, '', '']);
+  }
+
+  // Create the table headers
+  const headers = columns.map(column => column.label);
+
+  // Create the table data
+  const rows = data.map(row => columns.map(column => row[column.key]));
+
+  if (xlsFooter && Array.isArray(xlsFooter)) {
+    let dados = Array.isArray(xlsFooter[0]) ? [...xlsFooter] : [xlsFooter];
+    //@ts-ignore
+    rows.push(...dados);
+  }
+  else if (xlsFooter && !Array.isArray(xlsFooter)) {
+    rows.push([xlsFooter]);
+  }
+
+  // Combine all parts into one array
+  const xlsData = [...headerContent, [], headers, ...rows];
+
+  // Create a worksheet
+  const worksheet = XLSX.utils.aoa_to_sheet(xlsData);
+
+  // Define column widths
+  const colWidths = columns.map(() => ({ wpx: 130 }));
+  worksheet['!cols'] = colWidths;
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+  // Convert the workbook to a binary array
+  const workbookBinary = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+  fileName = fileName + ' - ' + empresa.RAZAO_SOCIAL;
+
+  // Create a Blob from the binary array and save it as a .xls file
+  const blob = new Blob([workbookBinary], { type: 'application/octet-stream' });
+  saveAs(blob, `${fileName}.xls`);
+};
+
+export default {
+  validMail,
+  formatValor,
+  formatValorUSA,
+  dataBrasil,
+  aguarde,
+  confirma,
+  confirmaCodigo,
+  show,
+  block,
+  unlock,
+  validaOBR,
+  formatarChaveNF,
+  base64_decode,
+  base64_encode,
+  SomenteNumero,
+  toLowerCase,
+  toCapitalize,
+  printComCabecalho,
+  gerarPlanilhaComCabecalho,
+};

@@ -1,6 +1,6 @@
 import { computed, nextTick, reactive } from 'vue'
 import comprasItensService, { getColorQtdEstoque } from './services/comprasItens.service';
-import { sleep, swalDarkError, swalDarkWarning } from '@/ts/utils';
+import { printComCabecalho, sleep, swalDarkError, swalDarkWarning } from '@/ts/utils';
 import moment from 'moment';
 import { MAP_COL_PRODUTO, MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
 import {
@@ -95,6 +95,7 @@ const historicoMesesDefault = getLast12Months();
 
 export const actions = {
     init: async () => {
+
         state.historicoMesesVenda = [...historicoMesesDefault]
         state.historicoMesesCompra = [...historicoMesesDefault]
 

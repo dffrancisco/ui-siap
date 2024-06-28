@@ -7,6 +7,14 @@ const props = defineProps({
     type: Object as () => iCabecalhoCompra,
     default: {},
   },
+  marcas: {
+    type: Array as () => string[],
+    default: [],
+  },
+  qtdItens: {
+    type: Number,
+    default: 0,
+  },
 });
 </script>
 
@@ -26,7 +34,7 @@ const props = defineProps({
       <div>
         <div>
           <span class="mr-1">Qtd Itens:</span>
-          <strong>{{ props.cabecalho.QTD_ITENS }}</strong>
+          <strong>{{ props.qtdItens }}</strong>
         </div>
         <div class="mt-2">
           <span class="mr-1">Valor:</span>
@@ -48,12 +56,13 @@ const props = defineProps({
             >{{ props.cabecalho.NOME_MARCA }}</v-chip
           >
           <v-chip
-            v-if="props.cabecalho?.MARCAS?.length > 0"
+            v-if="props.marcas.length > 1"
             variant="outlined"
             color="blue"
             size="x-small"
             class="px-2"
-            >+{{ props.cabecalho?.MARCAS?.length }}</v-chip
+            :title="props.marcas.join(', ')"
+            >+{{ props.marcas.length - 1 }}</v-chip
           >
         </div>
       </div>
