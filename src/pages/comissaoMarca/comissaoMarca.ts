@@ -95,11 +95,14 @@ export const actions = {
 
     async getProdutos() {
         state.loading = true;
+        let marcasEscolhidas = state.marcasEscolhidas
 
-        console.log(state.marcasEscolhidas);
+        const param: any = {
+            marcasEscolhidas: marcasEscolhidas
+        }
 
         try {
-            const data = await comissaoMarcaService.getProdutos();
+            const data = await comissaoMarcaService.getProdutos(param);
             state.produtos = data
         } catch (error) {
             Swal.fire({
@@ -111,7 +114,7 @@ export const actions = {
             state.loading = false;
         }
 
-        state.modalMarcas.open();
+        state.modalProdutos.open();
 
         state.loading = false;
     },

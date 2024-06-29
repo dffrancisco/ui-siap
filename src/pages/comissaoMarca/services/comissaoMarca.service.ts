@@ -6,7 +6,7 @@ const caminho = "siap/comissaoMarca";
 
 type iGetFuncionarios = () => Promise<iFuncionario[]>
 type iGetMarcas = () => Promise<iMarcas[]>
-type iGetProdutos = () => Promise<iProdutos[]>
+type iGetProdutos = (param: any) => Promise<iProdutos[]>
 
 const getFuncionarios: iGetFuncionarios = async () => {
     let { data } = await axios.post(caminho, {
@@ -24,9 +24,10 @@ const getMarcas: iGetMarcas = async () => {
     return data;
 }
 
-const getProdutos: iGetProdutos = async () => {
+const getProdutos: iGetProdutos = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getProdutos",
+        param
     });
 
     return data;
