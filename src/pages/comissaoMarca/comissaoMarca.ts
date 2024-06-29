@@ -95,14 +95,17 @@ export const actions = {
 
     async getProdutos() {
         state.loading = true;
-        let marcasEscolhidas = state.marcasEscolhidas
 
-        const param: any = {
-            marcasEscolhidas: marcasEscolhidas
-        }
+        const idsMarcasEscolhidas = state.marcasEscolhidas.map(marca => marca.ID_MARCA);
+
+        console.log(idsMarcasEscolhidas);
+
+        // const param: any = {
+        //     marcasEscolhidas: idsMarcasEscolhidas
+        // }
 
         try {
-            const data = await comissaoMarcaService.getProdutos(param);
+            const data = await comissaoMarcaService.getProdutos({ marcasEscolhidas: idsMarcasEscolhidas });
             state.produtos = data
         } catch (error) {
             Swal.fire({
