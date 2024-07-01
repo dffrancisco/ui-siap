@@ -41,7 +41,7 @@ nextTick(async () => {
             class="mt-3"
             icon="mdi-magnify"
             size="36px"
-            @click="actions.getHistoricoConsultaLojas"
+            @click="actions.validarInputs"
           >
           </v-btn>
         </div>

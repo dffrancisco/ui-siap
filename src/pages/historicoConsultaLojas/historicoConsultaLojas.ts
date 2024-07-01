@@ -62,11 +62,10 @@ export const state = reactive({
 
 export const actions = {
     async init() {
-        await actions.getHistoricoConsultaLojas()
+        await actions.validarInputs()
     },
 
-    async getHistoricoConsultaLojas() {
-
+    validarInputs() {
         if (state.ano === "" || state.ano > ano.toString()) {
             Swal.fire({
                 icon: "error",
@@ -83,14 +82,16 @@ export const actions = {
             return
         }
 
+        actions.getHistoricoConsultaLojas();
+    },
+
+    async getHistoricoConsultaLojas() {
         try {
             state.loading = true;
 
-            const itemsPerPage = state.itemsPerPage === -1 ? state.totalItems : state.itemsPerPage;
-
             const data = await serviceHistoricoConsultaLojas.getHistoricoConsultaLojas({
                 page: state.page,
-                itemsPerPage: itemsPerPage,
+                itemsPerPage: state.itemsPerPage,
                 mes: state.mes,
                 ano: state.ano,
             });
