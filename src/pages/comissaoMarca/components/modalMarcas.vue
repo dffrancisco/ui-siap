@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, reactive, watch } from "vue";
+import { nextTick, reactive, ref, watch } from "vue";
 import { iMarcas } from "../interfaces";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 
@@ -15,9 +15,12 @@ watch(
   () => {
     if (props.modalOpened) {
       state.gridMarcas.source(props.marcas);
+      inputRef.value?.focus();
     }
   }
 );
+
+const inputRef = ref<HTMLInputElement | null>(null);
 
 const state = reactive({
   gridMarcas: <ixGridCreate>{},
@@ -43,6 +46,12 @@ const actions = {
           center: true,
         },
       },
+      enter: function () {
+        actions.selecionarMarca();
+      },
+      dblClick: function () {
+        actions.selecionarMarca();
+      },
     });
   },
   search() {
@@ -50,6 +59,7 @@ const actions = {
     const filteredData = props.marcas.filter((marca) => marca.DESCRICAO.toUpperCase().includes(searchTerm));
     state.gridMarcas.source(filteredData);
     state.selecionada = filteredData;
+    state.gridMarcas.focus();
   },
   selecionarMarca() {
     state.selecionada = state.gridMarcas.dataSource();
@@ -72,6 +82,7 @@ nextTick(() => {
     <div>
       <div class="d-flex justify-end my-2 pb-2">
         <input
+          ref="inputRef"
           clearable="true"
           type="text"
           v-model="state.edtSearch"

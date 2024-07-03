@@ -1,12 +1,12 @@
 import axios from "axios";
-import { iFuncionario, iMarcas, iProdutos } from "../interfaces";
+import { iDadosParaRelatorio, iFuncionario, iGetProdutosParam, iMarcas, iParamParaRelatorio, iProdutos } from "../interfaces";
 
 const caminho = "siap/comissaoMarca";
 
-
 type iGetFuncionarios = () => Promise<iFuncionario[]>
 type iGetMarcas = () => Promise<iMarcas[]>
-type iGetProdutos = (param: any) => Promise<iProdutos[]>
+type iGetProdutos = (param: iGetProdutosParam) => Promise<iProdutos[]>
+type iGetDadosVendaMarca = (param: iParamParaRelatorio) => Promise<iDadosParaRelatorio[]>
 
 const getFuncionarios: iGetFuncionarios = async () => {
     let { data } = await axios.post(caminho, {
@@ -33,8 +33,28 @@ const getProdutos: iGetProdutos = async (param) => {
     return data;
 }
 
+const getDadosVendaMarcaPorVendedor: iGetDadosVendaMarca = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getDadosVendaMarcaPorVendedor",
+        param
+    });
+
+    return data;
+}
+
+const getDadosVendaMarcaPorItens: iGetDadosVendaMarca = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getDadosVendaMarcaPorItens",
+        param
+    });
+
+    return data;
+}
+
 export default {
     getFuncionarios,
     getMarcas,
     getProdutos,
+    getDadosVendaMarcaPorVendedor,
+    getDadosVendaMarcaPorItens
 }

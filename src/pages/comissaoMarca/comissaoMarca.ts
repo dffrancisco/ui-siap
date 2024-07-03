@@ -1,16 +1,19 @@
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iFuncionario, iMarcas, iProdutos } from "./interfaces";
+import { iFuncionario, iMarcas, iProdutos, iGetProdutosParam, iProdutosEscolhidos, iDadosParaRelatorio, iParamParaRelatorio } from "./interfaces";
 import Swal from "sweetalert2";
 import comissaoMarcaService from "./services/comissaoMarca.service";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
+import utils from "@/ts/utils";
+import printJS from "print-js";
 
 export const state = reactive({
     loading: false,
     totalItems: 0,
     itemsPerPage: 30,
+    inputValor: "",
     funcionarios: <iFuncionario[]>[],
-    selectedFuncionario: <number | null>null,
+    selectedFuncionario: <number[]>[],
     modalMarcas: <iModalCreate>{},
     modalMarcasOpened: false,
     marcas: <iMarcas[]>[],
@@ -18,32 +21,120 @@ export const state = reactive({
     modalProdutos: <iModalCreate>{},
     modalProdutosOpened: false,
     produtos: <iProdutos[]>[],
+    produtosEscolhidos: <iProdutosEscolhidos[]>[],
+    dadosParaRelatorioVendedor: <iDadosParaRelatorio[]>[],
+    dadosParaRelatorioItens: <iDadosParaRelatorio[]>[],
     dataInicial: moment().format('YYYY-MM-DD'),
     dataFinal: moment().format('YYYY-MM-DD'),
     inputDataInicial: <HTMLInputElement>{},
     inputDataFinal: <HTMLInputElement>{},
-    headers: <any>[]
+    tab: 'agrupadoPorVendedor',
+    headers: <any>[
+        {
+            title: "Funcionário",
+            key: "VENDEDOR",
+            sortable: true,
+        },
+        {
+            title: "Marca",
+            key: "MARCA",
+            sortable: true,
+            align: 'center',
+        },
+        {
+            title: "Quantidade",
+            key: "QTD",
+            sortable: true,
+            align: 'center',
+        },
+        {
+            title: "Valor",
+            key: "VALOR",
+            sortable: true,
+            value: (item: any) => utils.formatValor(item.VALOR)
+        },
+        {
+            title: "Valor p/ item",
+            key: "VALOR_P_ITEM",
+            value: () => state.inputValor
+        },
+        {
+            title: "Total p/ item",
+            key: "TOTAL_P_ITEM",
+            value: (item: any) => utils.formatValor(item.QTD * parseFloat(state.inputValor.replace(',', '.').trim()))
+        }
+    ],
+    headers2: <any>[
+        {
+            title: "Produto",
+            key: "PRODUTO",
+            sortable: true,
+        },
+        {
+            title: "Marca",
+            key: "MARCA",
+            sortable: true,
+            align: 'center',
+        },
+        {
+            title: "Quantidade",
+            key: "QTD",
+            sortable: true,
+            align: 'center',
+        },
+        {
+            title: "Valor",
+            key: "VALOR",
+            sortable: true,
+            value: (item: any) => utils.formatValor(item.VALOR)
+        }
+    ],
 })
 
-export const funcionariosOrdenados = computed(() => {
-    let funcionariosArray = <iFuncionario[]>[];
+export const dataHoje = moment().format('YYYY-MM-DD');
 
-    for (let indexFuncionario in state.funcionarios) {
-        funcionariosArray.push(state.funcionarios[indexFuncionario]);
-    }
+export const totalizadorVendedores = computed(() => {
+    let totalQtd = 0;
+    let totalValor = 0;
+    let totalPorItem = 0;
 
-    funcionariosArray.sort((funcionario1, funcionario2) => {
-        return funcionario1.NOME_COMP > funcionario2.NOME_COMP ? 1 : -1;
+    state.dadosParaRelatorioVendedor.forEach(item => {
+        totalQtd += item.QTD;
+        totalValor += item.VALOR;
+        totalPorItem += item.QTD * parseFloat(state.inputValor.replace(',', '.').trim());
     });
 
-    return funcionariosArray;
+    return {
+        VENDEDOR: 'TOTAL',
+        MARCA: '',
+        QTD: totalQtd,
+        VALOR: totalValor,
+        VALOR_P_ITEM: state.inputValor,
+        TOTAL_P_ITEM: totalPorItem
+    };
 });
 
-export const dataHoje = moment().format('YYYY-MM-DD');
+export const totalizadorItens = computed(() => {
+    let totalQtdItem = 0;
+    let totalValorItem = 0;
+
+    state.dadosParaRelatorioItens.forEach(item => {
+        totalQtdItem += item.QTD;
+        totalValorItem += item.VALOR;
+    });
+
+    return {
+        PRODUTO: 'TOTAL',
+        MARCA: '',
+        QTD: totalQtdItem,
+        VALOR: totalValorItem,
+    }
+})
 
 export const actions = {
     async init() {
         await actions.getFuncionarios()
+        await actions.getMarcas()
         await actions.createModal()
     },
 
@@ -60,8 +151,8 @@ export const actions = {
 
         state.modalProdutos = new xModal.create({
             el: "#modalProdutos",
-            height: 600,
-            width: 800,
+            height: 700,
+            width: 600,
             title: 'Itens - Produtos',
             theme: 'xModal-blue',
             onOpen: () => { state.modalProdutosOpened = true; },
@@ -85,27 +176,31 @@ export const actions = {
             } finally {
                 state.loading = false;
             }
-
         }
-        state.modalMarcas.open();
-
         state.loading = false;
     },
 
+    openModalMarcas() {
+        state.loading = true;
+        state.modalMarcas.open();
+        state.loading = false;
+    },
 
     async getProdutos() {
+        if (state.marcasEscolhidas.length == 0) {
+            Swal.fire({
+                icon: "error",
+                text: "Selecione primeiro uma marca."
+            });
+            return
+        }
+
         state.loading = true;
 
-        const idsMarcasEscolhidas = state.marcasEscolhidas.map(marca => marca.ID_MARCA);
-
-        console.log(idsMarcasEscolhidas);
-
-        // const param: any = {
-        //     marcasEscolhidas: idsMarcasEscolhidas
-        // }
+        const idsMarcasEscolhidas: number[] = state.marcasEscolhidas.map(marca => marca.ID_MARCA);
 
         try {
-            const data = await comissaoMarcaService.getProdutos({ marcasEscolhidas: idsMarcasEscolhidas });
+            const data = await comissaoMarcaService.getProdutos({ marcasEscolhidas: idsMarcasEscolhidas } as iGetProdutosParam);
             state.produtos = data
         } catch (error) {
             Swal.fire({
@@ -160,11 +255,144 @@ export const actions = {
         );
     },
 
-    adcProdutosNoCard() {
+    adcProdutosNoCard(produtosSelecionados: iProdutosEscolhidos) {
+        state.produtosEscolhidos.push(produtosSelecionados);
+    },
+
+    removerProdutos(descricaoSelecionados: string) {
+        state.produtosEscolhidos = state.produtosEscolhidos.filter(
+            (item) => item.descricaoSelecionados !== descricaoSelecionados
+        );
+    },
+
+    validarInputs() {
+        if (!state.dataInicial || !state.dataFinal) {
+            Swal.fire({
+                icon: "warning",
+                text: "Data Inválida!"
+            });
+            return
+        }
+
+        if (state.marcas == "" || state.produtos == "") {
+            Swal.fire({
+                icon: "warning",
+                text: "Escolha ao menos uma marca e produto!"
+            });
+            return
+        }
+        actions.getDadosVendaMarcaPorVendedor();
+    },
+
+    async getDadosVendaMarcaPorVendedor() {
+        state.loading = true;
+
+        try {
+            const param: iParamParaRelatorio = {
+                cod_funcionarios: state.selectedFuncionario,
+                produtos: state.produtosEscolhidos.map(item => item.produtosEscolhidos),
+                data_inicial: state.dataInicial,
+                data_final: state.dataFinal
+            }
+            const data = await comissaoMarcaService.getDadosVendaMarcaPorVendedor(param);
+            state.dadosParaRelatorioVendedor = data
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os dados."
+            });
+            return;
+        } finally {
+            state.loading = false;
+            state.dadosParaRelatorioItens = []
+        }
+    },
+
+    async getDadosVendaMarcaPorItens() {
+
+        if (state.dadosParaRelatorioItens.length == 0) {
+            state.loading = true;
+            try {
+                const param: iParamParaRelatorio = {
+                    cod_funcionarios: state.selectedFuncionario,
+                    produtos: state.produtosEscolhidos.map(item => item.produtosEscolhidos),
+                    data_inicial: state.dataInicial,
+                    data_final: state.dataFinal
+                }
+                const data = await comissaoMarcaService.getDadosVendaMarcaPorItens(param);
+                state.dadosParaRelatorioItens = data
+            } catch (error) {
+                Swal.fire({
+                    icon: "error",
+                    text: "Erro ao buscar os dados dos itens."
+                });
+                return;
+            } finally {
+                state.loading = false;
+            }
+        }
 
     },
 
-    removerProdutos() {
+    formatarDadosImpressao(data) {
+        return data.map(item => ({
+            ...item,
+            VALOR: utils.formatValor(item.VALOR),
+            VALOR_P_ITEM: state.inputValor,
+            TOTAL_P_ITEM: utils.formatValor(item.QTD * parseFloat(state.inputValor.replace(',', '.').trim()))
+        }))
+    },
 
+    async imprimirRelatorio() {
+        state.loading = true;
+
+        try {
+            const relatorioPorVendedor = actions.formatarDadosImpressao([...state.dadosParaRelatorioVendedor, totalizadorVendedores.value]);
+            const relatorioPorItens = actions.formatarDadosImpressao([...state.dadosParaRelatorioItens, totalizadorItens.value]);
+
+            printJS({
+                printable: relatorioPorVendedor,
+                type: "json",
+                documentTitle: 'Relatório de peças vendidas por vendedor - Período: ' + utils.dataBrasil(state.dataInicial) + ' até: ' + utils.dataBrasil(state.dataFinal),
+                gridHeaderStyle: "border: 1px solid #000000;",
+                gridStyle: "text-align: center; padding: 5px; border: 1px solid #000000",
+                properties: [
+                    { field: 'VENDEDOR', displayName: 'Vendedor' },
+                    { field: 'MARCA', displayName: 'Marca' },
+                    { field: 'QTD', displayName: 'Quantidade' },
+                    { field: 'VALOR', displayName: 'Valor' },
+                    { field: 'VALOR_P_ITEM', displayName: 'Valor p/ item' },
+                    { field: 'TOTAL_P_ITEM', displayName: 'Total p/ item' },
+                ]
+            });
+
+            if (state.dadosParaRelatorioItens.length == 0) {
+                state.loading = false;
+                return
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            printJS({
+                printable: relatorioPorItens,
+                type: "json",
+                documentTitle: 'Relatório de peças vendidas por item - Período: ' + utils.dataBrasil(state.dataInicial) + ' até: ' + utils.dataBrasil(state.dataFinal),
+                gridHeaderStyle: "border: 1px solid #000000;",
+                gridStyle: "text-align: center; padding: 5px; border: 1px solid #000000",
+                properties: [
+                    { field: 'PRODUTO', displayName: 'Produto' },
+                    { field: 'MARCA', displayName: 'Marca' },
+                    { field: 'QTD', displayName: 'Quantidade' },
+                    { field: 'VALOR', displayName: 'Valor' }
+                ]
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
+            });
+        } finally {
+            state.loading = false;
+        }
     }
 }

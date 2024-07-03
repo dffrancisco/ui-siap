@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { state, actions, dataHoje, funcionariosOrdenados } from "./comissaoMarca";
+import { state, actions, dataHoje, totalizadorVendedores, totalizadorItens } from "./comissaoMarca";
 import { nextTick } from "vue";
+import { configVMoney } from "../../constants/constants";
 import ModalMarcas from "./components/modalMarcas.vue";
 import ModalProdutos from "./components/modalProdutos.vue";
 
@@ -48,36 +49,44 @@ nextTick(async () => {
           <v-autocomplete
             :clearable="true"
             label="Funcionário"
+            multiple
             v-model="state.selectedFuncionario"
-            :items="funcionariosOrdenados"
+            :items="state.funcionarios"
             item-title="NOME_COMP"
             item-value="COD_FUNCIONARIO"
           ></v-autocomplete>
         </div>
 
         <div class="valorItem">
-          <v-text-field label="Valor"></v-text-field>
+          <input
+            id="inputValor"
+            :clearable="false"
+            v-model.lazy="state.inputValor"
+            :model-modifiers="{ number: true }"
+            v-money3="{ ...configVMoney, max: 1000000 }"
+            autofocus
+          />
         </div>
 
         <div class="marcasEProdutos">
           <div class="marcas">
             <span>Marcas</span>
             <v-icon
-              class="ml-14"
+              class="ml-16"
               size="large"
               color="primary"
               title="Adicionar Marca"
-              @click="actions.getMarcas"
+              @click="actions.openModalMarcas"
               >mdi-plus-circle</v-icon
             >
-            <v-card class="mt-2">
+            <v-card class="mt-2 marcasCard">
               <template v-if="state.marcasEscolhidas.length > 0">
                 <div
                   v-for="marca in state.marcasEscolhidas"
                   :key="marca.ID_MARCA"
                   class="marca-item"
                 >
-                  <span>{{ marca.DESCRICAO }}</span>
+                  <span>{{ marca.DESCRICAO }} <br />{{ marca.GRUPO.toLowerCase() }} </span>
                   <v-icon
                     size="small"
                     color="primary"
@@ -96,33 +105,36 @@ nextTick(async () => {
           <div class="produtos">
             <span>Produtos</span
             ><v-icon
-              class="ml-10"
+              class="ml-15"
               size="large"
               color="primary"
               title="Adicionar Produtos"
               @click="actions.getProdutos"
               >mdi-plus-circle</v-icon
             >
-            <v-card class="mt-2">
-              <!-- <template v-if="state.marcasEscolhidas.length > 0">
+            <v-card class="mt-2 produtosCard">
+              <template v-if="state.produtosEscolhidos.length > 0">
                 <div
-                  v-for="marca in state.marcasEscolhidas"
-                  :key="marca.ID_MARCA"
+                  v-for="item in state.produtosEscolhidos"
+                  :key="item.descricaoSelecionados"
                   class="produto-item"
                 >
-                  <span>{{ marca.DESCRICAO }}</span>
+                  <span
+                    >{{ item.descricaoSelecionados }} <br />
+                    {{ item.produtosEscolhidos.length }} itens</span
+                  >
                   <v-icon
                     size="small"
                     color="primary"
-                    @click="actions.removerProdutos()"
+                    @click="actions.removerProdutos(item.descricaoSelecionados)"
                   >
                     mdi-delete
                   </v-icon>
                 </div>
               </template>
               <template v-else>
-                <div class="spanSemProduto"><span>Nenhuma marca selecionada</span></div>
-              </template> -->
+                <div class="spanSemProduto"><span>Nenhum produto selecionado.</span></div>
+              </template>
             </v-card>
           </div>
         </div>
@@ -131,7 +143,7 @@ nextTick(async () => {
             title="Consultar"
             class="consultarBtn"
             color="#3680AB"
-            @click.prevent=""
+            @click.prevent="actions.validarInputs"
           >
             Consultar
           </v-btn>
@@ -148,47 +160,56 @@ nextTick(async () => {
     <div class="right-side">
       <div class="radio-group">
         <v-card width="700px">
-          <v-radio-group>
-            <div>
-              <v-radio
-                label="Agrupado por vendedor"
-                value="one"
-              ></v-radio
-            ></div>
-            <div class="radio-button"
-              ><v-radio
-                label="Agrupado por item"
-                value="two"
-              ></v-radio
-            ></div>
-          </v-radio-group>
-          <v-data-table-virtual
-            class="tableComissaoMarca"
-            items-per-page-text="Itens por página"
-            v-model:itemsPerPage="state.itemsPerPage"
-            :items-length="state.totalItems"
-            style="border-radius: 5px"
-            height="560"
-            fixed-header
-            :headers="state.headers"
-            :loading="state.loading"
-            :row-props="actions.getClassCorLinha"
-            @update:page=""
+          <v-tabs
+            v-model="state.tab"
+            bg-color="primary"
           >
-            <template #no-data>
-              <v-alert
-                :value="true"
-                icon="mdi-information"
-                style="background-color: #ffffff"
-              >
-                Não há dados disponíveis.
-              </v-alert>
-            </template>
-          </v-data-table-virtual>
+            <v-tab value="agrupadoPorVendedor">Agrupado por Vendedor</v-tab>
+            <v-tab
+              value="agrupadoPorItem"
+              @click="actions.getDadosVendaMarcaPorItens"
+              >Agrupado por Item</v-tab
+            >
+          </v-tabs>
+
+          <v-card-text>
+            <v-window v-model="state.tab">
+              <v-window-item value="agrupadoPorVendedor">
+                <v-data-table-virtual
+                  class="tableComissaoMarca"
+                  no-data-text="Não há dados disponíveis"
+                  v-model:itemsPerPage="state.totalItems"
+                  style="border-radius: 5px; max-width: 660px"
+                  height="545"
+                  fixed-header
+                  :headers="state.headers"
+                  :loading="state.loading"
+                  :items="[...state.dadosParaRelatorioVendedor, totalizadorVendedores]"
+                  :row-props="actions.getClassCorLinha"
+                >
+                </v-data-table-virtual>
+              </v-window-item>
+              <v-window-item value="agrupadoPorItem">
+                <v-data-table-virtual
+                  class="tableComissaoMarca"
+                  no-data-text="Não há dados disponíveis"
+                  v-model:itemsPerPage="state.totalItems"
+                  style="border-radius: 5px; max-width: 660px"
+                  height="545"
+                  fixed-header
+                  :headers="state.headers2"
+                  :loading="state.loading"
+                  :items="[...state.dadosParaRelatorioItens, totalizadorItens]"
+                  :row-props="actions.getClassCorLinha"
+                >
+                </v-data-table-virtual>
+              </v-window-item>
+            </v-window>
+          </v-card-text>
           <div class="pt-2 btnPrint">
             <v-btn
               color="primary"
-              @click=""
+              @click="actions.imprimirRelatorio"
               icon="mdi-printer"
               size="36px"
               title="Imprimir"
@@ -237,6 +258,20 @@ nextTick(async () => {
   <div id="pnCodigoTela">COMISSÃO_MARCA</div>
 </template>
 
+<style>
+.v-overlay__scrim {
+  background-color: black;
+}
+
+.cor-zebrada-1 {
+  background-color: #f0f0f0;
+}
+
+.cor-zebrada-2 {
+  background-color: #fff;
+}
+</style>
+
 <style scoped>
 .main-container {
   display: flex;
@@ -245,7 +280,7 @@ nextTick(async () => {
 
 .left-side {
   padding: 10px;
-  width: 30%;
+  width: 40%;
 }
 
 .right-side {
@@ -273,17 +308,27 @@ nextTick(async () => {
 }
 
 .input-data {
-  width: 126px;
+  width: 140px;
 }
 
 .inputVendedor {
-  width: 265px;
+  width: 290px;
   padding-top: 20px;
 }
 
 .valorItem {
-  width: 265px;
-  padding-top: 20px;
+  width: 290px;
+  height: 40px;
+  margin-top: 16px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  border: 1px solid rgba(0, 0, 0, 0.42);
+  border-radius: 4px;
+  padding: 6px 10px;
+}
+
+#inputValor {
+  padding-top: 5px;
 }
 
 .marcasEProdutos {
@@ -291,11 +336,18 @@ nextTick(async () => {
   gap: 12px;
   padding-top: 20px;
   width: 300px;
+  max-height: 400px;
+}
+
+.marcasCard,
+.produtosCard {
+  max-height: 390px;
+  overflow-y: auto;
 }
 
 .produtos,
 .marcas {
-  width: 120px;
+  width: 140px;
 }
 
 .spanSemProduto,
@@ -324,6 +376,7 @@ nextTick(async () => {
 
 .divBtn {
   margin-left: 80px;
+  margin-top: 45px;
 }
 
 .consultarBtn {
