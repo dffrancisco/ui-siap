@@ -17,10 +17,11 @@ export const state = reactive({
     modalMarcas: <iModalCreate>{},
     modalMarcasOpened: false,
     marcas: <iMarcas[]>[],
-    marcasEscolhidas: <iMarcas[]>[],
+    marcaEscolhida: <Array<{ marca: iMarcas, produtos: iProdutosEscolhidos[] }>>[],
     modalProdutos: <iModalCreate>{},
     modalProdutosOpened: false,
     produtos: <iProdutos[]>[],
+    produtosEditar: <iProdutosEscolhidos | null>null,
     produtosEscolhidos: <iProdutosEscolhidos[]>[],
     dadosParaRelatorioVendedor: <iDadosParaRelatorio[]>[],
     dadosParaRelatorioItens: <iDadosParaRelatorio[]>[],
@@ -186,26 +187,16 @@ export const actions = {
         state.loading = false;
     },
 
-    async getProdutos() {
-        if (state.marcasEscolhidas.length == 0) {
-            Swal.fire({
-                icon: "error",
-                text: "Selecione primeiro uma marca."
-            });
-            return
-        }
-
+    async getProdutos(idMarcaEscolhida: number) {
         state.loading = true;
 
-        const idsMarcasEscolhidas: number[] = state.marcasEscolhidas.map(marca => marca.ID_MARCA);
-
         try {
-            const data = await comissaoMarcaService.getProdutos({ marcasEscolhidas: idsMarcasEscolhidas } as iGetProdutosParam);
-            state.produtos = data
+            const data = await comissaoMarcaService.getProdutos({ marcaEscolhida: idMarcaEscolhida } as iGetProdutosParam);
+            state.produtos = data;
         } catch (error) {
             Swal.fire({
-                icon: "error",
-                text: "Erro ao buscar os Produtos."
+                icon: 'error',
+                text: 'Erro ao buscar os Produtos.',
             });
             return;
         } finally {
@@ -246,38 +237,81 @@ export const actions = {
     },
 
     adcMarcaNoCard(marcaEscolhida: iMarcas) {
-        state.marcasEscolhidas.push(marcaEscolhida);
+        state.marcaEscolhida.push({ marca: marcaEscolhida, produtos: [] });
+        actions.getProdutos(marcaEscolhida.ID_MARCA);
     },
 
     removerMarca(marca: iMarcas) {
-        state.marcasEscolhidas = state.marcasEscolhidas.filter(
-            (m) => m.ID_MARCA !== marca.ID_MARCA
+        state.marcaEscolhida = state.marcaEscolhida.filter(
+            (item) => item.marca.ID_MARCA !== marca.ID_MARCA
         );
     },
 
     adcProdutosNoCard(produtosSelecionados: iProdutosEscolhidos) {
+        const marcaAtual = state.marcaEscolhida.find(item => item.marca.ID_MARCA === state.produtos[0]?.ID_MARCA);
+        if (marcaAtual) {
+            const produtosExistentes = marcaAtual.produtos.findIndex(produto => produto.descricaoSelecionados === produtosSelecionados.descricaoSelecionados);
+            if (produtosExistentes !== -1) {
+                marcaAtual.produtos[produtosExistentes] = produtosSelecionados;
+            } else {
+                marcaAtual.produtos.push(produtosSelecionados);
+            }
+        }
+
         state.produtosEscolhidos.push(produtosSelecionados);
     },
 
     removerProdutos(descricaoSelecionados: string) {
-        state.produtosEscolhidos = state.produtosEscolhidos.filter(
-            (item) => item.descricaoSelecionados !== descricaoSelecionados
+        const currentMarca = state.marcaEscolhida.find(item =>
+            item.produtos.some(prod => prod.descricaoSelecionados === descricaoSelecionados)
         );
+        if (currentMarca) {
+            currentMarca.produtos = currentMarca.produtos.filter(
+                (item) => item.descricaoSelecionados !== descricaoSelecionados
+            );
+        }
+    },
+
+    editarProdutos(produtosEscolhidos: iProdutosEscolhidos, idMarca: number) {
+        state.produtosEditar = produtosEscolhidos
+        actions.getProdutos(idMarca);
     },
 
     validarInputs() {
-        if (!state.dataInicial || !state.dataFinal) {
+        const dataInicial = moment(state.dataInicial, 'YYYY-MM-DD');
+        const dataFinal = moment(state.dataFinal, 'YYYY-MM-DD');
+
+        if (!dataInicial.isValid() || !dataFinal.isValid()) {
             Swal.fire({
                 icon: "warning",
                 text: "Data Inválida!"
             });
-            return
+            return false;
         }
+
+        if (dataInicial.isAfter(dataFinal)) {
+            Swal.fire({
+                icon: "warning",
+                text: "Data inicial maior que a data final!"
+            });
+            return false;
+        }
+
+        const diferencaMeses = dataFinal.diff(dataInicial, 'months', true);
+
+        if (diferencaMeses > 3) {
+            Swal.fire({
+                icon: "warning",
+                text: "O intervalo entre as datas não pode ser maior que três meses!"
+            });
+            return false;
+        }
+
 
         if (state.marcas == "" || state.produtos == "") {
             Swal.fire({
                 icon: "warning",
-                text: "Escolha ao menos uma marca e produto!"
+                text: "Escolha ao menos uma marca!"
             });
             return
         }
@@ -286,7 +320,6 @@ export const actions = {
 
     async getDadosVendaMarcaPorVendedor() {
         state.loading = true;
-
         try {
             const param: iParamParaRelatorio = {
                 cod_funcionarios: state.selectedFuncionario,

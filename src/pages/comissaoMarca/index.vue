@@ -70,9 +70,9 @@ nextTick(async () => {
 
         <div class="marcasEProdutos">
           <div class="marcas">
-            <span>Marcas</span>
+            <span class="ml-2">Marcas</span>
             <v-icon
-              class="ml-16"
+              class="iconAddMarcas"
               size="large"
               color="primary"
               title="Adicionar Marca"
@@ -80,20 +80,58 @@ nextTick(async () => {
               >mdi-plus-circle</v-icon
             >
             <v-card class="mt-2 marcasCard">
-              <template v-if="state.marcasEscolhidas.length > 0">
+              <template v-if="state.marcaEscolhida.length > 0">
                 <div
-                  v-for="marca in state.marcasEscolhidas"
-                  :key="marca.ID_MARCA"
+                  v-for="item in state.marcaEscolhida"
+                  :key="item.marca?.ID_MARCA"
                   class="marca-item"
                 >
-                  <span>{{ marca.DESCRICAO }} <br />{{ marca.GRUPO.toLowerCase() }} </span>
+                  <span>{{ item.marca.DESCRICAO }} <br />{{ item.marca.GRUPO.toLowerCase() }}</span>
                   <v-icon
-                    size="small"
+                    size="large"
                     color="primary"
-                    @click="actions.removerMarca(marca)"
+                    @click="actions.removerMarca(item.marca)"
                   >
                     mdi-delete
                   </v-icon>
+                  <v-divider
+                    vertical
+                    :thickness="2"
+                  ></v-divider>
+
+                  <div
+                    v-if="item.produtos.length > 0"
+                    class="produtos-list"
+                  >
+                    <div
+                      v-for="produto in item.produtos"
+                      :key="produto.descricaoSelecionados"
+                      class="produto-item"
+                    >
+                      <span
+                        >{{ produto.descricaoSelecionados }} <br />{{
+                          produto.produtosEscolhidos.length
+                        }}
+                        itens</span
+                      >
+                      <div class="icons">
+                        <v-icon
+                          size="large"
+                          color="primary"
+                          @click="actions.editarProdutos(produto, item.marca.ID_MARCA)"
+                        >
+                          mdi-pencil
+                        </v-icon>
+                        <v-icon
+                          size="large"
+                          color="primary"
+                          @click="actions.removerProdutos(produto.descricaoSelecionados)"
+                        >
+                          mdi-delete
+                        </v-icon></div
+                      >
+                    </div>
+                  </div>
                 </div>
               </template>
               <template v-else>
@@ -102,7 +140,7 @@ nextTick(async () => {
             </v-card>
           </div>
 
-          <div class="produtos">
+          <!-- <div class="produtos">
             <span>Produtos</span
             ><v-icon
               class="ml-15"
@@ -136,8 +174,9 @@ nextTick(async () => {
                 <div class="spanSemProduto"><span>Nenhum produto selecionado.</span></div>
               </template>
             </v-card>
-          </div>
+          </div> -->
         </div>
+
         <div class="divBtn pt-4">
           <v-btn
             title="Consultar"
@@ -249,6 +288,7 @@ nextTick(async () => {
   >
     <ModalProdutos
       :produtos="state.produtos"
+      :produtosEditar="state.produtosEditar"
       :modalOpened="state.modalProdutosOpened"
       @close-modal="actions.fecharModalProdutos"
       @produtos-escolhidos="actions.adcProdutosNoCard"
@@ -339,6 +379,14 @@ nextTick(async () => {
   max-height: 400px;
 }
 
+.iconAddMarcas {
+  margin-left: 200px;
+}
+
+/* .icons {
+  justify-content: space-between;
+} */
+
 .marcasCard,
 .produtosCard {
   max-height: 390px;
@@ -347,13 +395,16 @@ nextTick(async () => {
 
 .produtos,
 .marcas {
-  width: 140px;
+  width: 280px;
 }
 
 .spanSemProduto,
 .spanSemMarca {
-  padding: 10px;
+  padding: 20px;
 }
+
+/* .produtos-list {
+} */
 
 .produto-item,
 .marca-item {

@@ -8,7 +8,7 @@ const props = defineProps<{
   modalOpened: boolean;
 }>();
 
-const emit = defineEmits(["marcaEscolhida", "closeModal"]);
+const emit = defineEmits(["marcaEscolhida", "closeModal", "abrirModalProdutos"]);
 
 watch(
   () => props.modalOpened,
@@ -67,6 +67,7 @@ const actions = {
     let marcaEscolhida = state.selecionada;
     emit("marcaEscolhida", marcaEscolhida);
     emit("closeModal");
+    state.edtSearch = "";
   },
   cancelar() {
     emit("closeModal");

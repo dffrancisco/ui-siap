@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
-import { iProdutos } from "../interfaces";
+import { iProdutos, iProdutosEscolhidos } from "../interfaces";
 
 const props = defineProps<{
   produtos: iProdutos[];
+  produtosEditar: iProdutosEscolhidos | null;
   modalOpened: boolean;
 }>();
 
@@ -57,7 +58,7 @@ watch(
   () => {
     if (props.modalOpened) {
       state.produtos = props.produtos;
-      state.selectedProdutos = [];
+      state.selectedProdutos = props.produtosEditar?.produtosEscolhidos || [];
       state.search = "";
     }
   }

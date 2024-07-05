@@ -11,10 +11,11 @@ export interface iMarcas {
     DESCRICAO: string;
     GRUPO: string;
     ID_MARCA_GRUPO: number;
+    iProdutosEscolhidos
 }
 
 export interface iGetProdutosParam {
-    marcasEscolhidas: number[];
+    marcaEscolhida: number;
 }
 
 export interface iProdutos {
