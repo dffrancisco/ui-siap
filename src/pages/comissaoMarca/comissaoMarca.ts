@@ -237,6 +237,17 @@ export const actions = {
     },
 
     adcMarcaNoCard(marcaEscolhida: iMarcas) {
+        const marcaExistente = state.marcaEscolhida.some(item => item.marca.ID_MARCA === marcaEscolhida.ID_MARCA);
+        //O método some() testa se ao menos um dos elementos no array 
+        //passa no teste implementado pela função atribuída e retorna um valor true ou false
+        if (marcaExistente) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Esta marca já foi adicionada.',
+            });
+            return;
+        }
+
         state.marcaEscolhida.push({ marca: marcaEscolhida, produtos: [] });
         actions.getProdutos(marcaEscolhida.ID_MARCA);
     },
@@ -245,35 +256,56 @@ export const actions = {
         state.marcaEscolhida = state.marcaEscolhida.filter(
             (item) => item.marca.ID_MARCA !== marca.ID_MARCA
         );
+        actions.atualizarProdutosEscolhidos();
     },
 
     adcProdutosNoCard(produtosSelecionados: iProdutosEscolhidos) {
+        if (produtosSelecionados.descricaoSelecionados == "Nenhuma descrição encontrada") {
+            return
+        }
+
         const marcaAtual = state.marcaEscolhida.find(item => item.marca.ID_MARCA === state.produtos[0]?.ID_MARCA);
         if (marcaAtual) {
-            const produtosExistentes = marcaAtual.produtos.findIndex(produto => produto.descricaoSelecionados === produtosSelecionados.descricaoSelecionados);
-            if (produtosExistentes !== -1) {
-                marcaAtual.produtos[produtosExistentes] = produtosSelecionados;
+            const produtosExistentes = marcaAtual.produtos.find(
+                produto => produto.descricaoSelecionados === produtosSelecionados.descricaoSelecionados);
+            if (produtosExistentes) {
+                // Se o produto já existe, atualize o produto existente
+                produtosExistentes.produtosEscolhidos = produtosSelecionados.produtosEscolhidos;
             } else {
+                // Se o produto não existe, adicione um novo produto
                 marcaAtual.produtos.push(produtosSelecionados);
             }
         }
 
-        state.produtosEscolhidos.push(produtosSelecionados);
+        state.produtosEditar = null;
+        actions.atualizarProdutosEscolhidos();
     },
 
-    removerProdutos(descricaoSelecionados: string) {
-        const currentMarca = state.marcaEscolhida.find(item =>
-            item.produtos.some(prod => prod.descricaoSelecionados === descricaoSelecionados)
-        );
-        if (currentMarca) {
-            currentMarca.produtos = currentMarca.produtos.filter(
-                (item) => item.descricaoSelecionados !== descricaoSelecionados
+
+    removerProdutos(idMarca: number, descricaoSelecionados: string) {
+        const marca = state.marcaEscolhida.find(item => item.marca.ID_MARCA === idMarca);
+
+        if (marca) {
+            marca.produtos = marca.produtos.filter(
+                (produto) => produto.descricaoSelecionados !== descricaoSelecionados
             );
+            actions.atualizarProdutosEscolhidos()
         }
+    },
+
+
+    atualizarProdutosEscolhidos() {
+        state.produtosEscolhidos = state.marcaEscolhida.flatMap(item => item.produtos);
+        //O método flatMap() primeiro mapeia cada elemento usando uma função de mapeamento e, 
+        //em seguida, nivela o resultado em um novo array.
     },
 
     editarProdutos(produtosEscolhidos: iProdutosEscolhidos, idMarca: number) {
         state.produtosEditar = produtosEscolhidos
+        actions.getProdutos(idMarca);
+    },
+
+    editarMarca(idMarca: number) {
         actions.getProdutos(idMarca);
     },
 
@@ -330,6 +362,13 @@ export const actions = {
             const data = await comissaoMarcaService.getDadosVendaMarcaPorVendedor(param);
             state.dadosParaRelatorioVendedor = data
         } catch (error) {
+            if (error.response.data.msg) {
+                Swal.fire({
+                    icon: "error",
+                    text: error.response.data.msg
+                });
+                return;
+            }
             Swal.fire({
                 icon: "error",
                 text: "Erro ao buscar os dados."

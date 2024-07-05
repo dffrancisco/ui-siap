@@ -58,7 +58,7 @@ watch(
   () => {
     if (props.modalOpened) {
       state.produtos = props.produtos;
-      state.selectedProdutos = props.produtosEditar?.produtosEscolhidos || [];
+      state.selectedProdutos = props.produtosEditar ? props.produtosEditar.produtosEscolhidos : [];
       state.search = "";
     }
   }

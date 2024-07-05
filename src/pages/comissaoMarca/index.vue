@@ -70,39 +70,45 @@ nextTick(async () => {
 
         <div class="marcasEProdutos">
           <div class="marcas">
-            <span class="ml-2">Marcas</span>
-            <v-icon
-              class="iconAddMarcas"
-              size="large"
-              color="primary"
-              title="Adicionar Marca"
-              @click="actions.openModalMarcas"
-              >mdi-plus-circle</v-icon
-            >
-            <v-card class="mt-2 marcasCard">
+            <div>
+              <span class="ml-2">Marcas / Produtos</span>
+              <v-icon
+                class="iconAddMarcas"
+                size="large"
+                color="primary"
+                title="Adicionar Marca"
+                @click="actions.openModalMarcas"
+              >
+                mdi-plus-circle
+              </v-icon>
+            </div>
+            <div class="marcasCard">
               <template v-if="state.marcaEscolhida.length > 0">
                 <div
                   v-for="item in state.marcaEscolhida"
                   :key="item.marca?.ID_MARCA"
-                  class="marca-item"
+                  class="marca-item mt-2"
                 >
-                  <span>{{ item.marca.DESCRICAO }} <br />{{ item.marca.GRUPO.toLowerCase() }}</span>
-                  <v-icon
-                    size="large"
-                    color="primary"
-                    @click="actions.removerMarca(item.marca)"
-                  >
-                    mdi-delete
-                  </v-icon>
-                  <v-divider
-                    vertical
-                    :thickness="2"
-                  ></v-divider>
-
-                  <div
-                    v-if="item.produtos.length > 0"
-                    class="produtos-list"
-                  >
+                  <div>
+                    <span>{{ item.marca.DESCRICAO }} <br />{{ item.marca.GRUPO.toLowerCase() }}</span
+                    ><br />
+                    <v-icon
+                      class="ml-1"
+                      size="large"
+                      color="primary"
+                      @click="actions.removerMarca(item.marca)"
+                    >
+                      mdi-delete
+                    </v-icon>
+                    <v-icon
+                      size="large"
+                      color="primary"
+                      @click="actions.editarMarca(item.marca.ID_MARCA)"
+                    >
+                      mdi-pencil
+                    </v-icon>
+                  </div>
+                  <div v-if="item.produtos.length > 0">
                     <div
                       v-for="produto in item.produtos"
                       :key="produto.descricaoSelecionados"
@@ -114,7 +120,7 @@ nextTick(async () => {
                         }}
                         itens</span
                       >
-                      <div class="icons">
+                      <div class="ml-2">
                         <v-icon
                           size="large"
                           color="primary"
@@ -125,11 +131,11 @@ nextTick(async () => {
                         <v-icon
                           size="large"
                           color="primary"
-                          @click="actions.removerProdutos(produto.descricaoSelecionados)"
+                          @click="actions.removerProdutos(item.marca.ID_MARCA, produto.descricaoSelecionados)"
                         >
                           mdi-delete
-                        </v-icon></div
-                      >
+                        </v-icon>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -137,44 +143,8 @@ nextTick(async () => {
               <template v-else>
                 <div class="spanSemMarca"><span>Nenhuma marca selecionada</span></div>
               </template>
-            </v-card>
+            </div>
           </div>
-
-          <!-- <div class="produtos">
-            <span>Produtos</span
-            ><v-icon
-              class="ml-15"
-              size="large"
-              color="primary"
-              title="Adicionar Produtos"
-              @click="actions.getProdutos"
-              >mdi-plus-circle</v-icon
-            >
-            <v-card class="mt-2 produtosCard">
-              <template v-if="state.produtosEscolhidos.length > 0">
-                <div
-                  v-for="item in state.produtosEscolhidos"
-                  :key="item.descricaoSelecionados"
-                  class="produto-item"
-                >
-                  <span
-                    >{{ item.descricaoSelecionados }} <br />
-                    {{ item.produtosEscolhidos.length }} itens</span
-                  >
-                  <v-icon
-                    size="small"
-                    color="primary"
-                    @click="actions.removerProdutos(item.descricaoSelecionados)"
-                  >
-                    mdi-delete
-                  </v-icon>
-                </div>
-              </template>
-              <template v-else>
-                <div class="spanSemProduto"><span>Nenhum produto selecionado.</span></div>
-              </template>
-            </v-card>
-          </div> -->
         </div>
 
         <div class="divBtn pt-4">
@@ -348,16 +318,16 @@ nextTick(async () => {
 }
 
 .input-data {
-  width: 140px;
+  width: 145px;
 }
 
 .inputVendedor {
-  width: 290px;
+  width: 300px;
   padding-top: 20px;
 }
 
 .valorItem {
-  width: 290px;
+  width: 300px;
   height: 40px;
   margin-top: 16px;
   font-size: 14px;
@@ -377,48 +347,42 @@ nextTick(async () => {
   padding-top: 20px;
   width: 300px;
   max-height: 400px;
+  /* padding-left: 5px; */
 }
 
 .iconAddMarcas {
-  margin-left: 200px;
+  margin-left: 150px;
 }
-
-/* .icons {
-  justify-content: space-between;
-} */
 
 .marcasCard,
 .produtosCard {
   max-height: 390px;
   overflow-y: auto;
+  border-radius: 10px;
 }
 
 .produtos,
 .marcas {
-  width: 280px;
+  width: 300px;
 }
 
-.spanSemProduto,
 .spanSemMarca {
   padding: 20px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
 }
-
-/* .produtos-list {
-} */
 
 .produto-item,
 .marca-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px;
-  width: auto;
+  padding: 12px;
   margin-top: 5px;
-  border-bottom: 1px solid #ccc;
-}
-
-.produto-item span .marca-item span {
-  flex-grow: 1;
+  width: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
 }
 
 .v-icon {
