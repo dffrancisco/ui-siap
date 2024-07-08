@@ -238,8 +238,7 @@ export const actions = {
 
     adcMarcaNoCard(marcaEscolhida: iMarcas) {
         const marcaExistente = state.marcaEscolhida.some(item => item.marca.ID_MARCA === marcaEscolhida.ID_MARCA);
-        //O método some() testa se ao menos um dos elementos no array 
-        //passa no teste implementado pela função atribuída e retorna um valor true ou false
+        //O método some() testa se ao menos um dos elementos no array passa no teste implementado pela função atribuída e retorna um valor true ou false
         if (marcaExistente) {
             Swal.fire({
                 icon: 'warning',
@@ -269,10 +268,10 @@ export const actions = {
             const produtosExistentes = marcaAtual.produtos.find(
                 produto => produto.descricaoSelecionados === produtosSelecionados.descricaoSelecionados);
             if (produtosExistentes) {
-                // Se o produto já existe, atualize o produto existente
+                // Se o produto já existe, atualiza os produtos existentes
                 produtosExistentes.produtosEscolhidos = produtosSelecionados.produtosEscolhidos;
             } else {
-                // Se o produto não existe, adicione um novo produto
+                // Se o produto não existe, adiciona os novos produtos
                 marcaAtual.produtos.push(produtosSelecionados);
             }
         }
@@ -296,8 +295,7 @@ export const actions = {
 
     atualizarProdutosEscolhidos() {
         state.produtosEscolhidos = state.marcaEscolhida.flatMap(item => item.produtos);
-        //O método flatMap() primeiro mapeia cada elemento usando uma função de mapeamento e, 
-        //em seguida, nivela o resultado em um novo array.
+        //O método flatMap() primeiro mapeia cada elemento usando uma função de mapeamento e, em seguida, nivela o resultado em um novo array.
     },
 
     editarProdutos(produtosEscolhidos: iProdutosEscolhidos, idMarca: number) {
@@ -339,8 +337,7 @@ export const actions = {
             return false;
         }
 
-
-        if (state.marcas == "" || state.produtos == "") {
+        if (state.marcaEscolhida == "") {
             Swal.fire({
                 icon: "warning",
                 text: "Escolha ao menos uma marca!"
