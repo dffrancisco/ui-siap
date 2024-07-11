@@ -69,7 +69,8 @@ export const state = reactive({
     itensTipoCargo: [
         { title: 'Vendedores', value: 0 },
         { title: 'Montadores', value: 1 },
-    ]
+    ],
+    mostrarTotalizadores: true
 })
 
 export const meses = mesesToSelect;
