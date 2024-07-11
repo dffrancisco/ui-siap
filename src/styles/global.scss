@@ -1,3 +1,109 @@
+:root {
+    --primary-100: #e5f3ff;
+    --primary-200: #cbe6ff;
+    --primary-300: #b1daff;
+    --primary-400: #97cdff;
+    --primary-500: #7dc1ff;
+    --primary-600: #319dff;
+    --primary-700: #0077e4;
+    --primary-800: #005098;
+    --primary-900: #00284c;
+
+    --grey-100: #eef0f4;
+    --grey-200: #dde1e8;
+    --grey-300: #cbd3dd;
+    --grey-400: #bac4d1;
+    --grey-500: #a9b5c6;
+    --grey-600: #7d8fa9;
+    --grey-700: #586a84;
+    --grey-800: #3b4758;
+    --grey-900: #1d232c;
+    --grey-0: #161b21;
+    --grey-minus-100: #0f1216;
+    --grey-minus-200: #07090b;
+
+    --purple-100: #ecd0fd;
+    --purple-200: #d8a1fa;
+    --purple-300: #c571f8;
+    --purple-400: #b142f5;
+    --purple-500: #9e13f3;
+    --purple-600: #800ac7;
+    --purple-700: #600896;
+    --purple-800: #400564;
+    --purple-900: #200332;
+
+    --danger-100: #ffe5ec;
+    --danger-200: #ffcbd9;
+    --danger-300: #ffb1c7;
+    --danger-400: #ff97b4;
+    --danger-500: #ff7da1;
+    --danger-600: #ff316a;
+    --danger-700: #e4003f;
+    --danger-800: #98002a;
+    --danger-900: #4c0015;
+
+    --warning-100: #fff2da;
+    --warning-200: #ffe6b5;
+    --warning-300: #ffd98f;
+    --warning-400: #ffcd6a;
+    --warning-500: #ffc045;
+    --warning-600: #ffaa04;
+    --warning-700: #c28100;
+    --warning-800: #825600;
+    --warning-900: #412b00;
+
+    --success-100: #cafbec;
+    --success-200: #95f7d9;
+    --success-300: #60f3c6;
+    --success-400: #2befb3;
+    --success-500: #10d096;
+    --success-600: #0da678;
+    --success-700: #0a7d5a;
+    --success-800: #06533c;
+    --success-900: #032a1e;
+
+    --info-100: #caf6f9;
+    --info-200: #95edf2;
+    --info-300: #60e4ec;
+    --info-400: #2cdae6;
+    --info-500: #17b5bf;
+    --info-600: #129199;
+    --info-700: #0e6d73;
+    --info-800: #09484c;
+    --info-900: #052426;
+}
+
 .click {
     cursor: pointer;
+}
+
+.swal2-container {
+    z-index: 2600 !important;
+}
+
+.swal-dark {
+    background-color: #333 !important; /* cor de fundo escura */
+    color: #fff !important; /* cor do texto */
+}
+
+.swal-dark .swal-title {
+    color: #fff !important; /* cor do título */
+}
+
+.swal-dark .swal-text {
+    color: #ddd !important; /* cor do texto do conteúdo */
+}
+
+.swal-dark .swal-footer {
+    background-color: #222 !important; /* cor de fundo do rodapé */
+}
+
+.swal-dark .swal-button {
+    background-color: #444 !important; /* cor de fundo dos botões */
+    border-color: #fff !important; /* cor da borda dos botões */
+    color: #fff !important; /* cor do texto dos botões */
+}
+
+.swal-dark .swal-button:hover {
+    background-color: #555 !important; /* cor de fundo dos botões quando hover */
 }

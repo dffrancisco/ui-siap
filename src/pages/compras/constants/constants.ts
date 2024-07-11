@@ -1,0 +1,16 @@
+export const MAP_COL_PRODUTO = {
+    'COD_PRODUTO': 'A',
+    'DESC_PRODUTO': 'B',
+    'FOTO': 'D',
+    'NUM_FABRICANTE': 'E',
+    'NUM_FABRICANTE2': 'F',
+    'QUANTIDADE': 'G',
+    'UNIDADE': 'H',
+    'VENDA': 'I',
+    'CUSTO': 'J',
+    'DESCRICAO_CARRO': 'L',
+    'DESCRICAO_MARCA': 'M',
+    'PRODUTO_NOVO': 'N',
+    'CURVA_ABC_G': 'CG',
+    'CURVA_ABC_M': 'CM',
+}

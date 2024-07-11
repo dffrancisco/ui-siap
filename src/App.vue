@@ -153,4 +153,8 @@ const installApp = () => {
   top: 260px;
   left: 115px;
 }
+
+html {
+  height: 100vh;
+}
 </style>

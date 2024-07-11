@@ -44,7 +44,7 @@ export interface ixGridOptions {
     title?: boolean;
     setfocus?: number,
     multiSelect?: boolean;
-    theme?: "x-grayV2" | "x-darkV2" | "x-opacite" | "x-whiteV2" | "x-blue";
+    theme?: "x-grayV2" | "x-darkV2" | "x-opacite" | "x-whiteV2" | "x-blue" | 'x-bocatan' | 'x-modern-dark';
     columns?: {
         [titleColumn: string]: {
             dataField: string,

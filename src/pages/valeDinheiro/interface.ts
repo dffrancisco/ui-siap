@@ -50,3 +50,10 @@ export interface iParamPagarValeRequest {
   }[],
   COD_FUNCIONARIO_PAGADOR: number,
 }
+
+export interface iHistoricoMes {
+  mesExtenso: string,
+  mes: number,
+  ano: number,
+  qtd: number,
+}

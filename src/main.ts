@@ -24,6 +24,7 @@ const pluginOptions = {
 
 axios.defaults.baseURL = config.SERVER + ":" + config.PORT
 
+//@ts-ignore
 window.Buffer = Buffer;
 
 app.use(vuetify)
