@@ -752,7 +752,7 @@ export const printComCabecalho = async (columns: iColumnPrint[], data: iDataPrin
 
   let htmlContent = `
       <div style="text-align: center; display: flex; align-items: center">
-        <img src="../public/Logo-Real-Shop-Car-menor.png" alt="Logo" style="height: 90px; margin-right: 10px"/>
+        <img src="./Logo-Real-Shop-Car-menor.png" alt="Logo" style="height: 90px; margin-right: 10px"/>
         <div style="display: flex; flex-direction: column; gap: 4px; align-items: start; width: 100%">
             <div style="display: flex; justify-content: space-between; width: 100%">
               <strong>${empresa.RAZAO_SOCIAL}</strong>
