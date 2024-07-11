@@ -81,6 +81,12 @@ const actions = {
         Marca: { dataField: MAP_COL_PRODUTO.DESCRICAO_MARCA, width: "14%" },
         Qtd: { dataField: "PEDIDO_QTD_ADICIONADA", center: true, width: "10%" },
         Custo: { dataField: "PEDIDO_CUSTO_ADICIONADO", center: true, render: utils.formatValor, width: "10%" },
+        Total: { dataField: "TOTAL", compare: "total", width: "10%" },
+      },
+      compare: {
+        total(r) {
+          return utils.formatValor(r.PEDIDO_CUSTO_ADICIONADO * r.PEDIDO_QTD_ADICIONADA);
+        },
       },
       onSelectLine: (dados) => {
         let indexProdutoSelecionadoGrid = props.keysProdutos.findIndex(
@@ -94,7 +100,7 @@ const actions = {
           state.modalAdicionarItemOpened = true;
         },
         46: (dados, e) => {
-          utils.confirmaCodigo({
+          utils.confirma({
             msg: "Deseja realmente deletar o item do pedido?",
             theme: "xModal-dark-square",
             call: async () => {
