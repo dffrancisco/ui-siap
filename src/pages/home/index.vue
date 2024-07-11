@@ -192,6 +192,24 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/devolucaoDePecas')"
+              >Devolução de Peças</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/vendaPerdida')"
+              >Venda Perdida</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/historicoConsultaLojas')"
+              >Histórico Consulta Lojas</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="login.actions.confirmarSaida()"
             >
               Logout
