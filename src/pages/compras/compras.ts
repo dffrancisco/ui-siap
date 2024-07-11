@@ -1,158 +1,259 @@
-import axios from 'axios';
-import utils from '@/ts/utils';
-import { reactive } from 'vue'
-import Swal from 'sweetalert2';
-import { msgConfirm } from '@/ts/message';
-import globalState from '@/store/globalState'
-import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
+import { computed, reactive } from 'vue'
+import comprasService from './services/compras.service'
+import {
+    iCompra, iMarca, iParamInsertCompra, iParamUpdateCompra,
+    iProdutoAdicionadoObj, objMarcasAgrupadas, iTransportadora,
+    iDadosImpressao
+} from './interfaces'
+import moment from 'moment'
+import utils, { swalDarkError, swalDarkSuccess } from '../../ts/utils'
+import router from '../../router'
 
-const caminho = "siap/compras"
-const mapa = {
-    COD_PRODUTO: 'A',
-    DESC_PRODUTO: 'B',
-    END_ESTOQUE: 'C',
-    FOTO: 'D',
-    NUM_FABRICANTE: 'E',
-    NUM_FABRICANTE2: 'F',
-    QUANTIDADE: 'G',
-    UNIDADE: 'H',
-    VENDA: 'I',
-    CUSTO: 'J',
-    CARRO: 'L',
-    MARCA: 'M',
-    NEW_CADASTRO: 'N',
-    CURVA_ABC_G: 'CG',
-    CURVA_ABC_M: 'CM',
-    VALOR_VENDA: 'VV'
-}
-
-
-// interface _ixGridCreate extends ixGridCreate {
-//     dataSource: (obj?: object) => iCarro
-// }
+const TODAS_AS_MARCAS = 'TODAS AS MARCAS';
 
 export const state = reactive(({
-    xgProduto: <ixGridCreate>{},
-
-    displayProduto: {
-        defalt: true,
-        simples: {
-            columns: {
-                'Descrição Produto -- (quando online produto da CENTRAL)': { dataField: mapa.DESC_PRODUTO, compare: 'produto' }
-            },
-            heightLine: 95
-        },
-        mult: {
-            columns: {
-                'Nº Fabricante': { dataField: mapa.NUM_FABRICANTE, width: '10%' },
-                'Descrição Produto': { dataField: mapa.DESC_PRODUTO },
-                'Curva G': { dataField: mapa.CURVA_ABC_M, width: '7%', style: 'text-align:center' },
-                'Curva M': { dataField: mapa.CURVA_ABC_G, width: '7%', style: 'text-align:center' },
-                'Carro': { dataField: mapa.CARRO, width: '15%' },
-                'Qto': { dataField: mapa.QUANTIDADE, width: '5%', style: 'text-align: center' },
-                'Preço': { dataField: mapa.VALOR_VENDA, width: '8%', render: utils.formatValor, style: 'text-align: right' }
-            },
-            heightLine: 30
-        },
-        uso: {
-            columns: {},
-            heightLine: 40
-        },
-    },
-
+    edtMarca: '',
+    compras: <iCompra[]>[],
+    marcas: <iMarca[]>[],
+    loading: false,
+    modalDadosPedidoOpened: false,
+    modalImpressaoOpened: false,
+    compraAlterar: <iCompra>{},
+    nomeMarcaSelecionada: TODAS_AS_MARCAS,
+    objProdutosAdicionados: <iProdutoAdicionadoObj>{},
+    transportadoras: <iTransportadora[]>[],
+    dadosImpressao: <iDadosImpressao>{},
 }))
 
-
 export const actions = {
-
-    grids() {
-
-        state.xgProduto = new xGridV2.create({
-            el: "#xgProduto",
-            height: 130,
-            heightLine: state.displayProduto.uso.heightLine,
-            columns: state.displayProduto.uso.columns,
-            compare: {
-                produto: (r) => {
-                    let foto = r[mapa.FOTO] == 'F' ? '<i style="font-size: 14px" class="fa fa-camera"></i>' : '';
-
-                    return '<v-row></v-row>' +
-                        '<div class="aGrid">' +
-                        '<div class="row">' +
-                        '<div class="col s11">' +
-                        '    <span>Descrição ' + r[mapa.COD_PRODUTO] + ' Foto ' + r[mapa.FOTO] + ' </span>' +
-                        '    <label class="vverd">' + r[mapa.DESC_PRODUTO] + '</label>' +
-                        '</div>' +
-                        '<div class="col s1">' +
-                        '    <span>Foto</span>' +
-                        '    <label >' + foto + '</label>' +
-                        '</div>' +
-                        '</div>' +
-                        '<div class="row">' +
-                        '<div class="col s4">' +
-                        '    <span>Carro Compra</span>' +
-                        '    <label>' + r[mapa.CARRO] + '</label>' +
-                        '</div>' +
-                        '<div class="col s3">' +
-                        '    <span>Nº Fabricante</span>' +
-                        '    <label>' + r[mapa.NUM_FABRICANTE] + '</label>' +
-                        '</div>' +
-                        // '<div class="col s3">' +
-                        // '    <span>Nº Fabricante2</span>' +
-                        // '    <label>' + r[mapa.NUM_FABRICANTE2] + '</label>' +
-                        // '</div>' +
-                        // '<div class="col s2">' +
-                        // '    <span>ABC G</span>' +
-                        // // '    <label>' + corCurvaABC(r[mapa.CURVA_ABC_G]) + '</label>' +
-                        // '</div>' +
-                        // '</div>' +
-                        // '<div class="row">' +
-                        // '<div class="col s4">' +
-                        // '    <span>Marca</span>' +
-                        // '    <label style="font-size:16px; padding-top: 3;" class="truncate">' + r[mapa.MARCA] + '</label>' +
-                        // '</div>' +
-                        // //                                '<div class="col s3">' +
-                        // //                                '    <span>Quantidade</span>' +
-                        // //                                '    <label>' + r[mapa.QUANTIDADE] + '</label>' +
-                        // //                                '</div>' +
-                        // '<div class="col s3">' +
-                        // '   <span>Custo</span>' +
-                        // '    <label>' + utils.formatValor(r[mapa.CUSTO]) + '</label>' +
-                        // '</div>' +
-                        // '<div class="col s3">' +
-                        // '    <span>Venda</span>' +
-                        // '    <label>' + utils.formatValor(r[mapa.VENDA]) + '</label>' +
-                        // '</div>' +
-                        '<div class="col s2">' +
-                        '    <span>ABC M</span>' +
-                        // '    <label>' + corCurvaABC(r[mapa.CURVA_ABC_M]) + '</label>' +
-                        '</div></div></div>';
-
-                }
-            },
-
-        });
-
+    init: async () => {
+        state.loading = true;
+        await actions.getCompras();
+        await actions.getMarcas();
+        state.loading = false;
     },
 
-    async getProdutos() {
-        let { data } = await axios.post(caminho, {
-            call: 'getProdutos',
-            idCarro: '9999',
-            idMarca: 194,
-            numFabricante: '',
-            descProduto: ''
+    onKeyDown: (event: KeyboardEvent) => {
+        if (event.key === 'F1') {
+            actions.onClickNovoPedido();
+            event.preventDefault();
+            return;
+        }
+
+        if (event.key === 'F2') {
+            //@ts-ignore
+            document.querySelector('#edtMarca').focus();
+            event.preventDefault();
+        }
+    },
+
+    getCompras: async () => {
+        try {
+            let dados = await comprasService.getCompras()
+            state.compras = dados;
+        } catch (error) {
+            swalDarkError('Ocorreu um erro ao buscar as compras')
+        }
+    },
+
+    getMarcas: async () => {
+        try {
+            let dados = await comprasService.getMarcas()
+            state.marcas = dados;
+        } catch (error) {
+            swalDarkError('Ocorreu um erro ao buscar as marcas')
+        }
+    },
+
+    onKeyPressEnterMarca: () => {
+        if (marcasAgrupadas.value.length == 1) {
+            state.nomeMarcaSelecionada = marcasAgrupadas.value[0].nomeMarca
+        }
+    },
+
+    onClickNovoPedido: () => {
+        state.modalDadosPedidoOpened = true;
+    },
+
+    onClickAlterarCompra: (compra: iCompra) => {
+        state.compraAlterar = compra;
+        state.modalDadosPedidoOpened = true;
+    },
+
+    onClickDeletarCompra: (compra: iCompra) => {
+        utils.confirmaCodigo({
+            msg: 'Deseja realmente deletar o pedido?',
+            theme: 'xModal-dark-square',
+            call: async () => {
+                try {
+                    state.loading = true;
+
+                    await comprasService.deleteCompra({ ID_COMPRAS: compra.ID_COMPRAS });
+
+                    let indexCompra = state.compras.findIndex(item => item.ID_COMPRAS == compra.ID_COMPRAS)
+
+                    state.compras.splice(indexCompra, 1);
+
+                    swalDarkSuccess('Compra deletada com sucesso!');
+                } catch (error) {
+                    swalDarkError(error?.response?.data?.msg || 'Ocorreu um erro ao deletar compra');
+                } finally {
+                    state.loading = false;
+                }
+            }
         })
+    },
 
+    onClickImprimir: async (compra: iCompra) => {
+        state.loading = true;
+        try {
+            state.objProdutosAdicionados = await comprasService.getProdutosAdicionados(compra.ID_COMPRAS);
+        } catch (error) {
+            swalDarkError(error?.response?.data?.msg || 'Ocorreu um erro ao buscar itens do pedido')
+        } finally {
+            state.loading = false;
+        }
 
-        state.xgProduto.source(data);
+        if (state.transportadoras.length == 0) {
+            try {
+                state.transportadoras = await comprasService.getTransportadoras();
+            } catch (error) {
+                swalDarkError(error?.response?.data?.msg || 'Ocorreu um erro ao buscar transportadoras')
+            } finally {
+                state.loading = false;
+            }
+        }
 
-        // console.log(data);
-    }
+        state.dadosImpressao.NOME_MARCA = compra.NOME_MARCA;
+        state.dadosImpressao.OBSERVACAO = compra.OBS || '';
+        state.modalImpressaoOpened = true;
+    },
 
+    closeModalDadosPedido: () => {
+        state.modalDadosPedidoOpened = false;
+        state.compraAlterar = {} as iCompra;
+    },
 
+    closeModalImpressao: () => {
+        state.modalImpressaoOpened = false;
+        state.objProdutosAdicionados = {} as iProdutoAdicionadoObj;
+    },
 
+    redirectToItensdoPedido: (idCompras: number, idMarca: number) => {
+        router.push({
+            name: "comprasItens",
+            query: {
+                idCompras,
+                idMarca
+            },
+        });
+    },
+
+    insertCompra: async (param: iParamInsertCompra) => {
+        try {
+            state.loading = true
+
+            const { ID_COMPRAS, ID_MARCA } = await comprasService.insertCompra(param);
+
+            actions.closeModalDadosPedido();
+
+            actions.redirectToItensdoPedido(ID_COMPRAS, ID_MARCA);
+
+        } catch (error) {
+            swalDarkError(error?.response?.data?.msg || 'Ocorreu um erro ao inserir compra');
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    updateCompra: async (param: iParamUpdateCompra) => {
+        try {
+            state.loading = true
+
+            await comprasService.updateCompra(param);
+
+            actions.closeModalDadosPedido();
+
+            let indexCompra = state.compras.findIndex(compra => compra.ID_COMPRAS == param.ID_COMPRAS)
+
+            state.compras[indexCompra] = {
+                ...state.compras[indexCompra],
+                ...param
+            }
+
+            swalDarkSuccess('Pedido alterado com sucesso!')
+
+        } catch (error) {
+            swalDarkError(error?.response?.data?.msg || 'Ocorreu um erro ao inserir compra');
+        } finally {
+            state.loading = false;
+        }
+    },
 }
 
+export const comprasFiltradas = computed(() => {
+    if (state.nomeMarcaSelecionada == TODAS_AS_MARCAS) {
+        return state.compras
+    }
+
+    return state.compras.filter(compra => {
+        return compra.NOME_MARCA.toLocaleLowerCase() == state.nomeMarcaSelecionada.toLocaleLowerCase() ? true : false
+    })
+})
+
+export const marcasAgrupadas = computed(() => {
+    let objMarcasAgrupadas: objMarcasAgrupadas = {}
+    objMarcasAgrupadas[TODAS_AS_MARCAS] = {
+        nomeMarca: TODAS_AS_MARCAS,
+        qtd: 0,
+        valor: 0,
+        selecionada: true,
+    }
+
+    state.compras.forEach(compra => {
+        if (objMarcasAgrupadas[compra.NOME_MARCA] == undefined) {
+            objMarcasAgrupadas[compra.NOME_MARCA] = {
+                qtd: 0,
+                valor: 0,
+                nomeMarca: compra.NOME_MARCA,
+                selecionada: false,
+            }
+        }
+
+        objMarcasAgrupadas[compra.NOME_MARCA].qtd++;
+        objMarcasAgrupadas[compra.NOME_MARCA].valor += compra.VALOR
+
+        objMarcasAgrupadas[TODAS_AS_MARCAS].qtd++;
+        objMarcasAgrupadas[TODAS_AS_MARCAS].valor += compra.VALOR;
+    })
+
+    let marcas = Object.values(objMarcasAgrupadas)
+        .sort((marcaA, marcaB) => {
+            return marcaB.valor - marcaA.valor
+        });
+
+    if (state.edtMarca) {
+        marcas = marcas.filter(marca => marca.nomeMarca.toLocaleLowerCase().indexOf(state.edtMarca.toLocaleLowerCase()) > -1)
+    }
+
+    return marcas
+})
+
+export const valorPendente = computed(() => {
+    let valorTotal = 0
+    comprasFiltradas.value.forEach(compra => valorTotal += compra.VALOR)
+
+    return valorTotal;
+})
+
+export const qtdPedidosMaisDe20Dias = computed(() => {
+    let pedidos = comprasFiltradas.value.filter(compra => {
+        let dataPedido = compra.DATA
+        let dataLimite = moment(dataPedido).add(20, 'days');
+        return moment().isAfter(dataLimite) ? true : false;
+    })
+
+    return pedidos.length;
+})
 
 export default { state, actions }

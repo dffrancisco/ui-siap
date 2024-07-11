@@ -1,0 +1,629 @@
+import { computed, nextTick, reactive } from 'vue'
+import comprasItensService, { getColorQtdEstoque } from './services/comprasItens.service';
+import { sleep, swalDarkError, swalDarkWarning } from '@/ts/utils';
+import moment from 'moment';
+import { MAP_COL_PRODUTO, MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
+import {
+    iAbaHistorico,
+    iAbaItens,
+    iCabecalhoCompra,
+    iCarro,
+    iHistoricoMes,
+    iItemFila,
+    iMarca,
+    iObjHistoricoCompraGeral,
+    iObjHistoricoVendaGeral,
+    iParamEmitAdicionarItem,
+    iParamEmitBuscarProdutos,
+    iProduto,
+    iProdutoAdicionadoObj,
+    iProdutoObj,
+    iTipoVisualizacao
+} from './interfaces';
+
+export const state = reactive(({
+    loading: true,
+    loadingHistoricoVendas: true,
+    loadingHistoricoCompras: true,
+    loadingProdutosAdicionados: true,
+    idCompras: <number | undefined>undefined,
+    cabecalho: <iCabecalhoCompra>{},
+    carros: <iCarro[]>[],
+    marcas: <iMarca[]>[],
+    edtNumFabricante: undefined,
+    edtDescricao: undefined,
+    edtCarro: undefined,
+    edtMarca: <number | undefined>undefined,
+    produtos: <iProdutoObj>{},
+    keyProdutos: <string[]>[],
+    produtosAdicionados: <iProdutoAdicionadoObj>{},
+    historicoVendasGeral: <iObjHistoricoVendaGeral>{},
+    historicoComprasGeral: <iObjHistoricoCompraGeral>{},
+    historicoMesesVenda: <iHistoricoMes[]>[],
+    historicoMesesCompra: <iHistoricoMes[]>[],
+    abaHistorico: <iAbaHistorico>'vendas',
+    abaItens: <iAbaItens>'nao_adicionados',
+    tipoVisualizacaoItem: <iTipoVisualizacao>"unica",
+    indexProdutoSelecionado: 0,
+    qtdMaxItensVistosByMarca: {},
+    qtdItensMarca: 0,
+    indexUltimoItemVisto: 0,
+    indexUltimoItemAdicionado: undefined,
+    filaItens: <iItemFila[]>[],
+    persistindoItem: false,
+    modalImpressaoOpened: false,
+    transportadoras: [],
+}))
+
+setInterval(async () => {
+
+    if (state.persistindoItem) return;
+
+    if (state.filaItens.length == 0) return;
+
+    let item = state.filaItens[0];
+
+    if (item.ACAO == 'ADD' && item.TENTATIVAS <= 3) {
+        state.persistindoItem = true;
+        await actions.persistirItemFilaADD(item, 0);
+        state.persistindoItem = false;
+    }
+
+    if (item.ACAO == 'REM' && item.TENTATIVAS <= 3) {
+        state.persistindoItem = true;
+        await actions.persistirItemFilaREM(item, 0);
+        state.persistindoItem = false;
+    }
+
+}, 1000);
+
+const getLast12Months = () => {
+    const nomeMeses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+    const result = [] as iHistoricoMes[];
+
+    for (let i = 0; i < 12; i++) {
+        const date = moment().subtract(i, 'months');
+        const nomeMes = nomeMeses[date.month()];
+
+        result.unshift({ mesExtenso: nomeMes, mes: date.month() + 1, ano: date.year(), qtd: 0 });
+    }
+
+    return result.reverse();
+}
+
+const historicoMesesDefault = getLast12Months();
+
+export const actions = {
+    init: async () => {
+
+        state.historicoMesesVenda = [...historicoMesesDefault]
+        state.historicoMesesCompra = [...historicoMesesDefault]
+
+        state.loading = true;
+
+        try {
+            const promiseDadosIniciais = comprasItensService.getDadosIniciais({
+                ID_COMPRAS: state.idCompras
+            })
+
+            const promiseProdutos = actions.buscarProdutos({ ID_MARCA: state.edtMarca })
+            actions.buscarProdutosAdicionados(state.idCompras);
+
+            const [dadosIniciais] = await Promise.all([promiseDadosIniciais, promiseProdutos])
+
+            state.cabecalho = dadosIniciais.cabecalho;
+            state.carros = dadosIniciais.carros;
+            state.marcas = dadosIniciais.marcas;
+            state.edtMarca = state.cabecalho.ID_MARCA;
+            state.transportadoras = dadosIniciais.transportadoras;
+            actions.focarNosItens();
+        } catch (error) {
+            swalDarkError(error?.response?.data.msg || 'Erro ao buscar dados do pedido');
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async abrirModalImpressao() {
+        state.modalImpressaoOpened = true;
+    },
+
+    fecharModalImpressao() {
+        state.modalImpressaoOpened = false;
+    },
+
+    focarNosItens: () => {
+        //@ts-ignore
+        document.querySelector('#compras-detalhes').focus();
+    },
+
+    buscarHistoricoVendas: async (param: iParamEmitBuscarProdutos) => {
+        try {
+            state.loadingHistoricoVendas = true;
+            state.historicoVendasGeral = await comprasItensService.getHistoricoVendas(param);
+        } catch (error) {
+            if (error.__CANCEL__) return;
+            swalDarkError('Erro ao buscar histórico de vendas');
+        } finally {
+            state.loadingHistoricoVendas = false;
+        }
+    },
+
+    buscarHistoricoCompras: async (param: iParamEmitBuscarProdutos) => {
+        try {
+            state.loadingHistoricoCompras = true;
+            state.historicoComprasGeral = await comprasItensService.getHistoricoCompras(param);
+        } catch (error) {
+            if (error.__CANCEL__) return;
+            swalDarkError('Erro ao buscar histórico de compras');
+        } finally {
+            state.loadingHistoricoCompras = false;
+        }
+    },
+
+    buscarProdutosAdicionados: async (idCompras: number) => {
+        try {
+            state.loading = true;
+            state.produtosAdicionados = await comprasItensService.getProdutosAdicionados(idCompras);
+        } catch (error) {
+            swalDarkError('Erro ao buscar produtos adicionados');
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    buscarProdutos: async (param: iParamEmitBuscarProdutos) => {
+
+        if (state.loading || state.loadingHistoricoCompras || state.loadingHistoricoVendas) {
+            comprasItensService.cancelarRequisicao();
+        }
+
+        if (!param.ID_MARCA) {
+            return swalDarkWarning('É necessário informar a marca');
+        }
+
+        state.loading = true;
+        state.indexProdutoSelecionado = 0;
+        state.abaItens = 'nao_adicionados';
+
+        if (param.ID_MARCA != state.edtMarca) {
+            let keyMarca = 'marca:' + state.edtMarca
+            state.qtdMaxItensVistosByMarca[keyMarca] = 1
+        }
+
+        try {
+            actions.buscarHistoricoVendas(param)
+            actions.buscarHistoricoCompras(param)
+
+            const response = await comprasItensService.getProdutos(param)
+
+
+            state.edtMarca = param.ID_MARCA;
+            state.produtos = response.produtos;
+            state.qtdItensMarca = response.qtdItensMarca;
+            state.keyProdutos = Object.keys(state.produtos);
+
+        } catch (error) {
+            if (error.__CANCEL__) return;
+            swalDarkError(error?.response?.data.msg || 'Erro ao buscar produtos');
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    setAbaHistorico: (abaHistorico: iAbaHistorico) => {
+        state.abaHistorico = abaHistorico;
+    },
+
+    setAbaItens: (abaItens: iAbaItens) => {
+        if (state.abaItens == 'nao_adicionados') {
+            state.indexUltimoItemVisto = state.indexProdutoSelecionado
+        }
+
+        if (state.abaItens == 'adicionados') {
+            actions.changeIndexProdutoSelecionado(state.indexUltimoItemVisto)
+        }
+
+        state.abaItens = abaItens;
+    },
+
+    setTipoVisualizacaoItem: (tipoVisualizacaoItem: iTipoVisualizacao) => {
+        state.tipoVisualizacaoItem = tipoVisualizacaoItem
+    },
+
+    async focarContainerItem() {
+        await sleep(100);
+        // @ts-ignore
+        document.querySelector("#containerItem").focus();
+    },
+
+    onKeydownContainerPrincipal: async (e: KeyboardEvent) => {
+        if (state.abaItens == 'nao_adicionados' && state.tipoVisualizacaoItem == 'unica') {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                actions.onClickVoltarItem()
+                e.preventDefault();
+                return;
+            }
+
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                actions.onClickAvancarItem()
+                e.preventDefault();
+                return;
+            }
+        }
+
+        if (e.key == 'F1') {
+            let elemento = document.getElementById('edtNumFabricante')
+            elemento.click();
+            e.preventDefault();
+            return;
+        }
+
+        if (e.key == 'F2') {
+            let elemento = document.getElementById('edtDescricao')
+            elemento.click();
+            e.preventDefault();
+            return;
+        }
+
+        if (e.key == 'F3') {
+            let elemento = document.getElementById('edtCarro')
+            elemento.click();
+            e.preventDefault();
+            return;
+        }
+
+        if (e.key == 'F6') {
+            let elemento = document.getElementById('edtMarca')
+            elemento.click();
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'A' || e.key == 'a')) {
+            state.abaItens = 'adicionados';
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'I' || e.key == 'i')) {
+            state.abaItens = 'nao_adicionados';
+            await nextTick();
+            actions.focarContainerItem();
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'M' || e.key == 'm')) {
+            if (state.tipoVisualizacaoItem == 'lista') {
+                actions.setTipoVisualizacaoItem('unica')
+                actions.focarContainerItem();
+            } else {
+                actions.setTipoVisualizacaoItem('lista')
+            }
+
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'V' || e.key == 'v')) {
+            actions.setAbaHistorico('vendas')
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'C' || e.key == 'c')) {
+            actions.setAbaHistorico('compras')
+            e.preventDefault();
+            return;
+        }
+
+        if (e.altKey && (e.key == 'P' || e.key == 'p')) {
+            actions.abrirModalImpressao();
+            e.preventDefault();
+        }
+    },
+
+    onUpdateModalAdicionarItem() {
+        setTimeout(() => {
+            actions.focarNosItens();
+        }, 100);
+    },
+
+    changeIndexProdutoSelecionado(index: number) {
+        let keyMarca = 'marca:' + state.edtMarca;
+        let qtdItensVisitadosMarca = state.qtdMaxItensVistosByMarca[keyMarca] || 1;
+
+        if (state.abaItens == 'nao_adicionados') {
+            let indexPosteriorAoSelecionado = index > state.indexProdutoSelecionado;
+            let indexPosteriorQtdAtualVista = index > (qtdItensVisitadosMarca - 1)
+            if (indexPosteriorAoSelecionado && indexPosteriorQtdAtualVista) {
+                state.qtdMaxItensVistosByMarca[keyMarca] = qtdItensVisitadosMarca + 1
+            }
+        }
+
+        state.indexProdutoSelecionado = index;
+    },
+
+    onClickAvancarItem() {
+        let keyMarca = 'marca:' + state.edtMarca
+        let qtdItensVisitadosMarca = state.qtdMaxItensVistosByMarca[keyMarca] || 1;
+        if (state.indexProdutoSelecionado + 1 > qtdItensVisitadosMarca) {
+            state.qtdMaxItensVistosByMarca[keyMarca] = qtdItensVisitadosMarca + 1
+        }
+
+        if (state.indexProdutoSelecionado < state.keyProdutos.length - 1) {
+            state.indexProdutoSelecionado += 1
+        }
+    },
+
+    onClickVoltarItem() {
+        if (state.indexProdutoSelecionado > 0) {
+            state.indexProdutoSelecionado -= 1
+        }
+    },
+
+    addItemFila(item: iItemFila) {
+
+        state.filaItens.push(item);
+        localStorage.setItem(`siap:comprasItens-${item.ID_COMPRAS}`, JSON.stringify(state.filaItens));
+
+    },
+
+    async persistirItemFilaADD(item: iItemFila, indexFilaItem: number) {
+        try {
+            let response = await comprasItensService.insertItemCompra({
+                COD_PRODUTO: item.COD_PRODUTO,
+                CUSTO: item.CUSTO,
+                QUANTIDADE: item.QUANTIDADE,
+                ID_COMPRAS: item.ID_COMPRAS,
+            });
+
+            state.cabecalho.VALOR = response.valorTotalPedido;
+            actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
+        } catch (error) {
+            item.TENTATIVAS++;
+            console.error('erro ao persistir dados do item: ', item.COD_PRODUTO)
+        }
+    },
+
+    async persistirItemFilaREM(item: iItemFila, indexFilaItem: number) {
+        try {
+            state.loading = true;
+
+            let response = await comprasItensService.deleteItemCompra({ ID_COMPRAS: item.ID_COMPRAS, COD_PRODUTO: item.COD_PRODUTO });
+
+            state.cabecalho.VALOR = response.valorTotalPedido;
+            actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
+        } catch (error) {
+            item.TENTATIVAS++;
+            swalDarkError(error?.response?.data?.msg || "Ocorreu um erro ao deletar o item");
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    removerItemFila(idCompras: number, indexFilaItem: number) {
+
+        state.filaItens.splice(indexFilaItem, 1);
+
+        if (state.filaItens.length > 0) {
+            localStorage.setItem(`siap:comprasItens-${idCompras}`, JSON.stringify(state.filaItens));
+        } else {
+            localStorage.removeItem(`siap:comprasItens-${idCompras}`);
+        }
+
+    },
+
+    async adicionarItem(param: iParamEmitAdicionarItem) {
+        try {
+            state.loading = true;
+
+            let produtoSelecionado = computeds.produtoSelecionado.value
+
+            let codProduto = produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO]
+
+            actions.addItemFila({
+                ID_COMPRAS: state.cabecalho.ID_COMPRAS,
+                COD_PRODUTO: codProduto,
+                CUSTO: param.custo,
+                QUANTIDADE: param.qtd,
+                ACAO: 'ADD',
+                TENTATIVAS: 0,
+            })
+
+            /* Adicionado para impactar a computed qtdProdutosAdicionados e fazer com que o grid avance a linha após atualizar dados */
+            delete state.produtosAdicionados[codProduto];
+            await nextTick()
+
+            state.produtosAdicionados[codProduto] = {
+                ...produtoSelecionado,
+                COD_PRODUTO: codProduto,
+                PEDIDO_CUSTO_ADICIONADO: param.custo,
+                PEDIDO_QTD_ADICIONADA: param.qtd,
+            }
+
+            if (state.abaItens == 'nao_adicionados') {
+                state.indexUltimoItemAdicionado = state.indexProdutoSelecionado
+                actions.onClickAvancarItem();
+            }
+
+            actions.focarNosItens();
+        } catch (error) {
+            swalDarkError('erro ao inserir item')
+            console.error(error)
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async deletarItem(codProduto: number) {
+        actions.addItemFila({
+            ID_COMPRAS: state.cabecalho.ID_COMPRAS,
+            COD_PRODUTO: codProduto,
+            CUSTO: 0,
+            QUANTIDADE: 0,
+            ACAO: 'REM',
+            TENTATIVAS: 0,
+        })
+
+        let keysProdutosSelecionados = Object.keys(state.produtosAdicionados)
+        let indexProdutoSelecionado = keysProdutosSelecionados.findIndex(key => parseInt(key) == codProduto);
+
+        delete state.produtosAdicionados[codProduto];
+        await nextTick()
+
+        let keyNextItem = keysProdutosSelecionados[indexProdutoSelecionado + 1]
+
+        state.indexProdutoSelecionado = state.keyProdutos.findIndex(key => key == keyNextItem);
+    },
+
+}
+
+export const computeds = {
+    produtoSelecionado: computed(() => {
+        let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado];
+        return state.produtos[keyProdutoSelecionado] || {} as iProduto;
+    }),
+
+    qtdJaAdicionadaItem: computed(() => {
+        let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado];
+        return state.produtosAdicionados[keyProdutoSelecionado]?.PEDIDO_QTD_ADICIONADA || 0
+    }),
+
+    ultimoItemAdicionado: computed(() => {
+        let keyProdutoSelecionado = state.keyProdutos[state.indexUltimoItemAdicionado];
+        return state.produtos[keyProdutoSelecionado] || {} as iProduto;
+    }),
+
+    exibirIconeAvancar: computed(() => {
+        return state.indexProdutoSelecionado < state.keyProdutos.length - 1 ? true : false
+    }),
+
+    exibirIconeVoltar: computed(() => {
+        return state.indexProdutoSelecionado > 0 ? true : false
+    }),
+
+    progressoNavegacaoItens: computed(() => {
+        return state.qtdMaxItensVistosByMarca['marca:' + state.edtMarca] * 100 / (state.qtdItensMarca - 1)
+    }),
+
+    historicoMeses: computed(() => {
+        let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado]
+
+        if (!keyProdutoSelecionado) {
+            return historicoMesesDefault
+        }
+
+        let historicoVendaProduto = state.historicoVendasGeral[keyProdutoSelecionado]
+        let historicoCompraProduto = state.historicoComprasGeral[keyProdutoSelecionado]
+
+        if (state.abaHistorico == 'compras' && historicoCompraProduto) {
+            let mesesCompras = [] as iHistoricoMes[]
+            let historicoMesesCompras = state.historicoComprasGeral[keyProdutoSelecionado].meses
+
+            for (let mes of historicoMesesDefault) {
+                mesesCompras.push({
+                    ...mes,
+                    qtd: historicoMesesCompras[mes.mes.toString() + mes.ano.toString()]?.QTD || 0
+                })
+            }
+
+            return mesesCompras;
+        }
+
+        if (state.abaHistorico == 'vendas' && historicoVendaProduto) {
+            let mesesVendas = [] as iHistoricoMes[];
+            let historicoMesesVenda = state.historicoVendasGeral[keyProdutoSelecionado].meses
+
+            for (let mes of historicoMesesDefault) {
+                mesesVendas.push({
+                    ...mes,
+                    qtd: historicoMesesVenda[mes.mes.toString() + mes.ano.toString()]?.QTD || 0
+                })
+            }
+
+            return mesesVendas;
+        }
+
+        return [...historicoMesesDefault]
+    }),
+
+    ultimasVendas: computed(() => {
+        let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado]
+
+        if (!keyProdutoSelecionado) {
+            return []
+        }
+
+        if (!state.historicoVendasGeral[keyProdutoSelecionado]) {
+            return []
+        }
+
+        return state.historicoVendasGeral[keyProdutoSelecionado].ultimasVendas.sort((a, b) => {
+            return a[MAP_COL_ULTIMAS_VENDAS.POSICAO] - b[MAP_COL_ULTIMAS_VENDAS.POSICAO]
+        })
+    }),
+
+    ultimasCompras: computed(() => {
+        let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado]
+
+        if (!keyProdutoSelecionado) {
+            return []
+        }
+
+        if (!state.historicoComprasGeral[keyProdutoSelecionado]) {
+            return []
+        }
+
+        return state.historicoComprasGeral[keyProdutoSelecionado].ultimasCompras.sort((a, b) => {
+            return a[MAP_COL_ULTIMAS_COMPRAS.POSICAO] - b[MAP_COL_ULTIMAS_COMPRAS.POSICAO]
+        })
+    }),
+
+    mediaQtdItemSelecionado: computed(() => {
+        let produtoSelecionado = computeds.produtoSelecionado.value
+
+        if (!produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO]) return 0
+
+        let ultimosTresMeses = computeds.historicoMeses.value.slice(0, 3)
+
+        let soma = 0;
+        for (let mes of ultimosTresMeses) {
+            soma += mes.qtd
+        }
+
+        return Math.round(soma / 3)
+    }),
+
+    corMediaVenda: computed(() => {
+        return getColorQtdEstoque(computeds.mediaQtdItemSelecionado.value, computeds.produtoSelecionado.value[MAP_COL_PRODUTO.QUANTIDADE])
+    }),
+
+    contadorItens: computed(() => {
+        let qtdItensFila = state.filaItens.length;
+        let qtdItensFilaSemErro = state.filaItens.filter(item => item.TENTATIVAS == 0).length
+        let qtdItensFilaErro = qtdItensFila - qtdItensFilaSemErro
+        let qtdProdutosAdicionados = Object.keys(state.produtosAdicionados).length;
+
+        return {
+            qtdProdutosAdicionados: qtdProdutosAdicionados - qtdItensFila,
+            qtdProcessando: qtdItensFilaSemErro,
+            qtdErro: qtdItensFilaErro,
+        }
+    }),
+
+    marcasPedido: computed(() => {
+        let marcas = [];
+
+        let produtosAdicionadosArray = Object.values(state.produtosAdicionados);
+        let grupoMarcas = Object.groupBy(produtosAdicionadosArray, item => item[MAP_COL_PRODUTO.DESCRICAO_MARCA]);
+        let nomeMarcas = Object.keys(grupoMarcas);
+
+        marcas.push(...nomeMarcas)
+
+        return marcas
+    })
+}
+
+export default { state, actions, computeds }
