@@ -147,7 +147,7 @@ export const totalizadorMetas = computed(() => {
 
     if (state.selectedGrupoFuncionario != '') {
         const codFuncionariosDoGrupo = state.gruposFuncionarios
-            .filter(grupo => grupo.NOME_GRUPO === state.selectedGrupoFuncionario)
+            .filter(grupo => grupo.ID_GRUPO_IMPRESSAO == state.selectedGrupoFuncionario)
             .map(grupo => grupo.COD_FUNCIONARIO);
 
         arrayMeta = arrayMeta.filter(item => codFuncionariosDoGrupo.includes(item.COD_FUNCIONARIO));
