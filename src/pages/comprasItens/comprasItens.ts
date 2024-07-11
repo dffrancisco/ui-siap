@@ -239,13 +239,13 @@ export const actions = {
 
     onKeydownContainerPrincipal: async (e: KeyboardEvent) => {
         if (state.abaItens == 'nao_adicionados' && state.tipoVisualizacaoItem == 'unica') {
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === '1') {
                 actions.onClickVoltarItem()
                 e.preventDefault();
                 return;
             }
 
-            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === '3') {
                 actions.onClickAvancarItem()
                 e.preventDefault();
                 return;
@@ -586,7 +586,7 @@ export const computeds = {
 
         if (!produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO]) return 0
 
-        let ultimosTresMeses = computeds.historicoMeses.value.slice(0, 3)
+        let ultimosTresMeses = computeds.historicoMeses.value.slice(1, 4)
 
         let soma = 0;
         for (let mes of ultimosTresMeses) {
