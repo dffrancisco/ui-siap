@@ -83,7 +83,13 @@ export const metas = computed(() => {
         metasFiltradas = state.metaMontadores;
     }
 
-    if (state.selectedGrupoFuncionario == "") return metasFiltradas;
+    metasFiltradas.sort((a, b) => {
+        return b.PROGRESSO - a.PROGRESSO
+    });
+
+    if (state.selectedGrupoFuncionario == "") {
+        return metasFiltradas
+    }
 
     const codFuncionariosDoGrupo = state.gruposFuncionarios
         .filter(grupo => grupo.ID_GRUPO_IMPRESSAO.toString() == state.selectedGrupoFuncionario)
