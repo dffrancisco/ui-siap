@@ -324,5 +324,9 @@ export const actions = {
             await actions.getFuncionarios();
         }
         state.modalDistribuirMetas.open();
+    },
+
+    printMetas() {
+        window.print();
     }
 }

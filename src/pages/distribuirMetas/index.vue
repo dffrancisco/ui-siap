@@ -26,7 +26,7 @@ onMounted(async () => {
     >
       <div>
         <v-col cols="12">
-          <v-row>
+          <v-row class="d-flex align-center pb-4">
             <v-col cols="2">
               <v-select
                 id="mes"
@@ -61,7 +61,7 @@ onMounted(async () => {
               >
               </v-select>
             </v-col>
-            <v-col cols="3">
+            <v-col cols="2">
               <v-select
                 v-model="state.selectedGrupoFuncionario"
                 :items="grupoFuncionarios"
@@ -76,10 +76,20 @@ onMounted(async () => {
             <v-col cols="2">
               <v-btn
                 title="Distribuir metas"
-                class="mr-4 mb-4 metas_btn"
+                class="metas_btn"
                 color="#3680AB"
                 @click.prevent="actions.distribuirMetas"
                 >Distribuir metas
+              </v-btn>
+            </v-col>
+            <v-col cols="1">
+              <v-btn
+                :disabled="metas.length <= 0"
+                title="Imprimir"
+                icon="mdi-printer"
+                color="#3680AB"
+                @click="actions.printMetas"
+              >
               </v-btn>
             </v-col>
           </v-row>
@@ -186,7 +196,10 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div style="max-width: 1120px; margin: 0 auto">
+    <div
+      style="max-width: 1120px; margin: 0 auto"
+      class="window-print"
+    >
       <v-container>
         <v-data-table
           class="tableMetas"
@@ -328,5 +341,20 @@ onMounted(async () => {
 .tableMetas {
   width: 1110px;
   border-radius: 10px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .window-print,
+  .window-print * {
+    visibility: visible;
+  }
+  .window-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
 }
 </style>
