@@ -12,11 +12,11 @@ const props = defineProps({
   },
   corPadrao: {
     type: String,
-    default: "#7dc1ff",
+    default: "#3c3028",
   },
   corDestaque: {
     type: String,
-    default: "#b1daff",
+    default: "#3c3028",
   },
   corFonte: {
     type: String,
