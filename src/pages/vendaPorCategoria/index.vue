@@ -73,6 +73,7 @@ onMounted(() => {
             color="primary"
             size="40px"
             title="Imprimir"
+            @click="actions.imprimirVendasPorCategoria"
           />
         </v-col>
       </v-row>

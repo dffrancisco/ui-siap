@@ -3,6 +3,10 @@ import Swal from "sweetalert2";
 import { reactive } from "vue";
 import { iListaMarcasGrupos, iParamGetVendasPorCategoria, iVendaPorCategoria } from "./interfaces";
 import serviceVendaPorCategoria from './services/vendaPorCategoria.service'
+import printJS from "print-js";
+import utils from "@/ts/utils";
+
+export const dataHoje = moment().format('YYYY-MM-DD')
 
 export const state = reactive({
     loading: false,
@@ -25,8 +29,6 @@ export const state = reactive({
     selectElementCategoria: <HTMLSelectElement>{},
     selectCategoria: 1
 })
-
-export const dataHoje = moment().format('YYYY-MM-DD')
 
 export const actions = {
     init() {
@@ -72,6 +74,39 @@ export const actions = {
         if (dados.index % 2 == 0) {
             return { class: 'cor-zebrada-1' }
         }
+    },
+
+    async imprimirVendasPorCategoria() {
+        // state.loading = true;
+
+        // let columns = [{
+        //     label: 'a',
+        //     key: 'a'
+        // }]
+
+        // let dadosToPrint = [{
+
+        // }]
+
+        // const vendaPorCategoria = actions.formatarDadosImpressao(state.dbVendaPorCategoria)
+
+        // await utils.gerarPlanilhaComCabecalho(columns, dadosToPrint, fileName, titulo, rodape);
+        // // documentTitle: `Venda por categoria - Período: 
+        // //                         ${actions.formatarData(state.dataInicial)} até 
+        // //                         ${actions.formatarData(state.dataFinal)}`,
+
+        // state.loading = false;
+    },
+
+    formatarDadosImpressao(data) {
+        return data.map(item => ({
+            ...item,
+            VALOR: utils.formatValor(item.VALOR)
+        }))
+    },
+
+    formatarData(data: string) {
+        return moment(data).format('DD/MM/YYYY')
     },
 
     async getMarcasGrupos() {
