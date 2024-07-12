@@ -9,18 +9,19 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(["marcaEscolhida", "closeModal", "abrirModalProdutos"]);
+const inputRef = ref<HTMLInputElement | null>(null);
 
 watch(
   () => props.modalOpened,
   () => {
     if (props.modalOpened) {
       state.gridMarcas.source(props.marcas);
-      inputRef.value?.focus();
+      setTimeout(() => {
+        inputRef.value?.focus();
+      }, 500);
     }
   }
 );
-
-const inputRef = ref<HTMLInputElement | null>(null);
 
 const state = reactive({
   gridMarcas: <ixGridCreate>{},

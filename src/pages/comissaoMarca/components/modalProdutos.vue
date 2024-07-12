@@ -96,6 +96,7 @@ watch(
         item-value="COD_PRODUTO"
         show-select
         v-model="state.selectedProdutos"
+        @keydown.enter.prevent="confirmarSelecionados"
       >
         <template #no-data>
           <v-alert

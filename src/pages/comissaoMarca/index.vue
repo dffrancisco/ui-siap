@@ -39,7 +39,7 @@ nextTick(async () => {
               type="date"
               class="ss obr"
               :max="dataHoje"
-              @keydown.enter.prevent=""
+              @keydown.enter.prevent="actions.validarInputs"
               maxlength="10"
             />
           </div>
@@ -218,7 +218,7 @@ nextTick(async () => {
           <div class="pt-2 btnPrint">
             <v-btn
               color="primary"
-              @click="actions.imprimirRelatorio"
+              @click="actions.relatorio"
               icon="mdi-printer"
               size="36px"
               title="Imprimir"

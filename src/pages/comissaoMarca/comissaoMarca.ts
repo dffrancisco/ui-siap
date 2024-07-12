@@ -29,7 +29,7 @@ export const state = reactive({
     dataFinal: moment().format('YYYY-MM-DD'),
     inputDataInicial: <HTMLInputElement>{},
     inputDataFinal: <HTMLInputElement>{},
-    tab: 'agrupadoPorVendedor',
+    tab: null,
     headers: <any>[
         {
             title: "Funcionário",
@@ -134,6 +134,8 @@ export const totalizadorItens = computed(() => {
 
 export const actions = {
     async init() {
+        state.inputDataFinal = <any>document.getElementById("DATA_FINAL");
+
         await actions.getFuncionarios()
         await actions.getMarcas()
         await actions.createModal()
@@ -280,7 +282,6 @@ export const actions = {
         actions.atualizarProdutosEscolhidos();
     },
 
-
     removerProdutos(idMarca: number, descricaoSelecionados: string) {
         const marca = state.marcaEscolhida.find(item => item.marca.ID_MARCA === idMarca);
 
@@ -291,7 +292,6 @@ export const actions = {
             actions.atualizarProdutosEscolhidos()
         }
     },
-
 
     atualizarProdutosEscolhidos() {
         state.produtosEscolhidos = state.marcaEscolhida.flatMap(item => item.produtos);
@@ -329,7 +329,7 @@ export const actions = {
 
         const diferencaMeses = dataFinal.diff(dataInicial, 'months', true);
 
-        if (diferencaMeses > 3) {
+        if (diferencaMeses >= 3) {
             Swal.fire({
                 icon: "warning",
                 text: "O intervalo entre as datas não pode ser maior que três meses!"
@@ -340,7 +340,13 @@ export const actions = {
         if (state.marcaEscolhida == "") {
             Swal.fire({
                 icon: "warning",
-                text: "Escolha ao menos uma marca!"
+                text: "Escolha ao menos uma marca!",
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    actions.openModalMarcas();
+                    return;
+                }
             });
             return
         }
@@ -373,11 +379,15 @@ export const actions = {
             return;
         } finally {
             state.loading = false;
+            state.tab = 'agrupadoPorVendedor'
             state.dadosParaRelatorioItens = []
         }
     },
 
     async getDadosVendaMarcaPorItens() {
+        if (state.marcaEscolhida.length == 0) {
+            return
+        }
 
         if (state.dadosParaRelatorioItens.length == 0) {
             state.loading = true;
@@ -397,8 +407,10 @@ export const actions = {
                 });
                 return;
             } finally {
+                state.tab = 'agrupadoPorItem'
                 state.loading = false;
             }
+
         }
 
     },
@@ -412,12 +424,21 @@ export const actions = {
         }))
     },
 
-    async imprimirRelatorio() {
+    async relatorio() {
+        if (state.tab == 'agrupadoPorVendedor') {
+            actions.imprimirRelatorioPorVendedor()
+        }
+
+        if (state.tab == 'agrupadoPorItem') {
+            actions.imprimirRelatorioItens()
+        }
+    },
+
+    async imprimirRelatorioPorVendedor() {
         state.loading = true;
 
         try {
             const relatorioPorVendedor = actions.formatarDadosImpressao([...state.dadosParaRelatorioVendedor, totalizadorVendedores.value]);
-            const relatorioPorItens = actions.formatarDadosImpressao([...state.dadosParaRelatorioItens, totalizadorItens.value]);
 
             printJS({
                 printable: relatorioPorVendedor,
@@ -435,12 +456,21 @@ export const actions = {
                 ]
             });
 
-            if (state.dadosParaRelatorioItens.length == 0) {
-                state.loading = false;
-                return
-            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
 
-            await new Promise(resolve => setTimeout(resolve, 500));
+    async imprimirRelatorioItens() {
+        state.loading = true;
+
+        try {
+            const relatorioPorItens = actions.formatarDadosImpressao([...state.dadosParaRelatorioItens, totalizadorItens.value]);
 
             printJS({
                 printable: relatorioPorItens,
@@ -455,6 +485,7 @@ export const actions = {
                     { field: 'VALOR', displayName: 'Valor' }
                 ]
             });
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
