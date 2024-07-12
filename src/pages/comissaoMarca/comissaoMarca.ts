@@ -385,9 +385,14 @@ export const actions = {
     },
 
     async getDadosVendaMarcaPorItens() {
-        if (state.marcaEscolhida.length == 0) {
-            return
+        if (state.marcaEscolhida.length == 0 || state.produtosEscolhidos.length == 0) {
+            Swal.fire({
+                icon: "warning",
+                text: "Escolha ao menos um produto."
+            });
+            return;
         }
+
 
         if (state.dadosParaRelatorioItens.length == 0) {
             state.loading = true;
