@@ -10,3 +10,10 @@ export interface iParamGetVendasPorCategoria {
     DATA_FIM: string;
     ID_MARCA_GRUPO: number
 }
+
+export interface iListaMarcasGrupos {
+    ID_MARCA_GRUPO: number;
+    DESCRICAO: string;
+}
+
+export interface iGetMarcasGruposResponse extends iListaMarcasGrupos { }

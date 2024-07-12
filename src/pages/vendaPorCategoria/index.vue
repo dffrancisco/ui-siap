@@ -9,83 +9,118 @@ onMounted(() => {
 
 <template>
   <v-container>
-    <v-card class="pa-5 card-principal d-flex flex-column ga-2">
-      <div class="d-flex justify-end align-center ga-4">
-        <div>
+    <v-card class="pa-5 card-principal d-flex flex-column">
+      <v-row class="d-flex align-center justify-space-between">
+        <v-col cols="3">
           <v-text-field
             type="date"
+            label="Data Inicial"
             v-model="state.dataInicial"
-            class="obr rounded-lg"
             id="DATA_INICIO"
             maxlength="10"
             :max="dataHoje"
             density="compact"
             @keydown.enter="state.inputElementDataFinal.focus()"
           />
-        </div>
+        </v-col>
 
-        <div>
+        <v-col cols="3">
           <v-text-field
             type="date"
+            label="Data Final"
             v-model="state.dataFinal"
-            class="obr rounded-lg"
             id="DATA_FIM"
             maxlength="10"
             :max="dataHoje"
             density="compact"
             @keydown.enter.prevent="actions.btnPesquisar"
           />
-        </div>
+        </v-col>
 
-        <v-select density="compact"></v-select>
+        <v-col cols="3">
+          <v-select
+            v-model="state.selectCategorias"
+            density="compact"
+            label="Categoria"
+            item-title="DESCRICAO"
+            item-value="ID_MARCA_GRUPO"
+            :items="state.listaMarcasGrupos"
+            :clearable="false"
+          />
+        </v-col>
 
-        <v-btn
-          icon="mdi-magnify"
-          color="primary"
-          size="36px"
-          title="Pesquisar"
-          @click="actions.btnPesquisar"
-        />
+        <v-col
+          cols="1"
+          class="d-flex justify-center"
+        >
+          <v-btn
+            icon="mdi-magnify"
+            color="primary"
+            size="40px"
+            title="Pesquisar"
+            @click="actions.btnPesquisar"
+          />
+        </v-col>
 
-        <v-btn
-          icon="mdi-printer"
-          color="primary"
-          size="36px"
-          title="Imprimir"
-        />
-      </div>
+        <v-col
+          cols="1"
+          class="d-flex justify-center"
+        >
+          <v-btn
+            icon="mdi-printer"
+            color="primary"
+            size="40px"
+            title="Imprimir"
+          />
+        </v-col>
+      </v-row>
 
       <v-data-table
-        height="480"
+        height="450"
+        class="pt-4"
         :headers="state.headers"
         fixed-header
         :items="state.dbVendaPorCategoria"
-      ></v-data-table>
-
-      <div id="pnCodigoTela">vendaPorCategoria</div>
-
-      <v-overlay
-        :model-value="state.loading"
-        class="align-center justify-center"
-        persistent
+        items-per-page="0"
+        :row-props="actions.getClassCorLinha"
       >
-        <v-progress-circular
-          color="primary"
-          indeterminate
-          size="64"
-        ></v-progress-circular>
-      </v-overlay>
+        <template #bottom></template>
+      </v-data-table>
+
+      <div
+        id="pnCodigoTela"
+        class="pt-4"
+        >vendaPorCategoria</div
+      >
     </v-card>
   </v-container>
+
+  <v-overlay
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
 
 <style scoped>
 .card-principal {
   margin: 0 auto;
-  width: 800px;
+  width: 850px;
 }
 
 .input-data-container {
   width: 130px;
+}
+</style>
+
+<style>
+.cor-zebrada-1 {
+  background-color: #e5e7eb;
 }
 </style>
