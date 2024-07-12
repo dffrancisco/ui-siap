@@ -34,15 +34,16 @@ onMounted(() => {
             maxlength="10"
             :max="dataHoje"
             density="compact"
-            @keydown.enter.prevent="actions.btnPesquisar"
+            @keydown.enter="state.selectElementCategoria.focus()"
           />
         </v-col>
 
         <v-col cols="3">
           <v-select
-            v-model="state.selectCategorias"
+            v-model="state.selectCategoria"
             density="compact"
             label="Categoria"
+            id="CATEGORIA"
             item-title="DESCRICAO"
             item-value="ID_MARCA_GRUPO"
             :items="state.listaMarcasGrupos"

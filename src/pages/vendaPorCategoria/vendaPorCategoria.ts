@@ -11,7 +11,7 @@ export const state = reactive({
     inputElementDataFinal: <HTMLInputElement>{},
     headers: <any>[
         {
-            title: 'Vendedor', key: 'VENDEDOR', align: 'center'
+            title: 'Vendedor', key: 'VENDEDOR', align: 'start'
         },
         {
             title: 'Valor', key: 'VALOR', align: 'center'
@@ -22,7 +22,8 @@ export const state = reactive({
     ],
     dbVendaPorCategoria: <iVendaPorCategoria[]>[],
     listaMarcasGrupos: <iListaMarcasGrupos[]>[],
-    selectCategorias: 1
+    selectElementCategoria: <HTMLSelectElement>{},
+    selectCategoria: 1
 })
 
 export const dataHoje = moment().format('YYYY-MM-DD')
@@ -30,6 +31,7 @@ export const dataHoje = moment().format('YYYY-MM-DD')
 export const actions = {
     init() {
         state.inputElementDataFinal = <any>document.getElementById('DATA_FIM')
+        state.selectElementCategoria = <any>document.getElementById('CATEGORIA')
         actions.getMarcasGrupos();
         actions.getVendasPorCategoria()
     },
@@ -96,7 +98,7 @@ export const actions = {
             const param: iParamGetVendasPorCategoria = {
                 DATA_INICIO: state.dataInicial,
                 DATA_FIM: state.dataFinal,
-                ID_MARCA_GRUPO: state.selectCategorias
+                ID_MARCA_GRUPO: state.selectCategoria
             }
 
             const data = await serviceVendaPorCategoria.getVendasPorCategoria(param)
