@@ -1,5 +1,5 @@
 export interface iVendaPorCategoria {
-    VENDA: number;
+    VALOR: number;
     VENDEDOR: string;
     GRUPO: string;
 }

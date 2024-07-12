@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { actions, dataHoje, state } from "./vendaPorCategoria";
+import utils from "@/ts/utils";
 
 onMounted(() => {
   actions.init();
@@ -85,6 +86,12 @@ onMounted(() => {
         :row-props="actions.getClassCorLinha"
       >
         <template #bottom></template>
+        <template
+          v-slot:item.VALOR="{ item }"
+          style=""
+        >
+          {{ utils.formatValor(item.VALOR) }}
+        </template>
       </v-data-table>
 
       <div
