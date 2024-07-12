@@ -3,8 +3,7 @@ import Swal from "sweetalert2";
 import { reactive } from "vue";
 import { iListaMarcasGrupos, iParamGetVendasPorCategoria, iVendaPorCategoria } from "./interfaces";
 import serviceVendaPorCategoria from './services/vendaPorCategoria.service'
-import printJS from "print-js";
-import utils from "@/ts/utils";
+import utils, { iColumnPrint } from "@/ts/utils";
 
 export const dataHoje = moment().format('YYYY-MM-DD')
 
@@ -77,25 +76,51 @@ export const actions = {
     },
 
     async imprimirVendasPorCategoria() {
-        // state.loading = true;
+        let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
 
-        // let columns = [{
-        //     label: 'a',
-        //     key: 'a'
-        // }]
+        let titulo = `
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+        <span>&nbsp;</span>
+        <strong style="font-size: 20px">Venda por Categoria</strong>
+      </div>
+    `;
 
-        // let dadosToPrint = [{
+        let rodape = `
+      <div style="margin-top: 10px">
+        <span>Obs.: teste</span>
+      </div>
+    `;
+        try {
+            state.loading = true
 
-        // }]
+            await utils.printComCabecalho(columns, dadosToPrint, titulo, rodape);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            state.loading = false
+        }
+    },
 
-        // const vendaPorCategoria = actions.formatarDadosImpressao(state.dbVendaPorCategoria)
+    getDadosImpresaoArquivo() {
+        let dadosToPrint = state.dbVendaPorCategoria
 
-        // await utils.gerarPlanilhaComCabecalho(columns, dadosToPrint, fileName, titulo, rodape);
-        // // documentTitle: `Venda por categoria - Período: 
-        // //                         ${actions.formatarData(state.dataInicial)} até 
-        // //                         ${actions.formatarData(state.dataFinal)}`,
+        let columns: iColumnPrint[] = [
+            {
+                key: 'VENDEDOR',
+                label: "Vendedor",
+                width: '70%'
+            },
+            {
+                key: 'VALOR',
+                label: "Valor",
+            },
+            {
+                key: 'GRUPO',
+                label: "Categoria",
+            },
+        ];
 
-        // state.loading = false;
+        return { columns, dadosToPrint };
     },
 
     formatarDadosImpressao(data) {
