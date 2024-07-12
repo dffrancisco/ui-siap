@@ -10,37 +10,41 @@ onMounted(() => {
 <template>
   <v-container>
     <v-card class="pa-5 card-principal d-flex flex-column ga-2">
-      <div class="d-flex justify-end align-end ga-4">
-        <div class="input-data-container">
-          <span>Data Inicial</span>
-          <input
+      <div class="d-flex justify-end align-center ga-4">
+        <div>
+          <v-text-field
             type="date"
             v-model="state.dataInicial"
-            class="ss obr"
+            class="obr rounded-lg"
             id="DATA_INICIO"
             maxlength="10"
             :max="dataHoje"
+            density="compact"
             @keydown.enter="state.inputElementDataFinal.focus()"
           />
         </div>
 
-        <div class="input-data-container">
-          <span>Data Final</span>
-          <input
+        <div>
+          <v-text-field
             type="date"
             v-model="state.dataFinal"
-            class="ss obr input-date"
+            class="obr rounded-lg"
             id="DATA_FIM"
             maxlength="10"
             :max="dataHoje"
+            density="compact"
+            @keydown.enter.prevent="actions.btnPesquisar"
           />
         </div>
+
+        <v-select density="compact"></v-select>
 
         <v-btn
           icon="mdi-magnify"
           color="primary"
           size="36px"
           title="Pesquisar"
+          @click="actions.btnPesquisar"
         />
 
         <v-btn
@@ -51,7 +55,11 @@ onMounted(() => {
         />
       </div>
 
-      <v-data-table height="480"></v-data-table>
+      <v-data-table
+        height="480"
+        :headers="state.headers"
+        fixed-header
+      ></v-data-table>
 
       <div id="pnCodigoTela">vendaPorCategoria</div>
 
