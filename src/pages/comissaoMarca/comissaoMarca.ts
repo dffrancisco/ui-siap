@@ -401,9 +401,16 @@ export const actions = {
                 const data = await comissaoMarcaService.getDadosVendaMarcaPorItens(param);
                 state.dadosParaRelatorioItens = data
             } catch (error) {
+                if (error.response.data.msg) {
+                    Swal.fire({
+                        icon: "error",
+                        text: error.response.data.msg
+                    });
+                    return;
+                }
                 Swal.fire({
                     icon: "error",
-                    text: "Erro ao buscar os dados dos itens."
+                    text: "Erro ao buscar os dados."
                 });
                 return;
             } finally {
