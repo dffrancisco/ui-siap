@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iGetVendasPorCategoriaResponse, iParamGetVendasPorCategoria } from "../interfaces";
 
-const caminho = 'siap/vendasPorCategoria'
+const caminho = 'siap/vendaPorCategoria'
 
 type iGetVendasPorCategoriaFunction = (param: iParamGetVendasPorCategoria) =>
     Promise<iGetVendasPorCategoriaResponse[]>

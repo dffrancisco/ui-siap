@@ -2,7 +2,7 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import { iVendaPorCategoria } from "./interfaces";
-import serviceVendasPorCategoria from './services/vendasPorCategoria.service'
+import serviceVendaPorCategoria from './services/vendaPorCategoria.service'
 
 export const state = reactive({
     loading: false,
@@ -28,6 +28,7 @@ export const dataHoje = moment().format('YYYY-MM-DD')
 export const actions = {
     init() {
         state.inputElementDataFinal = <any>document.getElementById('DATA_FIM')
+        actions.getVendasPorCategoria()
     },
 
     btnPesquisar() {
@@ -68,10 +69,11 @@ export const actions = {
 
             const param = {
                 DATA_INICIO: state.dataInicial,
-                DATA_FIM: state.dataFinal
+                DATA_FIM: state.dataFinal,
+                ID_MARCA_GRUPO: 1
             }
 
-            const data = await serviceVendasPorCategoria.getVendasPorCategoria(param)
+            const data = await serviceVendaPorCategoria.getVendasPorCategoria(param)
 
         } catch (error) {
             Swal.fire({

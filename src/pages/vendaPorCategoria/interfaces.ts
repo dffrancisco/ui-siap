@@ -8,4 +8,5 @@ export interface iGetVendasPorCategoriaResponse extends iVendaPorCategoria { }
 export interface iParamGetVendasPorCategoria {
     DATA_INICIO: string;
     DATA_FIM: string;
+    ID_MARCA_GRUPO: number
 }
