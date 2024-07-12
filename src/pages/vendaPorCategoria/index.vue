@@ -77,7 +77,7 @@ onMounted(() => {
       </v-row>
 
       <v-data-table
-        height="450"
+        height="500"
         class="pt-4"
         :headers="state.headers"
         fixed-header
