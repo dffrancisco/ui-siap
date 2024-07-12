@@ -75,6 +75,8 @@ export const actions = {
 
             const data = await serviceVendaPorCategoria.getVendasPorCategoria(param)
 
+            state.dbVendaPorCategoria = data
+
         } catch (error) {
             Swal.fire({
                 icon: 'error',

@@ -59,6 +59,7 @@ onMounted(() => {
         height="480"
         :headers="state.headers"
         fixed-header
+        :items="state.dbVendaPorCategoria"
       ></v-data-table>
 
       <div id="pnCodigoTela">vendaPorCategoria</div>
