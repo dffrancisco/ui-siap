@@ -18,6 +18,11 @@ export interface iGetProdutosParam {
     marcaEscolhida: number;
 }
 
+export interface iTabs {
+    agrupadoPorVendedor: boolean;
+    agrupadoPorItem: boolean;
+}
+
 export interface iProdutos {
     COD_PRODUTO: number;
     DESC_PRODUTO: string;

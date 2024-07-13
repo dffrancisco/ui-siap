@@ -88,10 +88,11 @@ watch(
       </v-row>
     </v-card-title>
     <v-card-text>
-      <v-data-table-virtual
+      <v-data-table
         :headers="state.headers"
         :items="filtrarProdutos"
-        height="500"
+        items-per-page-text="Itens por página"
+        height="455"
         item-key="COD_PRODUTO"
         item-value="COD_PRODUTO"
         show-select
@@ -107,9 +108,9 @@ watch(
             Não há dados disponíveis.
           </v-alert>
         </template>
-      </v-data-table-virtual>
+      </v-data-table>
     </v-card-text>
-    <div class="btns d-flex justify-end pt-2 pb-4 mr-4">
+    <div class="btns d-flex justify-end pb-4 mr-4">
       <v-btn
         style="color: #3680ab; border: 1px solid #3680ab"
         @click="cancelar"
@@ -137,4 +138,4 @@ watch(
   </v-overlay>
 </template>
 
-<style scoped></style>
+<style></style>

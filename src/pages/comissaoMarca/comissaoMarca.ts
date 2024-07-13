@@ -1,10 +1,10 @@
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iFuncionario, iMarcas, iProdutos, iGetProdutosParam, iProdutosEscolhidos, iDadosParaRelatorio, iParamParaRelatorio } from "./interfaces";
+import { iFuncionario, iMarcas, iProdutos, iGetProdutosParam, iProdutosEscolhidos, iDadosParaRelatorio, iParamParaRelatorio, iTabs } from "./interfaces";
 import Swal from "sweetalert2";
 import comissaoMarcaService from "./services/comissaoMarca.service";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import utils from "@/ts/utils";
+import utils, { iColumnPrint } from "@/ts/utils";
 import printJS from "print-js";
 
 export const state = reactive({
@@ -29,7 +29,7 @@ export const state = reactive({
     dataFinal: moment().format('YYYY-MM-DD'),
     inputDataInicial: <HTMLInputElement>{},
     inputDataFinal: <HTMLInputElement>{},
-    tab: null,
+    tab: <iTabs>{},
     headers: <any>[
         {
             title: "Funcionário",
@@ -135,6 +135,8 @@ export const totalizadorItens = computed(() => {
 export const actions = {
     async init() {
         state.inputDataFinal = <any>document.getElementById("DATA_FINAL");
+        state.inputDataInicial = <any>document.getElementById("DATA_INICIAL");
+        state.inputDataInicial.focus()
 
         await actions.getFuncionarios()
         await actions.getMarcas()
@@ -155,7 +157,7 @@ export const actions = {
         state.modalProdutos = new xModal.create({
             el: "#modalProdutos",
             height: 700,
-            width: 600,
+            width: 640,
             title: 'Itens - Produtos',
             theme: 'xModal-blue',
             onOpen: () => { state.modalProdutosOpened = true; },
@@ -337,10 +339,10 @@ export const actions = {
             return false;
         }
 
-        if (state.marcaEscolhida == "") {
+        if (state.marcaEscolhida == "" || state.produtosEscolhidos == "") {
             Swal.fire({
                 icon: "warning",
-                text: "Escolha ao menos uma marca!",
+                text: "Escolha ao menos uma marca e produto!",
                 confirmButtonText: 'OK'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -365,16 +367,10 @@ export const actions = {
             const data = await comissaoMarcaService.getDadosVendaMarcaPorVendedor(param);
             state.dadosParaRelatorioVendedor = data
         } catch (error) {
-            if (error.response.data.msg) {
-                Swal.fire({
-                    icon: "error",
-                    text: error.response.data.msg
-                });
-                return;
-            }
+            const errorMessage = error.response?.data?.msg || "Erro ao buscar os dados.";
             Swal.fire({
                 icon: "error",
-                text: "Erro ao buscar os dados."
+                text: errorMessage
             });
             return;
         } finally {
@@ -406,16 +402,10 @@ export const actions = {
                 const data = await comissaoMarcaService.getDadosVendaMarcaPorItens(param);
                 state.dadosParaRelatorioItens = data
             } catch (error) {
-                if (error.response.data.msg) {
-                    Swal.fire({
-                        icon: "error",
-                        text: error.response.data.msg
-                    });
-                    return;
-                }
+                const errorMessage = error.response?.data?.msg || "Erro ao buscar os dados.";
                 Swal.fire({
                     icon: "error",
-                    text: "Erro ao buscar os dados."
+                    text: errorMessage
                 });
                 return;
             } finally {
@@ -447,64 +437,74 @@ export const actions = {
     },
 
     async imprimirRelatorioPorVendedor() {
-        state.loading = true;
 
         try {
             const relatorioPorVendedor = actions.formatarDadosImpressao([...state.dadosParaRelatorioVendedor, totalizadorVendedores.value]);
 
-            printJS({
-                printable: relatorioPorVendedor,
-                type: "json",
-                documentTitle: 'Relatório de peças vendidas por vendedor - Período: ' + utils.dataBrasil(state.dataInicial) + ' até: ' + utils.dataBrasil(state.dataFinal),
-                gridHeaderStyle: "border: 1px solid #000000;",
-                gridStyle: "text-align: center; padding: 5px; border: 1px solid #000000",
-                properties: [
-                    { field: 'VENDEDOR', displayName: 'Vendedor' },
-                    { field: 'MARCA', displayName: 'Marca' },
-                    { field: 'QTD', displayName: 'Quantidade' },
-                    { field: 'VALOR', displayName: 'Valor' },
-                    { field: 'VALOR_P_ITEM', displayName: 'Valor p/ item' },
-                    { field: 'TOTAL_P_ITEM', displayName: 'Total p/ item' },
-                ]
-            });
+            const columns: iColumnPrint[] = [
+                { key: 'VENDEDOR', label: 'Vendedor', width: '20%' },
+                { key: 'MARCA', label: 'Marca', width: '20%' },
+                { key: 'QTD', label: 'Quantidade', width: '20%' },
+                { key: 'VALOR', label: 'Valor', width: '20%' },
+                { key: 'VALOR_P_ITEM', label: 'Valor p/ item', width: '10%' },
+                { key: 'TOTAL_P_ITEM', label: 'Total p/ item', width: '10%' }
+            ];
+
+            const titulo = `
+                <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                    <span>&nbsp;</span>
+                    <strong style="font-size: 20px">Relatório de peças vendidas por vendedor - Período: ${utils.dataBrasil(state.dataInicial)} até: ${utils.dataBrasil(state.dataFinal)}</strong>
+                </div>
+            `;
+
+            const rodape = `
+                <div style="margin-top: 10px">
+                    <span></span>
+                </div>
+            `;
+
+            await utils.printComCabecalho(columns, relatorioPorVendedor, titulo, rodape);
 
         } catch (error) {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao imprimir o relatório."
             });
-        } finally {
-            state.loading = false;
         }
     },
 
     async imprimirRelatorioItens() {
-        state.loading = true;
 
         try {
             const relatorioPorItens = actions.formatarDadosImpressao([...state.dadosParaRelatorioItens, totalizadorItens.value]);
 
-            printJS({
-                printable: relatorioPorItens,
-                type: "json",
-                documentTitle: 'Relatório de peças vendidas por item - Período: ' + utils.dataBrasil(state.dataInicial) + ' até: ' + utils.dataBrasil(state.dataFinal),
-                gridHeaderStyle: "border: 1px solid #000000;",
-                gridStyle: "text-align: center; padding: 5px; border: 1px solid #000000",
-                properties: [
-                    { field: 'PRODUTO', displayName: 'Produto' },
-                    { field: 'MARCA', displayName: 'Marca' },
-                    { field: 'QTD', displayName: 'Quantidade' },
-                    { field: 'VALOR', displayName: 'Valor' }
-                ]
-            });
+            const columns: iColumnPrint[] = [
+                { key: 'PRODUTO', label: 'Produto', width: '30%' },
+                { key: 'MARCA', label: 'Marca', width: '30%' },
+                { key: 'QTD', label: 'Quantidade', width: '20%' },
+                { key: 'VALOR', label: 'Valor', width: '20%' }
+            ];
+
+            const titulo = `
+                <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                    <span>&nbsp;</span>
+                    <strong style="font-size: 20px">Relatório de peças vendidas por item - Período: ${utils.dataBrasil(state.dataInicial)} até: ${utils.dataBrasil(state.dataFinal)}</strong>
+                </div>
+            `;
+
+            const rodape = `
+                <div style="margin-top: 10px">
+                    <span></span>
+                </div>
+            `;
+
+            await utils.printComCabecalho(columns, relatorioPorItens, titulo, rodape);
 
         } catch (error) {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao imprimir o relatório."
             });
-        } finally {
-            state.loading = false;
         }
     }
 }
