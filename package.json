@@ -1,6 +1,6 @@
 {
   "name": "siap",
-  "version": "0.1.128",
+  "version": "0.1.137",
   "description": "Siap Real Acessórios",
   "author": "Francisco Alves  <dffrancisco@gmail.com> (https://github.com/dffrancisco)",
   "scripts": {
@@ -33,6 +33,7 @@
     "buffer": "^6.0.3",
     "cpf-cnpj-validator": "^1.0.3",
     "dateformat": "^5.0.1",
+    "file-saver": "^2.0.5",
     "format-duration": "^1.4.0",
     "jquery": "^3.6.4",
     "jsonp": "^0.2.1",
@@ -58,7 +59,8 @@
     "vue3-apexcharts": "^1.5.2",
     "vue3-photo-preview": "^0.3.0",
     "vuetify": "^3.4.10",
-    "webfontloader": "^1.0.0"
+    "webfontloader": "^1.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@mdi/font": "^6.7.96",
@@ -80,7 +82,7 @@
     "eslint-plugin-vue": "7.17.0",
     "sass": "^1.38.1",
     "sass-loader": "^12.1.0",
-    "typescript": "^4.3.2",
+    "typescript": "^5.5.2",
     "vite": "^2.4.4",
     "vite-plugin-pages": "^0.18.1",
     "vite-plugin-pwa": "^0.12.0",

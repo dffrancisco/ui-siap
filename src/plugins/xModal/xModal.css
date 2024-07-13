@@ -114,7 +114,9 @@
 /*thema blue*/
 
 .xModal-blue {
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2), 0px 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0px 2px 6px rgba(0, 0, 0, 0.2),
+    0px 2px 6px rgba(0, 0, 0, 0.4);
   padding: 0.2em;
   /*outline: 0;*/
   border: 1px solid #aaaaaa;
@@ -212,7 +214,10 @@
 /*thema opacity*/
 
 .xModal-opacity {
-  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 1px 10px 0 rgba(0, 0, 0, 0.12),
+    0 2px 4px -1px rgba(0, 0, 0, 0.3);
   background-image: -moz-linear-gradient(45deg, #3f3251 2%, #002025 100%);
   background-image: -webkit-linear-gradient(45deg, #3f3251 2%, #002025 100%);
   background-image: linear-gradient(45deg, #3f3251 2%, #002025 100%);
@@ -308,7 +313,10 @@
 /*thema dark*/
 
 .xModal-dark {
-  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 1px 10px 0 rgba(0, 0, 0, 0.12),
+    0 2px 4px -1px rgba(0, 0, 0, 0.3);
   background: #546e7a;
   color: #eceff1;
   border-radius: 4px;
@@ -403,7 +411,9 @@
 /* Theme Dark Square */
 
 .xModal-dark-square {
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2), 0px 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0px 2px 6px rgba(0, 0, 0, 0.2),
+    0px 2px 6px rgba(0, 0, 0, 0.4);
   /* padding: 0.2em; */
   /* outline: 0; */
   /* border: 1px solid #aaaaaa; */
@@ -440,6 +450,7 @@
   background: #212529 !important;
   color: #ffffff;
   font-weight: bold;
+  margin-left: 4px;
   /* margin-left: 3px; */
 }
 
@@ -492,7 +503,9 @@
 /* Theme bublue */
 
 .xModal-bublue {
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2), 0px 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0px 2px 6px rgba(0, 0, 0, 0.2),
+    0px 2px 6px rgba(0, 0, 0, 0.4);
   /* padding: 0.2em; */
   /* outline: 0; */
   /* border: 1px solid #aaaaaa; */
@@ -698,7 +711,9 @@
 /* Theme v23 */
 
 .xModal-v23 {
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2), 0px 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0px 2px 6px rgba(0, 0, 0, 0.2),
+    0px 2px 6px rgba(0, 0, 0, 0.4);
   /* padding: 0.2em; */
   /* outline: 0; */
   /* border: 1px solid #aaaaaa; */
@@ -802,7 +817,9 @@
 /* Theme xAtila */
 
 .xModal-xAtila {
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2), 0px 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0px 2px 6px rgba(0, 0, 0, 0.2),
+    0px 2px 6px rgba(0, 0, 0, 0.4);
   /* padding: 0.2em; */
   /* outline: 0; */
   /* border: 1px solid #aaaaaa; */
@@ -911,7 +928,9 @@
 /* Theme xAtila-dark */
 
 .xModal-xAtila-dark {
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2), 0px 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0px 2px 6px rgba(0, 0, 0, 0.2),
+    0px 2px 6px rgba(0, 0, 0, 0.4);
   /* padding: 0.2em; */
   /* outline: 0; */
   /* border: 1px solid #aaaaaa; */
