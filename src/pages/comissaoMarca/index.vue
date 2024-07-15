@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { state, actions, dataHoje, totalizadorVendedores, totalizadorItens } from "./comissaoMarca";
+import {
+  state,
+  actions,
+  dataHoje,
+  totalizadorVendedores,
+  totalizadorItens,
+  disabledBtnImprimir,
+} from "./comissaoMarca";
 import { nextTick } from "vue";
 import { configVMoney } from "../../constants/constants";
 import ModalMarcas from "./components/modalMarcas.vue";
@@ -219,7 +226,7 @@ nextTick(async () => {
             <v-btn
               color="primary"
               @click="actions.relatorio"
-              :disabled="state.dadosParaRelatorioVendedor.length <= 0"
+              :disabled="disabledBtnImprimir"
               icon="mdi-printer"
               size="36px"
               title="Imprimir"

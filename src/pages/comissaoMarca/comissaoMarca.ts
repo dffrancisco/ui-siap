@@ -5,7 +5,6 @@ import Swal from "sweetalert2";
 import comissaoMarcaService from "./services/comissaoMarca.service";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import utils, { iColumnPrint } from "@/ts/utils";
-import printJS from "print-js";
 
 export const state = reactive({
     loading: false,
@@ -131,6 +130,16 @@ export const totalizadorItens = computed(() => {
         VALOR: totalValorItem,
     }
 })
+
+export const disabledBtnImprimir = computed(() => {
+    if (
+        (state.tab == 'agrupadoPorVendedor' && state.dadosParaRelatorioVendedor.length <= 0) ||
+        (state.tab == 'agrupadoPorItem' && state.dadosParaRelatorioItens.length <= 0)
+    ) {
+        return true;
+    }
+    return false;
+});
 
 export const actions = {
     async init() {
