@@ -451,19 +451,13 @@ export const actions = {
             ];
 
             const titulo = `
-                <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
                     <span>&nbsp;</span>
-                    <strong style="font-size: 20px">Relatório de peças vendidas por vendedor - Período: ${utils.dataBrasil(state.dataInicial)} até: ${utils.dataBrasil(state.dataFinal)}</strong>
+                    <strong style="font-size: 16px;">Relatório de peças vendidas por vendedor - Período: ${utils.dataBrasil(state.dataInicial)} até: ${utils.dataBrasil(state.dataFinal)}</strong>
                 </div>
             `;
 
-            const rodape = `
-                <div style="margin-top: 10px">
-                    <span></span>
-                </div>
-            `;
-
-            await utils.printComCabecalho(columns, relatorioPorVendedor, titulo, rodape);
+            await utils.printComCabecalho(columns, relatorioPorVendedor, titulo);
 
         } catch (error) {
             Swal.fire({
@@ -486,19 +480,13 @@ export const actions = {
             ];
 
             const titulo = `
-                <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
                     <span>&nbsp;</span>
-                    <strong style="font-size: 20px">Relatório de peças vendidas por item - Período: ${utils.dataBrasil(state.dataInicial)} até: ${utils.dataBrasil(state.dataFinal)}</strong>
+                    <strong style="font-size: 16px">Relatório de peças vendidas por item - Período: ${utils.dataBrasil(state.dataInicial)} até: ${utils.dataBrasil(state.dataFinal)}</strong>
                 </div>
             `;
 
-            const rodape = `
-                <div style="margin-top: 10px">
-                    <span></span>
-                </div>
-            `;
-
-            await utils.printComCabecalho(columns, relatorioPorItens, titulo, rodape);
+            await utils.printComCabecalho(columns, relatorioPorItens, titulo);
 
         } catch (error) {
             Swal.fire({
