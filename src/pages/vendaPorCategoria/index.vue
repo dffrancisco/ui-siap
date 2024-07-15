@@ -97,13 +97,13 @@ onMounted(() => {
           {{ utils.formatValor(item.VALOR) }}
         </template>
       </v-data-table>
-
-      <div
-        id="pnCodigoTela"
-        class="pt-4"
-        >vendaPorCategoria</div
-      >
     </v-card>
+
+    <div
+      id="pnCodigoTela"
+      class="pt-4"
+      >vendaPorCategoria</div
+    >
   </v-container>
 
   <v-overlay
