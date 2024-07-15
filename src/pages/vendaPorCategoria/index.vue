@@ -34,7 +34,7 @@ onMounted(() => {
             maxlength="10"
             :max="dataHoje"
             density="compact"
-            @keydown.enter="state.selectElementCategoria.focus()"
+            @keydown.enter.prevent="actions.btnPesquisar"
           />
         </v-col>
 
@@ -48,6 +48,7 @@ onMounted(() => {
             item-value="ID_MARCA_GRUPO"
             :items="state.listaMarcasGrupos"
             :clearable="false"
+            @update:model-value="actions.btnPesquisar"
           />
         </v-col>
 
@@ -73,6 +74,7 @@ onMounted(() => {
             color="primary"
             size="40px"
             title="Imprimir"
+            :disabled="state.dbVendaPorCategoria.length <= 0"
             @click="actions.imprimirVendasPorCategoria"
           />
         </v-col>

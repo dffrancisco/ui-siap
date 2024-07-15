@@ -1,7 +1,7 @@
 import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
-import { iListaMarcasGrupos, iParamGetVendasPorCategoria, iVendaPorCategoria } from "./interfaces";
+import { iDataImpressao, iListaMarcasGrupos, iParamGetVendasPorCategoria, iVendaPorCategoria } from "./interfaces";
 import serviceVendaPorCategoria from './services/vendaPorCategoria.service'
 import utils, { iColumnPrint } from "@/ts/utils";
 
@@ -25,14 +25,13 @@ export const state = reactive({
     ],
     dbVendaPorCategoria: <iVendaPorCategoria[]>[],
     listaMarcasGrupos: <iListaMarcasGrupos[]>[],
-    selectElementCategoria: <HTMLSelectElement>{},
-    selectCategoria: 1
+    selectCategoria: 1,
+    dataImpressao: <iDataImpressao>{}
 })
 
 export const actions = {
     init() {
         state.inputElementDataFinal = <any>document.getElementById('DATA_FIM')
-        state.selectElementCategoria = <any>document.getElementById('CATEGORIA')
         actions.getMarcasGrupos();
         actions.getVendasPorCategoria()
     },
@@ -75,54 +74,6 @@ export const actions = {
         }
     },
 
-    async imprimirVendasPorCategoria() {
-        let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
-
-        let titulo = `
-      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
-        <span>&nbsp;</span>
-        <strong style="font-size: 20px">Venda por Categoria</strong>
-      </div>
-    `;
-
-        let rodape = `
-      <div style="margin-top: 10px">
-        <span>Obs.: teste</span>
-      </div>
-    `;
-        try {
-            state.loading = true
-
-            await utils.printComCabecalho(columns, dadosToPrint, titulo, rodape);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            state.loading = false
-        }
-    },
-
-    getDadosImpresaoArquivo() {
-        let dadosToPrint = state.dbVendaPorCategoria
-
-        let columns: iColumnPrint[] = [
-            {
-                key: 'VENDEDOR',
-                label: "Vendedor",
-                width: '70%'
-            },
-            {
-                key: 'VALOR',
-                label: "Valor",
-            },
-            {
-                key: 'GRUPO',
-                label: "Categoria",
-            },
-        ];
-
-        return { columns, dadosToPrint };
-    },
-
     formatarDadosImpressao(data) {
         return data.map(item => ({
             ...item,
@@ -155,6 +106,11 @@ export const actions = {
         try {
             state.loading = true
 
+            state.dataImpressao = {
+                dataInicio: moment(state.dataInicial).format('DD/MM/YYYY'),
+                dataFinal: moment(state.dataFinal).format('DD/MM/YYYY'),
+            }
+
             const param: iParamGetVendasPorCategoria = {
                 DATA_INICIO: state.dataInicial,
                 DATA_FIM: state.dataFinal,
@@ -173,9 +129,57 @@ export const actions = {
         } finally {
             state.loading = false
         }
-    }
-}
+    },
 
-export const computeds = {
+    async imprimirVendasPorCategoria() {
+        let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
 
+        let titulo = `
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+        <span>Período: ${state.dataImpressao.dataInicio} até ${state.dataImpressao.dataFinal}</span>
+        <strong style="font-size: 20px">Venda por Categoria</strong>
+      </div>
+    `;
+
+        try {
+            state.loading = true
+
+            await utils.printComCabecalho(columns, dadosToPrint, titulo);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            state.loading = false
+        }
+    },
+
+    getDadosImpresaoArquivo() {
+        let dadosToPrint = state.dbVendaPorCategoria.map((venda) => {
+            return {
+                VENDEDOR: venda.VENDEDOR,
+                VALOR: utils.formatValor(venda.VALOR),
+                GRUPO: venda.GRUPO,
+            }
+        })
+
+        let columns: iColumnPrint[] = [
+            {
+                key: 'VENDEDOR',
+                label: "Vendedor",
+                width: '60%',
+            },
+            {
+                key: 'VALOR',
+                label: "Valor",
+                width: '20%',
+                align: 'center',
+            },
+            {
+                key: 'GRUPO',
+                label: "Categoria",
+                align: 'center',
+            },
+        ];
+
+        return { columns, dadosToPrint };
+    },
 }

@@ -17,3 +17,8 @@ export interface iListaMarcasGrupos {
 }
 
 export interface iGetMarcasGruposResponse extends iListaMarcasGrupos { }
+
+export interface iDataImpressao {
+    dataInicio: string;
+    dataFinal: string;
+}
