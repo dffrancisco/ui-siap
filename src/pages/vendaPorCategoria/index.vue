@@ -11,7 +11,7 @@ onMounted(() => {
 <template>
   <v-container>
     <v-card class="pa-5 card-principal d-flex flex-column">
-      <v-row class="d-flex align-center justify-space-between">
+      <v-row class="d-flex align-center">
         <v-col cols="3">
           <v-text-field
             type="date"
@@ -19,6 +19,7 @@ onMounted(() => {
             v-model="state.dataInicial"
             id="DATA_INICIO"
             maxlength="10"
+            class="obr rounded-lg"
             :max="dataHoje"
             density="compact"
             @keydown.enter="state.inputElementDataFinal.focus()"
@@ -31,6 +32,7 @@ onMounted(() => {
             label="Data Final"
             v-model="state.dataFinal"
             id="DATA_FIM"
+            class="obr rounded-lg"
             maxlength="10"
             :max="dataHoje"
             density="compact"
@@ -38,24 +40,20 @@ onMounted(() => {
           />
         </v-col>
 
-        <v-col cols="3">
+        <v-col cols="5 d-flex ga-4">
           <v-select
             v-model="state.selectCategoria"
             density="compact"
             label="Categoria"
             id="CATEGORIA"
+            class="obr rounded-lg"
             item-title="DESCRICAO"
             item-value="ID_MARCA_GRUPO"
             :items="state.listaMarcasGrupos"
             :clearable="false"
             @update:model-value="actions.btnPesquisar"
           />
-        </v-col>
 
-        <v-col
-          cols="1"
-          class="d-flex justify-center"
-        >
           <v-btn
             icon="mdi-magnify"
             color="primary"
@@ -123,10 +121,6 @@ onMounted(() => {
 .card-principal {
   margin: 0 auto;
   width: 850px;
-}
-
-.input-data-container {
-  width: 130px;
 }
 </style>
 
