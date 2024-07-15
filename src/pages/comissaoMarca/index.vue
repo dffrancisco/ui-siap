@@ -219,6 +219,7 @@ nextTick(async () => {
             <v-btn
               color="primary"
               @click="actions.relatorio"
+              :disabled="state.dadosParaRelatorioVendedor.length <= 0"
               icon="mdi-printer"
               size="36px"
               title="Imprimir"
