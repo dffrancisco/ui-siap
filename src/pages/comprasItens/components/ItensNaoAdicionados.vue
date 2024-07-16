@@ -249,6 +249,8 @@ const actions = {
       v-model="state.modalAdicionarItemOpened"
       max-width="350px"
       transition="dialog-transition"
+      scrim="#f2f2f2"
+      opacity="0.1"
       @update:modelValue="actions.focarContainerItem"
     >
       <ModalAdicionarItem
