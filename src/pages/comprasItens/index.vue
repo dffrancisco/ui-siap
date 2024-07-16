@@ -37,6 +37,7 @@ actions.init();
         @abrirModalImpressao="actions.abrirModalImpressao"
         @buscarProdutos="actions.buscarProdutos"
         @focarNosItensNaoAdicionados="actions.focarContainerItem"
+        @ordenar="actions.setOrdenar"
       />
       <div
         id="compras-detalhes"

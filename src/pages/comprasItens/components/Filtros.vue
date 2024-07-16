@@ -17,7 +17,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["buscarProdutos", "abrirModalImpressao", "focarNosItensNaoAdicionados"]);
+const emit = defineEmits(["buscarProdutos", "abrirModalImpressao", "focarNosItensNaoAdicionados", "ordenar"]);
 
 const state = reactive({
   edtNumFabricante: undefined,
@@ -29,6 +29,9 @@ const state = reactive({
 });
 
 const actions = {
+  onClickLabel: (label: "num_fabricante" | "descricao") => {
+    emit("ordenar", label);
+  },
   onMarcaUpdate: () => {
     if (state.edtMarca) {
       actions.callEmitBuscarProdutos();
@@ -132,7 +135,7 @@ watch(
     @keydown="actions.onKeydownContainerFiltro"
   >
     <div class="filtros-fabricante">
-      <label>Nº Fabricante (F1)</label>
+      <label @click="actions.onClickLabel('num_fabricante')">Nº Fabricante (F1)</label>
       <v-text-field
         id="edtNumFabricante"
         v-model="state.edtNumFabricante"
@@ -143,7 +146,7 @@ watch(
       ></v-text-field>
     </div>
     <div class="filtros-descricao">
-      <label>Descrição (F2)</label>
+      <label @click="actions.onClickLabel('descricao')">Descrição (F2)</label>
       <v-text-field
         id="edtDescricao"
         v-model="state.edtDescricao"
