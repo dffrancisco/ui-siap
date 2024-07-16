@@ -193,6 +193,7 @@ actions.init();
           :objProdutosAdicionados="state.objProdutosAdicionados"
           :marca="state.dadosImpressao?.NOME_MARCA"
           :observacao="state.dadosImpressao?.OBSERVACAO"
+          :numPedido="state.dadosImpressao?.NUM_PEDIDO"
           @fecharModal="actions.closeModalImpressao"
         />
       </v-dialog>

@@ -237,6 +237,7 @@ actions.init();
           :objProdutosAdicionados="state.produtosAdicionados"
           :marca="state.cabecalho.NOME_MARCA"
           :observacao="state.cabecalho.OBS"
+          :numPedido="state.cabecalho.ID_COMPRAS"
           @fecharModal="actions.fecharModalImpressao"
         />
       </v-dialog>

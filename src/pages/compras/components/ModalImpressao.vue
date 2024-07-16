@@ -4,6 +4,7 @@ import { iProdutoAdicionadoObj, iTransportadora } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import utils, { swalDarkError } from "../../../ts/utils";
 import type { iColumnPrint } from "../../../ts/utils";
+import moment from "moment";
 
 const emits = defineEmits(["fecharModal"]);
 
@@ -23,6 +24,10 @@ const props = defineProps({
   observacao: {
     type: String,
     default: "",
+  },
+  numPedido: {
+    type: Number,
+    required: true,
   },
 });
 
@@ -124,7 +129,9 @@ const actions = {
   async gerarArquivo() {
     let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
 
-    let fileName = props.marca;
+    let hoje = moment().format("DD-MM-YYYY");
+
+    let fileName = props.marca + " - " + hoje + " - " + props.numPedido;
 
     let titulo = state.tipoImpressao == "cotacao" ? "COTAÇÃO" : "PEDIDO" + " - " + props.marca;
 
