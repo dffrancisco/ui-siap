@@ -29,6 +29,11 @@ const state = reactive({
 });
 
 const actions = {
+  onMarcaUpdate: () => {
+    if (state.edtMarca) {
+      actions.callEmitBuscarProdutos();
+    }
+  },
   callEmitBuscarProdutos: () => {
     clearInterval(stopTime);
 
@@ -41,7 +46,6 @@ const actions = {
   },
 
   onKeydownContainerFiltro(e: KeyboardEvent): void {
-    console.log("aaaaaaaaa");
     if (e.key == "F1") {
       let elemento = document.getElementById("edtNumFabricante");
       elemento.click();
@@ -167,7 +171,7 @@ watch(
         item-value="ID_MARCA"
         item-title="NOME_MARCA"
         :clearable="false"
-        @update:model-value="actions.callEmitBuscarProdutos"
+        @update:model-value="actions.onMarcaUpdate"
       ></v-autocomplete>
     </div>
     <div class="d-flex align-end">
