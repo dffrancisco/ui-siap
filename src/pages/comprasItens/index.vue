@@ -218,6 +218,7 @@ actions.init();
               :indexProdutoSelecionado="state.indexProdutoSelecionado"
               :media="computeds.mediaQtdItemSelecionado.value"
               :corMediaVenda="computeds.corMediaVenda.value"
+              :qtdJaAdicionada="computeds.qtdJaAdicionadaItem.value"
               @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
               @adicionarItem="actions.adicionarItem"
               @deletarItem="actions.deletarItem"

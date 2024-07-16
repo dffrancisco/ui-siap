@@ -35,6 +35,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  qtdJaAdicionada: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const emit = defineEmits(["changeIndexProdutoSelecionado", "adicionarItem", "deletarItem"]);
@@ -145,7 +149,6 @@ nextTick(() => {
       id="gridItensAdicionados"
       class="grid-itens-adicionados"
     ></div>
-
     <v-dialog
       v-model="state.modalAdicionarItemOpened"
       max-width="350px"
@@ -153,9 +156,10 @@ nextTick(() => {
       @update:modelValue="actions.focarLinhaGrid"
     >
       <ModalAdicionarItem
-        :qtdAtual="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.QUANTIDADE]"
-        :valorVenda="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.VENDA]"
-        :valorCusto="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.CUSTO]"
+        :qtdAtual="objProdutos[keysProdutos[indexProdutoSelecionado]][MAP_COL_PRODUTO.QUANTIDADE]"
+        :valorVenda="objProdutos[keysProdutos[indexProdutoSelecionado]][MAP_COL_PRODUTO.VENDA]"
+        :valorCusto="objProdutos[keysProdutos[indexProdutoSelecionado]][MAP_COL_PRODUTO.CUSTO]"
+        :qtdAdicionada="qtdJaAdicionada"
         :media="media"
         :corMediaVenda="corMediaVenda"
         @adicionarItem="actions.adicionarItem"

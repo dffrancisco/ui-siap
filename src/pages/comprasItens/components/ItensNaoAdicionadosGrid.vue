@@ -25,6 +25,10 @@ const props = defineProps({
     type: Array as () => string[],
     default: [],
   },
+  qtdJaAdicionada: {
+    type: Number,
+    default: 0,
+  },
   indexProdutoSelecionado: {
     type: Number,
     default: 0,
@@ -137,6 +141,7 @@ nextTick(() => {
     >
       <ModalAdicionarItem
         :qtdAtual="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.QUANTIDADE]"
+        :qtdAdicionada="qtdJaAdicionada"
         :valorVenda="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.VENDA]"
         :valorCusto="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.CUSTO]"
         :media="media"

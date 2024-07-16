@@ -8,6 +8,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  qtdAdicionada: {
+    type: Number,
+    default: undefined,
+  },
   valorVenda: {
     type: Number,
     required: true,
@@ -53,6 +57,7 @@ const actions = {
 
 nextTick(() => {
   state.edtCusto = utils.formatValor(props.valorCusto || 0);
+  state.edtQtdPedido = props.qtdAdicionada;
 });
 </script>
 
@@ -105,12 +110,13 @@ nextTick(() => {
             v-model="state.edtQtdPedido"
             :clearable="false"
             autofocus
+            @focus="$event.target.select()"
             @keypress.enter.prevent="actions.adicionarItem"
           ></v-text-field>
         </v-col>
       </v-row>
     </v-card-text>
-    <div class="d-flex justify-center px-2 mb-4">
+    <div class="d-flex justify-center px-6 mb-4">
       <div class="media">
         <span class="mr-1">Média: </span>
         <strong :style="{ color: props.corMediaVenda }">{{ media }}</strong>
@@ -150,7 +156,7 @@ nextTick(() => {
 .adicionar-item {
   background-color: var(--grey-900);
   color: var(--grey-100);
-  height: 270px;
+  height: 290px;
 }
 
 .btn-primary {
@@ -167,7 +173,6 @@ nextTick(() => {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding-left: 16px;
   margin-top: 12px;
   line-height: 16px;
 }

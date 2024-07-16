@@ -255,6 +255,7 @@ const actions = {
     >
       <ModalAdicionarItem
         :qtdAtual="produto[MAP_COL_PRODUTO.QUANTIDADE]"
+        :qtdAdicionada="qtdJaAdicionada"
         :valorVenda="produto[MAP_COL_PRODUTO.VENDA]"
         :valorCusto="produto[MAP_COL_PRODUTO.CUSTO]"
         :media="media"
