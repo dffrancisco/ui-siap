@@ -63,7 +63,7 @@ const props = defineProps({
           'historico-meses-conteudo-card--loading': loading == true,
         }"
         :style="{
-          'background-color': index <= 2 ? corDestaque : corPadrao,
+          'background-color': index >= 1 && index <= 3 ? corDestaque : corPadrao,
           color: corFonte,
         }"
       >
