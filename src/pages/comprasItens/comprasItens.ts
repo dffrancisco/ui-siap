@@ -232,6 +232,8 @@ export const actions = {
     },
 
     async focarContainerItem() {
+        state.abaItens = 'nao_adicionados';
+        await nextTick();
         await sleep(100);
         // @ts-ignore
         document.querySelector("#containerItem").focus();
@@ -287,8 +289,6 @@ export const actions = {
         }
 
         if (e.altKey && (e.key == 'I' || e.key == 'i')) {
-            state.abaItens = 'nao_adicionados';
-            await nextTick();
             actions.focarContainerItem();
             e.preventDefault();
             return;

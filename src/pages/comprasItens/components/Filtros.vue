@@ -17,7 +17,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["buscarProdutos", "abrirModalImpressao"]);
+const emit = defineEmits(["buscarProdutos", "abrirModalImpressao", "focarNosItensNaoAdicionados"]);
 
 const state = reactive({
   edtNumFabricante: undefined,
@@ -72,6 +72,14 @@ const actions = {
       elemento.click();
       e.preventDefault();
       return;
+    }
+
+    if (e.key == "F8") {
+      emit("focarNosItensNaoAdicionados");
+    }
+
+    if (e.altKey && (e.key == "I" || e.key == "i")) {
+      emit("focarNosItensNaoAdicionados");
     }
 
     if (e.altKey && (e.key == "P" || e.key == "p")) {

@@ -36,6 +36,7 @@ actions.init();
         :carros="state.carros"
         @abrirModalImpressao="actions.abrirModalImpressao"
         @buscarProdutos="actions.buscarProdutos"
+        @focarNosItensNaoAdicionados="actions.focarContainerItem"
       />
       <div
         id="compras-detalhes"
