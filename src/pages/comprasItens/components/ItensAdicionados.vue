@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import utils, { swalDarkError } from "@/ts/utils";
+import utils from "@/ts/utils";
 import { nextTick, reactive, computed, watch } from "vue";
 import { iParamEmitAdicionarItem, iProdutoAdicionadoObj, iProdutoObj } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import ModalAdicionarItem from "./ModalAdicionarItem.vue";
-import comprasItensService from "../services/comprasItens.service";
 
 const props = defineProps({
   idCompras: {
