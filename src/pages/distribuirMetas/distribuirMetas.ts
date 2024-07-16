@@ -69,7 +69,8 @@ export const state = reactive({
     itensTipoCargo: [
         { title: 'Vendedores', value: 0 },
         { title: 'Montadores', value: 1 },
-    ]
+    ],
+    mostrarTotalizadores: true
 })
 
 export const meses = mesesToSelect;
@@ -83,7 +84,13 @@ export const metas = computed(() => {
         metasFiltradas = state.metaMontadores;
     }
 
-    if (state.selectedGrupoFuncionario == "") return metasFiltradas;
+    metasFiltradas.sort((a, b) => {
+        return b.PROGRESSO - a.PROGRESSO
+    });
+
+    if (state.selectedGrupoFuncionario == "") {
+        return metasFiltradas
+    }
 
     const codFuncionariosDoGrupo = state.gruposFuncionarios
         .filter(grupo => grupo.ID_GRUPO_IMPRESSAO.toString() == state.selectedGrupoFuncionario)
@@ -140,7 +147,7 @@ export const totalizadorMetas = computed(() => {
 
     if (state.selectedGrupoFuncionario != '') {
         const codFuncionariosDoGrupo = state.gruposFuncionarios
-            .filter(grupo => grupo.NOME_GRUPO === state.selectedGrupoFuncionario)
+            .filter(grupo => grupo.ID_GRUPO_IMPRESSAO == state.selectedGrupoFuncionario)
             .map(grupo => grupo.COD_FUNCIONARIO);
 
         arrayMeta = arrayMeta.filter(item => codFuncionariosDoGrupo.includes(item.COD_FUNCIONARIO));
@@ -318,5 +325,9 @@ export const actions = {
             await actions.getFuncionarios();
         }
         state.modalDistribuirMetas.open();
+    },
+
+    printMetas() {
+        window.print();
     }
 }

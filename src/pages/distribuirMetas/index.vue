@@ -25,65 +25,88 @@ onMounted(async () => {
       style="max-width: 1100px; margin: 0 auto"
     >
       <div>
-        <v-col cols="12">
-          <v-row>
-            <v-col cols="2">
-              <v-select
-                id="mes"
-                label="Mês"
-                v-model="state.mes"
-                item-title="title"
-                item-value="value"
-                :items="meses"
-                :clearable="false"
-                @update:model-value="actions.getMetas"
-              ></v-select>
-            </v-col>
-            <v-col cols="2">
-              <v-text-field
-                id="ano"
-                type="number"
-                label="Ano"
-                v-model="state.ano"
-                :clearable="false"
-                @update:model-value="actions.getMetas"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="3">
-              <v-select
-                v-model="state.opcaoMeta"
-                :items="state.itensTipoCargo"
-                item-value="value"
-                item-title="title"
-                :clearable="false"
-                label="Tipo Meta"
-                @update:model-value="actions.getMetas"
-              >
-              </v-select>
-            </v-col>
-            <v-col cols="3">
-              <v-select
-                v-model="state.selectedGrupoFuncionario"
-                :items="grupoFuncionarios"
-                item-value="ID_GRUPO_IMPRESSAO"
-                item-title="NOME_GRUPO"
-                :clearable="false"
-                label="Grupo Funcionários"
-                @update:model-value="alterarGrupoFuncionarios"
-              >
-              </v-select>
-            </v-col>
-            <v-col cols="2">
-              <v-btn
-                title="Distribuir metas"
-                class="mr-4 mb-4 metas_btn"
-                color="#3680AB"
-                @click.prevent="actions.distribuirMetas"
-                >Distribuir metas
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-col>
+        <v-row class="d-flex align-center pb-4">
+          <v-col
+            cols="1"
+            class="d-flex justify-center"
+          >
+            <v-btn
+              variant="text"
+              v-model="state.mostrarTotalizadores"
+              color="#3680AB"
+              :icon="state.mostrarTotalizadores ? 'mdi-eye mdi-36px' : 'mdi-eye-off mdi-36px'"
+              @click="state.mostrarTotalizadores = !state.mostrarTotalizadores"
+            />
+          </v-col>
+          <v-col cols="2">
+            <v-select
+              id="mes"
+              label="Mês"
+              v-model="state.mes"
+              item-title="title"
+              item-value="value"
+              :items="meses"
+              :clearable="false"
+              @update:model-value="actions.getMetas"
+            ></v-select>
+          </v-col>
+          <v-col cols="2">
+            <v-text-field
+              id="ano"
+              type="number"
+              label="Ano"
+              v-model="state.ano"
+              :clearable="false"
+              @update:model-value="actions.getMetas"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-select
+              v-model="state.opcaoMeta"
+              :items="state.itensTipoCargo"
+              item-value="value"
+              item-title="title"
+              :clearable="false"
+              label="Tipo Meta"
+              @update:model-value="actions.getMetas"
+            >
+            </v-select>
+          </v-col>
+          <v-col cols="2">
+            <v-select
+              v-model="state.selectedGrupoFuncionario"
+              :items="grupoFuncionarios"
+              item-value="ID_GRUPO_IMPRESSAO"
+              item-title="NOME_GRUPO"
+              :clearable="false"
+              label="Grupo Funcionários"
+              @update:model-value="alterarGrupoFuncionarios"
+            >
+            </v-select>
+          </v-col>
+          <v-col cols="2">
+            <v-btn
+              title="Distribuir metas"
+              class="metas_btn"
+              color="#3680AB"
+              @click.prevent="actions.distribuirMetas"
+              >Distribuir metas
+            </v-btn>
+          </v-col>
+          <v-col
+            cols="1"
+            class="d-flex justify-center"
+          >
+            <v-btn
+              :disabled="metas.length <= 0"
+              title="Imprimir"
+              icon="mdi-printer"
+              color="#3680AB"
+              @click="actions.printMetas"
+            >
+            </v-btn>
+          </v-col>
+        </v-row>
       </div>
 
       <div>
@@ -102,7 +125,7 @@ onMounted(async () => {
                     </div>
 
                     <div class="metas_tiposDeMeta_valor">
-                      <p>{{ utils.formatValor(totalizadorMetas.meta) }}</p>
+                      <p>{{ state.mostrarTotalizadores ? utils.formatValor(totalizadorMetas.meta) : "---" }}</p>
                     </div>
                   </v-card>
                 </v-col>
@@ -115,10 +138,14 @@ onMounted(async () => {
                     </div>
 
                     <div class="metas_tiposDeMeta_valor">
-                      <p>{{ utils.formatValor(totalizadorMetas.metaAcumulada) }}</p>
+                      <p>{{
+                        state.mostrarTotalizadores ? utils.formatValor(totalizadorMetas.metaAcumulada) : "---"
+                      }}</p>
                     </div>
                     <div class="metas_tiposDeMeta_porcentagem">
-                      <p> {{ totalizadorMetas.percentualMetaAcumulada }} % da meta atingida</p>
+                      <p v-show="state.mostrarTotalizadores">
+                        {{ totalizadorMetas.percentualMetaAcumulada }} % da meta atingida</p
+                      >
                     </div>
                   </v-card>
                 </v-col>
@@ -131,13 +158,23 @@ onMounted(async () => {
                     </div>
 
                     <div class="metas_tiposDeMeta_valor">
-                      <p>{{ utils.formatValor(totalizadorMetas.metaDoDia) }}</p>
+                      <p>{{
+                        state.mostrarTotalizadores ? utils.formatValor(totalizadorMetas.metaDoDia) : "---"
+                      }}</p>
                     </div>
                     <div class="metas_tiposDeMeta_porcentagem">
-                      <p v-if="totalizadorMetas.percentualMetaDoDia === 0">
+                      <p
+                        v-show="state.mostrarTotalizadores"
+                        v-if="totalizadorMetas.percentualMetaDoDia === 0"
+                      >
                         {{ state.metaNaoSeAplica }}
                       </p>
-                      <p v-else> {{ totalizadorMetas.percentualMetaDoDia }} % da meta atingida </p>
+                      <p
+                        v-else
+                        v-show="state.mostrarTotalizadores"
+                      >
+                        {{ totalizadorMetas.percentualMetaDoDia }} % da meta atingida
+                      </p>
                     </div>
                   </v-card>
                 </v-col>
@@ -153,13 +190,23 @@ onMounted(async () => {
                       <p v-if="totalizadorMetas.metaPrevisao === 0">
                         {{ state.metaNaoSeAplica }}
                       </p>
-                      <p v-else> {{ utils.formatValor(totalizadorMetas.metaPrevisao) }} </p>
+                      <p v-else>
+                        {{ state.mostrarTotalizadores ? utils.formatValor(totalizadorMetas.metaPrevisao) : "---" }}
+                      </p>
                     </div>
                     <div class="metas_tiposDeMeta_porcentagem">
-                      <p v-if="totalizadorMetas.percentualMetaPrevisao === 0">
+                      <p
+                        v-show="state.mostrarTotalizadores"
+                        v-if="totalizadorMetas.percentualMetaPrevisao === 0"
+                      >
                         {{ state.metaNaoSeAplica }}
                       </p>
-                      <p v-else> {{ totalizadorMetas.percentualMetaPrevisao }} % da meta atingida </p>
+                      <p
+                        v-show="state.mostrarTotalizadores"
+                        v-else
+                      >
+                        {{ totalizadorMetas.percentualMetaPrevisao }} % da meta atingida
+                      </p>
                     </div>
                   </v-card>
                 </v-col>
@@ -186,7 +233,10 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div style="max-width: 1120px; margin: 0 auto">
+    <div
+      style="max-width: 1120px; margin: 0 auto"
+      class="window-print"
+    >
       <v-container>
         <v-data-table
           class="tableMetas"
@@ -307,7 +357,6 @@ onMounted(async () => {
 
 .metas_btn {
   font-weight: 600;
-  text-align: center;
 }
 
 .metas_tiposDeMeta_porcentagem {
@@ -328,5 +377,20 @@ onMounted(async () => {
 .tableMetas {
   width: 1110px;
   border-radius: 10px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .window-print,
+  .window-print * {
+    visibility: visible;
+  }
+  .window-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
 }
 </style>
