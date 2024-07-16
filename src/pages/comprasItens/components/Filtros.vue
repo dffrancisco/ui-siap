@@ -135,7 +135,11 @@ watch(
     @keydown="actions.onKeydownContainerFiltro"
   >
     <div class="filtros-fabricante">
-      <label @click="actions.onClickLabel('num_fabricante')">Nº Fabricante (F1)</label>
+      <label
+        class="click"
+        @click="actions.onClickLabel('num_fabricante')"
+        >Nº Fabricante (F1)</label
+      >
       <v-text-field
         id="edtNumFabricante"
         v-model="state.edtNumFabricante"
@@ -146,7 +150,11 @@ watch(
       ></v-text-field>
     </div>
     <div class="filtros-descricao">
-      <label @click="actions.onClickLabel('descricao')">Descrição (F2)</label>
+      <label
+        class="click"
+        @click="actions.onClickLabel('descricao')"
+        >Descrição (F2)</label
+      >
       <v-text-field
         id="edtDescricao"
         v-model="state.edtDescricao"
