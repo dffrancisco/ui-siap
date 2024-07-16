@@ -241,13 +241,13 @@ export const actions = {
 
     onKeydownContainerPrincipal: async (e: KeyboardEvent) => {
         if (state.abaItens == 'nao_adicionados' && state.tipoVisualizacaoItem == 'unica') {
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === '1') {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === '3') {
                 actions.onClickVoltarItem()
                 e.preventDefault();
                 return;
             }
 
-            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === '3') {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === '1') {
                 actions.onClickAvancarItem()
                 e.preventDefault();
                 return;
