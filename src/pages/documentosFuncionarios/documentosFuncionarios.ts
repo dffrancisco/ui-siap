@@ -26,7 +26,7 @@ export const actions = {
             count: true,
             columns: {
                 Descrição: { dataField: "descricao" },
-                Pasta: { dataField: "pasta"},
+                Pasta: { dataField: "pasta" },
                 Controle: { dataField: "controle", compare: "returnControle" }
             },
             query: {
@@ -212,8 +212,20 @@ export const actions = {
             newFields.descricao = utils.toCapitalize(newFields.descricao)
             newFields.pasta = utils.toLowerCase(newFields.pasta)
 
+            // Substitui espaços por underline
+            newFields.pasta = newFields.pasta.replace(/\s+/g, '_');
+            // Verifica se há caracteres especiais
+            const verificarCaracterEspecial = /[^a-zA-Z0-9_]/u.test(newFields.pasta);
+            if (verificarCaracterEspecial) {
+                Swal.fire({
+                    icon: "error",
+                    text: "O campo pasta contém caracteres especiais. Por favor, ajuste.",
+                });
+                return;
+            }
+
             state.loading = true,
-            await serviceDocumentosFuncionarios.toInsert(newFields);
+                await serviceDocumentosFuncionarios.toInsert(newFields);
             state.loading = false
 
             state.gridPrincipal.insertLine(newFields)
@@ -232,7 +244,7 @@ export const actions = {
 
             if (dadosDiff.diff == false) {
                 return
-            }      
+            }
 
             let dadosAtualizados = {
                 ...state.dbDocumentosFuncionarios,
@@ -241,6 +253,18 @@ export const actions = {
 
             dadosAtualizados.descricao = utils.toCapitalize(dadosAtualizados.descricao)
             dadosAtualizados.pasta = utils.toLowerCase(dadosAtualizados.pasta)
+
+            // Substitui espaços por underline
+            dadosAtualizados.pasta = dadosAtualizados.pasta.replace(/\s+/g, '_');
+            // Verifica se há caracteres especiais
+            const verificarCaracterEspecial = /[^a-zA-Z0-9_]/u.test(dadosAtualizados.pasta);
+            if (verificarCaracterEspecial) {
+                Swal.fire({
+                    icon: "error",
+                    text: "O campo pasta contém caracteres especiais. Por favor, ajuste.",
+                });
+                return;
+            }
 
             state.loading = true
             await serviceDocumentosFuncionarios.toUpdate(dadosAtualizados);
