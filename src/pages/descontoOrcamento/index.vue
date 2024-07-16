@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import Swal from "sweetalert2";
 import { nextTick } from "vue";
-
 import { actions, state } from "./descontoOrcamento";
-
-import globalActions from "@/store/globalActions";
-
 import cAvatar100 from "@/components/cAvatar100.vue";
 import CInfoOrcamento from "./components/cInfoOrcamento.vue";
 import CInfoDesconto from "./components/cInfoDesconto.vue";
@@ -13,7 +8,13 @@ import XAuthManager from "../../plugins/xAuthManager/index.vue";
 import CModalDescontoPeca from "./components/cModalDescontoPeca.vue";
 import CModalUpdateProduto from "./components/cModalUpdateProduto.vue";
 
-actions.begin();
+nextTick(() => {
+  setTimeout(() => {
+    actions.begin();
+    actions.grid();
+    actions.modal();
+  });
+});
 </script>
 
 <template>
@@ -21,9 +22,17 @@ actions.begin();
 
   <v-main>
     <v-container>
-      <v-card max-width="1000" class="mx-auto pa-3">
+      <v-card
+        max-width="1000"
+        class="mx-auto pa-3"
+      >
         <v-row style="height: 80px">
-          <v-col cols="12" sm="8" md="8" class="pt-4">
+          <v-col
+            cols="12"
+            sm="8"
+            md="8"
+            class="pt-4"
+          >
             <v-row>
               <v-col cols="1">
                 <c-avatar100 :urlIMG="state.fotoVendedor" />
@@ -31,11 +40,18 @@ actions.begin();
 
               <v-col cols="5">
                 <div class="text-truncate">
-                  <v-alert density="compact" color="primary" variant="outlined">
+                  <v-alert
+                    density="compact"
+                    color="primary"
+                    variant="outlined"
+                  >
                     <i class="text-grey pr-1">Vendedor:</i>
                     <b>{{ state.dataOrcamento.NOME_VENDEDOR }} </b>
                     /
-                    <v-chip size="x-small" color="primary">
+                    <v-chip
+                      size="x-small"
+                      color="primary"
+                    >
                       Orç.: {{ state.dataOrcamento.NUM_ORCAMENTO }}
                     </v-chip>
                   </v-alert>
@@ -44,21 +60,21 @@ actions.begin();
 
               <v-col cols="1">
                 <c-avatar100
-                  v-show="
-                    state.dataOrcamento.VALOR_MONTAGEN == 0 ? false : true
-                  "
+                  v-show="state.dataOrcamento.VALOR_MONTAGEN == 0 ? false : true"
                   :urlIMG="state.fotoMontador"
                 />
               </v-col>
 
               <v-col cols="5">
                 <div
-                  v-show="
-                    state.dataOrcamento.VALOR_MONTAGEN == 0 ? false : true
-                  "
+                  v-show="state.dataOrcamento.VALOR_MONTAGEN == 0 ? false : true"
                   class="text-truncate"
                 >
-                  <v-alert density="compact" color="primary" variant="outlined">
+                  <v-alert
+                    density="compact"
+                    color="primary"
+                    variant="outlined"
+                  >
                     <i class="text-grey pr-1"> Montador: </i>
                     <b
                       >{{ state.dataOrcamento.NOME_MONTADOR }} /
@@ -70,7 +86,12 @@ actions.begin();
             </v-row>
           </v-col>
 
-          <v-col cols="12" sm="3" md="3" class="text-right">
+          <v-col
+            cols="12"
+            sm="3"
+            md="3"
+            class="text-right"
+          >
             <v-text-field
               v-model="state.edtNumOrcamento"
               id="edtNumOrcamento"
@@ -86,7 +107,11 @@ actions.begin();
             ></v-text-field>
           </v-col>
 
-          <v-col cols="12" sm="1" md="1">
+          <v-col
+            cols="12"
+            sm="1"
+            md="1"
+          >
             <v-btn
               @click="actions.consulta()"
               color="primary"
@@ -108,7 +133,12 @@ actions.begin();
             <c-info-desconto />
           </v-col>
 
-          <v-col cols="12" sm="12" md="12" class="mt-n2">
+          <v-col
+            cols="12"
+            sm="12"
+            md="12"
+            class="mt-n2"
+          >
             <v-progress-linear
               color="primary"
               v-model="state.timeAuth"
@@ -118,18 +148,34 @@ actions.begin();
             <div id="gdItensOrcamento"></div>
           </v-col>
 
-          <v-col cols="12" sm="12" md="12">
+          <v-col
+            cols="12"
+            sm="12"
+            md="12"
+          >
             <div class="mt-n3 text-center">
-              <v-chip class="ma-2" size="x-small">
+              <v-chip
+                class="ma-2"
+                size="x-small"
+              >
                 (Desc.V) Desconto Vendedor
               </v-chip>
-              <v-chip class="ma-2" size="x-small">
+              <v-chip
+                class="ma-2"
+                size="x-small"
+              >
                 (Desc.M) Desconto Marca
               </v-chip>
-              <v-chip class="ma-2" size="x-small">
+              <v-chip
+                class="ma-2"
+                size="x-small"
+              >
                 (Desc.G) Desconto Gerente
               </v-chip>
-              <v-chip class="ma-2" size="x-small">
+              <v-chip
+                class="ma-2"
+                size="x-small"
+              >
                 (Desc.T) Desconto Total
               </v-chip>
               <!-- <v-btn
@@ -151,11 +197,19 @@ actions.begin();
     </v-container>
   </v-main>
 
-  <div id="pnDesconto" title="Desconto Item do Orçamento">
+  <div
+    id="pnDesconto"
+    title="Desconto Item do Orçamento"
+    style="display: none"
+  >
     <c-modal-desconto-peca />
   </div>
 
-  <div id="pnUpdateProduto" title="Atualizar Quantidade no Estoque">
+  <div
+    id="pnUpdateProduto"
+    title="Atualizar Quantidade no Estoque"
+    style="display: none"
+  >
     <c-modal-update-produto />
   </div>
 </template>
