@@ -161,27 +161,25 @@ const actions = {
           <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.NUM_FABRICANTE2] || "-" }}</strong>
         </v-col>
         <v-col
-          cols="2"
+          cols="4"
           class="d-flex flex-column"
         >
-          <span>Custo</span>
-          <strong class="item-info-value">{{ formatValor(produto[MAP_COL_PRODUTO.CUSTO]) }}</strong>
-        </v-col>
-        <v-col
-          cols="2"
-          class="d-flex flex-column"
-        >
-          <span>Venda</span>
-          <strong class="item-info-value">{{ formatValor(produto[MAP_COL_PRODUTO.VENDA]) }}</strong>
+          <span>Marca</span>
+          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.DESCRICAO_MARCA] }}</strong>
         </v-col>
       </v-row>
       <v-row class="mt-0">
         <v-col
-          cols="4"
+          cols="2"
           class="d-flex flex-column py-5"
         >
-          <span>Marca</span>
-          <strong class="item-info-value">{{ produto[MAP_COL_PRODUTO.DESCRICAO_MARCA] }}</strong>
+          <span>Qtd. Atual</span>
+          <strong
+            class="item-info-value"
+            :style="{ color: getColorQtdEstoque(media, produto[MAP_COL_PRODUTO.QUANTIDADE]) }"
+          >
+            {{ produto[MAP_COL_PRODUTO.QUANTIDADE] }}
+          </strong>
         </v-col>
         <v-col
           cols="2"
@@ -196,13 +194,15 @@ const actions = {
           cols="2"
           class="d-flex flex-column py-5"
         >
-          <span>Qtd. Atual</span>
-          <strong
-            class="item-info-value"
-            :style="{ color: getColorQtdEstoque(media, produto[MAP_COL_PRODUTO.QUANTIDADE]) }"
-          >
-            {{ produto[MAP_COL_PRODUTO.QUANTIDADE] }}
-          </strong>
+          <span>Custo</span>
+          <strong class="item-info-value">{{ formatValor(produto[MAP_COL_PRODUTO.CUSTO]) }}</strong>
+        </v-col>
+        <v-col
+          cols="2"
+          class="d-flex flex-column py-5"
+        >
+          <span>Venda</span>
+          <strong class="item-info-value">{{ formatValor(produto[MAP_COL_PRODUTO.VENDA]) }}</strong>
         </v-col>
         <v-col
           cols="2"
