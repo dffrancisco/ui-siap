@@ -17,7 +17,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["buscarProdutos", "abrirModalImpressao"]);
+const emit = defineEmits(["buscarProdutos", "abrirModalImpressao", "focarNosItensNaoAdicionados", "ordenar"]);
 
 const state = reactive({
   edtNumFabricante: undefined,
@@ -29,6 +29,14 @@ const state = reactive({
 });
 
 const actions = {
+  onClickLabel: (label: "num_fabricante" | "descricao") => {
+    emit("ordenar", label);
+  },
+  onMarcaUpdate: () => {
+    if (state.edtMarca) {
+      actions.callEmitBuscarProdutos();
+    }
+  },
   callEmitBuscarProdutos: () => {
     clearInterval(stopTime);
 
@@ -41,7 +49,6 @@ const actions = {
   },
 
   onKeydownContainerFiltro(e: KeyboardEvent): void {
-    console.log("aaaaaaaaa");
     if (e.key == "F1") {
       let elemento = document.getElementById("edtNumFabricante");
       elemento.click();
@@ -68,6 +75,14 @@ const actions = {
       elemento.click();
       e.preventDefault();
       return;
+    }
+
+    if (e.key == "F8") {
+      emit("focarNosItensNaoAdicionados");
+    }
+
+    if (e.altKey && (e.key == "I" || e.key == "i")) {
+      emit("focarNosItensNaoAdicionados");
     }
 
     if (e.altKey && (e.key == "P" || e.key == "p")) {
@@ -120,7 +135,11 @@ watch(
     @keydown="actions.onKeydownContainerFiltro"
   >
     <div class="filtros-fabricante">
-      <label>Nº Fabricante (F1)</label>
+      <label
+        class="click"
+        @click="actions.onClickLabel('num_fabricante')"
+        >Nº Fabricante (F1)</label
+      >
       <v-text-field
         id="edtNumFabricante"
         v-model="state.edtNumFabricante"
@@ -131,7 +150,11 @@ watch(
       ></v-text-field>
     </div>
     <div class="filtros-descricao">
-      <label>Descrição (F2)</label>
+      <label
+        class="click"
+        @click="actions.onClickLabel('descricao')"
+        >Descrição (F2)</label
+      >
       <v-text-field
         id="edtDescricao"
         v-model="state.edtDescricao"
@@ -167,7 +190,7 @@ watch(
         item-value="ID_MARCA"
         item-title="NOME_MARCA"
         :clearable="false"
-        @update:model-value="actions.callEmitBuscarProdutos"
+        @update:model-value="actions.onMarcaUpdate"
       ></v-autocomplete>
     </div>
     <div class="d-flex align-end">

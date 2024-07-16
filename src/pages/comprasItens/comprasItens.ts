@@ -53,6 +53,7 @@ export const state = reactive(({
     persistindoItem: false,
     modalImpressaoOpened: false,
     transportadoras: [],
+    ordenarPor: <'nenhum' | 'num_fabricante' | 'descricao'>'nenhum'
 }))
 
 setInterval(async () => {
@@ -130,6 +131,17 @@ export const actions = {
 
     fecharModalImpressao() {
         state.modalImpressaoOpened = false;
+    },
+
+    setOrdenar(label: 'num_fabricante' | 'descricao') {
+        actions.changeIndexProdutoSelecionado(0)
+
+        if (state.ordenarPor == label) {
+            state.ordenarPor = 'nenhum'
+            return;
+        }
+
+        state.ordenarPor = label
     },
 
     focarNosItens: () => {
@@ -232,6 +244,8 @@ export const actions = {
     },
 
     async focarContainerItem() {
+        state.abaItens = 'nao_adicionados';
+        await nextTick();
         await sleep(100);
         // @ts-ignore
         document.querySelector("#containerItem").focus();
@@ -239,13 +253,13 @@ export const actions = {
 
     onKeydownContainerPrincipal: async (e: KeyboardEvent) => {
         if (state.abaItens == 'nao_adicionados' && state.tipoVisualizacaoItem == 'unica') {
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === '1') {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === '3') {
                 actions.onClickVoltarItem()
                 e.preventDefault();
                 return;
             }
 
-            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === '3') {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === '1') {
                 actions.onClickAvancarItem()
                 e.preventDefault();
                 return;
@@ -287,8 +301,6 @@ export const actions = {
         }
 
         if (e.altKey && (e.key == 'I' || e.key == 'i')) {
-            state.abaItens = 'nao_adicionados';
-            await nextTick();
             actions.focarContainerItem();
             e.preventDefault();
             return;
@@ -481,8 +493,31 @@ export const actions = {
 }
 
 export const computeds = {
+    keysOrdenadasPorNumFabricante: computed(() => {
+        return Object.keys(state.produtos).sort((a, b) => {
+            const fabricanteA = state.produtos[a][MAP_COL_PRODUTO.NUM_FABRICANTE];
+            const fabricanteB = state.produtos[b][MAP_COL_PRODUTO.NUM_FABRICANTE];
+            return fabricanteA.localeCompare(fabricanteB);
+        });
+    }),
+
+    keysOrdenadasPorDescricao: computed(() => {
+        return Object.keys(state.produtos).sort((a, b) => {
+            const fabricanteA = state.produtos[a][MAP_COL_PRODUTO.DESC_PRODUTO];
+            const fabricanteB = state.produtos[b][MAP_COL_PRODUTO.DESC_PRODUTO];
+            return fabricanteA.localeCompare(fabricanteB);
+        });
+    }),
+
     produtoSelecionado: computed(() => {
-        let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado];
+        let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado]
+
+        if (state.ordenarPor == 'num_fabricante') {
+            keyProdutoSelecionado = computeds.keysOrdenadasPorNumFabricante.value[state.indexProdutoSelecionado]
+        } else if (state.ordenarPor == 'descricao') {
+            keyProdutoSelecionado = computeds.keysOrdenadasPorDescricao.value[state.indexProdutoSelecionado]
+        }
+
         return state.produtos[keyProdutoSelecionado] || {} as iProduto;
     }),
 

@@ -862,7 +862,7 @@ export const gerarPlanilhaComCabecalho = async (columns: iColumnPrint[], data: i
   const worksheet = XLSX.utils.aoa_to_sheet(xlsData);
 
   // Define column widths
-  const colWidths = columns.map(() => ({ wpx: 130 }));
+  const colWidths = columns.map((col) => ({ wpx: 60 }));
   worksheet['!cols'] = colWidths;
 
   // Create a new workbook
@@ -872,7 +872,10 @@ export const gerarPlanilhaComCabecalho = async (columns: iColumnPrint[], data: i
   // Convert the workbook to a binary array
   const workbookBinary = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
-  fileName = fileName + ' - ' + empresa.RAZAO_SOCIAL;
+  let nomeEmpresaSplit = empresa.RAZAO_SOCIAL.split(' ')
+  let nomeEmpresaCurto = nomeEmpresaSplit[0] + ' ' + nomeEmpresaSplit[1]
+
+  fileName = fileName + ' - ' + nomeEmpresaCurto;
 
   // Create a Blob from the binary array and save it as a .xls file
   const blob = new Blob([workbookBinary], { type: 'application/octet-stream' });

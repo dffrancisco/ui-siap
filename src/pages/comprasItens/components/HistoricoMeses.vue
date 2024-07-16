@@ -12,11 +12,11 @@ const props = defineProps({
   },
   corPadrao: {
     type: String,
-    default: "#7dc1ff",
+    default: "#3c3028",
   },
   corDestaque: {
     type: String,
-    default: "#b1daff",
+    default: "#3c3028",
   },
   corFonte: {
     type: String,
@@ -63,7 +63,7 @@ const props = defineProps({
           'historico-meses-conteudo-card--loading': loading == true,
         }"
         :style="{
-          'background-color': index <= 2 ? corDestaque : corPadrao,
+          'background-color': index >= 1 && index <= 3 ? corDestaque : corPadrao,
           color: corFonte,
         }"
       >

@@ -126,6 +126,7 @@ export const actions = {
 
         state.dadosImpressao.NOME_MARCA = compra.NOME_MARCA;
         state.dadosImpressao.OBSERVACAO = compra.OBS || '';
+        state.dadosImpressao.NUM_PEDIDO = compra.ID_COMPRAS;
         state.modalImpressaoOpened = true;
     },
 

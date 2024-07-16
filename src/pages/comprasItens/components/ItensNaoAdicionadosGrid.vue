@@ -25,6 +25,10 @@ const props = defineProps({
     type: Array as () => string[],
     default: [],
   },
+  qtdJaAdicionada: {
+    type: Number,
+    default: 0,
+  },
   indexProdutoSelecionado: {
     type: Number,
     default: 0,
@@ -73,10 +77,10 @@ const actions = {
       theme: "x-modern-dark",
       height: "240px",
       columns: {
+        "Nº Fabricante": { dataField: MAP_COL_PRODUTO.NUM_FABRICANTE, width: "14%" },
         Descrição: { dataField: MAP_COL_PRODUTO.DESC_PRODUTO, compare: "colorirDescricao" },
         "Qtd. Est": { dataField: MAP_COL_PRODUTO.QUANTIDADE, center: true, width: "10%" },
         Custo: { dataField: MAP_COL_PRODUTO.CUSTO, center: true, render: utils.formatValor, width: "10%" },
-        "Nº Fabricante": { dataField: MAP_COL_PRODUTO.NUM_FABRICANTE, width: "14%" },
         Carro: { dataField: MAP_COL_PRODUTO.DESCRICAO_CARRO, width: "14%" },
         Marca: { dataField: MAP_COL_PRODUTO.DESCRICAO_MARCA, width: "14%" },
       },
@@ -137,6 +141,7 @@ nextTick(() => {
     >
       <ModalAdicionarItem
         :qtdAtual="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.QUANTIDADE]"
+        :qtdAdicionada="qtdJaAdicionada"
         :valorVenda="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.VENDA]"
         :valorCusto="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.CUSTO]"
         :media="media"
