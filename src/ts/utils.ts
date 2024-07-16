@@ -862,7 +862,7 @@ export const gerarPlanilhaComCabecalho = async (columns: iColumnPrint[], data: i
   const worksheet = XLSX.utils.aoa_to_sheet(xlsData);
 
   // Define column widths
-  const colWidths = columns.map(() => ({ wpx: 130 }));
+  const colWidths = columns.map((col) => ({ wpx: 60 }));
   worksheet['!cols'] = colWidths;
 
   // Create a new workbook
