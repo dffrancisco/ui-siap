@@ -3,6 +3,7 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import themes from './theme'
 import globalStage from '@/store/globalState'
+import { pt } from 'vuetify/locale'
 
 import { VCalendar } from 'vuetify/labs/VCalendar'
 
@@ -83,6 +84,10 @@ export default createVuetify({
   },
   directives,
   defaults: defaultConfig,
-  theme: defaultThemeOptions
-
+  theme: defaultThemeOptions,
+  locale: {
+    locale: 'pt',
+    fallback: 'pt',
+    messages: { pt },
+  },
 })
