@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import utils, { swalDarkError } from "@/ts/utils";
+import utils from "@/ts/utils";
 import { nextTick, reactive, computed, watch } from "vue";
 import { iParamEmitAdicionarItem, iProdutoAdicionadoObj, iProdutoObj } from "../interfaces";
 import { MAP_COL_PRODUTO } from "../constants/constants";
 import ModalAdicionarItem from "./ModalAdicionarItem.vue";
-import comprasItensService from "../services/comprasItens.service";
 
 const props = defineProps({
   idCompras: {
@@ -35,6 +34,10 @@ const props = defineProps({
   corMediaVenda: {
     type: String,
     required: true,
+  },
+  qtdJaAdicionada: {
+    type: Number,
+    default: 0,
   },
 });
 
@@ -77,10 +80,16 @@ const actions = {
       columns: {
         "Nº Fabricante": { dataField: MAP_COL_PRODUTO.NUM_FABRICANTE, width: "14%" },
         Descrição: { dataField: MAP_COL_PRODUTO.DESC_PRODUTO },
-        Carro: { dataField: MAP_COL_PRODUTO.DESCRICAO_CARRO, width: "14%" },
-        Marca: { dataField: MAP_COL_PRODUTO.DESCRICAO_MARCA, width: "14%" },
         Qtd: { dataField: "PEDIDO_QTD_ADICIONADA", center: true, width: "10%" },
         Custo: { dataField: "PEDIDO_CUSTO_ADICIONADO", center: true, render: utils.formatValor, width: "10%" },
+        Total: { dataField: "TOTAL", compare: "total", width: "10%" },
+        Carro: { dataField: MAP_COL_PRODUTO.DESCRICAO_CARRO, width: "14%" },
+        Marca: { dataField: MAP_COL_PRODUTO.DESCRICAO_MARCA, width: "14%" },
+      },
+      compare: {
+        total(r) {
+          return utils.formatValor(r.PEDIDO_CUSTO_ADICIONADO * r.PEDIDO_QTD_ADICIONADA);
+        },
       },
       onSelectLine: (dados) => {
         let indexProdutoSelecionadoGrid = props.keysProdutos.findIndex(
@@ -94,7 +103,7 @@ const actions = {
           state.modalAdicionarItemOpened = true;
         },
         46: (dados, e) => {
-          utils.confirmaCodigo({
+          utils.confirma({
             msg: "Deseja realmente deletar o item do pedido?",
             theme: "xModal-dark-square",
             call: async () => {
@@ -140,7 +149,6 @@ nextTick(() => {
       id="gridItensAdicionados"
       class="grid-itens-adicionados"
     ></div>
-
     <v-dialog
       v-model="state.modalAdicionarItemOpened"
       max-width="350px"
@@ -148,9 +156,10 @@ nextTick(() => {
       @update:modelValue="actions.focarLinhaGrid"
     >
       <ModalAdicionarItem
-        :qtdAtual="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.QUANTIDADE]"
-        :valorVenda="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.VENDA]"
-        :valorCusto="produtos[indexProdutoSelecionado][MAP_COL_PRODUTO.CUSTO]"
+        :qtdAtual="objProdutos[keysProdutos[indexProdutoSelecionado]][MAP_COL_PRODUTO.QUANTIDADE]"
+        :valorVenda="objProdutos[keysProdutos[indexProdutoSelecionado]][MAP_COL_PRODUTO.VENDA]"
+        :valorCusto="objProdutos[keysProdutos[indexProdutoSelecionado]][MAP_COL_PRODUTO.CUSTO]"
+        :qtdAdicionada="qtdJaAdicionada"
         :media="media"
         :corMediaVenda="corMediaVenda"
         @adicionarItem="actions.adicionarItem"
