@@ -64,6 +64,12 @@ setInterval(async () => {
 
     let item = state.filaItens[0];
 
+    if (item.TENTATIVAS > 3) {
+        state.filaItens.push(item);
+        state.filaItens.splice(0, 1);
+        return;
+    }
+
     if (item.ACAO == 'ADD' && item.TENTATIVAS <= 3) {
         state.persistindoItem = true;
         await actions.persistirItemFilaADD(item, 0);
