@@ -193,6 +193,22 @@ export const computeds = {
         }
 
         return somaTempo / qtd
+    }),
+
+    usuariosComConversa: computed(() => {
+        let keyUsuarios = Object.keys(computeds.conversasAbertasPorUsuario.value)
+
+        let usuarios = []
+
+        keyUsuarios.forEach(key => {
+            let usuario = state.usuarios.find(usuario => usuario.assigned_user == key)
+
+            if (key && usuario && computeds.conversasAbertasPorUsuario.value[key]?.length > 0) {
+                usuarios.push(usuario)
+            }
+        })
+
+        return usuarios.sort((a, b) => a.nome.localeCompare(b.nome))
     })
 }
 
