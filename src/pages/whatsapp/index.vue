@@ -65,7 +65,7 @@ onUnmounted(() => {
           @openModalUltimasConversas="actions.openModalUltimasConversas"
         />
         <CardUsuario
-          v-for="usuario in state.usuarios"
+          v-for="usuario in computeds.usuariosComConversa.value"
           :nome="usuario.nome"
           :conversas="computeds.conversasAbertasPorUsuario.value[usuario.assigned_user] || []"
           @openModalUltimasConversas="actions.openModalUltimasConversas"

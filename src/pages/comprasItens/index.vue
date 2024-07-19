@@ -36,6 +36,8 @@ actions.init();
         :carros="state.carros"
         @abrirModalImpressao="actions.abrirModalImpressao"
         @buscarProdutos="actions.buscarProdutos"
+        @focarNosItensNaoAdicionados="actions.focarContainerItem"
+        @ordenar="actions.setOrdenar"
       />
       <div
         id="compras-detalhes"
@@ -67,9 +69,9 @@ actions.init();
             v-if="state.abaHistorico == 'vendas'"
             :label="`Histórico de ${state.abaHistorico}`"
             :historicoMeses="computeds.historicoMeses.value"
-            :corPadrao="'#7dc1ff'"
-            :corDestaque="'#b1daff'"
-            :corFonte="'#005098'"
+            :corPadrao="'#27313e'"
+            :corDestaque="'#3d4a5b'"
+            :corFonte="'#eef0f4'"
             :media="computeds.mediaQtdItemSelecionado.value"
             :loading="state.loadingHistoricoVendas"
             :isVenda="true"
@@ -79,9 +81,9 @@ actions.init();
             v-if="state.abaHistorico == 'compras'"
             :label="`Histórico de ${state.abaHistorico}`"
             :historicoMeses="computeds.historicoMeses.value"
-            :corPadrao="'#17b5bf'"
-            :corDestaque="'#60e4ec'"
-            :corFonte="'#00284c'"
+            :corPadrao="'#27313e'"
+            :corDestaque="'#3d4a5b'"
+            :corFonte="'#eef0f4'"
             :media="computeds.mediaQtdItemSelecionado.value"
             :loading="state.loadingHistoricoCompras"
           />
@@ -217,6 +219,7 @@ actions.init();
               :indexProdutoSelecionado="state.indexProdutoSelecionado"
               :media="computeds.mediaQtdItemSelecionado.value"
               :corMediaVenda="computeds.corMediaVenda.value"
+              :qtdJaAdicionada="computeds.qtdJaAdicionadaItem.value"
               @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
               @adicionarItem="actions.adicionarItem"
               @deletarItem="actions.deletarItem"
@@ -234,6 +237,7 @@ actions.init();
           :objProdutosAdicionados="state.produtosAdicionados"
           :marca="state.cabecalho.NOME_MARCA"
           :observacao="state.cabecalho.OBS"
+          :numPedido="state.cabecalho.ID_COMPRAS"
           @fecharModal="actions.fecharModalImpressao"
         />
       </v-dialog>

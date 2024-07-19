@@ -112,4 +112,5 @@ export interface iTransportadora {
 export interface iDadosImpressao {
     NOME_MARCA: string,
     OBSERVACAO?: string,
+    NUM_PEDIDO: number,
 }

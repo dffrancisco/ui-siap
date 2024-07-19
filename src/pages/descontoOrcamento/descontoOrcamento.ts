@@ -45,20 +45,18 @@ export const state = reactive({
 export const actions = {
 
   begin() {
-    nextTick(() => {
-      actions.grid();
-      actions.modal();
+    // nextTick(() => {
 
-      (<HTMLInputElement>document.getElementById("edtNumOrcamento")).focus();
+    (<HTMLInputElement>document.getElementById("edtNumOrcamento")).focus();
 
-      useEventListener(document, "keydown", (event) => {
-        if (event.key === "F2") {
-          event.preventDefault();
-          event.stopPropagation();
-          (<HTMLInputElement>document.getElementById("edtNumOrcamento")).select();
-        }
-      });
+    useEventListener(document, "keydown", (event) => {
+      if (event.key === "F2") {
+        event.preventDefault();
+        event.stopPropagation();
+        (<HTMLInputElement>document.getElementById("edtNumOrcamento")).select();
+      }
     });
+    // });
   },
 
   modal() {
