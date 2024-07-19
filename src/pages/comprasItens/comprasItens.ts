@@ -35,6 +35,7 @@ export const state = reactive(({
     edtCarro: undefined,
     edtMarca: <number | undefined>undefined,
     produtos: <iProdutoObj>{},
+    keyProdutosOrigem: <string[]>[],
     keyProdutos: <string[]>[],
     produtosAdicionados: <iProdutoAdicionadoObj>{},
     historicoVendasGeral: <iObjHistoricoVendaGeral>{},
@@ -143,11 +144,20 @@ export const actions = {
         actions.changeIndexProdutoSelecionado(0)
 
         if (state.ordenarPor == label) {
-            state.ordenarPor = 'nenhum'
+            state.keyProdutos = state.keyProdutosOrigem
+            state.ordenarPor = 'nenhum';
             return;
         }
 
         state.ordenarPor = label
+
+        if (state.ordenarPor == 'num_fabricante') {
+            state.keyProdutos = computeds.keysOrdenadasPorNumFabricante.value
+        } else if (state.ordenarPor == 'descricao') {
+            state.keyProdutos = computeds.keysOrdenadasPorDescricao.value
+        } else {
+            state.keyProdutos = state.keyProdutosOrigem
+        }
     },
 
     focarNosItens: () => {
@@ -219,6 +229,7 @@ export const actions = {
             state.edtMarca = param.ID_MARCA;
             state.produtos = response.produtos;
             state.qtdItensMarca = response.qtdItensMarca;
+            state.keyProdutosOrigem = Object.keys(state.produtos);
             state.keyProdutos = Object.keys(state.produtos);
 
         } catch (error) {
@@ -517,13 +528,6 @@ export const computeds = {
 
     produtoSelecionado: computed(() => {
         let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado]
-
-        if (state.ordenarPor == 'num_fabricante') {
-            keyProdutoSelecionado = computeds.keysOrdenadasPorNumFabricante.value[state.indexProdutoSelecionado]
-        } else if (state.ordenarPor == 'descricao') {
-            keyProdutoSelecionado = computeds.keysOrdenadasPorDescricao.value[state.indexProdutoSelecionado]
-        }
-
         return state.produtos[keyProdutoSelecionado] || {} as iProduto;
     }),
 
