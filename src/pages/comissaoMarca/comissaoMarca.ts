@@ -155,8 +155,8 @@ export const actions = {
     createModal() {
         state.modalMarcas = new xModal.create({
             el: "#modalMarcas",
-            height: 600,
-            width: 800,
+            height: 450,
+            width: 600,
             title: 'Marcas - Fabricantes',
             theme: 'xModal-blue',
             onOpen: () => { state.modalMarcasOpened = true; },
@@ -165,8 +165,8 @@ export const actions = {
 
         state.modalProdutos = new xModal.create({
             el: "#modalProdutos",
-            height: 700,
-            width: 640,
+            height: 550,
+            width: 600,
             title: 'Itens - Produtos',
             theme: 'xModal-blue',
             onOpen: () => { state.modalProdutosOpened = true; },

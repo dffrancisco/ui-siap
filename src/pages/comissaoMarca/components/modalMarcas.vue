@@ -34,8 +34,8 @@ const actions = {
   criarGrid() {
     state.gridMarcas = new xGridV2.create({
       el: "#gridMarcas",
-      width: 750,
-      height: 390,
+      width: 550,
+      height: 240,
       count: false,
       columns: {
         Descrição: {
@@ -115,7 +115,7 @@ nextTick(() => {
           >Cancelar</v-btn
         >
         <v-btn
-          class="ml-5"
+          class="ml-2"
           color="#3680AB"
           @click="actions.selecionarMarca()"
           >Selecionar</v-btn

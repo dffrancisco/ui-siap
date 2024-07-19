@@ -23,8 +23,9 @@ const state = reactive({
 const filtrarProdutos = computed(() => {
   if (!state.search) return props.produtos;
 
+  const produtoPesquisado = state.search.toLowerCase();
   return props.produtos.filter((produto) =>
-    produto.DESC_PRODUTO.toLowerCase().includes(state.search.toLowerCase())
+    produto.DESC_PRODUTO.split(" ")[0].toLowerCase().includes(produtoPesquisado)
   );
 });
 
@@ -92,7 +93,7 @@ watch(
         :headers="state.headers"
         :items="filtrarProdutos"
         items-per-page-text="Itens por página"
-        height="455"
+        height="300"
         item-key="COD_PRODUTO"
         item-value="COD_PRODUTO"
         show-select
@@ -117,7 +118,7 @@ watch(
         >Cancelar</v-btn
       >
       <v-btn
-        class="ml-5"
+        class="ml-2"
         color="#3680AB"
         @click="confirmarSelecionados"
         >Selecionar</v-btn

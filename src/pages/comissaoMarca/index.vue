@@ -175,7 +175,10 @@ nextTick(async () => {
 
     <div class="right-side">
       <div class="radio-group">
-        <v-card width="700px">
+        <v-card
+          width="700px"
+          height="550px"
+        >
           <v-tabs
             v-model="state.tab"
             bg-color="primary"
@@ -196,7 +199,7 @@ nextTick(async () => {
                   no-data-text="Não há dados disponíveis"
                   v-model:itemsPerPage="state.totalItems"
                   style="border-radius: 5px; max-width: 660px"
-                  height="545"
+                  height="430"
                   fixed-header
                   :headers="state.headers"
                   :loading="state.loading"
@@ -211,7 +214,7 @@ nextTick(async () => {
                   no-data-text="Não há dados disponíveis"
                   v-model:itemsPerPage="state.totalItems"
                   style="border-radius: 5px; max-width: 660px"
-                  height="545"
+                  height="430"
                   fixed-header
                   :headers="state.headers2"
                   :loading="state.loading"
@@ -222,7 +225,7 @@ nextTick(async () => {
               </v-window-item>
             </v-window>
           </v-card-text>
-          <div class="pt-2 btnPrint">
+          <div class="btnPrint">
             <v-btn
               color="primary"
               @click="actions.relatorio"
@@ -234,6 +237,7 @@ nextTick(async () => {
           </div>
         </v-card>
       </div>
+      <div id="pnCodigoTela">COMISSÃO_MARCA</div>
     </div>
 
     <v-overlay
@@ -272,8 +276,6 @@ nextTick(async () => {
       @produtos-escolhidos="actions.adcProdutosNoCard"
     />
   </div>
-
-  <div id="pnCodigoTela">COMISSÃO_MARCA</div>
 </template>
 
 <style>
@@ -293,7 +295,6 @@ nextTick(async () => {
 <style scoped>
 .main-container {
   display: flex;
-  height: 80vh;
 }
 
 .left-side {
@@ -308,7 +309,7 @@ nextTick(async () => {
 
 .left-card {
   width: 100%;
-  min-height: 700px;
+  min-height: 550px;
 }
 
 .divider {
@@ -316,8 +317,8 @@ nextTick(async () => {
   margin-left: 5px;
   margin-right: -15px;
   margin-top: 5px;
-  height: 710px;
-  min-height: 710px;
+  height: 580px;
+  min-height: 580px;
 }
 
 .data-container {
@@ -426,7 +427,12 @@ nextTick(async () => {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 20px;
-  padding: 10px;
+  padding: 20px;
+  margin-top: -25px;
+}
+
+#pnCodigoTela {
+  margin-top: 30px;
+  margin-right: 150px;
 }
 </style>
