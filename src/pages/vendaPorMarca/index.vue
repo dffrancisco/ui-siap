@@ -45,22 +45,7 @@ nextTick(async () => {
         <div class="btn_print_container">
           <v-btn
             color="primary"
-            @click="
-              printJS({
-                printable: dadosFormatToPrint,
-                properties: [
-                  { field: 'DESCRICAO', displayName: 'Marcas' },
-                  { field: 'VALOR', displayName: 'Valor (R$)' },
-                  { field: 'QTD', displayName: 'Qtd' },
-                  { field: 'QTD_MEDIA_ITENS', displayName: 'Qtd. Média Itens' },
-                  { field: 'TICKET_MEDIO', displayName: 'Ticket Médio (R$)' },
-                  { field: 'PERCENTUAL', displayName: 'Percentual (%)' },
-                ],
-                type: 'json',
-                gridHeaderStyle: 'border: 1px solid #000000',
-                gridStyle: 'text-align: center; border: 1px solid #000000',
-              })
-            "
+            @click="actions.onClickImprimir"
             :disabled="state.dbVendasPorMarca.length == 0 ? true : false"
           >
             <v-icon class="mr-2">mdi-printer </v-icon>Imprimir
