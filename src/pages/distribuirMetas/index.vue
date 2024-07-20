@@ -40,7 +40,7 @@ onMounted(async () => {
           </v-col>
           <v-col cols="2">
             <v-select
-              id=" mes"
+              id="mes"
               label="Mês"
               v-model="state.mes"
               item-title="title"
