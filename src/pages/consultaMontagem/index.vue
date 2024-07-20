@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import moment from "moment";
-import { state, actions, dadosFormatToPrint, itemsToTable } from "./consultaMontagem";
+import { state, actions, itemsToTable } from "./consultaMontagem";
 import ModalMontagemInf from "./components/ModalMontagemInf.vue";
-import printJS from "print-js";
 import { nextTick } from "vue";
 
 nextTick(async () => {
@@ -79,20 +78,7 @@ nextTick(async () => {
       <div class="d-flex justify-end pt-2">
         <v-btn
           color="primary"
-          @click="
-            printJS({
-              printable: dadosFormatToPrint,
-              properties: [
-                { field: 'LOGIN', displayName: 'Montador' },
-                { field: 'VALOR', displayName: 'Valor' },
-                { field: 'DEVOLUCAO', displayName: 'Devolução' },
-                { field: 'VALOR_TOTAL', displayName: 'Total' },
-              ],
-              type: 'json',
-              gridHeaderStyle: 'border: 1px solid #000000',
-              gridStyle: 'text-align: center; border: 1px solid #000000',
-            })
-          "
+          @click="actions.onClickImprimir"
           :disabled="state.dbMontagem.length == 0 ? true : false"
         >
           <v-icon

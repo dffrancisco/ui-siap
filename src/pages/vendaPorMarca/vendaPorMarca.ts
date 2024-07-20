@@ -1,17 +1,9 @@
 import utils, { iColumnPrint } from "@/ts/utils";
 import Swal from "sweetalert2";
-import { computed, reactive } from "vue";
+import { reactive } from "vue";
 import serviceVendaPorMarca from "./services/vendaPorMarca.service";
 import { iVendasPorMarca } from "./interfaces";
 import moment from "moment";
-
-export const dadosFormatToPrint = computed(() => {
-    return state.dbVendasPorMarca.map(venda => ({
-        ...venda,
-        VALOR: utils.formatValor(venda.VALOR),
-        TICKET_MEDIO: utils.formatValor(venda.TICKET_MEDIO)
-    }));
-})
 
 export const state = reactive({
 

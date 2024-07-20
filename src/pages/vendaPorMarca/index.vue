@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { mesesToSelect } from "@/constants/constants";
-import { actions, state, dadosFormatToPrint } from "./vendaPorMarca";
+import { actions, state } from "./vendaPorMarca";
 import { nextTick } from "vue";
-import printJS from "print-js";
 
 nextTick(async () => {
   actions.init();

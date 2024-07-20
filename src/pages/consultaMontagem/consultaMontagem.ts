@@ -1,4 +1,4 @@
-import utils from "@/ts/utils";
+import utils, { iColumnPrint } from "@/ts/utils";
 import Swal from "sweetalert2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { computed, reactive } from "vue";
@@ -29,17 +29,6 @@ export const itemsToTable = computed(() => {
     }
 
     return state.dbMontagem
-})
-
-export const dadosFormatToPrint = computed(() => {
-    let dadosToPrint = state.dbMontagem
-
-    return dadosToPrint.map(venda => ({
-        ...venda,
-        VALOR: utils.formatValor(venda.VALOR),
-        DEVOLUCAO: utils.formatValor(venda.VALOR_DEVOLUCAO),
-        VALOR_TOTAL: utils.formatValor(venda.TOTAL),
-    }));
 })
 
 export const state = reactive({
@@ -162,6 +151,64 @@ export const actions = {
                 icon: "error",
                 text: "Erro ao exibir as informações dos detalhes do montador!"
             });
+        }
+    },
+
+    getDadosImpresaoArquivo() {
+
+        let dadosToPrint = state.dbMontagem.map((item) => {
+            return {
+                LOGIN: item.LOGIN ?? '',
+                VALOR: utils.formatValor(item.VALOR) ?? '',
+                VALOR_DEVOLUCAO: utils.formatValor(item.VALOR_DEVOLUCAO) ?? '',
+                TOTAL: utils.formatValor(item.TOTAL) ?? '',
+            }
+        })
+
+        let columns: iColumnPrint[] = [
+            {
+                key: 'LOGIN',
+                label: "Montador",
+                width: '60%'
+            },
+            {
+                key: 'VALOR',
+                label: "Valor",
+                align: 'right',
+                width: '20%'
+            },
+            {
+                key: 'VALOR_DEVOLUCAO',
+                label: "Devolução",
+                align: 'right',
+            },
+            {
+                key: 'TOTAL',
+                label: "Total",
+                align: 'right',
+            },
+        ];
+
+        return { columns, dadosToPrint };
+    },
+
+    async onClickImprimir() {
+        let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
+
+        let titulo = `
+      <div style="display: flex; justify-content: flex-end; width: 100%; margin-top: 10px">
+        <strong style="font-size: 20px">Consulta de Montagem</strong>
+      </div>
+    `;
+
+        try {
+            state.loading = true
+
+            await utils.printComCabecalho(columns, dadosToPrint, titulo);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            state.loading = false
         }
     },
 }
