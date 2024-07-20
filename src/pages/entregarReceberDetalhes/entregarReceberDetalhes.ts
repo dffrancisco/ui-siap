@@ -443,14 +443,14 @@ export const actions = {
 
         let dadosToPrint = entregarReceberImpressao.map((item) => {
             return {
-                NUM_ORCAMENTO: item.NUM_ORCAMENTO,
-                DATA: utils.dataBrasil(item.DATA),
-                CLIENTE: item.CLIENTE,
-                NOME_CLIENTE: item.NOME_CLIENTE,
-                VENDEDOR: item.VENDEDOR,
-                VALOR: utils.formatValor(item.VALOR),
-                TIPO_PAGAMENTO: item.TIPO_PAGAMENTO,
-                NOME_MOTORISTA: item.NOME_MOTORISTA,
+                NUM_ORCAMENTO: item.NUM_ORCAMENTO ?? '',
+                DATA: utils.dataBrasil(item.DATA) ?? '',
+                CLIENTE: item.CLIENTE ?? '',
+                NOME_CLIENTE: item.NOME_CLIENTE ?? '',
+                VENDEDOR: item.VENDEDOR ?? '',
+                VALOR: utils.formatValor(item.VALOR) ?? '',
+                TIPO_PAGAMENTO: item.TIPO_PAGAMENTO ?? '',
+                NOME_MOTORISTA: item.NOME_MOTORISTA ?? '',
             }
         })
 
