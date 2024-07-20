@@ -196,10 +196,13 @@ export const actions = {
         let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
 
         let titulo = `
-      <div style="display: flex; justify-content: flex-end; width: 100%; margin-top: 10px">
-        <strong style="font-size: 20px">Consulta de Montagem</strong>
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+      <span>Período: ${moment(state.dataInicialModal).format("DD/MM/YYYY")} até ${moment(state.dataFinalModal).format(
+            "DD/MM/YYYY"
+        )}</span>
+      <strong style="font-size: 20px">Consulta Montagens</strong>
       </div>
-    `;
+      `;
 
         try {
             state.loading = true
