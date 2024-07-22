@@ -19,7 +19,7 @@ nextTick(() => {
             v-model="state.dataInicio"
             :max="dataHoje"
             maxlength="10"
-            @keyup.enter="state.inputElementDataFim.focus"
+            @keyup.enter="state.inputElementDataFim.focus()"
           />
         </div>
 
@@ -69,7 +69,7 @@ nextTick(() => {
           size="36"
           title="IMPRIMIR"
           :disabled="state.dbDevolucoes.length == 0"
-          @click="actions.btnPrint"
+          @click="actions.onClickImprimir"
         />
       </div>
     </v-card>
