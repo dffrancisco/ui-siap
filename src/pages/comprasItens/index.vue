@@ -34,6 +34,7 @@ actions.init();
         :idMarcaInicial="state.cabecalho.ID_MARCA"
         :marcas="state.marcas"
         :carros="state.carros"
+        :disablePrint="computeds.disablePrint.value"
         @abrirModalImpressao="actions.abrirModalImpressao"
         @buscarProdutos="actions.buscarProdutos"
         @focarNosItensNaoAdicionados="actions.focarContainerItem"

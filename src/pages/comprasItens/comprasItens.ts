@@ -668,6 +668,18 @@ export const computeds = {
         marcas.push(...nomeMarcas)
 
         return marcas
+    }),
+
+    disablePrint: computed(() => {
+        if (computeds.contadorItens.value.qtdErro > 0) {
+            return true;
+        }
+
+        if (computeds.contadorItens.value.qtdProcessando > 0) {
+            return true;
+        }
+
+        return false;
     })
 }
 
