@@ -74,7 +74,7 @@ nextTick(async () => {
       <div class="pt-2 btnPrint">
         <v-btn
           color="primary"
-          @click="actions.imprimirVendasPerdidas"
+          @click="actions.onClickImprimir"
           icon="mdi-printer"
           size="36px"
           title="Imprimir"
