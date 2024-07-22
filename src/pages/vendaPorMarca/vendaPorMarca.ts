@@ -4,6 +4,9 @@ import { reactive } from "vue";
 import serviceVendaPorMarca from "./services/vendaPorMarca.service";
 import { iVendasPorMarca } from "./interfaces";
 import moment from "moment";
+import { mesesToSelect } from "@/constants/constants";
+
+export const meses = mesesToSelect
 
 export const state = reactive({
 
@@ -23,7 +26,9 @@ export const state = reactive({
 
     edtAno: <HTMLInputElement>{},
 
-    loading: false
+    loading: false,
+    mesImpressao: null,
+    anoImpressao: null,
 })
 
 export const actions = {
@@ -53,6 +58,8 @@ export const actions = {
             })
 
             state.dbVendasPorMarca = data
+            state.mesImpressao = state.mes;
+            state.anoImpressao = state.ano;
 
             state.loading = false;
 
@@ -122,7 +129,8 @@ export const actions = {
         let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
 
         let titulo = `
-      <div style="display: flex; justify-content: flex-end; width: 100%; margin-top: 10px">
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+        <span>Período: ${meses.find((mes) => mes.value === state.mesImpressao)?.title} ${state.anoImpressao}</span>
         <strong style="font-size: 20px">Vendas por Marca</strong>
       </div>
     `;

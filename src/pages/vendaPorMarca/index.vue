@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { mesesToSelect } from "@/constants/constants";
-import { actions, state } from "./vendaPorMarca";
+import { actions, state, meses } from "./vendaPorMarca";
 import { nextTick } from "vue";
 
 nextTick(async () => {
@@ -17,7 +16,9 @@ nextTick(async () => {
             v-model="state.mes"
             label="Mês"
             autocomplete="off"
-            :items="mesesToSelect"
+            :items="meses"
+            item-value="value"
+            item-title="title"
             name="MES"
             id="MES"
             @keydown.enter="state.edtAno.focus()"

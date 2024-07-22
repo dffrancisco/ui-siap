@@ -57,7 +57,9 @@ export const state = reactive({
             sortBy: "desc",
             align: 'center'
         }
-    ]
+    ],
+    mesImpressao: null,
+    anoImpressao: null
 })
 
 export const actions = {
@@ -97,6 +99,9 @@ export const actions = {
             });
             state.historicoConsultaLojas = data.historicoConsultaLojas;
             state.totalItems = data.total[0].TOTAL;
+
+            state.mesImpressao = state.mes
+            state.anoImpressao = state.ano
 
         } catch (error) {
             Swal.fire({
@@ -172,7 +177,8 @@ export const actions = {
         let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
 
         let titulo = `
-      <div style="display: flex; justify-content: flex-end; width: 100%; margin-top: 10px">
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+      <span>Período: ${meses.find((mes) => mes.value === state.mesImpressao)?.title} ${state.anoImpressao}</span>
       <strong style="font-size: 20px">Historico Consulta Loja </strong>
       </div>
       `;

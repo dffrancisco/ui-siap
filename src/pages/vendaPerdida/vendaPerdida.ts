@@ -65,7 +65,9 @@ export const state = reactive({
             sortable: false,
             align: 'center',
         },
-    ]
+    ],
+    mesImpressao: null,
+    anoImpressao: null
 })
 
 
@@ -106,6 +108,8 @@ export const actions = {
             let data = await serviceVendasPerdidas.getVendasPerdidas(param);
             state.vendasPerdidas = data;
             state.totalItems = data.length;
+            state.mesImpressao = state.mes;
+            state.anoImpressao = state.ano;
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -213,7 +217,8 @@ export const actions = {
         let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
 
         let titulo = `
-      <div style="display: flex; justify-content: flex-end; width: 100%; margin-top: 10px">
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+      <span>Período: ${meses.find((mes) => mes.value === state.mesImpressao)?.title} ${state.anoImpressao}</span>
       <strong style="font-size: 20px">Vendas Perdidas</strong>
       </div>
       `;
