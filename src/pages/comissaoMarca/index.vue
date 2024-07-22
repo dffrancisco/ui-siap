@@ -97,7 +97,7 @@ nextTick(async () => {
                   class="marca-item mt-2"
                 >
                   <div>
-                    <span>{{ item.marca.DESCRICAO }} <br />{{ item.marca.GRUPO.toLowerCase() }}</span
+                    <span class="ml-1">{{ item.marca.DESCRICAO }}</span
                     ><br />
                     <v-icon
                       class="ml-1"
@@ -112,7 +112,7 @@ nextTick(async () => {
                       color="primary"
                       @click="actions.editarMarca(item.marca.ID_MARCA)"
                     >
-                      mdi-pencil
+                      mdi-plus-circle
                     </v-icon>
                   </div>
                   <div v-if="item.produtos.length > 0">
@@ -356,7 +356,6 @@ nextTick(async () => {
   padding-top: 20px;
   width: 300px;
   max-height: 400px;
-  /* padding-left: 5px; */
 }
 
 .iconAddMarcas {
@@ -365,7 +364,7 @@ nextTick(async () => {
 
 .marcasCard,
 .produtosCard {
-  max-height: 390px;
+  max-height: 250px;
   overflow-y: auto;
   border-radius: 10px;
 }
@@ -400,7 +399,7 @@ nextTick(async () => {
 
 .divBtn {
   margin-left: 80px;
-  margin-top: 45px;
+  margin-top: 5px;
 }
 
 .consultarBtn {

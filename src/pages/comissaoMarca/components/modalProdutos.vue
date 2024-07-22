@@ -97,6 +97,7 @@ watch(
         item-key="COD_PRODUTO"
         item-value="COD_PRODUTO"
         show-select
+        select-strategy="all"
         v-model="state.selectedProdutos"
         @keydown.enter.prevent="confirmarSelecionados"
       >

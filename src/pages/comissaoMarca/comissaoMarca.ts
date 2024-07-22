@@ -165,7 +165,7 @@ export const actions = {
 
         state.modalProdutos = new xModal.create({
             el: "#modalProdutos",
-            height: 550,
+            height: 580,
             width: 600,
             title: 'Itens - Produtos',
             theme: 'xModal-blue',
@@ -398,13 +398,12 @@ export const actions = {
             return;
         }
 
-
         if (state.dadosParaRelatorioItens.length == 0) {
             state.loading = true;
             try {
                 const param: iParamParaRelatorio = {
                     cod_funcionarios: state.selectedFuncionario,
-                    produtos: state.produtosEscolhidos.map(item => item.produtosEscolhidos),
+                    produtos: state.produtosEscolhidos,
                     data_inicial: state.dataInicial,
                     data_final: state.dataFinal
                 }

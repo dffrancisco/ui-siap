@@ -37,7 +37,7 @@ export interface iProdutosEscolhidos {
 
 export interface iParamParaRelatorio {
     cod_funcionarios: number[];
-    produtos: number[];
+    produtos: { descricaoSelecionados: string, produtosEscolhidos: number[] }[];
     data_inicial: string;
     data_final: string;
 }
