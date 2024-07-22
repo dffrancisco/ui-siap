@@ -179,11 +179,17 @@ export const setup = (emit: any, props: any) => {
             const conteudoHTML = `<br><br><br>
               <div id="justificativaPDF">
                 <p>JUSTIFICATIVA DE AUSÊNCIA</p>
-                <p>Eu, ${props.funcionario.nome}, brasileiro (a), de CPF ${props.funcionario.cpf}, profissional lotado no cargo ${props.funcionario.cargo}, na empresa REAL ACESSÓRIOS venho justificar ao RH, minha ausência que foi devido a: <strong> ${justificativaValor}. </strong>  No dia ${props.dadosAusencia}, motivos pelos quais o ponto não foi registrado corretamente.</p>
+                <p>Eu, ${props.funcionario.nome}, brasileiro (a), de CPF ${props.funcionario.cpf}, profissional lotado no cargo ${props.funcionario.cargo}, na empresa REAL ACESSÓRIOS venho justificar ao RH, a ausência de registro no ponto devido a: <strong> ${justificativaValor}. </strong>  No dia ${props.dadosAusencia}, motivos pelos quais o ponto não foi registrado corretamente.</p>
                 <p>Por ser expressão da verdade, firmo a presente.</p>
                 <p>Brasília-DF, ___/___/_____.</p>
                 <p>_____________________________________</p>
                 <p>${props.funcionario.nome}</p>
+                <br><br><br>
+                <p></p>
+                <p>Obs.:____________________________________________________________________________________</p>
+                <p>_________________________________________________________________________________________</p>
+                <p>_________________________________________________________________________________________</p>
+                <p>_________________________________________________________________________________________</p>
               </div>
             `;
 
