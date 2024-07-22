@@ -165,7 +165,7 @@ export const actions = {
 
         state.modalProdutos = new xModal.create({
             el: "#modalProdutos",
-            height: 580,
+            height: 590,
             width: 600,
             title: 'Itens - Produtos',
             theme: 'xModal-blue',
@@ -315,6 +315,7 @@ export const actions = {
     },
 
     editarMarca(idMarca: number) {
+        state.produtosEditar = []
         actions.getProdutos(idMarca);
     },
 
