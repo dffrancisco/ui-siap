@@ -239,7 +239,11 @@ onMounted(async () => {
       class="window-print"
     >
       <v-container>
-        <div class="print-title">{{ `RANKING - ${moment().format("DD/MM/YYYY")}` }}</div>
+        <div class="print-title">{{
+          `RANKING - ${meses.find((mes) => mes.value === state.mes)?.title} ${state.ano} - ${moment().format(
+            "DD/MM/YYYY"
+          )}`
+        }}</div>
 
         <v-data-table
           class="tableMetas"
@@ -270,11 +274,6 @@ onMounted(async () => {
             >
               Não há dados disponíveis.
             </v-alert>
-          </template>
-          <template v-slot:item.LOGIN="{ item }">
-            <div class="login-funcionario">
-              {{ item.LOGIN }}
-            </div>
           </template>
         </v-data-table>
       </v-container>
@@ -411,9 +410,6 @@ onMounted(async () => {
   .window-print td,
   .window-print th div span {
     font-size: 18px;
-  }
-
-  .window-print .login-funcionario {
     font-weight: 600;
   }
 
@@ -430,7 +426,7 @@ onMounted(async () => {
   }
 
   .window-print .progress-value {
-    font-weight: normal;
+    font-weight: 600;
   }
 }
 </style>
