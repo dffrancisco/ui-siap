@@ -11,6 +11,7 @@ import {
 } from "./distribuirMetas";
 import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
 import utils from "@/ts/utils";
+import moment from "moment";
 
 onMounted(async () => {
   actions.init();
@@ -238,6 +239,12 @@ onMounted(async () => {
       class="window-print"
     >
       <v-container>
+        <div class="print-title">{{
+          `RANKING - ${meses.find((mes) => mes.value === state.mes)?.title} ${state.ano} - ${moment().format(
+            "DD/MM/YYYY"
+          )}`
+        }}</div>
+
         <v-data-table
           class="tableMetas"
           v-model:itemsPerPage="state.itemsPerPage"
@@ -256,7 +263,7 @@ onMounted(async () => {
               style="border-radius: 10px"
             >
               <template v-slot:default="{ value }">
-                <strong>{{ Math.ceil(value) }}%</strong>
+                <strong class="progress-value">{{ Math.ceil(value) }}%</strong>
               </template>
             </v-progress-linear>
           </template>
@@ -378,19 +385,48 @@ onMounted(async () => {
   width: 1110px;
   border-radius: 10px;
 }
+</style>
+
+<style>
+.print-title {
+  display: none;
+}
 
 @media print {
   body * {
     visibility: hidden;
   }
+
   .window-print,
   .window-print * {
     visibility: visible;
   }
+
   .window-print {
-    position: absolute;
-    left: 0;
     top: 0;
+    position: absolute;
+  }
+
+  .window-print td,
+  .window-print th div span {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .print-title {
+    display: block;
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .v-data-table-footer {
+    display: none;
+  }
+
+  .window-print .progress-value {
+    font-weight: 600;
   }
 }
 </style>
