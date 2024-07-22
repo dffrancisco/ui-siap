@@ -11,6 +11,7 @@ import {
 } from "./distribuirMetas";
 import ModalDistribuirMetas from "./components/modalDistribuirMetas.vue";
 import utils from "@/ts/utils";
+import moment from "moment";
 
 onMounted(async () => {
   actions.init();
@@ -238,7 +239,7 @@ onMounted(async () => {
       class="window-print"
     >
       <v-container>
-        <div class="print-title"> RANKING - DATA </div>
+        <div class="print-title">{{ `RANKING - ${moment().format("DD/MM/YYYY")}` }}</div>
 
         <v-data-table
           class="tableMetas"
