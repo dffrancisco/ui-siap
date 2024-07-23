@@ -165,6 +165,11 @@ export const actions = {
         document.querySelector('#compras-detalhes').focus();
     },
 
+    buscarHistorico: async (param: iParamEmitBuscarProdutos) => {
+        await actions.buscarHistoricoVendas(param);
+        await actions.buscarHistoricoCompras(param);
+    },
+
     buscarHistoricoVendas: async (param: iParamEmitBuscarProdutos) => {
         try {
             state.loadingHistoricoVendas = true;
@@ -220,8 +225,7 @@ export const actions = {
         }
 
         try {
-            actions.buscarHistoricoVendas(param)
-            actions.buscarHistoricoCompras(param)
+            actions.buscarHistorico(param);
 
             const response = await comprasItensService.getProdutos(param)
 
