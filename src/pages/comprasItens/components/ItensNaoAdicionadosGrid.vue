@@ -97,6 +97,34 @@ const actions = {
         13: (dados) => {
           state.modalAdicionarItemOpened = true;
         },
+
+        // tecla '1'
+        97: () => {
+          let linhaGrid = Number(state.gridItens.getIndex());
+          //@ts-ignore
+          let qtdItensGrid = state.gridItens.data().length;
+
+          let proximoItem = linhaGrid + 1;
+
+          if (proximoItem > qtdItensGrid) {
+            proximoItem = qtdItensGrid;
+          }
+
+          state.gridItens.focus(proximoItem);
+        },
+
+        // tecla '3'
+        99: () => {
+          let linhaGrid = Number(state.gridItens.getIndex());
+
+          let itemAnterior = linhaGrid - 1;
+
+          if (itemAnterior < 0) {
+            itemAnterior = 0;
+          }
+
+          state.gridItens.focus(itemAnterior);
+        },
       },
     });
 
