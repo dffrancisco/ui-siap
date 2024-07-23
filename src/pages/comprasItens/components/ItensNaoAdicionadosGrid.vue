@@ -126,33 +126,13 @@ const actions = {
           state.modalAdicionarItemOpened = true;
         },
 
-        // tecla '1'
-        97: () => {
-          let linhaGrid = Number(state.gridItens.getIndex());
-          //@ts-ignore
-          let qtdItensGrid = state.gridItens.data().length;
+        // tecla '1' e '->'
+        97: () => actions.proximoItem(),
+        39: () => actions.proximoItem(),
 
-          let proximoItem = linhaGrid + 1;
-
-          if (proximoItem > qtdItensGrid) {
-            proximoItem = qtdItensGrid;
-          }
-
-          state.gridItens.focus(proximoItem);
-        },
-
-        // tecla '3'
-        99: () => {
-          let linhaGrid = Number(state.gridItens.getIndex());
-
-          let itemAnterior = linhaGrid - 1;
-
-          if (itemAnterior < 0) {
-            itemAnterior = 0;
-          }
-
-          state.gridItens.focus(itemAnterior);
-        },
+        // tecla '3 e '<-''
+        99: () => actions.itemAnterior(),
+        37: () => actions.itemAnterior(),
       },
     });
 
@@ -174,6 +154,30 @@ const actions = {
     setTimeout(() => {
       actions.focarLinhaGrid();
     }, 100);
+  },
+  proximoItem() {
+    let linhaGrid = Number(state.gridItens.getIndex());
+    //@ts-ignore
+    let qtdItensGrid = state.gridItens.data().length;
+
+    let proximoItem = linhaGrid + 1;
+
+    if (proximoItem > qtdItensGrid) {
+      proximoItem = qtdItensGrid;
+    }
+
+    state.gridItens.focus(proximoItem);
+  },
+  itemAnterior() {
+    let linhaGrid = Number(state.gridItens.getIndex());
+
+    let itemAnterior = linhaGrid - 1;
+
+    if (itemAnterior < 0) {
+      itemAnterior = 0;
+    }
+
+    state.gridItens.focus(itemAnterior);
   },
 };
 

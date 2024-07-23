@@ -139,6 +139,13 @@ const actions = {
             },
           });
         },
+        // tecla '1' e '->'
+        97: () => actions.proximoItem(),
+        39: () => actions.proximoItem(),
+
+        // tecla '3 e '<-''
+        99: () => actions.itemAnterior(),
+        37: () => actions.itemAnterior(),
       },
     });
 
@@ -161,6 +168,32 @@ const actions = {
   adicionarItem(param: iParamEmitAdicionarItem) {
     emit("adicionarItem", param);
     state.modalAdicionarItemOpened = false;
+  },
+
+  proximoItem() {
+    let linhaGrid = Number(state.gridItensAdicionados.getIndex());
+    //@ts-ignore
+    let qtdItensGrid = state.gridItensAdicionados.data().length;
+
+    let proximoItem = linhaGrid + 1;
+
+    if (proximoItem > qtdItensGrid) {
+      proximoItem = qtdItensGrid;
+    }
+
+    state.gridItensAdicionados.focus(proximoItem);
+  },
+
+  itemAnterior() {
+    let linhaGrid = Number(state.gridItensAdicionados.getIndex());
+
+    let itemAnterior = linhaGrid - 1;
+
+    if (itemAnterior < 0) {
+      itemAnterior = 0;
+    }
+
+    state.gridItensAdicionados.focus(itemAnterior);
   },
 };
 
