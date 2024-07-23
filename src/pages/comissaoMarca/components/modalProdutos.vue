@@ -93,7 +93,7 @@ watch(
         :headers="state.headers"
         :items="filtrarProdutos"
         items-per-page-text="Itens por página"
-        height="300"
+        height="280"
         item-key="COD_PRODUTO"
         item-value="COD_PRODUTO"
         show-select

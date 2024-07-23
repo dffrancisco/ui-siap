@@ -177,7 +177,7 @@ nextTick(async () => {
       <div class="radio-group">
         <v-card
           width="700px"
-          height="550px"
+          height="520px"
         >
           <v-tabs
             v-model="state.tab"
@@ -199,7 +199,7 @@ nextTick(async () => {
                   no-data-text="Não há dados disponíveis"
                   v-model:itemsPerPage="state.totalItems"
                   style="border-radius: 5px; max-width: 660px"
-                  height="430"
+                  height="400"
                   fixed-header
                   :headers="state.headers"
                   :loading="state.loading"
@@ -214,7 +214,7 @@ nextTick(async () => {
                   no-data-text="Não há dados disponíveis"
                   v-model:itemsPerPage="state.totalItems"
                   style="border-radius: 5px; max-width: 660px"
-                  height="430"
+                  height="400"
                   fixed-header
                   :headers="state.headers2"
                   :loading="state.loading"
@@ -309,16 +309,16 @@ nextTick(async () => {
 
 .left-card {
   width: 100%;
-  min-height: 550px;
+  min-height: 520px;
 }
 
 .divider {
   width: 2px;
   margin-left: 5px;
   margin-right: -15px;
-  margin-top: 5px;
-  height: 580px;
-  min-height: 580px;
+  margin-top: 10px;
+  height: 520px;
+  min-height: 520px;
 }
 
 .data-container {
@@ -364,7 +364,7 @@ nextTick(async () => {
 
 .marcasCard,
 .produtosCard {
-  max-height: 250px;
+  max-height: 220px;
   overflow-y: auto;
   border-radius: 10px;
 }
@@ -431,7 +431,7 @@ nextTick(async () => {
 }
 
 #pnCodigoTela {
-  margin-top: 30px;
-  margin-right: 150px;
+  margin-top: 10px;
+  margin-right: 350px;
 }
 </style>
