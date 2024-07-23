@@ -166,7 +166,7 @@ export const actions = {
         state.modalProdutos = new xModal.create({
             el: "#modalProdutos",
             height: 565,
-            width: 600,
+            width: 650,
             title: 'Itens - Produtos',
             theme: 'xModal-blue',
             onOpen: () => { state.modalProdutosOpened = true; },
