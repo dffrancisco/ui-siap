@@ -451,12 +451,12 @@ export const actions = {
             const relatorioPorVendedor = actions.formatarDadosImpressao([...state.dadosParaRelatorioVendedor, totalizadorVendedores.value]);
 
             const columns: iColumnPrint[] = [
-                { key: 'VENDEDOR', label: 'Vendedor', width: '20%' },
+                { key: 'VENDEDOR', label: 'Vendedor', width: '30%' },
                 { key: 'MARCA', label: 'Marca', width: '20%' },
-                { key: 'QTD', label: 'Quantidade', width: '20%' },
-                { key: 'VALOR', label: 'Valor', width: '20%' },
-                { key: 'VALOR_P_ITEM', label: 'Valor p/ item', width: '10%' },
-                { key: 'TOTAL_P_ITEM', label: 'Total p/ item', width: '10%' }
+                { key: 'QTD', label: 'Qtd', width: '5%', align: 'center' },
+                { key: 'VALOR', label: 'Valor', width: '15%', align: 'right' },
+                { key: 'VALOR_P_ITEM', label: 'Valor p/ item', width: '10%', align: 'right' },
+                { key: 'TOTAL_P_ITEM', label: 'Total p/ item', width: '10%', align: 'right' }
             ];
 
             const titulo = `
@@ -482,10 +482,10 @@ export const actions = {
             const relatorioPorItens = actions.formatarDadosImpressao([...state.dadosParaRelatorioItens, totalizadorItens.value]);
 
             const columns: iColumnPrint[] = [
-                { key: 'PRODUTO', label: 'Produto', width: '30%' },
-                { key: 'MARCA', label: 'Marca', width: '30%' },
-                { key: 'QTD', label: 'Quantidade', width: '20%' },
-                { key: 'VALOR', label: 'Valor', width: '20%' }
+                { key: 'PRODUTO', label: 'Produto', width: '40%' },
+                { key: 'MARCA', label: 'Marca', width: '25%' },
+                { key: 'QTD', label: 'Qtd', width: '10%', align: 'center' },
+                { key: 'VALOR', label: 'Valor', width: '20%', align: 'right' }
             ];
 
             const titulo = `
