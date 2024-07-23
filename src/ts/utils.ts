@@ -839,7 +839,7 @@ export const gerarPlanilhaComCabecalho = async (columns: iColumnPrint[], data: i
   if (xlsHeader && Array.isArray(xlsHeader)) {
     headerContent.push(xlsHeader);
   } else if (xlsHeader && !Array.isArray(xlsHeader)) {
-    headerContent.push(['', '', xlsHeader, '', '']);
+    headerContent.push(['', '', xlsHeader, '', ''], []);
   }
 
   // Add header
