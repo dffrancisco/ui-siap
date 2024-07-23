@@ -4,8 +4,8 @@ import $ from 'jquery'
 import axios from 'axios'
 import moment from 'moment'
 import printJS from "print-js";
-import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import ExcelJS from 'exceljs';
 
 interface iShowModal {
   msg: string;
@@ -824,62 +824,85 @@ export const gerarPlanilhaComCabecalho = async (columns: iColumnPrint[], data: i
     throw new Error('Ocorreu um erro ao buscar empresa');
   }
 
-  // Create the header content
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Sheet1');
+
   const headerContent = [
     [empresa.RAZAO_SOCIAL, '', '', '', moment().format('DD/MM/YYYY HH:mm:ss')],
-    [empresa.ENDERECO, '', '', '', empresa.CGC_EMPRESA],
+    [empresa.ENDERECO, '', `IE: ${empresa.INSCRICAO}`],
     [`Cidade: ${empresa.CIDADE}`, `Bairro: ${empresa.BAIRRO}`, `CEP: ${empresa.CEP}`],
-    [`CNPJ: ${empresa.CGC_EMPRESA}`, `Telefone: ${empresa.TELEFONE1}`],
+    [`CNPJ: ${empresa.CGC_EMPRESA}`, '', `Telefone: ${empresa.TELEFONE1}`],
     []
   ];
 
+  // Add title header
   if (xlsHeader && Array.isArray(xlsHeader)) {
     headerContent.push(xlsHeader);
-  }
-  else if (xlsHeader && !Array.isArray(xlsHeader)) {
+  } else if (xlsHeader && !Array.isArray(xlsHeader)) {
     headerContent.push(['', '', xlsHeader, '', '']);
   }
 
-  // Create the table headers
+  // Add header
+  headerContent.forEach(row => worksheet.addRow(row));
+
+  // Create table headers
   const headers = columns.map(column => column.label);
+  worksheet.addRow(headers);
 
-  // Create the table data
-  const rows = data.map(row => columns.map(column => row[column.key]));
+  // Create table data
+  data.forEach(row => {
+    const rowData = columns.map(column => row[column.key]);
+    worksheet.addRow(rowData);
+  });
 
+  // Add footer content
   if (xlsFooter && Array.isArray(xlsFooter)) {
     let dados = Array.isArray(xlsFooter[0]) ? [...xlsFooter] : [xlsFooter];
-    //@ts-ignore
-    rows.push(...dados);
-  }
-  else if (xlsFooter && !Array.isArray(xlsFooter)) {
-    rows.push([xlsFooter]);
+    dados.forEach(footerRow => worksheet.addRow(footerRow));
+  } else if (xlsFooter && !Array.isArray(xlsFooter)) {
+    worksheet.addRow([xlsFooter]);
   }
 
-  // Combine all parts into one array
-  const xlsData = [...headerContent, [], headers, ...rows];
+  // Adjust column widths based on content
+  columns.forEach((_, index) => {
+    let maxLength = headers[index].length;
+    data.forEach(row => {
+      if (row[columns[index].key].length > maxLength) {
+        maxLength = row[columns[index].key].length;
+      }
+    });
+    worksheet.getColumn(index + 1).width = maxLength + 2; // Adding a little extra space
+  });
 
-  // Create a worksheet
-  const worksheet = XLSX.utils.aoa_to_sheet(xlsData);
+  // Configure print settings
+  worksheet.pageSetup = {
+    paperSize: 9, // A4 paper size
+    orientation: 'portrait',
+    fitToPage: true,
+    fitToHeight: 0,
+    fitToWidth: 1, // Adjust width to fit in one page
+    horizontalCentered: true,
+    verticalCentered: false,
+    margins: {
+      left: 0.4,
+      right: 0.4,
+      top: 0.4,
+      bottom: 0.4,
+      header: 0.2,
+      footer: 0.2,
+    },
+  };
 
-  // Define column widths
-  const colWidths = columns.map((col) => ({ wpx: 60 }));
-  worksheet['!cols'] = colWidths;
+  // Save the workbook as a .xlsx file
+  const buffer = await workbook.xlsx.writeBuffer();
 
-  // Create a new workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-
-  // Convert the workbook to a binary array
-  const workbookBinary = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-
-  let nomeEmpresaSplit = empresa.RAZAO_SOCIAL.split(' ')
-  let nomeEmpresaCurto = nomeEmpresaSplit[0] + ' ' + nomeEmpresaSplit[1]
+  let nomeEmpresaSplit = empresa.RAZAO_SOCIAL.split(' ');
+  let nomeEmpresaCurto = nomeEmpresaSplit[0] + ' ' + nomeEmpresaSplit[1];
 
   fileName = fileName + ' - ' + nomeEmpresaCurto;
 
-  // Create a Blob from the binary array and save it as a .xls file
-  const blob = new Blob([workbookBinary], { type: 'application/octet-stream' });
-  saveAs(blob, `${fileName}.xls`);
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  saveAs(blob, `${fileName}.xlsx`);
 };
 
 export default {
