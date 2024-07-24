@@ -9,6 +9,7 @@ import {
     iCabecalhoCompra,
     iCarro,
     iHistoricoMes,
+    iItemComErro,
     iItemFila,
     iMarca,
     iObjHistoricoCompraGeral,
@@ -55,7 +56,8 @@ export const state = reactive(({
     modalImpressaoOpened: false,
     transportadoras: [],
     ordenarPor: <'nenhum' | 'num_fabricante' | 'descricao'>'nenhum',
-    modalItensErroOpen: false
+    modalItensErroOpen: false,
+    itensComErro: []
 }))
 
 setInterval(async () => {
@@ -417,6 +419,13 @@ export const actions = {
             actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
         } catch (error) {
             item.TENTATIVAS++;
+            actions.addItemComErro({
+                COD_PRODUTO: item.COD_PRODUTO,
+                ERRO_MSG: error,
+                ACAO: item.ACAO,
+                DESC_PRODUTO: item.DESC_PRODUTO,
+                NUM_FABRICANTE: item.NUM_FABRICANTE
+            })
             console.error('erro ao persistir dados do item: ', item.COD_PRODUTO)
         }
     },
@@ -431,6 +440,13 @@ export const actions = {
             actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
         } catch (error) {
             item.TENTATIVAS++;
+            actions.addItemComErro({
+                COD_PRODUTO: item.COD_PRODUTO,
+                ERRO_MSG: error,
+                ACAO: item.ACAO,
+                DESC_PRODUTO: item.DESC_PRODUTO,
+                NUM_FABRICANTE: item.NUM_FABRICANTE
+            })
             swalDarkError(error?.response?.data?.msg || "Ocorreu um erro ao deletar o item");
         } finally {
             state.loading = false;
@@ -456,6 +472,8 @@ export const actions = {
             let produtoSelecionado = computeds.produtoSelecionado.value
 
             let codProduto = produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO]
+            let descProduto = produtoSelecionado[MAP_COL_PRODUTO.DESC_PRODUTO]
+            let numFabricante = produtoSelecionado[MAP_COL_PRODUTO.NUM_FABRICANTE]
 
             actions.addItemFila({
                 ID_COMPRAS: state.cabecalho.ID_COMPRAS,
@@ -464,6 +482,8 @@ export const actions = {
                 QUANTIDADE: param.qtd,
                 ACAO: 'ADD',
                 TENTATIVAS: 0,
+                DESC_PRODUTO: descProduto,
+                NUM_FABRICANTE: numFabricante
             })
 
             /* Adicionado para impactar a computed qtdProdutosAdicionados e fazer com que o grid avance a linha após atualizar dados */
@@ -492,6 +512,11 @@ export const actions = {
     },
 
     async deletarItem(codProduto: number) {
+        let produtoSelecionado = state.produtosAdicionados[codProduto]
+
+        let numFabricante = produtoSelecionado[MAP_COL_PRODUTO.NUM_FABRICANTE]
+        let descProduto = produtoSelecionado[MAP_COL_PRODUTO.DESC_PRODUTO]
+
         actions.addItemFila({
             ID_COMPRAS: state.cabecalho.ID_COMPRAS,
             COD_PRODUTO: codProduto,
@@ -499,6 +524,8 @@ export const actions = {
             QUANTIDADE: 0,
             ACAO: 'REM',
             TENTATIVAS: 0,
+            DESC_PRODUTO: descProduto,
+            NUM_FABRICANTE: numFabricante
         })
 
         let keysProdutosSelecionados = Object.keys(state.produtosAdicionados)
@@ -513,9 +540,18 @@ export const actions = {
     },
 
     openCloseModalItensErro() {
-        state.modalItensErroOpen = !state.modalItensErroOpen;
-    }
+        if (computeds.contadorItens.value.qtdErro == 0 && !state.modalItensErroOpen) {
+            return
+        }
 
+        state.modalItensErroOpen = !state.modalItensErroOpen;
+    },
+
+    async addItemComErro(item: iItemComErro) {
+        if (!state.itensComErro.includes(item)) {
+            state.itensComErro.push(item)
+        }
+    }
 }
 
 export const computeds = {

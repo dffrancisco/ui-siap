@@ -1,4 +1,13 @@
 <script lang="ts" setup>
+import { iItemComErro } from "../interfaces";
+
+const props = defineProps({
+  itensComErro: {
+    type: Array as () => iItemComErro[],
+    required: true,
+  },
+});
+
 const emits = defineEmits(["fecharModal"]);
 
 const actions = {
@@ -20,11 +29,11 @@ const actions = {
     </div>
     <div class="pa-5 d-flex flex-column ga-4">
       <v-card
-        v-for="i in 3"
+        v-for="item in itensComErro"
         color="#991b1b"
       >
-        <v-card-title> DTS3156 - CAPA DE PARACHOQUE</v-card-title>
-        <v-card-text> Erro COD_PRODUTO undefined</v-card-text>
+        <v-card-title> {{ `${item.NUM_FABRICANTE} - ${item.DESC_PRODUTO} ` }}</v-card-title>
+        <v-card-text>{{ item.ERRO_MSG }}</v-card-text>
       </v-card>
     </div>
   </v-card>

@@ -249,7 +249,10 @@ actions.init();
         max-width="480px"
         transition="dialog-transition"
       >
-        <ModalItensErro @fechar-modal="actions.openCloseModalItensErro" />
+        <ModalItensErro
+          @fechar-modal="actions.openCloseModalItensErro"
+          :itens-com-erro="state.itensComErro"
+        />
       </v-dialog>
       <v-overlay
         :model-value="state.loading"
