@@ -57,7 +57,7 @@ export const state = reactive(({
     transportadoras: [],
     ordenarPor: <'nenhum' | 'num_fabricante' | 'descricao'>'nenhum',
     modalItensErroOpen: false,
-    itensComErro: []
+    itensComErro: <iItemComErro[]>[],
 }))
 
 setInterval(async () => {
@@ -424,7 +424,8 @@ export const actions = {
                 ERRO_MSG: error,
                 ACAO: item.ACAO,
                 DESC_PRODUTO: item.DESC_PRODUTO,
-                NUM_FABRICANTE: item.NUM_FABRICANTE
+                NUM_FABRICANTE: item.NUM_FABRICANTE,
+                TENTATIVAS: item.TENTATIVAS
             })
             console.error('erro ao persistir dados do item: ', item.COD_PRODUTO)
         }
@@ -445,7 +446,8 @@ export const actions = {
                 ERRO_MSG: error,
                 ACAO: item.ACAO,
                 DESC_PRODUTO: item.DESC_PRODUTO,
-                NUM_FABRICANTE: item.NUM_FABRICANTE
+                NUM_FABRICANTE: item.NUM_FABRICANTE,
+                TENTATIVAS: item.TENTATIVAS
             })
             swalDarkError(error?.response?.data?.msg || "Ocorreu um erro ao deletar o item");
         } finally {
@@ -548,8 +550,8 @@ export const actions = {
     },
 
     async addItemComErro(item: iItemComErro) {
-        if (!state.itensComErro.includes(item)) {
-            state.itensComErro.push(item)
+        if (item.TENTATIVAS == 1) {
+            state.itensComErro.push(item);
         }
     }
 }

@@ -100,6 +100,7 @@ export interface iItemComErro {
     ERRO_MSG: string,
     NUM_FABRICANTE: string,
     DESC_PRODUTO: string,
+    TENTATIVAS: number,
 }
 
 export interface iParamDeleteItemCompra {
