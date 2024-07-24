@@ -54,7 +54,8 @@ export const state = reactive(({
     persistindoItem: false,
     modalImpressaoOpened: false,
     transportadoras: [],
-    ordenarPor: <'nenhum' | 'num_fabricante' | 'descricao'>'nenhum'
+    ordenarPor: <'nenhum' | 'num_fabricante' | 'descricao'>'nenhum',
+    modalItensErroOpen: false
 }))
 
 setInterval(async () => {
@@ -510,6 +511,10 @@ export const actions = {
 
         state.indexProdutoSelecionado = state.keyProdutos.findIndex(key => key == keyNextItem);
     },
+
+    openCloseModalItensErro() {
+        state.modalItensErroOpen = !state.modalItensErroOpen;
+    }
 
 }
 

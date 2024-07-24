@@ -12,6 +12,7 @@ import ItensAdicionados from "./components/ItensAdicionados.vue";
 import { useRoute } from "vue-router";
 import { MAP_COL_PRODUTO } from "./constants/constants";
 import ModalImpressao from "./components/ModalImpressao.vue";
+import ModalItensErro from "./components/ModalItensErro.vue";
 
 const route = useRoute();
 state.idCompras = parseInt(route?.query?.idCompras as string);
@@ -124,6 +125,7 @@ actions.init();
               <v-chip
                 color="#ff7da1"
                 size="x-small"
+                @click="actions.openCloseModalItensErro"
               >
                 {{ computeds.contadorItens.value.qtdErro }}
               </v-chip>
@@ -241,6 +243,13 @@ actions.init();
           :numPedido="state.cabecalho.ID_COMPRAS"
           @fecharModal="actions.fecharModalImpressao"
         />
+      </v-dialog>
+      <v-dialog
+        v-model="state.modalItensErroOpen"
+        max-width="480px"
+        transition="dialog-transition"
+      >
+        <ModalItensErro @fechar-modal="actions.openCloseModalItensErro" />
       </v-dialog>
       <v-overlay
         :model-value="state.loading"
