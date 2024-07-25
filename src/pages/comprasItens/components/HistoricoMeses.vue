@@ -72,7 +72,11 @@ const props = defineProps({
           class="d-flex flex-column align-center"
         >
           <span>{{ historico.mesExtenso }}</span>
-          <strong class="historico-meses-conteudo-card-qtd">{{ historico.qtd }}</strong>
+          <strong
+            v-show="historico.qtd > 0"
+            class="historico-meses-conteudo-card-qtd"
+            >{{ historico.qtd }}</strong
+          >
         </div>
       </div>
     </div>

@@ -416,6 +416,11 @@ export const actions = {
             });
 
             state.cabecalho.VALOR = response.valorTotalPedido;
+
+            if (item.TENTATIVAS > 0) {
+                actions.removerItemComErro(item.COD_PRODUTO)
+            }
+
             actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
         } catch (error) {
             item.TENTATIVAS++;
@@ -441,14 +446,14 @@ export const actions = {
             actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
         } catch (error) {
             item.TENTATIVAS++;
-            actions.addItemComErro({
-                COD_PRODUTO: item.COD_PRODUTO,
-                ERRO_MSG: error,
-                ACAO: item.ACAO,
-                DESC_PRODUTO: item.DESC_PRODUTO,
-                NUM_FABRICANTE: item.NUM_FABRICANTE,
-                TENTATIVAS: item.TENTATIVAS
-            })
+            // actions.addItemComErro({
+            //     COD_PRODUTO: item.COD_PRODUTO,
+            //     ERRO_MSG: error,
+            //     ACAO: item.ACAO,
+            //     DESC_PRODUTO: item.DESC_PRODUTO,
+            //     NUM_FABRICANTE: item.NUM_FABRICANTE,
+            //     TENTATIVAS: item.TENTATIVAS
+            // })
             swalDarkError(error?.response?.data?.msg || "Ocorreu um erro ao deletar o item");
         } finally {
             state.loading = false;
@@ -552,6 +557,13 @@ export const actions = {
     async addItemComErro(item: iItemComErro) {
         if (item.TENTATIVAS == 1) {
             state.itensComErro.push(item);
+        }
+    },
+
+    async removerItemComErro(codProduto: number) {
+        let indexItemComErro = state.itensComErro.findIndex(item => item.COD_PRODUTO == codProduto);
+        if (indexItemComErro > -1) {
+            state.itensComErro.splice(indexItemComErro, 1);
         }
     }
 }

@@ -32,7 +32,7 @@ const actions = {
         v-for="item in itensComErro"
         color="#991b1b"
       >
-        <v-card-title> {{ item.NUM_FABRICANTE }} - {{ item.DESC_PRODUTO }} }}</v-card-title>
+        <v-card-title> {{ item.NUM_FABRICANTE }} - {{ item.DESC_PRODUTO }}</v-card-title>
         <v-card-text>{{ item.ERRO_MSG }}</v-card-text>
       </v-card>
     </div>
