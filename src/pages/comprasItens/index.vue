@@ -78,6 +78,8 @@ actions.init();
             :loading="state.loadingHistoricoVendas"
             :isVenda="true"
             :corMediaVenda="computeds.corMediaVenda.value"
+            @refreshHistorico="actions.buscarHistorico({ ID_MARCA: state.edtMarca })"
+            :historicoErro="state.historicoErro"
           />
           <HistoricoMeses
             v-if="state.abaHistorico == 'compras'"
@@ -88,6 +90,8 @@ actions.init();
             :corFonte="'#eef0f4'"
             :media="computeds.mediaQtdItemSelecionado.value"
             :loading="state.loadingHistoricoCompras"
+            @refreshHistorico="actions.buscarHistorico({ ID_MARCA: state.edtMarca })"
+            :historicoErro="state.historicoErro"
           />
           <HistoricoUltimasVendas
             v-if="state.abaHistorico == 'vendas'"

@@ -38,7 +38,19 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  historicoErro: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+const emits = defineEmits(["refreshHistorico"]);
+
+const actions = {
+  refreshHistorico() {
+    emits("refreshHistorico");
+  },
+};
 </script>
 
 <template>
@@ -57,6 +69,20 @@ const props = defineProps({
     </div>
     <div class="historico-meses-conteudo">
       <div
+        class="refresh-container"
+        v-if="historicoErro"
+      >
+        <span>Ops, ocorreu um erro ao buscar o histórico.</span>
+        <v-btn
+          color="#0077e4"
+          icon="mdi-refresh"
+          size="36"
+          title="Recarregar"
+          @click="actions.refreshHistorico"
+        />
+      </div>
+      <div
+        v-else
         v-for="(historico, index) in historicoMeses"
         class="historico-meses-conteudo-card"
         :class="{
@@ -110,6 +136,7 @@ const props = defineProps({
   flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
+  min-height: 130px;
 }
 
 .historico-meses-conteudo-card {
@@ -152,5 +179,13 @@ const props = defineProps({
 }
 .historico-meses-conteudo-card-qtd {
   font-weight: 900;
+}
+
+.refresh-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
 }
 </style>

@@ -58,6 +58,7 @@ export const state = reactive(({
     ordenarPor: <'nenhum' | 'num_fabricante' | 'descricao'>'nenhum',
     modalItensErroOpen: false,
     itensComErro: <iItemComErro[]>[],
+    historicoErro: false,
 }))
 
 setInterval(async () => {
@@ -169,6 +170,8 @@ export const actions = {
     },
 
     buscarHistorico: async (param: iParamEmitBuscarProdutos) => {
+        state.historicoErro = false
+
         await actions.buscarHistoricoVendas(param);
         await actions.buscarHistoricoCompras(param);
     },
@@ -179,6 +182,7 @@ export const actions = {
             state.historicoVendasGeral = await comprasItensService.getHistoricoVendas(param);
         } catch (error) {
             if (error.__CANCEL__) return;
+            state.historicoErro = true
             swalDarkError('Erro ao buscar histórico de vendas');
         } finally {
             state.loadingHistoricoVendas = false;
@@ -191,6 +195,7 @@ export const actions = {
             state.historicoComprasGeral = await comprasItensService.getHistoricoCompras(param);
         } catch (error) {
             if (error.__CANCEL__) return;
+            state.historicoErro = true
             swalDarkError('Erro ao buscar histórico de compras');
         } finally {
             state.loadingHistoricoCompras = false;
