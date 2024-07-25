@@ -254,8 +254,9 @@ actions.init();
         transition="dialog-transition"
       >
         <ModalItensErro
-          @fechar-modal="actions.openCloseModalItensErro"
-          :itens-com-erro="state.itensComErro"
+          @fecharModal="actions.openCloseModalItensErro"
+          @tentarInserirItemNovamente="actions.tentarInserirItemComErroNovamente"
+          :itensComErro="state.itensComErro"
         />
       </v-dialog>
       <v-overlay

@@ -8,11 +8,15 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["fecharModal"]);
+const emits = defineEmits(["fecharModal", "tentarInserirItemNovamente"]);
 
 const actions = {
   closeModal() {
     emits("fecharModal");
+  },
+
+  tentarInserirItemNovamente(codProduto: number) {
+    emits("tentarInserirItemNovamente", codProduto);
   },
 };
 </script>
@@ -28,13 +32,27 @@ const actions = {
       >
     </div>
     <div class="pa-5 d-flex flex-column ga-4">
-      <v-card
+      <div
+        class="d-flex align-center ga-4"
         v-for="item in itensComErro"
-        color="#991b1b"
       >
-        <v-card-title> {{ item.NUM_FABRICANTE }} - {{ item.DESC_PRODUTO }}</v-card-title>
-        <v-card-text>{{ item.ERRO_MSG }}</v-card-text>
-      </v-card>
+        <v-card color="#991b1b">
+          <v-card-title> {{ item.NUM_FABRICANTE }} - {{ item.DESC_PRODUTO }}</v-card-title>
+          <v-card-text
+            ><strong>Erro ao {{ item.ACAO == "ADD" ? "adicionar" : "remover" }} o item:</strong>
+            {{ item.ERRO_MSG }}
+          </v-card-text>
+        </v-card>
+        <div>
+          <v-btn
+            size="26"
+            color="#0077e4"
+            icon="mdi-refresh"
+            title="Tentar novamente"
+            @click="actions.tentarInserirItemNovamente(item.COD_PRODUTO)"
+          />
+        </div>
+      </div>
     </div>
   </v-card>
 </template>

@@ -1,6 +1,6 @@
 import { computed, nextTick, reactive } from 'vue'
 import comprasItensService, { getColorQtdEstoque } from './services/comprasItens.service';
-import { sleep, swalDarkError, swalDarkWarning } from '@/ts/utils';
+import utils, { sleep, swalDarkError, swalDarkWarning } from '@/ts/utils';
 import moment from 'moment';
 import { MAP_COL_PRODUTO, MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
 import {
@@ -405,10 +405,14 @@ export const actions = {
     },
 
     addItemFila(item: iItemFila) {
+        let indexItemNaFila = state.filaItens.findIndex(i => i.COD_PRODUTO == item.COD_PRODUTO);
 
-        state.filaItens.push(item);
-        localStorage.setItem(`siap:comprasItens-${item.ID_COMPRAS}`, JSON.stringify(state.filaItens));
-
+        if (indexItemNaFila == -1) {
+            state.filaItens.push(item);
+            localStorage.setItem(`siap:comprasItens-${item.ID_COMPRAS}`, JSON.stringify(state.filaItens));
+        } else {
+            state.filaItens[indexItemNaFila].TENTATIVAS = 0;
+        }
     },
 
     async persistirItemFilaADD(item: iItemFila, indexFilaItem: number) {
@@ -422,16 +426,12 @@ export const actions = {
 
             state.cabecalho.VALOR = response.valorTotalPedido;
 
-            if (item.TENTATIVAS > 0) {
-                actions.removerItemComErro(item.COD_PRODUTO)
-            }
-
             actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
         } catch (error) {
             item.TENTATIVAS++;
             actions.addItemComErro({
                 COD_PRODUTO: item.COD_PRODUTO,
-                ERRO_MSG: error,
+                ERRO_MSG: utils.getErrorMessage(error),
                 ACAO: item.ACAO,
                 DESC_PRODUTO: item.DESC_PRODUTO,
                 NUM_FABRICANTE: item.NUM_FABRICANTE,
@@ -448,17 +448,18 @@ export const actions = {
             let response = await comprasItensService.deleteItemCompra({ ID_COMPRAS: item.ID_COMPRAS, COD_PRODUTO: item.COD_PRODUTO });
 
             state.cabecalho.VALOR = response.valorTotalPedido;
+
             actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
         } catch (error) {
             item.TENTATIVAS++;
-            // actions.addItemComErro({
-            //     COD_PRODUTO: item.COD_PRODUTO,
-            //     ERRO_MSG: error,
-            //     ACAO: item.ACAO,
-            //     DESC_PRODUTO: item.DESC_PRODUTO,
-            //     NUM_FABRICANTE: item.NUM_FABRICANTE,
-            //     TENTATIVAS: item.TENTATIVAS
-            // })
+            actions.addItemComErro({
+                COD_PRODUTO: item.COD_PRODUTO,
+                ERRO_MSG: utils.getErrorMessage(error),
+                ACAO: item.ACAO,
+                DESC_PRODUTO: item.DESC_PRODUTO,
+                NUM_FABRICANTE: item.NUM_FABRICANTE,
+                TENTATIVAS: item.TENTATIVAS
+            })
             swalDarkError(error?.response?.data?.msg || "Ocorreu um erro ao deletar o item");
         } finally {
             state.loading = false;
@@ -466,7 +467,6 @@ export const actions = {
     },
 
     removerItemFila(idCompras: number, indexFilaItem: number) {
-
         state.filaItens.splice(indexFilaItem, 1);
 
         if (state.filaItens.length > 0) {
@@ -474,7 +474,6 @@ export const actions = {
         } else {
             localStorage.removeItem(`siap:comprasItens-${idCompras}`);
         }
-
     },
 
     async adicionarItem(param: iParamEmitAdicionarItem) {
@@ -560,7 +559,9 @@ export const actions = {
     },
 
     async addItemComErro(item: iItemComErro) {
-        if (item.TENTATIVAS == 1) {
+        let itemComErroExistente = state.itensComErro.find(i => i.COD_PRODUTO == item.COD_PRODUTO);
+
+        if (!itemComErroExistente) {
             state.itensComErro.push(item);
         }
     },
@@ -569,6 +570,16 @@ export const actions = {
         let indexItemComErro = state.itensComErro.findIndex(item => item.COD_PRODUTO == codProduto);
         if (indexItemComErro > -1) {
             state.itensComErro.splice(indexItemComErro, 1);
+        }
+    },
+
+    async tentarInserirItemComErroNovamente(codProduto: number) {
+        await actions.removerItemComErro(codProduto)
+
+        let indexFilaItem = state.filaItens.findIndex(item => item.COD_PRODUTO == codProduto);
+
+        if (indexFilaItem != -1) {
+            state.filaItens[indexFilaItem].TENTATIVAS = 0;
         }
     }
 }
