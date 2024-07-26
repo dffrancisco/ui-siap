@@ -14,4 +14,11 @@ export interface iDevolucao {
     STATUS: 'ABERTA' | 'FINALIZADA'
 }
 
+export interface iDetalhesDevolucao {
+    COD_PRODUTO: number;
+    QUAL_TIPO_AVARIA: string;
+    MOTIVO_DEVOLUCAO: string;
+    DESC_PRODUTO: string;
+}
+
 export interface iGetDevolucoesResponse extends iDevolucao { }

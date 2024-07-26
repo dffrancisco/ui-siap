@@ -2,9 +2,9 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceDevolucaodePecas from "./services/devolucaoDePecas.service";
-import { iDevolucao } from "./interfaces";
-import utils from "@/ts/utils";
-import printJS from "print-js";
+import { iDetalhesDevolucao, iDevolucao } from "./interfaces";
+import utils, { iColumnPrint } from "@/ts/utils";
+import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 
 export const dataHoje = moment().format('YYYY-MM-DD')
 
@@ -14,6 +14,9 @@ export const state = reactive({
     loading: false,
     dbDevolucoes: <iDevolucao[]>[],
     inputElementDataFim: <HTMLInputElement>{},
+    modalDetalhesItensDevolucao: <iModalCreate>{},
+    modalDetalhesItensDevolucaoOpened: false,
+    detalhesDevolucaoSelecionada: <iDetalhesDevolucao[]>[],
     headers: <any>[
         {
             title: 'N° Devolução', key: 'NUM_DEVOLUCAO',
@@ -50,13 +53,49 @@ export const state = reactive({
             title: 'Status', key: 'STATUS',
             align: 'center'
         },
+        {
+            title: 'Inf',
+            key: 'inf',
+            sortable: false,
+            align: 'center',
+        },
     ],
+    dataInicioImpressao: null,
+    dataFimImpressao: null
 })
 
 export const actions = {
     async init() {
         actions.getDevolucoes()
+        actions.createModal()
         state.inputElementDataFim = <HTMLInputElement>document.getElementById('DATA_FIM')
+    },
+
+    createModal() {
+        state.modalDetalhesItensDevolucao = new xModal.create({
+            el: "#modalDetalhesItensDevolucao",
+            height: 400,
+            width: 800,
+            title: 'Detalhes itens devolução',
+            theme: 'xModal-blue',
+            onOpen: () => { state.modalDetalhesItensDevolucaoOpened = true; },
+            onClose: () => { state.modalDetalhesItensDevolucaoOpened = false; },
+        });
+    },
+
+    openModalDetalhesItensDevolucao(item) {
+        state.loading = true;
+
+        state.detalhesDevolucaoSelecionada = item.PRODUTOS.map((produto: iDetalhesDevolucao) => ({
+            COD_PRODUTO: produto.COD_PRODUTO,
+            QUAL_TIPO_AVARIA: produto.QUAL_TIPO_AVARIA,
+            MOTIVO_DEVOLUCAO: produto.MOTIVO_DEVOLUCAO,
+            DESC_PRODUTO: produto.DESC_PRODUTO
+        }));
+
+        state.modalDetalhesItensDevolucao.open()
+
+        state.loading = false;
     },
 
     getClassCorLinha(dados: any) {
@@ -87,49 +126,6 @@ export const actions = {
         await actions.getDevolucoes()
     },
 
-    async btnPrint() {
-        try {
-
-            state.loading = true;
-
-            let campos = state.headers.map((header) => ({
-                field: header.key,
-                displayName: header.title
-            }))
-
-            let dadosToPrint = state.dbDevolucoes.map((devolucao) => {
-                return {
-                    NUM_DEVOLUCAO: devolucao.NUM_DEVOLUCAO,
-                    NUM_ORCAMENTO: devolucao.NUM_ORCAMENTO,
-                    DATA: utils.dataBrasil(devolucao.DATA),
-                    VALOR: utils.formatValor(devolucao.VALOR),
-                    NF_DEVOLUCAO: devolucao.NF_DEVOLUCAO,
-                    CREDITO: devolucao.CREDITO != null ? utils.formatValor(devolucao.CREDITO) : '',
-                    LOGIN: devolucao.LOGIN,
-                    STATUS: devolucao.STATUS,
-                };
-            });
-
-            printJS({
-                printable: dadosToPrint,
-                properties: campos,
-                documentTitle: `Devolução de Peças - Data: ${moment(state.dataInicio).format("DD/MM/YYYY")} até
-              ${moment(state.dataFim).format("DD/MM/YYYY")}`,
-                type: "json",
-                gridHeaderStyle: "border: 1px solid #000000",
-                gridStyle: "text-align: center; border: 1px solid #000000;",
-            });
-
-        } catch (error) {
-            Swal.fire({
-                text: "Erro ao imprimir as vendas!",
-                icon: "error",
-            });
-        } finally {
-            state.loading = false;
-        }
-    },
-
     async getDevolucoes() {
         try {
             state.loading = true;
@@ -140,6 +136,8 @@ export const actions = {
             const data = await serviceDevolucaodePecas.getDevolucoes({ dataInicio, dataFim })
 
             state.dbDevolucoes = data
+            state.dataInicioImpressao = dataInicio
+            state.dataFimImpressao = dataFim
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -148,5 +146,89 @@ export const actions = {
         } finally {
             state.loading = false;
         }
-    }
+    },
+
+    getDadosImpresaoArquivo() {
+
+        let dadosToPrint = state.dbDevolucoes.map((item) => {
+            return {
+                NUM_DEVOLUCAO: item.NUM_DEVOLUCAO ?? '',
+                NUM_ORCAMENTO: item.NUM_ORCAMENTO ?? '',
+                DATA: utils.dataBrasil(item.DATA) ?? '',
+                VALOR: utils.formatValor(item.VALOR) ?? '',
+                NF_DEVOLUCAO: item.NF_DEVOLUCAO ?? '',
+                CREDITO: utils.formatValor(item.CREDITO) ?? '',
+                LOGIN: item.LOGIN ?? '',
+                STATUS: item.STATUS ?? ''
+            }
+        })
+
+        let columns: iColumnPrint[] = [
+            {
+                key: 'NUM_DEVOLUCAO',
+                label: "N° Devolução",
+                align: 'center',
+            },
+            {
+                key: 'NUM_ORCAMENTO',
+                label: "N° Orçamento",
+                align: 'center',
+            },
+            {
+                key: 'DATA',
+                label: "Data Orçamento",
+                align: 'center',
+            },
+            {
+                key: 'VALOR',
+                label: "Valor",
+                align: 'right',
+            },
+            {
+                key: 'NF_DEVOLUCAO',
+                label: "NF-e",
+                align: 'center',
+                width: "80%"
+            },
+            {
+                key: 'CREDITO',
+                label: "Cŕedito",
+                align: 'right',
+            },
+            {
+                key: 'LOGIN',
+                label: "Funcionário",
+            },
+            {
+                key: 'STATUS',
+                label: "Status",
+                align: 'center',
+            }
+        ];
+
+        return { columns, dadosToPrint };
+    },
+
+    async onClickImprimir() {
+        let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
+
+        let titulo = `
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+      <span>Período: ${moment(state.dataInicioImpressao).format("DD/MM/YYYY")} até ${moment(state.dataFimImpressao).format(
+            "DD/MM/YYYY"
+        )}</span>
+      <strong style="font-size: 20px">Devolução de Peças</strong>
+      </div>
+      `;
+
+        try {
+            state.loading = true
+
+            await utils.printComCabecalho(columns, dadosToPrint, titulo);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            state.loading = false
+        }
+    },
 }
