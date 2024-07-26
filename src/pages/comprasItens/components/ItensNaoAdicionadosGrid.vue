@@ -112,7 +112,7 @@ const actions = {
                   </div>`;
         },
         agruparNumeroFabricante: (r) => {
-          return `<div class="numFabContainer--itensNaoAdicionadosGrid">
+          return `<div class="numFabContainer-itensNaoAdicionadosGrid">
                     <span>${r[MAP_COL_PRODUTO.NUM_FABRICANTE]}</span>
                     <span>${r[MAP_COL_PRODUTO.NUM_FABRICANTE2]}</span>
                   </div>`;
