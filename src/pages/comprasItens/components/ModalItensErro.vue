@@ -36,7 +36,10 @@ const actions = {
         class="d-flex align-center ga-4"
         v-for="item in itensComErro"
       >
-        <v-card color="#991b1b">
+        <v-card
+          color="#991b1b"
+          class="d-flex flex-grow-1 flex-column"
+        >
           <v-card-title> {{ item.NUM_FABRICANTE }} - {{ item.DESC_PRODUTO }}</v-card-title>
           <v-card-text
             ><strong>Erro ao {{ item.ACAO == "ADD" ? "adicionar" : "remover" }} o item:</strong>
