@@ -905,6 +905,14 @@ export const gerarPlanilhaComCabecalho = async (columns: iColumnPrint[], data: i
   saveAs(blob, `${fileName}.xlsx`);
 };
 
+export function getErrorMessage(error: any): string {
+  if (error instanceof Error) {
+    return error.message;
+  } else {
+    return String(error);
+  }
+}
+
 export default {
   validMail,
   formatValor,
@@ -925,4 +933,5 @@ export default {
   toCapitalize,
   printComCabecalho,
   gerarPlanilhaComCabecalho,
+  getErrorMessage
 };

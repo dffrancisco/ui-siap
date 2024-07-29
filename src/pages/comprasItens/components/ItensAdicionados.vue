@@ -161,7 +161,6 @@ const actions = {
       (keyProduto) => keyProduto == keyProdutoSelecionado
     );
 
-    console.log(linhaParaFocar, keyProdutoSelecionado);
     state.gridItensAdicionados.focus(linhaParaFocar);
   },
 
