@@ -2,7 +2,6 @@
 import { reactive, watch, computed } from "vue";
 import { iVenda } from "../interfaces";
 import utils from "@/ts/utils";
-import printJS from "print-js";
 import Swal from "sweetalert2";
 import moment from "moment";
 
@@ -113,46 +112,49 @@ const actions = {
     }
 
     const camposParamImprimir = colunasSelecionadas.map((coluna) => ({
-      field: coluna,
-      displayName: state.headers.find((header) => header.key === coluna).title,
+      key: coluna,
+      label: state.headers.find((header) => header.key === coluna).title,
     }));
 
     await actions.imprimirVendas(camposParamImprimir);
   },
 
+  getDadosImpresaoArquivo() {
+    let dadosToPrint = dadosToTable.value.map((item) => {
+      return {
+        LOGIN: item.LOGIN,
+        LIMITE: utils.formatValor(item.LIMITE),
+        VALOR_VENDA: utils.formatValor(item.VALOR_VENDA),
+        VALOR_DEVOLUCAO: utils.formatValor(item.VALOR_DEVOLUCAO),
+        VENDA_LIQUIDA: utils.formatValor(item.VENDA_LIQUIDA),
+        TICKET_MEDIO: utils.formatValor(item.TICKET_MEDIO),
+        QTD_MEDIA_ITENS: utils.formatValor(item.QTD_MEDIA_ITENS),
+      };
+    });
+
+    return { dadosToPrint };
+  },
+
   async imprimirVendas(campos) {
+    let { dadosToPrint } = actions.getDadosImpresaoArquivo();
+
+    let titulo = `
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+      <span>Período: ${moment(props.dataInicial).format("DD/MM/YYYY")} até ${moment(props.dataFinal).format(
+      "DD/MM/YYYY"
+    )}</span>
+      <strong style="font-size: 20px">Vendas por Vendedor</strong>
+      </div>
+      `;
+
     try {
       state.loading = true;
 
-      let dadosToPrint = dadosToTable.value.map((venda) => {
-        return {
-          LOGIN: venda.LOGIN,
-          LIMITE: utils.formatValor(venda.LIMITE),
-          VALOR_VENDA: utils.formatValor(venda.VALOR_VENDA),
-          VALOR_DEVOLUCAO: utils.formatValor(venda.VALOR_DEVOLUCAO),
-          VENDA_LIQUIDA: utils.formatValor(venda.VENDA_LIQUIDA),
-          TICKET_MEDIO: utils.formatValor(venda.TICKET_MEDIO),
-          QTD_MEDIA_ITENS: utils.formatValor(venda.QTD_MEDIA_ITENS),
-        };
-      });
-
-      printJS({
-        printable: dadosToPrint,
-        properties: campos,
-        documentTitle: `Vendas por Vendedor - Data: ${moment(props.dataInicial).format("DD/MM/YYYY")} até
-        ${moment(props.dataFinal).format("DD/MM/YYYY")}`,
-        type: "json",
-        gridHeaderStyle: "border: 1px solid #000000",
-        gridStyle: "text-align: center; border: 1px solid #000000",
-      });
-
-      state.loading = false;
+      await utils.printComCabecalho(campos, dadosToPrint, titulo);
     } catch (error) {
+      console.error(error);
+    } finally {
       state.loading = false;
-      Swal.fire({
-        text: "Erro ao imprimir as vendas!",
-        icon: "error",
-      });
     }
   },
 };

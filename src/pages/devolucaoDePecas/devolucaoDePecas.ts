@@ -192,7 +192,7 @@ export const actions = {
             },
             {
                 key: 'CREDITO',
-                label: "Cŕedito",
+                label: "Crédito",
                 align: 'right',
             },
             {
