@@ -12,6 +12,7 @@ import ItensAdicionados from "./components/ItensAdicionados.vue";
 import { useRoute } from "vue-router";
 import { MAP_COL_PRODUTO } from "./constants/constants";
 import ModalImpressao from "./components/ModalImpressao.vue";
+import ModalItensErro from "./components/ModalItensErro.vue";
 
 const route = useRoute();
 state.idCompras = parseInt(route?.query?.idCompras as string);
@@ -34,6 +35,7 @@ actions.init();
         :idMarcaInicial="state.cabecalho.ID_MARCA"
         :marcas="state.marcas"
         :carros="state.carros"
+        :disablePrint="computeds.disablePrint.value"
         @abrirModalImpressao="actions.abrirModalImpressao"
         @buscarProdutos="actions.buscarProdutos"
         @focarNosItensNaoAdicionados="actions.focarContainerItem"
@@ -76,6 +78,8 @@ actions.init();
             :loading="state.loadingHistoricoVendas"
             :isVenda="true"
             :corMediaVenda="computeds.corMediaVenda.value"
+            @refreshHistorico="actions.buscarHistorico({ ID_MARCA: state.edtMarca })"
+            :historicoErro="state.historicoErro"
           />
           <HistoricoMeses
             v-if="state.abaHistorico == 'compras'"
@@ -86,6 +90,8 @@ actions.init();
             :corFonte="'#eef0f4'"
             :media="computeds.mediaQtdItemSelecionado.value"
             :loading="state.loadingHistoricoCompras"
+            @refreshHistorico="actions.buscarHistorico({ ID_MARCA: state.edtMarca })"
+            :historicoErro="state.historicoErro"
           />
           <HistoricoUltimasVendas
             v-if="state.abaHistorico == 'vendas'"
@@ -123,6 +129,7 @@ actions.init();
               <v-chip
                 color="#ff7da1"
                 size="x-small"
+                @click="actions.openCloseModalItensErro"
               >
                 {{ computeds.contadorItens.value.qtdErro }}
               </v-chip>
@@ -239,6 +246,17 @@ actions.init();
           :observacao="state.cabecalho.OBS"
           :numPedido="state.cabecalho.ID_COMPRAS"
           @fecharModal="actions.fecharModalImpressao"
+        />
+      </v-dialog>
+      <v-dialog
+        v-model="state.modalItensErroOpen"
+        max-width="480px"
+        transition="dialog-transition"
+      >
+        <ModalItensErro
+          @fecharModal="actions.openCloseModalItensErro"
+          @tentarInserirItemNovamente="actions.tentarInserirItemComErroNovamente"
+          :itensComErro="state.itensComErro"
         />
       </v-dialog>
       <v-overlay

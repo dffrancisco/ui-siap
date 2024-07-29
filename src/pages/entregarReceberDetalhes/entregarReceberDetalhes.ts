@@ -2,7 +2,7 @@ import { computed, nextTick, reactive } from "vue";
 import xGrid, { ixGridCreate } from '@/plugins/xGridV2'
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import entregarReceberDetalhesService from "./services/entregarReceberDetalhes.service";
-import utils, { sleep } from "@/ts/utils";
+import utils, { iColumnPrint, sleep } from "@/ts/utils";
 import { iCartaoDisponivel, iEntregarReceber, iMotorista, iOrcamentoBaixa, iPagamento, iTipoPagamento, iTipos } from "./interface";
 import router from "@/router";
 import Swal from "sweetalert2";
@@ -438,31 +438,87 @@ export const actions = {
         }
     },
 
-    async onClickImprimir() {
+    getDadosImpresaoArquivo() {
         const entregarReceberImpressao = state.gridEntregarReceber.data() as unknown as iEntregarReceber[];
 
-        entregarReceberImpressao.forEach(entregarReceber => {
-            entregarReceber.DATA = utils.dataBrasil(entregarReceber.DATA)
-            //@ts-ignore
-            entregarReceber.VALOR = utils.formatValor(entregarReceber.VALOR)
-            entregarReceber.NOME_MOTORISTA = entregarReceber.NOME_MOTORISTA || '-'
+        let dadosToPrint = entregarReceberImpressao.map((item) => {
+            return {
+                NUM_ORCAMENTO: item.NUM_ORCAMENTO ?? '',
+                DATA: utils.dataBrasil(item.DATA) ?? '',
+                CLIENTE: item.CLIENTE ?? '',
+                NOME_CLIENTE: item.NOME_CLIENTE ?? '',
+                VENDEDOR: item.VENDEDOR ?? '',
+                VALOR: utils.formatValor(item.VALOR) ?? '',
+                TIPO_PAGAMENTO: item.TIPO_PAGAMENTO ?? '',
+                NOME_MOTORISTA: item.NOME_MOTORISTA ?? '',
+            }
         })
 
-        printJS({
-            documentTitle: 'Entregar e Receber / Pendências',
-            printable: state.gridEntregarReceber.data(),
-            properties: [
-                { field: 'NUM_ORCAMENTO', displayName: 'Nº Orç.' },
-                { field: 'DATA', displayName: 'Data' },
-                { field: 'CLIENTE', displayName: 'Cliente' },
-                { field: 'NOME_CLIENTE', displayName: 'Nome Cliente' },
-                { field: 'VENDEDOR', displayName: 'Vendedor' },
-                { field: 'VALOR', displayName: 'Valor' },
-                { field: 'TIPO_PAGAMENTO', displayName: 'Tipo Pgto' },
-                { field: 'NOME_MOTORISTA', displayName: 'Motorista' },
-            ],
-            type: 'json'
-        })
+        let columns: iColumnPrint[] = [
+            {
+                key: 'NUM_ORCAMENTO',
+                label: "N° Orç.",
+                width: '20%',
+                align: 'center',
+
+            },
+            {
+                key: 'DATA',
+                label: "Data",
+                align: 'center',
+                width: '20%'
+            },
+            {
+                key: 'CLIENTE',
+                label: "Cliente",
+            },
+            {
+                key: 'NOME_CLIENTE',
+                label: "Nome Cliente",
+
+            },
+            {
+                key: 'VENDEDOR',
+                label: "Vendedor",
+
+            },
+            {
+                key: 'VALOR',
+                label: "Valor",
+                align: 'right',
+            },
+            {
+                key: 'TIPO_PAGAMENTO',
+                label: "Tipo Pgto",
+                align: 'center',
+            },
+            {
+                key: 'NOME_MOTORISTA',
+                label: "Motorista",
+            },
+        ];
+
+        return { columns, dadosToPrint };
+    },
+
+    async onClickImprimir() {
+        let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
+
+        let titulo = `
+      <div style="display: flex; justify-content: flex-end; width: 100%; margin-top: 10px">
+        <strong style="font-size: 20px">Entregar e Receber / Pendências</strong>
+      </div>
+    `;
+
+        try {
+            state.loading = true
+
+            await utils.printComCabecalho(columns, dadosToPrint, titulo);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            state.loading = false
+        }
     },
 
     async onClickEditarObservacao() {

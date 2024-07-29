@@ -15,6 +15,10 @@ const props = defineProps({
     type: Array as () => iMarca[],
     required: true,
   },
+  disablePrint: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["buscarProdutos", "abrirModalImpressao", "focarNosItensNaoAdicionados", "ordenar"]);
@@ -201,6 +205,7 @@ watch(
         min-width="50"
         class="pa-0"
         title="Imprimir (Alt+P)"
+        :disabled="props.disablePrint"
         @click="emit('abrirModalImpressao')"
       >
         <v-icon size="x-large">mdi mdi-printer</v-icon>

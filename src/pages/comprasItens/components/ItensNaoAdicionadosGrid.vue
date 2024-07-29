@@ -77,17 +77,45 @@ const actions = {
       theme: "x-modern-dark",
       height: "240px",
       columns: {
-        "Nº Fabricante": { dataField: MAP_COL_PRODUTO.NUM_FABRICANTE, width: "14%" },
-        Descrição: { dataField: MAP_COL_PRODUTO.DESC_PRODUTO, compare: "colorirDescricao" },
-        "Qtd. Est": { dataField: MAP_COL_PRODUTO.QUANTIDADE, center: true, width: "10%" },
-        Custo: { dataField: MAP_COL_PRODUTO.CUSTO, center: true, render: utils.formatValor, width: "10%" },
-        Carro: { dataField: MAP_COL_PRODUTO.DESCRICAO_CARRO, width: "14%" },
-        Marca: { dataField: MAP_COL_PRODUTO.DESCRICAO_MARCA, width: "14%" },
+        "Nº Fabricante": {
+          dataField: MAP_COL_PRODUTO.NUM_FABRICANTE,
+          width: "14%",
+          compare: "agruparNumeroFabricante",
+          style: "font-size: 12px",
+        },
+        Descrição: {
+          dataField: MAP_COL_PRODUTO.DESC_PRODUTO,
+          compare: "formatarDescricaoProduto",
+          style: "font-size: 12px",
+        },
+        "Qtd. Est": {
+          dataField: MAP_COL_PRODUTO.QUANTIDADE,
+          center: true,
+          width: "10%",
+          style: "font-size: 12px",
+        },
+        Custo: {
+          dataField: MAP_COL_PRODUTO.CUSTO,
+          center: true,
+          render: utils.formatValor,
+          width: "10%",
+          style: "font-size: 12px",
+        },
+        Carro: { dataField: MAP_COL_PRODUTO.DESCRICAO_CARRO, width: "14%", style: "font-size: 12px" },
+        Marca: { dataField: MAP_COL_PRODUTO.DESCRICAO_MARCA, width: "14%", style: "font-size: 12px" },
       },
       compare: {
-        colorirDescricao: (r) => {
+        formatarDescricaoProduto: (r) => {
           let color = getColorDescricao(r["PEDIDO_QTD_ADICIONADA"], r[MAP_COL_PRODUTO.PRODUTO_NOVO]);
-          return `<span style='color: ${color}'>${r[MAP_COL_PRODUTO.DESC_PRODUTO]}</span>`;
+          return `<div class="descricaoContainer-itensNaoAdicionadosGrid">
+                    <span style='color: ${color}'>${r[MAP_COL_PRODUTO.DESC_PRODUTO]}</span>
+                  </div>`;
+        },
+        agruparNumeroFabricante: (r) => {
+          return `<div class="numFabContainer-itensNaoAdicionadosGrid">
+                    <span>${r[MAP_COL_PRODUTO.NUM_FABRICANTE]}</span>
+                    <span>${r[MAP_COL_PRODUTO.NUM_FABRICANTE2]}</span>
+                  </div>`;
         },
       },
       onSelectLine: (dados) => {
@@ -97,6 +125,14 @@ const actions = {
         13: (dados) => {
           state.modalAdicionarItemOpened = true;
         },
+
+        // tecla '1' e '->'
+        97: () => actions.proximoItem(),
+        39: () => actions.proximoItem(),
+
+        // tecla '3 e '<-''
+        99: () => actions.itemAnterior(),
+        37: () => actions.itemAnterior(),
       },
     });
 
@@ -118,6 +154,30 @@ const actions = {
     setTimeout(() => {
       actions.focarLinhaGrid();
     }, 100);
+  },
+  proximoItem() {
+    let linhaGrid = Number(state.gridItens.getIndex());
+    //@ts-ignore
+    let qtdItensGrid = state.gridItens.data().length;
+
+    let proximoItem = linhaGrid + 1;
+
+    if (proximoItem > qtdItensGrid) {
+      proximoItem = qtdItensGrid;
+    }
+
+    state.gridItens.focus(proximoItem);
+  },
+  itemAnterior() {
+    let linhaGrid = Number(state.gridItens.getIndex());
+
+    let itemAnterior = linhaGrid - 1;
+
+    if (itemAnterior < 0) {
+      itemAnterior = 0;
+    }
+
+    state.gridItens.focus(itemAnterior);
   },
 };
 
@@ -164,6 +224,20 @@ nextTick(() => {
   height: 50px;
   background-color: #666;
   border-radius: 3px;
+}
+
+.numFabContainer-itensNaoAdicionadosGrid {
+  display: flex;
+  flex-direction: column;
+}
+.descricaoContainer-itensNaoAdicionadosGrid {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
 }
 </style>
 

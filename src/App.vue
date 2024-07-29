@@ -111,6 +111,10 @@ const installApp = () => {
     deferredPrompt = null;
   });
 };
+
+const enviarEventoClick = () => {
+  window.parent.postMessage("clickAcionado", "*");
+};
 </script>
 
 <template>
@@ -125,7 +129,7 @@ const installApp = () => {
 			<van-button @click="installApp()" type="primary" size="large">Instalar</van-button>
 		</div>
 	</van-popup> -->
-  <v-app>
+  <v-app @click="enviarEventoClick">
     <!-- <v-app-bar></v-app-bar> -->
     <router-view></router-view>
   </v-app>

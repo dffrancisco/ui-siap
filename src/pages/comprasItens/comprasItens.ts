@@ -1,6 +1,6 @@
 import { computed, nextTick, reactive } from 'vue'
 import comprasItensService, { getColorQtdEstoque } from './services/comprasItens.service';
-import { sleep, swalDarkError, swalDarkWarning } from '@/ts/utils';
+import utils, { sleep, swalDarkError, swalDarkWarning } from '@/ts/utils';
 import moment from 'moment';
 import { MAP_COL_PRODUTO, MAP_COL_ULTIMAS_COMPRAS, MAP_COL_ULTIMAS_VENDAS } from './constants/constants';
 import {
@@ -9,6 +9,7 @@ import {
     iCabecalhoCompra,
     iCarro,
     iHistoricoMes,
+    iItemComErro,
     iItemFila,
     iMarca,
     iObjHistoricoCompraGeral,
@@ -35,6 +36,7 @@ export const state = reactive(({
     edtCarro: undefined,
     edtMarca: <number | undefined>undefined,
     produtos: <iProdutoObj>{},
+    keyProdutosOrigem: <string[]>[],
     keyProdutos: <string[]>[],
     produtosAdicionados: <iProdutoAdicionadoObj>{},
     historicoVendasGeral: <iObjHistoricoVendaGeral>{},
@@ -53,7 +55,10 @@ export const state = reactive(({
     persistindoItem: false,
     modalImpressaoOpened: false,
     transportadoras: [],
-    ordenarPor: <'nenhum' | 'num_fabricante' | 'descricao'>'nenhum'
+    ordenarPor: <'nenhum' | 'num_fabricante' | 'descricao'>'nenhum',
+    modalItensErroOpen: false,
+    itensComErro: <iItemComErro[]>[],
+    historicoErro: false,
 }))
 
 setInterval(async () => {
@@ -143,16 +148,32 @@ export const actions = {
         actions.changeIndexProdutoSelecionado(0)
 
         if (state.ordenarPor == label) {
-            state.ordenarPor = 'nenhum'
+            state.keyProdutos = state.keyProdutosOrigem
+            state.ordenarPor = 'nenhum';
             return;
         }
 
         state.ordenarPor = label
+
+        if (state.ordenarPor == 'num_fabricante') {
+            state.keyProdutos = computeds.keysOrdenadasPorNumFabricante.value
+        } else if (state.ordenarPor == 'descricao') {
+            state.keyProdutos = computeds.keysOrdenadasPorDescricao.value
+        } else {
+            state.keyProdutos = state.keyProdutosOrigem
+        }
     },
 
     focarNosItens: () => {
         //@ts-ignore
         document.querySelector('#compras-detalhes').focus();
+    },
+
+    buscarHistorico: async (param: iParamEmitBuscarProdutos) => {
+        state.historicoErro = false
+
+        await actions.buscarHistoricoVendas(param);
+        await actions.buscarHistoricoCompras(param);
     },
 
     buscarHistoricoVendas: async (param: iParamEmitBuscarProdutos) => {
@@ -161,6 +182,7 @@ export const actions = {
             state.historicoVendasGeral = await comprasItensService.getHistoricoVendas(param);
         } catch (error) {
             if (error.__CANCEL__) return;
+            state.historicoErro = true
             swalDarkError('Erro ao buscar histórico de vendas');
         } finally {
             state.loadingHistoricoVendas = false;
@@ -173,6 +195,7 @@ export const actions = {
             state.historicoComprasGeral = await comprasItensService.getHistoricoCompras(param);
         } catch (error) {
             if (error.__CANCEL__) return;
+            state.historicoErro = true
             swalDarkError('Erro ao buscar histórico de compras');
         } finally {
             state.loadingHistoricoCompras = false;
@@ -210,8 +233,7 @@ export const actions = {
         }
 
         try {
-            actions.buscarHistoricoVendas(param)
-            actions.buscarHistoricoCompras(param)
+            actions.buscarHistorico(param);
 
             const response = await comprasItensService.getProdutos(param)
 
@@ -219,6 +241,7 @@ export const actions = {
             state.edtMarca = param.ID_MARCA;
             state.produtos = response.produtos;
             state.qtdItensMarca = response.qtdItensMarca;
+            state.keyProdutosOrigem = Object.keys(state.produtos);
             state.keyProdutos = Object.keys(state.produtos);
 
         } catch (error) {
@@ -382,10 +405,14 @@ export const actions = {
     },
 
     addItemFila(item: iItemFila) {
+        let indexItemNaFila = state.filaItens.findIndex(i => i.COD_PRODUTO == item.COD_PRODUTO);
 
-        state.filaItens.push(item);
-        localStorage.setItem(`siap:comprasItens-${item.ID_COMPRAS}`, JSON.stringify(state.filaItens));
-
+        if (indexItemNaFila == -1) {
+            state.filaItens.push(item);
+            localStorage.setItem(`siap:comprasItens-${item.ID_COMPRAS}`, JSON.stringify(state.filaItens));
+        } else {
+            state.filaItens[indexItemNaFila].TENTATIVAS = 0;
+        }
     },
 
     async persistirItemFilaADD(item: iItemFila, indexFilaItem: number) {
@@ -398,9 +425,18 @@ export const actions = {
             });
 
             state.cabecalho.VALOR = response.valorTotalPedido;
+
             actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
         } catch (error) {
             item.TENTATIVAS++;
+            actions.addItemComErro({
+                COD_PRODUTO: item.COD_PRODUTO,
+                ERRO_MSG: utils.getErrorMessage(error),
+                ACAO: item.ACAO,
+                DESC_PRODUTO: item.DESC_PRODUTO,
+                NUM_FABRICANTE: item.NUM_FABRICANTE,
+                TENTATIVAS: item.TENTATIVAS
+            })
             console.error('erro ao persistir dados do item: ', item.COD_PRODUTO)
         }
     },
@@ -412,9 +448,18 @@ export const actions = {
             let response = await comprasItensService.deleteItemCompra({ ID_COMPRAS: item.ID_COMPRAS, COD_PRODUTO: item.COD_PRODUTO });
 
             state.cabecalho.VALOR = response.valorTotalPedido;
+
             actions.removerItemFila(item.ID_COMPRAS, indexFilaItem)
         } catch (error) {
             item.TENTATIVAS++;
+            actions.addItemComErro({
+                COD_PRODUTO: item.COD_PRODUTO,
+                ERRO_MSG: utils.getErrorMessage(error),
+                ACAO: item.ACAO,
+                DESC_PRODUTO: item.DESC_PRODUTO,
+                NUM_FABRICANTE: item.NUM_FABRICANTE,
+                TENTATIVAS: item.TENTATIVAS
+            })
             swalDarkError(error?.response?.data?.msg || "Ocorreu um erro ao deletar o item");
         } finally {
             state.loading = false;
@@ -422,7 +467,6 @@ export const actions = {
     },
 
     removerItemFila(idCompras: number, indexFilaItem: number) {
-
         state.filaItens.splice(indexFilaItem, 1);
 
         if (state.filaItens.length > 0) {
@@ -430,7 +474,6 @@ export const actions = {
         } else {
             localStorage.removeItem(`siap:comprasItens-${idCompras}`);
         }
-
     },
 
     async adicionarItem(param: iParamEmitAdicionarItem) {
@@ -440,6 +483,8 @@ export const actions = {
             let produtoSelecionado = computeds.produtoSelecionado.value
 
             let codProduto = produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO]
+            let descProduto = produtoSelecionado[MAP_COL_PRODUTO.DESC_PRODUTO]
+            let numFabricante = produtoSelecionado[MAP_COL_PRODUTO.NUM_FABRICANTE]
 
             actions.addItemFila({
                 ID_COMPRAS: state.cabecalho.ID_COMPRAS,
@@ -448,6 +493,8 @@ export const actions = {
                 QUANTIDADE: param.qtd,
                 ACAO: 'ADD',
                 TENTATIVAS: 0,
+                DESC_PRODUTO: descProduto,
+                NUM_FABRICANTE: numFabricante
             })
 
             /* Adicionado para impactar a computed qtdProdutosAdicionados e fazer com que o grid avance a linha após atualizar dados */
@@ -476,6 +523,11 @@ export const actions = {
     },
 
     async deletarItem(codProduto: number) {
+        let produtoSelecionado = state.produtosAdicionados[codProduto]
+
+        let numFabricante = produtoSelecionado[MAP_COL_PRODUTO.NUM_FABRICANTE]
+        let descProduto = produtoSelecionado[MAP_COL_PRODUTO.DESC_PRODUTO]
+
         actions.addItemFila({
             ID_COMPRAS: state.cabecalho.ID_COMPRAS,
             COD_PRODUTO: codProduto,
@@ -483,6 +535,8 @@ export const actions = {
             QUANTIDADE: 0,
             ACAO: 'REM',
             TENTATIVAS: 0,
+            DESC_PRODUTO: descProduto,
+            NUM_FABRICANTE: numFabricante
         })
 
         let keysProdutosSelecionados = Object.keys(state.produtosAdicionados)
@@ -496,6 +550,38 @@ export const actions = {
         state.indexProdutoSelecionado = state.keyProdutos.findIndex(key => key == keyNextItem);
     },
 
+    openCloseModalItensErro() {
+        if (computeds.contadorItens.value.qtdErro == 0 && !state.modalItensErroOpen) {
+            return
+        }
+
+        state.modalItensErroOpen = !state.modalItensErroOpen;
+    },
+
+    async addItemComErro(item: iItemComErro) {
+        let itemComErroExistente = state.itensComErro.find(i => i.COD_PRODUTO == item.COD_PRODUTO);
+
+        if (!itemComErroExistente) {
+            state.itensComErro.push(item);
+        }
+    },
+
+    async removerItemComErro(codProduto: number) {
+        let indexItemComErro = state.itensComErro.findIndex(item => item.COD_PRODUTO == codProduto);
+        if (indexItemComErro > -1) {
+            state.itensComErro.splice(indexItemComErro, 1);
+        }
+    },
+
+    async tentarInserirItemComErroNovamente(codProduto: number) {
+        await actions.removerItemComErro(codProduto)
+
+        let indexFilaItem = state.filaItens.findIndex(item => item.COD_PRODUTO == codProduto);
+
+        if (indexFilaItem != -1) {
+            state.filaItens[indexFilaItem].TENTATIVAS = 0;
+        }
+    }
 }
 
 export const computeds = {
@@ -517,13 +603,6 @@ export const computeds = {
 
     produtoSelecionado: computed(() => {
         let keyProdutoSelecionado = state.keyProdutos[state.indexProdutoSelecionado]
-
-        if (state.ordenarPor == 'num_fabricante') {
-            keyProdutoSelecionado = computeds.keysOrdenadasPorNumFabricante.value[state.indexProdutoSelecionado]
-        } else if (state.ordenarPor == 'descricao') {
-            keyProdutoSelecionado = computeds.keysOrdenadasPorDescricao.value[state.indexProdutoSelecionado]
-        }
-
         return state.produtos[keyProdutoSelecionado] || {} as iProduto;
     }),
 
@@ -664,6 +743,18 @@ export const computeds = {
         marcas.push(...nomeMarcas)
 
         return marcas
+    }),
+
+    disablePrint: computed(() => {
+        if (computeds.contadorItens.value.qtdErro > 0) {
+            return true;
+        }
+
+        if (computeds.contadorItens.value.qtdProcessando > 0) {
+            return true;
+        }
+
+        return false;
     })
 }
 

@@ -5,7 +5,7 @@ import moment from "moment";
 import { mesesToSelect } from "@/constants/constants";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { iGetDetalhesResponse, iGetVendasPerdidasResponse, iParamDetalhes, iParamGetVendasPerdidas } from "./interfaces";
-import printJS from "print-js";
+import utils, { iColumnPrint } from "@/ts/utils";
 
 export const meses = mesesToSelect;
 const ano = moment().year();
@@ -65,14 +65,16 @@ export const state = reactive({
             sortable: false,
             align: 'center',
         },
-    ]
+    ],
+    mesImpressao: null,
+    anoImpressao: null
 })
 
 
 export const actions = {
     async init() {
         await actions.getVendasPerdidas()
-        await actions.createModalDetalhesVendaPerdida()
+        actions.createModalDetalhesVendaPerdida()
     },
 
     async getVendasPerdidas() {
@@ -106,6 +108,8 @@ export const actions = {
             let data = await serviceVendasPerdidas.getVendasPerdidas(param);
             state.vendasPerdidas = data;
             state.totalItems = data.length;
+            state.mesImpressao = state.mes;
+            state.anoImpressao = state.ano;
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -159,36 +163,75 @@ export const actions = {
         state.loading = false;
     },
 
-    formatarDadosImpressao(data) {
-        return data.map(item => ({
-            ...item,
-            NUM_FABRICANTE: item.NUM_FABRICANTE ? item.NUM_FABRICANTE : '',
-            NUM_FABRICANTE2: item.NUM_FABRICANTE2 ? item.NUM_FABRICANTE2 : '',
-        }))
+    getDadosImpresaoArquivo() {
+
+        let dadosToPrint = state.vendasPerdidas.map((item) => {
+            return {
+                DESC_PRODUTO: item.DESC_PRODUTO ?? '',
+                NUM_FABRICANTE: item.NUM_FABRICANTE ?? '',
+                NUM_FABRICANTE2: item.NUM_FABRICANTE2 ?? '',
+                DESC_MARCA: item.DESC_MARCA ?? '',
+                QUANTIDADE: item.QUANTIDADE ?? '',
+                QUANTIDADE_PERDIDA: item.QUANTIDADE_PERDIDA ?? '',
+            }
+        })
+
+        let columns: iColumnPrint[] = [
+            {
+                key: 'DESC_PRODUTO',
+                label: "Produto",
+                width: '60%'
+            },
+            {
+                key: 'NUM_FABRICANTE',
+                label: "N° Fabricante",
+                align: 'center',
+                width: '10%'
+            },
+            {
+                key: 'NUM_FABRICANTE2',
+                label: "N° Fabricante 2",
+                align: 'center',
+                width: '15%'
+            },
+            {
+                key: 'DESC_MARCA',
+                label: "Marca",
+            },
+            {
+                key: 'QUANTIDADE',
+                label: "Qtd Estoque",
+                align: 'center',
+            },
+            {
+                key: 'QUANTIDADE_PERDIDA',
+                label: "Vendas Perdidas",
+                align: 'center',
+            },
+        ];
+
+        return { columns, dadosToPrint };
     },
 
-    async imprimirVendasPerdidas() {
-        state.loading = true;
+    async onClickImprimir() {
+        let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
 
-        const vendasPerdidasImpressao = actions.formatarDadosImpressao(state.vendasPerdidas)
+        let titulo = `
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+      <span>Período: ${meses.find((mes) => mes.value === state.mesImpressao)?.title} ${state.anoImpressao}</span>
+      <strong style="font-size: 20px">Vendas Perdidas</strong>
+      </div>
+      `;
 
-        printJS({
-            printable: vendasPerdidasImpressao,
-            type: "json",
-            documentTitle: 'Vendas Perdidas - Período: ' + state.mes + '/' + state.ano,
-            gridHeaderStyle: "border: 1px solid #000000;",
-            gridStyle: "text-align: center; padding: 5px; border: 1px solid #000000",
-            properties: [
-                { field: 'DESC_PRODUTO', displayName: 'Descrição do Produto' },
-                { field: 'NUM_FABRICANTE', displayName: 'Número do Fabricante' },
-                { field: 'NUM_FABRICANTE2', displayName: 'Número do Fabricante 2' },
-                { field: 'DESC_MARCA', displayName: 'Marca' },
-                { field: 'QUANTIDADE', displayName: 'Qtd atual em estoque ' },
-                { field: 'QUANTIDADE_PERDIDA', displayName: 'Vendas Perdidas' }
-            ]
-        });
+        try {
+            state.loading = true
 
-        state.loading = false;
+            await utils.printComCabecalho(columns, dadosToPrint, titulo);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            state.loading = false
+        }
     },
 
     getClassCorLinha(dados: any) {
