@@ -87,6 +87,7 @@ nextTick(async () => {
   display: flex;
   flex-direction: row;
   gap: 10px;
+  width: 450px;
   align-items: center;
 }
 
