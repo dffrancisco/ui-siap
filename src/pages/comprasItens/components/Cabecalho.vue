@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import router from "@/router";
 import { iCabecalhoCompra } from "../interfaces";
 import utils from "@/ts/utils";
 
@@ -21,6 +22,14 @@ const props = defineProps({
 <template>
   <div class="cabecalho">
     <div class="cabecalho-dados">
+      <div>
+        <v-icon
+          size="large"
+          @click="router.push('/compras')"
+        >
+          mdi-arrow-left
+        </v-icon>
+      </div>
       <div>
         <div>
           <span class="mr-1">Pedido:</span>
