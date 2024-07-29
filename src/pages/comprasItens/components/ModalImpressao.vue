@@ -133,12 +133,12 @@ const actions = {
 
     let fileName = props.marca + " - " + hoje + " - " + props.numPedido;
 
-    let titulo = state.tipoImpressao == "cotacao" ? "COTAÇÃO" : "PEDIDO" + " - " + props.marca;
+    let titulo = state.tipoImpressao == "cotacao" ? "COTAÇÃO" : `PEDIDO N°${props.numPedido} - ${props.marca}`;
 
     let rodape = [
       [],
       [],
-      [`Obs.: ${props.observacao}`],
+      [`Obs.: ${props.observacao ?? ""}`],
       [""],
       [`Transportadora: ${state.transportadora?.RAZAO_SOCIAL || ""} `],
     ];

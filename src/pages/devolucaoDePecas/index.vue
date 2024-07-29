@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { nextTick } from "vue";
 import { actions, dataHoje, state } from "./devolucaoDePecas";
+import ModalDetalhesItensDevolucao from "./components/modalDetalhesItensDevolucao.vue";
 
 nextTick(() => {
   actions.init();
@@ -57,6 +58,16 @@ nextTick(() => {
         <template v-slot:item.NF_DEVOLUCAO="{ item }">
           <div class="nf-container">{{ item.NF_DEVOLUCAO }}</div>
         </template>
+        <template v-slot:item.inf="{ item }">
+          <v-icon
+            size="large"
+            color="primary"
+            title="Ver detalhes"
+            @click="actions.openModalDetalhesItensDevolucao(item)"
+          >
+            mdi-information
+          </v-icon>
+        </template>
       </v-data-table>
 
       <div class="d-flex justify-space-between align-center">
@@ -76,6 +87,16 @@ nextTick(() => {
 
     <div id="pnCodigoTela">devolucaoDePecas</div>
   </v-container>
+
+  <div
+    id="modalDetalhesItensDevolucao"
+    style="display: none"
+  >
+    <ModalDetalhesItensDevolucao
+      :devolucaoSelecionada="state.detalhesDevolucaoSelecionada"
+      :modalOpened="state.modalDetalhesItensDevolucaoOpened"
+    />
+  </div>
 
   <v-overlay
     :model-value="state.loading"
@@ -105,7 +126,7 @@ nextTick(() => {
 <style scoped>
 .main-card {
   margin: 0 auto;
-  width: 1000px;
+  width: 1050px;
 }
 
 .container-data {

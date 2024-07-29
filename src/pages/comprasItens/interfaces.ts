@@ -90,6 +90,17 @@ export interface iItemFila {
     QUANTIDADE: number,
     ACAO: 'ADD' | 'REM'
     TENTATIVAS: number,
+    DESC_PRODUTO: string,
+    NUM_FABRICANTE: string,
+}
+
+export interface iItemComErro {
+    COD_PRODUTO: number,
+    ACAO: 'ADD' | 'REM'
+    ERRO_MSG: string,
+    NUM_FABRICANTE: string,
+    DESC_PRODUTO: string,
+    TENTATIVAS: number,
 }
 
 export interface iParamDeleteItemCompra {

@@ -2,8 +2,9 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceDevolucaodePecas from "./services/devolucaoDePecas.service";
-import { iDevolucao } from "./interfaces";
+import { iDetalhesDevolucao, iDevolucao } from "./interfaces";
 import utils, { iColumnPrint } from "@/ts/utils";
+import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 
 export const dataHoje = moment().format('YYYY-MM-DD')
 
@@ -13,6 +14,9 @@ export const state = reactive({
     loading: false,
     dbDevolucoes: <iDevolucao[]>[],
     inputElementDataFim: <HTMLInputElement>{},
+    modalDetalhesItensDevolucao: <iModalCreate>{},
+    modalDetalhesItensDevolucaoOpened: false,
+    detalhesDevolucaoSelecionada: <iDetalhesDevolucao[]>[],
     headers: <any>[
         {
             title: 'N° Devolução', key: 'NUM_DEVOLUCAO',
@@ -49,6 +53,12 @@ export const state = reactive({
             title: 'Status', key: 'STATUS',
             align: 'center'
         },
+        {
+            title: 'Inf',
+            key: 'inf',
+            sortable: false,
+            align: 'center',
+        },
     ],
     dataInicioImpressao: null,
     dataFimImpressao: null
@@ -57,7 +67,35 @@ export const state = reactive({
 export const actions = {
     async init() {
         actions.getDevolucoes()
+        actions.createModal()
         state.inputElementDataFim = <HTMLInputElement>document.getElementById('DATA_FIM')
+    },
+
+    createModal() {
+        state.modalDetalhesItensDevolucao = new xModal.create({
+            el: "#modalDetalhesItensDevolucao",
+            height: 400,
+            width: 800,
+            title: 'Detalhes itens devolução',
+            theme: 'xModal-blue',
+            onOpen: () => { state.modalDetalhesItensDevolucaoOpened = true; },
+            onClose: () => { state.modalDetalhesItensDevolucaoOpened = false; },
+        });
+    },
+
+    openModalDetalhesItensDevolucao(item) {
+        state.loading = true;
+
+        state.detalhesDevolucaoSelecionada = item.PRODUTOS.map((produto: iDetalhesDevolucao) => ({
+            COD_PRODUTO: produto.COD_PRODUTO,
+            QUAL_TIPO_AVARIA: produto.QUAL_TIPO_AVARIA,
+            MOTIVO_DEVOLUCAO: produto.MOTIVO_DEVOLUCAO,
+            DESC_PRODUTO: produto.DESC_PRODUTO
+        }));
+
+        state.modalDetalhesItensDevolucao.open()
+
+        state.loading = false;
     },
 
     getClassCorLinha(dados: any) {
@@ -150,10 +188,11 @@ export const actions = {
                 key: 'NF_DEVOLUCAO',
                 label: "NF-e",
                 align: 'center',
+                width: "80%"
             },
             {
                 key: 'CREDITO',
-                label: "Cŕedito",
+                label: "Crédito",
                 align: 'right',
             },
             {
@@ -164,7 +203,7 @@ export const actions = {
                 key: 'STATUS',
                 label: "Status",
                 align: 'center',
-            },
+            }
         ];
 
         return { columns, dadosToPrint };

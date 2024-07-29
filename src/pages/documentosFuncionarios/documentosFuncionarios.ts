@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { nextTick, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -26,7 +26,7 @@ export const actions = {
             count: true,
             columns: {
                 Descrição: { dataField: "descricao" },
-                Pasta: { dataField: "pasta"},
+                Pasta: { dataField: "pasta" },
                 Controle: { dataField: "controle", compare: "returnControle" }
             },
             query: {
@@ -49,7 +49,7 @@ export const actions = {
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
-                    state.dbDocumentosFuncionarios = r
+                    state.dbDocumentosFuncionarios = { ...r }
                 },
                 duplicity: {
                     dataField: ['descricao'],
@@ -113,15 +113,16 @@ export const actions = {
         });
     },
 
-    btnInsert() {
+    async btnInsert() {
         state.pnSearch = true;
+        state.dbDocumentosFuncionarios = {} as iDocumentosFuncionarios
+        await nextTick()
 
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
-        state.gridPrincipal.clearElementSideBySide();
     },
 
-    btnEdit() {
+    async btnEdit() {
         //@ts-ignore
         if (state.gridPrincipal.dataSource() === false) {
             Swal.fire({
@@ -130,6 +131,9 @@ export const actions = {
             });
             return false;
         }
+        state.pnSearch = true;
+        await nextTick()
+
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
     },
@@ -139,6 +143,14 @@ export const actions = {
 
         if (await state.gridPrincipal.getDuplicityAll()) return false;
 
+        const verificarCaracterEspecial = /[^a-zA-Z0-9_]/u.test(state.dbDocumentosFuncionarios.pasta);
+        if (verificarCaracterEspecial) {
+            Swal.fire({
+                icon: "error",
+                text: "O campo pasta contém caracteres especiais. Por favor, ajuste.",
+            });
+            return false;
+        }
 
         //@ts-ignore
         if (state.gridPrincipal.dataSource() == false) {
@@ -148,16 +160,20 @@ export const actions = {
             actions.toUpdate();
         }
 
-        state.gridPrincipal.enable();
-
         state.pnSearch = false;
+        await nextTick()
+
+        state.gridPrincipal.enable();
         state.gridPrincipal.focus();
     },
 
-    btnCancel() {
+    async btnCancel() {
         state.pnSearch = false;
+        let linhaGrid = <any>state.gridPrincipal.getIndex()
+        await nextTick()
+
         state.gridPrincipal.enable();
-        state.gridPrincipal.focus();
+        state.gridPrincipal.focus(linhaGrid);
     },
 
     async btnDelete() {
@@ -211,9 +227,11 @@ export const actions = {
 
             newFields.descricao = utils.toCapitalize(newFields.descricao)
             newFields.pasta = utils.toLowerCase(newFields.pasta)
+            // Substitui espaços por underline
+            newFields.pasta.replace(/\s+/g, '_');
 
             state.loading = true,
-            await serviceDocumentosFuncionarios.toInsert(newFields);
+                await serviceDocumentosFuncionarios.toInsert(newFields);
             state.loading = false
 
             state.gridPrincipal.insertLine(newFields)
@@ -232,7 +250,7 @@ export const actions = {
 
             if (dadosDiff.diff == false) {
                 return
-            }      
+            }
 
             let dadosAtualizados = {
                 ...state.dbDocumentosFuncionarios,
@@ -241,6 +259,9 @@ export const actions = {
 
             dadosAtualizados.descricao = utils.toCapitalize(dadosAtualizados.descricao)
             dadosAtualizados.pasta = utils.toLowerCase(dadosAtualizados.pasta)
+
+            // Substitui espaços por underline
+            dadosAtualizados.pasta = dadosAtualizados.pasta.replace(/\s+/g, '_');
 
             state.loading = true
             await serviceDocumentosFuncionarios.toUpdate(dadosAtualizados);
