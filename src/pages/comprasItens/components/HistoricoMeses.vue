@@ -98,11 +98,9 @@ const actions = {
           class="d-flex flex-column align-center"
         >
           <span>{{ historico.mesExtenso }}</span>
-          <strong
-            v-show="historico.qtd > 0"
-            class="historico-meses-conteudo-card-qtd"
-            >{{ historico.qtd }}</strong
-          >
+          <strong class="historico-meses-conteudo-card-qtd">{{
+            historico.qtd > 0 ? historico.qtd : "&nbsp;"
+          }}</strong>
         </div>
       </div>
     </div>
