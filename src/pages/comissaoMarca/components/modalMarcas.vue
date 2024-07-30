@@ -110,13 +110,14 @@ nextTick(() => {
 
       <div class="btns d-flex justify-end pt-5">
         <v-btn
-          style="color: #3680ab; border: 1px solid #3680ab"
+          variant="outlined"
+          color="primary"
           @click="actions.cancelar()"
           >Cancelar</v-btn
         >
         <v-btn
           class="ml-2"
-          color="#3680AB"
+          color="primary"
           @click="actions.selecionarMarca()"
           >Selecionar</v-btn
         >

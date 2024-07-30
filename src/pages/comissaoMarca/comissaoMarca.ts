@@ -149,7 +149,7 @@ export const actions = {
 
         await actions.getFuncionarios()
         await actions.getMarcas()
-        await actions.createModal()
+        actions.createModal()
     },
 
     createModal() {
@@ -357,7 +357,6 @@ export const actions = {
             }).then((result) => {
                 if (result.isConfirmed) {
                     actions.openModalMarcas();
-                    return;
                 }
             });
             return
