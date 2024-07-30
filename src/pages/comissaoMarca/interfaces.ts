@@ -18,6 +18,11 @@ export interface iGetProdutosParam {
     marcaEscolhida: number;
 }
 
+export interface iFiltrarProdutos {
+    marcaEscolhida: number;
+    descricaoProduto: string
+}
+
 export interface iTabs {
     agrupadoPorVendedor: boolean;
     agrupadoPorItem: boolean;

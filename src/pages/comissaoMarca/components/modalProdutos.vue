@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
+import { reactive, watch } from "vue";
 import { iProdutos, iProdutosEscolhidos } from "../interfaces";
 
 const props = defineProps<{
   produtos: iProdutos[];
   produtosEditar: iProdutosEscolhidos | null;
+  marcaEscolhida: number;
   modalOpened: boolean;
 }>();
 
@@ -20,14 +21,14 @@ const state = reactive({
   ],
 });
 
-const filtrarProdutos = computed(() => {
+const filtrarProdutos = () => {
   if (!state.search) return props.produtos;
 
   const produtoPesquisado = state.search.toLowerCase();
-  return props.produtos.filter((produto) =>
-    produto.DESC_PRODUTO.split(" ")[0].toLowerCase().includes(produtoPesquisado)
-  );
-});
+  const idMarca = props.marcaEscolhida;
+
+  emit("produtoPesquisar", produtoPesquisado, idMarca);
+};
 
 const confirmarSelecionados = () => {
   let produtosEscolhidos = state.selectedProdutos;
@@ -52,7 +53,7 @@ const cancelar = () => {
   state.search = "";
 };
 
-const emit = defineEmits(["produtosEscolhidos", "closeModal"]);
+const emit = defineEmits(["produtosEscolhidos", "closeModal", "produtoPesquisar"]);
 
 watch(
   () => props.modalOpened,
@@ -64,6 +65,13 @@ watch(
     }
   }
 );
+
+watch(
+  () => props.produtos,
+  (produtosFiltrados) => {
+    state.produtos = produtosFiltrados;
+  }
+);
 </script>
 
 <template>
@@ -73,12 +81,14 @@ watch(
         <v-text-field
           :clearable="true"
           v-model="state.search"
+          @keydown.enter.prevent="filtrarProdutos"
           label="Pesquisar"
         ></v-text-field>
         <v-btn
           icon
           size="small"
           color="primary"
+          @click="filtrarProdutos"
         >
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
@@ -87,7 +97,7 @@ watch(
     <v-card-text>
       <v-data-table
         :headers="state.headers"
-        :items="filtrarProdutos"
+        :items="state.produtos"
         items-per-page-text="Itens por página"
         height="310"
         item-key="COD_PRODUTO"
@@ -95,7 +105,6 @@ watch(
         show-select
         select-strategy="all"
         v-model="state.selectedProdutos"
-        @keydown.enter.prevent="confirmarSelecionados"
       >
         <template #no-data>
           <v-alert

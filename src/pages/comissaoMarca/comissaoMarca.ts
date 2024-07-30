@@ -1,6 +1,6 @@
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iFuncionario, iMarcas, iProdutos, iGetProdutosParam, iProdutosEscolhidos, iDadosParaRelatorio, iParamParaRelatorio, iTabs } from "./interfaces";
+import { iFuncionario, iMarcas, iProdutos, iGetProdutosParam, iProdutosEscolhidos, iDadosParaRelatorio, iParamParaRelatorio, iTabs, iFiltrarProdutos } from "./interfaces";
 import Swal from "sweetalert2";
 import comissaoMarcaService from "./services/comissaoMarca.service";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -16,6 +16,7 @@ export const state = reactive({
     modalMarcas: <iModalCreate>{},
     modalMarcasOpened: false,
     marcas: <iMarcas[]>[],
+    idMarcaFiltragem: 0,
     marcaEscolhida: <Array<{ marca: iMarcas, produtos: iProdutosEscolhidos[] }>>[],
     modalProdutos: <iModalCreate>{},
     modalProdutosOpened: false,
@@ -201,6 +202,8 @@ export const actions = {
     },
 
     async getProdutos(idMarcaEscolhida: number) {
+        state.idMarcaFiltragem = idMarcaEscolhida;
+
         state.loading = true;
 
         try {
@@ -218,6 +221,26 @@ export const actions = {
 
         state.modalProdutos.open();
 
+        state.loading = false;
+    },
+
+    async filtrarProdutos(produtoPesquisado: string, idMarca: number) {
+        state.loading = true;
+        try {
+            const data = await comissaoMarcaService.getProdutos({
+                marcaEscolhida: idMarca,
+                descricaoProduto: produtoPesquisado
+            } as iFiltrarProdutos);
+            state.produtos = data;
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao pesquisar.',
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
         state.loading = false;
     },
 

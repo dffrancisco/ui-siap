@@ -272,7 +272,9 @@ nextTick(async () => {
       :produtos="state.produtos"
       :produtosEditar="state.produtosEditar"
       :modalOpened="state.modalProdutosOpened"
+      :marcaEscolhida="state.idMarcaFiltragem"
       @close-modal="actions.fecharModalProdutos"
+      @produto-pesquisar="actions.filtrarProdutos"
       @produtos-escolhidos="actions.adcProdutosNoCard"
     />
   </div>
