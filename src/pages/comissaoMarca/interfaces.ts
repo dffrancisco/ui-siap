@@ -18,6 +18,11 @@ export interface iGetProdutosParam {
     marcaEscolhida: number;
 }
 
+export interface iFiltrarProdutos {
+    marcaEscolhida: number;
+    descricaoProduto: string
+}
+
 export interface iTabs {
     agrupadoPorVendedor: boolean;
     agrupadoPorItem: boolean;
@@ -37,7 +42,7 @@ export interface iProdutosEscolhidos {
 
 export interface iParamParaRelatorio {
     cod_funcionarios: number[];
-    produtos: number[];
+    produtos: { descricaoSelecionados: string, produtosEscolhidos: number[] }[];
     data_inicial: string;
     data_final: string;
 }

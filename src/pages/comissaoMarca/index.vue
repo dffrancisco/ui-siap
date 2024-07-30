@@ -97,7 +97,7 @@ nextTick(async () => {
                   class="marca-item mt-2"
                 >
                   <div>
-                    <span>{{ item.marca.DESCRICAO }} <br />{{ item.marca.GRUPO.toLowerCase() }}</span
+                    <span class="ml-1">{{ item.marca.DESCRICAO }}</span
                     ><br />
                     <v-icon
                       class="ml-1"
@@ -112,7 +112,7 @@ nextTick(async () => {
                       color="primary"
                       @click="actions.editarMarca(item.marca.ID_MARCA)"
                     >
-                      mdi-pencil
+                      mdi-plus-circle
                     </v-icon>
                   </div>
                   <div v-if="item.produtos.length > 0">
@@ -175,7 +175,10 @@ nextTick(async () => {
 
     <div class="right-side">
       <div class="radio-group">
-        <v-card width="700px">
+        <v-card
+          width="700px"
+          height="520px"
+        >
           <v-tabs
             v-model="state.tab"
             bg-color="primary"
@@ -196,7 +199,7 @@ nextTick(async () => {
                   no-data-text="Não há dados disponíveis"
                   v-model:itemsPerPage="state.totalItems"
                   style="border-radius: 5px; max-width: 660px"
-                  height="545"
+                  height="400"
                   fixed-header
                   :headers="state.headers"
                   :loading="state.loading"
@@ -211,7 +214,7 @@ nextTick(async () => {
                   no-data-text="Não há dados disponíveis"
                   v-model:itemsPerPage="state.totalItems"
                   style="border-radius: 5px; max-width: 660px"
-                  height="545"
+                  height="400"
                   fixed-header
                   :headers="state.headers2"
                   :loading="state.loading"
@@ -222,7 +225,7 @@ nextTick(async () => {
               </v-window-item>
             </v-window>
           </v-card-text>
-          <div class="pt-2 btnPrint">
+          <div class="btnPrint">
             <v-btn
               color="primary"
               @click="actions.relatorio"
@@ -234,6 +237,7 @@ nextTick(async () => {
           </div>
         </v-card>
       </div>
+      <div id="pnCodigoTela">COMISSÃO_MARCA</div>
     </div>
 
     <v-overlay
@@ -268,12 +272,12 @@ nextTick(async () => {
       :produtos="state.produtos"
       :produtosEditar="state.produtosEditar"
       :modalOpened="state.modalProdutosOpened"
+      :marcaEscolhida="state.idMarcaFiltragem"
       @close-modal="actions.fecharModalProdutos"
+      @produto-pesquisar="actions.filtrarProdutos"
       @produtos-escolhidos="actions.adcProdutosNoCard"
     />
   </div>
-
-  <div id="pnCodigoTela">COMISSÃO_MARCA</div>
 </template>
 
 <style>
@@ -293,7 +297,6 @@ nextTick(async () => {
 <style scoped>
 .main-container {
   display: flex;
-  height: 80vh;
 }
 
 .left-side {
@@ -308,16 +311,16 @@ nextTick(async () => {
 
 .left-card {
   width: 100%;
-  min-height: 700px;
+  min-height: 520px;
 }
 
 .divider {
   width: 2px;
   margin-left: 5px;
   margin-right: -15px;
-  margin-top: 5px;
-  height: 710px;
-  min-height: 710px;
+  margin-top: 10px;
+  height: 520px;
+  min-height: 520px;
 }
 
 .data-container {
@@ -355,7 +358,6 @@ nextTick(async () => {
   padding-top: 20px;
   width: 300px;
   max-height: 400px;
-  /* padding-left: 5px; */
 }
 
 .iconAddMarcas {
@@ -364,7 +366,7 @@ nextTick(async () => {
 
 .marcasCard,
 .produtosCard {
-  max-height: 390px;
+  max-height: 220px;
   overflow-y: auto;
   border-radius: 10px;
 }
@@ -399,7 +401,7 @@ nextTick(async () => {
 
 .divBtn {
   margin-left: 80px;
-  margin-top: 45px;
+  margin-top: 5px;
 }
 
 .consultarBtn {
@@ -426,7 +428,12 @@ nextTick(async () => {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 20px;
-  padding: 10px;
+  padding: 20px;
+  margin-top: -25px;
+}
+
+#pnCodigoTela {
+  margin-top: 10px;
+  margin-right: 350px;
 }
 </style>
