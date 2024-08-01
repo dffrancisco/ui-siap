@@ -6,12 +6,16 @@ import serviceSugestaoCompraAlteracao from './services/sugestaoCompraAlteracao.s
 import { iSugestaoCompraAlteracao } from "./interfaces";
 import utils, { iColumnPrint } from "@/ts/utils";
 
-export const opcoes = [{ title: 'Todos', value: 'Todos' },
-{ title: 'Compra', value: 'Compra' },
-{ title: 'Alteração', value: 'Alteração' }];
-export const status = [{ title: 'Todos', value: 'Todos' },
-{ title: 'Aprovado', value: 'Aprovado' },
-{ title: 'Reprovado', value: 'Reprovado' }];
+export const opcoes = [
+    { title: 'Todos', value: 'Todos' },
+    { title: 'Compra', value: 'Compra' },
+    { title: 'Alteração', value: 'Alteração' }
+];
+export const status = [
+    { title: 'Todos', value: 'Todos' },
+    { title: 'Aprovado', value: 'Aprovado' },
+    { title: 'Reprovado', value: 'Reprovado' }
+];
 
 export const meses = mesesToSelect;
 const ano = moment().year();
@@ -55,29 +59,29 @@ export const state = reactive({
         {
             title: "Produto",
             key: "DESCRICAO_PRODUTO",
-            sortable: true,
+            sortable: false,
         },
         {
             title: "Sugestão",
             key: "SUGESTAO",
-            sortable: true,
+            sortable: false,
         },
         {
             title: "Tipo",
             key: "TIPO",
-            sortable: true,
+            sortable: false,
             align: 'center'
         },
         {
             title: "Solicitante",
             key: "SOLICITANTE",
-            sortable: true,
+            sortable: false,
             align: 'center'
         },
         {
             title: "Status",
             key: "APROVADA",
-            sortable: true,
+            sortable: false,
             sortBy: "desc",
             align: 'center'
         },
@@ -145,33 +149,13 @@ export const actions = {
 
     getDadosImpresaoArquivo() {
 
-        let dadosToPrint = state.sugestaoCompraAlteracao.map((item) => {
-            // Formatar o campo 'APROVADA'
-            let status = '';
-            if (item.APROVADA === 'S') {
-                status = 'Aprovado';
-            } else if (item.APROVADA === 'N') {
-                status = 'Reprovado';
-            } else if (item.APROVADA === null) {
-                status = 'Aguardando';
-            }
-
-            // Formatar o campo 'TIPO'
-            let tipoSugestao = '';
-            if (item.TIPO === 'I') {
-                tipoSugestao = 'Compra';
-            } else if (item.TIPO === 'A') {
-                tipoSugestao = 'Alteração';
-            }
-
-            return {
-                DESCRICAO_PRODUTO: item.DESCRICAO_PRODUTO ?? '',
-                SUGESTAO: item.SUGESTAO ?? '',
-                TIPO: tipoSugestao,
-                SOLICITANTE: item.SOLICITANTE ?? '',
-                APROVADA: status
-            };
-        });
+        const dadosToPrint = filtrarSugestoes.value.map(item => ({
+            DESCRICAO_PRODUTO: item.DESCRICAO_PRODUTO ?? '----------',
+            SUGESTAO: item.SUGESTAO ?? '--------',
+            TIPO: item.TIPO === 'I' ? 'Compra' : 'Alteração',
+            SOLICITANTE: item.SOLICITANTE ?? '',
+            APROVADA: item.APROVADA === 'S' ? 'Aprovado' : item.APROVADA === 'N' ? 'Reprovado' : 'Aguardando'
+        }));
 
         let columns: iColumnPrint[] = [
             {

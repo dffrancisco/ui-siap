@@ -25,9 +25,11 @@ export interface iResponseSugestaoCompraAlteracao {
     }[]
 }
 
-export interface iAprovar {
+export interface iAprovarOuReprovar {
     id_produto_sugestao: number,
     aprovada: string
 }
 
-export interface iReprovar extends iAprovar { }
+export interface iAprovar extends iAprovarOuReprovar { }
+
+export interface iReprovar extends iAprovarOuReprovar { }

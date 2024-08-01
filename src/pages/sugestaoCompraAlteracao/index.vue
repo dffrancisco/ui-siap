@@ -83,6 +83,15 @@ nextTick(async () => {
         :row-props="actions.getClassCorLinha"
         @update:page="actions.updatePage"
       >
+        <template v-slot:item.DESCRICAO_PRODUTO="{ item }">
+          <template v-if="item.DESCRICAO_PRODUTO == null">
+            <span>-------</span>
+          </template>
+          <template v-else>
+            <span>{{ item.DESCRICAO_PRODUTO }}</span>
+          </template>
+        </template>
+
         <template v-slot:item.TIPO="{ item }">
           <template v-if="item.TIPO == 'I'">
             <span>Compra</span>
