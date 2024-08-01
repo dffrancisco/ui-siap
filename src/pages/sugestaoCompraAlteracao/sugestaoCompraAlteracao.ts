@@ -24,17 +24,14 @@ const mes = moment().month() + 1;
 export const filtrarSugestoes = computed(() => {
 
     return state.sugestaoCompraAlteracao.filter(item => {
-
         // Filtra por 'opcoes' (Compra, Alteração ou Todos)
         const opcao = state.opcoes === "Todos" ||
             (state.opcoes === "Compra" && item.TIPO === "I") ||
             (state.opcoes === "Alteração" && item.TIPO === "A");
-
         // Filtra por 'status' (Aprovado, Reprovado ou Todos)
         const status = state.status === "Todos" ||
             (state.status === "Aprovado" && item.APROVADA === "S") ||
             (state.status === "Reprovado" && item.APROVADA === "N");
-
         return opcao && status;
     });
 })
@@ -117,7 +114,6 @@ export const actions = {
         }
         actions.getSugestaoCompraAlteracao();
     },
-
 
     async getSugestaoCompraAlteracao() {
         try {
