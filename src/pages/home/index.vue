@@ -222,6 +222,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/sugestaoCompraAlteracao')"
+              >Sugestão Compra/Alteração
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="login.actions.confirmarSaida()"
             >
               Logout
