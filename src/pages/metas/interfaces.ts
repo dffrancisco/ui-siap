@@ -3,7 +3,7 @@ export interface iGetMetasTracadaParam {
     cnpj: string;
 }
 
-export interface iGetMetasTracadaResponse {
+export interface iGetMetasTracada {
     geral: number,
     mercado: number,
     montagem: number,
@@ -15,23 +15,20 @@ export interface iGetMetasTracadaResponse {
     mecanica_noite: number
 }
 
+export interface iGetMetasTracadaResponse extends iGetMetasTracada { }
 export interface iGetValoresParam {
     data: string,
-    noturno: "S" | "N"
+    noturno: "S" | "N" | string
 }
 
-export interface iVendas {
-    VALOR: number;
-    QTD: number;
-}
 
-export interface iGetValoresResponse {
-    vendas: iVendas,
+export interface iValores {
+    vendas: number,
     mecanica: number,
     mercado: number,
     ticketMedio: number,
     montagem: number,
-    vendasNoturna?: iVendas,
+    vendasNoturna?: number,
     mercadoNoturno?: number,
     montagemNoturna?: number,
     mecanicaNoturna?: number,
@@ -41,12 +38,12 @@ export interface iGetValoresResponse {
     mercadoDiurno?: number,
     montagemDiurna?: number,
     mecanicaDiurna?: number,
-    vendasAcu: iVendas,
+    vendasAcu: number,
     mercadoAcu: number,
     montagemAcu: number,
     mecanicaAcu: number,
     ticketMedioAcu: number,
-    vendasNoturnaAcu?: iVendas,
+    vendasNoturnaAcu?: number,
     mercadoNoturnoAcu?: number,
     montagemNoturnaAcu?: number,
     mecanicaNoturnaAcu?: number,
@@ -57,3 +54,15 @@ export interface iGetValoresResponse {
     montagemDiurnaAcu?: number,
     mecanicaDiurnaAcu?: number
 }
+
+export interface iDadosMetaCard {
+    nomeCard: string,
+    valorGeral: number,
+    valorDiaria: number,
+    valorAcumulado: number
+    porcentagem: number,
+    backgroudColor: string,
+    progressColor: string,
+}
+
+export interface iGetValoresResponse extends iValores { }

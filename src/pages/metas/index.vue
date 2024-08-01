@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { actions } from "./metas";
+import { actions, computeds, state } from "./metas";
+import utils from "@/ts/utils";
+import MetaCard from "./components/MetaCard.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -42,14 +44,18 @@ onMounted(async () => {
         </div>
         <div class="d-flex ga-4 align-center">
           <v-text-field
+            v-model="state.data"
             type="date"
             label="Data"
+            :clearable="false"
             style="width: fit-content"
+            @keydown.enter.prevent="actions.btnPesquisarMetas"
           ></v-text-field>
           <v-btn
             size="36"
             icon="mdi-magnify"
             color="primary"
+            @click="actions.btnPesquisarMetas"
           />
           <v-icon
             size="36"
@@ -62,69 +68,10 @@ onMounted(async () => {
       <div class="d-flex flex-column ga-2">
         <div class="text-h6"> Metas: </div>
         <div class="d-flex justify-space-between">
-          <v-card
-            v-for="i in 5"
-            class="d-flex flex-column pa-2 ga-2 justify-space-between"
-            width="170"
-            color="#DBEAFE"
-            height="100"
-          >
-            <span
-              class="text-body-1"
-              style="color: #374151"
-              >Meta Geral</span
-            >
-            <div class="d-flex justify-center">
-              <strong class="text-h6">2.000.000,00</strong>
-            </div>
-            <v-progress-linear
-              model-value="100"
-              height="20"
-              rounded
-              color="#60A5FA"
-              ><strong>100%</strong></v-progress-linear
-            >
-          </v-card>
-        </div>
-      </div>
-
-      <v-divider />
-
-      <div class="d-flex flex-column ga-2">
-        <div class="text-h6">Venda Diária:</div>
-        <div>
-          <v-card>
-            <v-table>
-              <thead>
-                <tr style="background-color: #e5e7eb">
-                  <th>&nbsp</th>
-                  <th> Venda Geral </th>
-                  <th> Venda Mercado </th>
-                  <th> Venda Montagem </th>
-                  <th> Venda Mecânica </th>
-                  <th> Ticket Médio </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="background-color: #f9fafb">
-                  <td>Diária</td>
-                  <td>R$ 1.000,00</td>
-                  <td>R$ 500,00</td>
-                  <td>R$ 300,00</td>
-                  <td>R$ 200,00</td>
-                  <td>R$ 250,00</td>
-                </tr>
-                <tr style="background-color: #f9fafb">
-                  <td>Acumulada</td>
-                  <td>R$ 1.200,00</td>
-                  <td>R$ 600,00</td>
-                  <td>R$ 400,00</td>
-                  <td>R$ 300,00</td>
-                  <td>R$ 300,00</td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-card>
+          <MetaCard
+            v-for="dados in computeds.dadosToMetaCardGeral.value"
+            :dadosToMetaCard="dados"
+          />
         </div>
       </div>
 
@@ -156,6 +103,17 @@ onMounted(async () => {
         </div>
       </div>
     </v-card>
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
     <div id="pnCodigoTela">metas</div>
   </v-container>
 </template>
