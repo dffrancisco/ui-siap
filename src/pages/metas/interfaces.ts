@@ -17,7 +17,7 @@ export interface iGetMetasTracadaResponse {
 
 export interface iGetValoresParam {
     data: string,
-    noturno: 'S' | 'N'
+    noturno: "S" | "N"
 }
 
 export interface iVendas {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iGetMetasTracadaParam, iGetMetasTracadaResponse, iGetValoresParam, iGetValoresResponse } from "../interfaces";
 
-const caminho = '/metas'
+const caminho = '/siap/metas'
 
 type iGetMetasTracadaFunction = (param: iGetMetasTracadaParam) => Promise<iGetMetasTracadaResponse[]>
 type iGetValoresFunction = (param: iGetValoresParam) => Promise<iGetValoresResponse[]>
