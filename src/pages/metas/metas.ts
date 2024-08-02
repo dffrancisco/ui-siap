@@ -94,9 +94,6 @@ export const actions = {
             porcentagem = 0
         }
 
-        console.log(porcentagem);
-
-
         return porcentagem;
     }
 }
@@ -125,35 +122,32 @@ export const computeds = {
     }),
 
     dadosToMetaCardGeral: computed(() => {
-        const {
-            geral, mercado, montagem, mecanica, ticket_medio
-        } = state.metasTracada
 
         const cardConfig: iDadosMetaCard[] = [
             {
-                nomeCard: 'Meta Geral', valorGeral: geral, backgroudColor: '#DBEAFE', progressColor: '#60A5FA',
-                porcentagem: actions.calcularPorcentagem(state.valores.vendasAcu, geral),
+                nomeCard: 'Meta Geral', valorGeral: state.metasTracada?.geral, backgroudColor: '#DBEAFE', progressColor: '#60A5FA',
+                porcentagem: actions.calcularPorcentagem(state.valores.vendasAcu, state.metasTracada?.geral),
                 valorDiaria: state.valores.vendas, valorAcumulado: state.valores.vendasAcu
 
             },
             {
-                nomeCard: 'Meta Mercado', valorGeral: mercado, backgroudColor: '#FCE7F3', progressColor: '#F472B6',
-                porcentagem: actions.calcularPorcentagem(state.valores.mercadoAcu, mercado),
+                nomeCard: 'Meta Mercado', valorGeral: state.metasTracada?.mercado, backgroudColor: '#FCE7F3', progressColor: '#F472B6',
+                porcentagem: actions.calcularPorcentagem(state.valores.mercadoAcu, state.metasTracada?.mercado),
                 valorAcumulado: state.valores.mercadoAcu, valorDiaria: state.valores.mercado
             },
             {
-                nomeCard: 'Meta Montagem', valorGeral: montagem, backgroudColor: '#D1FAE5', progressColor: '#34D399',
-                porcentagem: actions.calcularPorcentagem(state.valores.montagemAcu, montagem),
+                nomeCard: 'Meta Montagem', valorGeral: state.metasTracada?.montagem, backgroudColor: '#D1FAE5', progressColor: '#34D399',
+                porcentagem: actions.calcularPorcentagem(state.valores.montagemAcu, state.metasTracada?.montagem),
                 valorAcumulado: state.valores.montagemAcu, valorDiaria: state.valores.montagem
             },
             {
-                nomeCard: 'Meta Mecânica', valorGeral: mecanica, backgroudColor: '#FEF3C7', progressColor: '#FBBF24',
-                porcentagem: actions.calcularPorcentagem(state.valores.mecanicaAcu, mecanica),
+                nomeCard: 'Meta Mecânica', valorGeral: state.metasTracada?.mecanica, backgroudColor: '#FEF3C7', progressColor: '#FBBF24',
+                porcentagem: actions.calcularPorcentagem(state.valores.mecanicaAcu, state.metasTracada?.mecanica),
                 valorAcumulado: state.valores.mecanicaAcu, valorDiaria: state.valores.mecanica
             },
             {
-                nomeCard: 'Ticket Médio', valorGeral: ticket_medio, backgroudColor: '#FEE2E2', progressColor: '#F87171',
-                porcentagem: actions.calcularPorcentagem(state.valores.ticketMedioAcu, ticket_medio),
+                nomeCard: 'Ticket Médio', valorGeral: state.metasTracada?.ticket_medio, backgroudColor: '#FEE2E2', progressColor: '#F87171',
+                porcentagem: actions.calcularPorcentagem(state.valores.ticketMedioAcu, state.metasTracada?.ticket_medio),
                 valorAcumulado: state.valores.ticketMedioAcu, valorDiaria: state.valores.ticketMedio
             }
         ]
@@ -162,6 +156,11 @@ export const computeds = {
     }),
 
     dadosToMetaCardDiurna: computed(() => {
+
+        if (!computeds.lojaIsNoturna.value) {
+            return
+        }
+
         const {
             geral, geral_noite, mercado, mercado_noite, montagem, montagem_noite, mecanica, mecanica_noite
         } = state.metasTracada
@@ -200,6 +199,11 @@ export const computeds = {
     }),
 
     dadosToMetaCardNoturna: computed(() => {
+
+        if (!computeds.lojaIsNoturna.value) {
+            return
+        }
+
         const {
             geral_noite, mercado_noite, montagem_noite, mecanica_noite
         } = state.metasTracada

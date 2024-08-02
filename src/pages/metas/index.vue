@@ -13,7 +13,7 @@ import MetaCard from "./components/MetaCard.vue";
             v-model="state.radioAlternarMetas"
             class="ml-4"
             hide-details
-            v-if="state.metasTracada.geral_noite > 0"
+            v-if="state.metasTracada?.geral_noite > 0"
           >
             <v-row>
               <v-col cols="2">
