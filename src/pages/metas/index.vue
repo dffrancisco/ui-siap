@@ -56,11 +56,13 @@ onMounted(async () => {
             color="primary"
             @click="actions.btnPesquisarMetas"
           />
-          <v-icon
+          <v-btn
             size="36"
             color="primary"
-            >mdi-eye</v-icon
-          >
+            :icon="state.mostrarValores ? 'mdi-eye mdi-24px' : 'mdi-eye-off mdi-24px'"
+            :title="state.mostrarValores ? 'Esconder valores' : 'Mostrar valores'"
+            @click="state.mostrarValores = !state.mostrarValores"
+          />
         </div>
       </div>
 
@@ -70,6 +72,7 @@ onMounted(async () => {
           <MetaCard
             v-for="dados in computeds.dadosToMetaCardGeral.value"
             :dadosToMetaCard="dados"
+            :mostrarValores="state.mostrarValores"
           />
         </div>
       </div>

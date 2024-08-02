@@ -8,7 +8,8 @@ export const state = reactive({
     metasTracada: <iGetMetasTracada>{},
     valores: <iValores>{},
     data: moment().format('YYYY-MM-DD'),
-    loading: false
+    loading: false,
+    mostrarValores: true,
 })
 
 export const actions = {
