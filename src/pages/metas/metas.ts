@@ -1,6 +1,5 @@
 import { computed, reactive } from "vue";
 import metasService from './services/metas.service'
-import globalState from '../../store/globalState'
 import Swal from "sweetalert2";
 import { iDadosMetaCard, iGetMetasTracada, iGetMetasTracadaParam, iGetValoresParam, iValores } from "./interfaces";
 import moment from "moment";
@@ -48,7 +47,6 @@ export const actions = {
 
             let param: iGetMetasTracadaParam = {
                 data: state.data,
-                cnpj: globalState.empresa.CGC_EMPRESA
             }
 
             const data = await metasService.getMetasTracada(param)
@@ -91,9 +89,12 @@ export const actions = {
     calcularPorcentagem(venda: number, meta: number) {
         let porcentagem = Number(((venda / meta) * 100).toFixed(2))
 
-        if (isNaN(porcentagem)) {
+        if (isNaN(porcentagem) || !isFinite(porcentagem)) {
             porcentagem = 0
         }
+
+        console.log(porcentagem);
+
 
         return porcentagem;
     }

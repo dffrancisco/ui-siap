@@ -11,42 +11,56 @@ const props = defineProps({
 </script>
 
 <template>
-  <v-card
-    class="d-flex flex-column pa-2 ga-2 justify-space-between"
-    width="170"
-    :color="props.dadosToMetaCard.backgroudColor"
-  >
-    <span
-      class="text-body-1"
-      style="color: #374151"
-      >{{ props.dadosToMetaCard.nomeCard }}:</span
+  <div class="d-flex flex-column ga-4 justify-space-between">
+    <v-card
+      width="170"
+      class="pa-2"
+      :color="props.dadosToMetaCard.backgroudColor"
     >
-    <div class="d-flex justify-center">
-      <strong class="text-h6">{{ utils.formatValor(props.dadosToMetaCard.valorGeral) }}</strong>
+      <span
+        class="text-body-1"
+        style="color: #374151"
+        >{{ props.dadosToMetaCard.nomeCard }}:</span
+      >
+      <div class="d-flex justify-center">
+        <strong class="text-h6">{{ utils.formatValor(props.dadosToMetaCard.valorGeral) }}</strong>
+      </div>
+    </v-card>
+    <v-card
+      class="pa-2"
+      :color="props.dadosToMetaCard.backgroudColor"
+    >
+      <span
+        class="text-body-1"
+        style="color: #374151"
+        >Acumulado:</span
+      >
+      <div class="d-flex justify-center">
+        <strong class="text-h6">{{ utils.formatValor(props.dadosToMetaCard.valorAcumulado) }}</strong>
+      </div>
+    </v-card>
+    <v-card
+      class="pa-2"
+      :color="props.dadosToMetaCard.backgroudColor"
+    >
+      <span
+        class="text-body-1"
+        style="color: #374151"
+        >Diária:</span
+      >
+      <div class="d-flex justify-center">
+        <strong class="text-h6">{{ utils.formatValor(props.dadosToMetaCard.valorDiaria) }}</strong>
+      </div>
+    </v-card>
+    <div class="pa-2">
+      <v-progress-linear
+        :model-value="props.dadosToMetaCard.porcentagem"
+        height="20"
+        rounded
+        :color="props.dadosToMetaCard.progressColor"
+      >
+        <strong>{{ props.dadosToMetaCard.porcentagem }}%</strong>
+      </v-progress-linear>
     </div>
-    <span
-      class="text-body-1"
-      style="color: #374151"
-      >Acumulado:</span
-    >
-    <div class="d-flex justify-center">
-      <strong class="text-h6">{{ utils.formatValor(props.dadosToMetaCard.valorAcumulado) }}</strong>
-    </div>
-    <span
-      class="text-body-1"
-      style="color: #374151"
-      >Diária:</span
-    >
-    <div class="d-flex justify-center">
-      <strong class="text-h6">{{ utils.formatValor(props.dadosToMetaCard.valorDiaria) }}</strong>
-    </div>
-    <v-progress-linear
-      :model-value="props.dadosToMetaCard.porcentagem"
-      height="20"
-      rounded
-      :color="props.dadosToMetaCard.progressColor"
-    >
-      <strong>{{ props.dadosToMetaCard.porcentagem }}%</strong>
-    </v-progress-linear>
-  </v-card>
+  </div>
 </template>

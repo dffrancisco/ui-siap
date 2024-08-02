@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { actions, computeds, state } from "./metas";
-import utils from "@/ts/utils";
 import MetaCard from "./components/MetaCard.vue";
 
 onMounted(async () => {
@@ -18,7 +17,7 @@ onMounted(async () => {
           <v-radio-group
             class="ml-4"
             hide-details
-            v-if="1 + 1 == 2"
+            v-if="state.metasTracada.geral_noite > 0"
           >
             <v-row>
               <v-col cols="2">

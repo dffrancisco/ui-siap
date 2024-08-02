@@ -1,6 +1,5 @@
 export interface iGetMetasTracadaParam {
     data: string;
-    cnpj: string;
 }
 
 export interface iGetMetasTracada {
@@ -18,7 +17,7 @@ export interface iGetMetasTracada {
 export interface iGetMetasTracadaResponse extends iGetMetasTracada { }
 export interface iGetValoresParam {
     data: string,
-    noturno: "S" | "N" | string
+    noturno: "S" | "N"
 }
 
 
