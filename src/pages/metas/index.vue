@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
 import { actions, computeds, META_DIURNA, META_GERAL, META_NOTURNA, state } from "./metas";
 import MetaCard from "./components/MetaCard.vue";
-
-onMounted(async () => {
-  await actions.init();
-});
 </script>
 
 <template>
