@@ -57,6 +57,24 @@ const defaultConfig = {
     clearIcon: "mdi-close-circle",
     hideDetails: true
   },
+  VDataTable: {
+    VSelect: {
+      density: 'compact',
+      variant: 'outlined',
+      color: 'cyan-lighten-1',
+      clearable: false,
+      hideDetails: true
+    },
+  },
+  VDataTableServer: {
+    VSelect: {
+      density: 'compact',
+      variant: 'outlined',
+      color: 'cyan-lighten-1',
+      clearable: false,
+      hideDetails: true
+    },
+  }
 }
 
 
