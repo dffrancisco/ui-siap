@@ -1,8 +1,12 @@
-import { computed, reactive } from "vue";
+import { computed, reactive, registerRuntimeCompiler } from "vue";
 import metasService from './services/metas.service'
 import Swal from "sweetalert2";
 import { iDadosMetaCard, iGetMetasTracada, iGetMetasTracadaParam, iGetValoresParam, iValores } from "./interfaces";
 import moment from "moment";
+
+export const META_GERAL = 0
+export const META_DIURNA = 1
+export const META_NOTURNA = 2
 
 export const state = reactive({
     metasTracada: <iGetMetasTracada>{},
@@ -10,6 +14,7 @@ export const state = reactive({
     data: moment().format('YYYY-MM-DD'),
     loading: false,
     mostrarValores: true,
+    radioAlternarMetas: META_GERAL
 })
 
 export const actions = {
@@ -112,7 +117,90 @@ export const computeds = {
         return lojaNoturna;
     }),
 
+    dadosToMetaCard: computed(() => {
+        if (state.radioAlternarMetas == META_DIURNA) {
+            return computeds.dadosToMetaCardDiurna.value
+        }
+
+        return computeds.dadosToMetaCardGeral.value
+    }),
+
     dadosToMetaCardGeral: computed(() => {
+        const {
+            geral, mercado, montagem, mecanica, ticket_medio
+        } = state.metasTracada
+
+        const cardConfig: iDadosMetaCard[] = [
+            {
+                nomeCard: 'Meta Geral', valorGeral: geral, backgroudColor: '#DBEAFE', progressColor: '#60A5FA',
+                porcentagem: actions.calcularPorcentagem(state.valores.vendasAcu, geral),
+                valorDiaria: state.valores.vendas, valorAcumulado: state.valores.vendasAcu
+
+            },
+            {
+                nomeCard: 'Meta Mercado', valorGeral: mercado, backgroudColor: '#FCE7F3', progressColor: '#F472B6',
+                porcentagem: actions.calcularPorcentagem(state.valores.mercadoAcu, mercado),
+                valorAcumulado: state.valores.mercadoAcu, valorDiaria: state.valores.mercado
+            },
+            {
+                nomeCard: 'Meta Montagem', valorGeral: montagem, backgroudColor: '#D1FAE5', progressColor: '#34D399',
+                porcentagem: actions.calcularPorcentagem(state.valores.montagemAcu, montagem),
+                valorAcumulado: state.valores.montagemAcu, valorDiaria: state.valores.montagem
+            },
+            {
+                nomeCard: 'Meta Mecânica', valorGeral: mecanica, backgroudColor: '#FEF3C7', progressColor: '#FBBF24',
+                porcentagem: actions.calcularPorcentagem(state.valores.mecanicaAcu, mecanica),
+                valorAcumulado: state.valores.mecanicaAcu, valorDiaria: state.valores.mecanica
+            },
+            {
+                nomeCard: 'Ticket Médio', valorGeral: ticket_medio, backgroudColor: '#FEE2E2', progressColor: '#F87171',
+                porcentagem: actions.calcularPorcentagem(state.valores.ticketMedioAcu, ticket_medio),
+                valorAcumulado: state.valores.ticketMedioAcu, valorDiaria: state.valores.ticketMedio
+            }
+        ]
+
+        return cardConfig
+    }),
+
+    dadosToMetaCardDiurna: computed(() => {
+        const {
+            geral, geral_noite, mercado, mercado_noite, montagem, montagem_noite, mecanica, mecanica_noite, ticket_medio
+        } = state.metasTracada
+
+
+        let geral_diurno = geral - geral_noite
+        let mercado_diurno = mercado - mercado_noite
+        let montagem_diurno = montagem - montagem_noite
+        let mecanica_diurno = mecanica - mecanica_noite
+
+        const cardConfig: iDadosMetaCard[] = [
+            {
+                nomeCard: 'Meta Geral', valorGeral: geral_diurno, backgroudColor: '#DBEAFE', progressColor: '#60A5FA',
+                porcentagem: actions.calcularPorcentagem(state.valores.vendasDiurnaAcu, geral_diurno),
+                valorDiaria: state.valores.vendasDiurna, valorAcumulado: state.valores.vendasDiurnaAcu
+
+            },
+            {
+                nomeCard: 'Meta Mercado', valorGeral: mercado_diurno, backgroudColor: '#FCE7F3', progressColor: '#F472B6',
+                porcentagem: actions.calcularPorcentagem(state.valores.mercadoDiurnoAcu, mercado_diurno),
+                valorAcumulado: state.valores.mercadoDiurnoAcu, valorDiaria: state.valores.mercadoDiurno
+            },
+            {
+                nomeCard: 'Meta Montagem', valorGeral: montagem_diurno, backgroudColor: '#D1FAE5', progressColor: '#34D399',
+                porcentagem: actions.calcularPorcentagem(state.valores.montagemDiurnaAcu, montagem_diurno),
+                valorAcumulado: state.valores.montagemDiurnaAcu, valorDiaria: state.valores.montagemDiurna
+            },
+            {
+                nomeCard: 'Meta Mecânica', valorGeral: mecanica_diurno, backgroudColor: '#FEF3C7', progressColor: '#FBBF24',
+                porcentagem: actions.calcularPorcentagem(state.valores.mecanicaDiurnaAcu, mecanica_diurno),
+                valorAcumulado: state.valores.mecanicaDiurnaAcu, valorDiaria: state.valores.mecanicaDiurna
+            },
+        ]
+
+        return cardConfig
+    }),
+
+    dadosToMetaCardNoturna: computed(() => {
         const {
             geral, mercado, montagem, mecanica, ticket_medio
         } = state.metasTracada

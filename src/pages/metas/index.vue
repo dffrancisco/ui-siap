@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { actions, computeds, state } from "./metas";
+import { actions, computeds, META_DIURNA, META_GERAL, META_NOTURNA, state } from "./metas";
 import MetaCard from "./components/MetaCard.vue";
 
 onMounted(async () => {
@@ -15,6 +15,7 @@ onMounted(async () => {
       <div class="d-flex justify-space-between align-center flex-grow-1">
         <div class="d-flex flex-grow-1">
           <v-radio-group
+            v-model="state.radioAlternarMetas"
             class="ml-4"
             hide-details
             v-if="state.metasTracada.geral_noite > 0"
@@ -23,19 +24,19 @@ onMounted(async () => {
               <v-col cols="2">
                 <v-radio
                   label="Geral"
-                  value="0"
+                  :value="META_GERAL"
                 />
               </v-col>
               <v-col cols="2">
                 <v-radio
                   label="Diurna"
-                  value="1"
+                  :value="META_DIURNA"
                 />
               </v-col>
               <v-col>
                 <v-radio
                   label="Noturna"
-                  value="2"
+                  :value="META_NOTURNA"
                 />
               </v-col>
             </v-row>
@@ -67,13 +68,33 @@ onMounted(async () => {
       </div>
 
       <div class="d-flex flex-column ga-2">
-        <div class="text-h6"> Metas: </div>
-        <div class="d-flex justify-space-between">
-          <MetaCard
-            v-for="dados in computeds.dadosToMetaCardGeral.value"
-            :dadosToMetaCard="dados"
-            :mostrarValores="state.mostrarValores"
-          />
+        <div
+          v-if="state.radioAlternarMetas == META_GERAL"
+          class="text-h6"
+        >
+          Metas:
+        </div>
+        <div
+          v-if="state.radioAlternarMetas == META_DIURNA"
+          class="text-h6"
+        >
+          Metas Diurna:
+        </div>
+        <div
+          v-if="state.radioAlternarMetas == META_NOTURNA"
+          class="text-h6"
+        >
+          Metas Noturna:
+        </div>
+        <div>
+          <v-row>
+            <v-col v-for="dados in computeds.dadosToMetaCard.value">
+              <MetaCard
+                :dadosToMetaCard="dados"
+                :mostrarValores="state.mostrarValores"
+              />
+            </v-col>
+          </v-row>
         </div>
       </div>
 

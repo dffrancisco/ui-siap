@@ -17,7 +17,6 @@ const props = defineProps({
 <template>
   <div class="d-flex flex-column ga-4">
     <v-card
-      width="170"
       class="pa-2"
       :color="props.dadosToMetaCard.backgroudColor"
     >
