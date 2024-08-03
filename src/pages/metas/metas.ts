@@ -55,25 +55,64 @@ export const actions = {
         actions.calcularPrevisao()
     },
 
+    salvarMetasNoCache(key: string, metas: iMetasTracada) {
+        const timestamp = moment().toISOString();
+        localStorage.setItem(key, JSON.stringify({ timestamp, metas }));
+    },
+
+    getMetasCache(key: string, tempo: number) {
+        const cached = localStorage.getItem(key);
+
+        if (!cached) return null;
+
+        const { timestamp, metas } = JSON.parse(cached);
+        const tempoCache = moment(timestamp);
+        const agora = moment();
+        const diff = agora.diff(tempoCache, 'milliseconds'); // Calcula a diferença em milissegundos
+
+        // Verifica se o cache ainda é válido
+        if (diff > tempo) {
+            localStorage.removeItem(key);
+            return null;
+        }
+
+        return metas;
+    },
+
     async getMetasTracadas() {
         try {
-            state.loading = true
+            state.loading = true;
 
-            let param: iGetMetasTracadasParam = {
-                data: state.data,
+            // Define a chave do cache com base no mês da meta
+            const mes = moment(state.data).format('YYYY-MM');
+            const cacheKey = `metasTracadas_${mes}`;
+
+            // Tenta obter dados do cache
+            const cachedData = actions.getMetasCache(cacheKey, 12 * 60 * 60 * 1000); // 12 horas em milissegundos
+
+            if (cachedData) {
+                state.metasTracada = cachedData;
+                return;
             }
 
-            const data = await metasService.getMetasTracadas(param)
+            // Se não houver cache faz a requisição
+            let param = {
+                data: state.data,
+            };
 
+            const data = await metasService.getMetasTracadas(param);
             state.metasTracada = data[0];
+
+            // Salva os dados no cache
+            actions.salvarMetasNoCache(cacheKey, state.metasTracada);
 
         } catch (erro) {
             Swal.fire({
                 icon: "error",
                 text: "Ocorreu um erro ao buscar as metas traçadas."
-            })
+            });
         } finally {
-            state.loading = false
+            state.loading = false;
         }
     },
 
