@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { mesesToSelect } from "@/constants/constants";
-import { actions, state, dadosFormatToPrint } from "./vendaPorMarca";
+import { actions, state, meses } from "./vendaPorMarca";
 import { nextTick } from "vue";
-import printJS from "print-js";
 
 nextTick(async () => {
   actions.init();
@@ -18,7 +16,9 @@ nextTick(async () => {
             v-model="state.mes"
             label="Mês"
             autocomplete="off"
-            :items="mesesToSelect"
+            :items="meses"
+            item-value="value"
+            item-title="title"
             name="MES"
             id="MES"
             @keydown.enter="state.edtAno.focus()"
@@ -45,22 +45,7 @@ nextTick(async () => {
         <div class="btn_print_container">
           <v-btn
             color="primary"
-            @click="
-              printJS({
-                printable: dadosFormatToPrint,
-                properties: [
-                  { field: 'DESCRICAO', displayName: 'Marcas' },
-                  { field: 'VALOR', displayName: 'Valor (R$)' },
-                  { field: 'QTD', displayName: 'Qtd' },
-                  { field: 'QTD_MEDIA_ITENS', displayName: 'Qtd. Média Itens' },
-                  { field: 'TICKET_MEDIO', displayName: 'Ticket Médio (R$)' },
-                  { field: 'PERCENTUAL', displayName: 'Percentual (%)' },
-                ],
-                type: 'json',
-                gridHeaderStyle: 'border: 1px solid #000000',
-                gridStyle: 'text-align: center; border: 1px solid #000000',
-              })
-            "
+            @click="actions.onClickImprimir"
             :disabled="state.dbVendasPorMarca.length == 0 ? true : false"
           >
             <v-icon class="mr-2">mdi-printer </v-icon>Imprimir
@@ -102,6 +87,7 @@ nextTick(async () => {
   display: flex;
   flex-direction: row;
   gap: 10px;
+  width: 450px;
   align-items: center;
 }
 
