@@ -126,7 +126,7 @@ export const actions = {
 
         const qtdDiasUteis = actions.contarDiasUteis(inicioMes, fimMes);
         const qtdUteisCorridos = actions.contarDiasUteis(inicioMes, dataAtual);
-        const qtdDiasParaFimMesUteis = actions.contarDiasUteis(dataAtual.clone().add(1, 'day'), fimMes);
+        const qtdDiasParaFimMesUteis = actions.contarDiasUteis(dataAtual, fimMes);
 
         return {
             qtdDiasUteis,
@@ -145,7 +145,13 @@ export const actions = {
 
         // Calcular o valor desejado até o fim do mês
         let diasParaFimMesUteis = diasUteis.qtdDiasParaFimMesUteis;
+
+        if (diasParaFimMesUteis == 0) {
+            diasParaFimMesUteis = 1
+        }
+
         let feriadosParaFimMes = state.feriados.qtdFeriadosParaFimMes;
+
         let desejado = (state.metasTracada.geral - (state.valores.vendasAcu - state.valores.vendas)) / (diasParaFimMesUteis - feriadosParaFimMes);
 
         // Calcular a previsão de vendas para o restante do mês
