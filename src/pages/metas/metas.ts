@@ -1,7 +1,7 @@
 import { computed, reactive } from "vue";
 import metasService from './services/metas.service'
 import Swal from "sweetalert2";
-import { iDadosMetaCard, iMetasTracada, iGetMetasTracadasEFeriadosParam, iGetValoresParam, iValores, iFeriados, iPrevisao } from "./interfaces";
+import { iDadosMetaCard, iMetasTracada, iGetMetasTracadasParam, iGetValoresParam, iValores, iFeriados, iPrevisao, iGetFeriadosParam } from "./interfaces";
 import moment, { Moment } from "moment";
 
 export const META_GERAL = 0
@@ -31,7 +31,7 @@ export const actions = {
             return;
         }
 
-        await actions.getMetasTracadasEFeriados()
+        await actions.getMetasTracadas()
 
         if (!state.metasTracada) {
             Swal.fire({
@@ -46,26 +46,49 @@ export const actions = {
         }
 
         await actions.getValores()
+        await actions.getFeriados()
+
         actions.calcularPrevisao()
     },
 
-    async getMetasTracadasEFeriados() {
+    async getMetasTracadas() {
         try {
             state.loading = true
 
-            let param: iGetMetasTracadasEFeriadosParam = {
+            let param: iGetMetasTracadasParam = {
                 data: state.data,
             }
 
-            const data = await metasService.getMetasTracadasEFeriados(param)
+            const data = await metasService.getMetasTracadas(param)
 
-            state.metasTracada = data.metasTracada;
-            state.feriados = data.feriados;
+            state.metasTracada = data[0];
 
         } catch (erro) {
             Swal.fire({
                 icon: "error",
                 text: "Ocorreu um erro ao buscar as metas traçadas."
+            })
+        } finally {
+            state.loading = false
+        }
+    },
+
+    async getFeriados() {
+        try {
+            state.loading = true
+
+            let param: iGetFeriadosParam = {
+                data: state.data
+            }
+
+            const data = await metasService.getFeriados(param)
+
+            state.feriados = data;
+
+        } catch (erro) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar os feriados."
             })
         } finally {
             state.loading = false

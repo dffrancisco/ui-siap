@@ -1,4 +1,8 @@
-export interface iGetMetasTracadasEFeriadosParam {
+export interface iGetMetasTracadasParam {
+    data: string;
+}
+
+export interface iGetFeriadosParam {
     data: string;
 }
 
@@ -20,10 +24,8 @@ export interface iFeriados {
     qtdFeriadosParaFimMes: number
 }
 
-export interface iGetMetasEFeriadosResponse {
-    metasTracada: iMetasTracada,
-    feriados: iFeriados
-}
+export interface iGetMetasTracadasResponse extends iMetasTracada { }
+export interface iGetFeriadosResponse extends iFeriados { }
 
 export interface iGetValoresParam {
     data: string,
