@@ -1,14 +1,14 @@
 import axios from "axios";
-import { iGetMetasTracadaParam, iGetMetasTracadaResponse, iGetValoresParam, iGetValoresResponse } from "../interfaces";
+import { iGetMetasTracadasEFeriadosParam, iGetMetasEFeriadosResponse, iGetValoresParam, iGetValoresResponse } from "../interfaces";
 
 const caminho = '/siap/metas'
 
-type iGetMetasTracadaFunction = (param: iGetMetasTracadaParam) => Promise<iGetMetasTracadaResponse[]>
+type iGetMetasTracadasEFeriadosFunction = (param: iGetMetasTracadasEFeriadosParam) => Promise<iGetMetasEFeriadosResponse>
 type iGetValoresFunction = (param: iGetValoresParam) => Promise<iGetValoresResponse>
 
-const getMetasTracada: iGetMetasTracadaFunction = async (param) => {
+const getMetasTracadasEFeriados: iGetMetasTracadasEFeriadosFunction = async (param) => {
     let { data } = await axios.post(caminho, {
-        call: "getMetasTracada",
+        call: "getMetasTracadaEFeriados",
         param
     })
 
@@ -25,6 +25,6 @@ const getValores: iGetValoresFunction = async (param) => {
 }
 
 export default {
-    getMetasTracada,
+    getMetasTracadasEFeriados,
     getValores,
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { actions, computeds, META_DIURNA, META_GERAL, META_NOTURNA, state } from "./metas";
 import MetaCard from "./components/MetaCard.vue";
+import utils from "@/ts/utils";
 </script>
 
 <template>
@@ -93,9 +94,12 @@ import MetaCard from "./components/MetaCard.vue";
         </div>
       </div>
 
-      <v-divider />
+      <div
+        class="d-flex flex-column ga-2"
+        v-if="state.mostrarValores && state.radioAlternarMetas == META_GERAL"
+      >
+        <v-divider />
 
-      <div class="d-flex flex-column ga-2">
         <div class="text-h6">Previsão:</div>
         <div>
           <v-card>
@@ -104,16 +108,18 @@ import MetaCard from "./components/MetaCard.vue";
                 <tr style="background-color: #e5e7eb">
                   <th> Média Venda </th>
                   <th> Desejado </th>
-                  <th> Privisão % </th>
+                  <th> Previsão % </th>
                   <th> Previsão $ </th>
                 </tr>
               </thead>
               <tbody>
                 <tr style="background-color: #f9fafb">
-                  <td style="border-right: 1px #e5e7eb solid">R$ 1.000,00</td>
-                  <td>R$ 500,00</td>
-                  <td>R$ 300,00</td>
-                  <td>R$ 200,00</td>
+                  <td style="border-right: 1px #e5e7eb solid">{{
+                    utils.formatValor(state.previsao.mediaVenda)
+                  }}</td>
+                  <td>{{ utils.formatValor(state.previsao.desejado) }}</td>
+                  <td>{{ state.previsao.previsaoPorcentagem || "0" }}%</td>
+                  <td>{{ utils.formatValor(state.previsao.previsaoValor) }}</td>
                 </tr>
               </tbody>
             </v-table>

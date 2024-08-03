@@ -1,8 +1,8 @@
-export interface iGetMetasTracadaParam {
+export interface iGetMetasTracadasEFeriadosParam {
     data: string;
 }
 
-export interface iGetMetasTracada {
+export interface iMetasTracada {
     geral: number,
     mercado: number,
     montagem: number,
@@ -14,7 +14,17 @@ export interface iGetMetasTracada {
     mecanica_noite: number
 }
 
-export interface iGetMetasTracadaResponse extends iGetMetasTracada { }
+export interface iFeriados {
+    qtdFeriadosCorridos: number,
+    qtdFeriadosDoMes: number,
+    qtdFeriadosParaFimMes: number
+}
+
+export interface iGetMetasEFeriadosResponse {
+    metasTracada: iMetasTracada,
+    feriados: iFeriados
+}
+
 export interface iGetValoresParam {
     data: string,
     noturno: "S" | "N"
@@ -62,6 +72,13 @@ export interface iDadosMetaCard {
     porcentagem: number,
     backgroudColor: string,
     progressColor: string,
+}
+
+export interface iPrevisao {
+    mediaVenda: number,
+    desejado: number,
+    previsaoValor: number,
+    previsaoPorcentagem: string
 }
 
 export interface iGetValoresResponse extends iValores { }

@@ -1,20 +1,22 @@
 import { computed, reactive } from "vue";
 import metasService from './services/metas.service'
 import Swal from "sweetalert2";
-import { iDadosMetaCard, iGetMetasTracada, iGetMetasTracadaParam, iGetValoresParam, iValores } from "./interfaces";
-import moment from "moment";
+import { iDadosMetaCard, iMetasTracada, iGetMetasTracadasEFeriadosParam, iGetValoresParam, iValores, iFeriados, iPrevisao } from "./interfaces";
+import moment, { Moment } from "moment";
 
 export const META_GERAL = 0
 export const META_DIURNA = 1
 export const META_NOTURNA = 2
 
 export const state = reactive({
-    metasTracada: <iGetMetasTracada>{},
+    metasTracada: <iMetasTracada>{},
     valores: <iValores>{},
     data: moment().format('YYYY-MM-DD'),
     loading: false,
     mostrarValores: true,
-    radioAlternarMetas: META_GERAL
+    radioAlternarMetas: META_GERAL,
+    feriados: <iFeriados>{},
+    previsao: <iPrevisao>{}
 })
 
 export const actions = {
@@ -29,30 +31,36 @@ export const actions = {
             return;
         }
 
-        await actions.getMetasTracadas()
+        await actions.getMetasTracadasEFeriados()
 
         if (!state.metasTracada) {
             Swal.fire({
                 icon: "info",
                 text: "Nenhuma meta encontrada para a data informada."
             })
+
+            state.valores = {} as iValores
+            state.previsao = {} as iPrevisao
+
             return;
         }
 
         await actions.getValores()
+        actions.calcularPrevisao()
     },
 
-    async getMetasTracadas() {
+    async getMetasTracadasEFeriados() {
         try {
             state.loading = true
 
-            let param: iGetMetasTracadaParam = {
+            let param: iGetMetasTracadasEFeriadosParam = {
                 data: state.data,
             }
 
-            const data = await metasService.getMetasTracada(param)
+            const data = await metasService.getMetasTracadasEFeriados(param)
 
-            state.metasTracada = data[0];
+            state.metasTracada = data.metasTracada;
+            state.feriados = data.feriados;
 
         } catch (erro) {
             Swal.fire({
@@ -95,7 +103,67 @@ export const actions = {
         }
 
         return porcentagem;
+    },
+
+    contarDiasUteis(dataInicio: Moment, dataFim: Moment) {
+        let contador = 0;
+        const diffDias = dataFim.diff(dataInicio, 'days');
+
+        for (let i = 0; i <= diffDias; i++) {
+            const diaAtual = dataInicio.clone().add(i, 'days');
+            if (diaAtual.isoWeekday() !== 7) { // isoWeekday() retorna 7 para domingo
+                contador++;
+            }
+        }
+
+        return contador;
+    },
+
+    calcularDiasUteis(data: string) {
+        const dataAtual = moment(data);
+        const inicioMes = dataAtual.clone().startOf('month');
+        const fimMes = dataAtual.clone().endOf('month');
+
+        const qtdDiasUteis = actions.contarDiasUteis(inicioMes, fimMes);
+        const qtdUteisCorridos = actions.contarDiasUteis(inicioMes, dataAtual);
+        const qtdDiasParaFimMesUteis = actions.contarDiasUteis(dataAtual.clone().add(1, 'day'), fimMes);
+
+        return {
+            qtdDiasUteis,
+            qtdUteisCorridos,
+            qtdDiasParaFimMesUteis
+        };
+    },
+
+    calcularPrevisao() {
+        let diasUteis = actions.calcularDiasUteis(state.data);
+
+        // Calcular a média de vendas diária
+        let diasUteisCorridos = diasUteis.qtdUteisCorridos;
+        let feriadosCorridos = state.feriados.qtdFeriadosCorridos;
+        let mediaVenda = (state.valores.vendasAcu - state.valores.vendas) / (diasUteisCorridos - feriadosCorridos);
+
+        // Calcular o valor desejado até o fim do mês
+        let diasParaFimMesUteis = diasUteis.qtdDiasParaFimMesUteis;
+        let feriadosParaFimMes = state.feriados.qtdFeriadosParaFimMes;
+        let desejado = (state.metasTracada.geral - (state.valores.vendasAcu - state.valores.vendas)) / (diasParaFimMesUteis - feriadosParaFimMes);
+
+        // Calcular a previsão de vendas para o restante do mês
+        let diasUteisDoMes = diasUteis.qtdDiasUteis;
+        let feriadosDoMes = state.feriados.qtdFeriadosDoMes;
+        let previsaoValor = mediaVenda * (diasUteisDoMes - feriadosDoMes);
+
+        // Calcular a porcentagem de previsão em relação à meta
+        let previsaoPorcentagem = ((previsaoValor / state.metasTracada.geral) * 100).toFixed(2);
+
+        state.previsao = {
+            mediaVenda,
+            desejado,
+            previsaoValor,
+            previsaoPorcentagem
+        };
     }
+
 }
 
 export const computeds = {
@@ -233,5 +301,5 @@ export const computeds = {
         ]
 
         return cardConfig
-    })
+    }),
 }
