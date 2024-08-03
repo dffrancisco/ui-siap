@@ -1,7 +1,11 @@
 import { computed, reactive } from "vue";
 import metasService from './services/metas.service'
 import Swal from "sweetalert2";
-import { iDadosMetaCard, iMetasTracada, iGetMetasTracadasParam, iGetValoresParam, iValores, iFeriados, iPrevisao, iGetFeriadosParam } from "./interfaces";
+import {
+    iDadosMetaCard, iMetasTracada, iGetMetasTracadasParam, iGetValoresParam, iValores, iFeriados,
+    iPrevisao, iGetFeriadosParam
+} from "./interfaces";
+
 import moment, { Moment } from "moment";
 
 export const META_GERAL = 0
