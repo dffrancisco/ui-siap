@@ -96,7 +96,7 @@ export const actions = {
             }
 
             // Se não houver cache faz a requisição
-            let param = {
+            let param: iGetMetasTracadasParam = {
                 data: state.data,
             };
 
