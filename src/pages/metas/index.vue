@@ -14,7 +14,7 @@ import utils from "@/ts/utils";
             v-model="state.radioAlternarMetas"
             class="ml-4"
             hide-details
-            v-if="state.metasTracada?.geral_noite > 0"
+            v-if="computeds.lojaIsNoturna.value == 'S'"
           >
             <v-row>
               <v-col cols="2">
