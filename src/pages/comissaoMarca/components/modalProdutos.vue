@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
+import { reactive, watch } from "vue";
 import { iProdutos, iProdutosEscolhidos } from "../interfaces";
 
 const props = defineProps<{
   produtos: iProdutos[];
   produtosEditar: iProdutosEscolhidos | null;
+  marcaEscolhida: number;
   modalOpened: boolean;
 }>();
 
@@ -20,13 +21,14 @@ const state = reactive({
   ],
 });
 
-const filtrarProdutos = computed(() => {
+const filtrarProdutos = () => {
   if (!state.search) return props.produtos;
 
-  return props.produtos.filter((produto) =>
-    produto.DESC_PRODUTO.toLowerCase().includes(state.search.toLowerCase())
-  );
-});
+  const produtoPesquisado = state.search.toLowerCase();
+  const idMarca = props.marcaEscolhida;
+
+  emit("produtoPesquisar", produtoPesquisado, idMarca);
+};
 
 const confirmarSelecionados = () => {
   let produtosEscolhidos = state.selectedProdutos;
@@ -51,7 +53,7 @@ const cancelar = () => {
   state.search = "";
 };
 
-const emit = defineEmits(["produtosEscolhidos", "closeModal"]);
+const emit = defineEmits(["produtosEscolhidos", "closeModal", "produtoPesquisar"]);
 
 watch(
   () => props.modalOpened,
@@ -63,41 +65,46 @@ watch(
     }
   }
 );
+
+watch(
+  () => props.produtos,
+  (produtosFiltrados) => {
+    state.produtos = produtosFiltrados;
+  }
+);
 </script>
 
 <template>
   <v-card>
-    <v-card-title style="padding-bottom: 30px">
-      <v-row>
-        <div style="margin-left: 10px; width: 85%; padding-top: 20px">
-          <v-text-field
-            :clearable="true"
-            v-model="state.search"
-            label="Pesquisar"
-          ></v-text-field>
-        </div>
-        <div style="margin-left: 20px; padding-top: 20px"
-          ><v-btn
-            icon
-            size="small"
-            color="primary"
-          >
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn></div
+    <v-card-title class="py-3">
+      <div class="d-flex ga-2">
+        <v-text-field
+          :clearable="true"
+          v-model="state.search"
+          @keydown.enter.prevent="filtrarProdutos"
+          label="Pesquisar"
+        ></v-text-field>
+        <v-btn
+          icon
+          size="small"
+          color="primary"
+          @click="filtrarProdutos"
         >
-      </v-row>
+          <v-icon>mdi-magnify</v-icon>
+        </v-btn>
+      </div>
     </v-card-title>
     <v-card-text>
       <v-data-table
         :headers="state.headers"
-        :items="filtrarProdutos"
+        :items="state.produtos"
         items-per-page-text="Itens por página"
-        height="455"
+        height="310"
         item-key="COD_PRODUTO"
         item-value="COD_PRODUTO"
         show-select
+        select-strategy="all"
         v-model="state.selectedProdutos"
-        @keydown.enter.prevent="confirmarSelecionados"
       >
         <template #no-data>
           <v-alert
@@ -110,15 +117,16 @@ watch(
         </template>
       </v-data-table>
     </v-card-text>
-    <div class="btns d-flex justify-end pb-4 mr-4">
+    <div class="d-flex justify-end pb-4 mr-4">
       <v-btn
-        style="color: #3680ab; border: 1px solid #3680ab"
+        variant="outlined"
+        color="primary"
         @click="cancelar"
         >Cancelar</v-btn
       >
       <v-btn
-        class="ml-5"
-        color="#3680AB"
+        class="ml-2"
+        color="primary"
         @click="confirmarSelecionados"
         >Selecionar</v-btn
       >

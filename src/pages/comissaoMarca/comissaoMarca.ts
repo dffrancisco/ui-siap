@@ -1,6 +1,6 @@
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iFuncionario, iMarcas, iProdutos, iGetProdutosParam, iProdutosEscolhidos, iDadosParaRelatorio, iParamParaRelatorio, iTabs } from "./interfaces";
+import { iFuncionario, iMarcas, iProdutos, iGetProdutosParam, iProdutosEscolhidos, iDadosParaRelatorio, iParamParaRelatorio, iTabs, iFiltrarProdutos } from "./interfaces";
 import Swal from "sweetalert2";
 import comissaoMarcaService from "./services/comissaoMarca.service";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -16,6 +16,7 @@ export const state = reactive({
     modalMarcas: <iModalCreate>{},
     modalMarcasOpened: false,
     marcas: <iMarcas[]>[],
+    idMarcaFiltragem: 0,
     marcaEscolhida: <Array<{ marca: iMarcas, produtos: iProdutosEscolhidos[] }>>[],
     modalProdutos: <iModalCreate>{},
     modalProdutosOpened: false,
@@ -149,14 +150,14 @@ export const actions = {
 
         await actions.getFuncionarios()
         await actions.getMarcas()
-        await actions.createModal()
+        actions.createModal()
     },
 
     createModal() {
         state.modalMarcas = new xModal.create({
             el: "#modalMarcas",
-            height: 600,
-            width: 800,
+            height: 450,
+            width: 600,
             title: 'Marcas - Fabricantes',
             theme: 'xModal-blue',
             onOpen: () => { state.modalMarcasOpened = true; },
@@ -165,8 +166,8 @@ export const actions = {
 
         state.modalProdutos = new xModal.create({
             el: "#modalProdutos",
-            height: 700,
-            width: 640,
+            height: 565,
+            width: 650,
             title: 'Itens - Produtos',
             theme: 'xModal-blue',
             onOpen: () => { state.modalProdutosOpened = true; },
@@ -201,6 +202,8 @@ export const actions = {
     },
 
     async getProdutos(idMarcaEscolhida: number) {
+        state.idMarcaFiltragem = idMarcaEscolhida;
+
         state.loading = true;
 
         try {
@@ -218,6 +221,26 @@ export const actions = {
 
         state.modalProdutos.open();
 
+        state.loading = false;
+    },
+
+    async filtrarProdutos(produtoPesquisado: string, idMarca: number) {
+        state.loading = true;
+        try {
+            const data = await comissaoMarcaService.getProdutos({
+                marcaEscolhida: idMarca,
+                descricaoProduto: produtoPesquisado
+            } as iFiltrarProdutos);
+            state.produtos = data;
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao pesquisar.',
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
         state.loading = false;
     },
 
@@ -315,6 +338,7 @@ export const actions = {
     },
 
     editarMarca(idMarca: number) {
+        state.produtosEditar = []
         actions.getProdutos(idMarca);
     },
 
@@ -356,7 +380,6 @@ export const actions = {
             }).then((result) => {
                 if (result.isConfirmed) {
                     actions.openModalMarcas();
-                    return;
                 }
             });
             return
@@ -398,13 +421,12 @@ export const actions = {
             return;
         }
 
-
         if (state.dadosParaRelatorioItens.length == 0) {
             state.loading = true;
             try {
                 const param: iParamParaRelatorio = {
                     cod_funcionarios: state.selectedFuncionario,
-                    produtos: state.produtosEscolhidos.map(item => item.produtosEscolhidos),
+                    produtos: state.produtosEscolhidos,
                     data_inicial: state.dataInicial,
                     data_final: state.dataFinal
                 }
@@ -451,12 +473,12 @@ export const actions = {
             const relatorioPorVendedor = actions.formatarDadosImpressao([...state.dadosParaRelatorioVendedor, totalizadorVendedores.value]);
 
             const columns: iColumnPrint[] = [
-                { key: 'VENDEDOR', label: 'Vendedor', width: '20%' },
+                { key: 'VENDEDOR', label: 'Vendedor', width: '30%' },
                 { key: 'MARCA', label: 'Marca', width: '20%' },
-                { key: 'QTD', label: 'Quantidade', width: '20%' },
-                { key: 'VALOR', label: 'Valor', width: '20%' },
-                { key: 'VALOR_P_ITEM', label: 'Valor p/ item', width: '10%' },
-                { key: 'TOTAL_P_ITEM', label: 'Total p/ item', width: '10%' }
+                { key: 'QTD', label: 'Qtd', width: '5%', align: 'center' },
+                { key: 'VALOR', label: 'Valor', width: '15%', align: 'right' },
+                { key: 'VALOR_P_ITEM', label: 'Valor p/ item', width: '10%', align: 'right' },
+                { key: 'TOTAL_P_ITEM', label: 'Total p/ item', width: '10%', align: 'right' }
             ];
 
             const titulo = `
@@ -482,10 +504,10 @@ export const actions = {
             const relatorioPorItens = actions.formatarDadosImpressao([...state.dadosParaRelatorioItens, totalizadorItens.value]);
 
             const columns: iColumnPrint[] = [
-                { key: 'PRODUTO', label: 'Produto', width: '30%' },
-                { key: 'MARCA', label: 'Marca', width: '30%' },
-                { key: 'QTD', label: 'Quantidade', width: '20%' },
-                { key: 'VALOR', label: 'Valor', width: '20%' }
+                { key: 'PRODUTO', label: 'Produto', width: '40%' },
+                { key: 'MARCA', label: 'Marca', width: '25%' },
+                { key: 'QTD', label: 'Qtd', width: '10%', align: 'center' },
+                { key: 'VALOR', label: 'Valor', width: '20%', align: 'right' }
             ];
 
             const titulo = `
