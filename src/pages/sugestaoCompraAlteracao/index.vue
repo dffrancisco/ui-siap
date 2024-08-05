@@ -40,7 +40,7 @@ nextTick(async () => {
           <v-select
             id="mes"
             label="Mês"
-            class="obr mes"
+            class="mes"
             v-model="state.mes"
             item-title="title"
             item-value="value"
@@ -50,7 +50,7 @@ nextTick(async () => {
 
           <v-text-field
             id="ano"
-            class="obr ano"
+            class="ano"
             type="number"
             label="Ano"
             v-model="state.ano"
@@ -84,12 +84,7 @@ nextTick(async () => {
         @update:page="actions.updatePage"
       >
         <template v-slot:item.DESCRICAO_PRODUTO="{ item }">
-          <template v-if="item.DESCRICAO_PRODUTO == null">
-            <span>-------</span>
-          </template>
-          <template v-else>
-            <span>{{ item.DESCRICAO_PRODUTO }}</span>
-          </template>
+          <span>{{ item.DESCRICAO_PRODUTO ? item.DESCRICAO_PRODUTO : "--------" }}</span>
         </template>
 
         <template v-slot:item.TIPO="{ item }">
@@ -175,7 +170,7 @@ nextTick(async () => {
         />
       </div>
     </v-card>
-    <div id="pnCodigoTela">SUGESTAO_COMPRA_ALTERAÇÃO</div>
+    <div id="pnCodigoTela">sugestaoCompraAlteracao</div>
   </v-container>
 
   <v-dialog
@@ -216,17 +211,9 @@ nextTick(async () => {
   background-color: #f0f0f0;
 }
 
-.cor-zebrada-2 {
-  background-color: #fff;
-}
-
 .v-data-table-footer {
   max-height: 2px;
   padding-top: 20px;
-}
-
-.v-field__clearable {
-  display: none;
 }
 
 .v-data-table-footer__pagination {
@@ -258,6 +245,5 @@ nextTick(async () => {
 .mes,
 .ano {
   width: 180px;
-  border-radius: 6px;
 }
 </style>
