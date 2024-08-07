@@ -828,10 +828,11 @@ export const gerarPlanilhaComCabecalho = async (columns: iColumnPrint[], data: i
   const worksheet = workbook.addWorksheet('Sheet1');
 
   const headerContent = [
-    [empresa.RAZAO_SOCIAL, '', '', '', moment().format('DD/MM/YYYY HH:mm:ss')],
-    [empresa.ENDERECO, '', `IE: ${empresa.INSCRICAO}`],
-    [`Cidade: ${empresa.CIDADE}`, `Bairro: ${empresa.BAIRRO}`, `CEP: ${empresa.CEP}`],
-    [`CNPJ: ${empresa.CGC_EMPRESA}`, '', `Telefone: ${empresa.TELEFONE1}`],
+    [moment().format('DD/MM/YYYY HH:mm:ss')],
+    ['', '', empresa.RAZAO_SOCIAL, '', '', ''],
+    [`Telefone: ${empresa.TELEFONE1}`, '', empresa.ENDERECO, '', '', ''],
+    [`Cidade: ${empresa.CIDADE}`, '', `Bairro: ${empresa.BAIRRO}`, `CEP: ${empresa.CEP}`, '', ''],
+    [`IE: ${empresa.INSCRICAO}`, '', `CNPJ: ${empresa.CGC_EMPRESA}`, '', '', ''],
     []
   ];
 
