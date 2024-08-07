@@ -16,6 +16,7 @@ const TIPO_FERIADO = 7
 const TIPO_DIA_FOLGA = 5
 const TIPO_EM_OUTRA_LOJA = 13
 const TIPO_ATRASO_JUSTIFICADO = 14
+const TIPO_SEM_SISTEMA = 15
 
 export const setup = (emit: any, props: any) => {
 
@@ -55,6 +56,7 @@ export const setup = (emit: any, props: any) => {
             TIPO_DIA_FOLGA,
             TIPO_FERIADO,
             TIPO_EM_OUTRA_LOJA,
+            TIPO_SEM_SISTEMA
         ].includes(state.selectedTipoFalta)) {
             return true;
         }
@@ -111,7 +113,8 @@ export const setup = (emit: any, props: any) => {
         if (
             props.dadosDocumento.length == 0 ||
             props.pontos.TIPO == TIPO_FERIADO ||
-            props.pontos.TIPO == TIPO_DIA_FOLGA
+            props.pontos.TIPO == TIPO_DIA_FOLGA ||
+            props.pontos.TIPO == TIPO_SEM_SISTEMA
         ) {
             return false;
         } else {
@@ -124,7 +127,8 @@ export const setup = (emit: any, props: any) => {
             props.dadosDocumento.length > 0 ||
             props.pontos.TIPO == TIPO_DIA_FOLGA ||
             props.pontos.TIPO == TIPO_EM_OUTRA_LOJA ||
-            props.pontos.TIPO == TIPO_ATRASO_JUSTIFICADO
+            props.pontos.TIPO == TIPO_ATRASO_JUSTIFICADO ||
+            props.pontos.TIPO == TIPO_SEM_SISTEMA
         ) {
             return true;
         } else {
@@ -220,7 +224,8 @@ export const setup = (emit: any, props: any) => {
             if (
                 faltaSelecionada == TIPO_FERIADO ||
                 faltaSelecionada == TIPO_DIA_FOLGA ||
-                faltaSelecionada == TIPO_EM_OUTRA_LOJA
+                faltaSelecionada == TIPO_EM_OUTRA_LOJA ||
+                faltaSelecionada == TIPO_SEM_SISTEMA
             ) {
                 actions.salvarFaltaFeriadoOuFolga();
             } else {
