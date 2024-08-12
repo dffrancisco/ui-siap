@@ -1,6 +1,6 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { reactive } from "vue";
-import { iGetNaturezaOperacaoGrid, iGetNaturezaOperacaoParam, iNaturezaOperacao } from "./interfaces";
+import { iGetDuplicidadeParam, iGetNaturezaOperacaoGrid, iGetNaturezaOperacaoParam, iInsertNaturezaOperacaoParam, iNaturezaOperacao, iUpdateNaturezaOperacaoParam } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceNaturezaOperacao from "./services/naturezaOperacao.service";
 
@@ -33,6 +33,23 @@ export const actions = {
                 el: '#pnCampos',
                 vModel(r) {
                     state.dbNarurezaOperacao = r;
+                },
+                duplicity: {
+                    dataField: ['CFOP'],
+                    async execute(rs) {
+                        let dup = await actions.getDuplicidade({
+                            value: rs.value.toUpperCase(),
+                            field: rs.field
+                        });
+                        if (Object.keys(dup).length > 0) {
+                            state.gridNaturezaOperacao.showMessageDuplicity(
+                                rs.text + " já está cadastrada"
+                            );
+                            return true;
+                        }
+
+                        return false;
+                    }
                 },
                 frame: {
                     el: '#pnBotoes',
@@ -78,7 +95,10 @@ export const actions = {
         actions.criarGrid()
         state.gridNaturezaOperacao.queryOpen({
             SEARCH: ""
-        })
+        }, () => {
+            state.gridNaturezaOperacao.focus();
+        }
+        )
     },
 
     async getNaturezaOperacao({ param, offset }: iGetNaturezaOperacaoGrid) {
@@ -91,6 +111,90 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Ocorreu um erro ao buscar as naturezas de operações"
+            })
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getDuplicidade({ field, value }: iGetDuplicidadeParam) {
+        try {
+            const data = await serviceNaturezaOperacao.getDuplicidade({ field, value });
+            return data;
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao verificar duplicidade!"
+            })
+        }
+    },
+
+    async insertNaturezaOperacao() {
+        try {
+            state.loading = true;
+
+            let param: iInsertNaturezaOperacaoParam = {
+                CFOP: state.dbNarurezaOperacao.CFOP,
+                DESCRICAO: state.dbNarurezaOperacao.DESCRICAO
+            }
+
+            const data = await serviceNaturezaOperacao.insertNaturezaOperacao(param);
+
+            state.gridNaturezaOperacao.insertLine({
+                ...state.gridNaturezaOperacao,
+                ID_NATUREZA_OPERACAO: data[0].ID_NATUREZA_OPERACAO,
+            })
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao inserir a natureza de operação"
+            })
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async updateNaturezaOperacao() {
+        try {
+            state.loading = true;
+
+            let param: iUpdateNaturezaOperacaoParam = {
+                ID_NATUREZA_OPERACAO: state.dbNarurezaOperacao.ID_NATUREZA_OPERACAO,
+                CFOP: state.dbNarurezaOperacao.CFOP,
+                DESCRICAO: state.dbNarurezaOperacao.DESCRICAO
+            }
+
+            await serviceNaturezaOperacao.updateNaturezaOperacao(param);
+
+            state.gridNaturezaOperacao.dataSource({
+                ...state.gridNaturezaOperacao,
+            })
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao atualizar a natureza de operação"
+            })
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async deleteNaturezaOperacao() {
+        try {
+            state.loading = true;
+
+            let id_natureza_operacao = state.dbNarurezaOperacao.ID_NATUREZA_OPERACAO
+
+            await serviceNaturezaOperacao.deleteNaturezaOperacao(id_natureza_operacao);
+
+            state.gridNaturezaOperacao.deleteLine();
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao excluir a natureza de operação"
             })
         } finally {
             state.loading = false;
