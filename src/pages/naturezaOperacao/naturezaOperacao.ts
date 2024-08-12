@@ -10,7 +10,8 @@ export const state = reactive({
     gridNaturezaOperacao: <ixGridCreate>{},
     dbNarurezaOperacao: <iNaturezaOperacao>{},
     loading: false,
-    searchDisabled: false
+    searchDisabled: false,
+    inputSearch: <HTMLInputElement>{}
 })
 
 export const actions = {
@@ -96,6 +97,9 @@ export const actions = {
 
     init() {
         actions.criarGrid()
+
+        state.inputSearch = <HTMLInputElement>document.getElementById("inputSearch")
+
         state.gridNaturezaOperacao.queryOpen({
             SEARCH: ""
         },
@@ -103,6 +107,12 @@ export const actions = {
                 state.gridNaturezaOperacao.focus();
             }
         )
+    },
+
+    searchGrupos() {
+        state.gridNaturezaOperacao.queryOpen({
+            SEARCH: state.inputSearch.value.toUpperCase(),
+        });
     },
 
     async btnInsert() {
