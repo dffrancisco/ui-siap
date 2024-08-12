@@ -1,10 +1,13 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { reactive } from "vue";
-import { iNaturezaOperacao } from "./interfaces";
+import { iGetNaturezaOperacaoGrid, iGetNaturezaOperacaoParam, iNaturezaOperacao } from "./interfaces";
+import Swal from "sweetalert2";
+import serviceNaturezaOperacao from "./services/naturezaOperacao.service";
 
 export const state = reactive({
     gridNaturezaOperacao: <ixGridCreate>{},
     dbNarurezaOperacao: <iNaturezaOperacao>{},
+    loading: false
 })
 
 export const actions = {
@@ -15,7 +18,16 @@ export const actions = {
             count: true,
             columns: {
                 'Descrição': { dataField: 'DESCRICAO' },
-                'CFOP': { dataField: 'CFOP', center: true },
+                'CFOP': { dataField: 'CFOP', center: true, width: '20%' },
+            },
+            query: {
+                async execute(rs) {
+                    let data = await serviceNaturezaOperacao.getNaturezaOperacao({
+                        offset: rs.offset,
+                        param: rs.param as iGetNaturezaOperacaoParam
+                    });
+                    state.gridNaturezaOperacao.querySourceAdd(data);
+                }
             },
             sideBySide: {
                 el: '#pnCampos',
@@ -64,5 +76,24 @@ export const actions = {
 
     init() {
         actions.criarGrid()
+        state.gridNaturezaOperacao.queryOpen({
+            SEARCH: ""
+        })
+    },
+
+    async getNaturezaOperacao({ param, offset }: iGetNaturezaOperacaoGrid) {
+        try {
+            state.loading = true
+            const data = await serviceNaturezaOperacao.getNaturezaOperacao({ param, offset });
+
+            return data;
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar as naturezas de operações"
+            })
+        } finally {
+            state.loading = false;
+        }
     }
 }

@@ -24,6 +24,7 @@ onMounted(() => {
             name="DESCRICAO"
             id="DESCRICAO"
             maxlength="255"
+            style="text-transform: none"
           />
         </v-col>
         <v-col cols="2">
