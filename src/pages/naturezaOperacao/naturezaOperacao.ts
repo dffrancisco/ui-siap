@@ -1,13 +1,16 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import { reactive } from "vue";
+import { nextTick, reactive } from "vue";
 import { iGetDuplicidadeParam, iGetNaturezaOperacaoGrid, iGetNaturezaOperacaoParam, iInsertNaturezaOperacaoParam, iNaturezaOperacao, iUpdateNaturezaOperacaoParam } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceNaturezaOperacao from "./services/naturezaOperacao.service";
+import utils from "@/ts/utils";
+import { msgConfirm } from "@/ts/message";
 
 export const state = reactive({
     gridNaturezaOperacao: <ixGridCreate>{},
     dbNarurezaOperacao: <iNaturezaOperacao>{},
-    loading: false
+    loading: false,
+    searchDisabled: false
 })
 
 export const actions = {
@@ -57,30 +60,30 @@ export const actions = {
                         novo: {
                             html: "Novo",
                             state: "insert",
-                            click: () => { },
+                            click: () => actions.btnInsert(),
                             id: "btnInsert"
                         },
                         update: {
                             html: "Alterar",
                             state: "update",
-                            click: () => { },
+                            click: () => actions.btnUpdate(),
                             id: "btnUpdate",
                         },
                         excluir: {
                             html: "Excluir",
                             state: "delete",
-                            click: () => { },
+                            click: () => actions.btnDelete(),
                         },
                         salvar: {
                             html: "Salvar",
                             state: "save",
-                            click: () => { },
+                            click: () => actions.btnSave(),
                             preLoad: "Salvando",
                         },
                         cancela: {
                             html: "Cancelar",
                             state: "cancel",
-                            click: () => { },
+                            click: () => actions.btnCancel(),
                         },
                     },
                 }
@@ -95,10 +98,82 @@ export const actions = {
         actions.criarGrid()
         state.gridNaturezaOperacao.queryOpen({
             SEARCH: ""
-        }, () => {
+        },
+            () => {
+                state.gridNaturezaOperacao.focus();
+            }
+        )
+    },
+
+    async btnInsert() {
+        state.searchDisabled = true;
+        state.dbNarurezaOperacao = {} as iNaturezaOperacao
+        await nextTick()
+
+        state.gridNaturezaOperacao.disable()
+        state.gridNaturezaOperacao.focusField();
+    },
+
+    async btnUpdate() {
+        if (state.gridNaturezaOperacao.dataSource() == false) {
+            Swal.fire({
+                icon: "warning",
+                text: "Nenhum registro selecionado, operação cancelada!"
+            })
+            return false;
+        }
+
+        state.searchDisabled = true;
+        await nextTick()
+
+        state.gridNaturezaOperacao.disable();
+        state.gridNaturezaOperacao.focusField();
+    },
+
+    async btnDelete() {
+        if (state.gridNaturezaOperacao.dataSource() == false) {
+            Swal.fire({
+                icon: "warning",
+                text: "Nenhum registro selecionado, operação cancelada!"
+            })
+            return false;
+        }
+
+        if (await msgConfirm("Confirmação", "Confirma a exclusão deste registro?")) {
+            await actions.deleteNaturezaOperacao();
             state.gridNaturezaOperacao.focus();
         }
-        )
+    },
+
+    async btnSave() {
+        if (utils.validaOBR()) {
+            return false
+        }
+
+        if (await state.gridNaturezaOperacao.getDuplicityAll()) {
+            return false;
+        }
+
+        if (state.gridNaturezaOperacao.dataSource() == false) {
+            actions.insertNaturezaOperacao();
+        } else {
+            await actions.updateNaturezaOperacao();
+        }
+
+
+        state.searchDisabled = false;
+        await nextTick();
+
+        state.gridNaturezaOperacao.enable();
+    },
+
+    async btnCancel() {
+        state.searchDisabled = false
+        let linhaGrid = <any>state.gridNaturezaOperacao.getIndex()
+        await nextTick();
+
+        state.gridNaturezaOperacao.enable();
+        state.gridNaturezaOperacao.focus(linhaGrid);
     },
 
     async getNaturezaOperacao({ param, offset }: iGetNaturezaOperacaoGrid) {
@@ -141,8 +216,8 @@ export const actions = {
             const data = await serviceNaturezaOperacao.insertNaturezaOperacao(param);
 
             state.gridNaturezaOperacao.insertLine({
-                ...state.gridNaturezaOperacao,
-                ID_NATUREZA_OPERACAO: data[0].ID_NATUREZA_OPERACAO,
+                ...param,
+                ID_NATUREZA_OPERACAO: data.ID_NATUREZA_OPERACAO,
             })
 
         } catch (error) {
@@ -168,7 +243,7 @@ export const actions = {
             await serviceNaturezaOperacao.updateNaturezaOperacao(param);
 
             state.gridNaturezaOperacao.dataSource({
-                ...state.gridNaturezaOperacao,
+                ...param,
             })
 
         } catch (error) {

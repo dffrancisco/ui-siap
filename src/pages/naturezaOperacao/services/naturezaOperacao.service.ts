@@ -12,7 +12,7 @@ type iGetNaturezaOperacaoFunction = ({ param, offset }: iGetNaturezaOperacaoGrid
     Promise<iGetNaturezaOperacaoResponse>
 
 type iInsertNaturezaOperacaoFunction = (param: iInsertNaturezaOperacaoParam) =>
-    Promise<iInsertNaturezaOperacaoResponse[]>
+    Promise<iInsertNaturezaOperacaoResponse>
 
 type iGetDuplicidadeFunction = ({ value, field }: iGetDuplicidadeParam) => Promise<iGetDuplicidadeResponse>
 

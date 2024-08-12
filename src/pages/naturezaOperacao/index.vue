@@ -46,11 +46,13 @@ onMounted(() => {
           placeholder="PESQUISAR (F1)"
           id="inputSearch"
           class="ss"
+          :disabled="state.searchDisabled"
         />
         <v-btn
           icon="mdi-magnify"
           color="primary"
           size="36"
+          :disabled="state.searchDisabled"
         />
       </div>
       <div id="gridNaturezaOperacao"> </div>
