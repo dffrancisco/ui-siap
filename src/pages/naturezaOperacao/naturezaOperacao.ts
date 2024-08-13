@@ -160,6 +160,14 @@ export const actions = {
             return false
         }
 
+        if (state.dbNarurezaOperacao.CFOP.length < 4) {
+            Swal.fire({
+                icon: "warning",
+                text: "O CFOP deve conter 4 caracteres"
+            })
+            return false;
+        }
+
         if (await state.gridNaturezaOperacao.getDuplicityAll()) {
             return false;
         }
