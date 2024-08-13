@@ -59,7 +59,24 @@ export const actions = {
         try {
             state.loading = true;
 
+<<<<<<< HEAD
             let param = {
+=======
+            // Define a chave do cache com base no mês da meta
+            const mes = moment(state.data).format('YYYY-MM');
+            const cacheKey = `metasTracadas_${mes}`;
+
+            // Tenta obter dados do cache
+            const cachedData = actions.getMetasCache(cacheKey, 12 * 60 * 60 * 1000); // 12 horas em milissegundos
+
+            if (cachedData) {
+                state.metasTracada = cachedData;
+                return;
+            }
+
+            // Se não houver cache faz a requisição
+            let param: iGetMetasTracadasParam = {
+>>>>>>> 9c15cd7f3bf4a076c93c61421dfc5131eb178beb
                 data: state.data,
             };
 
