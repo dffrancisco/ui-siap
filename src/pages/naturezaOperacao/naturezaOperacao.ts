@@ -22,7 +22,7 @@ export const actions = {
             count: true,
             columns: {
                 'Descrição': { dataField: 'DESCRICAO' },
-                'CFOP': { dataField: 'CFOP', center: true, width: '20%' },
+                'CFOP': { dataField: 'CFOP', center: true, width: '15%' },
             },
             query: {
                 async execute(rs) {
