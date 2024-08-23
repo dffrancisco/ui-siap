@@ -228,6 +228,7 @@ export const actions = {
         state.abaItens = 'nao_adicionados';
 
         if (param.ID_MARCA != state.edtMarca) {
+            state.qtdItensMarca = 0;
             let keyMarca = 'marca:' + state.edtMarca
             state.qtdMaxItensVistosByMarca[keyMarca] = 1
         }
@@ -237,7 +238,7 @@ export const actions = {
 
             const response = await comprasItensService.getProdutos(param)
 
-            if (state.qtdItensMarca == 0 || state.edtMarca != param.ID_MARCA) {
+            if (state.qtdItensMarca == 0) {
                 state.qtdItensMarca = response.qtdItensMarca
             }
 
