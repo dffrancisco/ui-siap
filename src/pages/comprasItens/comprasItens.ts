@@ -237,10 +237,12 @@ export const actions = {
 
             const response = await comprasItensService.getProdutos(param)
 
+            if (state.qtdItensMarca == 0 || state.edtMarca != param.ID_MARCA) {
+                state.qtdItensMarca = response.qtdItensMarca
+            }
 
             state.edtMarca = param.ID_MARCA;
             state.produtos = response.produtos;
-            state.qtdItensMarca = response.qtdItensMarca;
             state.keyProdutosOrigem = Object.keys(state.produtos);
             state.keyProdutos = Object.keys(state.produtos);
 
