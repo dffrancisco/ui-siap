@@ -222,8 +222,8 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/metas')"
-              >Metas
+              @click="router.push('/naturezaOperacao')"
+              >Natureza Operação
             </v-btn>
 
             <v-btn
