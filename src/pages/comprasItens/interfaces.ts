@@ -213,6 +213,7 @@ export interface iObjHistoricoCompraGeral {
 export interface iParamEmitAdicionarItem {
     custo: number,
     qtd: number,
+    isAlteracao?: boolean
 }
 
 export interface iListaFotoProduto {

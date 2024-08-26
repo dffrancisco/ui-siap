@@ -59,6 +59,7 @@ export const state = reactive(({
     modalItensErroOpen: false,
     itensComErro: <iItemComErro[]>[],
     historicoErro: false,
+    isAlteracao: false,
 }))
 
 setInterval(async () => {
@@ -480,6 +481,8 @@ export const actions = {
         try {
             state.loading = true;
 
+            state.isAlteracao = false
+
             let produtoSelecionado = computeds.produtoSelecionado.value
 
             let codProduto = produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO]
@@ -497,8 +500,7 @@ export const actions = {
                 NUM_FABRICANTE: numFabricante
             })
 
-            /* Adicionado para impactar a computed qtdProdutosAdicionados e fazer com que o grid avance a linha após atualizar dados */
-            delete state.produtosAdicionados[codProduto];
+            state.isAlteracao = param.isAlteracao
             await nextTick()
 
             state.produtosAdicionados[codProduto] = {
