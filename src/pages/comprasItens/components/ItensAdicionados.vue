@@ -39,6 +39,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  isAlteracao: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["changeIndexProdutoSelecionado", "adicionarItem", "deletarItem"]);
@@ -47,6 +51,7 @@ const state = reactive({
   gridItensAdicionados: <ixGridCreate>{},
   modalAdicionarItemOpened: false,
   loading: false,
+  qtdAlterado: 0,
 });
 
 const produtos = computed(() => {
@@ -56,6 +61,15 @@ const produtos = computed(() => {
 watch(
   () => props.objProdutosAdicionados,
   async () => {
+    if (props.isAlteracao) {
+      state.gridItensAdicionados.dataSource({
+        ...state.gridItensAdicionados.dataSource(),
+        PEDIDO_QTD_ADICIONADA: state.qtdAlterado,
+      });
+
+      return;
+    }
+
     state.gridItensAdicionados.source(produtos.value);
 
     await nextTick();
@@ -165,6 +179,13 @@ const actions = {
   },
 
   adicionarItem(param: iParamEmitAdicionarItem) {
+    state.qtdAlterado = param.qtd;
+
+    param = {
+      ...param,
+      isAlteracao: true,
+    };
+
     emit("adicionarItem", param);
     state.modalAdicionarItemOpened = false;
   },

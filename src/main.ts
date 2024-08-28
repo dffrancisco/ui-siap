@@ -12,6 +12,7 @@ import VuePhotoPreview, { PhotoProvider, PhotoConsumer } from 'vue3-photo-previe
 
 import config from "./ts/config";
 import { setupInterceptorsTo } from "./pages/login/interceptor";
+import disableAutocomplete from "./plugins/disableAutocomplete/disableAutocomplete";
 
 const app = createApp(App)
 
@@ -34,6 +35,7 @@ app.use(money)
 app.use(router)
 app.use(VueApexCharts);
 app.use(VuePhotoPreview)
+app.use(disableAutocomplete)
 
 app.directive('money3', Money3Directive)
 

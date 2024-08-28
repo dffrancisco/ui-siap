@@ -1,0 +1,153 @@
+<script setup lang="ts">
+import { actions, computeds, META_DIURNA, META_GERAL, META_NOTURNA, state } from "./metas";
+import MetaCard from "./components/MetaCard.vue";
+import utils from "@/ts/utils";
+</script>
+
+<template>
+  <title>Metas</title>
+  <v-container>
+    <v-card class="pa-4 main-card">
+      <div class="d-flex justify-space-between align-center flex-grow-1">
+        <div class="d-flex flex-grow-1">
+          <v-radio-group
+            v-model="state.radioAlternarMetas"
+            class="ml-4"
+            hide-details
+            v-if="computeds.lojaIsNoturna.value == 'S'"
+          >
+            <v-row>
+              <v-col cols="2">
+                <v-radio
+                  label="Geral"
+                  :value="META_GERAL"
+                />
+              </v-col>
+              <v-col cols="2">
+                <v-radio
+                  label="Diurna"
+                  :value="META_DIURNA"
+                />
+              </v-col>
+              <v-col>
+                <v-radio
+                  label="Noturna"
+                  :value="META_NOTURNA"
+                />
+              </v-col>
+            </v-row>
+          </v-radio-group>
+        </div>
+        <div class="d-flex ga-4 align-center">
+          <v-text-field
+            v-model="state.data"
+            type="date"
+            label="Data"
+            :clearable="false"
+            style="width: fit-content"
+            @keydown.enter.prevent="actions.btnPesquisarMetas"
+          ></v-text-field>
+          <v-btn
+            size="36"
+            icon="mdi-magnify"
+            color="primary"
+            @click="actions.btnPesquisarMetas"
+          />
+          <v-btn
+            size="36"
+            color="primary"
+            :icon="state.mostrarValores ? 'mdi-eye mdi-24px' : 'mdi-eye-off mdi-24px'"
+            :title="state.mostrarValores ? 'Esconder valores' : 'Mostrar valores'"
+            @click="state.mostrarValores = !state.mostrarValores"
+          />
+        </div>
+      </div>
+
+      <div class="d-flex flex-column ga-2">
+        <div
+          v-if="state.radioAlternarMetas == META_GERAL"
+          class="text-h6"
+        >
+          Metas:
+        </div>
+        <div
+          v-if="state.radioAlternarMetas == META_DIURNA"
+          class="text-h6"
+        >
+          Metas Diurna:
+        </div>
+        <div
+          v-if="state.radioAlternarMetas == META_NOTURNA"
+          class="text-h6"
+        >
+          Metas Noturna:
+        </div>
+        <div>
+          <v-row>
+            <v-col v-for="dados in computeds.dadosToMetaCard.value">
+              <MetaCard
+                :dadosToMetaCard="dados"
+                :mostrarValores="state.mostrarValores"
+              />
+            </v-col>
+          </v-row>
+        </div>
+      </div>
+
+      <div
+        class="d-flex flex-column ga-2"
+        v-if="state.mostrarValores && state.radioAlternarMetas == META_GERAL"
+      >
+        <v-divider />
+
+        <div class="text-h6">Previsão:</div>
+        <div>
+          <v-card>
+            <v-table>
+              <thead>
+                <tr style="background-color: #e5e7eb">
+                  <th> Média Venda </th>
+                  <th> Desejado </th>
+                  <th> Previsão % </th>
+                  <th> Previsão $ </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background-color: #f9fafb">
+                  <td style="border-right: 1px #e5e7eb solid">{{
+                    utils.formatValor(state.previsao.mediaVenda)
+                  }}</td>
+                  <td>{{ utils.formatValor(state.previsao.desejado) }}</td>
+                  <td>{{ state.previsao.previsaoPorcentagem || "0" }}%</td>
+                  <td>{{ utils.formatValor(state.previsao.previsaoValor) }}</td>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-card>
+        </div>
+      </div>
+    </v-card>
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
+    <div id="pnCodigoTela">metas</div>
+  </v-container>
+</template>
+
+<style scoped>
+.main-card {
+  width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+</style>

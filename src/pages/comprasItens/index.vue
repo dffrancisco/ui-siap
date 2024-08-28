@@ -230,6 +230,7 @@ actions.init();
               @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
               @adicionarItem="actions.adicionarItem"
               @deletarItem="actions.deletarItem"
+              :isAlteracao="state.isAlteracao"
             />
           </div>
         </div>
