@@ -151,7 +151,7 @@ export const actions = {
         const fimMes = dataAtual.clone().endOf('month');
 
         const qtdDiasUteis = actions.contarDiasUteis(inicioMes, fimMes);
-        const qtdUteisCorridos = actions.contarDiasUteis(inicioMes, dataAtual);
+        const qtdUteisCorridos = actions.contarDiasUteis(inicioMes, dataAtual) - 1; // Diminuindo 1 dia para não considerar a data atual
         const qtdDiasParaFimMesUteis = actions.contarDiasUteis(dataAtual, fimMes);
 
         return {
@@ -167,7 +167,7 @@ export const actions = {
         // Calcular a média de vendas diária
         let diasUteisCorridos = diasUteis.qtdUteisCorridos;
         let feriadosCorridos = state.feriados.qtdFeriadosCorridos;
-        let mediaVenda = (state.valores.vendasAcu - state.valores.vendas) / (diasUteisCorridos - feriadosCorridos);
+        let mediaVenda = Number(((state.valores.vendasAcu - state.valores.vendas) / (diasUteisCorridos - feriadosCorridos)).toFixed(2));
 
         // Calcular o valor desejado até o fim do mês
         let diasParaFimMesUteis = diasUteis.qtdDiasParaFimMesUteis;
