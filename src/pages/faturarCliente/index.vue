@@ -62,12 +62,24 @@ onMounted(async () => {
                   class="d-flex justify-space-between"
                 >
                   <span class="text-body-1">+123</span>
-                  <span class="text-body-1">200,00</span>
+                  <span
+                    class="text-body-1"
+                    style="color: #60a5fa"
+                    >200,00</span
+                  >
+                </div>
+                <div class="d-flex justify-space-between">
+                  <span class="text-body-1">D123</span>
+                  <span
+                    class="text-body-1"
+                    style="color: #f87171"
+                    >200,00</span
+                  >
                 </div>
               </div>
               <div class="d-flex flex-column">
-                <span class="text-body-2"><strong>Qtd. Orç: </strong>2</span>
-                <span class="text-body-2"><strong>Somatório: </strong>2.500,00</span>
+                <span class="text-body-2"><strong>Qtd. Orç: </strong>3</span>
+                <span class="text-body-2"><strong>Somatório: </strong>600,00</span>
               </div>
             </div>
           </v-col>
@@ -92,7 +104,7 @@ onMounted(async () => {
                 </div>
               </div>
               <div>
-                <v-btn color="primary">faturar (f1)</v-btn>
+                <v-btn color="error">faturar (f1)</v-btn>
               </div>
             </div>
           </v-col>
