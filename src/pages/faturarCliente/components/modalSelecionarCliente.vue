@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, Ref, ref } from "vue";
 
 const state = reactive({
   gridCliente: <ixGridCreate>{},
@@ -23,8 +23,13 @@ const actions = {
   },
 };
 
+const inputSearch = ref("inputSearch") as Ref;
+
 onMounted(async () => {
   await actions.init();
+
+  const inputSearchElement = inputSearch.value as HTMLInputElement;
+  inputSearchElement.focus();
 });
 </script>
 
@@ -35,6 +40,7 @@ onMounted(async () => {
         type="text"
         placeholder="Razão social / CNPJ"
         density="compact"
+        ref="inputSearch"
       />
       <div class="d-flex align-center">
         <v-btn
