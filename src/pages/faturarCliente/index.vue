@@ -28,8 +28,6 @@ onMounted(async () => {
           <v-col class="d-flex ga-4">
             <v-text-field
               type="text"
-              class=""
-              value="aaaaaa"
               label="Cliente"
               density="compact"
               disabled
@@ -57,8 +55,20 @@ onMounted(async () => {
             <div id="gridPedido"></div>
           </v-col>
           <v-col class="d-flex">
-            <div class="border rounded-lg d-flex flex-grow-1">
-              <v-card-title>localizar orc</v-card-title>
+            <div class="border rounded-lg d-flex flex-grow-1 flex-column justify-space-between pa-3">
+              <div class="custom-scroll">
+                <div
+                  v-for="i in 3"
+                  class="d-flex justify-space-between"
+                >
+                  <span class="text-body-1">+123</span>
+                  <span class="text-body-1">200,00</span>
+                </div>
+              </div>
+              <div class="d-flex flex-column">
+                <span class="text-body-2"><strong>Qtd. Orç: </strong>2</span>
+                <span class="text-body-2"><strong>Somatório: </strong>2.500,00</span>
+              </div>
             </div>
           </v-col>
         </v-row>
@@ -70,8 +80,20 @@ onMounted(async () => {
             cols="9"
             class="d-flex flex-grow-1"
           >
-            <div class="border rounded-lg d-flex flex-grow-1">
-              <v-card-title>Dados orc</v-card-title>
+            <div class="border rounded-lg d-flex flex-grow-1 justify-space-between pa-4">
+              <div class="d-flex ga-10">
+                <div class="d-flex flex-column align-end">
+                  <span class="text-body-2"><strong>Qtd. Orç:</strong></span>
+                  <span class="text-body-2">10</span>
+                </div>
+                <div class="d-flex flex-column align-end">
+                  <span class="text-body-2"><strong>Total Orç:</strong></span>
+                  <span class="text-body-2">2.500,00</span>
+                </div>
+              </div>
+              <div>
+                <v-btn color="primary">faturar (f1)</v-btn>
+              </div>
             </div>
           </v-col>
           <v-col class="d-flex align-end">
@@ -88,3 +110,12 @@ onMounted(async () => {
     <div id="pnCodigoTela">faturarCliente</div>
   </v-container>
 </template>
+
+<style scoped>
+.custom-scroll {
+  padding-right: 10px;
+  overflow: auto;
+  height: 300px;
+  scrollbar-width: thin;
+}
+</style>
