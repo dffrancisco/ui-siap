@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { actions } from "./faturarCliente";
+import { actions, state } from "./faturarCliente";
 
 onMounted(async () => {
   await actions.init();
@@ -19,6 +19,7 @@ onMounted(async () => {
           <v-col cols="3">
             <v-text-field
               type="date"
+              v-model="state.dataLimite"
               label="Data limite"
               :hide-spin-buttons="true"
               :clearable="false"
@@ -73,7 +74,7 @@ onMounted(async () => {
                   <span
                     class="text-body-1"
                     style="color: #f87171"
-                    >200,00</span
+                    >-100,00</span
                   >
                 </div>
               </div>
