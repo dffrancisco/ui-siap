@@ -1,0 +1,25 @@
+name: ESLint Check
+
+on:
+  pull_request:
+    branches:
+      - production
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16" # Ou a versão do Node.js que você está usando
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: npm run lint # Certifique-se de ter um script `lint` no seu package.json
