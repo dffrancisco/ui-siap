@@ -4,7 +4,8 @@ import { reactive } from "vue";
 
 export const state = reactive({
     gridPedido: <ixGridCreate>{},
-    dataLimite: moment().format('YYYY-MM-DD')
+    dataLimite: moment().format('YYYY-MM-DD'),
+    modalSelecionarClienteOpened: false
 })
 
 export const actions = ({

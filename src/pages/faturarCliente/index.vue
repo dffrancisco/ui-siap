@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { actions, state } from "./faturarCliente";
+import ModalSelecionarCliente from "./components/modalSelecionarCliente.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -38,6 +39,7 @@ onMounted(async () => {
                 icon="mdi-magnify"
                 size="34"
                 color="primary"
+                @click="state.modalSelecionarClienteOpened = true"
               />
             </div>
           </v-col>
@@ -121,6 +123,14 @@ onMounted(async () => {
       </div>
     </v-card>
     <div id="pnCodigoTela">faturarCliente</div>
+
+    <v-dialog
+      v-model="state.modalSelecionarClienteOpened"
+      width="600"
+      height="450"
+    >
+      <ModalSelecionarCliente />
+    </v-dialog>
   </v-container>
 </template>
 
