@@ -1,3 +1,12 @@
+<script setup lang="ts">
+import { onMounted } from "vue";
+import { actions } from "./faturarCliente";
+
+onMounted(async () => {
+  await actions.init();
+});
+</script>
+
 <template>
   <v-container>
     <v-card
@@ -45,9 +54,7 @@
             cols="9"
             class="d-flex"
           >
-            <div class="border rounded-lg d-flex flex-grow-1">
-              <v-card-title>grid</v-card-title>
-            </div>
+            <div id="gridPedido"></div>
           </v-col>
           <v-col class="d-flex">
             <div class="border rounded-lg d-flex flex-grow-1">
