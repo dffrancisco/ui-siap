@@ -27,5 +27,9 @@ export const actions = ({
             },
 
         })
+    },
+
+    closeModal() {
+        state.modalSelecionarClienteOpened = false
     }
 })

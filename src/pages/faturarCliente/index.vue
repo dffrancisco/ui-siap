@@ -2,6 +2,7 @@
 import { onMounted, ref } from "vue";
 import { actions, state } from "./faturarCliente";
 import ModalSelecionarCliente from "./components/modalSelecionarCliente.vue";
+import globalActions from "@/store/globalActions";
 
 onMounted(async () => {
   await actions.init();
@@ -9,6 +10,17 @@ onMounted(async () => {
 </script>
 
 <template>
+  <v-btn
+    @click="
+      () => {
+        globalActions.toggleTheme();
+      }
+    "
+    variant="text"
+    class="position-absolute"
+    color="gray"
+    icon="mdi-theme-light-dark"
+  ></v-btn>
   <v-container>
     <v-card
       width="800"
@@ -129,7 +141,7 @@ onMounted(async () => {
       width="600"
       height="450"
     >
-      <ModalSelecionarCliente />
+      <ModalSelecionarCliente @closeModal="actions.closeModal" />
     </v-dialog>
   </v-container>
 </template>

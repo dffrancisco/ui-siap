@@ -2,6 +2,8 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, reactive, Ref, ref } from "vue";
 
+const emits = defineEmits(["closeModal"]);
+
 const state = reactive({
   gridCliente: <ixGridCreate>{},
 });
@@ -20,6 +22,10 @@ const actions = {
         CNPJ: { width: "30%" },
       },
     });
+  },
+
+  closeModal() {
+    emits("closeModal");
   },
 };
 
@@ -60,6 +66,7 @@ onMounted(async () => {
       <v-btn
         color="primary"
         variant="outlined"
+        @click="actions.closeModal"
         >cancelar</v-btn
       >
       <v-btn color="primary">selecionar</v-btn>
