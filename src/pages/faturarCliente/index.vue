@@ -90,7 +90,7 @@ onMounted(async () => {
       </div>
 
       <div class="d-flex mt-4 flex-grow-1">
-        <v-row>
+        <v-row class="align-center">
           <v-col
             cols="9"
             class="d-flex flex-grow-1"
