@@ -130,8 +130,43 @@ export const actions = {
         return { class: classe }
     },
 
-    async onClickImprimir() {
-        console.log('imprimir');
+    async onClickImprimirFiltros() {
+        try {
+            let filtros = state.filtros
+            const filtroFormatado = actions.formatarDadosImpressaoFiltros([...filtros]);
+
+            const columns: iColumnPrint[] = [
+                { key: 'DATA_INICIO', label: 'Data Início', width: '30%' },
+                { key: 'DATA_FIM', label: 'Data Fim', width: '20%' },
+                { key: 'NOME_FILTRO', label: 'Nome do Filtro', width: '20%' },
+                { key: 'CRIADOR', label: 'Criador', width: '20%', align: 'center' },
+                { key: 'CONFERENTE', label: 'Conferente', width: '20%', align: 'center' }
+            ];
+
+            const titulo = `
+                <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
+                    <span>&nbsp;</span>
+                    <strong style="font-size: 16px;">Filtro para conferência</strong>
+                </div>
+            `;
+
+            await utils.printComCabecalho(columns, filtroFormatado, titulo);
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
+            });
+        }
+    },
+
+    formatarDadosImpressaoFiltros(data) {
+        return data.map(item => ({
+            ...item,
+            DATA_INICIO: item.DATA_INICIO ? utils.dataBrasil(item.DATA_INICIO) : '-------',
+            DATA_FIM: item.DATA_FIM ? utils.dataBrasil(item.DATA_FIM) : '---------'
+
+        }));
     },
 
     async imprimirFiltroSelecionado(idFiltro: number) {

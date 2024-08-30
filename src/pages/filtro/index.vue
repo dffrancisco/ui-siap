@@ -106,7 +106,7 @@ onMounted(async () => {
       <div class="pt-6 btnPrint">
         <v-btn
           color="primary"
-          @click="actions.onClickImprimir"
+          @click="actions.onClickImprimirFiltros"
           icon="mdi-printer"
           size="36px"
           title="Imprimir"
