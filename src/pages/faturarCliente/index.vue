@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { actions, state } from "./faturarCliente";
 import ModalSelecionarCliente from "./components/modalSelecionarCliente.vue";
 import globalActions from "@/store/globalActions";
@@ -139,9 +139,11 @@ onMounted(async () => {
     <v-dialog
       v-model="state.modalSelecionarClienteOpened"
       width="600"
-      height="450"
     >
-      <ModalSelecionarCliente @closeModal="actions.closeModal" />
+      <ModalSelecionarCliente
+        :dataLimite="state.dataLimite"
+        @closeModal="actions.closeModal"
+      />
     </v-dialog>
   </v-container>
 </template>

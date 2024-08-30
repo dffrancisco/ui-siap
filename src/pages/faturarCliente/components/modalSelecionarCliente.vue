@@ -1,11 +1,25 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import { onMounted, reactive, Ref, ref } from "vue";
+import moment from "moment";
+import { onMounted, reactive, ref } from "vue";
+import serviceFaturarCliente from "../services/faturarCliente.service";
+import Swal from "sweetalert2";
+
+const props = defineProps({
+  dataLimite: {
+    type: String,
+    default: moment().format("YYYY-MM-DD"),
+  },
+});
 
 const emits = defineEmits(["closeModal"]);
 
+const inputSearch = ref();
+
 const state = reactive({
   gridCliente: <ixGridCreate>{},
+  loading: false,
+  dbClienteFaturado: {},
 });
 
 const actions = {
@@ -17,9 +31,19 @@ const actions = {
     state.gridCliente = new xGridV2.create({
       el: "#gridCliente",
       count: true,
+      height: 300,
       columns: {
-        "Razão Social": {},
-        CNPJ: { width: "30%" },
+        "Razão Social": { dataField: "NOME" },
+        CNPJ: { dataField: "CGC_CLIENTE", width: "25%", center: true },
+      },
+      query: {
+        async execute(rs) {
+          let data = await actions.getClientesFaturados({
+            offset: rs.offset,
+            param: rs.param,
+          });
+          state.gridCliente.querySourceAdd(data);
+        },
       },
     });
   },
@@ -27,15 +51,44 @@ const actions = {
   closeModal() {
     emits("closeModal");
   },
-};
 
-const inputSearch = ref("inputSearch") as Ref;
+  async getClientesFaturados({ param, offset }) {
+    try {
+      state.loading = true;
+
+      const data = await serviceFaturarCliente.getClientesFaturados({ param, offset });
+
+      return data;
+    } catch (error) {
+      Swal.fire({
+        text: "Erro ao buscar os clientes faturados",
+        icon: "error",
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  async btnSearch() {
+    state.gridCliente.queryOpen({
+      search: inputSearch.value.value,
+      dataLimite: props.dataLimite,
+    });
+  },
+};
 
 onMounted(async () => {
   await actions.init();
 
-  const inputSearchElement = inputSearch.value as HTMLInputElement;
-  inputSearchElement.focus();
+  state.gridCliente.queryOpen(
+    {
+      search: "",
+      dataLimite: props.dataLimite,
+    },
+    () => {
+      inputSearch.value.focus();
+    }
+  );
 });
 </script>
 
@@ -47,12 +100,15 @@ onMounted(async () => {
         placeholder="Razão social / CNPJ"
         density="compact"
         ref="inputSearch"
+        @keydown.enter.prevent="actions.btnSearch"
+        @keydown.arrow.down.prevent="state.gridCliente.focus()"
       />
       <div class="d-flex align-center">
         <v-btn
           icon="mdi-magnify"
           size="34"
           color="primary"
+          @click="actions.btnSearch"
         />
       </div>
     </div>
@@ -72,4 +128,16 @@ onMounted(async () => {
       <v-btn color="primary">selecionar</v-btn>
     </div>
   </v-card>
+
+  <v-overlay
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
