@@ -4,7 +4,7 @@ import moment from "moment";
 import { onMounted, reactive, ref } from "vue";
 import serviceFaturarCliente from "../services/faturarCliente.service";
 import Swal from "sweetalert2";
-import { iGetClientesFaturadosParam } from "../interfaces";
+import { iClienteFaturado, iGetClientesFaturadosParam } from "../interfaces";
 
 const props = defineProps({
   dataLimite: {
@@ -13,14 +13,14 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["closeModal"]);
+const emits = defineEmits(["closeModal", "selecionarCliente"]);
 
 const inputSearch = ref();
 
 const state = reactive({
   gridCliente: <ixGridCreate>{},
   loading: false,
-  dbClienteFaturado: {},
+  dbClienteFaturado: <iClienteFaturado>{},
 });
 
 const actions = {
@@ -43,6 +43,8 @@ const actions = {
           state.gridCliente.querySourceAdd(data);
         },
       },
+      enter: () => actions.selecionarCliente(),
+      dblClick: () => actions.selecionarCliente(),
     });
   },
 
@@ -72,6 +74,22 @@ const actions = {
       search: inputSearch.value.value,
       dataLimite: props.dataLimite,
     });
+  },
+
+  selecionarCliente() {
+    if (!state.gridCliente.dataSource()) {
+      Swal.fire({
+        text: "Nenhum cliente foi selecionado",
+        icon: "warning",
+      });
+      return false;
+    }
+
+    const clienteSelecionado = state.gridCliente.dataSource();
+
+    emits("selecionarCliente", clienteSelecionado);
+
+    actions.closeModal();
   },
 };
 
@@ -123,7 +141,11 @@ onMounted(async () => {
         @click="actions.closeModal"
         >cancelar</v-btn
       >
-      <v-btn color="primary">selecionar</v-btn>
+      <v-btn
+        @click="actions.selecionarCliente"
+        color="primary"
+        >selecionar</v-btn
+      >
     </div>
   </v-card>
 

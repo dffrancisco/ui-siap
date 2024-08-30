@@ -44,7 +44,10 @@ onMounted(async () => {
               type="text"
               label="Cliente"
               density="compact"
-              disabled
+              readonly
+              :disabled="!state.dbClienteFaturado.ID_CLIENTE"
+              :clearable="false"
+              v-model="state.dbClienteFaturado.NOME"
             />
             <div class="d-flex align-center">
               <v-btn
@@ -142,6 +145,7 @@ onMounted(async () => {
     >
       <ModalSelecionarCliente
         :dataLimite="state.dataLimite"
+        @selecionarCliente="actions.selecionarCliente"
         @closeModal="actions.closeModal"
       />
     </v-dialog>
