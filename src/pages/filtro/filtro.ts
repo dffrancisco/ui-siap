@@ -1,4 +1,4 @@
-import utils from '@/ts/utils';
+import utils, { iColumnPrint } from '@/ts/utils';
 import Swal from "sweetalert2";
 import { computed, reactive } from "vue";
 import serviceFiltro from './services/filtro.service';
@@ -134,6 +134,56 @@ export const actions = {
         console.log('imprimir');
     },
 
+    async imprimirFiltroSelecionado(idFiltro: number) {
+        try {
+            const filtro = await serviceFiltro.getFiltroSelected(idFiltro)
+            const filtroFormatado = actions.formatarDadosImpressao([...filtro]);
+
+            const columns: iColumnPrint[] = [
+                { key: 'DESC_PRODUTO', label: 'Produto', width: '30%' },
+                { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '20%' },
+                { key: 'NUM_FABRICANTE2', label: 'Nº Fabricante2', width: '20%' },
+                { key: 'QUANTIDADE', label: 'Qtd velha', width: '5%', align: 'center' },
+                { key: 'QTO_OLD', label: 'Qtd nova', width: '5%', align: 'center' },
+                { key: 'END_ESTOQUE', label: 'End. Estoque', width: '15%', align: 'right' },
+                { key: 'END_EXCESSO', label: 'End. Excesso', width: '15%', align: 'right' },
+                { key: 'DATA', label: 'Data', width: '10%', align: 'right' },
+                { key: 'CONFERIDO', label: 'Conferido', width: '10%', align: 'right' }
+
+            ];
+
+            const titulo = `
+                <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
+                    <span>&nbsp;</span>
+                    <strong style="font-size: 16px;">Filtro para conferência</strong>
+                </div>
+            `;
+
+            await utils.printComCabecalho(columns, filtroFormatado, titulo);
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
+            });
+        }
+    },
+
+    formatarDadosImpressao(data) {
+        return data.map(item => ({
+            ...item,
+            DESC_PRODUTO: item.DESC_PRODUTO || '-------',
+            NUM_FABRICANTE: item.NUM_FABRICANTE || '-------',
+            NUM_FABRICANTE2: item.NUM_FABRICANTE2 || '-------',
+            QUANTIDADE: item.QUANTIDADE || '-------',
+            QTO_OLD: item.QTO_OLD || '-------',
+            END_ESTOQUE: item.END_ESTOQUE || '-------',
+            END_EXCESSO: item.END_EXCESSO || '-------',
+            DATA: item.DATA ? utils.dataBrasil(item.DATA) : '-------',
+            CONFERIDO: item.CONFERIDO || '-------',
+        }));
+    },
+
     novoFiltro() {
         state.modalNovoFiltroOpened = true;
     },
@@ -182,6 +232,32 @@ export const actions = {
                 Swal.fire({
                     icon: "error",
                     text: "Erro ao reabrir o filtro!"
+                });
+            } finally {
+                state.loading = false;
+            }
+
+        }
+    },
+
+    async deletarFiltro(idFiltro) {
+        state.idFiltro = idFiltro;
+        if (await msgConfirm("Confirmação", "Confirma que deseja excluir esse filtro? Todos os itens relativos serão removidos.")) {
+
+            try {
+                state.loading = true;
+                let param = state.idFiltro
+                await serviceFiltro.deletarFiltro(param)
+                Swal.fire({
+                    icon: "success",
+                    text: "Filtro deletado com sucesso!",
+                    timer: 1500
+                });
+                actions.getFiltros()
+            } catch {
+                Swal.fire({
+                    icon: "error",
+                    text: "Erro ao excluir o filtro!"
                 });
             } finally {
                 state.loading = false;

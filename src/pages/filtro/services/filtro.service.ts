@@ -100,6 +100,15 @@ const reabrirFiltro: iFinalizarFiltro = async (param) => {
     return data;
 }
 
+const deletarFiltro: iFinalizarFiltro = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "deletarFiltro",
+        param
+    });
+
+    return data;
+}
+
 export default {
     getFuncionarios,
     getMarcas,
@@ -110,5 +119,6 @@ export default {
     atualizarFiltro,
     inserirFiltro,
     finalizarFiltro,
-    reabrirFiltro
+    reabrirFiltro,
+    deletarFiltro
 }

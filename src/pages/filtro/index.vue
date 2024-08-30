@@ -63,7 +63,7 @@ onMounted(async () => {
               class="ml-1"
               color="primary"
               title="Imprimir"
-              @click=""
+              @click="actions.imprimirFiltroSelecionado(item.ID_FILTRO)"
             >
               mdi-printer-outline
             </v-icon>
@@ -73,7 +73,7 @@ onMounted(async () => {
               class="ml-1"
               title="Deletar"
               :disabled="item.DATA_FIM != null"
-              @click=""
+              @click="actions.deletarFiltro(item.ID_FILTRO)"
             >
               mdi-delete-outline
             </v-icon>
