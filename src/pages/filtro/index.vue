@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { actions, state } from "./filtro";
+import { actions, state, computeds } from "./filtro";
+import ModalAddItensFiltro from "./components/modalAddItensFiltro.vue";
+import ModalVisualizarFiltro from "./components/modalVisualizarFiltro.vue";
+import ModalNovoFiltro from "./components/modalNovoFiltro.vue";
 
 onMounted(async () => {
   actions.init();
@@ -14,77 +17,81 @@ onMounted(async () => {
       style="width: 900px; margin: 0 auto"
     >
       <div class="divInputs">
-        <div style="display: flex; gap: 16px">
-          <v-autocomplete
-            id="carros"
-            label="Carros"
-            class="carros"
-            :items="state.carros"
-            item-title="DESCRICAO"
-            item-value="ID_CARRO"
-            autocomplete="off"
-            :clearable="true"
-          ></v-autocomplete>
-          <v-autocomplete
-            id="marcas"
-            label="Marcas"
-            class="marcas"
-            :items="state.marcas"
-            autocomplete="off"
-            item-title="DESCRICAO"
-            item-value="ID_MARCA"
-            :clearable="true"
-          ></v-autocomplete>
-          <v-text-field
-            id="endEstoque"
-            label="End. Estoque"
-            class="endEstoque"
-            autocomplete="off"
-            item-title="title"
-            item-value="value"
-            :clearable="true"
-          ></v-text-field>
-
-          <v-text-field
-            id="numFabricante"
-            class="numFabricante"
-            autocomplete="off"
-            label="Num. Fabricante"
-            :clearable="true"
-          ></v-text-field>
-
-          <v-text-field
-            id="descricaoProduto"
-            class="descricaoProduto"
-            autocomplete="off"
-            label="Descrição"
-            :clearable="true"
-          ></v-text-field>
-        </div>
-        <div class="btnPesquisar">
-          <v-btn
-            color="primary"
-            class="mt-3"
-            icon="mdi-magnify"
-            size="36px"
-            @click="actions.validarInputs"
-          >
-          </v-btn>
-        </div>
+        <v-text-field
+          id="getFiltro"
+          label="Pesquisar Filtro"
+          class="getFiltro"
+          autocomplete="off"
+          item-title="title"
+          item-value="value"
+          :clearable="true"
+          v-model="state.searchFiltro"
+          append-inner-icon="mdi-magnify"
+        ></v-text-field>
+        <v-btn
+          title="Novo"
+          class="novoFiltroBtn"
+          color="primary"
+          @click="actions.novoFiltro"
+        >
+          + Novo
+        </v-btn>
       </div>
 
-      <v-data-table-server
-        class="tableSugestaoCompraAlteracao"
-        items-per-page-text="Itens por página"
-        v-model:itemsPerPage="state.itemsPerPage"
-        :items-length="state.totalItems"
+      <v-data-table-virtual
+        class="tableFiltros"
         style="border-radius: 5px; padding-top: 20px"
         height="400"
+        :headers="state.headers"
+        :items="computeds.filtros.value"
         fixed-header
         :loading="state.loading"
         :row-props="actions.getClassCorLinha"
-        @update:page=""
       >
+        <template v-slot:item.acoes="{ item }">
+          <div style="display: flex">
+            <v-icon
+              size="large"
+              color="primary"
+              title="Ver detalhes"
+              @click="actions.selectFiltro(item.ID_FILTRO)"
+            >
+              mdi-playlist-plus
+            </v-icon>
+            <v-icon
+              size="large"
+              class="ml-1"
+              color="primary"
+              title="Imprimir"
+              @click=""
+            >
+              mdi-printer-outline
+            </v-icon>
+            <v-icon
+              size="large"
+              color="primary"
+              class="ml-1"
+              title="Deletar"
+              :disabled="item.DATA_FIM != null"
+              @click=""
+            >
+              mdi-delete-outline
+            </v-icon>
+            <v-icon
+              size="large"
+              color="primary"
+              class="ml-1"
+              :title="item.DATA_FIM == null ? 'Finalizar' : 'Reabrir'"
+              @click="
+                item.DATA_FIM == null
+                  ? actions.finalizarFiltro(item.ID_FILTRO)
+                  : actions.reabrirFiltro(item.ID_FILTRO)
+              "
+            >
+              {{ item.DATA_FIM == null ? "mdi-checkbox-marked-outline" : "mdi-restore" }}
+            </v-icon>
+          </div>
+        </template>
         <template #no-data>
           <v-alert
             :value="true"
@@ -94,9 +101,9 @@ onMounted(async () => {
             Não há dados disponíveis.
           </v-alert>
         </template>
-      </v-data-table-server>
+      </v-data-table-virtual>
 
-      <div class="pt-2 btnPrint">
+      <div class="pt-6 btnPrint">
         <v-btn
           color="primary"
           @click="actions.onClickImprimir"
@@ -107,7 +114,60 @@ onMounted(async () => {
       </div>
     </v-card>
     <div id="pnCodigoTela">filtro</div>
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </v-container>
+
+  <v-dialog
+    v-model="state.modalNovoFiltroOpened"
+    transition="dialog-transition"
+    variant="flat"
+    :persistent="true"
+    @click:outside="actions.closeModalNovoFiltro"
+  >
+    <ModalNovoFiltro
+      @closeModalNovoFiltro="actions.closeModalNovoFiltro"
+      @nomeFiltro="actions.addItensNovoFiltro"
+    />
+  </v-dialog>
+
+  <v-dialog
+    v-model="state.modalVisualizarFiltroOpened"
+    transition="dialog-transition"
+    variant="flat"
+    :persistent="true"
+    @click:outside="actions.closeModalVisualizarFiltro"
+  >
+    <ModalVisualizarFiltro
+      :dadosFiltroSelecionado="state.dadosDoFiltroSelecionado"
+      @addItensFiltro="actions.addItensFiltroExistente"
+      @closeModalVisualizarFiltro="actions.closeModalVisualizarFiltro"
+    />
+  </v-dialog>
+
+  <v-dialog
+    v-model="state.modalAddItensFiltroOpened"
+    transition="dialog-transition"
+    variant="flat"
+    :persistent="true"
+    @click:outside="actions.closeModalAddItensFiltro"
+  >
+    <ModalAddItensFiltro
+      :nomeFiltro="state.nomeNovoFiltro"
+      :idFiltro="state.idFiltro"
+      :conferente="state.conferente"
+      @closeModalAddItensFiltro="actions.closeModalAddItensFiltro"
+    />
+  </v-dialog>
 </template>
 
 <style>
@@ -118,28 +178,13 @@ onMounted(async () => {
 .cor-zebrada-1 {
   background-color: #f0f0f0;
 }
-
-.v-data-table-footer {
-  max-height: 2px;
-  padding-top: 20px;
-}
-
-.v-data-table-footer__pagination {
-  padding-right: 50px;
-}
 </style>
 
 <style scoped>
 .divInputs {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   width: 100%;
-}
-
-.btnPesquisar {
-  margin-top: -15px;
-  padding-left: 10px;
 }
 
 .btnPrint {
@@ -148,11 +193,13 @@ onMounted(async () => {
   margin-top: -10px;
 }
 
-.carros,
-.marcas,
-.endEstoque,
-.numFabricante,
-.descricaoProduto {
-  width: 150px;
+.getFiltro {
+  width: 350px;
+}
+
+.novoFiltroBtn {
+  font-weight: 600;
+  text-align: center;
+  margin-left: 370px;
 }
 </style>

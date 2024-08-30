@@ -1,0 +1,135 @@
+<script setup lang="ts">
+import { reactive } from "vue";
+import { iDadosFiltro } from "../interfaces";
+
+const stateModalVisualizarFiltro = reactive({
+  loading: false,
+  headers: <any>[
+    {
+      title: "Produto",
+      key: "DESC_PRODUTO",
+      sortable: true,
+    },
+    {
+      title: "Nº Fabricante",
+      key: "NUM_FABRICANTE",
+      sortable: true,
+    },
+    {
+      title: "Nº Fabricante 2",
+      key: "NUM_FABRICANTE2",
+      sortable: true,
+    },
+
+    {
+      title: "Qtd",
+      key: "QUANTIDADE",
+      sortable: true,
+      align: "center",
+    },
+    {
+      title: "Conferido",
+      key: "CONFERIDO",
+      sortable: true,
+      align: "center",
+    },
+    {
+      title: "Ações",
+      key: "acoes",
+      sortable: false,
+      align: "center",
+    },
+  ],
+});
+
+const actions = {
+  cancelar() {
+    emit("closeModalVisualizarFiltro");
+  },
+
+  addItensFiltro() {
+    emit(
+      "addItensFiltro",
+      props.dadosFiltroSelecionado[0].ID_FILTRO,
+      props.dadosFiltroSelecionado[0].CONFERENTE,
+      props.dadosFiltroSelecionado[0].NOME_FILTRO
+    );
+    emit("closeModalVisualizarFiltro");
+  },
+};
+
+const props = defineProps({
+  dadosFiltroSelecionado: {
+    type: Array as () => iDadosFiltro[],
+    required: true,
+  },
+});
+
+const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeFiltro"]);
+</script>
+<template>
+  <v-container>
+    <v-card
+      class="pa-2"
+      style="width: 900px; margin: 0 auto"
+    >
+      <v-card-text>
+        <div style="margin-left: 85%; padding-bottom: 15px">
+          <v-btn
+            class="ml-2"
+            color="primary"
+            @click="actions.addItensFiltro()"
+          >
+            + ADD itens</v-btn
+          >
+        </div>
+        <v-data-table
+          :headers="stateModalVisualizarFiltro.headers"
+          items-per-page-text="Itens por página"
+          items-per-page="50"
+          height="370"
+          fixed-header
+          :items="props.dadosFiltroSelecionado"
+          item-key="COD_PRODUTO"
+          item-value="COD_PRODUTO"
+        >
+          <template v-slot:item.acoes="{ item }">
+            <div style="display: flex">
+              <v-icon
+                size="large"
+                color="primary"
+                class="ml-1"
+                title="Deletar"
+                :disabled="item.CONFERIDO == 'SIM'"
+                @click=""
+              >
+                mdi-delete-outline
+              </v-icon>
+            </div>
+          </template>
+          <template #no-data>
+            <v-alert
+              :value="true"
+              icon="mdi-information"
+              style="background-color: #ffffff"
+            >
+              Não há dados disponíveis.
+            </v-alert>
+          </template>
+        </v-data-table>
+      </v-card-text>
+    </v-card>
+    <v-overlay
+      :model-value="stateModalVisualizarFiltro.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
+  </v-container>
+</template>
+<style scoped></style>

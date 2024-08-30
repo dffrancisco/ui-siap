@@ -1,10 +1,17 @@
 import axios from "axios";
-import { iFuncionario, iMarcas } from "../interfaces";
+import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iInsertOuUpdate, iMarcas, iParamFiltrar, iResultPesquisa } from "../interfaces";
 
 const caminho = 'siap/filtro'
 
 type iGetFuncionarios = () => Promise<iFuncionario[]>
 type iGetMarcas = () => Promise<iMarcas[]>
+type iGetCarros = () => Promise<iCarros[]>
+type iGetFiltros = () => Promise<iFiltros[]>
+type iGetDadosParaFiltragem = (param: iParamFiltrar) => Promise<iResultPesquisa[]>
+type iGetDadosFiltroSelecionado = (param: number) => Promise<iDadosFiltro[]>
+type iUpdateFiltro = (param: iInsertOuUpdate) => Promise<string[]>
+type iInsertFiltro = (param: iInsertOuUpdate) => Promise<string[]>
+type iFinalizarFiltro = (param: number) => Promise<string[]>
 
 
 const getFuncionarios: iGetFuncionarios = async () => {
@@ -23,7 +30,7 @@ const getMarcas: iGetMarcas = async () => {
     return data;
 }
 
-const getCarros = async () => {
+const getCarros: iGetCarros = async () => {
     let { data } = await axios.post(caminho, {
         call: "getCarros"
     });
@@ -31,9 +38,63 @@ const getCarros = async () => {
     return data;
 }
 
-const getFiltros = async () => {
+const getFiltros: iGetFiltros = async () => {
     let { data } = await axios.post(caminho, {
         call: "getFiltros"
+    });
+
+    return data;
+}
+
+const getFiltroSelected: iGetDadosFiltroSelecionado = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getFiltroSelected",
+        param
+    });
+
+    return data;
+}
+
+const getDadosParaFiltragem: iGetDadosParaFiltragem = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getDadosParaFiltragem",
+        param
+    });
+
+    return data;
+}
+
+const atualizarFiltro: iUpdateFiltro = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "atualizarFiltro",
+        param
+    });
+
+    return data;
+}
+
+const inserirFiltro: iInsertFiltro = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "inserirFiltro",
+        param
+    });
+
+    return data;
+}
+
+const finalizarFiltro: iFinalizarFiltro = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "finalizarFiltro",
+        param
+    });
+
+    return data;
+}
+
+const reabrirFiltro: iFinalizarFiltro = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "reabrirFiltro",
+        param
     });
 
     return data;
@@ -43,5 +104,11 @@ export default {
     getFuncionarios,
     getMarcas,
     getCarros,
-    getFiltros
+    getFiltros,
+    getFiltroSelected,
+    getDadosParaFiltragem,
+    atualizarFiltro,
+    inserirFiltro,
+    finalizarFiltro,
+    reabrirFiltro
 }
