@@ -10,3 +10,19 @@ export interface iGetClientesFaturadosParam {
     search: string,
     dataLimite: string
 }
+
+export interface iOrcamentosClienteFaturado {
+    NUM_ORCAMENTO: number,
+    NUM_NFE: number,
+    NOME: string,
+    DATA: string,
+    DEVOLUCAO: number,
+    VALOR: number
+}
+
+export interface iGetOrcamentosClienteFaturadoResponse extends iOrcamentosClienteFaturado { }
+
+export interface iGetOrcamentosClienteFaturadoParam {
+    dataLimite: string,
+    id_cliente: number
+}
