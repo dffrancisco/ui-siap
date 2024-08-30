@@ -1,6 +1,6 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import moment from "moment";
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import { iClienteFaturado, iOrcamentosClienteFaturado } from "./interfaces";
 import serviceFaturarCliente from "./services/faturarCliente.service";
 import Swal from "sweetalert2";
@@ -71,4 +71,10 @@ export const actions = ({
             state.loading = false
         }
     }
+})
+
+export const computeds = ({
+    totalValorOrcamentos: computed(() => {
+        return state.dbOrcamentosClienteFaturado.reduce((total, orcamento) => total + orcamento.VALOR, 0)
+    })
 })

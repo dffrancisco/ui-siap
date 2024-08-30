@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { actions, state } from "./faturarCliente";
+import { actions, computeds, state } from "./faturarCliente";
 import ModalSelecionarCliente from "./components/modalSelecionarCliente.vue";
 import globalActions from "@/store/globalActions";
+import utils from "@/ts/utils";
 
 onMounted(async () => {
   await actions.init();
@@ -118,7 +119,7 @@ onMounted(async () => {
                 </div>
                 <div class="d-flex flex-column align-end">
                   <span class="text-body-2"><strong>Total Orç:</strong></span>
-                  <span class="text-body-2">2.500,00</span>
+                  <span class="text-body-2">{{ utils.formatValor(computeds.totalValorOrcamentos.value) }}</span>
                 </div>
               </div>
               <div>
@@ -149,6 +150,18 @@ onMounted(async () => {
         @closeModal="actions.closeModal"
       />
     </v-dialog>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </v-container>
 </template>
 
