@@ -4,6 +4,7 @@ import moment from "moment";
 import { onMounted, reactive, ref } from "vue";
 import serviceFaturarCliente from "../services/faturarCliente.service";
 import Swal from "sweetalert2";
+import { iGetClientesFaturadosParam } from "../interfaces";
 
 const props = defineProps({
   dataLimite: {
@@ -38,10 +39,7 @@ const actions = {
       },
       query: {
         async execute(rs) {
-          let data = await actions.getClientesFaturados({
-            offset: rs.offset,
-            param: rs.param,
-          });
+          let data = await actions.getClientesFaturados(rs.param as iGetClientesFaturadosParam, rs.offset);
           state.gridCliente.querySourceAdd(data);
         },
       },
@@ -52,11 +50,11 @@ const actions = {
     emits("closeModal");
   },
 
-  async getClientesFaturados({ param, offset }) {
+  async getClientesFaturados(param: iGetClientesFaturadosParam, offset: number) {
     try {
       state.loading = true;
 
-      const data = await serviceFaturarCliente.getClientesFaturados({ param, offset });
+      const data = await serviceFaturarCliente.getClientesFaturados(param, offset);
 
       return data;
     } catch (error) {
