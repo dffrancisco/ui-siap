@@ -70,7 +70,7 @@ onMounted(async () => {
             cols="9"
             class="d-flex"
           >
-            <div id="gridPedido"></div>
+            <div id="gridOrcamentosClienteFaturado"></div>
           </v-col>
           <v-col class="d-flex">
             <div class="border rounded-lg d-flex flex-grow-1 flex-column justify-space-between pa-3">
@@ -114,7 +114,7 @@ onMounted(async () => {
               <div class="d-flex ga-10">
                 <div class="d-flex flex-column align-end">
                   <span class="text-body-2"><strong>Qtd. Orç:</strong></span>
-                  <span class="text-body-2">10</span>
+                  <span class="text-body-2">{{ state.dbOrcamentosClienteFaturado.length }}</span>
                 </div>
                 <div class="d-flex flex-column align-end">
                   <span class="text-body-2"><strong>Total Orç:</strong></span>

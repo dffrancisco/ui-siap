@@ -9,8 +9,8 @@ const caminho = 'siap/faturarCliente'
 type iGetClientesFaturadosFuction = (param: iGetClientesFaturadosParam, offset: number) =>
     Promise<iGetClientesFaturadosResponse>
 
-type iGetOrcamentosClienteFaturadoFunction = (param: iGetOrcamentosClienteFaturadoParam, offset: number) =>
-    Promise<iGetOrcamentosClienteFaturadoResponse>
+type iGetOrcamentosClienteFaturadoFunction = (param: iGetOrcamentosClienteFaturadoParam) =>
+    Promise<iGetOrcamentosClienteFaturadoResponse[]>
 
 const getClientesFaturados: iGetClientesFaturadosFuction = async (param, offset) => {
     const { data } = await axios.post(caminho, {
