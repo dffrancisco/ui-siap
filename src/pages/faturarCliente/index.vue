@@ -22,6 +22,7 @@ onMounted(async () => {
     color="gray"
     icon="mdi-theme-light-dark"
   ></v-btn>
+
   <v-container>
     <v-card
       width="800"
@@ -98,7 +99,9 @@ onMounted(async () => {
               </div>
               <div class="d-flex flex-column">
                 <span class="text-body-2"><strong>Qtd. Orç: </strong>3</span>
-                <span class="text-body-2"><strong>Somatório: </strong>600,00</span>
+                <span class="text-body-2"
+                  ><strong>Somatório: </strong>{{ utils.formatValor(computeds.somatorio.value) }}</span
+                >
               </div>
             </div>
           </v-col>
@@ -123,7 +126,11 @@ onMounted(async () => {
                 </div>
               </div>
               <div>
-                <v-btn color="error">faturar (f1)</v-btn>
+                <v-btn
+                  :disabled="state.dbOrcamentosClienteFaturado.length == 0"
+                  color="error"
+                  >faturar (f1)</v-btn
+                >
               </div>
             </div>
           </v-col>
@@ -132,12 +139,15 @@ onMounted(async () => {
               <v-text-field
                 label="Localizar"
                 density="compact"
+                v-model="state.locValor"
+                @keydown.enter.prevent="actions.locValorOrcamento"
               />
             </div>
           </v-col>
         </v-row>
       </div>
     </v-card>
+
     <div id="pnCodigoTela">faturarCliente</div>
 
     <v-dialog
