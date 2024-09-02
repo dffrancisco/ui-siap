@@ -30,8 +30,8 @@ export const actions = ({
             columns: {
                 'Orç.': { dataField: 'NUM_ORCAMENTO', center: true, width: '10%' },
                 'Nota Fiscal': { dataField: 'NUM_NFE', center: true, width: '10%' },
-                'Cliente': { dataField: 'NOME', width: '35%' },
-                'Data': { dataField: 'DATA', render: utils.dataBrasil, center: true },
+                'Cliente': { dataField: 'NOME', width: '40%' },
+                'Data': { dataField: 'DATA', render: utils.dataBrasil, center: true, width: '15%' },
                 'Devolução': { dataField: 'DEVOLUCAO', render: utils.formatValor, right: true },
                 'Valor': { dataField: 'VALOR', render: utils.formatValor, right: true }
             },
@@ -44,6 +44,7 @@ export const actions = ({
 
     async selecionarCliente(cliente: iClienteFaturado) {
         state.dbClienteFaturado = cliente
+        state.orcamentosLocalizados = []
         await actions.getOrcamentosClienteFaturado()
     },
 
@@ -58,8 +59,7 @@ export const actions = ({
 
             const data = await serviceFaturarCliente.getOrcamentosClienteFaturado(param)
 
-            state.gridPedido.clear()
-            state.gridPedido.querySourceAdd(data)
+            state.gridPedido.source(data)
             state.dbOrcamentosClienteFaturado = data
 
         } catch (error) {
