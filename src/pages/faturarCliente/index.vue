@@ -135,7 +135,7 @@ onMounted(async () => {
               <div>
                 <v-btn
                   :disabled="state.dbOrcamentosClienteFaturado.length == 0"
-                  color="error"
+                  :color="computeds.somatorio.value == computeds.totalValorOrcamentos.value ? 'success' : 'error'"
                   >faturar (f1)</v-btn
                 >
               </div>
