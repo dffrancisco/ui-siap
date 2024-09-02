@@ -1,6 +1,6 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import moment from "moment";
-import { computed, reactive, ref } from "vue";
+import { computed, reactive } from "vue";
 import { iClienteFaturado, iGetOrcamentosClienteFaturadoParam, iOrcamentosClienteFaturado, iOrcamentosLocalizados } from "./interfaces";
 import serviceFaturarCliente from "./services/faturarCliente.service";
 import Swal from "sweetalert2";
@@ -80,9 +80,30 @@ export const actions = ({
         let isOrcamento = state.locValor.startsWith('+') ? true : false
         let isDevolucao = state.locValor.toUpperCase().startsWith('DEV') ? true : false
 
+        if (!isOrcamento && !isDevolucao) {
+            Swal.fire({
+                icon: "error",
+                text: "Orçamento inválido!"
+            })
+        }
+
         if (isOrcamento) {
 
             let num_orcamento = state.locValor.slice(1)
+            let orcamento: iOrcamentosLocalizados = state.dbOrcamentosClienteFaturado.find((orc) =>
+                orc.NUM_ORCAMENTO == num_orcamento
+            )
+
+            if (!orcamento) {
+                Swal.fire({
+                    icon: "error",
+                    text: "Orçamento não encontrado!"
+                })
+
+                state.locValor = null
+
+                return
+            }
 
             document.querySelectorAll('.xGridV2-col[name="NUM_ORCAMENTO"]').forEach(col => {
                 if (col.textContent.trim() == num_orcamento) {
@@ -92,16 +113,12 @@ export const actions = ({
                         parentRow.style.color = 'black';
                     }
 
-                    let orcamento: iOrcamentosLocalizados = state.dbOrcamentosClienteFaturado.find((orc) => orc.NUM_ORCAMENTO == num_orcamento)
-
                     orcamento = {
                         ...orcamento,
                         ISDEVOLUCAO: false
                     }
 
                     state.orcamentosLocalizados.push(orcamento)
-
-                    state.locValor = null
                 }
             });
         }
@@ -120,9 +137,15 @@ export const actions = ({
 
                 state.orcamentosLocalizados.push(orcamento)
 
-                state.locValor = null
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    text: "Orçamento de devolução não encontrado!"
+                })
             }
         }
+
+        state.locValor = null
     }
 
 })
@@ -132,19 +155,24 @@ export const computeds = ({
         return state.dbOrcamentosClienteFaturado.reduce((total, orcamento) => total + (orcamento.VALOR - orcamento.DEVOLUCAO), 0)
     }),
 
-    somatorio: computed(() => {
+    calcularOrcamentosLocalizados: computed(() => {
 
         let total = 0;
+        let qtdOrcamentos = 0
 
         if (state.orcamentosLocalizados.length == 0) {
-            return total;
+            return { total, qtdOrcamentos }
         }
 
         state.orcamentosLocalizados.forEach(orcamento => {
             total += orcamento.VALOR - orcamento.DEVOLUCAO;
+
+            if (!orcamento.ISDEVOLUCAO) {
+                qtdOrcamentos++;
+            }
         });
 
-        return total;
+        return { total, qtdOrcamentos };
     })
 
 })

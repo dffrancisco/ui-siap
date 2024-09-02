@@ -121,10 +121,12 @@ onMounted(async () => {
               </div>
               <div class="d-flex flex-column">
                 <span class="text-body-2"
-                  ><strong>Qtd. Orç: </strong>{{ state.orcamentosLocalizados.length }}</span
+                  ><strong>Qtd. Orç: </strong
+                  >{{ computeds.calcularOrcamentosLocalizados.value.qtdOrcamentos }}</span
                 >
                 <span class="text-body-2"
-                  ><strong>Somatório: </strong>{{ utils.formatValor(computeds.somatorio.value) }}</span
+                  ><strong>Somatório: </strong
+                  >{{ utils.formatValor(computeds.calcularOrcamentosLocalizados.value.total) }}</span
                 >
               </div>
             </div>
@@ -153,8 +155,8 @@ onMounted(async () => {
                 <v-btn
                   :disabled="state.dbOrcamentosClienteFaturado.length == 0"
                   :color="
-                    computeds.somatorio.value == computeds.totalValorOrcamentos.value &&
-                    computeds.somatorio.value != 0
+                    computeds.calcularOrcamentosLocalizados.value.total == computeds.totalValorOrcamentos.value &&
+                    computeds.totalValorOrcamentos.value != 0
                       ? 'success'
                       : 'error'
                   "
