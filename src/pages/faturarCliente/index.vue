@@ -77,28 +77,35 @@ onMounted(async () => {
           <v-col class="d-flex">
             <div class="border rounded-lg d-flex flex-grow-1 flex-column justify-space-between pa-3">
               <div class="custom-scroll">
-                <div
-                  v-for="i in 3"
-                  class="d-flex justify-space-between"
-                >
-                  <span class="text-body-1">+123</span>
-                  <span
-                    class="text-body-1"
-                    style="color: #60a5fa"
-                    >200,00</span
+                <div v-for="orcamento in state.orcamentosLocalizados">
+                  <div
+                    v-if="!orcamento.ISDEVOLUCAO"
+                    class="d-flex justify-space-between"
                   >
-                </div>
-                <div class="d-flex justify-space-between">
-                  <span class="text-body-1">D123</span>
-                  <span
-                    class="text-body-1"
-                    style="color: #f87171"
-                    >-100,00</span
+                    <span class="text-body-1">+{{ orcamento.NUM_ORCAMENTO }}</span>
+                    <span
+                      class="text-body-1"
+                      style="color: #60a5fa"
+                      >{{ utils.formatValor(orcamento.VALOR) }}</span
+                    >
+                  </div>
+                  <div
+                    v-else
+                    class="d-flex justify-space-between"
                   >
+                    <span class="text-body-1">D{{ orcamento.NUM_DEVOLUCAO }}</span>
+                    <span
+                      class="text-body-1"
+                      style="color: #f87171"
+                      >-{{ utils.formatValor(orcamento.DEVOLUCAO) }}</span
+                    >
+                  </div>
                 </div>
               </div>
               <div class="d-flex flex-column">
-                <span class="text-body-2"><strong>Qtd. Orç: </strong>3</span>
+                <span class="text-body-2"
+                  ><strong>Qtd. Orç: </strong>{{ state.orcamentosLocalizados.length }}</span
+                >
                 <span class="text-body-2"
                   ><strong>Somatório: </strong>{{ utils.formatValor(computeds.somatorio.value) }}</span
                 >

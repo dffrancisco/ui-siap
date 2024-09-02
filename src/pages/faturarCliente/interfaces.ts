@@ -17,7 +17,12 @@ export interface iOrcamentosClienteFaturado {
     NOME: string,
     DATA: string,
     DEVOLUCAO: number,
-    VALOR: number
+    VALOR: number,
+    NUM_DEVOLUCAO: number,
+}
+
+export interface iOrcamentosLocalizados extends iOrcamentosClienteFaturado {
+    ISDEVOLUCAO?: boolean
 }
 
 export interface iGetOrcamentosClienteFaturadoResponse extends iOrcamentosClienteFaturado { }
