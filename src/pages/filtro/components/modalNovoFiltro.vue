@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Swal from "sweetalert2";
 import { onMounted, reactive } from "vue";
 
 const stateModalNovoFiltro = reactive({
@@ -10,6 +11,13 @@ const emit = defineEmits(["closeModalNovoFiltro", "nomeFiltro"]);
 
 const actions = {
   salvar() {
+    if (!stateModalNovoFiltro.nomeFiltro.trim()) {
+      Swal.fire({
+        icon: "warning",
+        text: "Escolha um nome pro filtro!",
+      });
+      return;
+    }
     emit("nomeFiltro", stateModalNovoFiltro.nomeFiltro);
     actions.cancelar();
   },

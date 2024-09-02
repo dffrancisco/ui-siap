@@ -12,6 +12,7 @@ type iGetDadosFiltroSelecionado = (param: number) => Promise<iDadosFiltro[]>
 type iUpdateFiltro = (param: iInsertOuUpdate) => Promise<string[]>
 type iInsertFiltro = (param: iInsertOuUpdate) => Promise<string[]>
 type iFinalizarFiltro = (param: number) => Promise<string[]>
+type iDeletarItem = (param: number) => Promise<string[]>
 
 
 const getFuncionarios: iGetFuncionarios = async () => {
@@ -109,6 +110,15 @@ const deletarFiltro: iFinalizarFiltro = async (param) => {
     return data;
 }
 
+const deleteItemFiltro: iDeletarItem = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "deleteItemFiltro",
+        param
+    });
+
+    return data;
+}
+
 export default {
     getFuncionarios,
     getMarcas,
@@ -120,5 +130,6 @@ export default {
     inserirFiltro,
     finalizarFiltro,
     reabrirFiltro,
-    deletarFiltro
+    deletarFiltro,
+    deleteItemFiltro
 }

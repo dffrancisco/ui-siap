@@ -1,4 +1,4 @@
-import utils, { iColumnPrint } from '@/ts/utils';
+import utils, { iColumnPrint, msgConfirmSemCodigo } from '@/ts/utils';
 import Swal from "sweetalert2";
 import { computed, reactive } from "vue";
 import serviceFiltro from './services/filtro.service';
@@ -136,11 +136,12 @@ export const actions = {
             const filtroFormatado = actions.formatarDadosImpressaoFiltros([...filtros]);
 
             const columns: iColumnPrint[] = [
-                { key: 'DATA_INICIO', label: 'Data Início', width: '30%' },
+                { key: 'DATA_INICIO', label: 'Data Início', width: '20%' },
                 { key: 'DATA_FIM', label: 'Data Fim', width: '20%' },
-                { key: 'NOME_FILTRO', label: 'Nome do Filtro', width: '20%' },
-                { key: 'CRIADOR', label: 'Criador', width: '20%', align: 'center' },
-                { key: 'CONFERENTE', label: 'Conferente', width: '20%', align: 'center' }
+                { key: 'NOME_FILTRO', label: 'Nome do Filtro', width: '15%' },
+                { key: 'QTD_ITENS', label: 'Qtd Itens', width: '15%', align: 'center' },
+                { key: 'CRIADOR', label: 'Criador', width: '15%', align: 'center' },
+                { key: 'CONFERENTE', label: 'Conferente', width: '15%', align: 'center' }
             ];
 
             const titulo = `
@@ -176,14 +177,14 @@ export const actions = {
 
             const columns: iColumnPrint[] = [
                 { key: 'DESC_PRODUTO', label: 'Produto', width: '30%' },
-                { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '20%' },
-                { key: 'NUM_FABRICANTE2', label: 'Nº Fabricante2', width: '20%' },
+                { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '15%' },
+                { key: 'NUM_FABRICANTE2', label: 'Nº Fabricante2', width: '15%' },
                 { key: 'QUANTIDADE', label: 'Qtd velha', width: '5%', align: 'center' },
                 { key: 'QTO_OLD', label: 'Qtd nova', width: '5%', align: 'center' },
                 { key: 'END_ESTOQUE', label: 'End. Estoque', width: '15%', align: 'right' },
                 { key: 'END_EXCESSO', label: 'End. Excesso', width: '15%', align: 'right' },
-                { key: 'DATA', label: 'Data', width: '10%', align: 'right' },
-                { key: 'CONFERIDO', label: 'Conferido', width: '10%', align: 'right' }
+                { key: 'DATA', label: 'Data', width: '10%', align: 'center' },
+                { key: 'CONFERIDO', label: 'Conferido', width: '10%', align: 'center' }
 
             ];
 
@@ -207,15 +208,15 @@ export const actions = {
     formatarDadosImpressao(data) {
         return data.map(item => ({
             ...item,
-            DESC_PRODUTO: item.DESC_PRODUTO || '-------',
-            NUM_FABRICANTE: item.NUM_FABRICANTE || '-------',
-            NUM_FABRICANTE2: item.NUM_FABRICANTE2 || '-------',
-            QUANTIDADE: item.QUANTIDADE || '-------',
-            QTO_OLD: item.QTO_OLD || '-------',
-            END_ESTOQUE: item.END_ESTOQUE || '-------',
-            END_EXCESSO: item.END_EXCESSO || '-------',
-            DATA: item.DATA ? utils.dataBrasil(item.DATA) : '-------',
-            CONFERIDO: item.CONFERIDO || '-------',
+            DESC_PRODUTO: item.DESC_PRODUTO || '-----',
+            NUM_FABRICANTE: item.NUM_FABRICANTE || '-----',
+            NUM_FABRICANTE2: item.NUM_FABRICANTE2 || '-----',
+            QUANTIDADE: item.QUANTIDADE || '-----',
+            QTO_OLD: item.QTO_OLD || '-----',
+            END_ESTOQUE: item.END_ESTOQUE || '-----',
+            END_EXCESSO: item.END_EXCESSO || '-----',
+            DATA: item.DATA ? utils.dataBrasil(item.DATA) : '-----',
+            CONFERIDO: item.CONFERIDO || '-----',
         }));
     },
 
@@ -225,7 +226,7 @@ export const actions = {
 
     async finalizarFiltro(idFiltro) {
         state.idFiltro = idFiltro;
-        if (await msgConfirm("Confirmação", "Confirma a finalização desse filtro?")) {
+        if (await msgConfirmSemCodigo("Confirmação", "Deseja finalizar esse filtro?")) {
 
             try {
                 state.loading = true;
@@ -251,7 +252,7 @@ export const actions = {
 
     async reabrirFiltro(idFiltro) {
         state.idFiltro = idFiltro;
-        if (await msgConfirm("Confirmação", "Confirma a reabertura desse filtro?")) {
+        if (await msgConfirmSemCodigo("Confirmação", "Deseja reativar esse filtro?")) {
 
             try {
                 state.loading = true;
@@ -317,6 +318,7 @@ export const actions = {
 
     closeModalVisualizarFiltro() {
         state.modalVisualizarFiltroOpened = false;
+        actions.getFiltros()
     },
 
     closeModalNovoFiltro() {

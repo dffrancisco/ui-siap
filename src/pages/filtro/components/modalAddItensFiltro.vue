@@ -66,15 +66,6 @@ const actions = {
       stateModalAddItensFiltro.funcionarios = funcionarios;
       stateModalAddItensFiltro.carros = carros;
       stateModalAddItensFiltro.marcas = marcas;
-
-      //prencher input com o conferente existente
-      const funcionarioExistente = props.conferente;
-      if (funcionarioExistente) {
-        const funcionario = funcionarios.find((f) => f.LOGIN === funcionarioExistente);
-        if (funcionario) {
-          stateModalAddItensFiltro.funcionarioSelecionado = funcionario.LOGIN;
-        }
-      }
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -131,6 +122,14 @@ const actions = {
   },
 
   confirmarSelecionados() {
+    if (stateModalAddItensFiltro.produtosSelecionados.length == 0) {
+      Swal.fire({
+        icon: "warning",
+        text: "Escolha ao menos um item pro filtro!",
+      });
+      return;
+    }
+
     //verificar se tem funcionario conferente
     if (stateModalAddItensFiltro.funcionarioSelecionado) {
       let parametrosInsercao = {
@@ -285,7 +284,6 @@ onUnmounted(() => {
 
       <v-card>
         <v-card-text>
-          <div>{{ props.nomeFiltro }}</div>
           <v-data-table
             :headers="stateModalAddItensFiltro.headers"
             items-per-page-text="Itens por página"
@@ -315,8 +313,8 @@ onUnmounted(() => {
             style="max-width: 230px; margin-left: 10px; margin-top: -50px"
             color="primary"
             >Nome do Filtro: {{ stateModalAddItensFiltro.nomeFiltro }}</v-chip
-          ></div
-        >
+          >
+        </div>
         <div>
           <v-autocomplete
             id="funcionarios"

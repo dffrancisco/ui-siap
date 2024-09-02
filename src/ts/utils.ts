@@ -587,6 +587,20 @@ export const formatarChaveNF = (ctx) => {
   return 'Nota fiscal não informada.'
 }
 
+export const msgConfirmSemCodigo = async (title: string, text: string): Promise<boolean> => {
+  const { isConfirmed } = await Swal.fire({
+    title,
+    text,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar',
+  });
+
+  return isConfirmed;
+};
+
+
 export const base64_decode = (data) => {
   var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
   var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,

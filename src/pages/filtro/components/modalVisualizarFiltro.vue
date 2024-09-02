@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import { iDadosFiltro } from "../interfaces";
+import serviceFiltro from "../services/filtro.service";
+import Swal from "sweetalert2";
+import { msgConfirmSemCodigo } from "@/ts/utils";
 
 const stateModalVisualizarFiltro = reactive({
   loading: false,
@@ -56,6 +59,29 @@ const actions = {
     );
     emit("closeModalVisualizarFiltro");
   },
+
+  async deleteItemFiltro(item) {
+    if (await msgConfirmSemCodigo("Confirmação", "Deseja excluir esse item do filtro?")) {
+      try {
+        let param = item.ID_ITENS_FILTRO;
+        stateModalVisualizarFiltro.loading = true;
+        await serviceFiltro.deleteItemFiltro(param);
+        Swal.fire({
+          icon: "success",
+          text: "Item removido com sucesso!",
+          timer: 1000,
+        });
+      } catch {
+        Swal.fire({
+          icon: "error",
+          text: "Erro ao excluir o item!",
+        });
+      } finally {
+        stateModalVisualizarFiltro.loading = false;
+        emit("closeModalVisualizarFiltro");
+      }
+    }
+  },
 };
 
 const props = defineProps({
@@ -101,7 +127,7 @@ const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeF
                 class="ml-1"
                 title="Deletar"
                 :disabled="item.CONFERIDO == 'SIM'"
-                @click=""
+                @click="actions.deleteItemFiltro(item)"
               >
                 mdi-delete-outline
               </v-icon>
