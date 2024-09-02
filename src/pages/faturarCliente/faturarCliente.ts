@@ -1,6 +1,6 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import moment from "moment";
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { iClienteFaturado, iGetOrcamentosClienteFaturadoParam, iOrcamentosClienteFaturado, iOrcamentosLocalizados } from "./interfaces";
 import serviceFaturarCliente from "./services/faturarCliente.service";
 import Swal from "sweetalert2";
@@ -14,12 +14,14 @@ export const state = reactive({
     loading: false,
     dbOrcamentosClienteFaturado: <iOrcamentosClienteFaturado[]>[],
     locValor: null,
-    orcamentosLocalizados: <iOrcamentosLocalizados[]>[]
+    orcamentosLocalizados: <iOrcamentosLocalizados[]>[],
+    inputLocOrcElement: <HTMLInputElement>null
 })
 
 export const actions = ({
     async init() {
         actions.criarGrid()
+        state.inputLocOrcElement = document.getElementById('inputLocOrc') as HTMLInputElement
     },
 
     criarGrid() {
@@ -61,6 +63,7 @@ export const actions = ({
 
             state.gridPedido.source(data)
             state.dbOrcamentosClienteFaturado = data
+            state.inputLocOrcElement.focus()
 
         } catch (error) {
             Swal.fire({

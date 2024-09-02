@@ -4,6 +4,21 @@ import { actions, computeds, state } from "./faturarCliente";
 import ModalSelecionarCliente from "./components/modalSelecionarCliente.vue";
 import globalActions from "@/store/globalActions";
 import utils from "@/ts/utils";
+import { useEventListener } from "@vueuse/core";
+
+useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F2") {
+    state.modalSelecionarClienteOpened = true;
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  if (event.key === "F3") {
+    state.inputLocOrcElement.focus();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
 
 onMounted(async () => {
   await actions.init();
@@ -55,6 +70,7 @@ onMounted(async () => {
               <v-btn
                 icon="mdi-magnify"
                 size="34"
+                title="Pesquisar (F2)"
                 color="primary"
                 @click="state.modalSelecionarClienteOpened = true"
               />
@@ -84,7 +100,7 @@ onMounted(async () => {
                   >
                     <span class="text-body-1">+{{ orcamento.NUM_ORCAMENTO }}</span>
                     <span
-                      class="text-body-1"
+                      class="text-body-1 font-weight-bold"
                       style="color: #60a5fa"
                       >{{ utils.formatValor(orcamento.VALOR) }}</span
                     >
@@ -95,10 +111,11 @@ onMounted(async () => {
                   >
                     <span class="text-body-1">D{{ orcamento.NUM_DEVOLUCAO }}</span>
                     <span
-                      class="text-body-1"
+                      class="text-body-1 font-weight-bold"
                       style="color: #f87171"
-                      >-{{ utils.formatValor(orcamento.DEVOLUCAO) }}</span
                     >
+                      -{{ utils.formatValor(orcamento.DEVOLUCAO) }}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -149,8 +166,9 @@ onMounted(async () => {
           <v-col class="d-flex align-end">
             <div class="d-flex flex-grow-1">
               <v-text-field
-                label="Localizar"
+                label="Localizar (F3)"
                 density="compact"
+                id="inputLocOrc"
                 v-model="state.locValor"
                 @keydown.enter.prevent="actions.locValorOrcamento"
               />
