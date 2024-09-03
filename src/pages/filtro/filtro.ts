@@ -232,12 +232,18 @@ export const actions = {
                 state.loading = true;
                 let param = state.idFiltro
                 await serviceFiltro.finalizarFiltro(param)
+
+                // Atualizar o filtro na state
+                const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
+                if (filtroIndex !== -1) {
+                    state.filtros[filtroIndex].DATA_FIM = new Date().toISOString(); // Definindo a data atual como fim
+                }
+
                 Swal.fire({
                     icon: "success",
                     text: "Filtro finalizado com sucesso!",
                     timer: 1500
                 });
-                actions.getFiltros()
             } catch {
                 Swal.fire({
                     icon: "error",
@@ -258,12 +264,19 @@ export const actions = {
                 state.loading = true;
                 let param = state.idFiltro
                 await serviceFiltro.reabrirFiltro(param)
+
+                // Atualizar o filtro na state
+                const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
+                if (filtroIndex !== -1) {
+                    state.filtros[filtroIndex].DATA_FIM = null; // Reabrindo o filtro, removendo a data de fim
+                }
+
                 Swal.fire({
                     icon: "success",
                     text: "Filtro atualizado com sucesso!",
                     timer: 1500
                 });
-                actions.getFiltros()
+
             } catch {
                 Swal.fire({
                     icon: "error",
@@ -284,12 +297,15 @@ export const actions = {
                 state.loading = true;
                 let param = state.idFiltro
                 await serviceFiltro.deletarFiltro(param)
+
+                // Remover filtro da state
+                state.filtros = state.filtros.filter(filtro => filtro.ID_FILTRO !== idFiltro);
+
                 Swal.fire({
                     icon: "success",
                     text: "Filtro deletado com sucesso!",
                     timer: 1500
                 });
-                actions.getFiltros()
             } catch {
                 Swal.fire({
                     icon: "error",
@@ -318,7 +334,6 @@ export const actions = {
 
     closeModalVisualizarFiltro() {
         state.modalVisualizarFiltroOpened = false;
-        actions.getFiltros()
     },
 
     closeModalNovoFiltro() {

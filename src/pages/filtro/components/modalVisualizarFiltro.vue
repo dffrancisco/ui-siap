@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 import { iDadosFiltro } from "../interfaces";
 import serviceFiltro from "../services/filtro.service";
 import Swal from "sweetalert2";
@@ -7,6 +7,7 @@ import { msgConfirmSemCodigo } from "@/ts/utils";
 
 const stateModalVisualizarFiltro = reactive({
   loading: false,
+  dadosFiltro: [] as iDadosFiltro[],
   headers: <any>[
     {
       title: "Produto",
@@ -66,6 +67,13 @@ const actions = {
         let param = item.ID_ITENS_FILTRO;
         stateModalVisualizarFiltro.loading = true;
         await serviceFiltro.deleteItemFiltro(param);
+
+        // Remover o item do estado local
+        stateModalVisualizarFiltro.dadosFiltro = stateModalVisualizarFiltro.dadosFiltro.filter(
+          // @ts-ignore
+          (filtroItem) => filtroItem.ID_ITENS_FILTRO !== item.ID_ITENS_FILTRO
+        );
+
         Swal.fire({
           icon: "success",
           text: "Item removido com sucesso!",
@@ -78,7 +86,6 @@ const actions = {
         });
       } finally {
         stateModalVisualizarFiltro.loading = false;
-        emit("closeModalVisualizarFiltro");
       }
     }
   },
@@ -91,6 +98,17 @@ const props = defineProps({
   },
 });
 
+// Inicializando o estado local com os dados da props
+stateModalVisualizarFiltro.dadosFiltro = [...props.dadosFiltroSelecionado];
+
+watch(
+  () => props.dadosFiltroSelecionado,
+  (newValue) => {
+    stateModalVisualizarFiltro.dadosFiltro = [...newValue];
+  },
+  { immediate: true } //immediate: true faz com que o watch rode na primeira renderização
+);
+
 const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeFiltro"]);
 </script>
 <template>
@@ -100,6 +118,13 @@ const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeF
       style="width: 900px; margin: 0 auto"
     >
       <v-card-text>
+        <div>
+          <v-icon
+            style="top: 20px"
+            @click="actions.cancelar()"
+            >mdi-close-circle-outline</v-icon
+          >
+        </div>
         <div style="margin-left: 85%; padding-bottom: 15px">
           <v-btn
             class="ml-2"
@@ -115,7 +140,7 @@ const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeF
           items-per-page="50"
           height="370"
           fixed-header
-          :items="props.dadosFiltroSelecionado"
+          :items="stateModalVisualizarFiltro.dadosFiltro"
           item-key="COD_PRODUTO"
           item-value="COD_PRODUTO"
         >
