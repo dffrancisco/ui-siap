@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive } from "vue";
 import { iDadosFiltro } from "../interfaces";
 import serviceFiltro from "../services/filtro.service";
 import Swal from "sweetalert2";
@@ -99,15 +99,7 @@ const props = defineProps({
 });
 
 // Inicializando o estado local com os dados da props
-stateModalVisualizarFiltro.dadosFiltro = [...props.dadosFiltroSelecionado];
-
-watch(
-  () => props.dadosFiltroSelecionado,
-  (newValue) => {
-    stateModalVisualizarFiltro.dadosFiltro = [...newValue];
-  },
-  { immediate: true } //immediate: true faz com que o watch rode na primeira renderização
-);
+stateModalVisualizarFiltro.dadosFiltro = props.dadosFiltroSelecionado;
 
 const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeFiltro"]);
 </script>
