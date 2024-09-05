@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { state } from "./liberarCliente";
+import { state, actions } from "./liberarCliente";
+import ModalLiberarCliente from "./components/modalLiberarCliente.vue";
+import { nextTick } from "vue";
+
+nextTick(async () => {
+  actions.init();
+});
 </script>
 <template>
   <v-container>
@@ -36,7 +42,7 @@ import { state } from "./liberarCliente";
             class="mb-3"
             icon="mdi-magnify"
             size="36px"
-            @click=""
+            @click="actions.openModalLiberarCliente"
           >
           </v-btn>
           <v-chip class="ml-5">BLOQUEADO</v-chip>
@@ -133,5 +139,17 @@ import { state } from "./liberarCliente";
       ></v-progress-circular>
     </v-overlay>
   </v-container>
+
+  <div
+    id="modalLiberarCliente"
+    style="display: none"
+    title="Liberar Cliente"
+  >
+    <ModalLiberarCliente
+      @cancelar="actions.modalLiberarClienteClose"
+      @clienteSelecionado="actions.selecionarCliente"
+      :modalLiberarClienteOpened="state.modalLiberarClienteOpened"
+    />
+  </div>
 </template>
 <style scoped></style>
