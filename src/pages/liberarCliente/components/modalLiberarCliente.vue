@@ -33,12 +33,13 @@ const emit = defineEmits(["cancelar", "clienteSelecionado"]);
 function grids() {
   stateClientes.gridLiberarCliente = new xGridV2.create({
     el: "#gridLiberarCliente",
-    height: 300,
+    height: 330,
+    width: 680,
     count: true,
     columns: {
       CLIENTE: { dataField: "CLIENTE", width: "60%", compare: "colorir" },
       CNPJ: { dataField: "CNPJ", width: "20%", compare: "colorir" },
-      FATURADO: { dataField: "TIPO COMPRA", width: "20%", center: true, compare: "faturado" },
+      FATURADO: { dataField: "TIPO COMPRA", center: true, compare: "faturado" },
     },
     query: {
       async execute(rs) {
@@ -79,7 +80,7 @@ function grids() {
             click: modalClienteClose,
           },
           Ok: {
-            html: "OK",
+            html: "Selecionar",
             state: "select",
             click: selecionarCliente,
           },
@@ -92,7 +93,7 @@ function grids() {
 }
 
 function selecionarCliente() {
-  const cliente = stateClientes.gridLiberarCliente.dataSource();
+  const cliente: iCliente = stateClientes.gridLiberarCliente.dataSource();
 
   if (!cliente) {
     Swal.fire({
@@ -101,8 +102,6 @@ function selecionarCliente() {
     });
     return;
   }
-
-  console.log(cliente);
 
   emit("clienteSelecionado", cliente);
 }

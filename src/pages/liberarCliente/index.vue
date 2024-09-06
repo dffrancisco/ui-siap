@@ -14,18 +14,7 @@ nextTick(async () => {
       style="width: 900px; margin: 0 auto"
     >
       <v-row>
-        <v-col cols="4">
-          <v-text-field
-            id="cnpj"
-            label="CNPJ"
-            class="cnpj"
-            autocomplete="off"
-            item-title="title"
-            item-value="value"
-            :clearable="true"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="4">
+        <v-col cols="6">
           <v-text-field
             id="cliente"
             label="Cliente"
@@ -36,7 +25,18 @@ nextTick(async () => {
             :clearable="true"
           ></v-text-field>
         </v-col>
-        <v-col cols="4"
+        <v-col cols="5">
+          <v-text-field
+            id="cnpj"
+            label="CNPJ"
+            class="cnpj"
+            autocomplete="off"
+            item-title="title"
+            item-value="value"
+            :clearable="true"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1"
           ><v-btn
             color="primary"
             class="mb-3"
@@ -45,7 +45,6 @@ nextTick(async () => {
             @click="actions.openModalLiberarCliente"
           >
           </v-btn>
-          <v-chip class="ml-5">BLOQUEADO</v-chip>
         </v-col>
       </v-row>
 
@@ -96,7 +95,7 @@ nextTick(async () => {
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="6"
+        <v-col cols="5"
           ><v-text-field
             id="divisaoBoleto"
             label="Divisão Boleto"
@@ -107,7 +106,7 @@ nextTick(async () => {
             :clearable="true"
           ></v-text-field
         ></v-col>
-        <v-col cols="6">
+        <v-col cols="5">
           <v-text-field
             id="diaVencimento"
             label="Dia Vencimento Fixo"
@@ -118,13 +117,26 @@ nextTick(async () => {
             :clearable="true"
           ></v-text-field>
         </v-col>
+        <v-col cols="2"><v-chip>BLOQUEADO</v-chip></v-col>
       </v-row>
-      <div id="gridPrincipal"></div>
-      <div
-        id="pnBotoes"
-        class="mt-3"
-        style="text-align: center"
-      ></div>
+
+      <div style="padding-top: 20px">
+        <v-tabs v-model="state.tab"
+          ><v-tab value="liberacoes">Liberações</v-tab>
+          <v-tab value="bloqueiosDesbloqueios">Bloqueios/Desbloqueios</v-tab>
+          <v-tab value="compras">Compras</v-tab>
+          <v-tab value="boletos">Boletos</v-tab>
+        </v-tabs>
+      </div>
+
+      <v-card-text>
+        <v-window v-model="state.tab">
+          <v-window-item value="liberacoes"><div id="gridLiberacoes"></div></v-window-item>
+          <v-window-item value="bloqueiosDesbloqueios"><div id="gridBloqueiosDesbloqueios"></div></v-window-item>
+          <v-window-item value="compras"><div id="gridCompras"></div></v-window-item>
+          <v-window-item value="boletos"><div id="gridBoletos"></div></v-window-item>
+        </v-window>
+      </v-card-text>
     </v-card>
     <div id="pnCodigoTela">liberarCliente</div>
     <v-overlay

@@ -13,4 +13,16 @@ export interface iParamGetCliente {
     param: object
 }
 
+export interface iParamDetalhesCliente {
+    offset: number;
+    param: object
+}
+
 export interface iGetClientesResponse extends iCliente { }
+
+export interface iTabs {
+    liberacoes: string
+    bloqueiosDesbloqueios: string;
+    compras: string;
+    boletos: string;
+}
