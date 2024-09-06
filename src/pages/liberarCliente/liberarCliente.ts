@@ -4,6 +4,8 @@ import { reactive } from "vue";
 import { iCliente, iParamDetalhesCliente, iTabs } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceLiberarCliente from "./services/liberarCliente.service"
+import utils from "@/ts/utils";
+import moment from "moment";
 
 export const state = reactive({
     loading: false,
@@ -49,7 +51,6 @@ export const actions = {
     async selecionarCliente(cliente: iCliente) {
 
         state.idCliente = cliente.ID_CLIENTE
-        // let param = state.idCliente
 
         state.gridLiberacoes.queryOpen({
             ID_CLIENTE: cliente.ID_CLIENTE,
@@ -77,12 +78,12 @@ export const actions = {
             height: 250,
             count: true,
             columns: {
-                DATA: { dataField: "DATA" },
-                FATURADO: { dataField: "FATURADO" },
-                HORA: { dataField: "HORA" },
-                LIMITE_ATUAL: { dataField: "LIMITE_ATUAL" },
-                NOVO_LIMITE: { dataField: "NOVO_LIMITE" },
-                LOGIN: { dataField: "LOGIN" }
+                Data: { dataField: "DATA", width: "15%", render: utils.dataBrasil, center: true },
+                Hora: { dataField: "HORA", width: "15%", render: utils.formatHora, center: true },
+                Tipo: { dataField: "FATURADO", center: true, width: "15%" },
+                'Limite Atual': { dataField: "LIMITE_ATUAL", render: utils.formatValor, center: true },
+                'Limite Novo': { dataField: "NOVO_LIMITE", render: utils.formatValor, center: true },
+                Funcionário: { dataField: "LOGIN" }
             },
             query: {
                 async execute(rs) {
@@ -105,11 +106,11 @@ export const actions = {
             height: 250,
             count: true,
             columns: {
-                DATA_BLOQUEIO: { dataField: "DATA_BLOQUEIO" },
-                DATA_DESBLOQUEIO: { dataField: "DATA_DESBLOQUEIO" },
-                BLOQUEADOR: { dataField: "BLOQUEADOR" },
-                LIBERADOR: { dataField: "LIBERADOR" },
-                OBS: { dataField: "OBS" }
+                'Data Bloqueio': { dataField: "DATA_BLOQUEIO", width: "10%", render: utils.dataBrasil, center: true },
+                'Data Desbloqueio': { dataField: "DATA_DESBLOQUEIO", width: "11%", render: utils.dataBrasil, center: true },
+                Observação: { dataField: "OBS" },
+                Bloqueador: { dataField: "BLOQUEADOR", width: "10%", compare: "formatNomeBloqueador" },
+                Liberador: { dataField: "LIBERADOR", width: "10%", compare: "formatNomeLiberador" },
             },
             query: {
                 async execute(rs) {
@@ -120,6 +121,22 @@ export const actions = {
                     state.gridBloqueiosDesbloqueios.querySourceAdd(data as any);
                 },
             },
+            compare: {
+                formatNomeBloqueador: (r) => {
+                    if (r.BLOQUEADOR) {
+                        const nome = r.BLOQUEADOR
+                        const primeiroNome = nome.split(' ')[0];
+                        return primeiroNome;
+                    }
+                },
+                formatNomeLiberador: (r) => {
+                    if (r.LIBERADOR) {
+                        const nome = r.LIBERADOR
+                        const primeiroNome = nome.split(' ')[0];
+                        return primeiroNome;
+                    }
+                }
+            },
         });
     },
 
@@ -129,18 +146,17 @@ export const actions = {
             height: 250,
             count: true,
             columns: {
-                BOLETO: { dataField: "BOLETO" },
-                CAIXA: { dataField: "CAIXA" },
-                DATA: { dataField: "DATA" },
-                DESCONTO: { dataField: "DESCONTO" },
-                DEVOLUCAO: { dataField: "DEVOLUCAO" },
-                HORA: { dataField: "HORA" },
-                NOME_CLIENTE: { dataField: "NOME_CLIENTE" },
-                NUM_ORCAMENTO: { dataField: "NUM_ORCAMENTO" },
-                TIPO_PAGAMENTO: { dataField: "TIPO_PAGAMENTO" },
-                VALOR: { dataField: "VALOR" },
-                VALOR_MONTAGEM: { dataField: "VALOR_MONTAGEM" },
-                VENDEDOR: { dataField: "VENDEDOR" },
+                'Nº Orç': { dataField: "NUM_ORCAMENTO", width: "8%" },
+                Data: { dataField: "DATA", render: utils.dataBrasil },
+                Hora: { dataField: "HORA", render: utils.formatHora, width: "10%" },
+                Caixa: { dataField: "CAIXA", compare: "formatNome" },
+                Vendedor: { dataField: "VENDEDOR", compare: "formatVendedor" },
+                'Tipo Pg.': { dataField: "TIPO_PAGAMENTO", width: "5%", center: true },
+                Valor: { dataField: "VALOR", render: utils.formatValor, right: true },
+                Desconto: { dataField: "DESCONTO", render: utils.formatValor, right: true },
+                Devolução: { dataField: "DEVOLUCAO", render: utils.formatValor, right: true },
+                Montagem: { dataField: "VALOR_MONTAGEM", render: utils.formatValor, right: true },
+                Nome: { dataField: "NOME_CLIENTE" },
             },
             query: {
                 async execute(rs) {
@@ -150,6 +166,22 @@ export const actions = {
                     });
                     state.gridCompras.querySourceAdd(data as any);
                 },
+            },
+            compare: {
+                formatNome: (r) => {
+                    if (r.CAIXA) {
+                        const nome = r.CAIXA
+                        const primeiroNome = nome.split(' ')[0];
+                        return primeiroNome;
+                    }
+                },
+                formatVendedor: (r) => {
+                    if (r.VENDEDOR) {
+                        const nome = r.VENDEDOR
+                        const primeiroNome = nome.split(' ')[0];
+                        return primeiroNome;
+                    }
+                }
             },
         });
     },
