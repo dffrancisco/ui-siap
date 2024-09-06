@@ -15,9 +15,36 @@ const getClientes: iGetClientesFunction = async ({ offset, param }) => {
     return data
 }
 
-const getDetalhesCliente: iGetDetalhesCliente = async ({ offset, param }) => {
+const getLiberacoes: iGetDetalhesCliente = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
-        call: 'getDetalhesCliente',
+        call: 'getLiberacoes',
+        offset,
+        param
+    })
+    return data
+}
+
+const getBloqueiosDesbloqueios: iGetDetalhesCliente = async ({ offset, param }) => {
+    let { data } = await axios.post(caminho, {
+        call: 'getBloqueiosDesbloqueios',
+        offset,
+        param
+    })
+    return data
+}
+
+const getCompras: iGetDetalhesCliente = async ({ offset, param }) => {
+    let { data } = await axios.post(caminho, {
+        call: 'getCompras',
+        offset,
+        param
+    })
+    return data
+}
+
+const getBoletos: iGetDetalhesCliente = async ({ offset, param }) => {
+    let { data } = await axios.post(caminho, {
+        call: 'getBoletos',
         offset,
         param
     })
@@ -26,5 +53,8 @@ const getDetalhesCliente: iGetDetalhesCliente = async ({ offset, param }) => {
 
 export default {
     getClientes,
-    getDetalhesCliente
+    getLiberacoes,
+    getBloqueiosDesbloqueios,
+    getCompras,
+    getBoletos
 }

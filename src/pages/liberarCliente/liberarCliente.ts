@@ -22,9 +22,9 @@ export const actions = {
     init() {
         actions.criarModal()
         actions.gridLiberacoes()
-        //actions.gridBloqueiosDesbloqueios()
-        // actions.gridBoletos()
-        // actions.gridCompras()
+        actions.gridBloqueiosDesbloqueios()
+        actions.gridBoletos()
+        actions.gridCompras()
     },
 
     criarModal() {
@@ -70,22 +70,6 @@ export const actions = {
         actions.modalLiberarClienteClose()
     },
 
-    async getDetalhesCliente({ offset, param }: iParamDetalhesCliente) {
-        try {
-            state.loading = true
-            const data = await serviceLiberarCliente.getDetalhesCliente({ offset, param })
-
-            return data
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Erro ao buscar os dados do cliente",
-            });
-        } finally {
-            state.loading = false
-        }
-    },
-
     gridLiberacoes() {
         //primeiro grid da primeira tab
         state.gridLiberacoes = new xGridV2.create({
@@ -102,7 +86,7 @@ export const actions = {
             },
             query: {
                 async execute(rs) {
-                    let data = await actions.getDetalhesCliente({
+                    let data = await actions.getLiberacoes({
                         offset: rs.offset,
                         param: rs.param
                     });
@@ -129,7 +113,7 @@ export const actions = {
             },
             query: {
                 async execute(rs) {
-                    let data = await actions.getDetalhesCliente({
+                    let data = await actions.getBloqueiosDesbloqueios({
                         offset: rs.offset,
                         param: rs.param,
                     });
@@ -160,7 +144,7 @@ export const actions = {
             },
             query: {
                 async execute(rs) {
-                    let data = await actions.getDetalhesCliente({
+                    let data = await actions.getCompras({
                         offset: rs.offset,
                         param: rs.param,
                     });
@@ -187,7 +171,7 @@ export const actions = {
             },
             query: {
                 async execute(rs) {
-                    let data = await actions.getDetalhesCliente({
+                    let data = await actions.getBoletos({
                         offset: rs.offset,
                         param: rs.param,
                     });
@@ -196,4 +180,69 @@ export const actions = {
             },
         });
     },
+
+    async getLiberacoes({ offset, param }: iParamDetalhesCliente) {
+        try {
+            state.loading = true
+            const data = await serviceLiberarCliente.getLiberacoes({ offset, param })
+
+            return data
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao buscar os dados do cliente",
+            });
+        } finally {
+            state.loading = false
+        }
+    },
+
+    async getBloqueiosDesbloqueios({ offset, param }: iParamDetalhesCliente) {
+        try {
+            state.loading = true
+            const data = await serviceLiberarCliente.getBloqueiosDesbloqueios({ offset, param })
+
+            return data
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao buscar os dados do cliente",
+            });
+        } finally {
+            state.loading = false
+        }
+    },
+
+    async getCompras({ offset, param }: iParamDetalhesCliente) {
+        try {
+            state.loading = true
+            const data = await serviceLiberarCliente.getCompras({ offset, param })
+
+            return data
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao buscar os dados do cliente",
+            });
+        } finally {
+            state.loading = false
+        }
+    },
+
+    async getBoletos({ offset, param }: iParamDetalhesCliente) {
+        try {
+            state.loading = true
+            const data = await serviceLiberarCliente.getBoletos({ offset, param })
+
+            return data
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao buscar os dados do cliente",
+            });
+        } finally {
+            state.loading = false
+        }
+    },
+
 }

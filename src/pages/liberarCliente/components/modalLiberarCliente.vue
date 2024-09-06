@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, reactive, watch } from "vue";
+import { onMounted, reactive, watch } from "vue";
 import { iCliente, iParamGetCliente } from "../interfaces";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
@@ -133,11 +133,11 @@ function searchClientes() {
 }
 
 onMounted(() => {
-  nextTick(() => {
-    grids();
+  // nextTick(() => {
+  grids();
 
-    stateClientes.edtClienteSearch = <any>document.getElementById("edtClienteSearch");
-  });
+  stateClientes.edtClienteSearch = <any>document.getElementById("edtClienteSearch");
+  // });
 });
 </script>
 <template>

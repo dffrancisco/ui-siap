@@ -131,10 +131,26 @@ nextTick(async () => {
 
       <v-card-text>
         <v-window v-model="state.tab">
-          <v-window-item value="liberacoes"><div id="gridLiberacoes"></div></v-window-item>
-          <v-window-item value="bloqueiosDesbloqueios"><div id="gridBloqueiosDesbloqueios"></div></v-window-item>
-          <v-window-item value="compras"><div id="gridCompras"></div></v-window-item>
-          <v-window-item value="boletos"><div id="gridBoletos"></div></v-window-item>
+          <v-window-item
+            eager
+            value="liberacoes"
+            ><div id="gridLiberacoes"></div
+          ></v-window-item>
+          <v-window-item
+            eager
+            value="bloqueiosDesbloqueios"
+            ><div id="gridBloqueiosDesbloqueios"></div
+          ></v-window-item>
+          <v-window-item
+            eager
+            value="compras"
+            ><div id="gridCompras"></div
+          ></v-window-item>
+          <v-window-item
+            eager
+            value="boletos"
+            ><div id="gridBoletos"></div
+          ></v-window-item>
         </v-window>
       </v-card-text>
     </v-card>
