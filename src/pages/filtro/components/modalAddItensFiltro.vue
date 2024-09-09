@@ -130,6 +130,12 @@ const actions = {
       return;
     }
 
+    const inputFuncionario = document.querySelector("#funcionarios") as HTMLElement;
+
+    if (!stateModalAddItensFiltro.funcionarioSelecionado) {
+      inputFuncionario.focus();
+    }
+
     //verificar se tem funcionario conferente
     if (stateModalAddItensFiltro.funcionarioSelecionado) {
       let parametrosInsercao = {
@@ -142,15 +148,9 @@ const actions = {
 
       if (stateModalAddItensFiltro.idFiltro == 0) {
         actions.inserirFiltro(parametrosInsercao);
-      } else {
-        actions.atualizarFiltro(parametrosInsercao);
+        return;
       }
-      // se nao tiver conferente focar no input
-    } else {
-      const inputFuncionario = document.querySelector("#funcionarios") as HTMLElement;
-      if (inputFuncionario) {
-        inputFuncionario.focus();
-      }
+      actions.atualizarFiltro(parametrosInsercao);
     }
   },
 
@@ -160,10 +160,11 @@ const actions = {
       await serviceFiltro.atualizarFiltro(parametrosInsercao);
       Swal.fire({ icon: "success", text: "Dados salvos com sucesso!", timer: 1500 });
       actions.cancelar();
-    } catch {
+    } catch (error) {
+      const errorMessage = error.response?.data?.msg || "Erro ao atualizar os dados.";
       Swal.fire({
         icon: "error",
-        text: "Erro ao atualizar Filtro",
+        text: errorMessage,
       });
       return;
     } finally {
@@ -181,11 +182,13 @@ const actions = {
         timer: 1500,
       });
       actions.cancelar();
-    } catch {
+    } catch (error) {
+      const errorMessage = error.response?.data?.msg || "Erro ao inserir os dados.";
       Swal.fire({
         icon: "error",
-        text: "Erro ao salvar os dados!",
+        text: errorMessage,
       });
+      return;
     } finally {
       stateModalAddItensFiltro.loading = false;
     }

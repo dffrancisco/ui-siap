@@ -80,20 +80,6 @@ export interface iDadosFiltro {
     CONFERENTE: string
 }
 
-// export interface iProdutosSelecionados {
-//     CARRO: string;
-//     COD_PRODUTO: number;
-//     DESC_PRODUTO: string;
-//     END_ESTOQUE: string;
-//     END_EXCESSO: string;
-//     MARCA: string;
-//     NUM_FABRICANTE: string;
-//     NUM_FABRICANTE2: string;
-//     QUANTIDADE: number;
-// }
-
-
-
 export interface iInsertOuUpdate {
     idFiltro: number;
     nomeFiltro: string;
