@@ -20,11 +20,12 @@ const props = defineProps<{
 watch(
   () => props.modalLiberarClienteOpened,
   () => {
-    stateClientes.gridLiberarCliente.queryOpen({
-      CLIENTE: "",
-    });
-
-    stateClientes.search = null;
+    if (props.modalLiberarClienteOpened) {
+      stateClientes.gridLiberarCliente.queryOpen({
+        CLIENTE: "",
+      });
+      stateClientes.search = null;
+    }
   }
 );
 
@@ -59,10 +60,13 @@ function grids() {
         }
       },
       faturado: (r) => {
-        if (r.FATURADO == 1) {
-          return "<span>" + "Faturado" + "<span>";
+        let textoFaturado = r.FATURADO == 1 ? "Faturado" : "Não Faturado";
+
+        if (r.BLOQUEADO == "1") {
+          // Retorna o texto com cor vermelha se estiver bloqueado
+          return '<span style="color: red">' + textoFaturado + "</span>";
         } else {
-          return "Não Faturado";
+          return textoFaturado;
         }
       },
     },
@@ -133,11 +137,8 @@ function searchClientes() {
 }
 
 onMounted(() => {
-  // nextTick(() => {
   grids();
-
   stateClientes.edtClienteSearch = <any>document.getElementById("edtClienteSearch");
-  // });
 });
 </script>
 <template>

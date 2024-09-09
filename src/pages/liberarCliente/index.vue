@@ -18,22 +18,26 @@ nextTick(async () => {
           <v-text-field
             id="cliente"
             label="Cliente"
+            readonly
             class="cliente"
+            v-model="state.nomeClienteSelect"
             autocomplete="off"
             item-title="title"
             item-value="value"
-            :clearable="true"
+            :clearable="false"
           ></v-text-field>
         </v-col>
         <v-col cols="5">
           <v-text-field
             id="cnpj"
+            readonly
             label="CNPJ"
             class="cnpj"
+            v-model="state.cnpjSelect"
             autocomplete="off"
             item-title="title"
             item-value="value"
-            :clearable="true"
+            :clearable="false"
           ></v-text-field>
         </v-col>
         <v-col cols="1"
@@ -52,12 +56,14 @@ nextTick(async () => {
         <v-col cols="3">
           <v-text-field
             id="creditoUsado"
+            readonly
             label="Crédito Usado"
             class="creditoUsado"
+            v-model="state.creditoUsado"
             autocomplete="off"
             item-title="title"
             item-value="value"
-            :clearable="true"
+            :clearable="false"
           ></v-text-field>
         </v-col>
         <v-col cols="3">
@@ -65,6 +71,7 @@ nextTick(async () => {
             id="creditoLimite"
             label="Crédito Limite"
             class="creditoLimite"
+            v-model="state.creditoLimite"
             autocomplete="off"
             item-title="title"
             item-value="value"
@@ -72,52 +79,69 @@ nextTick(async () => {
           ></v-text-field
         ></v-col>
         <v-col cols="3">
-          <v-text-field
+          <v-select
             id="tipoCompra"
             label="Tipo Compra"
+            :items="['Faturado', 'Não Faturado']"
             class="tipoCompra"
+            v-model="state.tipoCompra"
             autocomplete="off"
             item-title="title"
             item-value="value"
             :clearable="true"
-          ></v-text-field
+          ></v-select
         ></v-col>
         <v-col cols="3">
-          <v-text-field
+          <v-select
             id="tipoFaturamento"
             label="Tipo Faturamento"
+            :items="['Quinzenal', 'Mensal']"
             class="tipoFaturamento"
+            v-model="state.tipoFaturamento"
             autocomplete="off"
             item-title="title"
             item-value="value"
             :clearable="true"
-          ></v-text-field>
+          ></v-select>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="5"
-          ><v-text-field
+          ><v-select
             id="divisaoBoleto"
+            :items="['Sim', 'Não']"
+            v-model="state.dividirBoleto"
             label="Divisão Boleto"
             class="divisaoBoleto"
             autocomplete="off"
             item-title="title"
             item-value="value"
             :clearable="true"
-          ></v-text-field
+          ></v-select
         ></v-col>
-        <v-col cols="5">
+        <v-col cols="4">
           <v-text-field
             id="diaVencimento"
+            v-model="state.diaVencimento"
             label="Dia Vencimento Fixo"
             class="diaVencimento"
+            :disabled="state.dividirBoleto == 'Sim'"
             autocomplete="off"
+            type="number"
             item-title="title"
             item-value="value"
             :clearable="true"
           ></v-text-field>
         </v-col>
-        <v-col cols="2"><v-chip>BLOQUEADO</v-chip></v-col>
+
+        <v-col cols="3">
+          <v-chip
+            :color="state.statusColor"
+            style="min-width: 185px; justify-content: center; margin-left: 15px; margin-top: 5px"
+          >
+            {{ state.status }}
+          </v-chip>
+        </v-col>
       </v-row>
 
       <div style="padding-top: 20px">
@@ -153,6 +177,26 @@ nextTick(async () => {
           ></v-window-item>
         </v-window>
       </v-card-text>
+      <div class="divBtns">
+        <v-btn
+          color="primary"
+          @click="actions.alterar"
+          :disabled="!state.botaoAlterarHabilitado"
+          >Alterar</v-btn
+        >
+        <v-btn
+          color="primary"
+          @click="actions.salvar"
+          :disabled="!state.botaoSalvarHabilitado"
+          >Salvar</v-btn
+        >
+        <v-btn
+          color="primary"
+          @click="actions.cancelar"
+          :disabled="!state.botaoCancelarHabilitado"
+          >Cancelar</v-btn
+        >
+      </div>
     </v-card>
     <div id="pnCodigoTela">liberarCliente</div>
     <v-overlay
@@ -180,4 +224,10 @@ nextTick(async () => {
     />
   </div>
 </template>
-<style scoped></style>
+<style scoped>
+.divBtns {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+</style>

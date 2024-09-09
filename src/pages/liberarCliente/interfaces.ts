@@ -6,6 +6,9 @@ export interface iCliente {
     CREDITO_USADO: string;
     FATURADO: string;
     LIMITE_CREDITO: string;
+    DIA_VENCIMENTO_BOLETO: number;
+    TIPO_FATURAMENTO: string;
+    DIVIDIR_BOLETO: string;
 }
 
 export interface iParamGetCliente {

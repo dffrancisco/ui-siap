@@ -5,18 +5,30 @@ import { iCliente, iParamDetalhesCliente, iTabs } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceLiberarCliente from "./services/liberarCliente.service"
 import utils from "@/ts/utils";
-import moment from "moment";
 
 export const state = reactive({
     loading: false,
     modalLiberarCliente: <iModalCreate>{},
     modalLiberarClienteOpened: false,
     idCliente: 0 || null,
+    nomeClienteSelect: "",
+    cnpjSelect: "",
+    creditoUsado: "",
+    creditoLimite: "",
+    tipoCompra: "",
+    tipoFaturamento: "",
+    dividirBoleto: "",
+    diaVencimento: 0 || null,
+    status: "",
+    statusColor: "",
     tab: <iTabs>{},
     gridLiberacoes: <ixGridCreate>{},
     gridBloqueiosDesbloqueios: <ixGridCreate>{},
     gridCompras: <ixGridCreate>{},
-    gridBoletos: <ixGridCreate>{}
+    gridBoletos: <ixGridCreate>{},
+    botaoAlterarHabilitado: true,
+    botaoSalvarHabilitado: false,
+    botaoCancelarHabilitado: false,
 })
 
 export const actions = {
@@ -49,9 +61,26 @@ export const actions = {
     },
 
     async selecionarCliente(cliente: iCliente) {
-
         state.idCliente = cliente.ID_CLIENTE
+        actions.popularInputs(cliente)
+        actions.popularGrids(cliente)
+    },
 
+    popularInputs(cliente) {
+        state.nomeClienteSelect = cliente.CLIENTE
+        state.cnpjSelect = cliente.CNPJ
+        state.creditoUsado = utils.formatValor(cliente.CREDITO_USADO)
+        state.creditoLimite = utils.formatValor(cliente.LIMITE_CREDITO)
+        state.tipoCompra = cliente.FATURADO == "0" ? "Não Faturado" : "Faturado"
+        state.tipoFaturamento = cliente.TIPO_FATURAMENTO ? cliente.TIPO_FATURAMENTO == "Q" ? "Quinzenal" : "Mensal" : "";
+        state.dividirBoleto = cliente.DIVIDIR_BOLETO ? cliente.DIVIDIR_BOLETO == "S" ? "Sim" : "Não" : "";
+        state.diaVencimento = cliente.DIA_VENCIMENTO_BOLETO
+        state.status = cliente.BLOQUEADO == 0 ? "Liberado" : "Bloqueado"
+        state.statusColor = cliente.BLOQUEADO == 0 ? "green" : "red";
+    },
+
+    popularGrids(cliente) {
+        state.loading = true
         state.gridLiberacoes.queryOpen({
             ID_CLIENTE: cliente.ID_CLIENTE,
         })
@@ -67,7 +96,7 @@ export const actions = {
         state.gridCompras.queryOpen({
             ID_CLIENTE: cliente.ID_CLIENTE,
         })
-
+        state.loading = false
         actions.modalLiberarClienteClose()
     },
 
@@ -93,7 +122,7 @@ export const actions = {
                     });
                     state.gridLiberacoes.querySourceAdd(data as any);
                 }
-            }
+            },
         })
 
 
@@ -193,13 +222,13 @@ export const actions = {
             height: 250,
             count: true,
             columns: {
-                DATA_PROCESSAMENTO: { dataField: "DATA_PROCESSAMENTO" },
-                DATA_QUITACAO: { dataField: "DATA_QUITACAO" },
-                DATA_VENCIMENTO: { dataField: "DATA_VENCIMENTO" },
-                NUM_BOLETO: { dataField: "NUM_BOLETO" },
-                PARCELA: { dataField: "PARCELA" },
-                VALOR: { dataField: "VALOR" },
-                VALOR_QUITACAO: { dataField: "VALOR_QUITACAO" },
+                'Nº Boleto': { dataField: "NUM_BOLETO", right: true },
+                Parcela: { dataField: "PARCELA", center: true },
+                Processamento: { dataField: "DATA_PROCESSAMENTO", render: utils.dataBrasil, center: true },
+                Vencimento: { dataField: "DATA_VENCIMENTO", render: utils.dataBrasil, center: true },
+                Quitação: { dataField: "DATA_QUITACAO", render: utils.dataBrasil, center: true },
+                Valor: { dataField: "VALOR", render: utils.formatValor, right: true },
+                'Valor Pago': { dataField: "VALOR_QUITACAO", render: utils.formatValor, right: true },
             },
             query: {
                 async execute(rs) {
@@ -276,5 +305,40 @@ export const actions = {
             state.loading = false
         }
     },
+
+    alterar() {
+        state.botaoAlterarHabilitado = false;
+        state.botaoSalvarHabilitado = true;
+        state.botaoCancelarHabilitado = true;
+
+        if (!state.idCliente) {
+            Swal.fire({
+                icon: "warning",
+                title: "Selecione um cliente primeiro",
+            });
+            return
+        }
+
+        const inputCreditoLimite = document.querySelector("#creditoLimite") as HTMLElement;
+        inputCreditoLimite.focus();
+
+        actions.update()
+    },
+
+    async update() {
+
+    },
+
+    salvar() {
+        state.botaoAlterarHabilitado = true;
+        state.botaoSalvarHabilitado = false;
+        state.botaoCancelarHabilitado = false;
+    },
+
+    cancelar() {
+        state.botaoAlterarHabilitado = true;
+        state.botaoSalvarHabilitado = false;
+        state.botaoCancelarHabilitado = false;
+    }
 
 }
