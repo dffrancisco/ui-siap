@@ -54,6 +54,7 @@ onMounted(async () => {
               size="large"
               color="primary"
               title="Ver detalhes"
+              :disabled="item.DATA_FIM != null"
               @click="actions.selectFiltro(item.ID_FILTRO)"
             >
               mdi-playlist-plus

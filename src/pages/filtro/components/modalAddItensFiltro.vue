@@ -160,8 +160,13 @@ const actions = {
       await serviceFiltro.atualizarFiltro(parametrosInsercao);
       Swal.fire({ icon: "success", text: "Dados salvos com sucesso!", timer: 1500 });
       actions.cancelar();
-    } catch {
-      Swal.fire({ icon: "error", text: "Erro ao salvar os dados!" });
+    } catch (error) {
+      const errorMessage = error.response?.data?.msg || "Erro ao inserir os dados.";
+      Swal.fire({
+        icon: "error",
+        text: errorMessage,
+      });
+      return;
     } finally {
       stateModalAddItensFiltro.loading = false;
     }
@@ -191,7 +196,7 @@ const actions = {
 const props = defineProps({
   nomeFiltro: {
     type: String,
-    required: true,
+    required: false,
   },
   idFiltro: {
     type: Number,
