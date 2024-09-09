@@ -165,8 +165,8 @@ export const actions = {
         return data.map(item => ({
             ...item,
             DATA_INICIO: item.DATA_INICIO ? utils.dataBrasil(item.DATA_INICIO) : '-------',
-            DATA_FIM: item.DATA_FIM ? utils.dataBrasil(item.DATA_FIM) : '---------'
-
+            DATA_FIM: item.DATA_FIM ? utils.dataBrasil(item.DATA_FIM) : '---------',
+            NOME_FILTRO: item.NOME_FILTRO ? item.NOME_FILTRO : '--------'
         }));
     },
 
