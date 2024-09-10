@@ -78,7 +78,7 @@ export const actions = {
                 mes: state.mes,
                 ano: state.ano,
             });
-            // state.dadosRelatorio = data.historicoConsultaLojas;
+            // state.dadosRelatorio = data;
             // state.totalItems = data.total[0].TOTAL;
 
             state.mesImpressao = state.mes
@@ -101,7 +101,7 @@ export const actions = {
 
     updatePage(newPage: number) {
         state.page = newPage;
-        // actions.getHistoricoConsultaLojas();
+        actions.getDadosParaRelatorio();
     },
 
     async onClickImprimir() { }
