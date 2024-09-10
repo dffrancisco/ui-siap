@@ -1,7 +1,7 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { reactive } from "vue";
-import { iCliente, iParamDetalhesCliente, iTabs } from "./interfaces";
+import { iCliente, iParamDetalhesCliente, iParamUpdateCliente, iTabs } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceLiberarCliente from "./services/liberarCliente.service"
 import utils from "@/ts/utils";
@@ -15,6 +15,7 @@ export const state = reactive({
     cnpjSelect: "",
     creditoUsado: "",
     creditoLimite: "",
+    creditoLimiteAtual: "",
     tipoCompra: "",
     tipoFaturamento: "",
     dividirBoleto: "",
@@ -61,16 +62,17 @@ export const actions = {
     },
 
     async selecionarCliente(cliente: iCliente) {
-        state.idCliente = cliente.ID_CLIENTE
         actions.popularInputs(cliente)
         actions.popularGrids(cliente)
     },
 
     popularInputs(cliente) {
+        state.idCliente = cliente.ID_CLIENTE
         state.nomeClienteSelect = cliente.CLIENTE
         state.cnpjSelect = cliente.CNPJ
         state.creditoUsado = utils.formatValor(cliente.CREDITO_USADO)
         state.creditoLimite = utils.formatValor(cliente.LIMITE_CREDITO)
+        state.creditoLimiteAtual = cliente.LIMITE_CREDITO
         state.tipoCompra = cliente.FATURADO == "0" ? "Não Faturado" : "Faturado"
         state.tipoFaturamento = cliente.TIPO_FATURAMENTO ? cliente.TIPO_FATURAMENTO == "Q" ? "Quinzenal" : "Mensal" : "";
         state.dividirBoleto = cliente.DIVIDIR_BOLETO ? cliente.DIVIDIR_BOLETO == "S" ? "Sim" : "Não" : "";
@@ -321,24 +323,51 @@ export const actions = {
 
         const inputCreditoLimite = document.querySelector("#creditoLimite") as HTMLElement;
         inputCreditoLimite.focus();
-
-        actions.update()
-    },
-
-    async update() {
-
     },
 
     salvar() {
         state.botaoAlterarHabilitado = true;
         state.botaoSalvarHabilitado = false;
         state.botaoCancelarHabilitado = false;
+
+        actions.updateCliente()
     },
 
     cancelar() {
         state.botaoAlterarHabilitado = true;
         state.botaoSalvarHabilitado = false;
         state.botaoCancelarHabilitado = false;
-    }
+    },
+
+    async updateCliente() {
+        let param = {
+            idCliente: state.idCliente,
+            tipoCompra: state.tipoCompra === "Faturado" ? 1 : 0,
+            creditoLimiteAtual: state.creditoLimiteAtual,
+            creditoLimiteNovo: parseFloat(state.creditoLimite.replace(/\./g, '').replace(',', '.')),
+            tipoFaturamento: state.tipoFaturamento === "Quinzenal" ? "Q" : "M",
+            divideBoleto: state.dividirBoleto === "Sim" ? "S" : "N",
+            diaVencimento: state.diaVencimento
+        }
+        try {
+            state.loading = true
+            const data = await serviceLiberarCliente.updateCliente(param as iParamUpdateCliente)
+
+            state.gridLiberacoes.queryOpen({
+                ID_CLIENTE: state.idCliente,
+            })
+
+            return data
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao alterar os dados do cliente",
+            });
+        } finally {
+            state.loading = false
+        }
+    },
+
+
 
 }

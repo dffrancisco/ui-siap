@@ -29,3 +29,13 @@ export interface iTabs {
     compras: string;
     boletos: string;
 }
+
+export interface iParamUpdateCliente {
+    idCliente: number;
+    creditoLimiteAtual: string;
+    creditoLimiteNovo: string | number;
+    diaVencimento: string;
+    divideBoleto: "S" | "N";
+    tipoCompra: 0 | 1;
+    tipoFaturamento: "Q" | "M";
+}
