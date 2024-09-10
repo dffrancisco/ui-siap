@@ -4,7 +4,7 @@ import { reactive } from "vue";
 import { iCliente, iParamDetalhesCliente, iParamUpdateCliente, iTabs } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceLiberarCliente from "./services/liberarCliente.service"
-import utils from "@/ts/utils";
+import utils, { msgConfirmSemCodigo } from "@/ts/utils";
 
 export const state = reactive({
     loading: false,
@@ -358,23 +358,27 @@ export const actions = {
             divideBoleto: state.dividirBoleto === "Sim" ? "S" : "N",
             diaVencimento: state.diaVencimento
         }
-        try {
-            state.loading = true
-            const data = await serviceLiberarCliente.updateCliente(param as iParamUpdateCliente)
 
-            state.gridLiberacoes.queryOpen({
-                ID_CLIENTE: state.idCliente,
-            })
+        if (await msgConfirmSemCodigo("Confirmação", "Deseja alterar os dados do cliente?")) {
 
-            return data
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Erro ao alterar os dados do cliente",
-            });
-        } finally {
-            state.loading = false
+            try {
+                state.loading = true
+                const data = await serviceLiberarCliente.updateCliente(param as iParamUpdateCliente)
+
+                state.gridLiberacoes.queryOpen({
+                    ID_CLIENTE: state.idCliente,
+                })
+
+                return data
+            } catch (error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Erro ao alterar os dados do cliente",
+                });
+            } finally {
+                state.loading = false
+            }
         }
-    },
+    }
 
 }

@@ -587,6 +587,19 @@ export const formatarChaveNF = (ctx) => {
   return 'Nota fiscal não informada.'
 }
 
+export const msgConfirmSemCodigo = async (title: string, text: string): Promise<boolean> => {
+  const { isConfirmed } = await Swal.fire({
+    title,
+    text,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar',
+  });
+
+  return isConfirmed;
+};
+
 export const formatHora = (isoString: string): string => {
   const date = new Date(isoString);
   const hours = String(date.getHours()).padStart(2, '0');
@@ -944,5 +957,6 @@ export default {
   printComCabecalho,
   gerarPlanilhaComCabecalho,
   getErrorMessage,
-  formatHora
+  formatHora,
+  msgConfirmSemCodigo
 };
