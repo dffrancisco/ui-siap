@@ -58,12 +58,24 @@ export const actions = {
     },
 
     openModalLiberarCliente() {
+        if (state.botaoSalvarHabilitado == true) {
+            Swal.fire({
+                icon: "warning",
+                title: "Alteração em andamento, salve ou cancele para selecionar outro cliente!",
+                timer: 2000
+            });
+            const inputCreditoLimite = document.querySelector("#creditoLimite") as HTMLElement;
+            inputCreditoLimite.focus();
+            return
+        }
+
         state.modalLiberarCliente.open();
     },
 
     async selecionarCliente(cliente: iCliente) {
         actions.popularInputs(cliente)
         actions.popularGrids(cliente)
+        actions.cancelar()
     },
 
     popularInputs(cliente) {
@@ -103,7 +115,6 @@ export const actions = {
     },
 
     gridLiberacoes() {
-        //primeiro grid da primeira tab
         state.gridLiberacoes = new xGridV2.create({
             el: "#gridLiberacoes",
             height: 250,
@@ -131,7 +142,6 @@ export const actions = {
     },
 
     gridBloqueiosDesbloqueios() {
-
         state.gridBloqueiosDesbloqueios = new xGridV2.create({
             el: "#gridBloqueiosDesbloqueios",
             height: 250,
@@ -218,7 +228,6 @@ export const actions = {
     },
 
     gridBoletos() {
-
         state.gridBoletos = new xGridV2.create({
             el: "#gridBoletos",
             height: 250,
@@ -367,7 +376,5 @@ export const actions = {
             state.loading = false
         }
     },
-
-
 
 }

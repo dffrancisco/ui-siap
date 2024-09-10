@@ -25,6 +25,7 @@ nextTick(async () => {
             item-title="title"
             item-value="value"
             :clearable="false"
+            :style="{ color: state.status == 'Bloqueado' ? 'red' : '' }"
           ></v-text-field>
         </v-col>
         <v-col cols="5">
@@ -38,6 +39,7 @@ nextTick(async () => {
             item-title="title"
             item-value="value"
             :clearable="false"
+            :style="{ color: state.status == 'Bloqueado' ? 'red' : '' }"
           ></v-text-field>
         </v-col>
         <v-col cols="1"
