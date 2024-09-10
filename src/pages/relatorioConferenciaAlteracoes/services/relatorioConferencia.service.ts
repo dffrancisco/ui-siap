@@ -16,6 +16,7 @@ const getDadosParaInputs: iGetDadosParaInputs = async () => {
 const getDadosParaRelatorio: iGetDadosParaRelatorio = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getDadosParaRelatorio",
+        param
     });
     return data;
 }
