@@ -59,6 +59,7 @@ export const state = reactive(({
     modalItensErroOpen: false,
     itensComErro: <iItemComErro[]>[],
     historicoErro: false,
+    isAlteracao: false,
 }))
 
 setInterval(async () => {
@@ -228,6 +229,7 @@ export const actions = {
         state.abaItens = 'nao_adicionados';
 
         if (param.ID_MARCA != state.edtMarca) {
+            state.qtdItensMarca = 0;
             let keyMarca = 'marca:' + state.edtMarca
             state.qtdMaxItensVistosByMarca[keyMarca] = 1
         }
@@ -237,10 +239,12 @@ export const actions = {
 
             const response = await comprasItensService.getProdutos(param)
 
+            if (state.qtdItensMarca == 0) {
+                state.qtdItensMarca = response.qtdItensMarca
+            }
 
             state.edtMarca = param.ID_MARCA;
             state.produtos = response.produtos;
-            state.qtdItensMarca = response.qtdItensMarca;
             state.keyProdutosOrigem = Object.keys(state.produtos);
             state.keyProdutos = Object.keys(state.produtos);
 
@@ -296,15 +300,15 @@ export const actions = {
         }
 
         if (e.key == 'F1') {
-            let elemento = document.getElementById('edtNumFabricante')
-            elemento.click();
+            let elemento = document.getElementById('edtNumFabricante') as HTMLInputElement
+            elemento.select();
             e.preventDefault();
             return;
         }
 
         if (e.key == 'F2') {
-            let elemento = document.getElementById('edtDescricao')
-            elemento.click();
+            let elemento = document.getElementById('edtDescricao') as HTMLInputElement
+            elemento.select();
             e.preventDefault();
             return;
         }
@@ -480,6 +484,8 @@ export const actions = {
         try {
             state.loading = true;
 
+            state.isAlteracao = false
+
             let produtoSelecionado = computeds.produtoSelecionado.value
 
             let codProduto = produtoSelecionado[MAP_COL_PRODUTO.COD_PRODUTO]
@@ -497,8 +503,7 @@ export const actions = {
                 NUM_FABRICANTE: numFabricante
             })
 
-            /* Adicionado para impactar a computed qtdProdutosAdicionados e fazer com que o grid avance a linha após atualizar dados */
-            delete state.produtosAdicionados[codProduto];
+            state.isAlteracao = param.isAlteracao
             await nextTick()
 
             state.produtosAdicionados[codProduto] = {

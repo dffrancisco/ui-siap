@@ -54,15 +54,15 @@ const actions = {
 
   onKeydownContainerFiltro(e: KeyboardEvent): void {
     if (e.key == "F1") {
-      let elemento = document.getElementById("edtNumFabricante");
-      elemento.click();
+      let elemento = document.getElementById("edtNumFabricante") as HTMLInputElement;
+      elemento.select();
       e.preventDefault();
       return;
     }
 
     if (e.key == "F2") {
-      let elemento = document.getElementById("edtDescricao");
-      elemento.click();
+      let elemento = document.getElementById("edtDescricao") as HTMLInputElement;
+      elemento.select();
       e.preventDefault();
       return;
     }
