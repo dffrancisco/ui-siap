@@ -234,6 +234,18 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/filtro')"
+              >Filtro
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/faturarCliente')"
+              >Faturar Cliente
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/relatorioConferenciaAlteracoes')"
               >Relatório Conferência e Alterações
             </v-btn>
