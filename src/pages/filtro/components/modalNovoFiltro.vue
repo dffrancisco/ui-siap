@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
-import { nextTick, onMounted, reactive, watch } from "vue";
+import { onMounted, reactive } from "vue";
 import serviceFiltro from "../services/filtro.service";
 import { iFuncionario } from "../interfaces";
 

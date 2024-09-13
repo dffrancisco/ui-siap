@@ -119,7 +119,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao exibir as trazer os dados!"
+                text: "Erro ao trazer os dados!"
             });
         } finally {
             state.loading = false;
@@ -237,7 +237,7 @@ export const actions = {
                 // Atualizar o filtro na state
                 const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
                 if (filtroIndex !== -1) {
-                    state.filtros[filtroIndex].DATA_FIM = new Date().toISOString(); // Definindo a data atual como fim
+                    state.filtros[filtroIndex].DATA_FIM = new Date().toISOString();
                 }
 
                 Swal.fire({
@@ -269,7 +269,7 @@ export const actions = {
                 // Atualizar o filtro na state
                 const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
                 if (filtroIndex !== -1) {
-                    state.filtros[filtroIndex].DATA_FIM = null; // Reabrindo o filtro, removendo a data de fim
+                    state.filtros[filtroIndex].DATA_FIM = null;
                 }
 
                 Swal.fire({
@@ -319,7 +319,7 @@ export const actions = {
         }
     },
 
-    addItensFiltro(idFiltro: number | null, conferente: number | string, nomeFiltro: string) {
+    addItensFiltro(idFiltro: number | null, conferente: number | string, nomeFiltro: string | null) {
 
         if (idFiltro != null) {
             state.idFiltro = idFiltro
