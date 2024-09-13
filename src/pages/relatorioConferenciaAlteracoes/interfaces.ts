@@ -15,6 +15,9 @@ export interface iParams {
     itemsPerPage: number;
     mes: number;
     ano: number | string;
+    conteudo: string[];
+    tela: string[];
+    funcionario: any
 }
 
 export interface iResponseDadosInput {

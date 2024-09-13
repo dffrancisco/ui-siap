@@ -17,7 +17,9 @@ export const state = reactive({
     funcionarios: <iFuncionarios[]>[],
     selectedFuncionario: <number[]>[],
     telas: <iTelas[]>[],
+    conteudo: ['Conferido', 'Quantidade', 'End.Estoque', 'End.Excesso'],
     selectTela: <string[]>[],
+    selectedConteudo: <string[]>[],
     totalItems: 0,
     itemsPerPage: 30,
     page: 1,
@@ -29,7 +31,7 @@ export const state = reactive({
 
 export const actions = {
     async init() {
-        // actions.validarInputs()
+        actions.validarInputs()
         actions.getDadosParaInputs()
     },
 
@@ -77,6 +79,10 @@ export const actions = {
                 itemsPerPage: state.itemsPerPage,
                 mes: state.mes,
                 ano: state.ano,
+                conteudo: state.selectedConteudo,
+                tela: state.selectTela,
+                funcionario: state.selectedFuncionario
+
             });
             // state.dadosRelatorio = data;
             // state.totalItems = data.total[0].TOTAL;
