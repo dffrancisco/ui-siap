@@ -10,9 +10,10 @@ export const state = reactive({
     filtros: <iFiltros[]>[],
     selectedFiltro: null,
     idFiltro: 0,
-    conferente: "",
+    conferente: null,
     dadosDoFiltroSelecionado: <iDadosFiltro[]>[],
     searchFiltro: "",
+    filtroEditar: <iFiltros[]>[],
     modalVisualizarFiltroOpened: false,
     modalNovoFiltroOpened: false,
     modalAddItensFiltroOpened: false,
@@ -183,7 +184,6 @@ export const actions = {
                 { key: 'QTO_OLD', label: 'Qtd nova', width: '5%', align: 'center' },
                 { key: 'END_ESTOQUE', label: 'End. Estoque', width: '15%', align: 'right' },
                 { key: 'END_EXCESSO', label: 'End. Excesso', width: '15%', align: 'right' },
-                { key: 'DATA', label: 'Data', width: '10%', align: 'center' },
                 { key: 'CONFERIDO', label: 'Conferido', width: '10%', align: 'center' }
 
             ];
@@ -221,6 +221,7 @@ export const actions = {
     },
 
     novoFiltro() {
+        state.filtroEditar = []
         state.modalNovoFiltroOpened = true;
     },
 
@@ -318,18 +319,20 @@ export const actions = {
         }
     },
 
-    addItensNovoFiltro(nomeFiltro: string) {
-        state.nomeNovoFiltro = nomeFiltro;
-        state.idFiltro = 0
-        state.conferente = "";
-        state.modalAddItensFiltroOpened = true
-    },
+    addItensFiltro(idFiltro: number | null, conferente: number | string, nomeFiltro: string) {
 
-    addItensFiltroExistente(idFiltro: number, conferente: string, nomeFiltro: string) {
-        state.idFiltro = idFiltro
+        if (idFiltro != null) {
+            state.idFiltro = idFiltro
+        }
+
         state.conferente = conferente;
         state.nomeNovoFiltro = nomeFiltro;
         state.modalAddItensFiltroOpened = true
+    },
+
+    editarDadosFiltroSelecionado(filtro) {
+        state.filtroEditar = filtro
+        state.modalNovoFiltroOpened = true
     },
 
     closeModalVisualizarFiltro() {
@@ -342,6 +345,7 @@ export const actions = {
 
     closeModalAddItensFiltro() {
         state.modalAddItensFiltroOpened = false;
+        state.modalVisualizarFiltroOpened = false
         actions.getFiltros()
     }
 }

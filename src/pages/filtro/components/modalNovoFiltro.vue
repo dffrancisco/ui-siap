@@ -1,13 +1,25 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
-import { onMounted, reactive } from "vue";
+import { nextTick, onMounted, reactive, watch } from "vue";
+import serviceFiltro from "../services/filtro.service";
+import { iFuncionario } from "../interfaces";
 
 const stateModalNovoFiltro = reactive({
   loading: false,
   nomeFiltro: "",
+  funcionarios: <iFuncionario[]>[],
+  funcionarioSelecionado: null,
+  idFiltro: null,
 });
 
-const emit = defineEmits(["closeModalNovoFiltro", "nomeFiltro"]);
+const emit = defineEmits(["closeModalNovoFiltro", "nomeFiltroEConferente"]);
+
+const props = defineProps({
+  filtroEditar: {
+    type: Object,
+    required: false,
+  },
+});
 
 const actions = {
   salvar() {
@@ -18,7 +30,12 @@ const actions = {
       });
       return;
     }
-    emit("nomeFiltro", stateModalNovoFiltro.nomeFiltro);
+    emit(
+      "nomeFiltroEConferente",
+      stateModalNovoFiltro.idFiltro,
+      stateModalNovoFiltro.funcionarioSelecionado,
+      stateModalNovoFiltro.nomeFiltro
+    );
     actions.cancelar();
   },
 
@@ -26,12 +43,33 @@ const actions = {
     stateModalNovoFiltro.nomeFiltro = "";
     emit("closeModalNovoFiltro");
   },
+
+  async init() {
+    try {
+      stateModalNovoFiltro.loading = true;
+
+      const funcionarios = await serviceFiltro.getFuncionarios();
+      stateModalNovoFiltro.funcionarios = funcionarios;
+    } finally {
+      stateModalNovoFiltro.loading = false;
+    }
+  },
 };
 
 onMounted(() => {
+  actions.init();
   const inputNomeFiltro = document.querySelector("#nomeFiltro") as HTMLElement;
   if (inputNomeFiltro) {
     inputNomeFiltro.focus();
+  }
+});
+
+nextTick(() => {
+  if (props.filtroEditar.length > 0) {
+    const filtro = props.filtroEditar[0];
+    stateModalNovoFiltro.nomeFiltro = filtro.NOME_FILTRO;
+    stateModalNovoFiltro.funcionarioSelecionado = filtro.COD_FUNCIONARIO;
+    stateModalNovoFiltro.idFiltro = filtro.ID_FILTRO;
   }
 });
 </script>
@@ -49,6 +87,20 @@ onMounted(() => {
         bg-color="#ffffff"
       >
       </v-text-field>
+
+      <v-autocomplete
+        id="funcionarios"
+        label="Funcionario Conferente"
+        class="funcionarios pt-5"
+        :items="stateModalNovoFiltro.funcionarios"
+        item-title="LOGIN"
+        item-value="COD_FUNCIONARIO"
+        autocomplete="off"
+        variant="outlined"
+        :clearable="true"
+        bg-color="#ffffff"
+        v-model="stateModalNovoFiltro.funcionarioSelecionado"
+      ></v-autocomplete>
     </div>
 
     <div>
@@ -111,7 +163,7 @@ onMounted(() => {
   margin-bottom: 150px;
   margin-left: 25%;
   max-width: 520px;
-  height: 170px;
+  height: 220px;
   border: 2px solid rgba(0, 0, 0, 0.261);
 }
 

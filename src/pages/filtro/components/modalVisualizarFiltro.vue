@@ -51,11 +51,16 @@ const actions = {
     emit("closeModalVisualizarFiltro");
   },
 
+  getClassCorLinha(dados: any) {
+    let classe = dados.index % 2 == 0 ? "cor-zebrada-1" : "cor-zebrada-2";
+    return { class: classe };
+  },
+
   addItensFiltro() {
     emit(
       "addItensFiltro",
       props.dadosFiltroSelecionado[0].ID_FILTRO,
-      props.dadosFiltroSelecionado[0].CONFERENTE,
+      props.dadosFiltroSelecionado[0].COD_FUNCIONARIO,
       props.dadosFiltroSelecionado[0].NOME_FILTRO
     );
     emit("closeModalVisualizarFiltro");
@@ -89,6 +94,10 @@ const actions = {
       }
     }
   },
+
+  editarDadosFiltro(filtro) {
+    emit("editarDadosFiltro", filtro);
+  },
 };
 
 const props = defineProps({
@@ -101,37 +110,41 @@ const props = defineProps({
 // Inicializando o estado local com os dados da props
 stateModalVisualizarFiltro.dadosFiltro = props.dadosFiltroSelecionado;
 
-const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeFiltro"]);
+const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeFiltro", "editarDadosFiltro"]);
 </script>
 <template>
   <v-container>
     <v-card
       class="pa-2"
-      style="width: 900px; margin: 0 auto"
+      style="width: 900px; height: 505px; margin: 0 auto"
     >
       <v-card-text>
-        <div>
-          <v-icon
-            style="top: 20px"
-            @click="actions.cancelar()"
-            >mdi-close-circle-outline</v-icon
-          >
-        </div>
-        <div style="margin-left: 85%; padding-bottom: 15px">
-          <v-btn
-            class="ml-2"
+        <div style="display: flex">
+          <v-chip
+            style=""
             color="primary"
-            @click="actions.addItensFiltro()"
-          >
-            + ADD itens</v-btn
+            >Nome do Filtro: {{ stateModalVisualizarFiltro.dadosFiltro[0].NOME_FILTRO || "-------" }}
+          </v-chip>
+          <v-chip
+            style="margin-left: 10px"
+            color="primary"
+            >Conferente: {{ stateModalVisualizarFiltro.dadosFiltro[0].CONFERENTE }}
+          </v-chip>
+          <v-icon
+            class="iconEditar"
+            color="primary"
+            size="30px"
+            @click="actions.editarDadosFiltro(stateModalVisualizarFiltro.dadosFiltro)"
+            >mdi-account-edit</v-icon
           >
         </div>
         <v-data-table
           :headers="stateModalVisualizarFiltro.headers"
           items-per-page-text="Itens por página"
           items-per-page="50"
-          height="370"
+          height="380"
           fixed-header
+          :row-props="actions.getClassCorLinha"
           :items="stateModalVisualizarFiltro.dadosFiltro"
           item-key="COD_PRODUTO"
           item-value="COD_PRODUTO"
@@ -160,6 +173,23 @@ const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeF
             </v-alert>
           </template>
         </v-data-table>
+        <div style="margin-left: 72%; margin-top: -45px">
+          <v-btn
+            variant="outlined"
+            color="primary"
+            @click="actions.cancelar"
+            >Cancelar</v-btn
+          >
+        </div>
+        <div style="margin-left: 85%; margin-top: -37px">
+          <v-btn
+            class="ml-2"
+            color="primary"
+            @click="actions.addItensFiltro()"
+          >
+            + ADD itens</v-btn
+          >
+        </div>
       </v-card-text>
     </v-card>
     <v-overlay
@@ -175,4 +205,16 @@ const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeF
     </v-overlay>
   </v-container>
 </template>
-<style scoped></style>
+<style>
+.cor-zebrada-1 {
+  background-color: #f0f0f0;
+}
+
+.v-overlay__scrim {
+  background-color: black;
+}
+
+.v-data-table-footer__pagination {
+  padding-right: 250px;
+}
+</style>

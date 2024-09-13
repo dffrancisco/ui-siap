@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive } from "vue";
 import serviceFiltro from "../services/filtro.service";
-import { iCarros, iFuncionario, iMarcas, iParamFiltrar, iResultPesquisa } from "../interfaces";
+import { iCarros, iMarcas, iParamFiltrar, iResultPesquisa } from "../interfaces";
 import Swal from "sweetalert2";
 
 const stateModalAddItensFiltro = reactive({
@@ -9,8 +9,7 @@ const stateModalAddItensFiltro = reactive({
   search: "",
   nomeFiltro: "",
   idFiltro: 0,
-  funcionarios: <iFuncionario[]>[],
-  funcionarioSelecionado: "",
+  funcionarioSelecionado: null,
   carros: <iCarros[]>[],
   carroSelecionado: <iCarros[]>[],
   marcaSelecionada: <iMarcas[]>[],
@@ -61,9 +60,7 @@ const actions = {
 
       const carros = await serviceFiltro.getCarros();
       const marcas = await serviceFiltro.getMarcas();
-      const funcionarios = await serviceFiltro.getFuncionarios();
 
-      stateModalAddItensFiltro.funcionarios = funcionarios;
       stateModalAddItensFiltro.carros = carros;
       stateModalAddItensFiltro.marcas = marcas;
     } catch (error) {
@@ -79,6 +76,7 @@ const actions = {
   iniciarStates() {
     stateModalAddItensFiltro.nomeFiltro = props.nomeFiltro;
     stateModalAddItensFiltro.idFiltro = props.idFiltro;
+    stateModalAddItensFiltro.funcionarioSelecionado = props.conferente;
   },
 
   resetStates() {
@@ -130,28 +128,19 @@ const actions = {
       return;
     }
 
-    const inputFuncionario = document.querySelector("#funcionarios") as HTMLElement;
+    let parametrosInsercao = {
+      idFiltro: stateModalAddItensFiltro.idFiltro,
+      nomeFiltro: stateModalAddItensFiltro.nomeFiltro,
+      funcionario: stateModalAddItensFiltro.funcionarioSelecionado,
+      objPesquisa: stateModalAddItensFiltro.paramsPesquisa,
+      produtosSelecionados: stateModalAddItensFiltro.produtosSelecionados,
+    };
 
-    if (!stateModalAddItensFiltro.funcionarioSelecionado) {
-      inputFuncionario.focus();
+    if (stateModalAddItensFiltro.idFiltro == 0) {
+      actions.inserirFiltro(parametrosInsercao);
+      return;
     }
-
-    //verificar se tem funcionario conferente
-    if (stateModalAddItensFiltro.funcionarioSelecionado) {
-      let parametrosInsercao = {
-        idFiltro: stateModalAddItensFiltro.idFiltro,
-        nomeFiltro: stateModalAddItensFiltro.nomeFiltro,
-        funcionario: stateModalAddItensFiltro.funcionarioSelecionado,
-        objPesquisa: stateModalAddItensFiltro.paramsPesquisa,
-        produtosSelecionados: stateModalAddItensFiltro.produtosSelecionados,
-      };
-
-      if (stateModalAddItensFiltro.idFiltro == 0) {
-        actions.inserirFiltro(parametrosInsercao);
-        return;
-      }
-      actions.atualizarFiltro(parametrosInsercao);
-    }
+    actions.atualizarFiltro(parametrosInsercao);
   },
 
   async atualizarFiltro(parametrosInsercao) {
@@ -193,6 +182,11 @@ const actions = {
       stateModalAddItensFiltro.loading = false;
     }
   },
+
+  getClassCorLinha(dados: any) {
+    let classe = dados.index % 2 == 0 ? "cor-zebrada-1" : "cor-zebrada-2";
+    return { class: classe };
+  },
 };
 
 const props = defineProps({
@@ -205,7 +199,7 @@ const props = defineProps({
     required: true,
   },
   conferente: {
-    type: String,
+    type: Number || null,
     required: true,
   },
 });
@@ -225,7 +219,7 @@ onUnmounted(() => {
   <v-container>
     <v-card
       class="pa-5"
-      style="width: 900px; margin: 0 auto"
+      style="width: 900px; height: 505px; margin: 0 auto"
     >
       <div style="display: flex; gap: 16px; padding-bottom: 10px">
         <v-autocomplete
@@ -260,6 +254,7 @@ onUnmounted(() => {
           item-title="title"
           item-value="value"
           :clearable="true"
+          @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.endEstoque"
         ></v-text-field>
 
@@ -269,6 +264,7 @@ onUnmounted(() => {
           autocomplete="off"
           label="Num. Fabricante"
           :clearable="true"
+          @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.numFabricante"
         ></v-text-field>
 
@@ -278,6 +274,7 @@ onUnmounted(() => {
           autocomplete="off"
           label="Descrição"
           :clearable="true"
+          @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.descricaoProduto"
         ></v-text-field>
         <v-btn
@@ -295,11 +292,12 @@ onUnmounted(() => {
             :headers="stateModalAddItensFiltro.headers"
             items-per-page-text="Itens por página"
             items-per-page="50"
-            height="370"
+            height="350"
             fixed-header
             :items="stateModalAddItensFiltro.dadosRetornadosDaPesquisa"
             item-key="COD_PRODUTO"
             item-value="COD_PRODUTO"
+            :row-props="actions.getClassCorLinha"
             v-model="stateModalAddItensFiltro.produtosSelecionados"
             show-select
             select-strategy="all"
@@ -315,14 +313,14 @@ onUnmounted(() => {
             </template>
           </v-data-table>
         </v-card-text>
-        <div style="display: flex">
+        <!-- <div style="display: flex">
           <v-chip
             style="max-width: 230px; margin-left: 10px; margin-top: -50px"
             color="primary"
             >Nome do Filtro: {{ stateModalAddItensFiltro.nomeFiltro }}</v-chip
           >
-        </div>
-        <div>
+        </div> -->
+        <!-- <div>
           <v-autocomplete
             id="funcionarios"
             label="Funcionario Conferente"
@@ -335,11 +333,11 @@ onUnmounted(() => {
             :clearable="true"
             v-model="stateModalAddItensFiltro.funcionarioSelecionado"
           ></v-autocomplete>
-        </div>
+        </div> -->
 
         <div
-          class="d-flex justify-end pa-2"
-          style="margin-top: -40px"
+          class="d-flex justify-end pa-2 btns"
+          style="margin-top: -70px"
         >
           <v-btn
             variant="outlined"
@@ -370,4 +368,16 @@ onUnmounted(() => {
   </v-overlay>
 </template>
 
-<style scoped></style>
+<style>
+.cor-zebrada-1 {
+  background-color: #f0f0f0;
+}
+
+.v-overlay__scrim {
+  background-color: black;
+}
+
+.v-data-table-footer__pagination {
+  padding-right: 230px;
+}
+</style>

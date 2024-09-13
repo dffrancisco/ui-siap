@@ -63,6 +63,7 @@ export interface iDadosFiltro {
     DATA: string,
     HORA: string,
     CONFERIDO: string,
+    COD_FUNCIONARIO: number
     ID_FILTRO: number,
     DT_FILTRO: string,
     ID_CRIADOR: number,

@@ -53,7 +53,7 @@ onMounted(async () => {
             <v-icon
               size="large"
               color="primary"
-              title="Ver detalhes"
+              title="Ver detalhes e add+ itens"
               :disabled="item.DATA_FIM != null"
               @click="actions.selectFiltro(item.ID_FILTRO)"
             >
@@ -132,12 +132,13 @@ onMounted(async () => {
     v-model="state.modalNovoFiltroOpened"
     transition="dialog-transition"
     variant="flat"
-    :persistent="true"
+    :persistent="false"
     @click:outside="actions.closeModalNovoFiltro"
   >
     <ModalNovoFiltro
+      :filtroEditar="state.filtroEditar"
       @closeModalNovoFiltro="actions.closeModalNovoFiltro"
-      @nomeFiltro="actions.addItensNovoFiltro"
+      @nomeFiltroEConferente="actions.addItensFiltro"
     />
   </v-dialog>
 
@@ -145,12 +146,13 @@ onMounted(async () => {
     v-model="state.modalVisualizarFiltroOpened"
     transition="dialog-transition"
     variant="flat"
-    :persistent="true"
+    :persistent="false"
     @click:outside="actions.closeModalVisualizarFiltro"
   >
     <ModalVisualizarFiltro
       :dadosFiltroSelecionado="state.dadosDoFiltroSelecionado"
-      @addItensFiltro="actions.addItensFiltroExistente"
+      @editarDadosFiltro="actions.editarDadosFiltroSelecionado"
+      @addItensFiltro="actions.addItensFiltro"
       @closeModalVisualizarFiltro="actions.closeModalVisualizarFiltro"
     />
   </v-dialog>
@@ -159,7 +161,7 @@ onMounted(async () => {
     v-model="state.modalAddItensFiltroOpened"
     transition="dialog-transition"
     variant="flat"
-    :persistent="true"
+    :persistent="false"
     @click:outside="actions.closeModalAddItensFiltro"
   >
     <ModalAddItensFiltro
