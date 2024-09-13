@@ -30,6 +30,14 @@ const actions = {
       });
       return;
     }
+
+    if (!stateModalNovoFiltro.funcionarioSelecionado) {
+      Swal.fire({
+        icon: "warning",
+        text: "Selecione um funcionário para o filtro!",
+      });
+      return;
+    }
     emit(
       "nomeFiltroEConferente",
       stateModalNovoFiltro.idFiltro,
@@ -50,8 +58,36 @@ const actions = {
 
       const funcionarios = await serviceFiltro.getFuncionarios();
       stateModalNovoFiltro.funcionarios = funcionarios;
+
+      actions.popularInputs();
     } finally {
       stateModalNovoFiltro.loading = false;
+    }
+  },
+
+  popularInputs() {
+    if (props.filtroEditar.length > 0) {
+      const filtro = props.filtroEditar[0];
+
+      stateModalNovoFiltro.nomeFiltro = filtro.NOME_FILTRO;
+      stateModalNovoFiltro.idFiltro = filtro.ID_FILTRO;
+
+      // encontrando o conferente dentre os funcionarios
+      const funcionarioEncontrado = stateModalNovoFiltro.funcionarios.find(
+        (func) => func.COD_FUNCIONARIO === filtro.COD_FUNCIONARIO
+      );
+
+      // Se o funcionário foi encontrado, seleciona, senão, deixa vazio
+      stateModalNovoFiltro.funcionarioSelecionado = funcionarioEncontrado
+        ? funcionarioEncontrado.COD_FUNCIONARIO
+        : null;
+    }
+  },
+
+  focarNoInputFuncionarios() {
+    const inputFuncionarios = document.querySelector("#funcionarios") as HTMLElement;
+    if (inputFuncionarios) {
+      inputFuncionarios.focus();
     }
   },
 };
@@ -63,15 +99,6 @@ onMounted(() => {
     inputNomeFiltro.focus();
   }
 });
-
-nextTick(() => {
-  if (props.filtroEditar.length > 0) {
-    const filtro = props.filtroEditar[0];
-    stateModalNovoFiltro.nomeFiltro = filtro.NOME_FILTRO;
-    stateModalNovoFiltro.funcionarioSelecionado = filtro.COD_FUNCIONARIO;
-    stateModalNovoFiltro.idFiltro = filtro.ID_FILTRO;
-  }
-});
 </script>
 <template>
   <div class="modal-container">
@@ -81,8 +108,8 @@ nextTick(() => {
         label="Nome do Filtro"
         class="custom-placeholder"
         :clearable="false"
+        @keypress.enter="actions.focarNoInputFuncionarios"
         v-model="stateModalNovoFiltro.nomeFiltro"
-        @keypress.enter="actions.salvar"
         variant="outlined"
         bg-color="#ffffff"
       >
@@ -97,6 +124,7 @@ nextTick(() => {
         item-value="COD_FUNCIONARIO"
         autocomplete="off"
         variant="outlined"
+        @keydown.enter="actions.salvar"
         :clearable="true"
         bg-color="#ffffff"
         v-model="stateModalNovoFiltro.funcionarioSelecionado"

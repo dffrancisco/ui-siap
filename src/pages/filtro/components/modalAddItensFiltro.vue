@@ -63,6 +63,11 @@ const actions = {
 
       stateModalAddItensFiltro.carros = carros;
       stateModalAddItensFiltro.marcas = marcas;
+
+      const inputDescricao = document.querySelector("#descricaoProduto") as HTMLElement;
+      if (inputDescricao) {
+        inputDescricao.focus();
+      }
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -115,6 +120,11 @@ const actions = {
   },
 
   cancelar() {
+    emit("cancelarModalAddItensFiltro");
+    actions.resetStates();
+  },
+
+  salvar() {
     emit("closeModalAddItensFiltro");
     actions.resetStates();
   },
@@ -148,7 +158,7 @@ const actions = {
       stateModalAddItensFiltro.loading = true;
       await serviceFiltro.atualizarFiltro(parametrosInsercao);
       Swal.fire({ icon: "success", text: "Dados salvos com sucesso!", timer: 1500 });
-      actions.cancelar();
+      actions.salvar();
     } catch (error) {
       const errorMessage = error.response?.data?.msg || "Erro ao atualizar os dados.";
       Swal.fire({
@@ -170,7 +180,7 @@ const actions = {
         text: "Dados salvos com sucesso!",
         timer: 1500,
       });
-      actions.cancelar();
+      actions.salvar();
     } catch (error) {
       const errorMessage = error.response?.data?.msg || "Erro ao inserir os dados.";
       Swal.fire({
@@ -204,7 +214,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["closeModalAddItensFiltro"]);
+const emit = defineEmits(["closeModalAddItensFiltro", "cancelarModalAddItensFiltro"]);
 
 onMounted(async () => {
   actions.init();
@@ -219,7 +229,7 @@ onUnmounted(() => {
   <v-container>
     <v-card
       class="pa-5"
-      style="width: 900px; height: 505px; margin: 0 auto"
+      style="width: 940px; height: 505px; margin: 0 auto"
     >
       <div style="display: flex; gap: 16px; padding-bottom: 10px">
         <v-autocomplete
@@ -313,27 +323,6 @@ onUnmounted(() => {
             </template>
           </v-data-table>
         </v-card-text>
-        <!-- <div style="display: flex">
-          <v-chip
-            style="max-width: 230px; margin-left: 10px; margin-top: -50px"
-            color="primary"
-            >Nome do Filtro: {{ stateModalAddItensFiltro.nomeFiltro }}</v-chip
-          >
-        </div> -->
-        <!-- <div>
-          <v-autocomplete
-            id="funcionarios"
-            label="Funcionario Conferente"
-            class="funcionarios"
-            :items="stateModalAddItensFiltro.funcionarios"
-            item-title="LOGIN"
-            item-value="COD_FUNCIONARIO"
-            style="max-width: 280px; margin-left: 10px"
-            autocomplete="off"
-            :clearable="true"
-            v-model="stateModalAddItensFiltro.funcionarioSelecionado"
-          ></v-autocomplete>
-        </div> -->
 
         <div
           class="d-flex justify-end pa-2 btns"

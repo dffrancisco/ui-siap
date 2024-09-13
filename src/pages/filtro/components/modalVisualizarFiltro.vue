@@ -75,9 +75,10 @@ const actions = {
 
         // Remover o item do estado local
         stateModalVisualizarFiltro.dadosFiltro = stateModalVisualizarFiltro.dadosFiltro.filter(
-          // @ts-ignore
           (filtroItem) => filtroItem.ID_ITENS_FILTRO !== item.ID_ITENS_FILTRO
         );
+
+        emit("removerItemState", { idItem: param, idFiltro: item.ID_FILTRO });
 
         Swal.fire({
           icon: "success",
@@ -110,8 +111,15 @@ const props = defineProps({
 // Inicializando o estado local com os dados da props
 stateModalVisualizarFiltro.dadosFiltro = props.dadosFiltroSelecionado;
 
-const emit = defineEmits(["closeModalVisualizarFiltro", "addItensFiltro", "nomeFiltro", "editarDadosFiltro"]);
+const emit = defineEmits([
+  "closeModalVisualizarFiltro",
+  "addItensFiltro",
+  "nomeFiltro",
+  "editarDadosFiltro",
+  "removerItemState",
+]);
 </script>
+
 <template>
   <v-container>
     <v-card

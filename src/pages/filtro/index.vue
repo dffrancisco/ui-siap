@@ -154,6 +154,7 @@ onMounted(async () => {
       @editarDadosFiltro="actions.editarDadosFiltroSelecionado"
       @addItensFiltro="actions.addItensFiltro"
       @closeModalVisualizarFiltro="actions.closeModalVisualizarFiltro"
+      @removerItemState="actions.removerItemState"
     />
   </v-dialog>
 
@@ -169,6 +170,7 @@ onMounted(async () => {
       :idFiltro="state.idFiltro"
       :conferente="state.conferente"
       @closeModalAddItensFiltro="actions.closeModalAddItensFiltro"
+      @cancelarModalAddItensFiltro="actions.cancelarModalAddItensFiltro"
     />
   </v-dialog>
 </template>

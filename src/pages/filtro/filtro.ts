@@ -335,6 +335,19 @@ export const actions = {
         state.modalNovoFiltroOpened = true
     },
 
+    removerItemState({ idItem, idFiltro }) {
+
+        state.dadosDoFiltroSelecionado = state.dadosDoFiltroSelecionado.filter(
+            (filtroItem) => filtroItem.ID_ITENS_FILTRO !== idItem
+        );
+
+        // Encontrar o filtro correspondente e diminuir a quantidade de itens
+        const filtro = state.filtros.find((filtro) => filtro.ID_FILTRO === idFiltro);
+        if (filtro) {
+            filtro.QTD_ITENS -= 1;
+        }
+    },
+
     closeModalVisualizarFiltro() {
         state.modalVisualizarFiltroOpened = false;
     },
@@ -347,5 +360,11 @@ export const actions = {
         state.modalAddItensFiltroOpened = false;
         state.modalVisualizarFiltroOpened = false
         actions.getFiltros()
+    },
+
+    cancelarModalAddItensFiltro() {
+        state.modalAddItensFiltroOpened = false;
+        state.modalVisualizarFiltroOpened = false
     }
+
 }
