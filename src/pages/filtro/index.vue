@@ -72,8 +72,7 @@ onMounted(async () => {
               size="large"
               color="primary"
               class="ml-1"
-              title="Deletar"
-              :disabled="item.DATA_FIM != null"
+              title="Deletar Filtro"
               @click="actions.deletarFiltro(item.ID_FILTRO)"
             >
               mdi-delete-outline
@@ -82,7 +81,7 @@ onMounted(async () => {
               size="large"
               color="primary"
               class="ml-1"
-              :title="item.DATA_FIM == null ? 'Finalizar' : 'Reabrir'"
+              :title="item.DATA_FIM == null ? 'Finalizar Filtro' : 'Reabrir Filtro'"
               @click="
                 item.DATA_FIM == null
                   ? actions.finalizarFiltro(item.ID_FILTRO)
