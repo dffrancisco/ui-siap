@@ -52,5 +52,9 @@ onMounted(()=>{
         <v-btn color="primary" size="36" icon="mdi-printer mdi-24px"></v-btn>
       </div>
     </v-card>
+
+    <v-dialog v-model="state.modalSelecionarClienteFaturadoOpened">
+      
+    </v-dialog>
   </v-container>
 </template>
