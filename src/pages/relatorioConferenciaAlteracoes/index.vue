@@ -100,6 +100,7 @@ nextTick(async () => {
         style="border-radius: 5px"
         height="460"
         fixed-header
+        :items="state.dadosRelatorio"
         :headers="state.headers"
         :loading="state.loading"
         :row-props="actions.getClassCorLinha"

@@ -27,7 +27,26 @@ export const state = reactive({
     dadosRelatorio: <any[]>[],
     mesImpressao: null,
     anoImpressao: null,
-    headers: <any>[]
+    headers: <any>[
+        {
+            title: "Produto",
+            key: "DESC_PRODUTO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Nº Fabricante",
+            key: "NUM_FABRICANTE",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Marca",
+            key: "DESC_MARCA",
+            sortable: true,
+            align: 'left',
+        }
+    ]
 })
 
 export const actions = {
@@ -86,8 +105,8 @@ export const actions = {
                 funcionario: state.selectedFuncionario
 
             });
-            state.dadosRelatorio = data;
-            state.totalItems = data.total[0].TOTAL;
+            state.dadosRelatorio = data.dadosRelatorio;
+            state.totalItems = data.totalDadosRelatorio[0].TOTAL;
 
             state.mesImpressao = state.mes
             state.anoImpressao = state.ano
