@@ -112,6 +112,7 @@ onMounted(() => {
         v-model="stateModalNovoFiltro.nomeFiltro"
         variant="outlined"
         bg-color="#ffffff"
+        maxlength="30"
       >
       </v-text-field>
 
