@@ -17,7 +17,8 @@ export interface iParams {
     ano: number | string;
     conteudo: string[];
     tela: string[];
-    funcionario: any
+    numFabricante: string;
+    funcionario: number[]
 }
 
 export interface iResponseDadosInput {

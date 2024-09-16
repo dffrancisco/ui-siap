@@ -20,6 +20,7 @@ export const state = reactive({
     conteudo: ['Conferido', 'Quantidade', 'End.Estoque', 'End.Excesso'],
     selectTela: <string[]>[],
     selectedConteudo: <string[]>[],
+    numFabricante: "",
     totalItems: 0,
     itemsPerPage: 30,
     page: 1,
@@ -81,11 +82,12 @@ export const actions = {
                 ano: state.ano,
                 conteudo: state.selectedConteudo,
                 tela: state.selectTela,
+                numFabricante: state.numFabricante,
                 funcionario: state.selectedFuncionario
 
             });
-            // state.dadosRelatorio = data;
-            // state.totalItems = data.total[0].TOTAL;
+            state.dadosRelatorio = data;
+            state.totalItems = data.total[0].TOTAL;
 
             state.mesImpressao = state.mes
             state.anoImpressao = state.ano
@@ -93,7 +95,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao exibir as consultas lojas!"
+                text: "Erro ao trazer os dados para relatório!"
             });
         } finally {
             state.loading = false;
@@ -108,6 +110,34 @@ export const actions = {
     updatePage(newPage: number) {
         state.page = newPage;
         actions.getDadosParaRelatorio();
+
+        // async verMais() {
+
+        //     try {
+        //         state.loading = true;
+        //         const nextPage = Math.ceil(state.clientesFila.length / state.itemsPerPage) + 1;
+        //         const data = await pranchetaService.getClientesFila({
+        //             page: nextPage,
+        //             itemsPerPage: state.itemsPerPage,
+        //             search: state.search,
+        //             filtroStatus: state.filtroStatus,
+        //         });
+
+        //         // Concatenar os novos clientes com os existentes
+        //         const updatedClientesFila = [...state.clientesFila, ...data.clientesFila];
+
+        //         state.clientesFila = updatedClientesFila;
+        //         state.totalItems = data.total[0].TOTAL;
+        //     } catch (error) {
+        //         Swal.fire({
+        //             icon: "error",
+        //             text: "Erro ao carregar mais clientes!"
+        //         });
+        //     } finally {
+        //         state.loading = false;
+        //         actions.esconderTeclado();
+        //     }
+        // },
     },
 
     async onClickImprimir() { }

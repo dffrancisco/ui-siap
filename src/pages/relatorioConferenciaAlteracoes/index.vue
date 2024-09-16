@@ -75,7 +75,10 @@ nextTick(async () => {
           ></v-select
         ></v-col>
         <v-col cols="3">
-          <v-text-field label="Nº Fabricante"></v-text-field>
+          <v-text-field
+            v-model="state.numFabricante"
+            label="Nº Fabricante"
+          ></v-text-field>
         </v-col>
         <v-col cols="1">
           <div class="btnPesquisar">
