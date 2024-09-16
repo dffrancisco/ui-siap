@@ -2,6 +2,15 @@
 import { onMounted } from "vue";
 import { actions, state } from "./relatorioFaturamento";
 import ModalSelecionarCliente from "./components/ModalSelecionarCliente.vue";
+import { useEventListener } from "@vueuse/core";
+
+useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F1") {
+    state.modalSelecionarClienteFaturadoOpened = true;
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
 
 onMounted(() => {
   actions.init();
@@ -39,6 +48,7 @@ onMounted(() => {
               v-model="state.clienteSelecionado.NOME"
               :disabled="!state.clienteSelecionado.ID_CLIENTE"
               readonly
+              :clearable="false"
             ></v-text-field>
             <v-btn
               icon="mdi-magnify mdi-24px"
