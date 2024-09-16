@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, onUnmounted } from "vue";
 import { actions, state } from "./relatorioFaturamento";
 import ModalSelecionarCliente from "./components/ModalSelecionarCliente.vue";
 import { useEventListener } from "@vueuse/core";
 
-useEventListener(document, "keydown", async (event) => {
+const eventListener = useEventListener(document, "keydown", async (event) => {
   if (event.key === "F1") {
     state.modalSelecionarClienteFaturadoOpened = true;
     event.preventDefault();
@@ -14,6 +14,10 @@ useEventListener(document, "keydown", async (event) => {
 
 onMounted(() => {
   actions.init();
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
 });
 </script>
 
