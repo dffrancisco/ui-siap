@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { actions, state } from './relatorioFaturamento';
+import { onMounted } from "vue";
+import { actions, state } from "./relatorioFaturamento";
+import ModalSelecionarCliente from "./components/ModalSelecionarCliente.vue";
 
-
-onMounted(()=>{
-  actions.init()
-})
+onMounted(() => {
+  actions.init();
+});
 </script>
 
 <template>
@@ -19,6 +19,7 @@ onMounted(()=>{
         ><v-row>
           <v-col cols="3">
             <v-text-field
+              v-model="state.dataInicio"
               label="Data Início"
               type="date"
             >
@@ -26,6 +27,7 @@ onMounted(()=>{
           </v-col>
           <v-col cols="3">
             <v-text-field
+              v-model="state.dataFim"
               label="Data Fim"
               type="date"
             >
@@ -34,27 +36,58 @@ onMounted(()=>{
           <v-col class="d-flex flex-row align-center ga-2">
             <v-text-field
               label="Cliente (F1)"
-              :disabled="!state.orcamentosFaturados.NOME"
+              v-model="state.clienteSelecionado.NOME"
+              :disabled="!state.clienteSelecionado.ID_CLIENTE"
               readonly
             ></v-text-field>
             <v-btn
               icon="mdi-magnify mdi-24px"
               color="primary"
               size="36"
+              @click="state.modalSelecionarClienteFaturadoOpened = true"
             ></v-btn>
           </v-col>
         </v-row>
       </div>
 
-      <div id="gridOrcamentosFaturados" class="mt-4"></div>
+      <div
+        id="gridOrcamentosFaturados"
+        class="mt-4"
+      ></div>
 
       <div class="mt-2 d-flex justify-end">
-        <v-btn color="primary" size="36" icon="mdi-printer mdi-24px"></v-btn>
+        <v-btn
+          color="primary"
+          size="36"
+          icon="mdi-printer mdi-24px"
+        ></v-btn>
       </div>
     </v-card>
 
-    <v-dialog v-model="state.modalSelecionarClienteFaturadoOpened">
-      
+    <div id="pnCodigoTela">relatorioFaturamento</div>
+
+    <v-dialog
+      v-model="state.modalSelecionarClienteFaturadoOpened"
+      :width="600"
+    >
+      <ModalSelecionarCliente
+        :dataInicio="state.dataInicio"
+        :dataFim="state.dataFim"
+        @closeModal="state.modalSelecionarClienteFaturadoOpened = false"
+        @selecionarCliente="actions.getOrcamentosFaturados"
+      />
     </v-dialog>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </v-container>
 </template>
