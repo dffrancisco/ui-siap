@@ -366,16 +366,6 @@ export const actions = {
             });
             return false
         }
-        // Validação para o crédito limite
-        const creditoLimiteValido = /^[0-9,.]+$/.test(state.creditoLimite);
-        if (!creditoLimiteValido) {
-            Swal.fire({
-                icon: "error",
-                title: "Crédito Limite inválido",
-                text: "Por favor, insira um valor numérico válido para o Crédito Limite.",
-            });
-            return false;
-        }
 
         let param = {
             idCliente: state.idCliente,

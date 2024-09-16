@@ -79,6 +79,7 @@ nextTick(async () => {
             class="creditoLimite"
             v-model="state.creditoLimite"
             autocomplete="off"
+            v-mask-decimal.br="2"
             maxlength="15"
             item-title="title"
             item-value="value"
