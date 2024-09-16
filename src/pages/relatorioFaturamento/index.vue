@@ -54,7 +54,7 @@ onMounted(() => {
               icon="mdi-magnify mdi-24px"
               color="primary"
               size="36"
-              @click="state.modalSelecionarClienteFaturadoOpened = true"
+              @click="actions.openModalSelecionarCliente"
             ></v-btn>
           </v-col>
         </v-row>
@@ -67,9 +67,12 @@ onMounted(() => {
 
       <div class="mt-2 d-flex justify-end">
         <v-btn
+          :disabled="!state.clienteSelecionado.ID_CLIENTE"
           color="primary"
           size="36"
+          title="Imprimir"
           icon="mdi-printer mdi-24px"
+          @click="actions.onClickImprimir"
         ></v-btn>
       </div>
     </v-card>
