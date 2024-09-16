@@ -53,6 +53,21 @@ export const actions = {
         })
     },
 
+    validarDiaVencimento(value: any) {
+        const dia = parseInt(value, 10);
+        if (!value) return true;
+        if (dia >= 1 && dia <= 31) {
+            return true; // Dia válido
+        } else {
+            Swal.fire({
+                icon: "warning",
+                title: "O dia deve estar entre 1 e 31!",
+                timer: 2000
+            });
+            return;
+        }
+    },
+
     modalLiberarClienteClose() {
         state.modalLiberarCliente.close();
     },
@@ -323,10 +338,12 @@ export const actions = {
         state.botaoCancelarHabilitado = true;
 
         if (!state.idCliente) {
+            actions.cancelar()
             Swal.fire({
                 icon: "warning",
                 title: "Selecione um cliente primeiro",
             });
+            actions.openModalLiberarCliente()
             return
         }
 

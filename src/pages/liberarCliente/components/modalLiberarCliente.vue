@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, reactive, watch } from "vue";
+import { onMounted, onUnmounted, reactive, watch } from "vue";
 import { iCliente, iParamGetCliente } from "../interfaces";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import serviceLiberarCliente from "../services/liberarCliente.service";
+import { useEventListener } from "@vueuse/core";
 
 const stateClientes = reactive({
   loading: false,
@@ -136,9 +137,21 @@ function searchClientes() {
   });
 }
 
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F1") {
+    stateClientes.edtClienteSearch.select();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
+
 onMounted(() => {
   grids();
   stateClientes.edtClienteSearch = <any>document.getElementById("edtClienteSearch");
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
 });
 </script>
 <template>

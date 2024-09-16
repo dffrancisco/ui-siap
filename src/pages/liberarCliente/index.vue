@@ -23,6 +23,7 @@ nextTick(async () => {
             v-model="state.nomeClienteSelect"
             autocomplete="off"
             item-title="title"
+            :disabled="state.idCliente == null"
             item-value="value"
             :clearable="false"
             :style="{ color: state.status == 'Bloqueado' ? 'red' : '' }"
@@ -32,6 +33,7 @@ nextTick(async () => {
           <v-text-field
             id="cnpj"
             readonly
+            :disabled="state.idCliente == null"
             label="CNPJ"
             class="cnpj"
             v-model="state.cnpjSelect"
@@ -54,11 +56,12 @@ nextTick(async () => {
         </v-col>
       </v-row>
 
-      <v-row>
+      <v-row style="margin-top: 0px">
         <v-col cols="3">
           <v-text-field
             id="creditoUsado"
             readonly
+            :disabled="state.idCliente == null"
             label="Crédito Usado"
             class="creditoUsado"
             v-model="state.creditoUsado"
@@ -72,9 +75,11 @@ nextTick(async () => {
           <v-text-field
             id="creditoLimite"
             label="Crédito Limite"
+            :disabled="state.idCliente == null"
             class="creditoLimite"
             v-model="state.creditoLimite"
             autocomplete="off"
+            maxlength="15"
             item-title="title"
             item-value="value"
             :clearable="true"
@@ -84,6 +89,7 @@ nextTick(async () => {
           <v-select
             id="tipoCompra"
             label="Tipo Compra"
+            :disabled="state.idCliente == null"
             :items="['Faturado', 'Não Faturado']"
             class="tipoCompra"
             v-model="state.tipoCompra"
@@ -96,6 +102,7 @@ nextTick(async () => {
         <v-col cols="3">
           <v-select
             id="tipoFaturamento"
+            :disabled="state.idCliente == null"
             label="Tipo Faturamento"
             :items="['Quinzenal', 'Mensal']"
             class="tipoFaturamento"
@@ -107,12 +114,13 @@ nextTick(async () => {
           ></v-select>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row style="margin-top: 7px">
         <v-col cols="5"
           ><v-select
             id="divisaoBoleto"
             :items="['Sim', 'Não']"
             v-model="state.dividirBoleto"
+            :disabled="state.idCliente == null"
             label="Divisão Boleto"
             class="divisaoBoleto"
             autocomplete="off"
@@ -127,11 +135,13 @@ nextTick(async () => {
             v-model="state.diaVencimento"
             label="Dia Vencimento Fixo"
             class="diaVencimento"
-            :disabled="state.dividirBoleto == 'Sim'"
+            :disabled="state.dividirBoleto == 'Sim' || state.idCliente == null"
             autocomplete="off"
-            type="number"
+            maxlength="2"
+            v-mask="'##'"
             item-title="title"
             item-value="value"
+            :rules="[actions.validarDiaVencimento]"
             :clearable="true"
           ></v-text-field>
         </v-col>
