@@ -23,7 +23,7 @@ nextTick(async () => {
             v-model="state.nomeClienteSelect"
             autocomplete="off"
             item-title="title"
-            :disabled="state.idCliente == null"
+            :disabled="state.idCliente == null || state.botaoAlterarHabilitado == true"
             item-value="value"
             :clearable="false"
             :style="{ color: state.status == 'Bloqueado' ? 'red' : '' }"
@@ -33,7 +33,7 @@ nextTick(async () => {
           <v-text-field
             id="cnpj"
             readonly
-            :disabled="state.idCliente == null"
+            :disabled="state.idCliente == null || state.botaoAlterarHabilitado == true"
             label="CNPJ"
             class="cnpj"
             v-model="state.cnpjSelect"
@@ -61,7 +61,7 @@ nextTick(async () => {
           <v-text-field
             id="creditoUsado"
             readonly
-            :disabled="state.idCliente == null"
+            :disabled="state.idCliente == null || state.botaoAlterarHabilitado == true"
             label="Crédito Usado"
             class="creditoUsado"
             v-model="state.creditoUsado"
@@ -75,7 +75,7 @@ nextTick(async () => {
           <v-text-field
             id="creditoLimite"
             label="Crédito Limite"
-            :disabled="state.idCliente == null"
+            :disabled="state.idCliente == null || state.botaoAlterarHabilitado == true"
             class="creditoLimite"
             v-model="state.creditoLimite"
             autocomplete="off"
@@ -89,7 +89,7 @@ nextTick(async () => {
           <v-select
             id="tipoCompra"
             label="Tipo Compra"
-            :disabled="state.idCliente == null"
+            :disabled="state.idCliente == null || state.botaoAlterarHabilitado == true"
             :items="['Faturado', 'Não Faturado']"
             class="tipoCompra"
             v-model="state.tipoCompra"
@@ -102,7 +102,7 @@ nextTick(async () => {
         <v-col cols="3">
           <v-select
             id="tipoFaturamento"
-            :disabled="state.idCliente == null"
+            :disabled="state.idCliente == null || state.botaoAlterarHabilitado == true"
             label="Tipo Faturamento"
             :items="['Quinzenal', 'Mensal']"
             class="tipoFaturamento"
@@ -120,7 +120,7 @@ nextTick(async () => {
             id="divisaoBoleto"
             :items="['Sim', 'Não']"
             v-model="state.dividirBoleto"
-            :disabled="state.idCliente == null"
+            :disabled="state.idCliente == null || state.botaoAlterarHabilitado == true"
             label="Divisão Boleto"
             class="divisaoBoleto"
             autocomplete="off"
@@ -135,7 +135,9 @@ nextTick(async () => {
             v-model="state.diaVencimento"
             label="Dia Vencimento Fixo"
             class="diaVencimento"
-            :disabled="state.dividirBoleto == 'Sim' || state.idCliente == null"
+            :disabled="
+              state.dividirBoleto == 'Sim' || state.idCliente == null || state.botaoAlterarHabilitado == true
+            "
             autocomplete="off"
             maxlength="2"
             v-mask="'##'"
@@ -193,7 +195,7 @@ nextTick(async () => {
         <v-btn
           color="primary"
           @click="actions.alterar"
-          :disabled="!state.botaoAlterarHabilitado"
+          :disabled="!state.botaoAlterarHabilitado || state.idCliente == null"
           >Alterar</v-btn
         >
         <v-btn

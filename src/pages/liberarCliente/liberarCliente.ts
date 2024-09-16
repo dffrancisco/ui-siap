@@ -30,6 +30,11 @@ export const state = reactive({
     botaoAlterarHabilitado: true,
     botaoSalvarHabilitado: false,
     botaoCancelarHabilitado: false,
+    config: {
+        thousands: '.',
+        decimal: ',',
+        precision: 2,
+    }
 })
 
 export const actions = {
@@ -54,17 +59,12 @@ export const actions = {
     },
 
     validarDiaVencimento(value: any) {
-        const dia = parseInt(value, 10);
-        if (!value) return true;
+        const dia = parseInt(value, 10)
+        if (!value) return true // Valor vazio é aceito
         if (dia >= 1 && dia <= 31) {
-            return true; // Dia válido
+            return true
         } else {
-            Swal.fire({
-                icon: "warning",
-                title: "O dia deve estar entre 1 e 31!",
-                timer: 2000
-            });
-            return;
+            return false
         }
     },
 
@@ -337,18 +337,10 @@ export const actions = {
         state.botaoSalvarHabilitado = true;
         state.botaoCancelarHabilitado = true;
 
-        if (!state.idCliente) {
-            actions.cancelar()
-            Swal.fire({
-                icon: "warning",
-                title: "Selecione um cliente primeiro",
-            });
-            actions.openModalLiberarCliente()
-            return
-        }
-
         const inputCreditoLimite = document.querySelector("#creditoLimite") as HTMLElement;
-        inputCreditoLimite.focus();
+        setTimeout(() => {
+            inputCreditoLimite.focus();
+        }, 500);
     },
 
     salvar() {
@@ -366,6 +358,25 @@ export const actions = {
     },
 
     async updateCliente() {
+        //validar dia vencimento
+        if (state.diaVencimento > 31) {
+            Swal.fire({
+                icon: "error",
+                title: "Dia inválido",
+            });
+            return false
+        }
+        // Validação para o crédito limite
+        const creditoLimiteValido = /^[0-9,.]+$/.test(state.creditoLimite);
+        if (!creditoLimiteValido) {
+            Swal.fire({
+                icon: "error",
+                title: "Crédito Limite inválido",
+                text: "Por favor, insira um valor numérico válido para o Crédito Limite.",
+            });
+            return false;
+        }
+
         let param = {
             idCliente: state.idCliente,
             tipoCompra: state.tipoCompra === "Faturado" ? 1 : 0,
@@ -396,6 +407,5 @@ export const actions = {
                 state.loading = false
             }
         }
-    }
-
+    },
 }
