@@ -1,10 +1,10 @@
 import axios from "axios";
-import { iParams, iResponseDadosInput } from "../interfaces";
+import { iParams, iResponseDadosInput, iResponseRelatorio } from "../interfaces";
 
 const caminho = 'siap/relatorioConferenciaAlteracoes'
 
 type iGetDadosParaInputs = () => Promise<iResponseDadosInput>;
-type iGetDadosParaRelatorio = (param: iParams) => Promise<any>;
+type iGetDadosParaRelatorio = (param: iParams) => Promise<iResponseRelatorio>;
 
 const getDadosParaInputs: iGetDadosParaInputs = async () => {
     let { data } = await axios.post(caminho, {

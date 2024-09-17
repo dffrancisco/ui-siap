@@ -3,7 +3,8 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceRelatorioConferenciaAlteracoes from './services/relatorioConferencia.service';
-import { iFuncionarios, iTelas } from "./interfaces";
+import { iDadosRelatorio, iFuncionarios, iTelas } from "./interfaces";
+import utils, { iColumnPrint } from "@/ts/utils";
 
 
 export const meses = mesesToSelect;
@@ -18,13 +19,13 @@ export const state = reactive({
     selectedFuncionario: <number[]>[],
     telas: <iTelas[]>[],
     conteudo: ['Conferido', 'Quantidade', 'End.Estoque', 'End.Excesso'],
-    selectTela: <string[]>[],
+    selectTela: 'CONFERENCIA',
     selectedConteudo: <string[]>[],
     numFabricante: "",
     totalItems: 0,
     itemsPerPage: 30,
     page: 1,
-    dadosRelatorio: <any[]>[],
+    dadosRelatorio: <iDadosRelatorio[]>[],
     mesImpressao: null,
     anoImpressao: null,
     headers: <any>[
@@ -42,9 +43,28 @@ export const state = reactive({
         },
         {
             title: "Marca",
-            key: "DESC_MARCA",
+            key: "MARCA",
             sortable: true,
             align: 'left',
+        },
+        {
+            title: "Conteúdo",
+            key: "CONTEUDO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Funcionário",
+            key: "LOGIN",
+            sortable: true,
+            align: 'right',
+        },
+        {
+            title: "Data",
+            key: "DATA",
+            sortable: true,
+            align: 'right',
+            value: (item: any) => moment(item.DATA).format('DD/MM/YYYY')
         }
     ]
 })
@@ -129,35 +149,43 @@ export const actions = {
     updatePage(newPage: number) {
         state.page = newPage;
         actions.getDadosParaRelatorio();
-
-        // async verMais() {
-
-        //     try {
-        //         state.loading = true;
-        //         const nextPage = Math.ceil(state.clientesFila.length / state.itemsPerPage) + 1;
-        //         const data = await pranchetaService.getClientesFila({
-        //             page: nextPage,
-        //             itemsPerPage: state.itemsPerPage,
-        //             search: state.search,
-        //             filtroStatus: state.filtroStatus,
-        //         });
-
-        //         // Concatenar os novos clientes com os existentes
-        //         const updatedClientesFila = [...state.clientesFila, ...data.clientesFila];
-
-        //         state.clientesFila = updatedClientesFila;
-        //         state.totalItems = data.total[0].TOTAL;
-        //     } catch (error) {
-        //         Swal.fire({
-        //             icon: "error",
-        //             text: "Erro ao carregar mais clientes!"
-        //         });
-        //     } finally {
-        //         state.loading = false;
-        //         actions.esconderTeclado();
-        //     }
-        // },
     },
 
-    async onClickImprimir() { }
+    async onClickImprimir() {
+        try {
+            let relatorio = state.dadosRelatorio
+            const relatorioAjustado = actions.formatarDadosImpressao([...relatorio]);
+
+            const columns: iColumnPrint[] = [
+                { key: 'DESC_PRODUTO', label: 'Produto', width: '25%', align: 'left' },
+                { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '10%', align: 'left' },
+                { key: 'MARCA', label: 'Marca', width: '10%', align: 'left' },
+                { key: 'CONTEUDO', label: 'Conteúdo', width: '30%', align: 'left' },
+                { key: 'LOGIN', label: 'Funcionário', width: '10%', align: 'left' },
+                { key: 'DATA', label: 'Data', width: '15%', align: 'center' }
+            ];
+
+            const titulo = `
+                <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
+                    <span>&nbsp;</span>
+                    <strong style="font-size: 16px;">Relatório Conferência - Alterações</strong>
+                </div>
+            `;
+
+            await utils.printComCabecalho(columns, relatorioAjustado, titulo);
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
+            });
+        }
+    },
+
+    formatarDadosImpressao(data) {
+        return data.map(item => ({
+            ...item,
+            DATA: item.DATA ? utils.dataBrasil(item.DATA) : '-------',
+        }));
+    },
 }

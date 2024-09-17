@@ -93,7 +93,7 @@ nextTick(async () => {
       </v-row>
 
       <v-data-table-server
-        class="tableHistoricoConsultaLojas"
+        class="tableHistoricoConsultaLojas pt-5"
         items-per-page-text="Itens por página"
         v-model:itemsPerPage="state.itemsPerPage"
         :items-length="state.totalItems"
@@ -149,15 +149,15 @@ nextTick(async () => {
 .v-data-table-footer__pagination {
   padding-right: 50px;
 }
+
+.cor-zebrada-1 {
+  background-color: #f0f0f0;
+}
 </style>
 <style scoped>
 .btnPrint {
   display: flex;
   justify-content: flex-end;
   margin-top: -10px;
-}
-
-.cor-zebrada-1 {
-  background-color: #f0f0f0;
 }
 </style>

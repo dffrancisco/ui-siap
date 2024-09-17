@@ -16,7 +16,7 @@ export interface iParams {
     mes: number;
     ano: number | string;
     conteudo: string[];
-    tela: string[];
+    tela: string[] | string;
     numFabricante: string;
     funcionario: number[]
 }
@@ -24,4 +24,24 @@ export interface iParams {
 export interface iResponseDadosInput {
     funcionarios: iFuncionarios[];
     telas: iTelas[];
+}
+
+export interface iDadosRelatorio {
+    COD_FUNCIONARIO: number;
+    CONTEUDO: string;
+    DATA: string;
+    DESC_PRODUTO: string;
+    ID_LOG: number;
+    LOGIN: string;
+    MARCA: string;
+    NUM_FABRICANTE: string;
+}
+
+export interface iCount {
+    TOTAL: number;
+}
+
+export interface iResponseRelatorio {
+    dadosRelatorio: iDadosRelatorio[];
+    totalDadosRelatorio: iCount[];
 }
