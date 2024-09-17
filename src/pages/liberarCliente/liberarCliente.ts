@@ -30,11 +30,6 @@ export const state = reactive({
     botaoAlterarHabilitado: true,
     botaoSalvarHabilitado: false,
     botaoCancelarHabilitado: false,
-    config: {
-        thousands: '.',
-        decimal: ',',
-        precision: 2,
-    }
 })
 
 export const actions = {
