@@ -13,8 +13,8 @@ export interface iTelas {
 export interface iParams {
     page: number;
     itemsPerPage: number;
-    mes: number;
-    ano: number | string;
+    dataInicio: string;
+    dataFim: string;
     conteudo: string[];
     tela: string[];
     numFabricante: string;

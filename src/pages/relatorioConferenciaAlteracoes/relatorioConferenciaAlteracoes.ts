@@ -18,7 +18,7 @@ export const state = reactive({
     funcionarios: <iFuncionarios[]>[],
     selectedFuncionario: <number[]>[],
     telas: <iTelas[]>[],
-    conteudo: ['Conferido', 'Quantidade', 'End.Estoque', 'End.Excesso'],
+    conteudo: ['Conferido', 'Quantidade', 'End.Estoque', 'End.Excesso', 'Venda'],
     selectTela: <string[]>[],
     selectedConteudo: <string[]>[],
     numFabricante: "",
@@ -113,17 +113,18 @@ export const actions = {
     async getDadosParaRelatorio() {
         try {
             state.loading = true;
+            let dataInicio = moment(`${state.ano}-${state.mes}-01`, 'YYYY-MM-DD').startOf('month').format('YYYY-MM-DD');
+            let dataFim = moment(`${state.ano}-${state.mes}-01`, 'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD');
 
             const data = await serviceRelatorioConferenciaAlteracoes.getDadosParaRelatorio({
                 page: state.page,
                 itemsPerPage: state.itemsPerPage,
-                mes: state.mes,
-                ano: state.ano,
+                dataInicio: dataInicio,
+                dataFim: dataFim,
                 conteudo: state.selectedConteudo,
                 tela: state.selectTela,
                 numFabricante: state.numFabricante,
                 funcionario: state.selectedFuncionario
-
             });
             state.dadosRelatorio = data.dadosRelatorio;
             state.totalItems = data.totalDadosRelatorio[0].TOTAL;
