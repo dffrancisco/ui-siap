@@ -53,7 +53,7 @@ export const actions = {
                 DEVOLUCAO: utils.formatValor(item.DEVOLUCAO) ?? '',
                 DESCONTO: utils.formatValor(item.DESCONTO) ?? '',
                 MONTAGEM: utils.formatValor(item.MONTAGEM) ?? '',
-                VALOR: utils.formatValor(item.MONTAGEM) ?? '',
+                VALOR: utils.formatValor(item.VALOR) ?? '',
             }
         })
 
@@ -112,16 +112,43 @@ export const actions = {
         let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
 
         let titulo = `
-      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
-      <span>Período: ${moment(state.setDataInicio).format('DD/MM/YYYY')} - ${moment(state.setDataFim).format('DD/MM/YYYY')}</span>
-      <strong style="font-size: 20px">Relatório de Pedido</strong>
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px; align-items: center">
+        <span>Período: ${moment(state.setDataInicio).format('DD/MM/YYYY')} - ${moment(state.setDataFim).format('DD/MM/YYYY')}</span>
+        <span>Quantidade de Itens: ${
+            //@ts-ignore
+            state.gridOrcamentosFaturados.data().length}</span>
+        <strong style="font-size: 20px">Relatório de Pedido</strong>
+      </div>
+      <div style="margin: 4px">
+        <span>Cliente: <strong>${state.clienteSelecionado.NOME}</strong></span>
       </div>
       `;
+
+        let totalOrcamentos = 0;
+        let totalDevolucao = 0;
+        let totalLiquido = 0;
+
+        // @ts-ignore
+        state.gridOrcamentosFaturados.data().forEach(orcamento => {
+
+            totalDevolucao += orcamento.DEVOLUCAO || 0;
+
+            totalLiquido += (orcamento.VALOR || 0) - (orcamento.DEVOLUCAO || 0);
+
+            totalOrcamentos += orcamento.VALOR || 0;
+        });
+
+        let footer =
+            `<div style="margin-top: 16px; display: flex; justify-content: space-between;">
+                <span>Total Líquido: ${utils.formatValor(totalLiquido)}</span>
+                <span>Total Devolução: ${utils.formatValor(totalDevolucao)}</span>
+                <span>Total Orçamentos: ${utils.formatValor(totalOrcamentos)}</span>
+             </div>`;
 
         try {
             state.loading = true
 
-            await utils.printComCabecalho(columns, dadosToPrint, titulo, '',);
+            await utils.printComCabecalho(columns, dadosToPrint, titulo, footer);
         } catch (error) {
             Swal.fire({
                 title: "Erro ao imprimir!",
