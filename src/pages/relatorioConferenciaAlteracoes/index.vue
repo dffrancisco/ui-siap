@@ -10,7 +10,7 @@ nextTick(async () => {
   <v-container>
     <v-card
       class="pa-5"
-      style="width: 876px; margin: 0 auto"
+      style="width: 969px; margin: 0 auto"
     >
       <v-row
         ><v-col cols="4"
