@@ -23,7 +23,7 @@ nextTick(async () => {
             v-model="state.nomeClienteSelect"
             autocomplete="off"
             item-title="title"
-            :disabled="state.idCliente == null || state.botaoAlterarHabilitado == true"
+            :disabled="state.idCliente == null"
             item-value="value"
             :clearable="false"
             :style="{ color: state.status == 'Bloqueado' ? 'red' : '' }"
@@ -33,7 +33,7 @@ nextTick(async () => {
           <v-text-field
             id="cnpj"
             readonly
-            :disabled="state.idCliente == null || state.botaoAlterarHabilitado == true"
+            :disabled="state.idCliente == null"
             label="CNPJ"
             class="cnpj"
             v-model="state.cnpjSelect"

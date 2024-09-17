@@ -1,7 +1,7 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { reactive } from "vue";
-import { iCliente, iParamDetalhesCliente, iParamUpdateCliente, iTabs } from "./interfaces";
+import { iCliente, iParamDetalhesCliente, iParamUpdateCliente, iResetStates, iTabs } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceLiberarCliente from "./services/liberarCliente.service"
 import utils, { msgConfirmSemCodigo } from "@/ts/utils";
@@ -19,6 +19,7 @@ export const state = reactive({
     tipoCompra: "",
     tipoFaturamento: "",
     dividirBoleto: "",
+    objInputsAtual: <iResetStates>{},
     diaVencimento: 0 || null,
     status: "",
     statusColor: "",
@@ -85,7 +86,6 @@ export const actions = {
     async selecionarCliente(cliente: iCliente) {
         actions.popularInputs(cliente)
         actions.popularGrids(cliente)
-        actions.cancelar()
     },
 
     popularInputs(cliente) {
@@ -101,6 +101,8 @@ export const actions = {
         state.diaVencimento = cliente.DIA_VENCIMENTO_BOLETO
         state.status = cliente.BLOQUEADO == 0 ? "Liberado" : "Bloqueado"
         state.statusColor = cliente.BLOQUEADO == 0 ? "green" : "red";
+
+        state.objInputsAtual = { ...cliente };
     },
 
     popularGrids(cliente) {
@@ -347,6 +349,13 @@ export const actions = {
     },
 
     cancelar() {
+        // Restaura os valores dos inputs para o estado inicial salvo em state.objInputsAtual
+        state.creditoLimite = utils.formatValor(state.objInputsAtual.LIMITE_CREDITO);
+        state.tipoCompra = state.objInputsAtual.FATURADO == "0" ? "Não Faturado" : "Faturado";
+        state.tipoFaturamento = state.objInputsAtual.TIPO_FATURAMENTO ? state.objInputsAtual.TIPO_FATURAMENTO == "Q" ? "Quinzenal" : "Mensal" : "";
+        state.dividirBoleto = state.objInputsAtual.DIVIDIR_BOLETO ? state.objInputsAtual.DIVIDIR_BOLETO == "S" ? "Sim" : "Não" : "";
+        state.diaVencimento = state.objInputsAtual.DIA_VENCIMENTO_BOLETO;
+
         state.botaoAlterarHabilitado = true;
         state.botaoSalvarHabilitado = false;
         state.botaoCancelarHabilitado = false;

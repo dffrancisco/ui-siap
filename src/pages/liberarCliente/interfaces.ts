@@ -39,3 +39,6 @@ export interface iParamUpdateCliente {
     tipoCompra: 0 | 1;
     tipoFaturamento: "Q" | "M";
 }
+
+export interface iResetStates extends iCliente {
+}
