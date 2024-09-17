@@ -16,7 +16,7 @@ export interface iParams {
     mes: number;
     ano: number | string;
     conteudo: string[];
-    tela: string[] | string;
+    tela: string[];
     numFabricante: string;
     funcionario: number[]
 }

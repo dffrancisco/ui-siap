@@ -19,7 +19,7 @@ export const state = reactive({
     selectedFuncionario: <number[]>[],
     telas: <iTelas[]>[],
     conteudo: ['Conferido', 'Quantidade', 'End.Estoque', 'End.Excesso'],
-    selectTela: 'CONFERENCIA',
+    selectTela: <string[]>[],
     selectedConteudo: <string[]>[],
     numFabricante: "",
     totalItems: 0,
@@ -84,7 +84,7 @@ export const actions = {
             return
         }
 
-        if (state.mes > mes) {
+        if (state.mes > mes && state.ano > ano.toString()) {
             Swal.fire({
                 icon: "error",
                 text: "Insira um mês válido para continuar"
