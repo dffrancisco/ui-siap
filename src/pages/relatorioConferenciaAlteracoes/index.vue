@@ -78,6 +78,7 @@ nextTick(async () => {
           <v-text-field
             v-model="state.numFabricante"
             label="Nº Fabricante"
+            @keypress.enter="actions.validarInputs"
           ></v-text-field>
         </v-col>
         <v-col cols="1">

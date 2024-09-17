@@ -84,7 +84,7 @@ export const actions = {
             return
         }
 
-        if (state.mes > mes && state.ano > ano.toString()) {
+        if (state.mes > mes && state.ano >= ano.toString()) {
             Swal.fire({
                 icon: "error",
                 text: "Insira um mês válido para continuar"
