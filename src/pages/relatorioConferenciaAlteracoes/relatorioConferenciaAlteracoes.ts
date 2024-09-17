@@ -63,7 +63,7 @@ export const state = reactive({
             title: "Data",
             key: "DATA",
             sortable: true,
-            align: 'right',
+            align: 'center',
             value: (item: any) => moment(item.DATA).format('DD/MM/YYYY')
         }
     ]
@@ -153,6 +153,7 @@ export const actions = {
 
     async onClickImprimir() {
         try {
+            state.loading = true;
             let relatorio = state.dadosRelatorio
             const relatorioAjustado = actions.formatarDadosImpressao([...relatorio]);
 
@@ -160,9 +161,9 @@ export const actions = {
                 { key: 'DESC_PRODUTO', label: 'Produto', width: '25%', align: 'left' },
                 { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '10%', align: 'left' },
                 { key: 'MARCA', label: 'Marca', width: '10%', align: 'left' },
-                { key: 'CONTEUDO', label: 'Conteúdo', width: '30%', align: 'left' },
+                { key: 'CONTEUDO', label: 'Conteúdo', width: '35%', align: 'left' },
                 { key: 'LOGIN', label: 'Funcionário', width: '10%', align: 'left' },
-                { key: 'DATA', label: 'Data', width: '15%', align: 'center' }
+                { key: 'DATA', label: 'Data', width: '10%', align: 'left' }
             ];
 
             const titulo = `
@@ -179,6 +180,8 @@ export const actions = {
                 icon: "error",
                 text: "Erro ao imprimir o relatório."
             });
+        } finally {
+            state.loading = false;
         }
     },
 

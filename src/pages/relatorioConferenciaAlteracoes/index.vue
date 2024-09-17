@@ -120,6 +120,7 @@ nextTick(async () => {
         <v-btn
           color="primary"
           @click="actions.onClickImprimir"
+          :disabled="state.dadosRelatorio.length == 0"
           icon="mdi-printer"
           size="36px"
           title="Imprimir"
