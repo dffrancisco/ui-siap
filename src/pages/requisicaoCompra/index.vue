@@ -12,7 +12,7 @@ import { state } from "./requisicaoCompra";
     >
       <div class="d-flex justify-space-between">
         <v-btn color="primary">Localizar Requisição (F1)</v-btn>
-        <v-btn color="primary">Novo Requisição (F2)</v-btn>
+        <v-btn color="primary">Nova Requisição (F2)</v-btn>
       </div>
 
       <div class="mt-4">
@@ -23,19 +23,19 @@ import { state } from "./requisicaoCompra";
                 <v-col cols="2">
                   <div class="d-flex flex-column">
                     <strong>Data:</strong>
-                    <span>{{ utils.dataBrasil(state.dbDadosRequisicao.DATA_HORA_CRIACAO) || "-" }}</span>
+                    <span>{{ utils.dataBrasil(state.dbRequisicaoCompra.DATA_HORA_CRIACAO) || "-" }}</span>
                   </div>
                 </v-col>
                 <v-col cols="3">
                   <div class="d-flex flex-column">
                     <strong>CNPJ:</strong>
-                    <span>{{ state.dbDadosRequisicao.CNPJ_FAVORECIDO || "-" }}</span>
+                    <span>{{ state.dbRequisicaoCompra.CNPJ_FAVORECIDO || "-" }}</span>
                   </div>
                 </v-col>
                 <v-col>
                   <div class="d-flex flex-column">
                     <strong>Razão Social:</strong>
-                    <span>{{ state.dbDadosRequisicao.NOME_FAVORECIDO || "-" }}</span>
+                    <span>{{ state.dbRequisicaoCompra.NOME_FAVORECIDO || "-" }}</span>
                   </div>
                 </v-col>
               </v-row>
@@ -48,13 +48,13 @@ import { state } from "./requisicaoCompra";
                 <v-col>
                   <div class="d-flex flex-column">
                     <strong>Qtd. Itens:</strong>
-                    <span>0</span>
+                    <span>{{ state.dbRequisicaoItens.length }}</span>
                   </div>
                 </v-col>
                 <v-col>
                   <div class="d-flex flex-column">
                     <strong>Valor:</strong>
-                    <span>2.000,00</span>
+                    <span>{{ utils.formatValor(state.dbRequisicaoCompra.VALOR) }}</span>
                   </div>
                 </v-col>
               </v-row>
@@ -66,13 +66,6 @@ import { state } from "./requisicaoCompra";
       <div class="d-flex flex-grow-1 mt-4 flex-column">
         <div class="d-flex align-center justify-space-between">
           <h2>Itens:</h2>
-          <!-- <div
-            class="d-flex ga-8 pa-2 rounded-lg+"
-            style="border: 1px solid gray"
-          >
-            <span><strong>Qtd. Itens: </strong>01</span>
-            <span><strong>Valor: </strong>2.000,00</span>
-          </div> -->
         </div>
 
         <div
@@ -80,11 +73,10 @@ import { state } from "./requisicaoCompra";
           style="overflow: auto; max-height: 300px"
         >
           <v-card
-            v-for="i in 50"
             color="#91d2f7"
             width="270"
             height="80"
-            class="d-flex justify-center align-center"
+            class="d-flex justify-center align-center rounded-lg"
             style="cursor: pointer"
           >
             <div
@@ -95,13 +87,65 @@ import { state } from "./requisicaoCompra";
               <span>NOVO ITEM (F3)</span>
             </div>
           </v-card>
+
+          <v-card
+            v-for="item in state.dbRequisicaoItens"
+            color="#91d2f7"
+            width="270"
+            height="80"
+            class="d-flex flex-column pa-2 justify-space-between rounded-lg"
+          >
+            <div class="d-flex justify-space-between flex-grow-1">
+              <div>
+                <strong
+                  class="elipsys-text"
+                  :style="{ maxWidth: item.COD_PRODUTO ? '250px' : '200px' }"
+                  >{{ item.DESCRICAO }}</strong
+                >
+              </div>
+
+              <div>
+                <v-chip
+                  color="success"
+                  variant="flat"
+                  size="x-small"
+                  v-if="!item.COD_PRODUTO"
+                >
+                  NOVO
+                </v-chip>
+              </div>
+            </div>
+
+            <div class="d-flex justify-space-between align-center">
+              <div class="d-flex ga-2">
+                <v-icon
+                  style="cursor: pointer"
+                  title="Deletar Item"
+                  >mdi-delete</v-icon
+                >
+                <v-icon
+                  style="cursor: pointer"
+                  title="Alterar Item"
+                  >mdi-pencil</v-icon
+                >
+              </div>
+
+              <div>
+                <span> {{ item.QTD }}x{{ utils.formatValor(item.VALOR_UNITARIO) }} </span>
+              </div>
+
+              <div>
+                <strong class="text-h5">{{ utils.formatValor(item.TOTAL) }}</strong>
+              </div>
+            </div>
+          </v-card>
         </div>
       </div>
 
       <div class="d-flex justify-space-between">
         <div>
           <v-btn
-            v-if="state.dbDadosRequisicao.FINALIZADO == 'N'"
+            v-if="state.dbRequisicaoCompra.FINALIZADO == 'N'"
             icon="mdi-delete mdi-24px"
             color="#ef4444"
             size="36"
@@ -112,13 +156,18 @@ import { state } from "./requisicaoCompra";
             v-else
             icon="mdi-printer mdi-24px"
             color="primary"
+            :disabled="!state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA"
             size="36"
             title="Imprimir Requisição"
           />
         </div>
 
         <div>
-          <v-btn color="success">Finalizar Requisição (F6)</v-btn>
+          <v-btn
+            :disabled="!state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA"
+            color="success"
+            >Finalizar Requisição (F6)</v-btn
+          >
         </div>
       </div>
     </v-card>
@@ -135,5 +184,12 @@ import { state } from "./requisicaoCompra";
 .containerDadosRequisicao strong,
 .containerDadosRequisicao span {
   font-size: 12px;
+}
+
+.elipsys-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
 }
 </style>

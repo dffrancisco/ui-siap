@@ -4,11 +4,17 @@ export interface iRequisicaoCompra {
     CNPJ_FAVORECIDO: string;
     FINALIZADO: 'S' | 'N';
     ID_REQUISICAO_COMPRA: number;
-    VALOR?: number;
+    VALOR: number;
     DATA_HORA_FINALIZADO?: string;
     COD_FUNCIONARIO_FINALIZOU?: number;
 }
 
 export interface iRequisicaoItem {
-
+    ID_REQUISICAO_COMPRA_ITEM: number;
+    ID_REQUISICAO_COMPRA: number;
+    COD_PRODUTO: number;
+    QTD: number;
+    VALOR_UNITARIO: number;
+    TOTAL: number;
+    DESCRICAO: string
 }
