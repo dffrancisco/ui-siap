@@ -1,0 +1,14 @@
+export interface iRequisicaoCompra {
+    NOME_FAVORECIDO: string;
+    DATA_HORA_CRIACAO: string;
+    CNPJ_FAVORECIDO: string;
+    FINALIZADO: 'S' | 'N';
+    ID_REQUISICAO_COMPRA: number;
+    VALOR?: number;
+    DATA_HORA_FINALIZADO?: string;
+    COD_FUNCIONARIO_FINALIZOU?: number;
+}
+
+export interface iRequisicaoItem {
+
+}
