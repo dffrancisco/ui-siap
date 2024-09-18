@@ -1,6 +1,21 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
 import { state } from "./requisicaoCompra";
+import ModalNovaRequisicao from "./components/ModalNovaRequisicao.vue";
+import { useEventListener } from "@vueuse/core";
+import { onUnmounted } from "vue";
+
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F2") {
+    state.modalNovaRequisicaoOpened = true;
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
+});
 </script>
 
 <template>
@@ -12,7 +27,11 @@ import { state } from "./requisicaoCompra";
     >
       <div class="d-flex justify-space-between">
         <v-btn color="primary">Localizar Requisição (F1)</v-btn>
-        <v-btn color="primary">Nova Requisição (F2)</v-btn>
+        <v-btn
+          color="primary"
+          @click="state.modalNovaRequisicaoOpened = true"
+          >Nova Requisição (F2)</v-btn
+        >
       </div>
 
       <div class="mt-4">
@@ -171,6 +190,14 @@ import { state } from "./requisicaoCompra";
         </div>
       </div>
     </v-card>
+
+    <v-dialog
+      v-model="state.modalNovaRequisicaoOpened"
+      width="650"
+      height="450"
+    >
+      <ModalNovaRequisicao @closeModal="state.modalNovaRequisicaoOpened = false" />
+    </v-dialog>
 
     <div id="pnCodigoTela">requisicaoCompra</div>
   </v-container>

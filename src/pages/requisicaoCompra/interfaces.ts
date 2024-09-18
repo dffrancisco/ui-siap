@@ -18,3 +18,15 @@ export interface iRequisicaoItem {
     TOTAL: number;
     DESCRICAO: string
 }
+
+export interface iGetFavorecidosParam {
+    search: string;
+}
+
+export interface iFavorecido {
+    ID_FAVORECIDO: number,
+    NOME_FAVORECIDO: string;
+    CNPJ_FAVORECIDO: string
+}
+
+export interface iGetFavorecidosResponse extends iFavorecido { }

@@ -3,5 +3,7 @@ import { iRequisicaoCompra, iRequisicaoItem } from "./interfaces";
 
 export const state = reactive({
     dbRequisicaoCompra: <iRequisicaoCompra>{},
-    dbRequisicaoItens: <iRequisicaoItem[]>[]
+    dbRequisicaoItens: <iRequisicaoItem[]>[],
+
+    modalNovaRequisicaoOpened: false
 })
