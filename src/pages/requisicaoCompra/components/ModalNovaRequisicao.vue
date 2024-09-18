@@ -82,8 +82,6 @@ const actions = {
       return;
     }
 
-    console.log(favorecido);
-
     emit("selecionarFavorecido", favorecido.ID_FAVORECIDO);
   },
 
