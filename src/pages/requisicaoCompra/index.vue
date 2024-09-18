@@ -97,12 +97,13 @@ onUnmounted(() => {
             height="80"
             class="d-flex justify-center align-center rounded-lg"
             style="cursor: pointer"
+            :style="{ cursor: state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA ? 'pointer' : 'zoom-in' }"
           >
             <div
               class="d-flex flex-column align-center"
               style="color: #52525b; font-size: 12px"
             >
-              <v-icon size="36">mdi-plus-circle-outline</v-icon>
+              <v-icon size="24">mdi-plus-circle-outline</v-icon>
               <span>NOVO ITEM (F3)</span>
             </div>
           </v-card>
@@ -198,6 +199,18 @@ onUnmounted(() => {
     >
       <ModalNovaRequisicao @closeModal="state.modalNovaRequisicaoOpened = false" />
     </v-dialog>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
 
     <div id="pnCodigoTela">requisicaoCompra</div>
   </v-container>
