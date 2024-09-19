@@ -184,6 +184,7 @@ onUnmounted(() => {
             color="#ef4444"
             size="36"
             title="Deletar Requisição"
+            @click="actions.btnDeleteRequisicaoCompra"
           />
 
           <v-btn

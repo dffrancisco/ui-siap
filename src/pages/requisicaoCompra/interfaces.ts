@@ -65,3 +65,12 @@ export interface iGetRequisicaoCompraParam {
 }
 
 export interface iGetRequisicaoCompraResponse extends iRequisicaoCompra { }
+
+export interface iDeleteRequisicaoCompraParam {
+    ID_REQUISICAO_COMPRA: number
+}
+
+export interface iDeleteRequisicaoCompraResponse {
+    success: boolean;
+    msg: string
+}

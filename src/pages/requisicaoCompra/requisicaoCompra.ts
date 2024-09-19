@@ -1,5 +1,6 @@
 import { reactive } from "vue";
 import {
+    iDeleteRequisicaoCompraParam,
     iFavorecido,
     iGetRequisicaoCompraParam,
     iInsertRequisicaoCompraParam,
@@ -9,6 +10,7 @@ import {
 import moment from "moment";
 import requisicaoCompraService from "./services/requisicaoCompra.service";
 import Swal from "sweetalert2";
+import { msgConfirm } from "@/ts/message";
 
 export const state = reactive({
     dbRequisicaoCompra: <iRequisicaoCompra>{},
@@ -20,6 +22,9 @@ export const state = reactive({
 
 export const actions = {
     async selecionarFavorecido(favorecido: iFavorecido) {
+
+        state.dbRequisicaoCompra = {} as iRequisicaoCompra
+
         state.dbRequisicaoCompra = {
             ...state.dbRequisicaoCompra,
             NOME_FAVORECIDO: favorecido.NOME_FAVORECIDO,
@@ -37,6 +42,12 @@ export const actions = {
         await actions.getRequisicaoCompra(requisicao.ID_REQUISICAO_COMPRA)
 
         state.modalLocalizarRequisicaoOpened = false
+    },
+
+    async btnDeleteRequisicaoCompra() {
+        if (await msgConfirm('Confirmação', 'Deseja excluir esta requisição?')) {
+            await actions.deleteRequisicaoCompra();
+        }
     },
 
     async insertRequisicaoCompra(idRequisicaoCompra: number) {
@@ -76,6 +87,38 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 title: "Ocorreu um erro ao buscar requisição de compra",
+                text: error.message
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async deleteRequisicaoCompra() {
+        try {
+            state.loading = true;
+
+            let param: iDeleteRequisicaoCompraParam = {
+                ID_REQUISICAO_COMPRA: state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA
+            }
+
+            const data = await requisicaoCompraService.deleteRequisicaoCompra(param);
+
+            if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: data.msg,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                state.dbRequisicaoCompra = {} as iRequisicaoCompra;
+                state.dbRequisicaoItens = [] as iRequisicaoItem[];
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Ocorreu um erro ao excluir requisição de compra",
                 text: error.message
             });
         } finally {
