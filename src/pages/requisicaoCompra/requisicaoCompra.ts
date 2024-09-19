@@ -8,7 +8,8 @@ export const state = reactive({
     dbRequisicaoCompra: <iRequisicaoCompra>{},
     dbRequisicaoItens: <iRequisicaoItem[]>[],
     modalNovaRequisicaoOpened: false,
-    loading: false
+    loading: false,
+    modalLocalizarRequisicaoOpened: false
 })
 
 export const actions = {

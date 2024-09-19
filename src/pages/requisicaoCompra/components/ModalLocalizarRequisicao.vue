@@ -1,16 +1,16 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, onUnmounted, reactive } from "vue";
-import { iGetFavorecidosParam, iFavorecido, iGetDuplicidadeRequisicaoCompraParam } from "../interfaces";
+import { iGetRequisicaoComprasParam, iRequisicaoCompra } from "../interfaces";
 import serviceRequisicaoCompra from "../services/requisicaoCompra.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
-import { msgConfirmSemCodigo } from "@/ts/utils";
+import utils from "@/ts/utils";
 
-const emit = defineEmits(["closeModal", "selecionarFavorecido"]);
+const emit = defineEmits(["closeModal", "selecionarRequisicaoCompra"]);
 
 const state = reactive({
-  gridFavorecidos: <ixGridCreate>{},
+  gridRequisicaoCompra: <ixGridCreate>{},
   loading: false,
   inputSearch: <HTMLInputElement>null,
 });
@@ -20,7 +20,7 @@ const actions = {
     actions.criarGrid();
     state.inputSearch = <HTMLInputElement>document.getElementById("inputSearch");
 
-    state.gridFavorecidos.queryOpen(
+    state.gridRequisicaoCompra.queryOpen(
       {
         search: "",
       },
@@ -29,35 +29,46 @@ const actions = {
   },
 
   criarGrid() {
-    state.gridFavorecidos = new xGridV2.create({
-      el: "#gridFavorecidos",
+    state.gridRequisicaoCompra = new xGridV2.create({
+      el: "#gridRequisicaoCompra",
       count: true,
       height: "310px",
       columns: {
-        CNPJ: { dataField: "CNPJ_FAVORECIDO", center: true, width: "20%" },
+        Data: { dataField: "DATA_HORA_CRIACAO", center: true, render: utils.dataBrasil, width: "15%" },
         "Razão Social": { dataField: "NOME_FAVORECIDO" },
+        Valor: { dataField: "VALOR", right: true, width: "12%", render: utils.formatValor },
+        Status: { dataField: "FINALIZADO", center: true, width: "18%", compare: "colorir" },
+      },
+      compare: {
+        colorir: (r) => {
+          if (r.FINALIZADO == "N") {
+            return '<span style="color: red">' + "Em andamento" + "<span>";
+          } else {
+            return '<span style="color: green">' + "Finalizada" + "<span>";
+          }
+        },
       },
       query: {
         async execute(rs) {
-          let data = await actions.getFavorecidos(rs.param as iGetFavorecidosParam, rs.offset);
-          state.gridFavorecidos.querySourceAdd(data);
+          let data = await actions.getRequisicaoCompras(rs.param as iGetRequisicaoComprasParam, rs.offset);
+          state.gridRequisicaoCompra.querySourceAdd(data);
         },
       },
-      dblClick: actions.selecionarFavorecido,
-      enter: actions.selecionarFavorecido,
+      dblClick: actions.selecionarRequisicaoCompra,
+      enter: actions.selecionarRequisicaoCompra,
     });
   },
 
   async search() {
-    state.gridFavorecidos.queryOpen({
+    state.gridRequisicaoCompra.queryOpen({
       search: state.inputSearch.value,
     });
   },
 
-  async selecionarFavorecido() {
-    const favorecido = state.gridFavorecidos.dataSource() as iFavorecido;
+  async selecionarRequisicaoCompra() {
+    const requisicaoCompra = state.gridRequisicaoCompra.dataSource() as iRequisicaoCompra;
 
-    if (!favorecido) {
+    if (!requisicaoCompra) {
       Swal.fire({
         icon: "warning",
         title: "Nenhum item foi selecionado",
@@ -65,62 +76,24 @@ const actions = {
       return;
     }
 
-    const duplicidade = await actions.getDuplicidadeRequisicaoCompra(favorecido.ID_FAVORECIDO);
-
-    if (duplicidade.length > 0) {
-      state.inputSearch.disabled = true;
-
-      if (
-        !(await msgConfirmSemCodigo(
-          "Confirmação",
-          "Já existe uma compra em andamento para este favorecido. Deseja continuar?"
-        ))
-      ) {
-        state.inputSearch.disabled = false;
-        return;
-      }
-    }
-
-    emit("selecionarFavorecido", favorecido);
+    emit("selecionarRequisicaoCompra", requisicaoCompra);
   },
 
   closeModal() {
     emit("closeModal");
   },
 
-  async getFavorecidos(param: iGetFavorecidosParam, offset: number) {
+  async getRequisicaoCompras(param: iGetRequisicaoComprasParam, offset: number) {
     try {
       state.loading = true;
 
-      const data = await serviceRequisicaoCompra.getFavorecidos(param, offset);
+      const data = await serviceRequisicaoCompra.getRequisicaoCompras(param, offset);
 
       return data;
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Ocorreu um erro ao buscar os favorecidos",
-        text: error.message,
-      });
-    } finally {
-      state.loading = false;
-    }
-  },
-
-  async getDuplicidadeRequisicaoCompra(idFavorecido: number) {
-    try {
-      state.loading = true;
-
-      let param: iGetDuplicidadeRequisicaoCompraParam = {
-        ID_FAVORECIDO: idFavorecido,
-      };
-
-      const data = await serviceRequisicaoCompra.getDuplicidadeRequisicaoCompra(param);
-
-      return data;
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Ocorreu um erro ao verificar a duplicidade da requisição de compra",
+        title: "Ocorreu um erro ao buscar as requisições",
         text: error.message,
       });
     } finally {
@@ -148,14 +121,13 @@ onUnmounted(() => {
 
 <template>
   <v-card class="pa-4 d-flex flex-grow-1">
-    <v-card-title style="color: #334155">Nova Requisição</v-card-title>
-
+    <v-card-title style="color: #334155">Localizar Requisição</v-card-title>
     <div class="d-flex ga-2 align-center mt-2">
       <v-text-field
         id="inputSearch"
         label="F1 - Pesquisar (NOME / CNPJ)"
         @keydown.enter="actions.search"
-        @keydown.arrow.down.prevent="state.gridFavorecidos.focus()"
+        @keydown.arrow.down.prevent="state.gridRequisicaoCompra.focus()"
       ></v-text-field>
       <v-btn
         icon="mdi-magnify mdi-24px"
@@ -167,7 +139,7 @@ onUnmounted(() => {
 
     <div
       class="mt-4"
-      id="gridFavorecidos"
+      id="gridRequisicaoCompra"
     >
     </div>
 
@@ -180,7 +152,7 @@ onUnmounted(() => {
       >
       <v-btn
         color="primary"
-        @click="actions.selecionarFavorecido"
+        @click="actions.selecionarRequisicaoCompra"
         >selecionar</v-btn
       >
     </div>

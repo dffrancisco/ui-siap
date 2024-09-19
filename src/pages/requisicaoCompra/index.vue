@@ -4,12 +4,21 @@ import { actions, state } from "./requisicaoCompra";
 import ModalNovaRequisicao from "./components/ModalNovaRequisicao.vue";
 import { useEventListener } from "@vueuse/core";
 import { onUnmounted } from "vue";
+import ModalLocalizarRequisicao from "./components/ModalLocalizarRequisicao.vue";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
-  if (event.key === "F2") {
-    state.modalNovaRequisicaoOpened = true;
-    event.preventDefault();
-    event.stopPropagation();
+  if (!state.modalLocalizarRequisicaoOpened && !state.modalNovaRequisicaoOpened) {
+    if (event.key === "F1") {
+      state.modalLocalizarRequisicaoOpened = true;
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    if (event.key === "F2") {
+      state.modalNovaRequisicaoOpened = true;
+      event.preventDefault();
+      event.stopPropagation();
+    }
   }
 });
 
@@ -26,7 +35,11 @@ onUnmounted(() => {
       height="550"
     >
       <div class="d-flex justify-space-between">
-        <v-btn color="primary">Localizar Requisição (F1)</v-btn>
+        <v-btn
+          @click="state.modalLocalizarRequisicaoOpened = true"
+          color="primary"
+          >Localizar Requisição (F1)</v-btn
+        >
         <v-btn
           color="primary"
           @click="state.modalNovaRequisicaoOpened = true"
@@ -54,7 +67,7 @@ onUnmounted(() => {
                 <v-col>
                   <div class="d-flex flex-column">
                     <strong>Razão Social:</strong>
-                    <span class="text-uppercase">{{ state.dbRequisicaoCompra.NOME_FAVORECIDO || "-" }}</span>
+                    <span>{{ state.dbRequisicaoCompra.NOME_FAVORECIDO || "-" }}</span>
                   </div>
                 </v-col>
               </v-row>
@@ -196,11 +209,22 @@ onUnmounted(() => {
     <v-dialog
       v-model="state.modalNovaRequisicaoOpened"
       width="650"
-      height="450"
+      height="510"
     >
       <ModalNovaRequisicao
         @selecionarFavorecido="actions.selecionarFavorecido"
         @closeModal="state.modalNovaRequisicaoOpened = false"
+      />
+    </v-dialog>
+
+    <v-dialog
+      v-model="state.modalLocalizarRequisicaoOpened"
+      width="650"
+      height="510"
+    >
+      <ModalLocalizarRequisicao
+        @selecionarFavorecido="actions.selecionarFavorecido"
+        @closeModal="state.modalLocalizarRequisicaoOpened = false"
       />
     </v-dialog>
 

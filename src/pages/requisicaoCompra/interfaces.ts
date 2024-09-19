@@ -46,3 +46,16 @@ export interface iGetDuplicidadeRequisicaoCompraParam {
 export interface iGetDuplicidadeRequisicaoCompraResponse {
     ID_REQUISICAO_COMPRA: number
 }
+
+export interface iGetRequisicaoComprasParam {
+    search: string
+}
+
+export interface iGetRequisicaoComprasResponse {
+    NOME_FAVORECIDO: string;
+    CNPJ_FAVORECIDO: string;
+    FINALIZADO: 'S' | 'N';
+    ID_REQUISICAO_COMPRA: number;
+    VALOR: number;
+    DATA_HORA_FINALIZADO?: string;
+}
