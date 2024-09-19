@@ -59,3 +59,9 @@ export interface iGetRequisicoesComprasResponse {
     VALOR: number;
     DATA_HORA_FINALIZADO?: string;
 }
+
+export interface iGetRequisicaoCompraParam {
+    ID_REQUISICAO_COMPRA: number
+}
+
+export interface iGetRequisicaoCompraResponse extends iRequisicaoCompra { }

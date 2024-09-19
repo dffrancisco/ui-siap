@@ -223,7 +223,7 @@ onUnmounted(() => {
       height="510"
     >
       <ModalLocalizarRequisicao
-        @selecionarFavorecido="actions.selecionarFavorecido"
+        @selecionarRequisicaoCompra="actions.selecionarRequisicaoCompra"
         @closeModal="state.modalLocalizarRequisicaoOpened = false"
       />
     </v-dialog>
