@@ -98,3 +98,8 @@ export interface iInsertOuUpdate {
     produtosSelecionados: number[];
 }
 
+export interface iUpdateNomeFiltro {
+    idFiltro: number;
+    nomeFiltro: string;
+    funcionario: number;
+}

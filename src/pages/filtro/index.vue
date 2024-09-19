@@ -73,6 +73,7 @@ onMounted(async () => {
               color="primary"
               class="ml-1"
               title="Deletar Filtro"
+              :disabled="item.DATA_FIM != null"
               @click="actions.deletarFiltro(item.ID_FILTRO)"
             >
               mdi-delete-outline
@@ -81,14 +82,11 @@ onMounted(async () => {
               size="large"
               color="primary"
               class="ml-1"
-              :title="item.DATA_FIM == null ? 'Finalizar Filtro' : 'Reabrir Filtro'"
-              @click="
-                item.DATA_FIM == null
-                  ? actions.finalizarFiltro(item.ID_FILTRO)
-                  : actions.reabrirFiltro(item.ID_FILTRO)
-              "
+              :disabled="item.DATA_FIM != null"
+              :title="item.DATA_FIM == null ? 'Finalizar Filtro' : 'Filtro Finalizado'"
+              @click="actions.finalizarFiltro(item.ID_FILTRO)"
             >
-              {{ item.DATA_FIM == null ? "mdi-checkbox-marked-outline" : "mdi-restore" }}
+              mdi-checkbox-marked-outline
             </v-icon>
           </div>
         </template>
@@ -137,7 +135,8 @@ onMounted(async () => {
     <ModalNovoFiltro
       :filtroEditar="state.filtroEditar"
       @closeModalNovoFiltro="actions.closeModalNovoFiltro"
-      @nomeFiltroEConferente="actions.addItensFiltro"
+      @novoFiltro="actions.criarNovoFiltro"
+      @nomeFiltroEConferente="actions.updateFiltroEConferente"
     />
   </v-dialog>
 

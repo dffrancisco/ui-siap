@@ -1,5 +1,5 @@
 import axios from "axios";
-import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iInsertOuUpdate, iMarcas, iParamFiltrar, iResultPesquisa } from "../interfaces";
+import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iInsertOuUpdate, iMarcas, iParamFiltrar, iResultPesquisa, iUpdateNomeFiltro } from "../interfaces";
 
 const caminho = 'siap/filtro'
 
@@ -13,6 +13,7 @@ type iUpdateFiltro = (param: iInsertOuUpdate) => Promise<string[]>
 type iInsertFiltro = (param: iInsertOuUpdate) => Promise<string[]>
 type iFinalizarFiltro = (param: number) => Promise<string[]>
 type iDeletarItem = (param: number) => Promise<string[]>
+type iFunctionUpdateNomeFiltro = (param: iUpdateNomeFiltro) => Promise<string[]>
 
 
 const getFuncionarios: iGetFuncionarios = async () => {
@@ -92,15 +93,6 @@ const finalizarFiltro: iFinalizarFiltro = async (param) => {
     return data;
 }
 
-const reabrirFiltro: iFinalizarFiltro = async (param) => {
-    let { data } = await axios.post(caminho, {
-        call: "reabrirFiltro",
-        param
-    });
-
-    return data;
-}
-
 const deletarFiltro: iFinalizarFiltro = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "deletarFiltro",
@@ -119,6 +111,15 @@ const deleteItemFiltro: iDeletarItem = async (param) => {
     return data;
 }
 
+const updateConferenteNomeFiltro: iFunctionUpdateNomeFiltro = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "updateConferenteNomeFiltro",
+        param
+    });
+
+    return data;
+}
+
 export default {
     getFuncionarios,
     getMarcas,
@@ -129,7 +130,7 @@ export default {
     atualizarFiltro,
     inserirFiltro,
     finalizarFiltro,
-    reabrirFiltro,
     deletarFiltro,
-    deleteItemFiltro
+    deleteItemFiltro,
+    updateConferenteNomeFiltro
 }

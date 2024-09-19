@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, watch } from "vue";
 import serviceFiltro from "../services/filtro.service";
 import { iFuncionario } from "../interfaces";
 
@@ -10,9 +10,10 @@ const stateModalNovoFiltro = reactive({
   funcionarios: <iFuncionario[]>[],
   funcionarioSelecionado: null,
   idFiltro: null,
+  nomeConferente: "",
 });
 
-const emit = defineEmits(["closeModalNovoFiltro", "nomeFiltroEConferente"]);
+const emit = defineEmits(["closeModalNovoFiltro", "nomeFiltroEConferente", "novoFiltro"]);
 
 const props = defineProps({
   filtroEditar: {
@@ -26,7 +27,7 @@ const actions = {
     if (!stateModalNovoFiltro.nomeFiltro.trim()) {
       Swal.fire({
         icon: "warning",
-        text: "Escolha um nome pro filtro!",
+        text: "Escolha um nome para o filtro!",
       });
       return;
     }
@@ -38,11 +39,24 @@ const actions = {
       });
       return;
     }
+
+    if (stateModalNovoFiltro.idFiltro == null || stateModalNovoFiltro.idFiltro == 0) {
+      emit(
+        "novoFiltro",
+        stateModalNovoFiltro.funcionarioSelecionado,
+        stateModalNovoFiltro.nomeFiltro,
+        stateModalNovoFiltro.nomeConferente
+      );
+      actions.cancelar();
+      return;
+    }
+
     emit(
       "nomeFiltroEConferente",
       stateModalNovoFiltro.idFiltro,
       stateModalNovoFiltro.funcionarioSelecionado,
-      stateModalNovoFiltro.nomeFiltro
+      stateModalNovoFiltro.nomeFiltro,
+      stateModalNovoFiltro.nomeConferente
     );
     actions.cancelar();
   },
@@ -90,6 +104,10 @@ const actions = {
       inputFuncionarios.focus();
     }
   },
+
+  formatFuncionarioTitle(item) {
+    return item ? `${item.LOGIN} - ${item.COD_FUNCIONARIO}` : "";
+  },
 };
 
 onMounted(() => {
@@ -99,6 +117,22 @@ onMounted(() => {
     inputNomeFiltro.focus();
   }
 });
+
+// Watcher para atualizar o nomeConferente
+watch(
+  () => stateModalNovoFiltro.funcionarioSelecionado,
+  (newFuncionario) => {
+    const selectedFuncionario = stateModalNovoFiltro.funcionarios.find(
+      (func) => func.COD_FUNCIONARIO === newFuncionario
+    );
+
+    if (selectedFuncionario) {
+      stateModalNovoFiltro.nomeConferente = actions.formatFuncionarioTitle(selectedFuncionario);
+    } else {
+      stateModalNovoFiltro.nomeConferente = "";
+    }
+  }
+);
 </script>
 <template>
   <div class="modal-container">
@@ -121,7 +155,7 @@ onMounted(() => {
         label="Funcionario Conferente"
         class="funcionarios pt-5"
         :items="stateModalNovoFiltro.funcionarios"
-        item-title="LOGIN"
+        :item-title="actions.formatFuncionarioTitle"
         item-value="COD_FUNCIONARIO"
         autocomplete="off"
         variant="outlined"

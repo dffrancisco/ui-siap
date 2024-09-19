@@ -2,7 +2,7 @@ import utils, { iColumnPrint, msgConfirmSemCodigo } from '@/ts/utils';
 import Swal from "sweetalert2";
 import { computed, reactive } from "vue";
 import serviceFiltro from './services/filtro.service';
-import { iDadosFiltro, iFiltros } from "./interfaces";
+import { iDadosFiltro, iFiltros, iUpdateNomeFiltro } from "./interfaces";
 import { msgConfirm } from '@/ts/message';
 
 export const state = reactive({
@@ -18,6 +18,7 @@ export const state = reactive({
     modalNovoFiltroOpened: false,
     modalAddItensFiltroOpened: false,
     nomeNovoFiltro: "",
+    nomeConferente: "",
     headers: <any>[
         {
             title: "Data Início",
@@ -180,8 +181,8 @@ export const actions = {
                 { key: 'DESC_PRODUTO', label: 'Produto', width: '30%' },
                 { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '15%' },
                 { key: 'NUM_FABRICANTE2', label: 'Nº Fabricante2', width: '15%' },
-                { key: 'QUANTIDADE', label: 'Qtd velha', width: '5%', align: 'center' },
-                { key: 'QTO_OLD', label: 'Qtd nova', width: '5%', align: 'center' },
+                { key: 'QTO_OLD', label: 'Qtd velha', width: '5%', align: 'center' },
+                { key: 'QUANTIDADE', label: 'Qtd nova', width: '5%', align: 'center' },
                 { key: 'END_ESTOQUE', label: 'End. Estoque', width: '15%', align: 'right' },
                 { key: 'END_EXCESSO', label: 'End. Excesso', width: '15%', align: 'right' },
                 { key: 'CONFERIDO', label: 'Conferido', width: '10%', align: 'center' }
@@ -211,8 +212,8 @@ export const actions = {
             DESC_PRODUTO: item.DESC_PRODUTO || '-----',
             NUM_FABRICANTE: item.NUM_FABRICANTE || '-----',
             NUM_FABRICANTE2: item.NUM_FABRICANTE2 || '-----',
+            QTO_OLD: item.QTO_OLD || 0,
             QUANTIDADE: item.QUANTIDADE || '-----',
-            QTO_OLD: item.QTO_OLD || '-----',
             END_ESTOQUE: item.END_ESTOQUE || '-----',
             END_EXCESSO: item.END_EXCESSO || '-----',
             DATA: item.DATA ? utils.dataBrasil(item.DATA) : '-----',
@@ -222,6 +223,7 @@ export const actions = {
 
     novoFiltro() {
         state.filtroEditar = []
+        state.idFiltro = 0;
         state.modalNovoFiltroOpened = true;
     },
 
@@ -249,39 +251,6 @@ export const actions = {
                 Swal.fire({
                     icon: "error",
                     text: "Erro ao finalizar o filtro!"
-                });
-            } finally {
-                state.loading = false;
-            }
-
-        }
-    },
-
-    async reabrirFiltro(idFiltro) {
-        state.idFiltro = idFiltro;
-        if (await msgConfirmSemCodigo("Confirmação", "Deseja reativar esse filtro?")) {
-
-            try {
-                state.loading = true;
-                let param = state.idFiltro
-                await serviceFiltro.reabrirFiltro(param)
-
-                // Atualizar o filtro na state
-                const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
-                if (filtroIndex !== -1) {
-                    state.filtros[filtroIndex].DATA_FIM = null;
-                }
-
-                Swal.fire({
-                    icon: "success",
-                    text: "Filtro atualizado com sucesso!",
-                    timer: 1500
-                });
-
-            } catch {
-                Swal.fire({
-                    icon: "error",
-                    text: "Erro ao reabrir o filtro!"
                 });
             } finally {
                 state.loading = false;
@@ -319,15 +288,66 @@ export const actions = {
         }
     },
 
-    addItensFiltro(idFiltro: number | null, conferente: number | string, nomeFiltro: string | null) {
-
-        if (idFiltro != null) {
-            state.idFiltro = idFiltro
-        }
-
+    criarNovoFiltro(conferente: number | string, nomeFiltro: string, nomeConferente: string) {
         state.conferente = conferente;
         state.nomeNovoFiltro = nomeFiltro;
+        state.nomeConferente = nomeConferente;
         state.modalAddItensFiltroOpened = true
+    },
+
+    addItensFiltro(idFiltro: number, conferente: number | string, nomeFiltro: string, nomeConferente: string) {
+        state.idFiltro = idFiltro
+        state.conferente = conferente;
+        state.nomeNovoFiltro = nomeFiltro;
+        state.nomeConferente = nomeConferente
+        state.modalAddItensFiltroOpened = true
+    },
+
+    updateFiltroEConferente(idFiltro: number, conferente: number | string, nomeFiltro: string, nomeConferente: string) {
+        state.idFiltro = idFiltro
+        state.conferente = conferente;
+        state.nomeNovoFiltro = nomeFiltro;
+        state.nomeConferente = nomeConferente
+        actions.updateConferenteNomeFiltro()
+    },
+
+    async updateConferenteNomeFiltro() {
+
+        try {
+            state.loading = true;
+            let param: iUpdateNomeFiltro = {
+                idFiltro: state.idFiltro,
+                nomeFiltro: state.nomeNovoFiltro,
+                funcionario: state.conferente
+            }
+            await serviceFiltro.updateConferenteNomeFiltro(param)
+            Swal.fire({
+                icon: "success",
+                text: "Filtro atualizado com sucesso!",
+                timer: 1500
+            });
+
+            // Atualizar o filtro na state
+            const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === state.idFiltro);
+            if (filtroIndex !== -1) {
+                state.filtros[filtroIndex].NOME_FILTRO = state.nomeNovoFiltro
+                state.filtros[filtroIndex].CONFERENTE = state.nomeConferente
+            }
+            // Atualizar o filtro na state.dadosDoFiltroSelecionado
+            const filtroSelecionadoIndex = state.dadosDoFiltroSelecionado.findIndex(filtro => filtro.ID_FILTRO === state.idFiltro);
+            if (filtroSelecionadoIndex !== -1) {
+                state.dadosDoFiltroSelecionado[filtroSelecionadoIndex].NOME_FILTRO = state.nomeNovoFiltro;
+                state.dadosDoFiltroSelecionado[filtroSelecionadoIndex].CONFERENTE = state.nomeConferente;
+            }
+
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao atualizar o filtro!"
+            });
+        } finally {
+            state.loading = false;
+        }
     },
 
     editarDadosFiltroSelecionado(filtro) {

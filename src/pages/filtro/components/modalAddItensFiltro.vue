@@ -133,7 +133,7 @@ const actions = {
     if (stateModalAddItensFiltro.produtosSelecionados.length == 0) {
       Swal.fire({
         icon: "warning",
-        text: "Escolha ao menos um item pro filtro!",
+        text: "Escolha ao menos um item para o filtro!",
       });
       return;
     }
