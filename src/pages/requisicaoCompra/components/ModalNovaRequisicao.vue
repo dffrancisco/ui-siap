@@ -68,13 +68,18 @@ const actions = {
 
     const duplicidade = await actions.getDuplicidadeRequisicaoCompra(favorecido.ID_FAVORECIDO);
 
-    if (
-      !(await msgConfirmSemCodigo(
-        "Confirmação",
-        "Já existe uma compra em andamento para este favorecido. Deseja continuar?"
-      ))
-    ) {
-      return;
+    if (duplicidade.length > 0) {
+      state.inputSearch.disabled = true;
+
+      if (
+        !(await msgConfirmSemCodigo(
+          "Confirmação",
+          "Já existe uma compra em andamento para este favorecido. Deseja continuar?"
+        ))
+      ) {
+        state.inputSearch.disabled = false;
+        return;
+      }
     }
 
     emit("selecionarFavorecido", favorecido);
