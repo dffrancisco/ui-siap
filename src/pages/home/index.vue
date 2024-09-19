@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import globalActions from "@/store/globalActions";
 import router from "../../router";
 
 import login from "../login/login";
 </script>
 
 <template>
+  <v-btn
+    @click="globalActions.toggleTheme()"
+    variant="text"
+    class="btnDark"
+    color="gray"
+    icon="mdi-theme-light-dark"
+  ></v-btn>
   <v-main>
     <v-container>
       <v-card

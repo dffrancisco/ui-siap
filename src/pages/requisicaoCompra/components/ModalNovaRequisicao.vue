@@ -148,7 +148,7 @@ onUnmounted(() => {
 
 <template>
   <v-card class="pa-4 d-flex flex-grow-1">
-    <v-card-title style="color: #334155">Nova Requisição</v-card-title>
+    <v-card-title>Nova Requisição</v-card-title>
 
     <div class="d-flex ga-2 align-center mt-2">
       <v-text-field

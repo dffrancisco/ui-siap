@@ -42,9 +42,9 @@ const actions = {
       compare: {
         colorir: (r) => {
           if (r.FINALIZADO == "N") {
-            return '<span style="color: red">' + "Em andamento" + "<span>";
+            return '<span style="color: #ef4444">' + "Em andamento" + "<span>";
           } else {
-            return '<span style="color: green">' + "Finalizada" + "<span>";
+            return '<span style="color: #84cc16">' + "Finalizada" + "<span>";
           }
         },
       },
@@ -121,7 +121,7 @@ onUnmounted(() => {
 
 <template>
   <v-card class="pa-4 d-flex flex-grow-1">
-    <v-card-title style="color: #334155">Localizar Requisição</v-card-title>
+    <v-card-title>Localizar Requisição</v-card-title>
     <div class="d-flex ga-2 align-center mt-2">
       <v-text-field
         id="inputSearch"
