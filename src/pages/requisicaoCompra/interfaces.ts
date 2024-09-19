@@ -47,11 +47,11 @@ export interface iGetDuplicidadeRequisicaoCompraResponse {
     ID_REQUISICAO_COMPRA: number
 }
 
-export interface iGetRequisicaoComprasParam {
+export interface iGetRequisicoesComprasParam {
     search: string
 }
 
-export interface iGetRequisicaoComprasResponse {
+export interface iGetRequisicoesComprasResponse {
     NOME_FAVORECIDO: string;
     CNPJ_FAVORECIDO: string;
     FINALIZADO: 'S' | 'N';

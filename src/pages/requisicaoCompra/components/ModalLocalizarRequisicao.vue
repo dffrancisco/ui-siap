@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, onUnmounted, reactive } from "vue";
-import { iGetRequisicaoComprasParam, iRequisicaoCompra } from "../interfaces";
+import { iGetRequisicoesComprasParam, iRequisicaoCompra } from "../interfaces";
 import serviceRequisicaoCompra from "../services/requisicaoCompra.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
@@ -50,7 +50,7 @@ const actions = {
       },
       query: {
         async execute(rs) {
-          let data = await actions.getRequisicaoCompras(rs.param as iGetRequisicaoComprasParam, rs.offset);
+          let data = await actions.getRequisicaoCompras(rs.param as iGetRequisicoesComprasParam, rs.offset);
           state.gridRequisicaoCompra.querySourceAdd(data);
         },
       },
@@ -83,11 +83,11 @@ const actions = {
     emit("closeModal");
   },
 
-  async getRequisicaoCompras(param: iGetRequisicaoComprasParam, offset: number) {
+  async getRequisicaoCompras(param: iGetRequisicoesComprasParam, offset: number) {
     try {
       state.loading = true;
 
-      const data = await serviceRequisicaoCompra.getRequisicaoCompras(param, offset);
+      const data = await serviceRequisicaoCompra.getRequisicoesCompras(param, offset);
 
       return data;
     } catch (error) {

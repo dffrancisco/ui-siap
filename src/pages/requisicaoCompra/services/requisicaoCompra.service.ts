@@ -4,8 +4,8 @@ import {
     iGetDuplicidadeRequisicaoCompraResponse,
     iGetFavorecidosParam,
     iGetFavorecidosResponse,
-    iGetRequisicaoComprasParam,
-    iGetRequisicaoComprasResponse,
+    iGetRequisicoesComprasParam,
+    iGetRequisicoesComprasResponse,
     iInsertRequisicaoCompraParam,
     iInsertRequisicaoCompraResponse
 } from "../interfaces";
@@ -18,8 +18,8 @@ type iInsertRequisicaoCompraFunction = (param: iInsertRequisicaoCompraParam) =>
     Promise<iInsertRequisicaoCompraResponse>
 type iGetDuplicidadeRequisicaoCompraFunction = (param: iGetDuplicidadeRequisicaoCompraParam) =>
     Promise<iGetDuplicidadeRequisicaoCompraResponse[]>
-type iGetRequisicaoComprasFunction = (param: iGetRequisicaoComprasParam, offset: number) =>
-    Promise<iGetRequisicaoComprasResponse>
+type iGetRequisicoesComprasFunction = (param: iGetRequisicoesComprasParam, offset: number) =>
+    Promise<iGetRequisicoesComprasResponse>
 
 const getFavorecidos: iGetFavorecidosFunction = async (param, offset) => {
     let { data } = await axios.post(caminho, {
@@ -46,9 +46,9 @@ const getDuplicidadeRequisicaoCompra: iGetDuplicidadeRequisicaoCompraFunction = 
     return data;
 }
 
-const getRequisicaoCompras: iGetRequisicaoComprasFunction = async (param, offset) => {
+const getRequisicoesCompras: iGetRequisicoesComprasFunction = async (param, offset) => {
     let { data } = await axios.post(caminho, {
-        call: "getRequisicaoCompras",
+        call: "getRequisicoesCompras",
         offset,
         param
     })
@@ -59,5 +59,5 @@ export default {
     getFavorecidos,
     insertRequisicaoCompra,
     getDuplicidadeRequisicaoCompra,
-    getRequisicaoCompras
+    getRequisicoesCompras
 };
