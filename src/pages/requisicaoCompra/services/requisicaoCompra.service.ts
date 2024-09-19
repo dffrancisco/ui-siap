@@ -1,9 +1,14 @@
 import axios from "axios";
-import { iGetFavorecidosParam, iGetFavorecidosResponse } from "../interfaces";
+import { iGetDuplicidadeRequisicaoCompraParam, iGetDuplicidadeRequisicaoCompraResponse, iGetFavorecidosParam, iGetFavorecidosResponse, iInsertRequisicaoCompraParam, iInsertRequisicaoCompraResponse } from "../interfaces";
 
 const caminho = "siap/requisicaoCompra"
 
-type iGetFavorecidosFunction = (param: iGetFavorecidosParam, offset: number) => Promise<iGetFavorecidosResponse>
+type iGetFavorecidosFunction = (param: iGetFavorecidosParam, offset: number) =>
+    Promise<iGetFavorecidosResponse>
+type iInsertRequisicaoCompraFunction = (param: iInsertRequisicaoCompraParam) =>
+    Promise<iInsertRequisicaoCompraResponse>
+type iGetDuplicidadeRequisicaoCompraFunction = (param: iGetDuplicidadeRequisicaoCompraParam) =>
+    Promise<iGetDuplicidadeRequisicaoCompraResponse[]>
 
 const getFavorecidos: iGetFavorecidosFunction = async (param, offset) => {
     let { data } = await axios.post(caminho, {
@@ -14,4 +19,24 @@ const getFavorecidos: iGetFavorecidosFunction = async (param, offset) => {
     return data;
 }
 
-export default { getFavorecidos };
+const insertRequisicaoCompra: iInsertRequisicaoCompraFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "insertRequisicaoCompra",
+        param
+    })
+    return data;
+}
+
+const getDuplicidadeRequisicaoCompra: iGetDuplicidadeRequisicaoCompraFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getDuplicidadeRequisicaoCompra",
+        param
+    })
+    return data;
+}
+
+export default {
+    getFavorecidos,
+    insertRequisicaoCompra,
+    getDuplicidadeRequisicaoCompra
+};

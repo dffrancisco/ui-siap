@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import { state } from "./requisicaoCompra";
+import { actions, state } from "./requisicaoCompra";
 import ModalNovaRequisicao from "./components/ModalNovaRequisicao.vue";
 import { useEventListener } from "@vueuse/core";
 import { onUnmounted } from "vue";
@@ -54,7 +54,7 @@ onUnmounted(() => {
                 <v-col>
                   <div class="d-flex flex-column">
                     <strong>Razão Social:</strong>
-                    <span>{{ state.dbRequisicaoCompra.NOME_FAVORECIDO || "-" }}</span>
+                    <span class="text-uppercase">{{ state.dbRequisicaoCompra.NOME_FAVORECIDO || "-" }}</span>
                   </div>
                 </v-col>
               </v-row>
@@ -166,6 +166,7 @@ onUnmounted(() => {
         <div>
           <v-btn
             v-if="state.dbRequisicaoCompra.FINALIZADO == 'N'"
+            :disabled="!state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA"
             icon="mdi-delete mdi-24px"
             color="#ef4444"
             size="36"
@@ -197,7 +198,10 @@ onUnmounted(() => {
       width="650"
       height="450"
     >
-      <ModalNovaRequisicao @closeModal="state.modalNovaRequisicaoOpened = false" />
+      <ModalNovaRequisicao
+        @selecionarFavorecido="actions.selecionarFavorecido"
+        @closeModal="state.modalNovaRequisicaoOpened = false"
+      />
     </v-dialog>
 
     <v-overlay

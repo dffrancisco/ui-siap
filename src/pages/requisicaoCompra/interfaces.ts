@@ -30,3 +30,19 @@ export interface iFavorecido {
 }
 
 export interface iGetFavorecidosResponse extends iFavorecido { }
+
+export interface iInsertRequisicaoCompraParam {
+    ID_FAVORECIDO: number
+}
+
+export interface iInsertRequisicaoCompraResponse {
+    ID_REQUISICAO_COMPRA: number
+}
+
+export interface iGetDuplicidadeRequisicaoCompraParam {
+    ID_FAVORECIDO: number
+}
+
+export interface iGetDuplicidadeRequisicaoCompraResponse {
+    ID_REQUISICAO_COMPRA: number
+}

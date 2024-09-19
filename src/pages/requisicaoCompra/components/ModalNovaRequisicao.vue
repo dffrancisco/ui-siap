@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, onUnmounted, reactive } from "vue";
-import { iGetFavorecidosParam, iFavorecido } from "../interfaces";
+import { iGetFavorecidosParam, iFavorecido, iGetDuplicidadeRequisicaoCompraParam } from "../interfaces";
 import serviceRequisicaoCompra from "../services/requisicaoCompra.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
+import utils, { msgConfirmSemCodigo } from "@/ts/utils";
+import { msgConfirm } from "@/ts/message";
 
 const emit = defineEmits(["closeModal", "selecionarFavorecido"]);
 
@@ -53,6 +55,35 @@ const actions = {
     });
   },
 
+  async selecionarFavorecido() {
+    const favorecido = state.gridFavorecidos.dataSource() as iFavorecido;
+
+    if (!favorecido) {
+      Swal.fire({
+        icon: "warning",
+        title: "Nenhum item foi selecionado",
+      });
+      return;
+    }
+
+    const duplicidade = await actions.getDuplicidadeRequisicaoCompra(favorecido.ID_FAVORECIDO);
+
+    if (
+      !(await msgConfirmSemCodigo(
+        "Confirmação",
+        "Já existe uma compra em andamento para este favorecido. Deseja continuar?"
+      ))
+    ) {
+      return;
+    }
+
+    emit("selecionarFavorecido", favorecido);
+  },
+
+  closeModal() {
+    emit("closeModal");
+  },
+
   async getFavorecidos(param: iGetFavorecidosParam, offset: number) {
     try {
       state.loading = true;
@@ -71,22 +102,26 @@ const actions = {
     }
   },
 
-  selecionarFavorecido() {
-    const favorecido = state.gridFavorecidos.dataSource() as iFavorecido;
+  async getDuplicidadeRequisicaoCompra(idFavorecido: number) {
+    try {
+      state.loading = true;
 
-    if (!favorecido) {
+      let param: iGetDuplicidadeRequisicaoCompraParam = {
+        ID_FAVORECIDO: idFavorecido,
+      };
+
+      const data = await serviceRequisicaoCompra.getDuplicidadeRequisicaoCompra(param);
+
+      return data;
+    } catch (error) {
       Swal.fire({
-        icon: "warning",
-        title: "Nenhum item foi selecionado",
+        icon: "error",
+        title: "Ocorreu um erro ao verificar a duplicidade da requisição de compra",
+        text: error.message,
       });
-      return;
+    } finally {
+      state.loading = false;
     }
-
-    emit("selecionarFavorecido", favorecido.ID_FAVORECIDO);
-  },
-
-  closeModal() {
-    emit("closeModal");
   },
 };
 
