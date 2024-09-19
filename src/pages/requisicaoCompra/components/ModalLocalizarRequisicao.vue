@@ -44,7 +44,7 @@ const actions = {
           if (r.FINALIZADO == "N") {
             return '<span style="color: #ef4444">' + "Em andamento" + "<span>";
           } else {
-            return '<span style="color: #84cc16">' + "Finalizada" + "<span>";
+            return '<span style="color: #65a30d">' + "Finalizada" + "<span>";
           }
         },
       },

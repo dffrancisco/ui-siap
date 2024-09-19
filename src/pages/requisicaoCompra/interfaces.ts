@@ -7,6 +7,7 @@ export interface iRequisicaoCompra {
     VALOR: number;
     DATA_HORA_FINALIZADO?: string;
     COD_FUNCIONARIO_FINALIZOU?: number;
+    LOGIN_FUNCIONARIO_FINALIZOU?: string
 }
 
 export interface iRequisicaoItem {
@@ -70,7 +71,18 @@ export interface iDeleteRequisicaoCompraParam {
     ID_REQUISICAO_COMPRA: number
 }
 
-export interface iDeleteRequisicaoCompraResponse {
+export interface iSuccessResponse {
     success: boolean;
     msg: string
+}
+
+export interface iDeleteRequisicaoCompraResponse extends iSuccessResponse { }
+
+export interface iFinalizarRequisicaoCompraParam {
+    ID_REQUISICAO_COMPRA: number
+}
+
+export interface iFinalizarRequisicaoCompraResponse extends iSuccessResponse {
+    loginFuncionario: string,
+    codFuncionario: number
 }

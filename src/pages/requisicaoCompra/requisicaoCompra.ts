@@ -2,6 +2,7 @@ import { reactive } from "vue";
 import {
     iDeleteRequisicaoCompraParam,
     iFavorecido,
+    iFinalizarRequisicaoCompraParam,
     iGetRequisicaoCompraParam,
     iInsertRequisicaoCompraParam,
     iRequisicaoCompra,
@@ -47,6 +48,12 @@ export const actions = {
     async btnDeleteRequisicaoCompra() {
         if (await msgConfirm('Confirmação', 'Deseja excluir esta requisição?')) {
             await actions.deleteRequisicaoCompra();
+        }
+    },
+
+    async btnFinalizarRequisicaoCompra() {
+        if (await msgConfirm('Confirmação', 'Deseja finalizar esta requisição?')) {
+            await actions.finalizarRequisicaoCompra();
         }
     },
 
@@ -119,6 +126,43 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 title: "Ocorreu um erro ao excluir requisição de compra",
+                text: error.message
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async finalizarRequisicaoCompra() {
+        try {
+            state.loading = true;
+
+            let param: iFinalizarRequisicaoCompraParam = {
+                ID_REQUISICAO_COMPRA: state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA
+            }
+
+            const data = await requisicaoCompraService.finalizarRequisicaoCompra(param);
+
+            if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: data.msg,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                state.dbRequisicaoCompra = {
+                    ...state.dbRequisicaoCompra,
+                    FINALIZADO: 'S',
+                    DATA_HORA_FINALIZADO: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    COD_FUNCIONARIO_FINALIZOU: data.codFuncionario,
+                    LOGIN_FUNCIONARIO_FINALIZOU: data.loginFuncionario,
+                }
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Ocorreu um erro ao finalizar requisição de compra",
                 text: error.message
             });
         } finally {

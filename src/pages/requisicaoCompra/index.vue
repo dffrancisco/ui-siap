@@ -5,6 +5,7 @@ import ModalNovaRequisicao from "./components/ModalNovaRequisicao.vue";
 import { useEventListener } from "@vueuse/core";
 import { onUnmounted } from "vue";
 import ModalLocalizarRequisicao from "./components/ModalLocalizarRequisicao.vue";
+import moment from "moment";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (!state.modalLocalizarRequisicaoOpened && !state.modalNovaRequisicaoOpened) {
@@ -16,6 +17,15 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
 
     if (event.key === "F2") {
       state.modalNovaRequisicaoOpened = true;
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    if (event.key === "F6") {
+      if (state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA) {
+        actions.btnFinalizarRequisicaoCompra();
+      }
+
       event.preventDefault();
       event.stopPropagation();
     }
@@ -175,32 +185,42 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div class="d-flex justify-space-between">
+      <div class="d-flex justify-space-between align-center">
         <div>
           <v-btn
             v-if="state.dbRequisicaoCompra.FINALIZADO == 'N'"
             :disabled="!state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA"
-            icon="mdi-delete mdi-24px"
             color="#ef4444"
-            size="36"
-            title="Deletar Requisição"
             @click="actions.btnDeleteRequisicaoCompra"
-          />
+          >
+            <v-icon class="mr-2">mdi-delete mdi-24px</v-icon> Deletar Requisição
+          </v-btn>
 
           <v-btn
             v-else
-            icon="mdi-printer mdi-24px"
             color="primary"
             :disabled="!state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA"
-            size="36"
-            title="Imprimir Requisição"
-          />
+            ><v-icon class="mr-2">mdi-printer mdi-24px</v-icon> imprimir</v-btn
+          >
+        </div>
+
+        <div v-if="state.dbRequisicaoCompra.COD_FUNCIONARIO_FINALIZOU">
+          <span class="text-subtitle-2"
+            >Requisição realizada por: {{ state.dbRequisicaoCompra.LOGIN_FUNCIONARIO_FINALIZOU }} -
+            {{ utils.dataBrasil(state.dbRequisicaoCompra.DATA_HORA_FINALIZADO) }} -
+            {{
+              moment(state.dbRequisicaoCompra.DATA_HORA_FINALIZADO).locale("America/Sao_Paulo").format("HH:mm")
+            }}</span
+          >
         </div>
 
         <div>
           <v-btn
-            :disabled="!state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA"
+            :disabled="
+              !state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA || state.dbRequisicaoCompra.FINALIZADO == 'S'
+            "
             color="success"
+            @click="actions.btnFinalizarRequisicaoCompra"
             >Finalizar Requisição (F6)</v-btn
           >
         </div>
