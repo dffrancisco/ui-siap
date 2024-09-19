@@ -118,7 +118,7 @@ onMounted(() => {
   }
 });
 
-// Watcher para atualizar o nomeConferente
+// Watch para atualizar o nomeConferente
 watch(
   () => stateModalNovoFiltro.funcionarioSelecionado,
   (newFuncionario) => {
