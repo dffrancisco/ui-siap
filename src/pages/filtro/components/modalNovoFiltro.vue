@@ -40,7 +40,7 @@ const actions = {
       return;
     }
 
-    if (stateModalNovoFiltro.idFiltro == null || stateModalNovoFiltro.idFiltro == 0) {
+    if (!stateModalNovoFiltro.idFiltro) {
       emit(
         "novoFiltro",
         stateModalNovoFiltro.funcionarioSelecionado,
@@ -108,6 +108,22 @@ const actions = {
   formatFuncionarioTitle(item) {
     return item ? `${item.LOGIN} - ${item.COD_FUNCIONARIO}` : "";
   },
+
+  capturarNomeSelecionado(codFuncionario) {
+    stateModalNovoFiltro.funcionarioSelecionado = codFuncionario;
+
+    // Encontra o funcionario correspondente
+    const selectedFuncionario = stateModalNovoFiltro.funcionarios.find(
+      (func) => func.COD_FUNCIONARIO === codFuncionario
+    );
+
+    // Atualiza o nomeConferente com o título formatado
+    if (selectedFuncionario) {
+      stateModalNovoFiltro.nomeConferente = actions.formatFuncionarioTitle(selectedFuncionario);
+    } else {
+      stateModalNovoFiltro.nomeConferente = "";
+    }
+  },
 };
 
 onMounted(() => {
@@ -117,22 +133,6 @@ onMounted(() => {
     inputNomeFiltro.focus();
   }
 });
-
-// Watch para atualizar o nomeConferente
-watch(
-  () => stateModalNovoFiltro.funcionarioSelecionado,
-  (newFuncionario) => {
-    const selectedFuncionario = stateModalNovoFiltro.funcionarios.find(
-      (func) => func.COD_FUNCIONARIO === newFuncionario
-    );
-
-    if (selectedFuncionario) {
-      stateModalNovoFiltro.nomeConferente = actions.formatFuncionarioTitle(selectedFuncionario);
-    } else {
-      stateModalNovoFiltro.nomeConferente = "";
-    }
-  }
-);
 </script>
 <template>
   <div class="modal-container">
@@ -159,6 +159,7 @@ watch(
         item-value="COD_FUNCIONARIO"
         autocomplete="off"
         variant="outlined"
+        @update:model-value="actions.capturarNomeSelecionado"
         @keydown.enter="actions.salvar"
         :clearable="true"
         bg-color="#ffffff"

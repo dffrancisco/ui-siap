@@ -46,7 +46,7 @@ const stateModalVisualizarFiltro = reactive({
   ],
 });
 
-const actionsModalView = {
+const actions = {
   cancelar() {
     emit("closeModalVisualizarFiltro");
   },
@@ -69,8 +69,8 @@ const actionsModalView = {
   async deleteItemFiltro(item) {
     if (stateModalVisualizarFiltro.dadosFiltro.length == 1) {
       Swal.fire({
-        icon: "error",
-        text: "Não é possível excluir o único item, volte e exclua todo o filtro se assim desejar!",
+        icon: "warning",
+        text: "O filtro precisa de ao menos um item!",
       });
       return;
     }
@@ -150,7 +150,7 @@ const emit = defineEmits([
             class="iconEditar"
             color="primary"
             size="30px"
-            @click="actionsModalView.editarDadosFiltro(stateModalVisualizarFiltro.dadosFiltro)"
+            @click="actions.editarDadosFiltro(stateModalVisualizarFiltro.dadosFiltro)"
             >mdi-account-edit</v-icon
           >
         </div>
@@ -160,7 +160,7 @@ const emit = defineEmits([
           items-per-page="50"
           height="380"
           fixed-header
-          :row-props="actionsModalView.getClassCorLinha"
+          :row-props="actions.getClassCorLinha"
           :items="stateModalVisualizarFiltro.dadosFiltro"
           item-key="COD_PRODUTO"
           item-value="COD_PRODUTO"
@@ -173,7 +173,7 @@ const emit = defineEmits([
                 class="ml-1"
                 title="Deletar"
                 :disabled="item.CONFERIDO == 'SIM'"
-                @click="actionsModalView.deleteItemFiltro(item)"
+                @click="actions.deleteItemFiltro(item)"
               >
                 mdi-delete-outline
               </v-icon>
@@ -193,7 +193,7 @@ const emit = defineEmits([
           <v-btn
             variant="outlined"
             color="primary"
-            @click="actionsModalView.cancelar"
+            @click="actions.cancelar"
             >Cancelar</v-btn
           >
         </div>
@@ -201,7 +201,7 @@ const emit = defineEmits([
           <v-btn
             class="ml-2"
             color="primary"
-            @click="actionsModalView.addItensFiltro()"
+            @click="actions.addItensFiltro()"
           >
             + ADD itens</v-btn
           >

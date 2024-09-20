@@ -8,7 +8,7 @@ const stateModalAddItensFiltro = reactive({
   loading: false,
   search: "",
   nomeFiltro: "",
-  idFiltro: 0,
+  idFiltro: null,
   funcionarioSelecionado: null,
   carros: <iCarros[]>[],
   carroSelecionado: <iCarros[]>[],
@@ -146,7 +146,7 @@ const actions = {
       produtosSelecionados: stateModalAddItensFiltro.produtosSelecionados,
     };
 
-    if (stateModalAddItensFiltro.idFiltro == 0) {
+    if (stateModalAddItensFiltro.idFiltro == null) {
       actions.inserirFiltro(parametrosInsercao);
       return;
     }
@@ -205,11 +205,11 @@ const props = defineProps({
     required: false,
   },
   idFiltro: {
-    type: Number,
+    type: [Number, null],
     required: true,
   },
   conferente: {
-    type: Number || null,
+    type: [Number, null],
     required: true,
   },
 });

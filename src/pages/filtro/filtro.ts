@@ -223,7 +223,7 @@ export const actions = {
 
     novoFiltro() {
         state.filtroEditar = []
-        state.idFiltro = 0;
+        state.idFiltro = null;
         state.modalNovoFiltroOpened = true;
     },
 
