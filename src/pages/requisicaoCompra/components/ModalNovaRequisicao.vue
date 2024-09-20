@@ -153,7 +153,7 @@ onUnmounted(() => {
     <div class="d-flex ga-2 align-center mt-2">
       <v-text-field
         id="inputSearch"
-        label="F1 - Pesquisar (NOME / CNPJ)"
+        label="F1 - Pesquisar (Razão Social ou CNPJ)"
         @keydown.enter="actions.search"
         @keydown.arrow.down.prevent="state.gridFavorecidos.focus()"
       ></v-text-field>

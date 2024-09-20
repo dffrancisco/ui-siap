@@ -9,7 +9,7 @@ import moment from "moment";
 import ModalNovoItem from "./components/ModalNovoItem.vue";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
-  if (!state.modalLocalizarRequisicaoOpened && !state.modalNovaRequisicaoOpened) {
+  if (!state.modalLocalizarRequisicaoOpened && !state.modalNovaRequisicaoOpened && !state.modalNovoItemOpened) {
     if (event.key === "F1") {
       state.modalLocalizarRequisicaoOpened = true;
       event.preventDefault();
@@ -18,6 +18,15 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
 
     if (event.key === "F2") {
       state.modalNovaRequisicaoOpened = true;
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    if (event.key === "F3") {
+      if (state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA && state.dbRequisicaoCompra.FINALIZADO == "N") {
+        state.modalNovoItemOpened = true;
+      }
+
       event.preventDefault();
       event.stopPropagation();
     }
@@ -121,12 +130,10 @@ onUnmounted(() => {
             height="80"
             class="d-flex justify-center align-center rounded-lg"
             style="cursor: pointer"
-            :style="{
-              cursor:
-                state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA && state.dbRequisicaoCompra.FINALIZADO == 'N'
-                  ? 'pointer'
-                  : 'zoom-in',
-            }"
+            @click="state.modalNovoItemOpened = true"
+            :disabled="
+              !state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA || state.dbRequisicaoCompra.FINALIZADO == 'S'
+            "
           >
             <div
               class="d-flex flex-column align-center"
@@ -257,7 +264,7 @@ onUnmounted(() => {
 
     <v-dialog
       v-model="state.modalNovoItemOpened"
-      width="650"
+      width="720"
       height="510"
     >
       <ModalNovoItem />
