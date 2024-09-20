@@ -6,6 +6,7 @@ import { useEventListener } from "@vueuse/core";
 import { onUnmounted } from "vue";
 import ModalLocalizarRequisicao from "./components/ModalLocalizarRequisicao.vue";
 import moment from "moment";
+import ModalNovoItem from "./components/ModalNovoItem.vue";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (!state.modalLocalizarRequisicaoOpened && !state.modalNovaRequisicaoOpened) {
@@ -120,7 +121,12 @@ onUnmounted(() => {
             height="80"
             class="d-flex justify-center align-center rounded-lg"
             style="cursor: pointer"
-            :style="{ cursor: state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA ? 'pointer' : 'zoom-in' }"
+            :style="{
+              cursor:
+                state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA && state.dbRequisicaoCompra.FINALIZADO == 'N'
+                  ? 'pointer'
+                  : 'zoom-in',
+            }"
           >
             <div
               class="d-flex flex-column align-center"
@@ -247,6 +253,14 @@ onUnmounted(() => {
         @selecionarRequisicaoCompra="actions.selecionarRequisicaoCompra"
         @closeModal="state.modalLocalizarRequisicaoOpened = false"
       />
+    </v-dialog>
+
+    <v-dialog
+      v-model="state.modalNovoItemOpened"
+      width="650"
+      height="510"
+    >
+      <ModalNovoItem />
     </v-dialog>
 
     <v-overlay
