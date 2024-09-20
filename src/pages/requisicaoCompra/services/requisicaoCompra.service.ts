@@ -4,6 +4,7 @@ import {
     iDeleteRequisicaoCompraResponse,
     iFinalizarRequisicaoCompraParam,
     iFinalizarRequisicaoCompraResponse,
+    iGetDadosToSelectProdutoResponse,
     iGetDuplicidadeRequisicaoCompraParam,
     iGetDuplicidadeRequisicaoCompraResponse,
     iGetFavorecidosParam,
@@ -31,6 +32,7 @@ type iDeleteRequisicaoCompraFuncion = (param: iDeleteRequisicaoCompraParam) =>
     Promise<iDeleteRequisicaoCompraResponse>
 type iFinalizarRequisicaoCompraFunction = (param: iFinalizarRequisicaoCompraParam) =>
     Promise<iFinalizarRequisicaoCompraResponse>
+type iGetDadosToSelectProduto = () => Promise<iGetDadosToSelectProdutoResponse>
 
 const getFavorecidos: iGetFavorecidosFunction = async (param, offset) => {
     let { data } = await axios.post(caminho, {
@@ -90,6 +92,13 @@ const finalizarRequisicaoCompra: iFinalizarRequisicaoCompraFunction = async (par
     return data;
 }
 
+const getDadosToSelectProduto: iGetDadosToSelectProduto = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getDadosToSelectProduto"
+    })
+    return data;
+}
+
 export default {
     getFavorecidos,
     insertRequisicaoCompra,
@@ -98,4 +107,5 @@ export default {
     getRequisicaoCompra,
     deleteRequisicaoCompra,
     finalizarRequisicaoCompra,
+    getDadosToSelectProduto,
 };

@@ -264,7 +264,7 @@ onUnmounted(() => {
 
     <v-dialog
       v-model="state.modalNovoItemOpened"
-      width="720"
+      width="900"
       height="510"
     >
       <ModalNovoItem />

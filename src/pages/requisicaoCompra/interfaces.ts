@@ -86,3 +86,18 @@ export interface iFinalizarRequisicaoCompraResponse extends iSuccessResponse {
     loginFuncionario: string,
     codFuncionario: number
 }
+
+export interface iGetDadosToSelectProdutoResponse {
+    marcas: iMarcas[],
+    carros: iCarros[]
+}
+
+export interface iMarcas {
+    ID_MARCA: number,
+    DESCRICAO: string
+}
+
+export interface iCarros {
+    ID_CARRO: number,
+    DESCRICAO: string
+}
