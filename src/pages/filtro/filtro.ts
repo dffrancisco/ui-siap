@@ -304,15 +304,19 @@ export const actions = {
     },
 
     updateFiltroEConferente(idFiltro: number, conferente: number | string, nomeFiltro: string, nomeConferente: string) {
+        //atualizando states para upload e states que sao enviadas como props
         state.idFiltro = idFiltro
         state.conferente = conferente;
         state.nomeNovoFiltro = nomeFiltro;
         state.nomeConferente = nomeConferente
+        state.dadosDoFiltroSelecionado[0].ID_FILTRO = state.idFiltro
+        state.dadosDoFiltroSelecionado[0].CONFERENTE = state.conferente
+        state.dadosDoFiltroSelecionado[0].NOME_FILTRO = state.nomeNovoFiltro
+        state.dadosDoFiltroSelecionado[0].COD_FUNCIONARIO = state.conferente
         actions.updateConferenteNomeFiltro()
     },
 
     async updateConferenteNomeFiltro() {
-
         try {
             state.loading = true;
             let param: iUpdateNomeFiltro = {
@@ -356,7 +360,6 @@ export const actions = {
     },
 
     removerItemState({ idItem, idFiltro }) {
-
         state.dadosDoFiltroSelecionado = state.dadosDoFiltroSelecionado.filter(
             (filtroItem) => filtroItem.ID_ITENS_FILTRO !== idItem
         );

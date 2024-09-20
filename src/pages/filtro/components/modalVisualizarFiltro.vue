@@ -46,7 +46,7 @@ const stateModalVisualizarFiltro = reactive({
   ],
 });
 
-const actions = {
+const actionsModalView = {
   cancelar() {
     emit("closeModalVisualizarFiltro");
   },
@@ -59,14 +59,22 @@ const actions = {
   addItensFiltro() {
     emit(
       "addItensFiltro",
-      props.dadosFiltroSelecionado[0].ID_FILTRO,
-      props.dadosFiltroSelecionado[0].COD_FUNCIONARIO,
-      props.dadosFiltroSelecionado[0].NOME_FILTRO
+      stateModalVisualizarFiltro.dadosFiltro[0].ID_FILTRO,
+      stateModalVisualizarFiltro.dadosFiltro[0].COD_FUNCIONARIO,
+      stateModalVisualizarFiltro.dadosFiltro[0].NOME_FILTRO
     );
     emit("closeModalVisualizarFiltro");
   },
 
   async deleteItemFiltro(item) {
+    if (stateModalVisualizarFiltro.dadosFiltro.length == 1) {
+      Swal.fire({
+        icon: "error",
+        text: "Não é possível excluir o único item, volte e exclua todo o filtro se assim desejar!",
+      });
+      return;
+    }
+
     if (await msgConfirmSemCodigo("Confirmação", "Deseja excluir esse item do filtro?")) {
       try {
         let param = item.ID_ITENS_FILTRO;
@@ -131,18 +139,18 @@ const emit = defineEmits([
           <v-chip
             style=""
             color="primary"
-            >Nome do Filtro: {{ stateModalVisualizarFiltro.dadosFiltro[0].NOME_FILTRO || "-------" }}
+            >Nome do Filtro: {{ stateModalVisualizarFiltro.dadosFiltro[0]?.NOME_FILTRO || "-------" }}
           </v-chip>
           <v-chip
             style="margin-left: 10px"
             color="primary"
-            >Conferente: {{ stateModalVisualizarFiltro.dadosFiltro[0].CONFERENTE }}
+            >Conferente: {{ stateModalVisualizarFiltro.dadosFiltro[0]?.CONFERENTE }}
           </v-chip>
           <v-icon
             class="iconEditar"
             color="primary"
             size="30px"
-            @click="actions.editarDadosFiltro(stateModalVisualizarFiltro.dadosFiltro)"
+            @click="actionsModalView.editarDadosFiltro(stateModalVisualizarFiltro.dadosFiltro)"
             >mdi-account-edit</v-icon
           >
         </div>
@@ -152,7 +160,7 @@ const emit = defineEmits([
           items-per-page="50"
           height="380"
           fixed-header
-          :row-props="actions.getClassCorLinha"
+          :row-props="actionsModalView.getClassCorLinha"
           :items="stateModalVisualizarFiltro.dadosFiltro"
           item-key="COD_PRODUTO"
           item-value="COD_PRODUTO"
@@ -165,7 +173,7 @@ const emit = defineEmits([
                 class="ml-1"
                 title="Deletar"
                 :disabled="item.CONFERIDO == 'SIM'"
-                @click="actions.deleteItemFiltro(item)"
+                @click="actionsModalView.deleteItemFiltro(item)"
               >
                 mdi-delete-outline
               </v-icon>
@@ -185,7 +193,7 @@ const emit = defineEmits([
           <v-btn
             variant="outlined"
             color="primary"
-            @click="actions.cancelar"
+            @click="actionsModalView.cancelar"
             >Cancelar</v-btn
           >
         </div>
@@ -193,7 +201,7 @@ const emit = defineEmits([
           <v-btn
             class="ml-2"
             color="primary"
-            @click="actions.addItensFiltro()"
+            @click="actionsModalView.addItensFiltro()"
           >
             + ADD itens</v-btn
           >
