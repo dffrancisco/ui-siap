@@ -67,6 +67,11 @@ const actions = {
   },
 
   async init() {
+    const inputNomeFiltro = document.querySelector("#nomeFiltro") as HTMLElement;
+    if (inputNomeFiltro) {
+      inputNomeFiltro.focus();
+    }
+
     try {
       stateModalNovoFiltro.loading = true;
 
@@ -128,10 +133,6 @@ const actions = {
 
 onMounted(() => {
   actions.init();
-  const inputNomeFiltro = document.querySelector("#nomeFiltro") as HTMLElement;
-  if (inputNomeFiltro) {
-    inputNomeFiltro.focus();
-  }
 });
 </script>
 <template>
