@@ -101,3 +101,7 @@ export interface iCarros {
     ID_CARRO: number,
     DESCRICAO: string
 }
+
+export interface iGetProdutosParam {
+
+}

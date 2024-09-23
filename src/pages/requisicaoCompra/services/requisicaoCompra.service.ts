@@ -33,6 +33,7 @@ type iDeleteRequisicaoCompraFuncion = (param: iDeleteRequisicaoCompraParam) =>
 type iFinalizarRequisicaoCompraFunction = (param: iFinalizarRequisicaoCompraParam) =>
     Promise<iFinalizarRequisicaoCompraResponse>
 type iGetDadosToSelectProduto = () => Promise<iGetDadosToSelectProdutoResponse>
+type iGetProdutos = (param: iGetProdutosParam, offset: number) => Promise<iGetProdutosResponse>
 
 const getFavorecidos: iGetFavorecidosFunction = async (param, offset) => {
     let { data } = await axios.post(caminho, {
