@@ -1,6 +1,6 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import { iCliente, iParamDetalhesCliente, iParamUpdateCliente, iResetStates, iTabs } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceLiberarCliente from "./services/liberarCliente.service"
@@ -345,6 +345,38 @@ export const actions = {
         state.botaoSalvarHabilitado = false;
         state.botaoCancelarHabilitado = false;
 
+
+        //se for faturado, necessario preencher tipo Fat. e Dividir Bol. 
+        if (state.tipoCompra == "Faturado") {
+            if (!state.tipoFaturamento || !state.dividirBoleto) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Preencha todos os dados de faturamento",
+                });
+                return false
+            }
+        }
+
+        //se nao divirBoleto, necessario dia vencimento 
+        if (state.dividirBoleto == 'Não') {
+            if (!state.diaVencimento) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Preencha o dia de vencimento",
+                });
+                return false
+            }
+        }
+
+        //validar dia vencimento
+        if (state.diaVencimento > 31) {
+            Swal.fire({
+                icon: "warning",
+                title: "Dia inválido",
+            });
+            return false
+        }
+
         actions.updateCliente()
     },
 
@@ -362,14 +394,6 @@ export const actions = {
     },
 
     async updateCliente() {
-        //validar dia vencimento
-        if (state.diaVencimento > 31) {
-            Swal.fire({
-                icon: "error",
-                title: "Dia inválido",
-            });
-            return false
-        }
 
         let param = {
             idCliente: state.idCliente,
@@ -403,3 +427,6 @@ export const actions = {
         }
     },
 }
+
+export const naoFaturado = computed(() => state.tipoCompra === "Não Faturado");
+export const faturado = computed(() => state.tipoCompra === "Faturado");
