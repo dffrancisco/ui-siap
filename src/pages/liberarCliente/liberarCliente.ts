@@ -353,17 +353,19 @@ export const actions = {
                     icon: "warning",
                     title: "Preencha todos os dados de faturamento",
                 });
+                actions.alterar()
                 return false
             }
         }
 
         //se nao divirBoleto, necessario dia vencimento 
-        if (state.dividirBoleto == 'Não') {
+        if (state.tipoCompra == "Faturado" && state.dividirBoleto == 'Não') {
             if (!state.diaVencimento) {
                 Swal.fire({
                     icon: "warning",
                     title: "Preencha o dia de vencimento",
                 });
+                actions.alterar()
                 return false
             }
         }
@@ -374,6 +376,7 @@ export const actions = {
                 icon: "warning",
                 title: "Dia inválido",
             });
+            actions.alterar()
             return false
         }
 
@@ -394,7 +397,6 @@ export const actions = {
     },
 
     async updateCliente() {
-
         let param = {
             idCliente: state.idCliente,
             tipoCompra: state.tipoCompra === "Faturado" ? 1 : 0,
@@ -415,7 +417,11 @@ export const actions = {
                     ID_CLIENTE: state.idCliente,
                 })
 
-                return data
+                const cliente = data.cliente[0];
+                setTimeout(() => {
+                    actions.popularInputs(cliente)
+                }, 500);
+
             } catch (error) {
                 Swal.fire({
                     icon: "error",
