@@ -110,14 +110,15 @@ export const actions = {
 
     async calcularOrcamentosToPrint() {
 
-        const dados = state.gridOrcamentosFaturados.data() as any
+        //@ts-ignore
+        const dados = state.gridOrcamentosFaturados.data() as iOrcamentosClienteFaturado[]
 
         let totalOrcamentos = 0;
         let totalDevolucao = 0;
         let totalLiquido = 0;
 
 
-        dados.forEach((orcamento: iOrcamentosClienteFaturado) => {
+        dados.forEach(orcamento => {
 
             totalDevolucao += orcamento.DEVOLUCAO || 0;
 
