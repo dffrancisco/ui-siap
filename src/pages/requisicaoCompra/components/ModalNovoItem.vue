@@ -8,13 +8,22 @@ import { useEventListener } from "@vueuse/core";
 import produtoSemFotoImg from "../../../assets/sem_foto.jpg";
 import ModalInformarQtdProduto from "./ModalInformarQtdProduto.vue";
 
+const props = defineProps({
+  carros: {
+    type: Array as () => iCarros[],
+    required: true,
+  },
+  marcas: {
+    type: Array as () => iMarcas[],
+    required: true,
+  },
+});
+
 const emits = defineEmits(["closeModal"]);
 
 const state = reactive({
   gridProdutos: <ixGridCreate>{},
   loading: false,
-  dbMarcas: <iMarcas[]>[],
-  dbCarros: <iCarros[]>[],
   selectMarca: null,
   selectCarro: null,
   inputSearch: <HTMLInputElement>null,
@@ -84,7 +93,6 @@ const actions = {
     state.inputSearch = document.getElementById("inputSearch") as HTMLInputElement;
 
     actions.criarGrid();
-    await actions.getDadosToSelectProduto();
 
     state.gridProdutos.queryOpen({}, () => {
       state.inputSearch.focus();
@@ -117,24 +125,6 @@ const actions = {
     state.dbProdutoSelecionado = produto;
 
     state.modalInformarQtdProdutoOpened = true;
-  },
-
-  async getDadosToSelectProduto() {
-    try {
-      state.loading = true;
-      const { marcas, carros } = await serviceRequisicaoCompra.getDadosToSelectProduto();
-
-      state.dbMarcas = marcas;
-      state.dbCarros = carros;
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Ocorreu um erro ao carregar as marcas e carros.",
-        text: error.message,
-      });
-    } finally {
-      state.loading = false;
-    }
   },
 
   async getProdutos(param: iGetProdutosParam, offset: number) {
@@ -182,7 +172,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
         <v-col cols="3">
           <v-autocomplete
             v-model="state.selectCarro"
-            :items="state.dbCarros"
+            :items="props.carros"
             label="Carro"
             item-title="DESCRICAO"
             item-value="ID_CARRO"
@@ -192,7 +182,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
         <v-col cols="3">
           <v-autocomplete
             v-model="state.selectMarca"
-            :items="state.dbMarcas"
+            :items="props.marcas"
             item-title="DESCRICAO"
             item-value="ID_MARCA"
             label="Marca"

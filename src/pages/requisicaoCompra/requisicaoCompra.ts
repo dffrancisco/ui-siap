@@ -1,10 +1,12 @@
 import { reactive } from "vue";
 import {
+    iCarros,
     iDeleteRequisicaoCompraParam,
     iFavorecido,
     iFinalizarRequisicaoCompraParam,
     iGetRequisicaoCompraParam,
     iInsertRequisicaoCompraParam,
+    iMarcas,
     iRequisicaoCompra,
     iRequisicaoItem
 } from "./interfaces";
@@ -20,9 +22,15 @@ export const state = reactive({
     loading: false,
     modalLocalizarRequisicaoOpened: false,
     modalNovoItemOpened: false,
+    dbMarcas: <iMarcas[]>[],
+    dbCarros: <iCarros[]>[],
 })
 
 export const actions = {
+    async init() {
+        await actions.getDadosToSelectProduto()
+    },
+
     async selecionarFavorecido(favorecido: iFavorecido) {
 
         state.dbRequisicaoCompra = {} as iRequisicaoCompra
@@ -55,6 +63,24 @@ export const actions = {
     async btnFinalizarRequisicaoCompra() {
         if (await msgConfirm('Confirmação', 'Deseja finalizar esta requisição?')) {
             await actions.finalizarRequisicaoCompra();
+        }
+    },
+
+    async getDadosToSelectProduto() {
+        try {
+            state.loading = true;
+            const { marcas, carros } = await requisicaoCompraService.getDadosToSelectProduto();
+
+            state.dbMarcas = marcas;
+            state.dbCarros = carros;
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Ocorreu um erro ao carregar as marcas e carros.",
+                text: error.message,
+            });
+        } finally {
+            state.loading = false;
         }
     },
 

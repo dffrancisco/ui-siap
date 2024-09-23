@@ -3,7 +3,7 @@ import utils from "@/ts/utils";
 import { actions, state } from "./requisicaoCompra";
 import ModalNovaRequisicao from "./components/ModalNovaRequisicao.vue";
 import { useEventListener } from "@vueuse/core";
-import { onUnmounted } from "vue";
+import { onMounted, onUnmounted } from "vue";
 import ModalLocalizarRequisicao from "./components/ModalLocalizarRequisicao.vue";
 import moment from "moment";
 import ModalNovoItem from "./components/ModalNovoItem.vue";
@@ -40,6 +40,10 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
       event.stopPropagation();
     }
   }
+});
+
+onMounted(async () => {
+  await actions.init();
 });
 
 onUnmounted(() => {
@@ -267,7 +271,11 @@ onUnmounted(() => {
       width="900"
       height="510"
     >
-      <ModalNovoItem @closeModal="state.modalNovoItemOpened = false" />
+      <ModalNovoItem
+        :carros="state.dbCarros"
+        :marcas="state.dbMarcas"
+        @closeModal="state.modalNovoItemOpened = false"
+      />
     </v-dialog>
 
     <v-overlay
