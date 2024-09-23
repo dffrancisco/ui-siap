@@ -108,28 +108,16 @@ export const actions = {
         return { columns, dadosToPrint };
     },
 
-    async onClickImprimir() {
-        let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
+    async calcularOrcamentosToPrint() {
 
-        let titulo = `
-      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px; align-items: center">
-        <span>Período: ${moment(state.setDataInicio).format('DD/MM/YYYY')} - ${moment(state.setDataFim).format('DD/MM/YYYY')}</span>
-        <span>Quantidade de Itens: ${
-            //@ts-ignore
-            state.gridOrcamentosFaturados.data().length}</span>
-        <strong style="font-size: 20px">Relatório de Pedido</strong>
-      </div>
-      <div style="margin: 4px">
-        <span>Cliente: <strong>${state.clienteSelecionado.NOME}</strong></span>
-      </div>
-      `;
+        const dados = state.gridOrcamentosFaturados.data() as any
 
         let totalOrcamentos = 0;
         let totalDevolucao = 0;
         let totalLiquido = 0;
 
-        // @ts-ignore
-        state.gridOrcamentosFaturados.data().forEach(orcamento => {
+
+        dados.forEach((orcamento: iOrcamentosClienteFaturado) => {
 
             totalDevolucao += orcamento.DEVOLUCAO || 0;
 
@@ -137,6 +125,29 @@ export const actions = {
 
             totalOrcamentos += orcamento.VALOR || 0;
         });
+
+        return {
+            totalOrcamentos,
+            totalDevolucao,
+            totalLiquido
+        }
+    },
+
+    async onClickImprimir() {
+        let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo()
+
+        let titulo = `
+      <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px; align-items: center">
+        <span>Período: ${moment(state.setDataInicio).format('DD/MM/YYYY')} - ${moment(state.setDataFim).format('DD/MM/YYYY')}</span>
+        <span>Quantidade de Itens: ${dadosToPrint.length}</span>
+        <strong style="font-size: 20px">Relatório de Pedido</strong>
+      </div>
+      <div style="margin: 4px">
+        <span>Cliente: <strong>${state.clienteSelecionado.NOME}</strong></span>
+      </div>
+      `;
+
+        let { totalLiquido, totalDevolucao, totalOrcamentos } = await actions.calcularOrcamentosToPrint()
 
         let footer =
             `<div style="margin-top: 16px; display: flex; justify-content: space-between;">
