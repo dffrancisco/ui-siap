@@ -3,9 +3,10 @@ import { onMounted, onUnmounted, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import serviceRequisicaoCompra from "../services/requisicaoCompra.service";
 import Swal from "sweetalert2";
-import { iCarros, iGetProdutosParam, iMarcas } from "../interfaces";
+import { iCarros, iGetProdutosParam, iMarcas, iProduto } from "../interfaces";
 import { useEventListener } from "@vueuse/core";
 import produtoSemFotoImg from "../../../assets/sem_foto.jpg";
+import ModalInformarQtdProduto from "./ModalInformarQtdProduto.vue";
 
 const emits = defineEmits(["closeModal"]);
 
@@ -17,6 +18,8 @@ const state = reactive({
   selectMarca: null,
   selectCarro: null,
   inputSearch: <HTMLInputElement>null,
+  modalInformarQtdProdutoOpened: false,
+  dbProdutoSelecionado: <iProduto>{},
 });
 
 const actions = {
@@ -72,6 +75,8 @@ const actions = {
           state.gridProdutos.querySourceAdd(data);
         },
       },
+      enter: actions.openModalInformarQtdProduto,
+      dblClick: actions.openModalInformarQtdProduto,
     });
   },
 
@@ -96,6 +101,22 @@ const actions = {
       ID_MARCA: state.selectMarca,
       ID_CARRO: state.selectCarro,
     });
+  },
+
+  async openModalInformarQtdProduto() {
+    const produto = state.gridProdutos.dataSource();
+
+    if (!produto) {
+      Swal.fire({
+        icon: "warning",
+        title: "Nenhum produto foi selecionado.",
+      });
+      return;
+    }
+
+    state.dbProdutoSelecionado = produto;
+
+    state.modalInformarQtdProdutoOpened = true;
   },
 
   async getDadosToSelectProduto() {
@@ -214,12 +235,22 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
         >
         <v-btn
           color="primary"
-          @click="() => {}"
+          @click="actions.openModalInformarQtdProduto"
           >selecionar</v-btn
         >
       </div>
     </div>
   </v-card>
+
+  <v-dialog
+    v-model="state.modalInformarQtdProdutoOpened"
+    :width="700"
+  >
+    <ModalInformarQtdProduto
+      @closeModal="state.modalInformarQtdProdutoOpened = false"
+      :produto="state.dbProdutoSelecionado"
+    />
+  </v-dialog>
 
   <v-overlay
     :model-value="state.loading"
