@@ -103,5 +103,19 @@ export interface iCarros {
 }
 
 export interface iGetProdutosParam {
+    ID_MARCA?: number;
+    ID_CARRO?: number;
+    search: string;
+}
 
+export interface iProduto {
+    COD_PRODUTO: number,
+    DESC_PRODUTO: string,
+    QUANTIDADE: number,
+    NUM_FABRICANTE: string,
+    FOTO: 'S' | 'N',
+    CARRO: string
+}
+
+export interface iGetProdutosResponse extends iProduto {
 }

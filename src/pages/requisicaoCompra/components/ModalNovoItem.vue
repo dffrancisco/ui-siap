@@ -3,8 +3,11 @@ import { onMounted, onUnmounted, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import serviceRequisicaoCompra from "../services/requisicaoCompra.service";
 import Swal from "sweetalert2";
-import { iCarros, iMarcas } from "../interfaces";
+import { iCarros, iGetProdutosParam, iMarcas } from "../interfaces";
 import { useEventListener } from "@vueuse/core";
+import produtoSemFotoImg from "../../../assets/sem_foto.jpg";
+
+const emits = defineEmits(["closeModal"]);
 
 const state = reactive({
   gridProdutos: <ixGridCreate>{},
@@ -21,9 +24,54 @@ const actions = {
     state.gridProdutos = new xGridV2.create({
       el: "#gridProdutos",
       columns: {
-        "": {},
+        "": { compare: "produtos" },
+      },
+      compare: {
+        produtos(rs) {
+          let url_foto = "";
+          if (rs.FOTO == "F") {
+            url_foto = `http://www.reallatas.com.br/balcao/foto/${rs.COD_PRODUTO}.jpg`;
+          } else {
+            url_foto = produtoSemFotoImg;
+          }
+
+          return `<div style="display: flex; height: 62px; margin-bottom: 10px; width: 100%;">
+                    <div>
+                    <img
+                        style="width: 96px; height: 100%; border-radius: 8px;"
+                        src="${url_foto}"
+                    />
+                    </div>
+                    <div
+                    style="
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-around;
+                        width: 100%;
+                        padding-left: 8px;
+                        padding-right: 8px;
+                    "
+                    >
+                    <div style="display: flex; justify-content: space-between">
+                        <p style="font-size: 12px; font-weight: 700">${rs.DESC_PRODUTO}</p>
+
+                        <p style="font-size: 12px; font-weight: 700">${rs.NUM_FABRICANTE}</p>
+                    </div>
+                    <div style="display: flex; flex-direction: row; justify-content: space-between">
+                        <p>Qtd de Itens: ${rs.QUANTIDADE}</p>
+                        <p>${rs.CARRO}</p>
+                    </div>
+                    </div>
+                  </div>`;
+        },
       },
       height: "310px",
+      query: {
+        async execute(rs) {
+          const data = await actions.getProdutos(rs.param as iGetProdutosParam, rs.offset);
+          state.gridProdutos.querySourceAdd(data);
+        },
+      },
     });
   },
 
@@ -32,6 +80,22 @@ const actions = {
 
     actions.criarGrid();
     await actions.getDadosToSelectProduto();
+
+    state.gridProdutos.queryOpen({}, () => {
+      state.inputSearch.focus();
+    });
+  },
+
+  closeModal() {
+    emits("closeModal");
+  },
+
+  async search() {
+    state.gridProdutos.queryOpen({
+      search: state.inputSearch.value,
+      ID_MARCA: state.selectMarca,
+      ID_CARRO: state.selectCarro,
+    });
   },
 
   async getDadosToSelectProduto() {
@@ -45,6 +109,24 @@ const actions = {
       Swal.fire({
         icon: "error",
         title: "Ocorreu um erro ao carregar as marcas e carros.",
+        text: error.message,
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  async getProdutos(param: iGetProdutosParam, offset: number) {
+    try {
+      state.loading = true;
+
+      const data = await serviceRequisicaoCompra.getProdutos(param, offset);
+
+      return data;
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Ocorreu um erro ao carregar os produtos.",
         text: error.message,
       });
     } finally {
@@ -100,14 +182,14 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
           <v-text-field
             id="inputSearch"
             label="F1 - Pesquisar (N° Fab. ou Descrição)"
-            @keydown.enter="() => {}"
-            @keydown.arrow.down.prevent="() => {}"
+            @keydown.enter="actions.search"
+            @keydown.arrow.down.prevent="state.gridProdutos.focus()"
           ></v-text-field>
           <v-btn
             icon="mdi-magnify mdi-24px"
             color="primary"
             size="36"
-            @click="() => {}"
+            @click="actions.search"
           />
         </v-col>
       </v-row>
@@ -127,7 +209,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
         <v-btn
           variant="outlined"
           color="primary"
-          @click="() => {}"
+          @click="actions.closeModal"
           >Cancelar</v-btn
         >
         <v-btn

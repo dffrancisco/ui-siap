@@ -267,7 +267,7 @@ onUnmounted(() => {
       width="900"
       height="510"
     >
-      <ModalNovoItem />
+      <ModalNovoItem @closeModal="state.modalNovoItemOpened = false" />
     </v-dialog>
 
     <v-overlay

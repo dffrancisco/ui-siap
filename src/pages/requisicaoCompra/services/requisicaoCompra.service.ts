@@ -9,6 +9,8 @@ import {
     iGetDuplicidadeRequisicaoCompraResponse,
     iGetFavorecidosParam,
     iGetFavorecidosResponse,
+    iGetProdutosParam,
+    iGetProdutosResponse,
     iGetRequisicaoCompraParam,
     iGetRequisicaoCompraResponse,
     iGetRequisicoesComprasParam,
@@ -100,6 +102,15 @@ const getDadosToSelectProduto: iGetDadosToSelectProduto = async () => {
     return data;
 }
 
+const getProdutos: iGetProdutos = async (param, offset) => {
+    let { data } = await axios.post(caminho, {
+        call: "getProdutos",
+        offset,
+        param
+    })
+    return data;
+}
+
 export default {
     getFavorecidos,
     insertRequisicaoCompra,
@@ -109,4 +120,5 @@ export default {
     deleteRequisicaoCompra,
     finalizarRequisicaoCompra,
     getDadosToSelectProduto,
+    getProdutos,
 };
