@@ -183,6 +183,7 @@ onUnmounted(() => {
                   style="cursor: pointer"
                   title="Deletar Item"
                   :disabled="state.dbRequisicaoCompra.FINALIZADO == 'S'"
+                  @click="actions.btnDeleteItem(item)"
                   >mdi-delete</v-icon
                 >
                 <v-icon

@@ -1,5 +1,7 @@
 import axios from "axios";
 import {
+    iDeleteRequisicaoComprasItemParam,
+    iDeleteRequisicaoComprasItemResponse,
     iDeleteRequisicaoCompraParam,
     iDeleteRequisicaoCompraResponse,
     iFinalizarRequisicaoCompraParam,
@@ -43,6 +45,8 @@ type iGetProdutosFunction = (param: iGetProdutosParam, offset: number) => Promis
 type iInsertProdutoFunction = (param: iInsertProdutoParam) => Promise<iInsertProdutoResponse>
 type iGetRequisicaoCompraItensFunction = (param: iGetRequisicaoCompraItensParam) =>
     Promise<iGetRequisicaoCompraItensResponse[]>
+type iDeleteRequisicaoComprasItemFunction = (param: iDeleteRequisicaoComprasItemParam) =>
+    Promise<iDeleteRequisicaoComprasItemResponse>
 
 const getFavorecidos: iGetFavorecidosFunction = async (param, offset) => {
     let { data } = await axios.post(caminho, {
@@ -134,6 +138,14 @@ const getRequisicaoComprasItensPorId: iGetRequisicaoCompraItensFunction = async 
     return data;
 }
 
+const deleteRequisicaoComprasItem: iDeleteRequisicaoComprasItemFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "deleteRequisicaoComprasItem",
+        param
+    })
+    return data;
+}
+
 export default {
     getFavorecidos,
     insertRequisicaoCompra,
@@ -146,4 +158,5 @@ export default {
     getProdutos,
     insertProduto,
     getRequisicaoComprasItensPorId,
+    deleteRequisicaoComprasItem,
 };

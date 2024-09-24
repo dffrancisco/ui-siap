@@ -147,3 +147,9 @@ export interface iProdutoToEdit {
     TOTAL: number,
     DESCRICAO: string
 }
+
+export interface iDeleteRequisicaoComprasItemParam {
+    ID_REQUISICAO_COMPRA_ITEM: number
+}
+
+export interface iDeleteRequisicaoComprasItemResponse extends iSuccessResponse { }

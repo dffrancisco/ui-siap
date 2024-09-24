@@ -2,6 +2,7 @@ import { computed, reactive } from "vue";
 import {
     iCarros,
     iDeleteRequisicaoCompraParam,
+    iDeleteRequisicaoComprasItemParam,
     iFavorecido,
     iFinalizarRequisicaoCompraParam,
     iGetRequisicaoCompraItensParam,
@@ -95,6 +96,12 @@ export const actions = {
         }
 
         state.modalInformarQtdProdutoOpened = true
+    },
+
+    async btnDeleteItem(item: iRequisicaoItem) {
+        if (await msgConfirm('Confirmação', 'Deseja excluir este item?')) {
+            await actions.deleteRequisicaoComprasItem(item.ID_REQUISICAO_COMPRA_ITEM);
+        }
     },
 
     async getDadosToSelectProduto() {
@@ -281,6 +288,40 @@ export const actions = {
             state.loading = false;
         }
     },
+
+    async deleteRequisicaoComprasItem(idRequisicaoCompraItem: number) {
+        try {
+            state.loading = true;
+
+            let param: iDeleteRequisicaoComprasItemParam = {
+                ID_REQUISICAO_COMPRA_ITEM: idRequisicaoCompraItem
+            }
+
+            const data = await requisicaoCompraService.deleteRequisicaoComprasItem(param);
+
+            if (data.success) {
+                state.dbRequisicaoItens = state.dbRequisicaoItens.filter(
+                    (item: iRequisicaoItem) => item.ID_REQUISICAO_COMPRA_ITEM != idRequisicaoCompraItem
+                );
+
+                Swal.fire({
+                    icon: "success",
+                    title: data.msg,
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Ocorreu um erro ao excluir o item.",
+                text: error.message
+            })
+        } finally {
+            state.loading = false;
+        }
+    }
 }
 
 export const computeds = {
