@@ -268,7 +268,7 @@ onUnmounted(() => {
   <v-container>
     <v-card
       class="pa-5"
-      style="width: 940px; height: 505px; margin: 0 auto"
+      style="width: 940px; height: 515px; margin: 0 auto"
     >
       <div style="display: flex; gap: 10px; padding-bottom: 10px">
         <v-autocomplete
@@ -284,7 +284,7 @@ onUnmounted(() => {
           multiple
           chips
           v-model="stateModalAddItensFiltro.carroSelecionado"
-          :menu-props="{ maxHeight: '300', maxWidth: '160', style: { overflowY: 'auto', position: 'absolute' } }"
+          :menu-props="{ maxHeight: '300px', maxWidth: '160px', teleport: 'body', closeOnContentClick: false }"
         >
         </v-autocomplete>
         <v-autocomplete
@@ -300,7 +300,12 @@ onUnmounted(() => {
           multiple
           chips
           v-model="stateModalAddItensFiltro.marcaSelecionada"
-          :menu-props="{ maxHeight: '300', maxWidth: '160', style: { overflowY: 'auto', position: 'absolute' } }"
+          :menu-props="{
+            maxHeight: '300px',
+            maxWidth: '160px',
+            teleport: 'body',
+            closeOnContentClick: false,
+          }"
         ></v-autocomplete>
         <v-text-field
           id="endEstoque"
