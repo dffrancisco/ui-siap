@@ -152,7 +152,7 @@ onUnmounted(() => {
           <v-card
             v-for="item in state.dbRequisicaoItens"
             color="#91d2f7"
-            width="270"
+            minWidth="270"
             height="80"
             class="d-flex flex-column pa-2 justify-space-between rounded-lg"
           >
@@ -177,7 +177,7 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <div class="d-flex justify-space-between align-center">
+            <div class="d-flex justify-space-between align-center ga-2">
               <div class="d-flex ga-2">
                 <v-icon
                   style="cursor: pointer"

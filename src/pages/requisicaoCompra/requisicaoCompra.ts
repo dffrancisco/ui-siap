@@ -73,6 +73,14 @@ export const actions = {
     },
 
     async btnFinalizarRequisicaoCompra() {
+        if (state.dbRequisicaoItens.length == 0) {
+            Swal.fire({
+                text: 'É necessário adicionar itens à requisição.',
+                icon: 'warning',
+            })
+            return;
+        }
+
         if (await msgConfirm('Confirmação', 'Deseja finalizar esta requisição?')) {
             await actions.finalizarRequisicaoCompra();
         }

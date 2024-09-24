@@ -18,13 +18,18 @@ const props = defineProps({
 const emits = defineEmits(["closeModal", "insertProduto"]);
 
 const state = reactive({
-  inputQtdPedida: 0,
+  inputQtdPedida: null,
   inputValorUnitario: "0",
   dbProduto: <iProduto>{},
+  inputValorUnitarioElement: <HTMLInputElement>null,
 });
 
 const actions = {
   async init() {
+    state.inputValorUnitarioElement = document.getElementById("inputValorUnitario") as HTMLInputElement;
+
+    console.log(state.inputValorUnitarioElement.focus());
+
     state.dbProduto = props.produto;
 
     if (props.produtoToEdit) {
@@ -112,8 +117,7 @@ onMounted(async () => {
 
     <div class="mt-4">
       <v-row>
-        <v-col
-        v-if="!props.produtoToEdit">
+        <v-col v-if="!props.produtoToEdit">
           <v-text-field
             type="text"
             class="inputDisabled"
@@ -124,19 +128,25 @@ onMounted(async () => {
         /></v-col>
         <v-col>
           <v-text-field
-            type="number"
+            type="text"
             label="Qtd. Pedida"
             autofocus
             :clearable="false"
+            v-mask="'#'"
+            maxlength="7"
             v-model="state.inputQtdPedida"
+            @keydown.enter="state.inputValorUnitarioElement.select()"
         /></v-col>
         <v-col>
           <v-text-field
             type="text"
+            id="inputValorUnitario"
             v-mask-decimal.br="2"
             label="Valor Unitário"
             :clearable="false"
+            maxlength="10"
             v-model="state.inputValorUnitario"
+            @keydown.enter="actions.btnSave"
         /></v-col>
         <v-col>
           <v-text-field
