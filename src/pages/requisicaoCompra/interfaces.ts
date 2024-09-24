@@ -1,3 +1,5 @@
+import { ex } from "@fullcalendar/core/internal-common";
+
 export interface iRequisicaoCompra {
     NOME_FAVORECIDO: string;
     DATA_HORA_CRIACAO: string;
@@ -121,8 +123,8 @@ export interface iGetProdutosResponse extends iProduto {
 }
 
 export interface iInsertItemParam {
-    ID_REQUISICAO_COMPRA: number,
-    COD_PRODUTO?: number,
+    ID_REQUISICAO_COMPRA?: number,
+    COD_PRODUTO: number,
     QTD: number,
     VALOR_UNITARIO: number,
     TOTAL: number,
@@ -153,3 +155,30 @@ export interface iDeleteRequisicaoComprasItemParam {
 }
 
 export interface iDeleteRequisicaoComprasItemResponse extends iSuccessResponse { }
+
+export interface iItemNovo {
+    QTD: number,
+    VALOR_UNITARIO: string,
+    DESCRICAO: string
+}
+
+export interface iItemNovoToEdit extends iItemNovo {
+    ID_REQUISICAO_COMPRA_ITEM: number
+}
+
+export interface iInsertItemNovoParam {
+    ID_REQUISICAO_COMPRA?: number,
+    DESCRICAO: string
+    QTD: number,
+    VALOR_UNITARIO: number,
+    TOTAL: number,
+}
+
+export interface iUpdateItemNovoParam {
+    ID_REQUISICAO_COMPRA_ITEM: number,
+    DESCRICAO: string,
+    QTD: number,
+    VALOR_UNITARIO: number,
+    TOTAL: number,
+    ID_REQUISICAO_COMPRA?: number,
+}

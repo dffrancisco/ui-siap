@@ -32,6 +32,7 @@ export const state = reactive({
     modalLocalizarRequisicaoOpened: false,
     modalNovoItemOpened: false,
     modalInformarQtdItemOpened: false,
+    modalInserirItemSemCadastro: false,
 
     loading: false,
 })

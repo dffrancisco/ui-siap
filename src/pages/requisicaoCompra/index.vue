@@ -8,6 +8,7 @@ import ModalLocalizarRequisicao from "./components/ModalLocalizarRequisicao.vue"
 import moment from "moment";
 import ModalNovoItem from "./components/ModalNovoItem.vue";
 import ModalInformarEditarQtdItem from "./components/ModalInformarEditarQtdItem.vue";
+import ModalInserirItemSemCadastro from "./components/ModalInserirItemSemCadastro.vue";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (!state.modalLocalizarRequisicaoOpened && !state.modalNovaRequisicaoOpened && !state.modalNovoItemOpened) {
@@ -281,6 +282,7 @@ onUnmounted(() => {
         :marcas="state.dbMarcas"
         @closeModal="state.modalNovoItemOpened = false"
         @openModalInformarQtdItem="actions.openModalInformarQtdItem"
+        @openModalInserirItemSemCadastro="state.modalInserirItemSemCadastro = true"
       />
     </v-dialog>
 
@@ -294,6 +296,13 @@ onUnmounted(() => {
         @insertItem="actions.insertItem"
         :itemToEdit="state.dbItemToEdit"
       />
+    </v-dialog>
+
+    <v-dialog
+      v-model="state.modalInserirItemSemCadastro"
+      :width="700"
+    >
+      <ModalInserirItemSemCadastro @closeModal="state.modalInserirItemSemCadastro = false" />
     </v-dialog>
 
     <v-overlay

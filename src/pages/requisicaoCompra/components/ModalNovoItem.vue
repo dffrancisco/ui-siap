@@ -18,7 +18,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["closeModal", "openModalInformarQtdItem"]);
+const emits = defineEmits(["closeModal", "openModalInformarQtdItem", "openModalInserirItemSemCadastro"]);
 
 const state = reactive({
   gridProdutos: <ixGridCreate>{},
@@ -122,6 +122,10 @@ const actions = {
     emits("openModalInformarQtdItem", produto);
   },
 
+  async openModalInserirItemSemCadastro() {
+    emits("openModalInserirItemSemCadastro");
+  },
+
   async getProdutos(param: iGetProdutosParam, offset: number) {
     try {
       state.loading = true;
@@ -208,7 +212,11 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
 
     <div class="d-flex justify-space-between">
       <div>
-        <v-btn color="primary">+ ITEM SEM CADASTRO</v-btn>
+        <v-btn
+          color="primary"
+          @click="actions.openModalInserirItemSemCadastro"
+          >+ ITEM SEM CADASTRO</v-btn
+        >
       </div>
 
       <div class="d-flex ga-4">
