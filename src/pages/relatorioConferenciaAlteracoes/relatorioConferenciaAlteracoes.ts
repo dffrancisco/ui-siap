@@ -78,7 +78,7 @@ export const actions = {
     validarInputs() {
         if (state.ano === "" || state.ano > ano.toString()) {
             Swal.fire({
-                icon: "error",
+                icon: "warning",
                 text: "Insira um ano válido para continuar"
             });
             return
@@ -86,7 +86,7 @@ export const actions = {
 
         if (state.mes > mes && state.ano >= ano.toString()) {
             Swal.fire({
-                icon: "error",
+                icon: "warning",
                 text: "Insira um mês válido para continuar"
             });
             return
@@ -113,7 +113,7 @@ export const actions = {
     async getDadosParaRelatorio() {
         try {
             state.loading = true;
-            let dataInicio = moment(`${state.ano}-${state.mes}-01`, 'YYYY-MM-DD').startOf('month').format('YYYY-MM-DD');
+            let dataInicio = moment(`${state.ano}-${state.mes}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
             let dataFim = moment(`${state.ano}-${state.mes}-01`, 'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD');
 
             const data = await serviceRelatorioConferenciaAlteracoes.getDadosParaRelatorio({

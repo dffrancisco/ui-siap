@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { state, actions, meses } from "./relatorioConferenciaAlteracoes";
-import { nextTick } from "vue";
+import { onMounted } from "vue";
 
-nextTick(async () => {
+onMounted(async () => {
   actions.init();
 });
 </script>
