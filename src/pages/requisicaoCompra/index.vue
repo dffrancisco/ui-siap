@@ -7,6 +7,7 @@ import { onMounted, onUnmounted } from "vue";
 import ModalLocalizarRequisicao from "./components/ModalLocalizarRequisicao.vue";
 import moment from "moment";
 import ModalNovoItem from "./components/ModalNovoItem.vue";
+import ModalInformarQtdProduto from "./components/ModalInformarQtdProduto.vue";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (!state.modalLocalizarRequisicaoOpened && !state.modalNovaRequisicaoOpened && !state.modalNovoItemOpened) {
@@ -274,9 +275,19 @@ onUnmounted(() => {
       <ModalNovoItem
         :carros="state.dbCarros"
         :marcas="state.dbMarcas"
-        :idRequisicaoCompra="state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA"
         @closeModal="state.modalNovoItemOpened = false"
-        @adicionarProduto="actions.adicionarProduto"
+        @openModalInformarQtdProduto="actions.openModalInformarQtdProduto"
+      />
+    </v-dialog>
+
+    <v-dialog
+      v-model="state.modalInformarQtdProdutoOpened"
+      :width="700"
+    >
+      <ModalInformarQtdProduto
+        @closeModal="state.modalInformarQtdProdutoOpened = false"
+        :produto="state.dbProdutoSelecionado"
+        @insertProduto="actions.insertProduto"
       />
     </v-dialog>
 

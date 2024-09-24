@@ -3,17 +3,9 @@ import { onMounted, onUnmounted, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import serviceRequisicaoCompra from "../services/requisicaoCompra.service";
 import Swal from "sweetalert2";
-import {
-  iCarros,
-  iGetProdutosParam,
-  iInsertProdutoParam,
-  iMarcas,
-  iProduto,
-  iRequisicaoItem,
-} from "../interfaces";
+import { iCarros, iGetProdutosParam, iInsertProdutoParam, iMarcas, iProduto } from "../interfaces";
 import { useEventListener } from "@vueuse/core";
 import produtoSemFotoImg from "../../../assets/sem_foto.jpg";
-import ModalInformarQtdProduto from "./ModalInformarQtdProduto.vue";
 
 const props = defineProps({
   carros: {
@@ -24,13 +16,9 @@ const props = defineProps({
     type: Array as () => iMarcas[],
     required: true,
   },
-  idRequisicaoCompra: {
-    type: Number,
-    required: true,
-  },
 });
 
-const emits = defineEmits(["closeModal", "adicionarProduto"]);
+const emits = defineEmits(["closeModal", "openModalInformarQtdProduto"]);
 
 const state = reactive({
   gridProdutos: <ixGridCreate>{},
@@ -38,8 +26,6 @@ const state = reactive({
   selectMarca: null,
   selectCarro: null,
   inputSearch: <HTMLInputElement>null,
-  modalInformarQtdProdutoOpened: false,
-  dbProdutoSelecionado: <iProduto>{},
 });
 
 const actions = {
@@ -133,9 +119,7 @@ const actions = {
       return;
     }
 
-    state.dbProdutoSelecionado = produto;
-
-    state.modalInformarQtdProdutoOpened = true;
+    emits("openModalInformarQtdProduto", produto);
   },
 
   async getProdutos(param: iGetProdutosParam, offset: number) {
@@ -149,35 +133,6 @@ const actions = {
       Swal.fire({
         icon: "error",
         title: "Ocorreu um erro ao carregar os produtos.",
-        text: error.message,
-      });
-    } finally {
-      state.loading = false;
-    }
-  },
-
-  async insertProduto(param: iInsertProdutoParam) {
-    try {
-      state.loading = true;
-
-      param.ID_REQUISICAO_COMPRA = props.idRequisicaoCompra;
-
-      const data = await serviceRequisicaoCompra.insertProduto(param);
-
-      Swal.fire({
-        icon: "success",
-        title: data.msg,
-        showConfirmButton: false,
-        timer: 1500,
-      });
-
-      emits("adicionarProduto");
-
-      actions.closeModal();
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Ocorreu um erro ao adicionar o item.",
         text: error.message,
       });
     } finally {
@@ -271,17 +226,6 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
       </div>
     </div>
   </v-card>
-
-  <v-dialog
-    v-model="state.modalInformarQtdProdutoOpened"
-    :width="700"
-  >
-    <ModalInformarQtdProduto
-      @closeModal="state.modalInformarQtdProdutoOpened = false"
-      :produto="state.dbProdutoSelecionado"
-      @insertProduto="actions.insertProduto"
-    />
-  </v-dialog>
 
   <v-overlay
     :model-value="state.loading"

@@ -6,8 +6,10 @@ import {
     iFinalizarRequisicaoCompraParam,
     iGetRequisicaoCompraItensParam,
     iGetRequisicaoCompraParam,
+    iInsertProdutoParam,
     iInsertRequisicaoCompraParam,
     iMarcas,
+    iProduto,
     iRequisicaoCompra,
     iRequisicaoItem
 } from "./interfaces";
@@ -19,12 +21,16 @@ import { msgConfirm } from "@/ts/message";
 export const state = reactive({
     dbRequisicaoCompra: <iRequisicaoCompra>{},
     dbRequisicaoItens: <iRequisicaoItem[]>[],
-    modalNovaRequisicaoOpened: false,
-    loading: false,
-    modalLocalizarRequisicaoOpened: false,
-    modalNovoItemOpened: false,
     dbMarcas: <iMarcas[]>[],
     dbCarros: <iCarros[]>[],
+    dbProdutoSelecionado: <iProduto>{},
+
+    modalNovaRequisicaoOpened: false,
+    modalLocalizarRequisicaoOpened: false,
+    modalNovoItemOpened: false,
+    modalInformarQtdProdutoOpened: false,
+
+    loading: false,
 })
 
 export const actions = {
@@ -35,6 +41,7 @@ export const actions = {
     async selecionarFavorecido(favorecido: iFavorecido) {
 
         state.dbRequisicaoCompra = {} as iRequisicaoCompra
+        state.dbRequisicaoItens = []
 
         state.dbRequisicaoCompra = {
             ...state.dbRequisicaoCompra,
@@ -68,8 +75,9 @@ export const actions = {
         }
     },
 
-    async adicionarProduto(produto: iRequisicaoItem) {
-        await actions.getRequisicaoComprasItensPorId()
+    async openModalInformarQtdProduto(produto: iProduto) {
+        state.dbProdutoSelecionado = produto;
+        state.modalInformarQtdProdutoOpened = true;
     },
 
     async getDadosToSelectProduto() {
@@ -224,5 +232,35 @@ export const actions = {
         } finally {
             state.loading = false;
         }
-    }
+    },
+
+    async insertProduto(param: iInsertProdutoParam) {
+        try {
+            state.loading = true;
+
+            param.ID_REQUISICAO_COMPRA = state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA;
+
+            const data = await requisicaoCompraService.insertProduto(param);
+
+            Swal.fire({
+                icon: "success",
+                title: data.msg,
+                showConfirmButton: false,
+                timer: 1500,
+            });
+
+            state.modalNovoItemOpened = false
+
+            await actions.getRequisicaoComprasItensPorId()
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Ocorreu um erro ao adicionar o item.",
+                text: error.message,
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
 }
