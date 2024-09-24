@@ -2,15 +2,19 @@ import utils, { iColumnPrint, msgConfirmSemCodigo } from '@/ts/utils';
 import Swal from "sweetalert2";
 import { computed, reactive } from "vue";
 import serviceFiltro from './services/filtro.service';
-import { iDadosFiltro, iFiltros, iUpdateNomeFiltro } from "./interfaces";
+import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iMarcas, iUpdateNomeFiltro } from "./interfaces";
 import { msgConfirm } from '@/ts/message';
 
 export const state = reactive({
     loading: false,
     filtros: <iFiltros[]>[],
     selectedFiltro: null,
+    selectedStatus: null,
     idFiltro: 0,
     conferente: null,
+    funcionarios: <iFuncionario[]>[],
+    marcas: <iMarcas[]>[],
+    carros: <iCarros[]>[],
     dadosDoFiltroSelecionado: <iDadosFiltro[]>[],
     searchFiltro: "",
     filtroEditar: <iFiltros[]>[],
@@ -63,30 +67,42 @@ export const state = reactive({
 export const computeds = {
     filtros: computed(() => {
         const searchFiltro = state.searchFiltro?.toLowerCase().trim() || '';
+        const selectedStatus = state.selectedStatus;
 
         // Se não houver termo de busca, retorne todos os filtros
-        if (!searchFiltro) {
-            return state.filtros;
+        let filteredItems = state.filtros;
+
+        if (searchFiltro) {
+            filteredItems = filteredItems.filter(filtro => {
+                const nomeFiltro = filtro.NOME_FILTRO ? filtro.NOME_FILTRO.toLowerCase() : '';
+                const criador = filtro.CRIADOR ? filtro.CRIADOR.toLowerCase() : '';
+                const conferente = filtro.CONFERENTE ? filtro.CONFERENTE.toLowerCase() : '';
+                const dataInicio = filtro.DATA_INICIO ? new Date(filtro.DATA_INICIO).toLocaleDateString() : '';
+                const dataFim = filtro.DATA_FIM ? new Date(filtro.DATA_FIM).toLocaleDateString() : '';
+
+                return (
+                    nomeFiltro.includes(searchFiltro) ||
+                    criador.includes(searchFiltro) ||
+                    conferente.includes(searchFiltro) ||
+                    dataInicio.includes(searchFiltro) ||
+                    dataFim.includes(searchFiltro)
+                );
+            });
         }
 
-        // Caso contrário, aplique o filtro
-        return state.filtros.filter(filtro => {
-            const nomeFiltro = filtro.NOME_FILTRO ? filtro.NOME_FILTRO.toLowerCase() : '';
-            const criador = filtro.CRIADOR ? filtro.CRIADOR.toLowerCase() : '';
-            const conferente = filtro.CONFERENTE ? filtro.CONFERENTE.toLowerCase() : '';
-            const dataInicio = filtro.DATA_INICIO ? new Date(filtro.DATA_INICIO).toLocaleDateString() : '';
-            const dataFim = filtro.DATA_FIM ? new Date(filtro.DATA_FIM).toLocaleDateString() : '';
+        // Aplica o filtro de status
+        if (selectedStatus === 'Finalizado') {
+            filteredItems = filteredItems.filter(filtro => filtro.DATA_FIM !== null);
+        } else if (selectedStatus === 'Em Andamento') {
+            filteredItems = filteredItems.filter(filtro => filtro.DATA_FIM === null);
+        } else if (selectedStatus === 'Todos') {
+            filteredItems = state.filtros
+        }
 
-            return (
-                nomeFiltro.includes(searchFiltro) ||
-                criador.includes(searchFiltro) ||
-                conferente.includes(searchFiltro) ||
-                dataInicio.includes(searchFiltro) ||
-                dataFim.includes(searchFiltro)
-            );
-        });
+        return filteredItems;
     }),
 };
+
 
 export const actions = {
     async init() {
@@ -121,6 +137,48 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao trazer os dados!"
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getFuncionarios() {
+        try {
+            state.loading = true;
+            state.funcionarios = await serviceFiltro.getFuncionarios();
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os funcionarios!"
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getMarcas() {
+        try {
+            state.loading = true;
+            state.marcas = await serviceFiltro.getMarcas();
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar as marcas!"
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getCarros() {
+        try {
+            state.loading = true;
+            state.carros = await serviceFiltro.getCarros();
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os carros!"
             });
         } finally {
             state.loading = false;
@@ -181,8 +239,8 @@ export const actions = {
                 { key: 'DESC_PRODUTO', label: 'Produto', width: '30%' },
                 { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '15%' },
                 { key: 'NUM_FABRICANTE2', label: 'Nº Fabricante2', width: '15%' },
-                { key: 'QTO_OLD', label: 'Qtd velha', width: '5%', align: 'center' },
-                { key: 'QUANTIDADE', label: 'Qtd nova', width: '5%', align: 'center' },
+                { key: 'QTD_ESTOQUE', label: 'Qtd Estoque', width: '5%', align: 'center' },
+                { key: 'QTD_ATUAL', label: 'Qtd Atual', width: '5%', align: 'center' },
                 { key: 'END_ESTOQUE', label: 'End. Estoque', width: '15%', align: 'right' },
                 { key: 'END_EXCESSO', label: 'End. Excesso', width: '15%', align: 'right' },
                 { key: 'CONFERIDO', label: 'Conferido', width: '10%', align: 'center' }
@@ -212,8 +270,8 @@ export const actions = {
             DESC_PRODUTO: item.DESC_PRODUTO || '-----',
             NUM_FABRICANTE: item.NUM_FABRICANTE || '-----',
             NUM_FABRICANTE2: item.NUM_FABRICANTE2 || '-----',
-            QTO_OLD: item.QTO_OLD || 0,
-            QUANTIDADE: item.QUANTIDADE || '-----',
+            QTD_ESTOQUE: item.QTD_ESTOQUE || 0,
+            QTD_ATUAL: item.QTD_ATUAL || '_____',
             END_ESTOQUE: item.END_ESTOQUE || '-----',
             END_EXCESSO: item.END_EXCESSO || '-----',
             DATA: item.DATA ? utils.dataBrasil(item.DATA) : '-----',
@@ -221,7 +279,10 @@ export const actions = {
         }));
     },
 
-    novoFiltro() {
+    async novoFiltro() {
+        if (state.funcionarios.length === 0) {
+            await actions.getFuncionarios();
+        }
         state.filtroEditar = []
         state.idFiltro = null;
         state.modalNovoFiltroOpened = true;
@@ -295,7 +356,15 @@ export const actions = {
         state.modalAddItensFiltroOpened = true
     },
 
-    addItensFiltro(idFiltro: number, conferente: number | string, nomeFiltro: string, nomeConferente: string) {
+    async addItensFiltro(idFiltro: number, conferente: number | string, nomeFiltro: string, nomeConferente: string) {
+        if (state.marcas.length === 0) {
+            await actions.getMarcas();
+        }
+
+        if (state.carros.length === 0) {
+            await actions.getCarros();
+        }
+
         state.idFiltro = idFiltro
         state.conferente = conferente;
         state.nomeNovoFiltro = nomeFiltro;
@@ -354,8 +423,11 @@ export const actions = {
         }
     },
 
-    editarDadosFiltroSelecionado(filtro) {
+    async editarDadosFiltroSelecionado(filtro) {
         state.filtroEditar = filtro
+        if (state.funcionarios.length === 0) {
+            await actions.getFuncionarios();
+        }
         state.modalNovoFiltroOpened = true
     },
 

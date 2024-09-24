@@ -24,10 +24,21 @@ onMounted(async () => {
           autocomplete="off"
           item-title="title"
           item-value="value"
-          :clearable="true"
+          :clearable="false"
           v-model="state.searchFiltro"
           append-inner-icon="mdi-magnify"
         ></v-text-field>
+        <v-select
+          id="status"
+          class="status"
+          :clearable="false"
+          label="Status"
+          width="180px"
+          style="margin-left: 15px"
+          v-model="state.selectedStatus"
+          :items="['Em Andamento', 'Finalizado', 'Todos']"
+        />
+
         <v-btn
           title="Novo"
           class="novoFiltroBtn"
@@ -53,11 +64,11 @@ onMounted(async () => {
             <v-icon
               size="large"
               color="primary"
-              title="Ver detalhes e add+ itens"
+              title="Alterar Filtro"
               :disabled="item.DATA_FIM != null"
               @click="actions.selectFiltro(item.ID_FILTRO)"
             >
-              mdi-playlist-plus
+              mdi-pen
             </v-icon>
             <v-icon
               size="large"
@@ -134,6 +145,7 @@ onMounted(async () => {
   >
     <ModalNovoFiltro
       :filtroEditar="state.filtroEditar"
+      :funcionarios="state.funcionarios"
       @closeModalNovoFiltro="actions.closeModalNovoFiltro"
       @novoFiltro="actions.criarNovoFiltro"
       @nomeFiltroEConferente="actions.updateFiltroEConferente"
@@ -167,6 +179,8 @@ onMounted(async () => {
       :nomeFiltro="state.nomeNovoFiltro"
       :idFiltro="state.idFiltro"
       :conferente="state.conferente"
+      :marcas="state.marcas"
+      :carros="state.carros"
       @closeModalAddItensFiltro="actions.closeModalAddItensFiltro"
       @cancelarModalAddItensFiltro="actions.cancelarModalAddItensFiltro"
     />
@@ -203,6 +217,6 @@ onMounted(async () => {
 .novoFiltroBtn {
   font-weight: 600;
   text-align: center;
-  margin-left: 370px;
+  margin-left: 180px;
 }
 </style>

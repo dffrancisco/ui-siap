@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
-import { onMounted, reactive, watch } from "vue";
-import serviceFiltro from "../services/filtro.service";
+import { onMounted, reactive } from "vue";
 import { iFuncionario } from "../interfaces";
 
 const stateModalNovoFiltro = reactive({
@@ -19,6 +18,10 @@ const props = defineProps({
   filtroEditar: {
     type: Object,
     required: false,
+  },
+  funcionarios: {
+    type: Array,
+    required: true,
   },
 });
 
@@ -67,21 +70,15 @@ const actions = {
   },
 
   async init() {
+    stateModalNovoFiltro.loading = true;
+
     const inputNomeFiltro = document.querySelector("#nomeFiltro") as HTMLElement;
     if (inputNomeFiltro) {
       inputNomeFiltro.focus();
     }
-
-    try {
-      stateModalNovoFiltro.loading = true;
-
-      const funcionarios = await serviceFiltro.getFuncionarios();
-      stateModalNovoFiltro.funcionarios = funcionarios;
-
-      actions.popularInputs();
-    } finally {
-      stateModalNovoFiltro.loading = false;
-    }
+    stateModalNovoFiltro.funcionarios = props.funcionarios as iFuncionario[];
+    actions.popularInputs();
+    stateModalNovoFiltro.loading = false;
   },
 
   popularInputs() {
@@ -100,6 +97,8 @@ const actions = {
       stateModalNovoFiltro.funcionarioSelecionado = funcionarioEncontrado
         ? funcionarioEncontrado.COD_FUNCIONARIO
         : null;
+
+      stateModalNovoFiltro.nomeConferente = actions.formatFuncionarioTitle(funcionarioEncontrado);
     }
   },
 

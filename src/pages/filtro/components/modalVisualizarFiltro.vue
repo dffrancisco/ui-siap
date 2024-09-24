@@ -27,7 +27,7 @@ const stateModalVisualizarFiltro = reactive({
 
     {
       title: "Qtd",
-      key: "QUANTIDADE",
+      key: "QTD_ESTOQUE",
       sortable: true,
       align: "center",
     },
@@ -231,6 +231,6 @@ const emit = defineEmits([
 }
 
 .v-data-table-footer__pagination {
-  padding-right: 250px;
+  padding-right: 230px;
 }
 </style>

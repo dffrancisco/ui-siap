@@ -59,7 +59,7 @@ export interface iParamFiltrar {
 };
 
 export interface iDadosFiltro {
-    QTO_OLD: number,
+    QTD_ATUAL: number,
     DATA: string,
     HORA: string,
     CONFERIDO: string,
@@ -77,7 +77,7 @@ export interface iDadosFiltro {
     DESC_PRODUTO: string,
     END_ESTOQUE: string,
     END_EXCESSO: string,
-    QUANTIDADE: number,
+    QTD_ESTOQUE: number,
     CRIADOR: string,
     CONFERENTE: string
 }

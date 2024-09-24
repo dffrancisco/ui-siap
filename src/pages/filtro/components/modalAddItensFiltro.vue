@@ -1,8 +1,31 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive } from "vue";
+import { onMounted, onUnmounted, reactive, computed, watch } from "vue";
 import serviceFiltro from "../services/filtro.service";
 import { iCarros, iMarcas, iParamFiltrar, iResultPesquisa } from "../interfaces";
 import Swal from "sweetalert2";
+
+const props = defineProps({
+  nomeFiltro: {
+    type: String,
+    required: false,
+  },
+  idFiltro: {
+    type: [Number, null],
+    required: true,
+  },
+  conferente: {
+    type: [Number, null],
+    required: true,
+  },
+  marcas: {
+    type: Array,
+    required: true,
+  },
+  carros: {
+    type: Array,
+    required: true,
+  },
+});
 
 const stateModalAddItensFiltro = reactive({
   loading: false,
@@ -16,6 +39,9 @@ const stateModalAddItensFiltro = reactive({
   marcas: <iMarcas[]>[],
   dadosRetornadosDaPesquisa: <iResultPesquisa[]>[],
   produtosSelecionados: <number[]>[],
+  produtosSelecionadosDetalhes: <iResultPesquisa[]>[],
+  mostrarSomenteSelecionados: false,
+  chipSelecionado: false,
   paramsPesquisa: {},
   endEstoque: "",
   numFabricante: "",
@@ -55,27 +81,17 @@ const stateModalAddItensFiltro = reactive({
 
 const actions = {
   async init() {
-    try {
-      stateModalAddItensFiltro.loading = true;
+    stateModalAddItensFiltro.loading = true;
 
-      const carros = await serviceFiltro.getCarros();
-      const marcas = await serviceFiltro.getMarcas();
+    stateModalAddItensFiltro.carros = props.carros as iCarros[];
+    stateModalAddItensFiltro.marcas = props.marcas as iMarcas[];
 
-      stateModalAddItensFiltro.carros = carros;
-      stateModalAddItensFiltro.marcas = marcas;
-
-      const inputDescricao = document.querySelector("#descricaoProduto") as HTMLElement;
-      if (inputDescricao) {
-        inputDescricao.focus();
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        text: "Erro ao trazer os dados!",
-      });
-    } finally {
-      stateModalAddItensFiltro.loading = false;
+    const inputDescricao = document.querySelector("#descricaoProduto") as HTMLElement;
+    if (inputDescricao) {
+      inputDescricao.focus();
     }
+
+    stateModalAddItensFiltro.loading = false;
   },
 
   iniciarStates() {
@@ -108,6 +124,7 @@ const actions = {
 
       stateModalAddItensFiltro.paramsPesquisa = [param];
       const dados = await serviceFiltro.getDadosParaFiltragem(param as iParamFiltrar);
+
       stateModalAddItensFiltro.dadosRetornadosDaPesquisa = dados;
     } catch (error) {
       Swal.fire({
@@ -199,22 +216,44 @@ const actions = {
   },
 };
 
-const props = defineProps({
-  nomeFiltro: {
-    type: String,
-    required: false,
-  },
-  idFiltro: {
-    type: [Number, null],
-    required: true,
-  },
-  conferente: {
-    type: [Number, null],
-    required: true,
-  },
+const emit = defineEmits(["closeModalAddItensFiltro", "cancelarModalAddItensFiltro"]);
+
+const filtrarSelecionados = () => {
+  stateModalAddItensFiltro.mostrarSomenteSelecionados = !stateModalAddItensFiltro.mostrarSomenteSelecionados;
+  stateModalAddItensFiltro.chipSelecionado = !stateModalAddItensFiltro.chipSelecionado;
+};
+
+const itensFiltrados = computed(() => {
+  if (stateModalAddItensFiltro.mostrarSomenteSelecionados) {
+    // Exibe apenas os itens selecionados
+    return stateModalAddItensFiltro.produtosSelecionadosDetalhes;
+  }
+  return stateModalAddItensFiltro.dadosRetornadosDaPesquisa;
 });
 
-const emit = defineEmits(["closeModalAddItensFiltro", "cancelarModalAddItensFiltro"]);
+watch(
+  () => stateModalAddItensFiltro.produtosSelecionados,
+  (novosSelecionados) => {
+    // Adiciona os novos itens selecionados aos produtos selecionados
+    novosSelecionados.forEach((id) => {
+      // Verifica se o produto com o ID já não está na lista de detalhes
+      if (!stateModalAddItensFiltro.produtosSelecionadosDetalhes.some((item) => item.COD_PRODUTO === id)) {
+        // Busca o produto completo com base no ID selecionado
+        const item = stateModalAddItensFiltro.dadosRetornadosDaPesquisa.find((item) => item.COD_PRODUTO === id);
+        if (item) {
+          // Adiciona o produto à lista de detalhes
+          stateModalAddItensFiltro.produtosSelecionadosDetalhes.push(item);
+        }
+      }
+    });
+
+    // Remove os itens desmarcados dos detalhes dos produtos selecionados
+    stateModalAddItensFiltro.produtosSelecionadosDetalhes =
+      stateModalAddItensFiltro.produtosSelecionadosDetalhes.filter((item) =>
+        stateModalAddItensFiltro.produtosSelecionados.includes(item.COD_PRODUTO)
+      );
+  }
+);
 
 onMounted(async () => {
   actions.init();
@@ -231,7 +270,7 @@ onUnmounted(() => {
       class="pa-5"
       style="width: 940px; height: 505px; margin: 0 auto"
     >
-      <div style="display: flex; gap: 16px; padding-bottom: 10px">
+      <div style="display: flex; gap: 10px; padding-bottom: 10px">
         <v-autocomplete
           id="carros"
           label="Carros"
@@ -240,21 +279,28 @@ onUnmounted(() => {
           item-title="DESCRICAO"
           item-value="ID_CARRO"
           autocomplete="off"
+          max-width="160px"
           :clearable="true"
           multiple
+          chips
           v-model="stateModalAddItensFiltro.carroSelecionado"
-        ></v-autocomplete>
+          :menu-props="{ maxHeight: '300', maxWidth: '160', style: { overflowY: 'auto', position: 'absolute' } }"
+        >
+        </v-autocomplete>
         <v-autocomplete
           id="marcas"
           label="Marcas"
           class="marcas"
+          max-width="160px"
           autocomplete="off"
           :items="stateModalAddItensFiltro.marcas"
           item-title="DESCRICAO"
           item-value="ID_MARCA"
           :clearable="true"
           multiple
+          chips
           v-model="stateModalAddItensFiltro.marcaSelecionada"
+          :menu-props="{ maxHeight: '300', maxWidth: '160', style: { overflowY: 'auto', position: 'absolute' } }"
         ></v-autocomplete>
         <v-text-field
           id="endEstoque"
@@ -263,7 +309,7 @@ onUnmounted(() => {
           autocomplete="off"
           item-title="title"
           item-value="value"
-          :clearable="true"
+          :clearable="false"
           @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.endEstoque"
         ></v-text-field>
@@ -273,7 +319,7 @@ onUnmounted(() => {
           class="numFabricante"
           autocomplete="off"
           label="Num. Fabricante"
-          :clearable="true"
+          :clearable="false"
           @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.numFabricante"
         ></v-text-field>
@@ -283,7 +329,7 @@ onUnmounted(() => {
           class="descricaoProduto"
           autocomplete="off"
           label="Descrição"
-          :clearable="true"
+          :clearable="false"
           @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.descricaoProduto"
         ></v-text-field>
@@ -304,7 +350,7 @@ onUnmounted(() => {
             items-per-page="50"
             height="350"
             fixed-header
-            :items="stateModalAddItensFiltro.dadosRetornadosDaPesquisa"
+            :items="itensFiltrados"
             item-key="COD_PRODUTO"
             item-value="COD_PRODUTO"
             :row-props="actions.getClassCorLinha"
@@ -325,8 +371,21 @@ onUnmounted(() => {
         </v-card-text>
 
         <div
+          class="d-flex justify-start pa-2 btns"
+          style="margin-top: -65px"
+          ><v-chip
+            :class="{
+              'chip-selecionado': stateModalAddItensFiltro.chipSelecionado,
+            }"
+            :color="stateModalAddItensFiltro.chipSelecionado ? 'green' : 'primary'"
+            @click="filtrarSelecionados"
+            >{{ stateModalAddItensFiltro.produtosSelecionados.length }} selecionados</v-chip
+          ></div
+        >
+
+        <div
           class="d-flex justify-end pa-2 btns"
-          style="margin-top: -70px"
+          style="margin-top: -45px"
         >
           <v-btn
             variant="outlined"
@@ -367,6 +426,19 @@ onUnmounted(() => {
 }
 
 .v-data-table-footer__pagination {
-  padding-right: 230px;
+  padding-right: 100px;
+}
+</style>
+
+<style scoped>
+.carros,
+.marcas {
+  max-height: 50px;
+  overflow-y: auto;
+  white-space: nowrap;
+}
+
+.chip-selecionado {
+  border: 2px solid green;
 }
 </style>
