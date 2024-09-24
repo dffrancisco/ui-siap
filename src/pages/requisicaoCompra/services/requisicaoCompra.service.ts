@@ -15,6 +15,8 @@ import {
     iGetRequisicaoCompraResponse,
     iGetRequisicoesComprasParam,
     iGetRequisicoesComprasResponse,
+    iInsertProdutoParam,
+    iInsertProdutoResponse,
     iInsertRequisicaoCompraParam,
     iInsertRequisicaoCompraResponse
 } from "../interfaces";
@@ -35,7 +37,8 @@ type iDeleteRequisicaoCompraFuncion = (param: iDeleteRequisicaoCompraParam) =>
 type iFinalizarRequisicaoCompraFunction = (param: iFinalizarRequisicaoCompraParam) =>
     Promise<iFinalizarRequisicaoCompraResponse>
 type iGetDadosToSelectProduto = () => Promise<iGetDadosToSelectProdutoResponse>
-type iGetProdutos = (param: iGetProdutosParam, offset: number) => Promise<iGetProdutosResponse>
+type iGetProdutosFunction = (param: iGetProdutosParam, offset: number) => Promise<iGetProdutosResponse>
+type iInsertProdutoFunction = (param: iInsertProdutoParam) => Promise<iInsertProdutoResponse>
 
 const getFavorecidos: iGetFavorecidosFunction = async (param, offset) => {
     let { data } = await axios.post(caminho, {
@@ -102,10 +105,18 @@ const getDadosToSelectProduto: iGetDadosToSelectProduto = async () => {
     return data;
 }
 
-const getProdutos: iGetProdutos = async (param, offset) => {
+const getProdutos: iGetProdutosFunction = async (param, offset) => {
     let { data } = await axios.post(caminho, {
         call: "getProdutos",
         offset,
+        param
+    })
+    return data;
+}
+
+const insertProduto: iInsertProdutoFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "insertProduto",
         param
     })
     return data;
@@ -121,4 +132,5 @@ export default {
     finalizarRequisicaoCompra,
     getDadosToSelectProduto,
     getProdutos,
+    insertProduto,
 };

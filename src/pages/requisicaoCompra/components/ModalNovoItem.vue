@@ -3,7 +3,14 @@ import { onMounted, onUnmounted, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import serviceRequisicaoCompra from "../services/requisicaoCompra.service";
 import Swal from "sweetalert2";
-import { iCarros, iGetProdutosParam, iMarcas, iProduto } from "../interfaces";
+import {
+  iCarros,
+  iGetProdutosParam,
+  iInsertProdutoParam,
+  iMarcas,
+  iProduto,
+  iRequisicaoItem,
+} from "../interfaces";
 import { useEventListener } from "@vueuse/core";
 import produtoSemFotoImg from "../../../assets/sem_foto.jpg";
 import ModalInformarQtdProduto from "./ModalInformarQtdProduto.vue";
@@ -17,9 +24,13 @@ const props = defineProps({
     type: Array as () => iMarcas[],
     required: true,
   },
+  idRequisicaoCompra: {
+    type: Number,
+    required: true,
+  },
 });
 
-const emits = defineEmits(["closeModal"]);
+const emits = defineEmits(["closeModal", "adicionarProduto"]);
 
 const state = reactive({
   gridProdutos: <ixGridCreate>{},
@@ -144,6 +155,35 @@ const actions = {
       state.loading = false;
     }
   },
+
+  async insertProduto(param: iInsertProdutoParam) {
+    try {
+      state.loading = true;
+
+      param.ID_REQUISICAO_COMPRA = props.idRequisicaoCompra;
+
+      const data = await serviceRequisicaoCompra.insertProduto(param);
+
+      Swal.fire({
+        icon: "success",
+        title: data.msg,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      emits("adicionarProduto");
+
+      actions.closeModal();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Ocorreu um erro ao adicionar o item.",
+        text: error.message,
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
 };
 
 onMounted(async () => {
@@ -239,6 +279,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
     <ModalInformarQtdProduto
       @closeModal="state.modalInformarQtdProdutoOpened = false"
       :produto="state.dbProdutoSelecionado"
+      @insertProduto="actions.insertProduto"
     />
   </v-dialog>
 

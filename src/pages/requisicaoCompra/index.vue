@@ -274,7 +274,9 @@ onUnmounted(() => {
       <ModalNovoItem
         :carros="state.dbCarros"
         :marcas="state.dbMarcas"
+        :idRequisicaoCompra="state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA"
         @closeModal="state.modalNovoItemOpened = false"
+        @adicionarProduto="actions.adicionarProduto"
       />
     </v-dialog>
 

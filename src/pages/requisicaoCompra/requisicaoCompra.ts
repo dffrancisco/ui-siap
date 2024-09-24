@@ -66,6 +66,10 @@ export const actions = {
         }
     },
 
+    async adicionarProduto(produto: iRequisicaoItem) {
+
+    },
+
     async getDadosToSelectProduto() {
         try {
             state.loading = true;
