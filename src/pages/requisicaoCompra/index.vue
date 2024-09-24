@@ -7,7 +7,7 @@ import { onMounted, onUnmounted } from "vue";
 import ModalLocalizarRequisicao from "./components/ModalLocalizarRequisicao.vue";
 import moment from "moment";
 import ModalNovoItem from "./components/ModalNovoItem.vue";
-import ModalInformarEditarQtdProduto from "./components/ModalInformarEditarQtdProduto.vue";
+import ModalInformarEditarQtdItem from "./components/ModalInformarEditarQtdItem.vue";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (!state.modalLocalizarRequisicaoOpened && !state.modalNovaRequisicaoOpened && !state.modalNovoItemOpened) {
@@ -189,7 +189,7 @@ onUnmounted(() => {
                 <v-icon
                   style="cursor: pointer"
                   title="Alterar Item"
-                  @click="actions.openModalEditarQtdProduto(item)"
+                  @click="actions.openModalEditarQtdItem(item)"
                   :disabled="state.dbRequisicaoCompra.FINALIZADO == 'S'"
                   >mdi-pencil</v-icon
                 >
@@ -280,19 +280,19 @@ onUnmounted(() => {
         :carros="state.dbCarros"
         :marcas="state.dbMarcas"
         @closeModal="state.modalNovoItemOpened = false"
-        @openModalInformarQtdProduto="actions.openModalInformarQtdProduto"
+        @openModalInformarQtdItem="actions.openModalInformarQtdItem"
       />
     </v-dialog>
 
     <v-dialog
-      v-model="state.modalInformarQtdProdutoOpened"
+      v-model="state.modalInformarQtdItemOpened"
       :width="700"
     >
-      <ModalInformarEditarQtdProduto
-        @closeModal="state.modalInformarQtdProdutoOpened = false"
-        :produto="state.dbProdutoSelecionado"
-        @insertProduto="actions.insertProduto"
-        :produtoToEdit="state.dbProdutoToEdit"
+      <ModalInformarEditarQtdItem
+        @closeModal="state.modalInformarQtdItemOpened = false"
+        :item="state.dbItemSelecionado"
+        @insertItem="actions.insertItem"
+        :itemToEdit="state.dbItemToEdit"
       />
     </v-dialog>
 

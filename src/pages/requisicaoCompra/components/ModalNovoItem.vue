@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import serviceRequisicaoCompra from "../services/requisicaoCompra.service";
 import Swal from "sweetalert2";
-import { iCarros, iGetProdutosParam, iInsertProdutoParam, iMarcas, iProduto } from "../interfaces";
+import { iCarros, iGetProdutosParam, iMarcas } from "../interfaces";
 import { useEventListener } from "@vueuse/core";
 import produtoSemFotoImg from "../../../assets/sem_foto.jpg";
 
@@ -18,7 +18,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["closeModal", "openModalInformarQtdProduto"]);
+const emits = defineEmits(["closeModal", "openModalInformarQtdItem"]);
 
 const state = reactive({
   gridProdutos: <ixGridCreate>{},
@@ -81,8 +81,8 @@ const actions = {
           state.gridProdutos.querySourceAdd(data);
         },
       },
-      enter: actions.openModalInformarQtdProduto,
-      dblClick: actions.openModalInformarQtdProduto,
+      enter: actions.openModalInformarQtdItem,
+      dblClick: actions.openModalInformarQtdItem,
     });
   },
 
@@ -108,7 +108,7 @@ const actions = {
     });
   },
 
-  async openModalInformarQtdProduto() {
+  async openModalInformarQtdItem() {
     const produto = state.gridProdutos.dataSource();
 
     if (!produto) {
@@ -119,7 +119,7 @@ const actions = {
       return;
     }
 
-    emits("openModalInformarQtdProduto", produto);
+    emits("openModalInformarQtdItem", produto);
   },
 
   async getProdutos(param: iGetProdutosParam, offset: number) {
@@ -220,7 +220,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
         >
         <v-btn
           color="primary"
-          @click="actions.openModalInformarQtdProduto"
+          @click="actions.openModalInformarQtdItem"
           >selecionar</v-btn
         >
       </div>

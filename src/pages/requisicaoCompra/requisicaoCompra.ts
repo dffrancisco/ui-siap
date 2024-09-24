@@ -7,11 +7,11 @@ import {
     iFinalizarRequisicaoCompraParam,
     iGetRequisicaoCompraItensParam,
     iGetRequisicaoCompraParam,
-    iInsertProdutoParam,
+    iInsertItemParam,
     iInsertRequisicaoCompraParam,
     iMarcas,
     iProduto,
-    iProdutoToEdit,
+    iItemToEdit,
     iRequisicaoCompra,
     iRequisicaoItem
 } from "./interfaces";
@@ -25,13 +25,13 @@ export const state = reactive({
     dbRequisicaoItens: <iRequisicaoItem[]>[],
     dbMarcas: <iMarcas[]>[],
     dbCarros: <iCarros[]>[],
-    dbProdutoSelecionado: <iProduto>{},
-    dbProdutoToEdit: <iProdutoToEdit>{},
+    dbItemSelecionado: <iProduto>{},
+    dbItemToEdit: <iItemToEdit>{},
 
     modalNovaRequisicaoOpened: false,
     modalLocalizarRequisicaoOpened: false,
     modalNovoItemOpened: false,
-    modalInformarQtdProdutoOpened: false,
+    modalInformarQtdItemOpened: false,
 
     loading: false,
 })
@@ -86,24 +86,24 @@ export const actions = {
         }
     },
 
-    async openModalInformarQtdProduto(produto: iProduto) {
-        state.dbProdutoToEdit = null
+    async openModalInformarQtdItem(item: iProduto) {
+        state.dbItemToEdit = null
 
-        state.dbProdutoSelecionado = produto;
-        state.modalInformarQtdProdutoOpened = true;
+        state.dbItemSelecionado = item;
+        state.modalInformarQtdItemOpened = true;
     },
 
-    async openModalEditarQtdProduto(produto: iRequisicaoItem) {
-        state.dbProdutoToEdit = {
-            ID_REQUISICAO_COMPRA_ITEM: produto.ID_REQUISICAO_COMPRA_ITEM,
-            COD_PRODUTO: produto.COD_PRODUTO,
-            QTD: produto.QTD,
-            VALOR_UNITARIO: produto.VALOR_UNITARIO,
-            TOTAL: produto.TOTAL,
-            DESCRICAO: produto.DESCRICAO
+    async openModalEditarQtdItem(item: iRequisicaoItem) {
+        state.dbItemToEdit = {
+            ID_REQUISICAO_COMPRA_ITEM: item.ID_REQUISICAO_COMPRA_ITEM,
+            COD_PRODUTO: item.COD_PRODUTO,
+            QTD: item.QTD,
+            VALOR_UNITARIO: item.VALOR_UNITARIO,
+            TOTAL: item.TOTAL,
+            DESCRICAO: item.DESCRICAO
         }
 
-        state.modalInformarQtdProdutoOpened = true
+        state.modalInformarQtdItemOpened = true
     },
 
     async btnDeleteItem(item: iRequisicaoItem) {
@@ -267,13 +267,13 @@ export const actions = {
         }
     },
 
-    async insertProduto(param: iInsertProdutoParam) {
+    async insertItem(param: iInsertItemParam) {
         try {
             state.loading = true;
 
             param.ID_REQUISICAO_COMPRA = state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA;
 
-            const data = await requisicaoCompraService.insertProduto(param);
+            const data = await requisicaoCompraService.insertItem(param);
 
             Swal.fire({
                 icon: "success",

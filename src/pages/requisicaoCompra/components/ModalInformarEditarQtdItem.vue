@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref } from "vue";
-import { iInsertProdutoParam, iProduto, iProdutoToEdit } from "../interfaces";
+import { iInsertItemParam, iProduto, iItemToEdit } from "../interfaces";
 import utils from "@/ts/utils";
 import Swal from "sweetalert2";
 
 const props = defineProps({
-  produto: {
+  item: {
     type: Object as () => iProduto,
     required: true,
   },
-  produtoToEdit: {
-    type: Object as () => iProdutoToEdit | null,
+  itemToEdit: {
+    type: Object as () => iItemToEdit | null,
     default: null,
   },
 });
 
-const emits = defineEmits(["closeModal", "insertProduto"]);
+const emits = defineEmits(["closeModal", "insertItem"]);
 
 const state = reactive({
   inputQtdPedida: null,
   inputValorUnitario: "0",
-  dbProduto: <iProduto>{},
+  dbItem: <iProduto>{},
   inputValorUnitarioElement: <HTMLInputElement>null,
 });
 
@@ -30,14 +30,14 @@ const actions = {
 
     console.log(state.inputValorUnitarioElement.focus());
 
-    state.dbProduto = props.produto;
+    state.dbItem = props.item;
 
-    if (props.produtoToEdit) {
-      state.inputQtdPedida = props.produtoToEdit.QTD;
-      state.inputValorUnitario = utils.formatValor(props.produtoToEdit.VALOR_UNITARIO);
-      state.dbProduto = {
-        DESC_PRODUTO: props.produtoToEdit.DESCRICAO,
-        COD_PRODUTO: props.produtoToEdit.COD_PRODUTO,
+    if (props.itemToEdit) {
+      state.inputQtdPedida = props.itemToEdit.QTD;
+      state.inputValorUnitario = utils.formatValor(props.itemToEdit.VALOR_UNITARIO);
+      state.dbItem = {
+        DESC_PRODUTO: props.itemToEdit.DESCRICAO,
+        COD_PRODUTO: props.itemToEdit.COD_PRODUTO,
       };
     }
   },
@@ -66,16 +66,16 @@ const actions = {
       return;
     }
 
-    let param: iInsertProdutoParam = {
-      DESCRICAO: state.dbProduto.DESC_PRODUTO,
+    let param: iInsertItemParam = {
+      DESCRICAO: state.dbItem.DESC_PRODUTO,
       QTD: state.inputQtdPedida,
       VALOR_UNITARIO: valorUnitario,
       TOTAL: total,
-      COD_PRODUTO: state.dbProduto.COD_PRODUTO,
+      COD_PRODUTO: state.dbItem.COD_PRODUTO,
       ID_REQUISICAO_COMPRA: null,
     };
 
-    emits("insertProduto", param);
+    emits("insertItem", param);
 
     actions.closeModal();
   },
@@ -97,7 +97,7 @@ onMounted(async () => {
 
 <template>
   <v-card class="d-flex flex-grow-1 pa-4">
-    <v-card-title v-if="props.produtoToEdit">Editar Quantidade</v-card-title>
+    <v-card-title v-if="props.itemToEdit">Editar Quantidade</v-card-title>
     <v-card-title v-else>Informar Quantidade</v-card-title>
 
     <div class="mt-2">
@@ -107,7 +107,7 @@ onMounted(async () => {
             type="text"
             class="inputDisabled"
             label="Produto"
-            v-model="state.dbProduto.DESC_PRODUTO"
+            v-model="state.dbItem.DESC_PRODUTO"
             readonly
             :clearable="false"
           />
@@ -117,14 +117,14 @@ onMounted(async () => {
 
     <div class="mt-4">
       <v-row>
-        <v-col v-if="!props.produtoToEdit">
+        <v-col v-if="!props.itemToEdit">
           <v-text-field
             type="text"
             class="inputDisabled"
             label="Qtd. Atual"
             readonly
             :clearable="false"
-            v-model="state.dbProduto.QUANTIDADE"
+            v-model="state.dbItem.QUANTIDADE"
         /></v-col>
         <v-col>
           <v-text-field
