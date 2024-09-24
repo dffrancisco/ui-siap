@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import { actions, state } from "./requisicaoCompra";
+import { actions, computeds, state } from "./requisicaoCompra";
 import ModalNovaRequisicao from "./components/ModalNovaRequisicao.vue";
 import { useEventListener } from "@vueuse/core";
 import { onMounted, onUnmounted } from "vue";
 import ModalLocalizarRequisicao from "./components/ModalLocalizarRequisicao.vue";
 import moment from "moment";
 import ModalNovoItem from "./components/ModalNovoItem.vue";
-import ModalInformarQtdProduto from "./components/ModalInformarQtdProduto.vue";
+import ModalInformarEditarQtdProduto from "./components/ModalInformarEditarQtdProduto.vue";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (!state.modalLocalizarRequisicaoOpened && !state.modalNovaRequisicaoOpened && !state.modalNovoItemOpened) {
@@ -111,7 +111,7 @@ onUnmounted(() => {
                 <v-col>
                   <div class="d-flex flex-column">
                     <strong>Valor:</strong>
-                    <span>{{ utils.formatValor(state.dbRequisicaoCompra.VALOR) }}</span>
+                    <span>{{ utils.formatValor(computeds.totalizador.value) }}</span>
                   </div>
                 </v-col>
               </v-row>
@@ -182,11 +182,14 @@ onUnmounted(() => {
                 <v-icon
                   style="cursor: pointer"
                   title="Deletar Item"
+                  :disabled="state.dbRequisicaoCompra.FINALIZADO == 'S'"
                   >mdi-delete</v-icon
                 >
                 <v-icon
                   style="cursor: pointer"
                   title="Alterar Item"
+                  @click="actions.openModalEditarQtdProduto(item)"
+                  :disabled="state.dbRequisicaoCompra.FINALIZADO == 'S'"
                   >mdi-pencil</v-icon
                 >
               </div>
@@ -284,10 +287,11 @@ onUnmounted(() => {
       v-model="state.modalInformarQtdProdutoOpened"
       :width="700"
     >
-      <ModalInformarQtdProduto
+      <ModalInformarEditarQtdProduto
         @closeModal="state.modalInformarQtdProdutoOpened = false"
         :produto="state.dbProdutoSelecionado"
         @insertProduto="actions.insertProduto"
+        :produtoToEdit="state.dbProdutoToEdit"
       />
     </v-dialog>
 

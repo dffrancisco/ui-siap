@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref } from "vue";
-import { iInsertProdutoParam, iProduto } from "../interfaces";
+import { iInsertProdutoParam, iProduto, iProdutoToEdit } from "../interfaces";
 import utils from "@/ts/utils";
 import Swal from "sweetalert2";
 
@@ -9,6 +9,10 @@ const props = defineProps({
     type: Object as () => iProduto,
     required: true,
   },
+  produtoToEdit: {
+    type: Object as () => iProdutoToEdit | null,
+    default: null,
+  },
 });
 
 const emits = defineEmits(["closeModal", "insertProduto"]);
@@ -16,10 +20,22 @@ const emits = defineEmits(["closeModal", "insertProduto"]);
 const state = reactive({
   inputQtdPedida: 0,
   inputValorUnitario: "0",
+  dbProduto: <iProduto>{},
 });
 
 const actions = {
-  async init() {},
+  async init() {
+    state.dbProduto = props.produto;
+
+    if (props.produtoToEdit) {
+      state.inputQtdPedida = props.produtoToEdit.QTD;
+      state.inputValorUnitario = utils.formatValor(props.produtoToEdit.VALOR_UNITARIO);
+      state.dbProduto = {
+        DESC_PRODUTO: props.produtoToEdit.DESCRICAO,
+        COD_PRODUTO: props.produtoToEdit.COD_PRODUTO,
+      };
+    }
+  },
 
   async closeModal() {
     emits("closeModal");
@@ -46,11 +62,11 @@ const actions = {
     }
 
     let param: iInsertProdutoParam = {
-      DESCRICAO: props.produto.DESC_PRODUTO,
+      DESCRICAO: state.dbProduto.DESC_PRODUTO,
       QTD: state.inputQtdPedida,
       VALOR_UNITARIO: valorUnitario,
       TOTAL: total,
-      COD_PRODUTO: props.produto.COD_PRODUTO,
+      COD_PRODUTO: state.dbProduto.COD_PRODUTO,
       ID_REQUISICAO_COMPRA: null,
     };
 
@@ -76,14 +92,17 @@ onMounted(async () => {
 
 <template>
   <v-card class="d-flex flex-grow-1 pa-4">
-    <div>
+    <v-card-title v-if="props.produtoToEdit">Editar Quantidade</v-card-title>
+    <v-card-title v-else>Informar Quantidade</v-card-title>
+
+    <div class="mt-2">
       <v-row>
         <v-col>
           <v-text-field
             type="text"
             class="inputDisabled"
             label="Produto"
-            v-model="props.produto.DESC_PRODUTO"
+            v-model="state.dbProduto.DESC_PRODUTO"
             readonly
             :clearable="false"
           />
@@ -93,14 +112,15 @@ onMounted(async () => {
 
     <div class="mt-4">
       <v-row>
-        <v-col>
+        <v-col
+        v-if="!props.produtoToEdit">
           <v-text-field
             type="text"
             class="inputDisabled"
             label="Qtd. Atual"
             readonly
             :clearable="false"
-            v-model="props.produto.QUANTIDADE"
+            v-model="state.dbProduto.QUANTIDADE"
         /></v-col>
         <v-col>
           <v-text-field

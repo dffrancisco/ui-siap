@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import {
     iCarros,
     iDeleteRequisicaoCompraParam,
@@ -10,6 +10,7 @@ import {
     iInsertRequisicaoCompraParam,
     iMarcas,
     iProduto,
+    iProdutoToEdit,
     iRequisicaoCompra,
     iRequisicaoItem
 } from "./interfaces";
@@ -24,6 +25,7 @@ export const state = reactive({
     dbMarcas: <iMarcas[]>[],
     dbCarros: <iCarros[]>[],
     dbProdutoSelecionado: <iProduto>{},
+    dbProdutoToEdit: <iProdutoToEdit>{},
 
     modalNovaRequisicaoOpened: false,
     modalLocalizarRequisicaoOpened: false,
@@ -76,8 +78,23 @@ export const actions = {
     },
 
     async openModalInformarQtdProduto(produto: iProduto) {
+        state.dbProdutoToEdit = null
+
         state.dbProdutoSelecionado = produto;
         state.modalInformarQtdProdutoOpened = true;
+    },
+
+    async openModalEditarQtdProduto(produto: iRequisicaoItem) {
+        state.dbProdutoToEdit = {
+            ID_REQUISICAO_COMPRA_ITEM: produto.ID_REQUISICAO_COMPRA_ITEM,
+            COD_PRODUTO: produto.COD_PRODUTO,
+            QTD: produto.QTD,
+            VALOR_UNITARIO: produto.VALOR_UNITARIO,
+            TOTAL: produto.TOTAL,
+            DESCRICAO: produto.DESCRICAO
+        }
+
+        state.modalInformarQtdProdutoOpened = true
     },
 
     async getDadosToSelectProduto() {
@@ -179,7 +196,8 @@ export const actions = {
             state.loading = true;
 
             let param: iFinalizarRequisicaoCompraParam = {
-                ID_REQUISICAO_COMPRA: state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA
+                ID_REQUISICAO_COMPRA: state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA,
+                VALOR: state.dbRequisicaoCompra.VALOR
             }
 
             const data = await requisicaoCompraService.finalizarRequisicaoCompra(param);
@@ -263,4 +281,18 @@ export const actions = {
             state.loading = false;
         }
     },
+}
+
+export const computeds = {
+    totalizador: computed(() => {
+        if (state.dbRequisicaoItens.length > 0) {
+            let valorTotalItens = state.dbRequisicaoItens.reduce((total, item) => total + item.TOTAL, 0)
+
+            state.dbRequisicaoCompra.VALOR = valorTotalItens
+
+            return valorTotalItens
+        }
+
+        return 0
+    })
 }

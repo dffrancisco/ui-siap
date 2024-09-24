@@ -78,7 +78,8 @@ export interface iSuccessResponse {
 export interface iDeleteRequisicaoCompraResponse extends iSuccessResponse { }
 
 export interface iFinalizarRequisicaoCompraParam {
-    ID_REQUISICAO_COMPRA: number
+    ID_REQUISICAO_COMPRA: number,
+    VALOR: number
 }
 
 export interface iFinalizarRequisicaoCompraResponse extends iSuccessResponse {
@@ -110,10 +111,10 @@ export interface iGetProdutosParam {
 export interface iProduto {
     COD_PRODUTO: number,
     DESC_PRODUTO: string,
-    QUANTIDADE: number,
-    NUM_FABRICANTE: string,
-    FOTO: 'S' | 'N',
-    CARRO: string
+    QUANTIDADE?: number,
+    NUM_FABRICANTE?: string,
+    FOTO?: 'S' | 'N',
+    CARRO?: string
 }
 
 export interface iGetProdutosResponse extends iProduto {
@@ -137,3 +138,12 @@ export interface iGetRequisicaoCompraItensParam {
 }
 
 export interface iGetRequisicaoCompraItensResponse extends iRequisicaoItem { }
+
+export interface iProdutoToEdit {
+    ID_REQUISICAO_COMPRA_ITEM: number,
+    COD_PRODUTO: number,
+    QTD: number,
+    VALOR_UNITARIO: number,
+    TOTAL: number,
+    DESCRICAO: string
+}
