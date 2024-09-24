@@ -12,7 +12,6 @@ export interface iRequisicaoCompra {
 
 export interface iRequisicaoItem {
     ID_REQUISICAO_COMPRA_ITEM: number;
-    ID_REQUISICAO_COMPRA: number;
     COD_PRODUTO?: number;
     QTD: number;
     VALOR_UNITARIO: number;
@@ -132,3 +131,9 @@ export interface iInsertProdutoParam {
 export interface iInsertProdutoResponse extends iSuccessResponse {
     idRequisicaoCompraItem: number
 }
+
+export interface iGetRequisicaoCompraItensParam {
+    ID_REQUISICAO_COMPRA: number
+}
+
+export interface iGetRequisicaoCompraItensResponse extends iRequisicaoItem { }

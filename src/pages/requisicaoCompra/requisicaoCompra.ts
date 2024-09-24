@@ -4,6 +4,7 @@ import {
     iDeleteRequisicaoCompraParam,
     iFavorecido,
     iFinalizarRequisicaoCompraParam,
+    iGetRequisicaoCompraItensParam,
     iGetRequisicaoCompraParam,
     iInsertRequisicaoCompraParam,
     iMarcas,
@@ -50,6 +51,7 @@ export const actions = {
 
     async selecionarRequisicaoCompra(requisicao: iRequisicaoCompra) {
         await actions.getRequisicaoCompra(requisicao.ID_REQUISICAO_COMPRA)
+        await actions.getRequisicaoComprasItensPorId()
 
         state.modalLocalizarRequisicaoOpened = false
     },
@@ -67,7 +69,7 @@ export const actions = {
     },
 
     async adicionarProduto(produto: iRequisicaoItem) {
-
+        await actions.getRequisicaoComprasItensPorId()
     },
 
     async getDadosToSelectProduto() {
@@ -196,6 +198,29 @@ export const actions = {
                 title: "Ocorreu um erro ao finalizar requisição de compra",
                 text: error.message
             });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getRequisicaoComprasItensPorId() {
+        try {
+            state.loading = true;
+
+            const param: iGetRequisicaoCompraItensParam = {
+                ID_REQUISICAO_COMPRA: state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA
+            }
+
+            const data = await requisicaoCompraService.getRequisicaoComprasItensPorId(param);
+
+            state.dbRequisicaoItens = data
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Ocorreu um erro ao buscar itens da requisição de compra",
+                text: error.message
+            });
+
         } finally {
             state.loading = false;
         }
