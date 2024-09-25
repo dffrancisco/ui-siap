@@ -229,6 +229,7 @@ onUnmounted(() => {
             v-else
             color="primary"
             :disabled="!state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA"
+            @click="actions.imprimirRequisicao"
             ><v-icon class="mr-2">mdi-printer mdi-24px</v-icon> imprimir</v-btn
           >
         </div>

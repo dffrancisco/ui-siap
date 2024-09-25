@@ -73,7 +73,7 @@ const actions = {
     if (props.itemNovoToEdit?.ID_REQUISICAO_COMPRA_ITEM) {
       const param: iUpdateItemNovoParam = {
         ID_REQUISICAO_COMPRA_ITEM: props.itemNovoToEdit.ID_REQUISICAO_COMPRA_ITEM,
-        DESCRICAO: state.dbItemNovo.DESCRICAO,
+        DESCRICAO: state.dbItemNovo.DESCRICAO.toUpperCase(),
         VALOR_UNITARIO: valorUnitario,
         QTD: state.dbItemNovo.QTD,
         TOTAL: total,
@@ -82,7 +82,7 @@ const actions = {
       emits("updateItemNovo", param);
     } else {
       const param: iInsertItemNovoParam = {
-        DESCRICAO: state.dbItemNovo.DESCRICAO,
+        DESCRICAO: state.dbItemNovo.DESCRICAO.toUpperCase(),
         VALOR_UNITARIO: valorUnitario,
         QTD: state.dbItemNovo.QTD,
         TOTAL: total,

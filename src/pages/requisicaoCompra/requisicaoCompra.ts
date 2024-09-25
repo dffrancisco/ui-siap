@@ -21,6 +21,7 @@ import moment from "moment";
 import requisicaoCompraService from "./services/requisicaoCompra.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
+import utils, { iColumnPrint } from "@/ts/utils";
 
 export const state = reactive({
     dbRequisicaoCompra: <iRequisicaoCompra>{},
@@ -132,6 +133,59 @@ export const actions = {
     async btnDeleteItem(item: iRequisicaoItem) {
         if (await msgConfirm('Confirmação', 'Deseja excluir este item?')) {
             await actions.deleteRequisicaoComprasItem(item.ID_REQUISICAO_COMPRA_ITEM);
+        }
+    },
+
+    getDadosImpresaoArquivo() {
+        let dadosToPrint = state.dbRequisicaoItens.map((item) => {
+            return {
+                DESCRICAO: item.DESCRICAO,
+                QTD: item.QTD
+            }
+        })
+
+        let columns: iColumnPrint[] = [
+            {
+                key: 'DESCRICAO',
+                label: "PRODUTO",
+                width: '80%',
+            },
+            {
+                key: 'QTD',
+                label: "QUANTIDADE",
+                width: '20%',
+                align: 'center',
+            },
+        ];
+
+        return { columns, dadosToPrint };
+    },
+
+    async imprimirRequisicao() {
+        let { dadosToPrint, columns } = actions.getDadosImpresaoArquivo();
+
+        let titulo = `
+        <div style="display: flex; justify-content: center; width: 100%; margin-top: 20px; margin-bottom: 20px">
+            <strong style="font-size: 20px">REQUISIÇÃO DE PEÇAS</strong>
+        </div>
+        `;
+
+        let footer = `
+        <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 50px">
+            <span>DATA DA SOLICITAÇÃO: ${utils.dataBrasil(state.dbRequisicaoCompra.DATA_HORA_FINALIZADO)}</span>
+            <span>EMPRESA SOLICITADA: ${state.dbRequisicaoCompra.NOME_FAVORECIDO}</span>
+            <span>SOLICITANTE: ${state.dbRequisicaoCompra.COD_FUNCIONARIO_FINALIZOU} - ${state.dbRequisicaoCompra.LOGIN_FUNCIONARIO_FINALIZOU}</span>
+            <span>ASSINATURA DO SOLICITANTE: <strong>_____________________________________________________</strong></span>
+        </div>`
+
+        try {
+            state.loading = true
+
+            await utils.printComCabecalho(columns, dadosToPrint, titulo, footer);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            state.loading = false
         }
     },
 
