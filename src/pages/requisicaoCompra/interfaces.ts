@@ -131,9 +131,7 @@ export interface iInsertOrUpdateItemParam {
     DESCRICAO: string,
 }
 
-export interface iInsertOrUpdateItemResponse extends iSuccessResponse {
-    idRequisicaoCompraItem: number
-}
+export interface iInsertOrUpdateItemResponse extends iSuccessResponse { }
 
 export interface iGetRequisicaoCompraItensParam {
     ID_REQUISICAO_COMPRA: number
@@ -162,10 +160,6 @@ export interface iItemNovo {
     DESCRICAO: string
 }
 
-export interface iItemNovoToEdit extends iItemNovo {
-    ID_REQUISICAO_COMPRA_ITEM: number
-}
-
 export interface iInsertItemNovoParam {
     ID_REQUISICAO_COMPRA?: number,
     DESCRICAO: string
@@ -175,6 +169,20 @@ export interface iInsertItemNovoParam {
 }
 
 export interface iUpdateItemNovoParam {
+    ID_REQUISICAO_COMPRA_ITEM: number,
+    DESCRICAO: string,
+    QTD: number,
+    VALOR_UNITARIO: number,
+    TOTAL: number,
+}
+
+export interface iInsertItemNovoResponse extends iSuccessResponse {
+    ID_REQUISICAO_COMPRA_ITEM: number
+}
+
+export interface iUpdateItemNovoResponse extends iSuccessResponse { }
+
+export interface iItemNovoToEdit {
     ID_REQUISICAO_COMPRA_ITEM: number,
     DESCRICAO: string,
     QTD: number,

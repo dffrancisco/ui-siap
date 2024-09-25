@@ -13,7 +13,9 @@ import {
     iProduto,
     iItemToEdit,
     iRequisicaoCompra,
-    iRequisicaoItem
+    iRequisicaoItem,
+    iInsertItemNovoParam,
+    iItemNovoToEdit
 } from "./interfaces";
 import moment from "moment";
 import requisicaoCompraService from "./services/requisicaoCompra.service";
@@ -27,12 +29,13 @@ export const state = reactive({
     dbCarros: <iCarros[]>[],
     dbItemSelecionado: <iProduto>{},
     dbItemToEdit: <iItemToEdit>{},
+    dbItemNovoToEdit: <iItemNovoToEdit>{},
 
     modalNovaRequisicaoOpened: false,
     modalLocalizarRequisicaoOpened: false,
     modalNovoItemOpened: false,
     modalInformarQtdItemOpened: false,
-    modalInserirItemSemCadastro: false,
+    modalInserirItemSemCadastroOpened: false,
 
     loading: false,
 })
@@ -94,17 +97,36 @@ export const actions = {
         state.modalInformarQtdItemOpened = true;
     },
 
-    async openModalEditarQtdItem(item: iRequisicaoItem) {
-        state.dbItemToEdit = {
-            ID_REQUISICAO_COMPRA_ITEM: item.ID_REQUISICAO_COMPRA_ITEM,
-            COD_PRODUTO: item.COD_PRODUTO,
-            QTD: item.QTD,
-            VALOR_UNITARIO: item.VALOR_UNITARIO,
-            TOTAL: item.TOTAL,
-            DESCRICAO: item.DESCRICAO
+    async openModalInserirItemSemCadastro() {
+        state.dbItemNovoToEdit = null
+        state.modalInserirItemSemCadastroOpened = true
+    },
+
+    async openModalEditarItem(item: iRequisicaoItem) {
+        if (item.COD_PRODUTO) {
+            state.dbItemToEdit = {
+                ID_REQUISICAO_COMPRA_ITEM: item.ID_REQUISICAO_COMPRA_ITEM,
+                COD_PRODUTO: item.COD_PRODUTO,
+                QTD: item.QTD,
+                VALOR_UNITARIO: item.VALOR_UNITARIO,
+                TOTAL: item.TOTAL,
+                DESCRICAO: item.DESCRICAO
+            }
+
+            state.modalInformarQtdItemOpened = true
+
+            return
         }
 
-        state.modalInformarQtdItemOpened = true
+        state.dbItemNovoToEdit = {
+            DESCRICAO: item.DESCRICAO,
+            ID_REQUISICAO_COMPRA_ITEM: item.ID_REQUISICAO_COMPRA_ITEM,
+            QTD: item.QTD,
+            VALOR_UNITARIO: item.VALOR_UNITARIO,
+            TOTAL: item.TOTAL
+        }
+
+        state.modalInserirItemSemCadastroOpened = true
     },
 
     async btnDeleteItem(item: iRequisicaoItem) {
@@ -320,6 +342,61 @@ export const actions = {
                 title: "Ocorreu um erro ao excluir o item.",
                 text: error.message
             })
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async insertItemNovo(param: iInsertItemNovoParam) {
+        try {
+            state.loading = true;
+
+            param.ID_REQUISICAO_COMPRA = state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA;
+
+            const data = await requisicaoCompraService.insertItemNovo(param);
+
+            state.modalNovoItemOpened = false
+
+            if (data.success) {
+                state.dbRequisicaoItens.push({
+                    ...param,
+                    ID_REQUISICAO_COMPRA_ITEM: data.ID_REQUISICAO_COMPRA_ITEM
+                })
+            }
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Ocorreu um erro ao adicionar um novo item.",
+                text: error.message,
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async updateItemNovo(param: iItemToEdit) {
+        try {
+            state.loading = true;
+
+            const data = await requisicaoCompraService.updateItemNovo(param);
+
+            if (data.success) {
+                const itemIndex = state.dbRequisicaoItens.findIndex(
+                    (item: iRequisicaoItem) => item.ID_REQUISICAO_COMPRA_ITEM == param.ID_REQUISICAO_COMPRA_ITEM
+                )
+
+                if (itemIndex >= 0) {
+                    state.dbRequisicaoItens[itemIndex] = { ...param }
+                }
+            }
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Ocorreu um erro ao atualizar o item.",
+                text: error.message,
+            });
         } finally {
             state.loading = false;
         }

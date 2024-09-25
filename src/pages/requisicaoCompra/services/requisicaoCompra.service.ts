@@ -22,7 +22,11 @@ import {
     iInsertOrUpdateItemParam,
     iInsertOrUpdateItemResponse,
     iInsertRequisicaoCompraParam,
-    iInsertRequisicaoCompraResponse
+    iInsertRequisicaoCompraResponse,
+    iInsertItemNovoParam,
+    iInsertItemNovoResponse,
+    iUpdateItemNovoParam,
+    iUpdateItemNovoResponse
 } from "../interfaces";
 
 const caminho = "siap/requisicaoCompra"
@@ -47,6 +51,8 @@ type iGetRequisicaoCompraItensFunction = (param: iGetRequisicaoCompraItensParam)
     Promise<iGetRequisicaoCompraItensResponse[]>
 type iDeleteRequisicaoComprasItemFunction = (param: iDeleteRequisicaoComprasItemParam) =>
     Promise<iDeleteRequisicaoComprasItemResponse>
+type iInsertItemNovoFunction = (param: iInsertItemNovoParam) => Promise<iInsertItemNovoResponse>
+type iUpdateItemNovoFunction = (param: iUpdateItemNovoParam) => Promise<iUpdateItemNovoResponse>
 
 const getFavorecidos: iGetFavorecidosFunction = async (param, offset) => {
     let { data } = await axios.post(caminho, {
@@ -146,6 +152,22 @@ const deleteRequisicaoComprasItem: iDeleteRequisicaoComprasItemFunction = async 
     return data;
 }
 
+const insertItemNovo: iInsertItemNovoFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "insertItemNovo",
+        param
+    })
+    return data;
+}
+
+const updateItemNovo: iUpdateItemNovoFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "updateItemNovo",
+        param
+    })
+    return data;
+}
+
 export default {
     getFavorecidos,
     insertRequisicaoCompra,
@@ -159,4 +181,6 @@ export default {
     insertOrUpdateItem,
     getRequisicaoComprasItensPorId,
     deleteRequisicaoComprasItem,
+    insertItemNovo,
+    updateItemNovo,
 };

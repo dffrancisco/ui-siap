@@ -43,8 +43,12 @@ const actions = {
   },
 
   async btnSave() {
-    if (utils.validaOBR()) {
-      return false;
+    if (!state.dbItemNovo.DESCRICAO) {
+      Swal.fire({
+        icon: "warning",
+        text: "A descrição do item não pode estar em branco.",
+      });
+      return;
     }
 
     if (state.dbItemNovo.QTD <= 0) {
@@ -66,7 +70,7 @@ const actions = {
       return;
     }
 
-    if (props.itemNovoToEdit.ID_REQUISICAO_COMPRA_ITEM) {
+    if (props.itemNovoToEdit?.ID_REQUISICAO_COMPRA_ITEM) {
       const param: iUpdateItemNovoParam = {
         ID_REQUISICAO_COMPRA_ITEM: props.itemNovoToEdit.ID_REQUISICAO_COMPRA_ITEM,
         DESCRICAO: state.dbItemNovo.DESCRICAO,

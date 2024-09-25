@@ -16,7 +16,7 @@ const eventListener = useEventListener(document, "keydown", async (event) => {
     !state.modalNovaRequisicaoOpened &&
     !state.modalNovoItemOpened &&
     !state.modalInformarQtdItemOpened &&
-    !state.modalInserirItemSemCadastro
+    !state.modalInserirItemSemCadastroOpened
   ) {
     if (event.key === "F1") {
       state.modalLocalizarRequisicaoOpened = true;
@@ -196,7 +196,7 @@ onUnmounted(() => {
                 <v-icon
                   style="cursor: pointer"
                   title="Alterar Item"
-                  @click="actions.openModalEditarQtdItem(item)"
+                  @click="actions.openModalEditarItem(item)"
                   :disabled="state.dbRequisicaoCompra.FINALIZADO == 'S'"
                   >mdi-pencil</v-icon
                 >
@@ -288,7 +288,7 @@ onUnmounted(() => {
         :marcas="state.dbMarcas"
         @closeModal="state.modalNovoItemOpened = false"
         @openModalInformarQtdItem="actions.openModalInformarQtdItem"
-        @openModalInserirItemSemCadastro="state.modalInserirItemSemCadastro = true"
+        @openModalInserirItemSemCadastro="actions.openModalInserirItemSemCadastro"
       />
     </v-dialog>
 
@@ -305,10 +305,15 @@ onUnmounted(() => {
     </v-dialog>
 
     <v-dialog
-      v-model="state.modalInserirItemSemCadastro"
+      v-model="state.modalInserirItemSemCadastroOpened"
       :width="700"
     >
-      <ModalInserirItemSemCadastro @closeModal="state.modalInserirItemSemCadastro = false" />
+      <ModalInserirItemSemCadastro
+        :itemNovoToEdit="state.dbItemNovoToEdit"
+        @insertItemNovo="actions.insertItemNovo"
+        @updateItemNovo="actions.updateItemNovo"
+        @closeModal="state.modalInserirItemSemCadastroOpened = false"
+      />
     </v-dialog>
 
     <v-overlay
