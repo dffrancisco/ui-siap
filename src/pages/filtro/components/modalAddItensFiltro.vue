@@ -280,11 +280,15 @@ onUnmounted(() => {
           item-value="ID_CARRO"
           autocomplete="off"
           max-width="160px"
-          :clearable="true"
+          :clearable="false"
           multiple
+          closable-chips
           chips
           v-model="stateModalAddItensFiltro.carroSelecionado"
-          :menu-props="{ maxHeight: '300px', maxWidth: '160px', teleport: 'body', closeOnContentClick: false }"
+          :menu-props="{
+            maxHeight: '300px',
+            maxWidth: '180px',
+          }"
         >
         </v-autocomplete>
         <v-autocomplete
@@ -296,15 +300,14 @@ onUnmounted(() => {
           :items="stateModalAddItensFiltro.marcas"
           item-title="DESCRICAO"
           item-value="ID_MARCA"
-          :clearable="true"
+          :clearable="false"
+          closable-chips
           multiple
           chips
           v-model="stateModalAddItensFiltro.marcaSelecionada"
           :menu-props="{
             maxHeight: '300px',
-            maxWidth: '160px',
-            teleport: 'body',
-            closeOnContentClick: false,
+            maxWidth: '180px',
           }"
         ></v-autocomplete>
         <v-text-field
@@ -439,8 +442,11 @@ onUnmounted(() => {
 .carros,
 .marcas {
   max-height: 50px;
-  overflow-y: auto;
-  white-space: nowrap;
+  /* overflow-y: auto; */
+  flex-wrap: nowrap;
+  /* overflow-x: scroll; */
+  overflow: auto;
+  white-space: nowrap !important;
 }
 
 .chip-selecionado {
