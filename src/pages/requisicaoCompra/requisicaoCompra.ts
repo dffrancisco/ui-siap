@@ -274,14 +274,7 @@ export const actions = {
 
             param.ID_REQUISICAO_COMPRA = state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA;
 
-            const data = await requisicaoCompraService.insertOrUpdateItem(param);
-
-            Swal.fire({
-                icon: "success",
-                title: data.msg,
-                showConfirmButton: false,
-                timer: 1500,
-            });
+            await requisicaoCompraService.insertOrUpdateItem(param);
 
             state.modalNovoItemOpened = false
 

@@ -180,5 +180,4 @@ export interface iUpdateItemNovoParam {
     QTD: number,
     VALOR_UNITARIO: number,
     TOTAL: number,
-    ID_REQUISICAO_COMPRA?: number,
 }

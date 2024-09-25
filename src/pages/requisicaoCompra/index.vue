@@ -11,7 +11,13 @@ import ModalInformarEditarQtdItem from "./components/ModalInformarEditarQtdItem.
 import ModalInserirItemSemCadastro from "./components/ModalInserirItemSemCadastro.vue";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
-  if (!state.modalLocalizarRequisicaoOpened && !state.modalNovaRequisicaoOpened && !state.modalNovoItemOpened) {
+  if (
+    !state.modalLocalizarRequisicaoOpened &&
+    !state.modalNovaRequisicaoOpened &&
+    !state.modalNovoItemOpened &&
+    !state.modalInformarQtdItemOpened &&
+    !state.modalInserirItemSemCadastro
+  ) {
     if (event.key === "F1") {
       state.modalLocalizarRequisicaoOpened = true;
       event.preventDefault();
