@@ -15,7 +15,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["closeModal", "insertItem "]);
+const emits = defineEmits(["closeModal", "insertItem"]);
 
 const state = reactive({
   inputQtdPedida: null,
@@ -72,7 +72,7 @@ const actions = {
       COD_PRODUTO: state.dbItem.COD_PRODUTO,
     };
 
-    emits("insertItem ", param);
+    emits("insertItem", param);
 
     actions.closeModal();
   },
