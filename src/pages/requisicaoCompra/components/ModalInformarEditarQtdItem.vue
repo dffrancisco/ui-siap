@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive } from "vue";
-import { iInsertItemParam, iProduto, iItemToEdit } from "../interfaces";
+import { iInsertOrUpdateItemParam, iProduto, iItemToEdit } from "../interfaces";
 import utils from "@/ts/utils";
 import Swal from "sweetalert2";
 
@@ -15,7 +15,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["closeModal", "insertItem"]);
+const emits = defineEmits(["closeModal", "insertOrUpdateItem"]);
 
 const state = reactive({
   inputQtdPedida: null,
@@ -64,7 +64,7 @@ const actions = {
       return;
     }
 
-    let param: iInsertItemParam = {
+    let param: iInsertOrUpdateItemParam = {
       DESCRICAO: state.dbItem.DESC_PRODUTO,
       QTD: state.inputQtdPedida,
       VALOR_UNITARIO: valorUnitario,
@@ -72,7 +72,7 @@ const actions = {
       COD_PRODUTO: state.dbItem.COD_PRODUTO,
     };
 
-    emits("insertItem", param);
+    emits("insertOrUpdateItem", param);
 
     actions.closeModal();
   },

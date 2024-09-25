@@ -293,7 +293,7 @@ onUnmounted(() => {
       <ModalInformarEditarQtdItem
         @closeModal="state.modalInformarQtdItemOpened = false"
         :item="state.dbItemSelecionado"
-        @insertItem="actions.insertItem"
+        @insertOrUpdateItem="actions.insertOrUpdateItem"
         :itemToEdit="state.dbItemToEdit"
       />
     </v-dialog>

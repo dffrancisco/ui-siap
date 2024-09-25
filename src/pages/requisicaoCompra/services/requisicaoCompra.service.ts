@@ -19,8 +19,8 @@ import {
     iGetRequisicaoCompraResponse,
     iGetRequisicoesComprasParam,
     iGetRequisicoesComprasResponse,
-    iInsertItemParam,
-    iInsertItemResponse,
+    iInsertOrUpdateItemParam,
+    iInsertOrUpdateItemResponse,
     iInsertRequisicaoCompraParam,
     iInsertRequisicaoCompraResponse
 } from "../interfaces";
@@ -42,7 +42,7 @@ type iFinalizarRequisicaoCompraFunction = (param: iFinalizarRequisicaoCompraPara
     Promise<iFinalizarRequisicaoCompraResponse>
 type iGetDadosToSelectProduto = () => Promise<iGetDadosToSelectProdutoResponse>
 type iGetProdutosFunction = (param: iGetProdutosParam, offset: number) => Promise<iGetProdutosResponse>
-type iInsertItemFunction = (param: iInsertItemParam) => Promise<iInsertItemResponse>
+type iInsertOrUpdateItemFunction = (param: iInsertOrUpdateItemParam) => Promise<iInsertOrUpdateItemResponse>
 type iGetRequisicaoCompraItensFunction = (param: iGetRequisicaoCompraItensParam) =>
     Promise<iGetRequisicaoCompraItensResponse[]>
 type iDeleteRequisicaoComprasItemFunction = (param: iDeleteRequisicaoComprasItemParam) =>
@@ -122,9 +122,9 @@ const getProdutos: iGetProdutosFunction = async (param, offset) => {
     return data;
 }
 
-const insertItem: iInsertItemFunction = async (param) => {
+const insertOrUpdateItem: iInsertOrUpdateItemFunction = async (param) => {
     let { data } = await axios.post(caminho, {
-        call: "insertItem",
+        call: "insertOrUpdateItem",
         param
     })
     return data;
@@ -156,7 +156,7 @@ export default {
     finalizarRequisicaoCompra,
     getDadosToSelectProduto,
     getProdutos,
-    insertItem,
+    insertOrUpdateItem,
     getRequisicaoComprasItensPorId,
     deleteRequisicaoComprasItem,
 };

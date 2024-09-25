@@ -122,7 +122,7 @@ export interface iProduto {
 export interface iGetProdutosResponse extends iProduto {
 }
 
-export interface iInsertItemParam {
+export interface iInsertOrUpdateItemParam {
     ID_REQUISICAO_COMPRA?: number,
     COD_PRODUTO: number,
     QTD: number,
@@ -131,7 +131,7 @@ export interface iInsertItemParam {
     DESCRICAO: string,
 }
 
-export interface iInsertItemResponse extends iSuccessResponse {
+export interface iInsertOrUpdateItemResponse extends iSuccessResponse {
     idRequisicaoCompraItem: number
 }
 

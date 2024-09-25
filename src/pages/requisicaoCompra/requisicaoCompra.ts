@@ -7,7 +7,7 @@ import {
     iFinalizarRequisicaoCompraParam,
     iGetRequisicaoCompraItensParam,
     iGetRequisicaoCompraParam,
-    iInsertItemParam,
+    iInsertOrUpdateItemParam,
     iInsertRequisicaoCompraParam,
     iMarcas,
     iProduto,
@@ -268,13 +268,13 @@ export const actions = {
         }
     },
 
-    async insertItem(param: iInsertItemParam) {
+    async insertOrUpdateItem(param: iInsertOrUpdateItemParam) {
         try {
             state.loading = true;
 
             param.ID_REQUISICAO_COMPRA = state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA;
 
-            const data = await requisicaoCompraService.insertItem(param);
+            const data = await requisicaoCompraService.insertOrUpdateItem(param);
 
             Swal.fire({
                 icon: "success",
