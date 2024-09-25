@@ -1,5 +1,3 @@
-import { ex } from "@fullcalendar/core/internal-common";
-
 export interface iRequisicaoCompra {
     NOME_FAVORECIDO: string;
     DATA_HORA_CRIACAO: string;
