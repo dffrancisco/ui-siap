@@ -60,6 +60,8 @@ export const state = reactive(({
     itensComErro: <iItemComErro[]>[],
     historicoErro: false,
     isAlteracao: false,
+    menuConfigOpened: false,
+    verTodosOsItens: false
 }))
 
 setInterval(async () => {
@@ -111,6 +113,8 @@ export const actions = {
 
         state.historicoMesesVenda = [...historicoMesesDefault]
         state.historicoMesesCompra = [...historicoMesesDefault]
+
+        state.verTodosOsItens = JSON.parse(localStorage.getItem('verTodosOsItens'))
 
         state.loading = true;
 
@@ -223,6 +227,8 @@ export const actions = {
         if (!param.ID_MARCA) {
             return swalDarkWarning('É necessário informar a marca');
         }
+
+        param.VER_TODOS_OS_ITENS = state.verTodosOsItens
 
         state.loading = true;
         state.indexProdutoSelecionado = 0;
@@ -586,6 +592,14 @@ export const actions = {
         if (indexFilaItem != -1) {
             state.filaItens[indexFilaItem].TENTATIVAS = 0;
         }
+    },
+
+    async btnVerTodosOsItens() {
+        state.verTodosOsItens = !state.verTodosOsItens
+
+        localStorage.setItem('verTodosOsItens', JSON.stringify(state.verTodosOsItens))
+
+        await actions.buscarProdutos({ ID_MARCA: state.edtMarca })
     }
 }
 
