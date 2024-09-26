@@ -132,7 +132,7 @@ const emit = defineEmits([
   <v-container>
     <v-card
       class="pa-2"
-      style="width: 900px; height: 505px; margin: 0 auto"
+      style="width: 900px; height: 510px; margin: 0 auto"
     >
       <v-card-text>
         <div style="display: flex">
@@ -189,7 +189,7 @@ const emit = defineEmits([
             </v-alert>
           </template>
         </v-data-table>
-        <div style="margin-left: 72%; margin-top: -45px">
+        <div style="margin-left: 72%; margin-top: -5px">
           <v-btn
             variant="outlined"
             color="primary"

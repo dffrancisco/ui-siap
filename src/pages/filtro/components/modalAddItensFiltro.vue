@@ -34,8 +34,8 @@ const stateModalAddItensFiltro = reactive({
   idFiltro: null,
   funcionarioSelecionado: null,
   carros: <iCarros[]>[],
-  carroSelecionado: <iCarros[]>[],
-  marcaSelecionada: <iMarcas[]>[],
+  carroSelecionado: null,
+  marcaSelecionada: null,
   marcas: <iMarcas[]>[],
   dadosRetornadosDaPesquisa: <iResultPesquisa[]>[],
   produtosSelecionados: <number[]>[],
@@ -104,8 +104,8 @@ const actions = {
     stateModalAddItensFiltro.search = "";
     stateModalAddItensFiltro.nomeFiltro = "";
     stateModalAddItensFiltro.funcionarioSelecionado = "";
-    stateModalAddItensFiltro.carroSelecionado = [];
-    stateModalAddItensFiltro.marcaSelecionada = [];
+    stateModalAddItensFiltro.carroSelecionado = null;
+    stateModalAddItensFiltro.marcaSelecionada = null;
     stateModalAddItensFiltro.dadosRetornadosDaPesquisa = [];
     stateModalAddItensFiltro.produtosSelecionados = [];
   },
@@ -268,7 +268,7 @@ onUnmounted(() => {
   <v-container>
     <v-card
       class="pa-5"
-      style="width: 940px; height: 515px; margin: 0 auto"
+      style="width: 940px; height: 525px; margin: 0 auto"
     >
       <div style="display: flex; gap: 10px; padding-bottom: 10px">
         <v-autocomplete
@@ -280,10 +280,7 @@ onUnmounted(() => {
           item-value="ID_CARRO"
           autocomplete="off"
           max-width="160px"
-          :clearable="false"
-          multiple
-          closable-chips
-          chips
+          :clearable="true"
           v-model="stateModalAddItensFiltro.carroSelecionado"
           :menu-props="{
             maxHeight: '300px',
@@ -300,10 +297,7 @@ onUnmounted(() => {
           :items="stateModalAddItensFiltro.marcas"
           item-title="DESCRICAO"
           item-value="ID_MARCA"
-          :clearable="false"
-          closable-chips
-          multiple
-          chips
+          :clearable="true"
           v-model="stateModalAddItensFiltro.marcaSelecionada"
           :menu-props="{
             maxHeight: '300px',
@@ -356,7 +350,7 @@ onUnmounted(() => {
             :headers="stateModalAddItensFiltro.headers"
             items-per-page-text="Itens por página"
             items-per-page="50"
-            height="350"
+            height="360"
             fixed-header
             :items="itensFiltrados"
             item-key="COD_PRODUTO"
@@ -380,7 +374,7 @@ onUnmounted(() => {
 
         <div
           class="d-flex justify-start pa-2 btns"
-          style="margin-top: -65px"
+          style="margin-top: -25px"
           ><v-chip
             :class="{
               'chip-selecionado': stateModalAddItensFiltro.chipSelecionado,
@@ -393,7 +387,7 @@ onUnmounted(() => {
 
         <div
           class="d-flex justify-end pa-2 btns"
-          style="margin-top: -45px"
+          style="margin-top: -50px; margin-bottom: 10px"
         >
           <v-btn
             variant="outlined"
@@ -439,16 +433,6 @@ onUnmounted(() => {
 </style>
 
 <style scoped>
-.carros,
-.marcas {
-  max-height: 50px;
-  /* overflow-y: auto; */
-  flex-wrap: nowrap;
-  /* overflow-x: scroll; */
-  overflow: auto;
-  white-space: nowrap !important;
-}
-
 .chip-selecionado {
   border: 2px solid green;
 }

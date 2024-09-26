@@ -1,12 +1,8 @@
 import axios from "axios";
-import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iInsertOuUpdate, iMarcas, iParamFiltrar, iResultPesquisa, iUpdateNomeFiltro } from "../interfaces";
+import { iDadosFiltro, iInsertOuUpdate, iParamFiltrar, iParamFiltros, iResponseDadosParaFiltros, iResponseFiltros, iResultPesquisa, iUpdateNomeFiltro } from "../interfaces";
 
 const caminho = 'siap/filtro'
-
-type iGetFuncionarios = () => Promise<iFuncionario[]>
-type iGetMarcas = () => Promise<iMarcas[]>
-type iGetCarros = () => Promise<iCarros[]>
-type iGetFiltros = () => Promise<iFiltros[]>
+type iGetFiltros = (param: iParamFiltros) => Promise<iResponseFiltros>
 type iGetDadosParaFiltragem = (param: iParamFiltrar) => Promise<iResultPesquisa[]>
 type iGetDadosFiltroSelecionado = (param: number) => Promise<iDadosFiltro[]>
 type iUpdateFiltro = (param: iInsertOuUpdate) => Promise<string[]>
@@ -14,35 +10,20 @@ type iInsertFiltro = (param: iInsertOuUpdate) => Promise<string[]>
 type iFinalizarFiltro = (param: number) => Promise<string[]>
 type iDeletarItem = (param: number) => Promise<string[]>
 type iFunctionUpdateNomeFiltro = (param: iUpdateNomeFiltro) => Promise<string[]>
+type iGetDadosParaFiltros = () => Promise<iResponseDadosParaFiltros>
 
-
-const getFuncionarios: iGetFuncionarios = async () => {
+const getDadosParaFiltros: iGetDadosParaFiltros = async () => {
     let { data } = await axios.post(caminho, {
-        call: "getFuncionarios",
+        call: "getDadosParaFiltros"
     });
 
     return data;
 }
 
-const getMarcas: iGetMarcas = async () => {
+const getFiltros: iGetFiltros = async (param) => {
     let { data } = await axios.post(caminho, {
-        call: "getMarcas",
-    });
-
-    return data;
-}
-
-const getCarros: iGetCarros = async () => {
-    let { data } = await axios.post(caminho, {
-        call: "getCarros"
-    });
-
-    return data;
-}
-
-const getFiltros: iGetFiltros = async () => {
-    let { data } = await axios.post(caminho, {
-        call: "getFiltros"
+        call: "getFiltros",
+        param
     });
 
     return data;
@@ -121,10 +102,8 @@ const updateConferenteNomeFiltro: iFunctionUpdateNomeFiltro = async (param) => {
 }
 
 export default {
-    getFuncionarios,
-    getMarcas,
-    getCarros,
     getFiltros,
+    getDadosParaFiltros,
     getFiltroSelected,
     getDadosParaFiltragem,
     atualizarFiltro,

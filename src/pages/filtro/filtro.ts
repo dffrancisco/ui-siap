@@ -1,11 +1,14 @@
 import utils, { iColumnPrint, msgConfirmSemCodigo } from '@/ts/utils';
 import Swal from "sweetalert2";
-import { computed, reactive } from "vue";
+import { reactive } from "vue";
 import serviceFiltro from './services/filtro.service';
-import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iMarcas, iUpdateNomeFiltro } from "./interfaces";
+import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iMarcas, iResponseDadosParaFiltros, iUpdateNomeFiltro } from "./interfaces";
 import { msgConfirm } from '@/ts/message';
 
 export const state = reactive({
+    itensPerPage: 30,
+    page: 1,
+    totalItems: 0,
     loading: false,
     filtros: <iFiltros[]>[],
     selectedFiltro: null,
@@ -64,49 +67,10 @@ export const state = reactive({
     ]
 })
 
-export const computeds = {
-    filtros: computed(() => {
-        const searchFiltro = state.searchFiltro?.toLowerCase().trim() || '';
-        const selectedStatus = state.selectedStatus;
-
-        // Se não houver termo de busca, retorne todos os filtros
-        let filteredItems = state.filtros;
-
-        if (searchFiltro) {
-            filteredItems = filteredItems.filter(filtro => {
-                const nomeFiltro = filtro.NOME_FILTRO ? filtro.NOME_FILTRO.toLowerCase() : '';
-                const criador = filtro.CRIADOR ? filtro.CRIADOR.toLowerCase() : '';
-                const conferente = filtro.CONFERENTE ? filtro.CONFERENTE.toLowerCase() : '';
-                const dataInicio = filtro.DATA_INICIO ? new Date(filtro.DATA_INICIO).toLocaleDateString() : '';
-                const dataFim = filtro.DATA_FIM ? new Date(filtro.DATA_FIM).toLocaleDateString() : '';
-
-                return (
-                    nomeFiltro.includes(searchFiltro) ||
-                    criador.includes(searchFiltro) ||
-                    conferente.includes(searchFiltro) ||
-                    dataInicio.includes(searchFiltro) ||
-                    dataFim.includes(searchFiltro)
-                );
-            });
-        }
-
-        // Aplica o filtro de status
-        if (selectedStatus === 'Finalizado') {
-            filteredItems = filteredItems.filter(filtro => filtro.DATA_FIM !== null);
-        } else if (selectedStatus === 'Em Andamento') {
-            filteredItems = filteredItems.filter(filtro => filtro.DATA_FIM === null);
-        } else if (selectedStatus === 'Todos') {
-            filteredItems = state.filtros
-        }
-
-        return filteredItems;
-    }),
-};
-
-
 export const actions = {
     async init() {
         actions.getFiltros()
+        actions.getDadosParaFiltros()
     },
 
     async selectFiltro(idFiltro: number) {
@@ -131,8 +95,16 @@ export const actions = {
     async getFiltros() {
         try {
             state.loading = true;
-            const filtros = await serviceFiltro.getFiltros()
-            state.filtros = filtros
+
+            const data = await serviceFiltro.getFiltros({
+                page: state.page,
+                itensPerPage: state.itensPerPage,
+                search: state.searchFiltro,
+                status: state.selectedStatus,
+            });
+
+            state.filtros = data.filtros;
+            state.totalItems = data.totalFiltros;
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -143,42 +115,23 @@ export const actions = {
         }
     },
 
-    async getFuncionarios() {
-        try {
-            state.loading = true;
-            state.funcionarios = await serviceFiltro.getFuncionarios();
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao buscar os funcionarios!"
-            });
-        } finally {
-            state.loading = false;
-        }
+    updatePage(newPage: number) {
+        state.page = newPage;
+        actions.getFiltros();
     },
 
-    async getMarcas() {
+    async getDadosParaFiltros() {
         try {
             state.loading = true;
-            state.marcas = await serviceFiltro.getMarcas();
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao buscar as marcas!"
-            });
-        } finally {
-            state.loading = false;
-        }
-    },
+            let data = await serviceFiltro.getDadosParaFiltros() as iResponseDadosParaFiltros;
 
-    async getCarros() {
-        try {
-            state.loading = true;
-            state.carros = await serviceFiltro.getCarros();
+            state.marcas = data.marcas
+            state.carros = data.carros
+            state.funcionarios = data.funcionarios
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao buscar os carros!"
+                text: "Erro ao buscar os dados!"
             });
         } finally {
             state.loading = false;
@@ -244,7 +197,6 @@ export const actions = {
                 { key: 'END_ESTOQUE', label: 'End. Estoque', width: '15%', align: 'right' },
                 { key: 'END_EXCESSO', label: 'End. Excesso', width: '15%', align: 'right' },
                 { key: 'CONFERIDO', label: 'Conferido', width: '10%', align: 'center' }
-
             ];
 
             const titulo = `
@@ -280,9 +232,6 @@ export const actions = {
     },
 
     async novoFiltro() {
-        if (state.funcionarios.length === 0) {
-            await actions.getFuncionarios();
-        }
         state.filtroEditar = []
         state.idFiltro = null;
         state.modalNovoFiltroOpened = true;
@@ -357,14 +306,6 @@ export const actions = {
     },
 
     async addItensFiltro(idFiltro: number, conferente: number | string, nomeFiltro: string, nomeConferente: string) {
-        if (state.marcas.length === 0) {
-            await actions.getMarcas();
-        }
-
-        if (state.carros.length === 0) {
-            await actions.getCarros();
-        }
-
         state.idFiltro = idFiltro
         state.conferente = conferente;
         state.nomeNovoFiltro = nomeFiltro;
@@ -425,9 +366,6 @@ export const actions = {
 
     async editarDadosFiltroSelecionado(filtro) {
         state.filtroEditar = filtro
-        if (state.funcionarios.length === 0) {
-            await actions.getFuncionarios();
-        }
         state.modalNovoFiltroOpened = true
     },
 

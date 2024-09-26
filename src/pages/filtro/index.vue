@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { actions, state, computeds } from "./filtro";
+import { actions, state } from "./filtro";
 import ModalAddItensFiltro from "./components/modalAddItensFiltro.vue";
 import ModalVisualizarFiltro from "./components/modalVisualizarFiltro.vue";
 import ModalNovoFiltro from "./components/modalNovoFiltro.vue";
@@ -24,9 +24,9 @@ onMounted(async () => {
           autocomplete="off"
           item-title="title"
           item-value="value"
-          :clearable="false"
+          :clearable="true"
+          @keypress.enter="actions.getFiltros()"
           v-model="state.searchFiltro"
-          append-inner-icon="mdi-magnify"
         ></v-text-field>
         <v-select
           id="status"
@@ -37,7 +37,18 @@ onMounted(async () => {
           style="margin-left: 15px"
           v-model="state.selectedStatus"
           :items="['Em Andamento', 'Finalizado', 'Todos']"
+          @update:modelValue="actions.getFiltros()"
         />
+        <div class="btnPesquisar">
+          <v-btn
+            color="primary"
+            icon="mdi-magnify"
+            size="36px"
+            class="ml-3"
+            @click="actions.getFiltros()"
+          >
+          </v-btn>
+        </div>
 
         <v-btn
           title="Novo"
@@ -49,15 +60,19 @@ onMounted(async () => {
         </v-btn>
       </div>
 
-      <v-data-table-virtual
+      <v-data-table-server
         class="tableFiltros"
         style="border-radius: 5px; padding-top: 20px"
         height="400"
+        items-per-page-text="Itens por página"
+        v-model:itemsPerPage="state.itensPerPage"
+        :items-length="state.totalItems"
         :headers="state.headers"
-        :items="computeds.filtros.value"
+        :items="state.filtros"
         fixed-header
         :loading="state.loading"
         :row-props="actions.getClassCorLinha"
+        @update:page="actions.updatePage"
       >
         <template v-slot:item.acoes="{ item }">
           <div style="display: flex">
@@ -110,7 +125,7 @@ onMounted(async () => {
             Não há dados disponíveis.
           </v-alert>
         </template>
-      </v-data-table-virtual>
+      </v-data-table-server>
 
       <div class="pt-6 btnPrint">
         <v-btn
@@ -192,6 +207,11 @@ onMounted(async () => {
   background-color: black;
 }
 
+.v-data-table-footer {
+  max-height: 2px;
+  padding-top: 20px;
+}
+
 .cor-zebrada-1 {
   background-color: #f0f0f0;
 }
@@ -207,7 +227,7 @@ onMounted(async () => {
 .btnPrint {
   display: flex;
   justify-content: flex-end;
-  margin-top: -10px;
+  margin-top: -30px;
 }
 
 .getFiltro {

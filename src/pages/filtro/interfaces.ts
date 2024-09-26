@@ -2,6 +2,8 @@ export interface iFuncionario {
     COD_FUNCIONARIO: number;
     CPF: string;
     CARGO: string;
+    DELETADO: string;
+    ID_CARGO: number;
     LOGIN: string;
     NOME_COMP: string;
 }
@@ -16,6 +18,17 @@ export interface iMarcas {
 export interface iCarros {
     DESCRICAO: string;
     ID_CARRO: number;
+}
+
+export interface iResponseDadosParaFiltros {
+    funcionarios: iFuncionario[];
+    marcas: iMarcas[];
+    carros: iCarros[];
+}
+
+export interface iResponseFiltros {
+    filtros: iFiltros[];
+    totalFiltros: number;
 }
 
 export interface iFiltros {
@@ -41,18 +54,17 @@ export interface iResultPesquisa {
     QUANTIDADE: number;
 }
 
+export interface iParamFiltros {
+    page: number;
+    itensPerPage: number;
+    search: string;
+    status: undefined | string;
+}
+
 export interface iParamFiltrar {
     search: string;
-    marca: {
-        ID_MARCA: number;
-        DESCRICAO: string;
-        GRUPO: string;
-        ID_MARCA_GRUPO: number;
-    }[];
-    carro: {
-        DESCRICAO: string;
-        ID_CARRO: number;
-    }[];
+    marca: number | null;
+    carro: number | null;
     endEstoque: string;
     numFabricante: string;
     descricaoProduto: string;
