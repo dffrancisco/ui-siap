@@ -234,20 +234,12 @@ export const actions = {
         state.indexProdutoSelecionado = 0;
         state.abaItens = 'nao_adicionados';
 
-        if (param.ID_MARCA != state.edtMarca) {
-            state.qtdItensMarca = 0;
-            let keyMarca = 'marca:' + state.edtMarca
-            state.qtdMaxItensVistosByMarca[keyMarca] = 1
-        }
-
         try {
             actions.buscarHistorico(param);
 
             const response = await comprasItensService.getProdutos(param)
 
-            if (state.qtdItensMarca == 0) {
-                state.qtdItensMarca = response.qtdItensMarca
-            }
+            state.qtdItensMarca = response.qtdItensMarca
 
             state.edtMarca = param.ID_MARCA;
             state.produtos = response.produtos;
@@ -600,6 +592,8 @@ export const actions = {
         localStorage.setItem('verTodosOsItens', JSON.stringify(state.verTodosOsItens))
 
         await actions.buscarProdutos({ ID_MARCA: state.edtMarca })
+
+        state.qtdMaxItensVistosByMarca = {}
     }
 }
 
