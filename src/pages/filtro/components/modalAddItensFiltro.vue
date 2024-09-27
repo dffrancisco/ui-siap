@@ -268,7 +268,7 @@ onUnmounted(() => {
   <v-container>
     <v-card
       class="pa-5"
-      style="width: 940px; height: 525px; margin: 0 auto"
+      style="width: 1020px; height: 525px; margin: 0 auto"
     >
       <div style="display: flex; gap: 10px; padding-bottom: 10px">
         <v-autocomplete
@@ -280,7 +280,7 @@ onUnmounted(() => {
           item-value="ID_CARRO"
           autocomplete="off"
           max-width="160px"
-          :clearable="true"
+          :clearable="false"
           v-model="stateModalAddItensFiltro.carroSelecionado"
           :menu-props="{
             maxHeight: '300px',
@@ -309,6 +309,7 @@ onUnmounted(() => {
           label="End. Estoque"
           class="endEstoque"
           autocomplete="off"
+          maxLength="25"
           item-title="title"
           item-value="value"
           :clearable="false"
@@ -321,6 +322,7 @@ onUnmounted(() => {
           class="numFabricante"
           autocomplete="off"
           label="Num. Fabricante"
+          maxLength="13"
           :clearable="false"
           @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.numFabricante"
@@ -331,6 +333,7 @@ onUnmounted(() => {
           class="descricaoProduto"
           autocomplete="off"
           label="Descrição"
+          maxLength="40"
           :clearable="false"
           @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.descricaoProduto"
