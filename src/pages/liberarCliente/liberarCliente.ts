@@ -397,14 +397,23 @@ export const actions = {
     },
 
     async updateCliente() {
+        let tipoFaturamento = state.tipoFaturamento === "Quinzenal" ? "Q" : "M"
+        let divideBoleto = state.dividirBoleto === "Sim" ? "S" : "N"
+
+        if (state.tipoCompra == 'Não Faturado') {
+            state.diaVencimento = null;
+            tipoFaturamento = ""
+            divideBoleto = ""
+        }
+
         let param = {
             idCliente: state.idCliente,
             tipoCompra: state.tipoCompra === "Faturado" ? 1 : 0,
             creditoLimiteAtual: state.creditoLimiteAtual,
             creditoLimiteNovo: parseFloat(state.creditoLimite.replace(/\./g, '').replace(',', '.')),
-            tipoFaturamento: state.tipoFaturamento === "Quinzenal" ? "Q" : "M",
-            divideBoleto: state.dividirBoleto === "Sim" ? "S" : "N",
-            diaVencimento: state.diaVencimento
+            diaVencimento: state.diaVencimento,
+            tipoFaturamento: tipoFaturamento,
+            divideBoleto: divideBoleto,
         }
 
         if (await msgConfirmSemCodigo("Confirmação", "Deseja alterar os dados do cliente?")) {
@@ -418,9 +427,7 @@ export const actions = {
                 })
 
                 const cliente = data.cliente[0];
-                setTimeout(() => {
-                    actions.popularInputs(cliente)
-                }, 500);
+                actions.popularInputs(cliente)
 
             } catch (error) {
                 Swal.fire({
