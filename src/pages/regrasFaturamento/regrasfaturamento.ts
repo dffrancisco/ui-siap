@@ -1,17 +1,17 @@
 import { reactive } from "vue";
 
 export const state = reactive({
-    prazoDiasDe: {
-
+    prazos: {
+        prazoDiasAte1: '0',
+        prazoDiasAte2: '0',
+        prazoDiasAte3: '0',
+        prazoDiasAcimaDe1: '0',
+        prazoDiasAcimaDe2: '0',
+        prazoDiasAcimaDe3: '0',
     },
-    prazoDiasAte: [
-        24, 39, 54
-    ],
     loading: false,
 })
 
 export const actions = {
-    teste(teste) {
-        state.prazoDiasAte = [teste]
-    }
+
 }

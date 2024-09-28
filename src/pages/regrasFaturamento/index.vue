@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import CardParcelamento from "./components/CardParcelamento.vue";
-import InputPrazoDias from "./components/InputPrazoDias.vue";
 import { actions, state } from "./regrasfaturamento";
 </script>
 
@@ -24,11 +23,32 @@ import { actions, state } from "./regrasfaturamento";
               <div class="mt-2">
                 <span> Prazo (Dias) </span>
                 <div class="mt-2 d-flex ga-4">
-                  <InputPrazoDias
-                    v-for="dia in state.prazoDiasAte"
-                    :prazo="dia"
-                    @update-prazo="actions.teste"
-                  />
+                  <div class="containerInputPrazo">
+                    <input
+                      v-model="state.prazos.prazoDiasAte1"
+                      :clearable="false"
+                      v-mask="'##'"
+                      maxlength="2"
+                    />
+                  </div>
+
+                  <div class="containerInputPrazo">
+                    <input
+                      v-model="state.prazos.prazoDiasAte2"
+                      :clearable="false"
+                      v-mask="'##'"
+                      maxlength="2"
+                    />
+                  </div>
+
+                  <div class="containerInputPrazo">
+                    <input
+                      v-model="state.prazos.prazoDiasAte3"
+                      :clearable="false"
+                      v-mask="'##'"
+                      maxlength="2"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -44,10 +64,33 @@ import { actions, state } from "./regrasfaturamento";
               <div class="mt-2">
                 <span> Prazo (Dias) </span>
                 <div class="mt-2 d-flex ga-4">
-                  <InputPrazoDias
-                    v-for="dia in state.prazoDiasDe"
-                    :prazo="dia"
-                  />
+                  <div class="containerInputPrazo">
+                    <input
+                      class="pa-2"
+                      v-model="state.prazos.prazoDiasAcimaDe1"
+                      :clearable="false"
+                      v-mask="'##'"
+                      maxlength="2"
+                    />
+                  </div>
+
+                  <div class="containerInputPrazo">
+                    <input
+                      v-model="state.prazos.prazoDiasAcimaDe2"
+                      :clearable="false"
+                      v-mask="'##'"
+                      maxlength="2"
+                    />
+                  </div>
+
+                  <div class="containerInputPrazo">
+                    <input
+                      v-model="state.prazos.prazoDiasAcimaDe3"
+                      :clearable="false"
+                      v-mask="'##'"
+                      maxlength="2"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -73,3 +116,19 @@ import { actions, state } from "./regrasfaturamento";
     <div id="pnCodigoTela">regrasFaturamento</div>
   </v-container>
 </template>
+
+<style scoped>
+.containerInputPrazo {
+  display: flex;
+  justify-content: center;
+  border-radius: 4px;
+  border: 1px solid gray;
+  width: 36px;
+}
+
+.containerInputPrazo input {
+  padding: 8px;
+  width: 30px;
+  text-align: center;
+}
+</style>
