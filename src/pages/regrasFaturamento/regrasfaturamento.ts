@@ -1,5 +1,7 @@
 import { reactive } from "vue";
 
+export const teste = true
+
 export const state = reactive({
     prazos: {
         prazoDiasAte1: '0',
@@ -10,6 +12,8 @@ export const state = reactive({
         prazoDiasAcimaDe3: '0',
     },
     loading: false,
+    btnAlterarActivated: false,
+    isReadonly: false,
 })
 
 export const actions = {

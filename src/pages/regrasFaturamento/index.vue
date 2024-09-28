@@ -18,6 +18,8 @@ import { actions, state } from "./regrasfaturamento";
               <v-text-field
                 v-mask-decimal.br="2"
                 label="Faturamento Até"
+                maxlength="15"
+                :disabled="!state.btnAlterarActivated"
               ></v-text-field>
 
               <div class="mt-2">
@@ -28,6 +30,7 @@ import { actions, state } from "./regrasfaturamento";
                       v-model="state.prazos.prazoDiasAte1"
                       :clearable="false"
                       v-mask="'##'"
+                      :disabled="!state.btnAlterarActivated"
                       maxlength="2"
                     />
                   </div>
@@ -38,6 +41,7 @@ import { actions, state } from "./regrasfaturamento";
                       :clearable="false"
                       v-mask="'##'"
                       maxlength="2"
+                      :disabled="!state.btnAlterarActivated"
                     />
                   </div>
 
@@ -47,6 +51,7 @@ import { actions, state } from "./regrasfaturamento";
                       :clearable="false"
                       v-mask="'##'"
                       maxlength="2"
+                      :disabled="!state.btnAlterarActivated"
                     />
                   </div>
                 </div>
@@ -59,6 +64,8 @@ import { actions, state } from "./regrasfaturamento";
               <v-text-field
                 v-mask-decimal.br="2"
                 label="Acima De"
+                maxlength="15"
+                :disabled="!state.btnAlterarActivated"
               ></v-text-field>
 
               <div class="mt-2">
@@ -71,6 +78,7 @@ import { actions, state } from "./regrasfaturamento";
                       :clearable="false"
                       v-mask="'##'"
                       maxlength="2"
+                      :disabled="!state.btnAlterarActivated"
                     />
                   </div>
 
@@ -80,6 +88,7 @@ import { actions, state } from "./regrasfaturamento";
                       :clearable="false"
                       v-mask="'##'"
                       maxlength="2"
+                      :disabled="!state.btnAlterarActivated"
                     />
                   </div>
 
@@ -89,6 +98,7 @@ import { actions, state } from "./regrasfaturamento";
                       :clearable="false"
                       v-mask="'##'"
                       maxlength="2"
+                      :disabled="!state.btnAlterarActivated"
                     />
                   </div>
                 </div>
@@ -105,12 +115,39 @@ import { actions, state } from "./regrasfaturamento";
             color="primary"
             size="20"
             icon="mdi-plus"
+            title="Novo parcelamento"
           ></v-btn>
         </div>
 
         <div class="mt-4">
           <CardParcelamento />
         </div>
+      </div>
+      <div class="mt-4 d-flex justify-center ga-4">
+        <v-btn
+          size="small"
+          color="primary"
+          :disabled="state.btnAlterarActivated"
+          @click="state.btnAlterarActivated = true"
+        >
+          Alterar
+        </v-btn>
+        <v-btn
+          size="small"
+          color="primary"
+          @click=""
+          :disabled="!state.btnAlterarActivated"
+        >
+          Salvar
+        </v-btn>
+        <v-btn
+          :disabled="!state.btnAlterarActivated"
+          size="small"
+          color="primary"
+          @click="state.btnAlterarActivated = false"
+        >
+          Cancelar
+        </v-btn>
       </div>
     </v-card>
     <div id="pnCodigoTela">regrasFaturamento</div>
