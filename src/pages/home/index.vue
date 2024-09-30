@@ -254,12 +254,6 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/requisicaoCompra')"
-              >Requisição Compra</v-btn
-            >
-
-            <v-btn
-              class="mr-4 mb-4"
               @click="router.push('/relatorioFaturamento')"
               >Relatorio Faturamento
             </v-btn>
@@ -269,6 +263,12 @@ import login from "../login/login";
               @click="router.push('/relatorioConferenciaAlteracoes')"
               >Relatório Conferência e Alterações
             </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/requisicaoCompra')"
+              >Requisição Compra</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
