@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import globalActions from "@/store/globalActions";
 import router from "../../router";
 
 import login from "../login/login";
 </script>
 
 <template>
+  <v-btn
+    @click="globalActions.toggleTheme()"
+    variant="text"
+    class="btnDark"
+    color="gray"
+    icon="mdi-theme-light-dark"
+  ></v-btn>
   <v-main>
     <v-container>
       <v-card
@@ -255,6 +263,12 @@ import login from "../login/login";
               @click="router.push('/relatorioConferenciaAlteracoes')"
               >Relatório Conferência e Alterações
             </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/requisicaoCompra')"
+              >Requisição Compra</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
