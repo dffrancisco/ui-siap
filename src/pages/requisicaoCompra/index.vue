@@ -2,60 +2,15 @@
 import utils from "@/ts/utils";
 import { actions, computeds, state } from "./requisicaoCompra";
 import ModalNovaRequisicao from "./components/ModalNovaRequisicao.vue";
-import { useEventListener } from "@vueuse/core";
-import { onMounted, onUnmounted } from "vue";
+import { onMounted } from "vue";
 import ModalLocalizarRequisicao from "./components/ModalLocalizarRequisicao.vue";
 import moment from "moment";
 import ModalNovoItem from "./components/ModalNovoItem.vue";
 import ModalInformarEditarQtdItem from "./components/ModalInformarEditarQtdItem.vue";
 import ModalInserirItemSemCadastro from "./components/ModalInserirItemSemCadastro.vue";
 
-const eventListener = useEventListener(document, "keydown", async (event) => {
-  if (
-    !state.modalLocalizarRequisicaoOpened &&
-    !state.modalNovaRequisicaoOpened &&
-    !state.modalNovoItemOpened &&
-    !state.modalInformarQtdItemOpened &&
-    !state.modalInserirItemSemCadastroOpened
-  ) {
-    if (event.key === "F1") {
-      state.modalLocalizarRequisicaoOpened = true;
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    if (event.key === "F2") {
-      state.modalNovaRequisicaoOpened = true;
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    if (event.key === "F3") {
-      if (state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA && state.dbRequisicaoCompra.FINALIZADO == "N") {
-        state.modalNovoItemOpened = true;
-      }
-
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    if (event.key === "F6") {
-      if (state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA) {
-        actions.btnFinalizarRequisicaoCompra();
-      }
-
-      event.preventDefault();
-      event.stopPropagation();
-    }
-  }
-});
-
 onMounted(async () => {
   await actions.init();
-});
-
-onUnmounted(() => {
-  removeEventListener("keydown", eventListener);
 });
 </script>
 

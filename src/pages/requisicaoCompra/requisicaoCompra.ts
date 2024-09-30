@@ -1,4 +1,4 @@
-import { computed, reactive } from "vue";
+import { computed, onUnmounted, reactive } from "vue";
 import {
     iCarros,
     iDeleteRequisicaoCompraParam,
@@ -22,6 +22,51 @@ import requisicaoCompraService from "./services/requisicaoCompra.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils, { iColumnPrint } from "@/ts/utils";
+import { useEventListener } from "@vueuse/core";
+
+const eventListener = useEventListener(document, "keydown", async (event) => {
+    if (
+        !state.modalLocalizarRequisicaoOpened &&
+        !state.modalNovaRequisicaoOpened &&
+        !state.modalNovoItemOpened &&
+        !state.modalInformarQtdItemOpened &&
+        !state.modalInserirItemSemCadastroOpened
+    ) {
+        if (event.key === "F1") {
+            state.modalLocalizarRequisicaoOpened = true;
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        if (event.key === "F2") {
+            state.modalNovaRequisicaoOpened = true;
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        if (event.key === "F3") {
+            if (state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA && state.dbRequisicaoCompra.FINALIZADO == "N") {
+                state.modalNovoItemOpened = true;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        if (event.key === "F6") {
+            if (state.dbRequisicaoCompra.ID_REQUISICAO_COMPRA) {
+                actions.btnFinalizarRequisicaoCompra();
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+});
+
+onUnmounted(() => {
+    removeEventListener("keydown", eventListener);
+});
 
 export const state = reactive({
     dbRequisicaoCompra: <iRequisicaoCompra>{},
