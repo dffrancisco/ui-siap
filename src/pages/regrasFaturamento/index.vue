@@ -31,7 +31,6 @@ import { actions, state } from "./regrasfaturamento";
                   >
                     <input
                       v-model="state.prazos.prazoDiasAte1"
-                      :clearable="false"
                       v-mask="'##'"
                       :disabled="!state.btnAlterarActivated"
                       maxlength="2"
@@ -44,7 +43,6 @@ import { actions, state } from "./regrasfaturamento";
                   >
                     <input
                       v-model="state.prazos.prazoDiasAte2"
-                      :clearable="false"
                       v-mask="'##'"
                       maxlength="2"
                       :disabled="!state.btnAlterarActivated"
@@ -57,7 +55,6 @@ import { actions, state } from "./regrasfaturamento";
                   >
                     <input
                       v-model="state.prazos.prazoDiasAte3"
-                      :clearable="false"
                       v-mask="'##'"
                       maxlength="2"
                       :disabled="!state.btnAlterarActivated"
@@ -87,7 +84,6 @@ import { actions, state } from "./regrasfaturamento";
                     <input
                       class="pa-2"
                       v-model="state.prazos.prazoDiasAcimaDe1"
-                      :clearable="false"
                       v-mask="'##'"
                       maxlength="2"
                       :disabled="!state.btnAlterarActivated"
@@ -100,7 +96,6 @@ import { actions, state } from "./regrasfaturamento";
                   >
                     <input
                       v-model="state.prazos.prazoDiasAcimaDe2"
-                      :clearable="false"
                       v-mask="'##'"
                       maxlength="2"
                       :disabled="!state.btnAlterarActivated"
@@ -113,7 +108,6 @@ import { actions, state } from "./regrasfaturamento";
                   >
                     <input
                       v-model="state.prazos.prazoDiasAcimaDe3"
-                      :clearable="false"
                       v-mask="'##'"
                       maxlength="2"
                       :disabled="!state.btnAlterarActivated"
