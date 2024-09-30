@@ -60,6 +60,8 @@ export const state = reactive(({
     itensComErro: <iItemComErro[]>[],
     historicoErro: false,
     isAlteracao: false,
+    menuConfigOpened: false,
+    verTodosOsItens: false
 }))
 
 setInterval(async () => {
@@ -111,6 +113,8 @@ export const actions = {
 
         state.historicoMesesVenda = [...historicoMesesDefault]
         state.historicoMesesCompra = [...historicoMesesDefault]
+
+        state.verTodosOsItens = JSON.parse(localStorage.getItem('verTodosOsItens'))
 
         state.loading = true;
 
@@ -224,24 +228,18 @@ export const actions = {
             return swalDarkWarning('É necessário informar a marca');
         }
 
+        param.VER_TODOS_OS_ITENS = state.verTodosOsItens
+
         state.loading = true;
         state.indexProdutoSelecionado = 0;
         state.abaItens = 'nao_adicionados';
-
-        if (param.ID_MARCA != state.edtMarca) {
-            state.qtdItensMarca = 0;
-            let keyMarca = 'marca:' + state.edtMarca
-            state.qtdMaxItensVistosByMarca[keyMarca] = 1
-        }
 
         try {
             actions.buscarHistorico(param);
 
             const response = await comprasItensService.getProdutos(param)
 
-            if (state.qtdItensMarca == 0) {
-                state.qtdItensMarca = response.qtdItensMarca
-            }
+            state.qtdItensMarca = response.qtdItensMarca
 
             state.edtMarca = param.ID_MARCA;
             state.produtos = response.produtos;
@@ -586,6 +584,16 @@ export const actions = {
         if (indexFilaItem != -1) {
             state.filaItens[indexFilaItem].TENTATIVAS = 0;
         }
+    },
+
+    async btnVerTodosOsItens() {
+        state.verTodosOsItens = !state.verTodosOsItens
+
+        localStorage.setItem('verTodosOsItens', JSON.stringify(state.verTodosOsItens))
+
+        await actions.buscarProdutos({ ID_MARCA: state.edtMarca })
+
+        state.qtdMaxItensVistosByMarca = {}
     }
 }
 
