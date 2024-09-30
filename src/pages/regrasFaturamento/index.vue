@@ -25,7 +25,10 @@ import { actions, state } from "./regrasfaturamento";
               <div class="mt-2">
                 <span> Prazo (Dias) </span>
                 <div class="mt-2 d-flex ga-4">
-                  <div class="containerInputPrazo">
+                  <div
+                    :class="{ containerInputPrazoHover: state.btnAlterarActivated }"
+                    class="containerInputPrazo"
+                  >
                     <input
                       v-model="state.prazos.prazoDiasAte1"
                       :clearable="false"
@@ -35,7 +38,10 @@ import { actions, state } from "./regrasfaturamento";
                     />
                   </div>
 
-                  <div class="containerInputPrazo">
+                  <div
+                    :class="{ containerInputPrazoHover: state.btnAlterarActivated }"
+                    class="containerInputPrazo"
+                  >
                     <input
                       v-model="state.prazos.prazoDiasAte2"
                       :clearable="false"
@@ -45,7 +51,10 @@ import { actions, state } from "./regrasfaturamento";
                     />
                   </div>
 
-                  <div class="containerInputPrazo">
+                  <div
+                    :class="{ containerInputPrazoHover: state.btnAlterarActivated }"
+                    class="containerInputPrazo"
+                  >
                     <input
                       v-model="state.prazos.prazoDiasAte3"
                       :clearable="false"
@@ -71,7 +80,10 @@ import { actions, state } from "./regrasfaturamento";
               <div class="mt-2">
                 <span> Prazo (Dias) </span>
                 <div class="mt-2 d-flex ga-4">
-                  <div class="containerInputPrazo">
+                  <div
+                    :class="{ containerInputPrazoHover: state.btnAlterarActivated }"
+                    class="containerInputPrazo"
+                  >
                     <input
                       class="pa-2"
                       v-model="state.prazos.prazoDiasAcimaDe1"
@@ -82,7 +94,10 @@ import { actions, state } from "./regrasfaturamento";
                     />
                   </div>
 
-                  <div class="containerInputPrazo">
+                  <div
+                    :class="{ containerInputPrazoHover: state.btnAlterarActivated }"
+                    class="containerInputPrazo"
+                  >
                     <input
                       v-model="state.prazos.prazoDiasAcimaDe2"
                       :clearable="false"
@@ -92,7 +107,10 @@ import { actions, state } from "./regrasfaturamento";
                     />
                   </div>
 
-                  <div class="containerInputPrazo">
+                  <div
+                    :class="{ containerInputPrazoHover: state.btnAlterarActivated }"
+                    class="containerInputPrazo"
+                  >
                     <input
                       v-model="state.prazos.prazoDiasAcimaDe3"
                       :clearable="false"
@@ -161,6 +179,14 @@ import { actions, state } from "./regrasfaturamento";
   border-radius: 4px;
   border: 1px solid gray;
   width: 36px;
+}
+
+.containerInputPrazo:focus-within {
+  border: 1px solid #26c6da !important;
+}
+
+.containerInputPrazoHover:hover {
+  border: 1px solid var(--grey-minus-100);
 }
 
 .containerInputPrazo input {
