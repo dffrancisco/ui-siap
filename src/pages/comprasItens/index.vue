@@ -64,7 +64,37 @@ actions.init();
               <span><u>C</u>ompras</span>
             </div>
             <div class="d-flex flex-grow-1 justify-end">
-              <v-icon>mdi mdi-cog</v-icon>
+              <div>
+                <v-menu
+                  v-model="state.menuConfigOpened"
+                  :close-on-content-click="false"
+                  location="bottom"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-icon v-bind="props">mdi mdi-cog</v-icon>
+                  </template>
+
+                  <v-card
+                    color="var(--grey-700)"
+                    width=""
+                    class="px-4"
+                  >
+                    <div class="d-flex align-center ga-4">
+                      <v-switch
+                        v-model="state.verTodosOsItens"
+                        color="var(--primary-600)"
+                        hide-details
+                        @click="actions.btnVerTodosOsItens"
+                      ></v-switch>
+                      <span
+                        style="color: var(--grey-100)"
+                        class="text-subtitle-1"
+                        >Ver todos os itens</span
+                      >
+                    </div>
+                  </v-card>
+                </v-menu>
+              </div>
             </div>
           </div>
           <HistoricoMeses
