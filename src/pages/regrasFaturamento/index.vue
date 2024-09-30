@@ -1,6 +1,11 @@
 <script lang="ts" setup>
+import { onMounted } from "vue";
 import CardParcelamento from "./components/CardParcelamento.vue";
 import { actions, state } from "./regrasfaturamento";
+
+onMounted(async () => {
+  await actions.init();
+});
 </script>
 
 <template>
@@ -16,6 +21,7 @@ import { actions, state } from "./regrasfaturamento";
           <v-col>
             <div>
               <v-text-field
+                v-model="state.dbRegraFaturamento.FATURAMENTO_ATE_VALOR"
                 v-mask-decimal.br="2"
                 label="Faturamento Até"
                 maxlength="15"
@@ -30,7 +36,7 @@ import { actions, state } from "./regrasfaturamento";
                     class="containerInputPrazo"
                   >
                     <input
-                      v-model="state.prazos.prazoDiasAte1"
+                      v-model="state.dbRegraFaturamento.FATURAMENTO_ATE_PRAZO_1"
                       v-mask="'##'"
                       :disabled="!state.btnAlterarActivated"
                       maxlength="2"
@@ -42,7 +48,7 @@ import { actions, state } from "./regrasfaturamento";
                     class="containerInputPrazo"
                   >
                     <input
-                      v-model="state.prazos.prazoDiasAte2"
+                      v-model="state.dbRegraFaturamento.FATURAMENTO_ATE_PRAZO_2"
                       v-mask="'##'"
                       maxlength="2"
                       :disabled="!state.btnAlterarActivated"
@@ -54,7 +60,7 @@ import { actions, state } from "./regrasfaturamento";
                     class="containerInputPrazo"
                   >
                     <input
-                      v-model="state.prazos.prazoDiasAte3"
+                      v-model="state.dbRegraFaturamento.FATURAMENTO_ATE_PRAZO_3"
                       v-mask="'##'"
                       maxlength="2"
                       :disabled="!state.btnAlterarActivated"
@@ -68,6 +74,7 @@ import { actions, state } from "./regrasfaturamento";
           <v-col>
             <div>
               <v-text-field
+                v-model="state.dbRegraFaturamento.FATURAMENTO_ACIMA_DE_VALOR"
                 v-mask-decimal.br="2"
                 label="Acima De"
                 maxlength="15"
@@ -83,7 +90,7 @@ import { actions, state } from "./regrasfaturamento";
                   >
                     <input
                       class="pa-2"
-                      v-model="state.prazos.prazoDiasAcimaDe1"
+                      v-model="state.dbRegraFaturamento.FATURAMENTO_ACIMA_DE_PRAZO_1"
                       v-mask="'##'"
                       maxlength="2"
                       :disabled="!state.btnAlterarActivated"
@@ -95,7 +102,7 @@ import { actions, state } from "./regrasfaturamento";
                     class="containerInputPrazo"
                   >
                     <input
-                      v-model="state.prazos.prazoDiasAcimaDe2"
+                      v-model="state.dbRegraFaturamento.FATURAMENTO_ACIMA_DE_PRAZO_2"
                       v-mask="'##'"
                       maxlength="2"
                       :disabled="!state.btnAlterarActivated"
@@ -107,7 +114,7 @@ import { actions, state } from "./regrasfaturamento";
                     class="containerInputPrazo"
                   >
                     <input
-                      v-model="state.prazos.prazoDiasAcimaDe3"
+                      v-model="state.dbRegraFaturamento.FATURAMENTO_ACIMA_DE_PRAZO_3"
                       v-mask="'##'"
                       maxlength="2"
                       :disabled="!state.btnAlterarActivated"
@@ -140,7 +147,7 @@ import { actions, state } from "./regrasfaturamento";
           size="small"
           color="primary"
           :disabled="state.btnAlterarActivated"
-          @click="state.btnAlterarActivated = true"
+          @click="actions.btnAlterar"
         >
           Alterar
         </v-btn>
@@ -156,7 +163,7 @@ import { actions, state } from "./regrasfaturamento";
           :disabled="!state.btnAlterarActivated"
           size="small"
           color="primary"
-          @click="state.btnAlterarActivated = false"
+          @click="actions.btnCancelar"
         >
           Cancelar
         </v-btn>
@@ -164,6 +171,18 @@ import { actions, state } from "./regrasfaturamento";
     </v-card>
     <div id="pnCodigoTela">regrasFaturamento</div>
   </v-container>
+
+  <v-overlay
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
 
 <style scoped>

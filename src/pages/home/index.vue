@@ -160,7 +160,12 @@ import login from "../login/login";
               >Compras
             </v-btn>
 
-            <v-btn @click="router.push('/consultaMontagem')"> Consulta Montagem </v-btn>
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/consultaMontagem')"
+            >
+              Consulta Montagem
+            </v-btn>
 
             <v-btn
               class="mr-4 mb-4"
