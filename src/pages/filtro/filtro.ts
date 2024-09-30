@@ -1,22 +1,31 @@
 import utils, { iColumnPrint, msgConfirmSemCodigo } from '@/ts/utils';
 import Swal from "sweetalert2";
-import { computed, reactive } from "vue";
+import { reactive } from "vue";
 import serviceFiltro from './services/filtro.service';
-import { iDadosFiltro, iFiltros } from "./interfaces";
+import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iMarcas, iResponseDadosParaFiltros, iUpdateNomeFiltro } from "./interfaces";
 import { msgConfirm } from '@/ts/message';
 
 export const state = reactive({
+    itensPerPage: 30,
+    page: 1,
+    totalItems: 0,
     loading: false,
     filtros: <iFiltros[]>[],
     selectedFiltro: null,
+    selectedStatus: null,
     idFiltro: 0,
-    conferente: "",
+    conferente: null,
+    funcionarios: <iFuncionario[]>[],
+    marcas: <iMarcas[]>[],
+    carros: <iCarros[]>[],
     dadosDoFiltroSelecionado: <iDadosFiltro[]>[],
     searchFiltro: "",
+    filtroEditar: <iFiltros[]>[],
     modalVisualizarFiltroOpened: false,
     modalNovoFiltroOpened: false,
     modalAddItensFiltroOpened: false,
     nomeNovoFiltro: "",
+    nomeConferente: "",
     headers: <any>[
         {
             title: "Data Início",
@@ -58,37 +67,10 @@ export const state = reactive({
     ]
 })
 
-export const computeds = {
-    filtros: computed(() => {
-        const searchFiltro = state.searchFiltro?.toLowerCase().trim() || '';
-
-        // Se não houver termo de busca, retorne todos os filtros
-        if (!searchFiltro) {
-            return state.filtros;
-        }
-
-        // Caso contrário, aplique o filtro
-        return state.filtros.filter(filtro => {
-            const nomeFiltro = filtro.NOME_FILTRO ? filtro.NOME_FILTRO.toLowerCase() : '';
-            const criador = filtro.CRIADOR ? filtro.CRIADOR.toLowerCase() : '';
-            const conferente = filtro.CONFERENTE ? filtro.CONFERENTE.toLowerCase() : '';
-            const dataInicio = filtro.DATA_INICIO ? new Date(filtro.DATA_INICIO).toLocaleDateString() : '';
-            const dataFim = filtro.DATA_FIM ? new Date(filtro.DATA_FIM).toLocaleDateString() : '';
-
-            return (
-                nomeFiltro.includes(searchFiltro) ||
-                criador.includes(searchFiltro) ||
-                conferente.includes(searchFiltro) ||
-                dataInicio.includes(searchFiltro) ||
-                dataFim.includes(searchFiltro)
-            );
-        });
-    }),
-};
-
 export const actions = {
     async init() {
         actions.getFiltros()
+        actions.getDadosParaFiltros()
     },
 
     async selectFiltro(idFiltro: number) {
@@ -113,12 +95,43 @@ export const actions = {
     async getFiltros() {
         try {
             state.loading = true;
-            const filtros = await serviceFiltro.getFiltros()
-            state.filtros = filtros
+
+            const data = await serviceFiltro.getFiltros({
+                page: state.page,
+                itensPerPage: state.itensPerPage,
+                search: state.searchFiltro,
+                status: state.selectedStatus,
+            });
+
+            state.filtros = data.filtros;
+            state.totalItems = data.totalFiltros;
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao exibir as trazer os dados!"
+                text: "Erro ao trazer os dados!"
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    updatePage(newPage: number) {
+        state.page = newPage;
+        actions.getFiltros();
+    },
+
+    async getDadosParaFiltros() {
+        try {
+            state.loading = true;
+            let data = await serviceFiltro.getDadosParaFiltros() as iResponseDadosParaFiltros;
+
+            state.marcas = data.marcas
+            state.carros = data.carros
+            state.funcionarios = data.funcionarios
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os dados!"
             });
         } finally {
             state.loading = false;
@@ -179,13 +192,11 @@ export const actions = {
                 { key: 'DESC_PRODUTO', label: 'Produto', width: '30%' },
                 { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '15%' },
                 { key: 'NUM_FABRICANTE2', label: 'Nº Fabricante2', width: '15%' },
-                { key: 'QUANTIDADE', label: 'Qtd velha', width: '5%', align: 'center' },
-                { key: 'QTO_OLD', label: 'Qtd nova', width: '5%', align: 'center' },
+                { key: 'QTD_ESTOQUE', label: 'Qtd Estoque', width: '5%', align: 'center' },
+                { key: 'QTD_ATUAL', label: 'Qtd Atual', width: '5%', align: 'center' },
                 { key: 'END_ESTOQUE', label: 'End. Estoque', width: '15%', align: 'right' },
                 { key: 'END_EXCESSO', label: 'End. Excesso', width: '15%', align: 'right' },
-                { key: 'DATA', label: 'Data', width: '10%', align: 'center' },
                 { key: 'CONFERIDO', label: 'Conferido', width: '10%', align: 'center' }
-
             ];
 
             const titulo = `
@@ -211,8 +222,8 @@ export const actions = {
             DESC_PRODUTO: item.DESC_PRODUTO || '-----',
             NUM_FABRICANTE: item.NUM_FABRICANTE || '-----',
             NUM_FABRICANTE2: item.NUM_FABRICANTE2 || '-----',
-            QUANTIDADE: item.QUANTIDADE || '-----',
-            QTO_OLD: item.QTO_OLD || '-----',
+            QTD_ESTOQUE: item.QTD_ESTOQUE || 0,
+            QTD_ATUAL: item.QTD_ATUAL || '_____',
             END_ESTOQUE: item.END_ESTOQUE || '-----',
             END_EXCESSO: item.END_EXCESSO || '-----',
             DATA: item.DATA ? utils.dataBrasil(item.DATA) : '-----',
@@ -220,7 +231,9 @@ export const actions = {
         }));
     },
 
-    novoFiltro() {
+    async novoFiltro() {
+        state.filtroEditar = []
+        state.idFiltro = null;
         state.modalNovoFiltroOpened = true;
     },
 
@@ -236,7 +249,7 @@ export const actions = {
                 // Atualizar o filtro na state
                 const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
                 if (filtroIndex !== -1) {
-                    state.filtros[filtroIndex].DATA_FIM = new Date().toISOString(); // Definindo a data atual como fim
+                    state.filtros[filtroIndex].DATA_FIM = new Date().toISOString();
                 }
 
                 Swal.fire({
@@ -248,39 +261,6 @@ export const actions = {
                 Swal.fire({
                     icon: "error",
                     text: "Erro ao finalizar o filtro!"
-                });
-            } finally {
-                state.loading = false;
-            }
-
-        }
-    },
-
-    async reabrirFiltro(idFiltro) {
-        state.idFiltro = idFiltro;
-        if (await msgConfirmSemCodigo("Confirmação", "Deseja reativar esse filtro?")) {
-
-            try {
-                state.loading = true;
-                let param = state.idFiltro
-                await serviceFiltro.reabrirFiltro(param)
-
-                // Atualizar o filtro na state
-                const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
-                if (filtroIndex !== -1) {
-                    state.filtros[filtroIndex].DATA_FIM = null; // Reabrindo o filtro, removendo a data de fim
-                }
-
-                Swal.fire({
-                    icon: "success",
-                    text: "Filtro atualizado com sucesso!",
-                    timer: 1500
-                });
-
-            } catch {
-                Swal.fire({
-                    icon: "error",
-                    text: "Erro ao reabrir o filtro!"
                 });
             } finally {
                 state.loading = false;
@@ -318,18 +298,87 @@ export const actions = {
         }
     },
 
-    addItensNovoFiltro(nomeFiltro: string) {
+    criarNovoFiltro(conferente: number | string, nomeFiltro: string, nomeConferente: string) {
+        state.conferente = conferente;
         state.nomeNovoFiltro = nomeFiltro;
-        state.idFiltro = 0
-        state.conferente = "";
+        state.nomeConferente = nomeConferente;
         state.modalAddItensFiltroOpened = true
     },
 
-    addItensFiltroExistente(idFiltro: number, conferente: string, nomeFiltro: string) {
+    async addItensFiltro(idFiltro: number, conferente: number | string, nomeFiltro: string, nomeConferente: string) {
         state.idFiltro = idFiltro
         state.conferente = conferente;
         state.nomeNovoFiltro = nomeFiltro;
+        state.nomeConferente = nomeConferente
         state.modalAddItensFiltroOpened = true
+    },
+
+    updateFiltroEConferente(idFiltro: number, conferente: number | string, nomeFiltro: string, nomeConferente: string) {
+        //atualizando states para upload e states que sao enviadas como props
+        state.idFiltro = idFiltro
+        state.conferente = conferente;
+        state.nomeNovoFiltro = nomeFiltro;
+        state.nomeConferente = nomeConferente
+        state.dadosDoFiltroSelecionado[0].ID_FILTRO = state.idFiltro
+        state.dadosDoFiltroSelecionado[0].CONFERENTE = state.conferente
+        state.dadosDoFiltroSelecionado[0].NOME_FILTRO = state.nomeNovoFiltro
+        state.dadosDoFiltroSelecionado[0].COD_FUNCIONARIO = state.conferente
+        actions.updateConferenteNomeFiltro()
+    },
+
+    async updateConferenteNomeFiltro() {
+        try {
+            state.loading = true;
+            let param: iUpdateNomeFiltro = {
+                idFiltro: state.idFiltro,
+                nomeFiltro: state.nomeNovoFiltro,
+                funcionario: state.conferente
+            }
+            await serviceFiltro.updateConferenteNomeFiltro(param)
+            Swal.fire({
+                icon: "success",
+                text: "Filtro atualizado com sucesso!",
+                timer: 1500
+            });
+
+            // Atualizar o filtro na state
+            const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === state.idFiltro);
+            if (filtroIndex !== -1) {
+                state.filtros[filtroIndex].NOME_FILTRO = state.nomeNovoFiltro
+                state.filtros[filtroIndex].CONFERENTE = state.nomeConferente
+            }
+            // Atualizar o filtro na state.dadosDoFiltroSelecionado
+            const filtroSelecionadoIndex = state.dadosDoFiltroSelecionado.findIndex(filtro => filtro.ID_FILTRO === state.idFiltro);
+            if (filtroSelecionadoIndex !== -1) {
+                state.dadosDoFiltroSelecionado[filtroSelecionadoIndex].NOME_FILTRO = state.nomeNovoFiltro;
+                state.dadosDoFiltroSelecionado[filtroSelecionadoIndex].CONFERENTE = state.nomeConferente;
+            }
+
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao atualizar o filtro!"
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async editarDadosFiltroSelecionado(filtro) {
+        state.filtroEditar = filtro
+        state.modalNovoFiltroOpened = true
+    },
+
+    removerItemState({ idItem, idFiltro }) {
+        state.dadosDoFiltroSelecionado = state.dadosDoFiltroSelecionado.filter(
+            (filtroItem) => filtroItem.ID_ITENS_FILTRO !== idItem
+        );
+
+        // Encontrar o filtro correspondente e diminuir a quantidade de itens
+        const filtro = state.filtros.find((filtro) => filtro.ID_FILTRO === idFiltro);
+        if (filtro) {
+            filtro.QTD_ITENS -= 1;
+        }
     },
 
     closeModalVisualizarFiltro() {
@@ -342,6 +391,13 @@ export const actions = {
 
     closeModalAddItensFiltro() {
         state.modalAddItensFiltroOpened = false;
+        state.modalVisualizarFiltroOpened = false
         actions.getFiltros()
+    },
+
+    cancelarModalAddItensFiltro() {
+        state.modalAddItensFiltroOpened = false;
+        state.modalVisualizarFiltroOpened = false
     }
+
 }
