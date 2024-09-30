@@ -19,5 +19,16 @@
     "lib": ["esnext", "dom"]
     // "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "**/*.ts",
+    "**/*.js",
+    "**/*.d.ts",
+    "**/*.tsx",
+    "**/*.vue",
+    "tests/setup.ts"
+  ]
 }
