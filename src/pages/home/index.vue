@@ -254,6 +254,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/liberarCliente')"
+              >Liberar Cliente
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/relatorioFaturamento')"
               >Relatorio Faturamento
             </v-btn>
