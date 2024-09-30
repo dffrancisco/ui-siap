@@ -1,22 +1,47 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive } from "vue";
+import { onMounted, onUnmounted, reactive, computed, watch } from "vue";
 import serviceFiltro from "../services/filtro.service";
-import { iCarros, iFuncionario, iMarcas, iParamFiltrar, iResultPesquisa } from "../interfaces";
+import { iCarros, iMarcas, iParamFiltrar, iResultPesquisa } from "../interfaces";
 import Swal from "sweetalert2";
+
+const props = defineProps({
+  nomeFiltro: {
+    type: String,
+    required: false,
+  },
+  idFiltro: {
+    type: [Number, null],
+    required: true,
+  },
+  conferente: {
+    type: [Number, null],
+    required: true,
+  },
+  marcas: {
+    type: Array,
+    required: true,
+  },
+  carros: {
+    type: Array,
+    required: true,
+  },
+});
 
 const stateModalAddItensFiltro = reactive({
   loading: false,
   search: "",
   nomeFiltro: "",
-  idFiltro: 0,
-  funcionarios: <iFuncionario[]>[],
-  funcionarioSelecionado: "",
+  idFiltro: null,
+  funcionarioSelecionado: null,
   carros: <iCarros[]>[],
-  carroSelecionado: <iCarros[]>[],
-  marcaSelecionada: <iMarcas[]>[],
+  carroSelecionado: null,
+  marcaSelecionada: null,
   marcas: <iMarcas[]>[],
   dadosRetornadosDaPesquisa: <iResultPesquisa[]>[],
   produtosSelecionados: <number[]>[],
+  produtosSelecionadosDetalhes: <iResultPesquisa[]>[],
+  mostrarSomenteSelecionados: false,
+  chipSelecionado: false,
   paramsPesquisa: {},
   endEstoque: "",
   numFabricante: "",
@@ -56,37 +81,31 @@ const stateModalAddItensFiltro = reactive({
 
 const actions = {
   async init() {
-    try {
-      stateModalAddItensFiltro.loading = true;
+    stateModalAddItensFiltro.loading = true;
 
-      const carros = await serviceFiltro.getCarros();
-      const marcas = await serviceFiltro.getMarcas();
-      const funcionarios = await serviceFiltro.getFuncionarios();
+    stateModalAddItensFiltro.carros = props.carros as iCarros[];
+    stateModalAddItensFiltro.marcas = props.marcas as iMarcas[];
 
-      stateModalAddItensFiltro.funcionarios = funcionarios;
-      stateModalAddItensFiltro.carros = carros;
-      stateModalAddItensFiltro.marcas = marcas;
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        text: "Erro ao trazer os dados!",
-      });
-    } finally {
-      stateModalAddItensFiltro.loading = false;
+    const inputDescricao = document.querySelector("#descricaoProduto") as HTMLElement;
+    if (inputDescricao) {
+      inputDescricao.focus();
     }
+
+    stateModalAddItensFiltro.loading = false;
   },
 
   iniciarStates() {
     stateModalAddItensFiltro.nomeFiltro = props.nomeFiltro;
     stateModalAddItensFiltro.idFiltro = props.idFiltro;
+    stateModalAddItensFiltro.funcionarioSelecionado = props.conferente;
   },
 
   resetStates() {
     stateModalAddItensFiltro.search = "";
     stateModalAddItensFiltro.nomeFiltro = "";
     stateModalAddItensFiltro.funcionarioSelecionado = "";
-    stateModalAddItensFiltro.carroSelecionado = [];
-    stateModalAddItensFiltro.marcaSelecionada = [];
+    stateModalAddItensFiltro.carroSelecionado = null;
+    stateModalAddItensFiltro.marcaSelecionada = null;
     stateModalAddItensFiltro.dadosRetornadosDaPesquisa = [];
     stateModalAddItensFiltro.produtosSelecionados = [];
   },
@@ -105,6 +124,7 @@ const actions = {
 
       stateModalAddItensFiltro.paramsPesquisa = [param];
       const dados = await serviceFiltro.getDadosParaFiltragem(param as iParamFiltrar);
+
       stateModalAddItensFiltro.dadosRetornadosDaPesquisa = dados;
     } catch (error) {
       Swal.fire({
@@ -117,6 +137,11 @@ const actions = {
   },
 
   cancelar() {
+    emit("cancelarModalAddItensFiltro");
+    actions.resetStates();
+  },
+
+  salvar() {
     emit("closeModalAddItensFiltro");
     actions.resetStates();
   },
@@ -125,33 +150,24 @@ const actions = {
     if (stateModalAddItensFiltro.produtosSelecionados.length == 0) {
       Swal.fire({
         icon: "warning",
-        text: "Escolha ao menos um item pro filtro!",
+        text: "Escolha ao menos um item para o filtro!",
       });
       return;
     }
 
-    const inputFuncionario = document.querySelector("#funcionarios") as HTMLElement;
+    let parametrosInsercao = {
+      idFiltro: stateModalAddItensFiltro.idFiltro,
+      nomeFiltro: stateModalAddItensFiltro.nomeFiltro,
+      funcionario: stateModalAddItensFiltro.funcionarioSelecionado,
+      objPesquisa: stateModalAddItensFiltro.paramsPesquisa,
+      produtosSelecionados: stateModalAddItensFiltro.produtosSelecionados,
+    };
 
-    if (!stateModalAddItensFiltro.funcionarioSelecionado) {
-      inputFuncionario.focus();
+    if (stateModalAddItensFiltro.idFiltro == null) {
+      actions.inserirFiltro(parametrosInsercao);
+      return;
     }
-
-    //verificar se tem funcionario conferente
-    if (stateModalAddItensFiltro.funcionarioSelecionado) {
-      let parametrosInsercao = {
-        idFiltro: stateModalAddItensFiltro.idFiltro,
-        nomeFiltro: stateModalAddItensFiltro.nomeFiltro,
-        funcionario: stateModalAddItensFiltro.funcionarioSelecionado,
-        objPesquisa: stateModalAddItensFiltro.paramsPesquisa,
-        produtosSelecionados: stateModalAddItensFiltro.produtosSelecionados,
-      };
-
-      if (stateModalAddItensFiltro.idFiltro == 0) {
-        actions.inserirFiltro(parametrosInsercao);
-        return;
-      }
-      actions.atualizarFiltro(parametrosInsercao);
-    }
+    actions.atualizarFiltro(parametrosInsercao);
   },
 
   async atualizarFiltro(parametrosInsercao) {
@@ -159,7 +175,7 @@ const actions = {
       stateModalAddItensFiltro.loading = true;
       await serviceFiltro.atualizarFiltro(parametrosInsercao);
       Swal.fire({ icon: "success", text: "Dados salvos com sucesso!", timer: 1500 });
-      actions.cancelar();
+      actions.salvar();
     } catch (error) {
       const errorMessage = error.response?.data?.msg || "Erro ao atualizar os dados.";
       Swal.fire({
@@ -181,7 +197,7 @@ const actions = {
         text: "Dados salvos com sucesso!",
         timer: 1500,
       });
-      actions.cancelar();
+      actions.salvar();
     } catch (error) {
       const errorMessage = error.response?.data?.msg || "Erro ao inserir os dados.";
       Swal.fire({
@@ -193,24 +209,51 @@ const actions = {
       stateModalAddItensFiltro.loading = false;
     }
   },
+
+  getClassCorLinha(dados: any) {
+    let classe = dados.index % 2 == 0 ? "cor-zebrada-1" : "cor-zebrada-2";
+    return { class: classe };
+  },
 };
 
-const props = defineProps({
-  nomeFiltro: {
-    type: String,
-    required: false,
-  },
-  idFiltro: {
-    type: Number,
-    required: true,
-  },
-  conferente: {
-    type: String,
-    required: true,
-  },
+const emit = defineEmits(["closeModalAddItensFiltro", "cancelarModalAddItensFiltro"]);
+
+const filtrarSelecionados = () => {
+  stateModalAddItensFiltro.mostrarSomenteSelecionados = !stateModalAddItensFiltro.mostrarSomenteSelecionados;
+  stateModalAddItensFiltro.chipSelecionado = !stateModalAddItensFiltro.chipSelecionado;
+};
+
+const itensFiltrados = computed(() => {
+  if (stateModalAddItensFiltro.mostrarSomenteSelecionados) {
+    // Exibe apenas os itens selecionados
+    return stateModalAddItensFiltro.produtosSelecionadosDetalhes;
+  }
+  return stateModalAddItensFiltro.dadosRetornadosDaPesquisa;
 });
 
-const emit = defineEmits(["closeModalAddItensFiltro"]);
+watch(
+  () => stateModalAddItensFiltro.produtosSelecionados,
+  (novosSelecionados) => {
+    // Adiciona os novos itens selecionados aos produtos selecionados
+    novosSelecionados.forEach((id) => {
+      // Verifica se o produto com o ID já não está na lista de detalhes
+      if (!stateModalAddItensFiltro.produtosSelecionadosDetalhes.some((item) => item.COD_PRODUTO === id)) {
+        // Busca o produto completo com base no ID selecionado
+        const item = stateModalAddItensFiltro.dadosRetornadosDaPesquisa.find((item) => item.COD_PRODUTO === id);
+        if (item) {
+          // Adiciona o produto à lista de detalhes
+          stateModalAddItensFiltro.produtosSelecionadosDetalhes.push(item);
+        }
+      }
+    });
+
+    // Remove os itens desmarcados dos detalhes dos produtos selecionados
+    stateModalAddItensFiltro.produtosSelecionadosDetalhes =
+      stateModalAddItensFiltro.produtosSelecionadosDetalhes.filter((item) =>
+        stateModalAddItensFiltro.produtosSelecionados.includes(item.COD_PRODUTO)
+      );
+  }
+);
 
 onMounted(async () => {
   actions.init();
@@ -225,9 +268,9 @@ onUnmounted(() => {
   <v-container>
     <v-card
       class="pa-5"
-      style="width: 900px; margin: 0 auto"
+      style="width: 1020px; height: 525px; margin: 0 auto"
     >
-      <div style="display: flex; gap: 16px; padding-bottom: 10px">
+      <div style="display: flex; gap: 10px; padding-bottom: 10px">
         <v-autocomplete
           id="carros"
           label="Carros"
@@ -236,30 +279,41 @@ onUnmounted(() => {
           item-title="DESCRICAO"
           item-value="ID_CARRO"
           autocomplete="off"
-          :clearable="true"
-          multiple
+          max-width="160px"
+          :clearable="false"
           v-model="stateModalAddItensFiltro.carroSelecionado"
-        ></v-autocomplete>
+          :menu-props="{
+            maxHeight: '300px',
+            maxWidth: '180px',
+          }"
+        >
+        </v-autocomplete>
         <v-autocomplete
           id="marcas"
           label="Marcas"
           class="marcas"
+          max-width="160px"
           autocomplete="off"
           :items="stateModalAddItensFiltro.marcas"
           item-title="DESCRICAO"
           item-value="ID_MARCA"
           :clearable="true"
-          multiple
           v-model="stateModalAddItensFiltro.marcaSelecionada"
+          :menu-props="{
+            maxHeight: '300px',
+            maxWidth: '180px',
+          }"
         ></v-autocomplete>
         <v-text-field
           id="endEstoque"
           label="End. Estoque"
           class="endEstoque"
           autocomplete="off"
+          maxLength="25"
           item-title="title"
           item-value="value"
-          :clearable="true"
+          :clearable="false"
+          @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.endEstoque"
         ></v-text-field>
 
@@ -268,7 +322,9 @@ onUnmounted(() => {
           class="numFabricante"
           autocomplete="off"
           label="Num. Fabricante"
-          :clearable="true"
+          maxLength="13"
+          :clearable="false"
+          @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.numFabricante"
         ></v-text-field>
 
@@ -277,7 +333,9 @@ onUnmounted(() => {
           class="descricaoProduto"
           autocomplete="off"
           label="Descrição"
-          :clearable="true"
+          maxLength="40"
+          :clearable="false"
+          @keypress.enter="actions.buscarDadosParaFiltro"
           v-model="stateModalAddItensFiltro.descricaoProduto"
         ></v-text-field>
         <v-btn
@@ -295,11 +353,12 @@ onUnmounted(() => {
             :headers="stateModalAddItensFiltro.headers"
             items-per-page-text="Itens por página"
             items-per-page="50"
-            height="370"
+            height="360"
             fixed-header
-            :items="stateModalAddItensFiltro.dadosRetornadosDaPesquisa"
+            :items="itensFiltrados"
             item-key="COD_PRODUTO"
             item-value="COD_PRODUTO"
+            :row-props="actions.getClassCorLinha"
             v-model="stateModalAddItensFiltro.produtosSelecionados"
             show-select
             select-strategy="all"
@@ -315,31 +374,23 @@ onUnmounted(() => {
             </template>
           </v-data-table>
         </v-card-text>
-        <div style="display: flex">
-          <v-chip
-            style="max-width: 230px; margin-left: 10px; margin-top: -50px"
-            color="primary"
-            >Nome do Filtro: {{ stateModalAddItensFiltro.nomeFiltro }}</v-chip
-          >
-        </div>
-        <div>
-          <v-autocomplete
-            id="funcionarios"
-            label="Funcionario Conferente"
-            class="funcionarios"
-            :items="stateModalAddItensFiltro.funcionarios"
-            item-title="LOGIN"
-            item-value="COD_FUNCIONARIO"
-            style="max-width: 280px; margin-left: 10px"
-            autocomplete="off"
-            :clearable="true"
-            v-model="stateModalAddItensFiltro.funcionarioSelecionado"
-          ></v-autocomplete>
-        </div>
 
         <div
-          class="d-flex justify-end pa-2"
-          style="margin-top: -40px"
+          class="d-flex justify-start pa-2 btns"
+          style="margin-top: -25px"
+          ><v-chip
+            :class="{
+              'chip-selecionado': stateModalAddItensFiltro.chipSelecionado,
+            }"
+            :color="stateModalAddItensFiltro.chipSelecionado ? 'green' : 'primary'"
+            @click="filtrarSelecionados"
+            >{{ stateModalAddItensFiltro.produtosSelecionados.length }} selecionados</v-chip
+          ></div
+        >
+
+        <div
+          class="d-flex justify-end pa-2 btns"
+          style="margin-top: -50px; margin-bottom: 10px"
         >
           <v-btn
             variant="outlined"
@@ -370,4 +421,22 @@ onUnmounted(() => {
   </v-overlay>
 </template>
 
-<style scoped></style>
+<style>
+.cor-zebrada-1 {
+  background-color: #f0f0f0;
+}
+
+.v-overlay__scrim {
+  background-color: black;
+}
+
+.v-data-table-footer__pagination {
+  padding-right: 100px;
+}
+</style>
+
+<style scoped>
+.chip-selecionado {
+  border: 2px solid green;
+}
+</style>

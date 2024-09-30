@@ -1,24 +1,66 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
 import { onMounted, reactive } from "vue";
+import { iFuncionario } from "../interfaces";
 
 const stateModalNovoFiltro = reactive({
   loading: false,
   nomeFiltro: "",
+  funcionarios: <iFuncionario[]>[],
+  funcionarioSelecionado: null,
+  idFiltro: null,
+  nomeConferente: "",
 });
 
-const emit = defineEmits(["closeModalNovoFiltro", "nomeFiltro"]);
+const emit = defineEmits(["closeModalNovoFiltro", "nomeFiltroEConferente", "novoFiltro"]);
+
+const props = defineProps({
+  filtroEditar: {
+    type: Object,
+    required: false,
+  },
+  funcionarios: {
+    type: Array,
+    required: true,
+  },
+});
 
 const actions = {
   salvar() {
     if (!stateModalNovoFiltro.nomeFiltro.trim()) {
       Swal.fire({
         icon: "warning",
-        text: "Escolha um nome pro filtro!",
+        text: "Escolha um nome para o filtro!",
       });
       return;
     }
-    emit("nomeFiltro", stateModalNovoFiltro.nomeFiltro);
+
+    if (!stateModalNovoFiltro.funcionarioSelecionado) {
+      Swal.fire({
+        icon: "warning",
+        text: "Selecione um funcionário para o filtro!",
+      });
+      return;
+    }
+
+    if (!stateModalNovoFiltro.idFiltro) {
+      emit(
+        "novoFiltro",
+        stateModalNovoFiltro.funcionarioSelecionado,
+        stateModalNovoFiltro.nomeFiltro,
+        stateModalNovoFiltro.nomeConferente
+      );
+      actions.cancelar();
+      return;
+    }
+
+    emit(
+      "nomeFiltroEConferente",
+      stateModalNovoFiltro.idFiltro,
+      stateModalNovoFiltro.funcionarioSelecionado,
+      stateModalNovoFiltro.nomeFiltro,
+      stateModalNovoFiltro.nomeConferente
+    );
     actions.cancelar();
   },
 
@@ -26,13 +68,70 @@ const actions = {
     stateModalNovoFiltro.nomeFiltro = "";
     emit("closeModalNovoFiltro");
   },
+
+  async init() {
+    stateModalNovoFiltro.loading = true;
+
+    const inputNomeFiltro = document.querySelector("#nomeFiltro") as HTMLElement;
+    if (inputNomeFiltro) {
+      inputNomeFiltro.focus();
+    }
+    stateModalNovoFiltro.funcionarios = props.funcionarios as iFuncionario[];
+    actions.popularInputs();
+    stateModalNovoFiltro.loading = false;
+  },
+
+  popularInputs() {
+    if (props.filtroEditar.length > 0) {
+      const filtro = props.filtroEditar[0];
+
+      stateModalNovoFiltro.nomeFiltro = filtro.NOME_FILTRO;
+      stateModalNovoFiltro.idFiltro = filtro.ID_FILTRO;
+
+      // encontrando o conferente dentre os funcionarios
+      const funcionarioEncontrado = stateModalNovoFiltro.funcionarios.find(
+        (func) => func.COD_FUNCIONARIO === filtro.COD_FUNCIONARIO
+      );
+
+      // Se o funcionário foi encontrado, seleciona, senão, deixa vazio
+      stateModalNovoFiltro.funcionarioSelecionado = funcionarioEncontrado
+        ? funcionarioEncontrado.COD_FUNCIONARIO
+        : null;
+
+      stateModalNovoFiltro.nomeConferente = actions.formatFuncionarioTitle(funcionarioEncontrado);
+    }
+  },
+
+  focarNoInputFuncionarios() {
+    const inputFuncionarios = document.querySelector("#funcionarios") as HTMLElement;
+    if (inputFuncionarios) {
+      inputFuncionarios.focus();
+    }
+  },
+
+  formatFuncionarioTitle(item) {
+    return item ? `${item.LOGIN} - ${item.COD_FUNCIONARIO}` : "";
+  },
+
+  capturarNomeSelecionado(codFuncionario) {
+    stateModalNovoFiltro.funcionarioSelecionado = codFuncionario;
+
+    // Encontra o funcionario correspondente
+    const selectedFuncionario = stateModalNovoFiltro.funcionarios.find(
+      (func) => func.COD_FUNCIONARIO === codFuncionario
+    );
+
+    // Atualiza o nomeConferente com o título formatado
+    if (selectedFuncionario) {
+      stateModalNovoFiltro.nomeConferente = actions.formatFuncionarioTitle(selectedFuncionario);
+    } else {
+      stateModalNovoFiltro.nomeConferente = "";
+    }
+  },
 };
 
 onMounted(() => {
-  const inputNomeFiltro = document.querySelector("#nomeFiltro") as HTMLElement;
-  if (inputNomeFiltro) {
-    inputNomeFiltro.focus();
-  }
+  actions.init();
 });
 </script>
 <template>
@@ -43,12 +142,29 @@ onMounted(() => {
         label="Nome do Filtro"
         class="custom-placeholder"
         :clearable="false"
+        @keypress.enter="actions.focarNoInputFuncionarios"
         v-model="stateModalNovoFiltro.nomeFiltro"
-        @keypress.enter="actions.salvar"
         variant="outlined"
         bg-color="#ffffff"
+        maxlength="30"
       >
       </v-text-field>
+
+      <v-autocomplete
+        id="funcionarios"
+        label="Funcionario Conferente"
+        class="funcionarios pt-5"
+        :items="stateModalNovoFiltro.funcionarios"
+        :item-title="actions.formatFuncionarioTitle"
+        item-value="COD_FUNCIONARIO"
+        autocomplete="off"
+        variant="outlined"
+        @update:model-value="actions.capturarNomeSelecionado"
+        @keydown.enter="actions.salvar"
+        :clearable="true"
+        bg-color="#ffffff"
+        v-model="stateModalNovoFiltro.funcionarioSelecionado"
+      ></v-autocomplete>
     </div>
 
     <div>
@@ -111,7 +227,7 @@ onMounted(() => {
   margin-bottom: 150px;
   margin-left: 25%;
   max-width: 520px;
-  height: 170px;
+  height: 220px;
   border: 2px solid rgba(0, 0, 0, 0.261);
 }
 
