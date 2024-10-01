@@ -2,6 +2,7 @@
 import { onMounted } from "vue";
 import CardParcelamento from "./components/CardParcelamento.vue";
 import { actions, computeds, state } from "./regrasfaturamento";
+import ModalCadastrarParcela from "./components/ModalCadastrarParcela.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -77,7 +78,7 @@ onMounted(async () => {
               <v-text-field
                 v-model="computeds.acimaDeValor.value"
                 v-mask-decimal.br="2"
-                label="Acima De"
+                label="Faturamento Acima De"
                 maxlength="15"
                 disabled
               ></v-text-field>
@@ -136,6 +137,7 @@ onMounted(async () => {
             size="20"
             icon="mdi-plus"
             title="Novo parcelamento"
+            @click="state.modalCadastrarParcelaOpened = true"
           ></v-btn>
         </div>
 
@@ -184,6 +186,16 @@ onMounted(async () => {
     </v-card>
     <div id="pnCodigoTela">regrasFaturamento</div>
   </v-container>
+
+  <v-dialog
+    v-model="state.modalCadastrarParcelaOpened"
+    max-width="600"
+  >
+    <ModalCadastrarParcela
+      @insertParcela="actions.insertRegraFaturamentoParcela"
+      @closeModal="state.modalCadastrarParcelaOpened = false"
+    />
+  </v-dialog>
 
   <v-overlay
     :model-value="state.loading"

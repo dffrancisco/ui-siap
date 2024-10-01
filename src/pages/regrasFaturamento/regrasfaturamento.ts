@@ -2,6 +2,7 @@ import { computed, reactive } from "vue";
 import serviceRegrasFaturamento from "./services/regrasFaturamento.service";
 import Swal from "sweetalert2";
 import {
+    iInsertRegraFaturamentoParcelaParam,
     iRegraFaturamento, iRegraFaturamentoParcelas, iUpdateOrInsertRegraFaturamentoParam
 } from "./interfaces";
 import utils from "@/ts/utils";
@@ -11,7 +12,8 @@ export const state = reactive({
     btnAlterarActivated: false,
     dbRegraFaturamento: <iRegraFaturamento>{},
     dbRegraFaturamentoOld: <iRegraFaturamento>{},
-    dbRegraFaturamentoParcelas: <iRegraFaturamentoParcelas[]>[]
+    dbRegraFaturamentoParcelas: <iRegraFaturamentoParcelas[]>[],
+    modalCadastrarParcelaOpened: false
 })
 
 export const actions = {
@@ -147,6 +149,57 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 title: "Erro ao excluir a parcela da regra de faturamento!",
+                text: error.message
+            })
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async insertRegraFaturamentoParcela(dbRegraFaturamentoParcela: iRegraFaturamentoParcelas) {
+        try {
+            state.loading = true;
+
+            let param: iInsertRegraFaturamentoParcelaParam = {
+                DIVISAO: dbRegraFaturamentoParcela.DIVISAO,
+                FATURAMENTO_ACIMA_DE_VALOR: utils.formatValorUSA(dbRegraFaturamentoParcela.FATURAMENTO_ACIMA_DE_VALOR.toString()),
+                FATURAMENTO_ATE_VALOR: utils.formatValorUSA(dbRegraFaturamentoParcela.FATURAMENTO_ATE_VALOR.toString())
+            }
+
+            const data = await serviceRegrasFaturamento.insertRegraFaturamentoParcela(param);
+
+            if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    text: data.msg,
+                    timer: 1500,
+                    showConfirmButton: false,
+                })
+
+                dbRegraFaturamentoParcela = {
+                    ID_REGRA_FATURAMENTO_PARCELA: data.idRegraFaturamentoParcela,
+                    DIVISAO: param.DIVISAO,
+                    FATURAMENTO_ATE_VALOR: param.FATURAMENTO_ATE_VALOR,
+                    FATURAMENTO_ACIMA_DE_VALOR: param.FATURAMENTO_ACIMA_DE_VALOR
+                }
+
+                state.dbRegraFaturamentoParcelas.push(dbRegraFaturamentoParcela)
+
+                state.dbRegraFaturamentoParcelas.sort((a, b) => {
+                    return a.FATURAMENTO_ACIMA_DE_VALOR - b.FATURAMENTO_ACIMA_DE_VALOR
+                })
+
+                state.modalCadastrarParcelaOpened = false
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    text: data.msg
+                })
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao inserir a parcela na regra de faturamento!",
                 text: error.message
             })
         } finally {

@@ -42,3 +42,22 @@ export interface iRegraFaturamentoParcelas {
 export interface iGetRegraFaturamentoParcelasResponse extends iRegraFaturamentoParcelas { }
 
 export interface iDeleteRegraFaturamentoParcelaResponse extends iResponseSuccess { }
+
+export interface iInsertRegraFaturamentoParcelaParam {
+    FATURAMENTO_ATE_VALOR: number,
+    FATURAMENTO_ACIMA_DE_VALOR: number,
+    DIVISAO: number,
+}
+
+export interface iUpdateRegraFaturamentoParcelaParam {
+    ID_REGRA_FATURAMENTO_PARCELA: number,
+    FATURAMENTO_ATE_VALOR: number,
+    FATURAMENTO_ACIMA_DE_VALOR: number,
+    DIVISAO: number
+}
+
+export interface iUpdateRegraFaturamentoParcelaResponse extends iResponseSuccess { }
+
+export interface iInsertRegraFaturamentoParcelaResponse extends iResponseSuccess {
+    idRegraFaturamentoParcela: number
+}
