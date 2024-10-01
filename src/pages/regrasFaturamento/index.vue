@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted } from "vue";
 import CardParcelamento from "./components/CardParcelamento.vue";
-import { actions, state } from "./regrasfaturamento";
+import { actions, computeds, state } from "./regrasfaturamento";
 
 onMounted(async () => {
   await actions.init();
@@ -26,6 +26,7 @@ onMounted(async () => {
                 label="Faturamento Até"
                 maxlength="15"
                 :disabled="!state.btnAlterarActivated"
+                :clearable="false"
               ></v-text-field>
 
               <div class="mt-2">
@@ -74,11 +75,11 @@ onMounted(async () => {
           <v-col>
             <div>
               <v-text-field
-                v-model="state.dbRegraFaturamento.FATURAMENTO_ACIMA_DE_VALOR"
+                v-model="computeds.acimaDeValor.value"
                 v-mask-decimal.br="2"
                 label="Acima De"
                 maxlength="15"
-                :disabled="!state.btnAlterarActivated"
+                disabled
               ></v-text-field>
 
               <div class="mt-2">
@@ -154,7 +155,7 @@ onMounted(async () => {
         <v-btn
           size="small"
           color="primary"
-          @click=""
+          @click="actions.btnSave"
           :disabled="!state.btnAlterarActivated"
         >
           Salvar
