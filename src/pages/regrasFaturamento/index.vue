@@ -140,7 +140,7 @@ onMounted(async () => {
         </div>
 
         <div class="mt-4">
-          <CardParcelamento />
+          <CardParcelamento :regraFaturamentoParcelas="state.dbRegraFaturamentoParcelas" />
         </div>
       </div>
       <div class="mt-4 d-flex justify-center ga-4">

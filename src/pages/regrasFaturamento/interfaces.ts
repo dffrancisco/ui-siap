@@ -31,3 +31,12 @@ export interface iResponseSuccess {
     success: boolean;
     msg: string;
 }
+
+export interface iRegraFaturamentoParcelas {
+    ID_REGRA_FATURAMENTO_PARCELA: number,
+    FATURAMENTO_ATE_VALOR: number,
+    FATURAMENTO_ACIMA_DE_VALOR: number,
+    DIVISAO: number
+}
+
+export interface iGetRegraFaturamentoParcelasResponse extends iRegraFaturamentoParcelas { }

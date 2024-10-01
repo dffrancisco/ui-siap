@@ -1,16 +1,28 @@
 <script lang="ts" setup>
 import utils from "@/ts/utils";
+import { iRegraFaturamentoParcelas } from "../interfaces";
 
-const desserts = [
-  { acimaDe: utils.formatValor(40.0), faturamentoAte: utils.formatValor(300.0), divisao: 1 },
-  { acimaDe: utils.formatValor(500.0), faturamentoAte: "---", divisao: 3 },
-];
+const props = defineProps({
+  regraFaturamentoParcelas: {
+    type: Array as () => iRegraFaturamentoParcelas[],
+    required: true,
+    default: [],
+  },
+});
 </script>
 
 <template>
+  <div
+    v-if="props.regraFaturamentoParcelas.length == 0"
+    class="d-flex justify-center"
+  >
+    <span class="text-subtitle-1 text-grey-darken-3">Não há regra de parcelamento cadastrada.</span>
+  </div>
+
   <v-table
+    v-else
     density="compact"
-    style="border: 1px solid gray"
+    style="border: 1px solid gray; max-height: 200px"
     class="rounded-lg"
   >
     <thead>
@@ -22,13 +34,10 @@ const desserts = [
       </tr>
     </thead>
     <tbody>
-      <tr
-        v-for="item in desserts"
-        :key="item.acimaDe"
-      >
-        <td>{{ item.acimaDe }}</td>
-        <td>{{ item.faturamentoAte }}</td>
-        <td>{{ item.divisao }}x</td>
+      <tr v-for="parcela in props.regraFaturamentoParcelas">
+        <td>{{ utils.formatValor(parcela.FATURAMENTO_ACIMA_DE_VALOR) }}</td>
+        <td>{{ utils.formatValor(parcela.FATURAMENTO_ATE_VALOR) }}</td>
+        <td>{{ parcela.DIVISAO }}x</td>
         <td class="d-flex align-center justify-end ga-2">
           <v-icon
             @click=""

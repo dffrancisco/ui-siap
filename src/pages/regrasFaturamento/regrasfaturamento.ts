@@ -1,21 +1,21 @@
 import { computed, reactive } from "vue";
 import serviceRegrasFaturamento from "./services/regrasFaturamento.service";
 import Swal from "sweetalert2";
-import { iRegraFaturamento, iUpdateOrInsertRegraFaturamentoParam } from "./interfaces";
+import { iRegraFaturamento, iRegraFaturamentoParcelas, iUpdateOrInsertRegraFaturamentoParam } from "./interfaces";
 import utils from "@/ts/utils";
-
-export const teste = true
 
 export const state = reactive({
     loading: false,
     btnAlterarActivated: false,
     dbRegraFaturamento: <iRegraFaturamento>{},
-    dbRegraFaturamentoOld: <iRegraFaturamento>{}
+    dbRegraFaturamentoOld: <iRegraFaturamento>{},
+    dbRegraFaturamentoParcelas: <iRegraFaturamentoParcelas[]>[]
 })
 
 export const actions = {
     async init() {
         await actions.getRegraFaturamento()
+        await actions.getRegraFaturamentoParcelas()
     },
 
     async btnAlterar() {
@@ -97,6 +97,25 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 title: "Erro ao alterar a regra de faturamento!",
+                text: error.message
+            })
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getRegraFaturamentoParcelas() {
+        try {
+            state.loading = true;
+
+            const data = await serviceRegrasFaturamento.getRegraFaturamentoParcelas();
+
+            state.dbRegraFaturamentoParcelas = data
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao buscar as parcelas da regra de faturamento!",
                 text: error.message
             })
         } finally {
