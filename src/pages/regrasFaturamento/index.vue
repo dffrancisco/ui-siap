@@ -140,34 +140,46 @@ onMounted(async () => {
         </div>
 
         <div class="mt-4">
-          <CardParcelamento :regraFaturamentoParcelas="state.dbRegraFaturamentoParcelas" />
+          <CardParcelamento
+            @deleteParcela="actions.deleteRegraFaturamentoParcela"
+            :regraFaturamentoParcelas="state.dbRegraFaturamentoParcelas"
+          />
         </div>
       </div>
-      <div class="mt-4 d-flex justify-center ga-4">
+      <div class="d-flex align-center justify-center mt-4 position-relative">
         <v-btn
-          size="small"
+          class="position-absolute left-0"
+          size="x-small"
           color="primary"
-          :disabled="state.btnAlterarActivated"
-          @click="actions.btnAlterar"
-        >
-          Alterar
-        </v-btn>
-        <v-btn
-          size="small"
-          color="primary"
-          @click="actions.btnSave"
-          :disabled="!state.btnAlterarActivated"
-        >
-          Salvar
-        </v-btn>
-        <v-btn
-          :disabled="!state.btnAlterarActivated"
-          size="small"
-          color="primary"
-          @click="actions.btnCancelar"
-        >
-          Cancelar
-        </v-btn>
+          icon="mdi-account-star mdi-24px"
+          title="Faturamento Exclusivo"
+        />
+        <div class="d-flex align-center justify-center ga-4">
+          <v-btn
+            size="small"
+            color="primary"
+            :disabled="state.btnAlterarActivated"
+            @click="actions.btnAlterar"
+          >
+            Alterar
+          </v-btn>
+          <v-btn
+            size="small"
+            color="primary"
+            @click="actions.btnSave"
+            :disabled="!state.btnAlterarActivated"
+          >
+            Salvar
+          </v-btn>
+          <v-btn
+            :disabled="!state.btnAlterarActivated"
+            size="small"
+            color="primary"
+            @click="actions.btnCancelar"
+          >
+            Cancelar
+          </v-btn>
+        </div>
       </div>
     </v-card>
     <div id="pnCodigoTela">regrasFaturamento</div>

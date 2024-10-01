@@ -1,7 +1,9 @@
 import { computed, reactive } from "vue";
 import serviceRegrasFaturamento from "./services/regrasFaturamento.service";
 import Swal from "sweetalert2";
-import { iRegraFaturamento, iRegraFaturamentoParcelas, iUpdateOrInsertRegraFaturamentoParam } from "./interfaces";
+import {
+    iRegraFaturamento, iRegraFaturamentoParcelas, iUpdateOrInsertRegraFaturamentoParam
+} from "./interfaces";
 import utils from "@/ts/utils";
 
 export const state = reactive({
@@ -116,6 +118,35 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 title: "Erro ao buscar as parcelas da regra de faturamento!",
+                text: error.message
+            })
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async deleteRegraFaturamentoParcela(idRegraFaturamentoParcela: number) {
+        try {
+            state.loading = true;
+
+            const data = await serviceRegrasFaturamento.deleteRegraFaturamentoParcela(idRegraFaturamentoParcela);
+
+            if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    text: data.msg,
+                    timer: 1500,
+                    showConfirmButton: false,
+                })
+
+                state.dbRegraFaturamentoParcelas = state.dbRegraFaturamentoParcelas.filter(parcela => {
+                    return parcela.ID_REGRA_FATURAMENTO_PARCELA !== idRegraFaturamentoParcela;
+                })
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao excluir a parcela da regra de faturamento!",
                 text: error.message
             })
         } finally {

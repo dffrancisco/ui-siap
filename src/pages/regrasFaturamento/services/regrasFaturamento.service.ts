@@ -1,5 +1,5 @@
 import axios from "axios";
-import { iGetRegraFaturamentoParcelasResponse, iGetRegraFaturamentoResponse, iUpdateOrInsertRegraFaturamentoParam, iUpdateOrInsertRegraFaturamentoResponse } from "../interfaces";
+import { iDeleteRegraFaturamentoParcelaResponse, iGetRegraFaturamentoParcelasResponse, iGetRegraFaturamentoResponse, iUpdateOrInsertRegraFaturamentoParam, iUpdateOrInsertRegraFaturamentoResponse } from "../interfaces";
 
 const caminho = 'siap/regrasFaturamento'
 
@@ -7,6 +7,7 @@ type getRegraFaturamentoFunction = () => Promise<iGetRegraFaturamentoResponse>
 type updateOrInsertRegraFaturamentoFunction = (param: iUpdateOrInsertRegraFaturamentoParam) =>
     Promise<iUpdateOrInsertRegraFaturamentoResponse>
 type iGetRegraFaturamentoParcelasFunction = () => Promise<iGetRegraFaturamentoParcelasResponse[]>
+type iDeleteRegraFaturamentoParcelaFunction = (idRegraFaturamentoParcela: number) => Promise<iDeleteRegraFaturamentoParcelaResponse>
 
 const getRegraFaturamento: getRegraFaturamentoFunction = async () => {
     let { data } = await axios.post(caminho, {
@@ -33,8 +34,18 @@ const getRegraFaturamentoParcelas: iGetRegraFaturamentoParcelasFunction = async 
     return data;
 }
 
+const deleteRegraFaturamentoParcela: iDeleteRegraFaturamentoParcelaFunction = async (idRegraFaturamentoParcela) => {
+    let { data } = await axios.post(caminho, {
+        call: "deleteRegraFaturamentoParcela",
+        idRegraFaturamentoParcela
+    })
+
+    return data;
+}
+
 export default {
     getRegraFaturamento,
     updateOrInsertRegraFaturamento,
-    getRegraFaturamentoParcelas
+    getRegraFaturamentoParcelas,
+    deleteRegraFaturamentoParcela,
 }

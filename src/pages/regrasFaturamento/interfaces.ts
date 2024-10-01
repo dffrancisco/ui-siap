@@ -40,3 +40,5 @@ export interface iRegraFaturamentoParcelas {
 }
 
 export interface iGetRegraFaturamentoParcelasResponse extends iRegraFaturamentoParcelas { }
+
+export interface iDeleteRegraFaturamentoParcelaResponse extends iResponseSuccess { }

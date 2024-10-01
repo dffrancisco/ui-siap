@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import utils from "@/ts/utils";
 import { iRegraFaturamentoParcelas } from "../interfaces";
+import serviceRegrasFaturamento from "../services/regrasFaturamento.service";
+import { msgConfirm } from "@/ts/message";
 
 const props = defineProps({
   regraFaturamentoParcelas: {
@@ -9,6 +11,16 @@ const props = defineProps({
     default: [],
   },
 });
+
+const emits = defineEmits(["deleteParcela"]);
+
+const actions = {
+  async deleteParcela(idRegraFaturamentoParcela: number) {
+    if (await msgConfirm("Confirmação", "Confirma a exclusão desta parcela?")) {
+      emits("deleteParcela", idRegraFaturamentoParcela);
+    }
+  },
+};
 </script>
 
 <template>
@@ -16,7 +28,7 @@ const props = defineProps({
     v-if="props.regraFaturamentoParcelas.length == 0"
     class="d-flex justify-center"
   >
-    <span class="text-subtitle-1 text-grey-darken-3">Não há regra de parcelamento cadastrada.</span>
+    <span class="text-subtitle-1 text-grey-darken-2">Não há regra de parcelamento cadastrada.</span>
   </div>
 
   <v-table
@@ -45,7 +57,7 @@ const props = defineProps({
             >mdi-pencil</v-icon
           >
           <v-icon
-            @click=""
+            @click="actions.deleteParcela(parcela.ID_REGRA_FATURAMENTO_PARCELA)"
             title="Deletar"
             >mdi-delete</v-icon
           >
