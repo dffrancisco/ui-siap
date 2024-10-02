@@ -7,6 +7,7 @@ import {
     iUpdateRegraFaturamentoParcelaParam
 } from "./interfaces";
 import utils from "@/ts/utils";
+import xAuthManager from "@/plugins/xAuthManager";
 
 export const state = reactive({
     loading: false,
@@ -16,7 +17,9 @@ export const state = reactive({
     dbRegraFaturamentoParcelas: <iRegraFaturamentoParcelas[]>[],
     modalCadastrarParcelaOpened: false,
     dbRegraFaturamentoParcelaToEdit: <iRegraFaturamentoParcelas>{},
-    inputFaturamentoAte: <HTMLInputElement>{}
+    inputFaturamentoAte: <HTMLInputElement>{},
+    modalFaturamentoExclusivoOpened: false,
+    modalSelecionarClienteExclusivoOpened: false
 })
 
 export const actions = {
@@ -56,6 +59,12 @@ export const actions = {
     async openModalCadastrarParcelaToEdit(dbParcela: iRegraFaturamentoParcelas) {
         state.dbRegraFaturamentoParcelaToEdit = { ...dbParcela }
         state.modalCadastrarParcelaOpened = true
+    },
+
+    async openModalFaturamentoExclusivo() {
+        xAuthManager("Acesso ao faturamento exclusivo", (dados) => {
+            state.modalFaturamentoExclusivoOpened = true
+        });
     },
 
     async getRegraFaturamento() {

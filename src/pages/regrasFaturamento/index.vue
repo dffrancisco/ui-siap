@@ -3,6 +3,9 @@ import { onMounted } from "vue";
 import CardParcelamento from "./components/CardParcelamento.vue";
 import { actions, computeds, state } from "./regrasfaturamento";
 import ModalCadastrarParcela from "./components/ModalCadastrarParcela.vue";
+import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
+import ModalFaturamentoExclusivo from "./components/ModalFaturamentoExclusivo.vue";
+import ModalSelecionarClienteExclusivo from "./components/ModalSelecionarClienteExclusivo.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -156,6 +159,7 @@ onMounted(async () => {
           class="position-absolute left-0"
           size="x-small"
           color="primary"
+          @click="actions.openModalFaturamentoExclusivo"
           icon="mdi-account-star mdi-24px"
           title="Faturamento Exclusivo"
         />
@@ -201,6 +205,25 @@ onMounted(async () => {
       @updateParcela="actions.updateRegraFaturamentoParcela"
     />
   </v-dialog>
+
+  <v-dialog
+    v-model="state.modalFaturamentoExclusivoOpened"
+    max-width="600"
+  >
+    <ModalFaturamentoExclusivo
+      @closeModal="state.modalFaturamentoExclusivoOpened = false"
+      @openModalSelecionarCliente="state.modalSelecionarClienteExclusivoOpened = true"
+    />
+  </v-dialog>
+
+  <v-dialog
+    v-model="state.modalSelecionarClienteExclusivoOpened"
+    max-width="600"
+  >
+    <ModalSelecionarClienteExclusivo @closeModal="state.modalSelecionarClienteExclusivoOpened = false" />
+  </v-dialog>
+
+  <modalXAuthManager />
 
   <v-overlay
     :model-value="state.loading"
