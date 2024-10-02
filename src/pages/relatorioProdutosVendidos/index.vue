@@ -27,6 +27,7 @@ onMounted(async () => {
             label="Data Fim"
             width="200px"
             type="date"
+            @keypress.enter="actions.validarInputs"
           >
           </v-text-field>
         </div>
