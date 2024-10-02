@@ -212,7 +212,7 @@ onMounted(async () => {
   >
     <ModalFaturamentoExclusivo
       @closeModal="state.modalFaturamentoExclusivoOpened = false"
-      @openModalSelecionarCliente="state.modalSelecionarClienteExclusivoOpened = true"
+      @openModalSelecionarCliente="actions.openModalSelecionarCliente"
     />
   </v-dialog>
 
@@ -220,7 +220,7 @@ onMounted(async () => {
     v-model="state.modalSelecionarClienteExclusivoOpened"
     max-width="600"
   >
-    <ModalSelecionarClienteExclusivo @closeModal="state.modalSelecionarClienteExclusivoOpened = false" />
+    <ModalSelecionarClienteExclusivo @closeModal="actions.closeModalSelecionarCliente" />
   </v-dialog>
 
   <modalXAuthManager />

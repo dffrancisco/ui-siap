@@ -1,15 +1,19 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import { onMounted, reactive } from "vue";
+import { useEventListener } from "@vueuse/core";
+import { onMounted, onUnmounted, reactive } from "vue";
 
 const emits = defineEmits(["openModalSelecionarCliente", "closeModal"]);
 
 const state = reactive({
   gridFaturamentoExclusivo: <ixGridCreate>null,
+  inputSearchElement: <HTMLInputElement>null,
 });
 
 const actions = {
   async init() {
+    state.inputSearchElement = document.getElementById("inputSearch") as HTMLInputElement;
+
     await actions.criarGrid();
   },
 
@@ -37,6 +41,18 @@ const actions = {
 onMounted(() => {
   actions.init();
 });
+
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F1") {
+    state.inputSearchElement.select();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
+
+onUnmounted(() => {
+  removeEventListener("keydown", eventListener);
+});
 </script>
 
 <template>
@@ -48,6 +64,7 @@ onMounted(() => {
         label="F1 - Pesquisar (Razão Social ou CNPJ)"
         :clearable="false"
         autofocus
+        id="inputSearch"
       ></v-text-field>
       <v-btn
         color="primary"
