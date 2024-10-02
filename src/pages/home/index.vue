@@ -278,6 +278,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/relatorioProdutosVendidos')"
+              >Relatório Produtos Vendidos</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="login.actions.confirmarSaida()"
             >
               Logout
