@@ -1,9 +1,10 @@
-import { computed, reactive } from "vue";
+import { computed, nextTick, reactive } from "vue";
 import serviceRegrasFaturamento from "./services/regrasFaturamento.service";
 import Swal from "sweetalert2";
 import {
     iInsertRegraFaturamentoParcelaParam,
-    iRegraFaturamento, iRegraFaturamentoParcelas, iUpdateOrInsertRegraFaturamentoParam
+    iRegraFaturamento, iRegraFaturamentoParcelas, iUpdateOrInsertRegraFaturamentoParam,
+    iUpdateRegraFaturamentoParcelaParam
 } from "./interfaces";
 import utils from "@/ts/utils";
 
@@ -13,11 +14,15 @@ export const state = reactive({
     dbRegraFaturamento: <iRegraFaturamento>{},
     dbRegraFaturamentoOld: <iRegraFaturamento>{},
     dbRegraFaturamentoParcelas: <iRegraFaturamentoParcelas[]>[],
-    modalCadastrarParcelaOpened: false
+    modalCadastrarParcelaOpened: false,
+    dbRegraFaturamentoParcelaToEdit: <iRegraFaturamentoParcelas>{},
+    inputFaturamentoAte: <HTMLInputElement>{}
 })
 
 export const actions = {
     async init() {
+        state.inputFaturamentoAte = document.getElementById('inputFaturamentoAte') as HTMLInputElement
+
         await actions.getRegraFaturamento()
         await actions.getRegraFaturamentoParcelas()
     },
@@ -25,6 +30,9 @@ export const actions = {
     async btnAlterar() {
         state.dbRegraFaturamentoOld = { ...state.dbRegraFaturamento }
         state.btnAlterarActivated = true
+        await nextTick()
+
+        state.inputFaturamentoAte.focus()
     },
 
     async btnCancelar() {
@@ -38,6 +46,16 @@ export const actions = {
         }
 
         state.btnAlterarActivated = false
+    },
+
+    async openModalCadastrarParcela() {
+        state.dbRegraFaturamentoParcelaToEdit = {} as iRegraFaturamentoParcelas
+        state.modalCadastrarParcelaOpened = true
+    },
+
+    async openModalCadastrarParcelaToEdit(dbParcela: iRegraFaturamentoParcelas) {
+        state.dbRegraFaturamentoParcelaToEdit = { ...dbParcela }
+        state.modalCadastrarParcelaOpened = true
     },
 
     async getRegraFaturamento() {
@@ -185,8 +203,55 @@ export const actions = {
 
                 state.dbRegraFaturamentoParcelas.push(dbRegraFaturamentoParcela)
 
-                state.dbRegraFaturamentoParcelas.sort((a, b) => {
-                    return a.FATURAMENTO_ACIMA_DE_VALOR - b.FATURAMENTO_ACIMA_DE_VALOR
+                state.modalCadastrarParcelaOpened = false
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    text: data.msg
+                })
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao inserir a parcela na regra de faturamento!",
+                text: error.message
+            })
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async updateRegraFaturamentoParcela(dbRegraFaturamentoParcela: iRegraFaturamentoParcelas) {
+        try {
+            state.loading = true;
+
+            let param: iUpdateRegraFaturamentoParcelaParam = {
+                DIVISAO: dbRegraFaturamentoParcela.DIVISAO,
+                FATURAMENTO_ACIMA_DE_VALOR: utils.formatValorUSA(dbRegraFaturamentoParcela.FATURAMENTO_ACIMA_DE_VALOR.toString()),
+                FATURAMENTO_ATE_VALOR: utils.formatValorUSA(dbRegraFaturamentoParcela.FATURAMENTO_ATE_VALOR.toString()),
+                ID_REGRA_FATURAMENTO_PARCELA: dbRegraFaturamentoParcela.ID_REGRA_FATURAMENTO_PARCELA
+            }
+
+            const data = await serviceRegrasFaturamento.updateRegraFaturamentoParcela(param);
+
+            if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    text: data.msg,
+                    timer: 1500,
+                    showConfirmButton: false,
+                })
+
+                state.dbRegraFaturamentoParcelas = state.dbRegraFaturamentoParcelas.map(parcela => {
+                    if (parcela.ID_REGRA_FATURAMENTO_PARCELA === dbRegraFaturamentoParcela.ID_REGRA_FATURAMENTO_PARCELA) {
+                        return {
+                            ...parcela,
+                            DIVISAO: param.DIVISAO,
+                            FATURAMENTO_ACIMA_DE_VALOR: param.FATURAMENTO_ACIMA_DE_VALOR,
+                            FATURAMENTO_ATE_VALOR: param.FATURAMENTO_ATE_VALOR
+                        }
+                    }
+                    return parcela
                 })
 
                 state.modalCadastrarParcelaOpened = false
@@ -199,7 +264,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao inserir a parcela na regra de faturamento!",
+                title: "Erro ao alterar a parcela da regra de faturamento!",
                 text: error.message
             })
         } finally {

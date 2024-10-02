@@ -12,13 +12,17 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["deleteParcela"]);
+const emits = defineEmits(["deleteParcela", "editParcela"]);
 
 const actions = {
   async deleteParcela(idRegraFaturamentoParcela: number) {
     if (await msgConfirm("Confirmação", "Confirma a exclusão desta parcela?")) {
       emits("deleteParcela", idRegraFaturamentoParcela);
     }
+  },
+
+  async editParcela(dbParcela: iRegraFaturamentoParcelas) {
+    emits("editParcela", dbParcela);
   },
 };
 </script>
@@ -52,7 +56,7 @@ const actions = {
         <td>{{ parcela.DIVISAO }}x</td>
         <td class="d-flex align-center justify-end ga-2">
           <v-icon
-            @click=""
+            @click="actions.editParcela(parcela)"
             title="Editar"
             >mdi-pencil</v-icon
           >

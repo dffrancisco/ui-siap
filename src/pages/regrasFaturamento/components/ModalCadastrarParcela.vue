@@ -1,8 +1,16 @@
 <script lang="ts" setup>
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import { iRegraFaturamentoParcelas } from "../interfaces";
 import utils from "@/ts/utils";
 import Swal from "sweetalert2";
+
+const props = defineProps({
+  dbParcelaToEdit: {
+    type: Object as () => iRegraFaturamentoParcelas,
+    required: true,
+    default: {},
+  },
+});
 
 const emits = defineEmits(["closeModal", , "insertParcela", "updateParcela"]);
 
@@ -34,17 +42,36 @@ const actions = {
     }
 
     if (state.dbParcela.ID_REGRA_FATURAMENTO_PARCELA) {
-      emits("updateParcela", state.dbParcela);
+      let dbParcelaFormatada: iRegraFaturamentoParcelas = {
+        ID_REGRA_FATURAMENTO_PARCELA: props.dbParcelaToEdit.ID_REGRA_FATURAMENTO_PARCELA,
+        FATURAMENTO_ATE_VALOR: Number(faturamentoAteValor),
+        FATURAMENTO_ACIMA_DE_VALOR: Number(faturamentoAcimaDeValor),
+        DIVISAO: Number(state.dbParcela.DIVISAO),
+      };
+
+      if (JSON.stringify(dbParcelaFormatada) != JSON.stringify(props.dbParcelaToEdit)) {
+        emits("updateParcela", state.dbParcela);
+        return;
+      }
+
+      actions.closeModal();
     } else {
       emits("insertParcela", state.dbParcela);
     }
   },
 };
+
+onMounted(() => {
+  if (props.dbParcelaToEdit.ID_REGRA_FATURAMENTO_PARCELA) {
+    state.dbParcela = { ...props.dbParcelaToEdit };
+  }
+});
 </script>
 
 <template>
   <v-card class="pa-4">
-    <v-card-title>Nova Parcela</v-card-title>
+    <v-card-title v-if="props.dbParcelaToEdit.ID_REGRA_FATURAMENTO_PARCELA">Editar Parcela</v-card-title>
+    <v-card-title v-else="props.dbParcelaToEdit.ID_REGRA_FATURAMENTO_PARCELA">Nova Parcela</v-card-title>
 
     <div class="mt-4">
       <v-row>
@@ -56,6 +83,7 @@ const actions = {
             class="obr rounded"
             :clearable="false"
             maxlength="15"
+            autofocus
           ></v-text-field>
         </v-col>
         <v-col>

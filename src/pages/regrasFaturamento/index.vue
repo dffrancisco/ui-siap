@@ -26,6 +26,7 @@ onMounted(async () => {
                 v-mask-decimal.br="2"
                 label="Faturamento Até"
                 maxlength="15"
+                id="inputFaturamentoAte"
                 :disabled="!state.btnAlterarActivated"
                 :clearable="false"
               ></v-text-field>
@@ -81,6 +82,7 @@ onMounted(async () => {
                 label="Faturamento Acima De"
                 maxlength="15"
                 disabled
+                :clearable="false"
               ></v-text-field>
 
               <div class="mt-2">
@@ -137,7 +139,7 @@ onMounted(async () => {
             size="20"
             icon="mdi-plus"
             title="Novo parcelamento"
-            @click="state.modalCadastrarParcelaOpened = true"
+            @click="actions.openModalCadastrarParcela"
           ></v-btn>
         </div>
 
@@ -145,6 +147,7 @@ onMounted(async () => {
           <CardParcelamento
             @deleteParcela="actions.deleteRegraFaturamentoParcela"
             :regraFaturamentoParcelas="state.dbRegraFaturamentoParcelas"
+            @editParcela="actions.openModalCadastrarParcelaToEdit"
           />
         </div>
       </div>
@@ -194,6 +197,8 @@ onMounted(async () => {
     <ModalCadastrarParcela
       @insertParcela="actions.insertRegraFaturamentoParcela"
       @closeModal="state.modalCadastrarParcelaOpened = false"
+      :dbParcelaToEdit="state.dbRegraFaturamentoParcelaToEdit"
+      @updateParcela="actions.updateRegraFaturamentoParcela"
     />
   </v-dialog>
 
