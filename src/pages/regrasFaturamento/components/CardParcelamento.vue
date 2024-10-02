@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import utils from "@/ts/utils";
 import { iRegraFaturamentoParcelas } from "../interfaces";
-import serviceRegrasFaturamento from "../services/regrasFaturamento.service";
 import { msgConfirm } from "@/ts/message";
 
 const props = defineProps({

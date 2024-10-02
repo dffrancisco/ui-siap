@@ -2,19 +2,25 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { useEventListener } from "@vueuse/core";
 import { onMounted, onUnmounted, reactive } from "vue";
+import serviceRegrasFaturamento from "../services/regrasFaturamento.service";
+import Swal from "sweetalert2";
 
 const emits = defineEmits(["openModalSelecionarCliente", "closeModal"]);
 
 const state = reactive({
   gridFaturamentoExclusivo: <ixGridCreate>null,
   inputSearchElement: <HTMLInputElement>null,
+  loading: false,
 });
 
 const actions = {
   async init() {
     state.inputSearchElement = document.getElementById("inputSearch") as HTMLInputElement;
-
     await actions.criarGrid();
+
+    state.gridFaturamentoExclusivo.queryOpen({
+      search: "",
+    });
   },
 
   async openModalSelecionarCliente() {
@@ -30,11 +36,42 @@ const actions = {
         "Razão Social": { dataField: "RAZAO_SOCIAL" },
         CNPJ: { dataField: "CNPJ", width: "25%" },
       },
+      query: {
+        async execute(rs) {
+          // @ts-ignore
+          const data = await actions.getFaturamentosExclusivos(rs.offset, rs.param.search);
+          state.gridFaturamentoExclusivo.querySourceAdd(data);
+        },
+      },
     });
   },
 
   async closeModal() {
     emits("closeModal");
+  },
+
+  async getFaturamentosExclusivos(offset: number, search: string) {
+    try {
+      state.loading = true;
+
+      const data = serviceRegrasFaturamento.getFaturamentosExclusivos(offset, search);
+
+      return data;
+    } catch (error) {
+      Swal.fire({
+        title: "Erro ao buscar os faturamentos exclusivos.",
+        text: error.message,
+        icon: "error",
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  async btnSearch() {
+    state.gridFaturamentoExclusivo.queryOpen({
+      search: state.inputSearchElement.value,
+    });
   },
 };
 
@@ -65,11 +102,14 @@ onUnmounted(() => {
         :clearable="false"
         autofocus
         id="inputSearch"
+        @keydown.arrow.down.prevent="state.gridFaturamentoExclusivo.focus()"
+        @keydown.enter.prevent="actions.btnSearch()"
       ></v-text-field>
       <v-btn
         color="primary"
         size="36"
         icon="mdi-magnify mdi-24px"
+        @click="actions.btnSearch()"
       ></v-btn>
     </div>
 
@@ -107,4 +147,16 @@ onUnmounted(() => {
       </div>
     </div>
   </v-card>
+
+  <v-overlay
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
