@@ -1,5 +1,18 @@
 import axios from "axios";
-import { iDeleteRegraFaturamentoParcelaResponse, iGetRegraFaturamentoParcelasResponse, iGetRegraFaturamentoResponse, iInsertRegraFaturamentoParcelaParam, iInsertRegraFaturamentoParcelaResponse, iUpdateOrInsertRegraFaturamentoParam, iUpdateOrInsertRegraFaturamentoResponse, iUpdateRegraFaturamentoParcelaParam, iUpdateRegraFaturamentoParcelaResponse } from "../interfaces";
+import {
+    iDeleteRegraFaturamentoParcelaResponse,
+    iGetClientesFaturadosResponse,
+    iGetFaturamentosExclusivosResponse,
+    iGetRegraFaturamentoExclusivoResponse,
+    iGetRegraFaturamentoParcelasResponse,
+    iGetRegraFaturamentoResponse,
+    iInsertRegraFaturamentoParcelaParam,
+    iInsertRegraFaturamentoParcelaResponse,
+    iUpdateOrInsertRegraFaturamentoParam,
+    iUpdateOrInsertRegraFaturamentoResponse,
+    iUpdateRegraFaturamentoParcelaParam,
+    iUpdateRegraFaturamentoParcelaResponse
+} from "../interfaces";
 
 const caminho = 'siap/regrasFaturamento'
 
@@ -12,6 +25,12 @@ type iInsertRegraFaturamentoParcelaFunction = (param: iInsertRegraFaturamentoPar
     Promise<iInsertRegraFaturamentoParcelaResponse>
 type iUpdateRegraFaturamentoParcelaFunction = (param: iUpdateRegraFaturamentoParcelaParam) =>
     Promise<iUpdateRegraFaturamentoParcelaResponse>
+type iGetFaturamentosExclusivosFunction = (offset: number, search: string) =>
+    Promise<iGetFaturamentosExclusivosResponse>
+type iGetClientesFaturadosFunction = (offset: number, search: string) =>
+    Promise<iGetClientesFaturadosResponse>
+type iGetRegraFaturamentoExclusivoFunction = (idCliente: number) =>
+    Promise<iGetRegraFaturamentoExclusivoResponse>
 
 const getRegraFaturamento: getRegraFaturamentoFunction = async () => {
     let { data } = await axios.post(caminho, {
@@ -65,11 +84,43 @@ const updateRegraFaturamentoParcela: iUpdateRegraFaturamentoParcelaFunction = as
     return data;
 }
 
+const getFaturamentosExclusivos: iGetFaturamentosExclusivosFunction = async (offset, search) => {
+    let { data } = await axios.post(caminho, {
+        call: "getFaturamentosExclusivos",
+        offset,
+        search
+    })
+
+    return data;
+}
+
+const getClientesFaturados: iGetClientesFaturadosFunction = async (offset, search) => {
+    let { data } = await axios.post(caminho, {
+        call: "getClientesFaturados",
+        offset,
+        search
+    })
+
+    return data;
+}
+
+const getRegraFaturamentoExclusivo: iGetRegraFaturamentoExclusivoFunction = async (idCliente) => {
+    let { data } = await axios.post(caminho, {
+        call: "getRegraFaturamentoExclusivo",
+        idCliente
+    })
+
+    return data;
+}
+
 export default {
     getRegraFaturamento,
     updateOrInsertRegraFaturamento,
     getRegraFaturamentoParcelas,
     deleteRegraFaturamentoParcela,
     insertRegraFaturamentoParcela,
-    updateRegraFaturamentoParcela
+    updateRegraFaturamentoParcela,
+    getFaturamentosExclusivos,
+    getClientesFaturados,
+    getRegraFaturamentoExclusivo,
 }

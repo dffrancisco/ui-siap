@@ -8,7 +8,8 @@ export interface iRegraFaturamento {
     FATURAMENTO_ACIMA_DE_PRAZO_1: number,
     FATURAMENTO_ACIMA_DE_PRAZO_2: number,
     FATURAMENTO_ACIMA_DE_PRAZO_3: number,
-    ID_CLIENTE?: number
+    ID_CLIENTE?: number,
+    RAZAO_SOCIAL?: string
 }
 
 export interface iGetRegraFaturamentoResponse extends iRegraFaturamento { }
@@ -61,3 +62,17 @@ export interface iUpdateRegraFaturamentoParcelaResponse extends iResponseSuccess
 export interface iInsertRegraFaturamentoParcelaResponse extends iResponseSuccess {
     idRegraFaturamentoParcela: number
 }
+
+export interface iGetFaturamentosExclusivosResponse {
+    ID_REGRA_FATURAMENTO: number,
+    CNPJ: string,
+    RAZAO_SOCIAL: string
+}
+
+export interface iGetClientesFaturadosResponse {
+    ID_CLIENTE: number,
+    RAZAO_SOCIAL: string,
+    CNPJ: string
+}
+
+export interface iGetRegraFaturamentoExclusivoResponse extends iRegraFaturamento { }
