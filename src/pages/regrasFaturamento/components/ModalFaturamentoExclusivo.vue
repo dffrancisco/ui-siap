@@ -34,7 +34,7 @@ const actions = {
       height: "300px",
       columns: {
         "Razão Social": { dataField: "RAZAO_SOCIAL" },
-        CNPJ: { dataField: "CNPJ", width: "25%" },
+        CNPJ: { dataField: "CNPJ", width: "22%" },
       },
       query: {
         async execute(rs) {
@@ -54,7 +54,7 @@ const actions = {
     try {
       state.loading = true;
 
-      const data = serviceRegrasFaturamento.getFaturamentosExclusivos(offset, search);
+      const data = await serviceRegrasFaturamento.getFaturamentosExclusivos(offset, search);
 
       return data;
     } catch (error) {

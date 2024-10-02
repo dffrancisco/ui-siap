@@ -67,16 +67,6 @@ export const actions = {
         });
     },
 
-    async openModalSelecionarCliente() {
-        state.modalSelecionarClienteExclusivoOpened = true
-        state.modalFaturamentoExclusivoOpened = false
-    },
-
-    async closeModalSelecionarCliente() {
-        state.modalFaturamentoExclusivoOpened = true
-        state.modalSelecionarClienteExclusivoOpened = false
-    },
-
     async getRegraFaturamento() {
         try {
             state.loading = true;

@@ -158,6 +158,7 @@ onMounted(async () => {
         <v-btn
           class="position-absolute left-0"
           size="x-small"
+          :disabled="state.btnAlterarActivated"
           color="primary"
           @click="actions.openModalFaturamentoExclusivo"
           icon="mdi-account-star mdi-24px"
@@ -208,19 +209,19 @@ onMounted(async () => {
 
   <v-dialog
     v-model="state.modalFaturamentoExclusivoOpened"
-    max-width="600"
+    max-width="650"
   >
     <ModalFaturamentoExclusivo
       @closeModal="state.modalFaturamentoExclusivoOpened = false"
-      @openModalSelecionarCliente="actions.openModalSelecionarCliente"
+      @openModalSelecionarCliente="state.modalSelecionarClienteExclusivoOpened = true"
     />
   </v-dialog>
 
   <v-dialog
     v-model="state.modalSelecionarClienteExclusivoOpened"
-    max-width="600"
+    max-width="650"
   >
-    <ModalSelecionarClienteExclusivo @closeModal="actions.closeModalSelecionarCliente" />
+    <ModalSelecionarClienteExclusivo @closeModal="state.modalSelecionarClienteExclusivoOpened = false" />
   </v-dialog>
 
   <modalXAuthManager />
