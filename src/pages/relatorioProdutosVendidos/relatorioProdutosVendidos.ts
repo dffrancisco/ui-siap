@@ -3,6 +3,7 @@ import { reactive } from "vue";
 import { iDadosRelatorioProdutosVendidos } from "./interfaces";
 import serviceRelatorioProdutosVendidos from './services/relatorioProdutosVendidos.service'
 import Swal from "sweetalert2";
+import utils, { iColumnPrint } from "@/ts/utils";
 
 export const state = reactive({
     loading: false,
@@ -14,7 +15,38 @@ export const state = reactive({
     itemsPerPage: 30,
     page: 1,
     dadosRelatorio: <iDadosRelatorioProdutosVendidos[]>[],
-    headers: <any>[]
+    headers: <any>[
+        {
+            title: "Produto",
+            key: "DESC_PRODUTO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Nº Fabricante",
+            key: "NUM_FABRICANTE",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Qtd Estoque",
+            key: "QTO_ESTOQUE",
+            sortable: true,
+            align: 'right',
+        },
+        {
+            title: "Qtd Vendas",
+            key: "QTO_VENDA",
+            sortable: true,
+            align: 'right',
+        },
+        {
+            title: "End. Estoque",
+            key: "END_ESTOQUE",
+            sortable: true,
+            align: 'left',
+        }
+    ]
 })
 
 export const actions = {
@@ -37,7 +69,7 @@ export const actions = {
             await Swal.fire({
                 text: "Data Inválida!",
                 icon: "warning"
-            })
+            });
             return;
         }
 
@@ -46,11 +78,24 @@ export const actions = {
                 text: "Data inicial deve ser menor que a data final!",
                 icon: "warning"
             });
-            return false;
+            return;
+        }
+
+        //converter para poder comparar
+        const dataInicioMoment = moment(state.dataInicio);
+        const dataFimMoment = moment(state.dataFim);
+        const diferencaEmMeses = dataFimMoment.diff(dataInicioMoment, 'months');
+        if (diferencaEmMeses > 3) {
+            await Swal.fire({
+                text: "O intervalo entre as datas não pode ser maior que 3 meses!",
+                icon: "warning"
+            });
+            return;
         }
 
         actions.getDadosParaRelatorio();
     },
+
 
     async getDadosParaRelatorio() {
         try {
@@ -62,8 +107,6 @@ export const actions = {
                 dataInicio: state.dataInicio,
                 dataFim: state.dataFim,
             });
-
-            console.log(data);
             state.dadosRelatorio = data.dadosRelatorio;
             state.totalItems = data.totalDadosRelatorio[0].TOTAL;
 
@@ -73,6 +116,39 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao trazer os dados para relatório!"
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async onClickImprimir() {
+        try {
+            state.loading = true;
+
+            const columns: iColumnPrint[] = [
+                { key: 'DESC_PRODUTO', label: 'Produto', width: '35%', align: 'left' },
+                { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '15%', align: 'left' },
+                { key: 'QTO_ESTOQUE', label: 'Qtd. Estoque', width: '17%', align: 'center' },
+                { key: 'QTO_VENDA', label: 'Qtd. Venda', width: '17%', align: 'center' },
+                { key: 'END_ESTOQUE', label: 'End. Estoque', width: '16%', align: 'left' }
+            ];
+
+            const titulo = `
+                <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
+                    <span>&nbsp;</span>
+                    <strong style="font-size: 16px;">Relatório Produtos Vendidos</strong>
+                    <span>&nbsp;</span>
+                    <span> - Período: ${moment(state.dataInicioImpressao).format('DD/MM/YYYY')} - ${moment(state.dataFimImpressao).format('DD/MM/YYYY')}</span>
+                </div>
+            `;
+
+            await utils.printComCabecalho(columns, state.dadosRelatorio, titulo);
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
             });
         } finally {
             state.loading = false;

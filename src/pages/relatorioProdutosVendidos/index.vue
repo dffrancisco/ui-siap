@@ -71,6 +71,7 @@ onMounted(async () => {
         <v-btn
           color="primary"
           :disabled="state.dadosRelatorio.length == 0"
+          @click="actions.onClickImprimir"
           icon="mdi-printer"
           size="36px"
           title="Imprimir"
