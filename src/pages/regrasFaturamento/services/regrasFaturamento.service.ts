@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+    iDeleteRegraFaturamentoExclusivaResponse,
     iDeleteRegraFaturamentoParcelaResponse,
     iGetClientesFaturadosResponse,
     iGetFaturamentosExclusivosResponse,
@@ -31,6 +32,8 @@ type iGetClientesFaturadosFunction = (offset: number, search: string) =>
     Promise<iGetClientesFaturadosResponse>
 type iGetRegraFaturamentoExclusivoFunction = (idCliente: number) =>
     Promise<iGetRegraFaturamentoExclusivoResponse>
+type iDeleteRegraFaturamentoExclusivaFunction = (idCliente: number) =>
+    Promise<iDeleteRegraFaturamentoExclusivaResponse>
 
 const getRegraFaturamento: getRegraFaturamentoFunction = async () => {
     let { data } = await axios.post(caminho, {
@@ -113,6 +116,15 @@ const getRegraFaturamentoExclusivo: iGetRegraFaturamentoExclusivoFunction = asyn
     return data;
 }
 
+const deleteRegraFaturamentoExclusiva: iDeleteRegraFaturamentoExclusivaFunction = async (idCliente) => {
+    let { data } = await axios.post(caminho, {
+        call: "deleteRegraFaturamentoExclusiva",
+        idCliente
+    })
+
+    return data;
+}
+
 export default {
     getRegraFaturamento,
     updateOrInsertRegraFaturamento,
@@ -123,4 +135,5 @@ export default {
     getFaturamentosExclusivos,
     getClientesFaturados,
     getRegraFaturamentoExclusivo,
+    deleteRegraFaturamentoExclusiva,
 }

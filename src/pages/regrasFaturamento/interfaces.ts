@@ -80,3 +80,5 @@ export interface iClienteFaturado {
 export interface iGetClientesFaturadosResponse extends iClienteFaturado { }
 
 export interface iGetRegraFaturamentoExclusivoResponse extends iRegraFaturamento { }
+
+export interface iDeleteRegraFaturamentoExclusivaResponse extends iResponseSuccess { }

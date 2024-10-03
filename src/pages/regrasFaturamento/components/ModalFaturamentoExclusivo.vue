@@ -4,6 +4,7 @@ import { useEventListener } from "@vueuse/core";
 import { onMounted, onUnmounted, reactive } from "vue";
 import serviceRegrasFaturamento from "../services/regrasFaturamento.service";
 import Swal from "sweetalert2";
+import { msgConfirmSemCodigo } from "@/ts/utils";
 
 const emits = defineEmits(["openModalSelecionarCliente", "closeModal", "selecionarFaturamentoExclusivo"]);
 
@@ -89,6 +90,47 @@ const actions = {
 
     emits("selecionarFaturamentoExclusivo", faturamento);
   },
+
+  async btnDelete() {
+    const faturamento = state.gridFaturamentoExclusivo.dataSource();
+
+    if (!faturamento) {
+      Swal.fire({
+        title: "Nenhum faturamento selecionado.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    if (await msgConfirmSemCodigo("Confirmação", "Confirma a exclusão desta regra de faturamento?")) {
+      await actions.deleteRegraFaturamentoExclusiva(faturamento.ID_CLIENTE);
+    }
+  },
+
+  async deleteRegraFaturamentoExclusiva(idCliente: number) {
+    try {
+      state.loading = true;
+
+      const data = await serviceRegrasFaturamento.deleteRegraFaturamentoExclusiva(idCliente);
+
+      if (data.success) {
+        Swal.fire({
+          title: data.msg,
+          icon: "success",
+        });
+
+        state.gridFaturamentoExclusivo.deleteLine();
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Erro ao excluir a regra de faturamento exclusiva.",
+        text: error.message,
+        icon: "error",
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
 };
 
 onMounted(() => {
@@ -141,6 +183,7 @@ onUnmounted(() => {
           size="36"
           title="Excluir Faturamento Exclusivo"
           icon="mdi-delete mdi-24px"
+          @click="actions.btnDelete"
         ></v-btn>
 
         <v-btn
