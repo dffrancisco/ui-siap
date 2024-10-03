@@ -5,6 +5,7 @@ import { iClienteFaturado, iGetOrcamentosClienteFaturadoParam, iOrcamentosClient
 import serviceFaturarCliente from "./services/faturarCliente.service";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
+import { msgConfirm } from "@/ts/message";
 
 export const state = reactive({
     gridPedido: <ixGridCreate>{},
@@ -15,7 +16,8 @@ export const state = reactive({
     dbOrcamentosClienteFaturado: <iOrcamentosClienteFaturado[]>[],
     locValor: null,
     orcamentosLocalizados: <iOrcamentosLocalizados[]>[],
-    inputLocOrcElement: <HTMLInputElement>null
+    inputLocOrcElement: <HTMLInputElement>null,
+    modalGerarBoletoOpened: false
 })
 
 export const actions = ({
@@ -77,8 +79,8 @@ export const actions = ({
 
     locValorOrcamento() {
 
-        let isOrcamento = state.locValor.startsWith('+') ? true : false
-        let isDevolucao = state.locValor.toUpperCase().startsWith('DEV') ? true : false
+        let isOrcamento = state.locValor.startsWith('+')
+        let isDevolucao = state.locValor.toUpperCase().startsWith('DEV')
 
         if (!isOrcamento && !isDevolucao) {
             Swal.fire({
@@ -146,6 +148,19 @@ export const actions = ({
         }
 
         state.locValor = null
+    },
+
+    async openModalGeralBoleto() {
+        if (computeds.calcularOrcamentosLocalizados.value.total != computeds.totalValorOrcamentos.value) {
+            if (await msgConfirm('Confirmação', 'Alguns orçamentos parecem estar faltando. Deseja continuar mesmo assim?')) {
+                state.modalGerarBoletoOpened = true
+                return
+            }
+
+            return
+        }
+
+        state.modalGerarBoletoOpened = true
     }
 
 })

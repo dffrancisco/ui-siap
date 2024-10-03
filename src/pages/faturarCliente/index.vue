@@ -1,20 +1,24 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { actions, computeds, state } from "./faturarCliente";
-import ModalSelecionarCliente from "./components/modalSelecionarCliente.vue";
-import globalActions from "@/store/globalActions";
+import ModalSelecionarCliente from "./components/ModalSelecionarCliente.vue";
 import utils from "@/ts/utils";
 import { useEventListener } from "@vueuse/core";
 
 useEventListener(document, "keydown", async (event) => {
-  if (event.key === "F2") {
-    state.modalSelecionarClienteOpened = true;
-    event.preventDefault();
-    event.stopPropagation();
-  }
+  if (!state.modalSelecionarClienteOpened && !state.modalGerarBoletoOpened) {
+    if (event.key === "F1" && state.dbOrcamentosClienteFaturado.length > 0) {
+      actions.openModalGeralBoleto();
+    }
 
-  if (event.key === "F3") {
-    state.inputLocOrcElement.focus();
+    if (event.key === "F2") {
+      state.modalSelecionarClienteOpened = true;
+    }
+
+    if (event.key === "F3") {
+      state.inputLocOrcElement.focus();
+    }
+
     event.preventDefault();
     event.stopPropagation();
   }
@@ -26,18 +30,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-btn
-    @click="
-      () => {
-        globalActions.toggleTheme();
-      }
-    "
-    variant="text"
-    class="position-absolute"
-    color="gray"
-    icon="mdi-theme-light-dark"
-  ></v-btn>
-
   <v-container>
     <v-card
       width="800"
@@ -153,6 +145,7 @@ onMounted(async () => {
               </div>
               <div>
                 <v-btn
+                  @click="actions.openModalGeralBoleto"
                   :disabled="state.dbOrcamentosClienteFaturado.length == 0"
                   :color="
                     computeds.calcularOrcamentosLocalizados.value.total == computeds.totalValorOrcamentos.value &&
@@ -191,6 +184,13 @@ onMounted(async () => {
         @selecionarCliente="actions.selecionarCliente"
         @closeModal="actions.closeModal"
       />
+    </v-dialog>
+
+    <v-dialog
+      v-model="state.modalGerarBoletoOpened"
+      width="800"
+    >
+      <v-card height="600"></v-card>
     </v-dialog>
 
     <v-overlay
