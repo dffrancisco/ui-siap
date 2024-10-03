@@ -104,10 +104,10 @@ const getClientesFaturados: iGetClientesFaturadosFunction = async (offset, searc
     return data;
 }
 
-const getRegraFaturamentoExclusivo: iGetRegraFaturamentoExclusivoFunction = async (idRegraFaturamentoExclusivo) => {
+const getRegraFaturamentoExclusivo: iGetRegraFaturamentoExclusivoFunction = async (idCliente) => {
     let { data } = await axios.post(caminho, {
         call: "getRegraFaturamentoExclusivo",
-        idRegraFaturamentoExclusivo
+        idCliente
     })
 
     return data;

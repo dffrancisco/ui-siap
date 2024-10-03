@@ -64,17 +64,19 @@ export interface iInsertRegraFaturamentoParcelaResponse extends iResponseSuccess
 }
 
 export interface iFaturamentosExclusivo {
-    ID_REGRA_FATURAMENTO: number,
+    ID_CLIENTE: number,
     CNPJ: string,
     RAZAO_SOCIAL: string
 }
 
 export interface iGetFaturamentosExclusivosResponse extends iFaturamentosExclusivo { }
 
-export interface iGetClientesFaturadosResponse {
+export interface iClienteFaturado {
     ID_CLIENTE: number,
     RAZAO_SOCIAL: string,
     CNPJ: string
 }
+
+export interface iGetClientesFaturadosResponse extends iClienteFaturado { }
 
 export interface iGetRegraFaturamentoExclusivoResponse extends iRegraFaturamento { }

@@ -2,6 +2,7 @@ import { computed, nextTick, reactive } from "vue";
 import serviceRegrasFaturamento from "./services/regrasFaturamento.service";
 import Swal from "sweetalert2";
 import {
+    iClienteFaturado,
     iFaturamentosExclusivo,
     iInsertRegraFaturamentoParcelaParam,
     iRegraFaturamento, iRegraFaturamentoParcelas, iUpdateOrInsertRegraFaturamentoParam,
@@ -40,13 +41,22 @@ export const actions = {
     },
 
     async btnCancelar() {
-        state.dbRegraFaturamento = { ...state.dbRegraFaturamentoOld }
+        if (state.dbRegraFaturamento.ID_CLIENTE) {
+            await actions.getRegraFaturamento()
+        } else {
+            state.dbRegraFaturamento = { ...state.dbRegraFaturamentoOld }
+        }
+
         state.btnAlterarActivated = false
     },
 
     async btnSave() {
         if (JSON.stringify(state.dbRegraFaturamento) != JSON.stringify(state.dbRegraFaturamentoOld)) {
             await actions.updateOrInsertRegraFaturamento();
+        }
+
+        if (state.dbRegraFaturamento.ID_CLIENTE) {
+            await actions.getRegraFaturamento()
         }
 
         state.btnAlterarActivated = false
@@ -66,6 +76,12 @@ export const actions = {
         xAuthManager("Acesso ao faturamento exclusivo", (dados) => {
             state.modalFaturamentoExclusivoOpened = true
         });
+    },
+
+    async selecionarClienteExclusivo(cliente: iClienteFaturado) {
+        await actions.getFaturamentoExclusivo(cliente)
+
+        state.modalSelecionarClienteExclusivoOpened = false
     },
 
     async getRegraFaturamento() {
@@ -286,13 +302,26 @@ export const actions = {
         try {
             state.loading = true;
 
-            state.dbRegraFaturamento.RAZAO_SOCIAL = faturamento.RAZAO_SOCIAL
+            const data = await serviceRegrasFaturamento.getRegraFaturamentoExclusivo(faturamento.ID_CLIENTE)
 
-            const data = await serviceRegrasFaturamento.getRegraFaturamentoExclusivo(faturamento.ID_REGRA_FATURAMENTO)
-
-            state.dbRegraFaturamento = data
+            state.dbRegraFaturamento = {
+                FATURAMENTO_ACIMA_DE_VALOR: utils.formatValor(data.FATURAMENTO_ACIMA_DE_VALOR),
+                FATURAMENTO_ATE_VALOR: utils.formatValor(data.FATURAMENTO_ATE_VALOR),
+                FATURAMENTO_ACIMA_DE_PRAZO_1: data.FATURAMENTO_ACIMA_DE_PRAZO_1 || 0,
+                FATURAMENTO_ACIMA_DE_PRAZO_2: data.FATURAMENTO_ACIMA_DE_PRAZO_2 || 0,
+                FATURAMENTO_ACIMA_DE_PRAZO_3: data.FATURAMENTO_ACIMA_DE_PRAZO_3 || 0,
+                FATURAMENTO_ATE_PRAZO_1: data.FATURAMENTO_ATE_PRAZO_1 || 0,
+                FATURAMENTO_ATE_PRAZO_2: data.FATURAMENTO_ATE_PRAZO_2 || 0,
+                FATURAMENTO_ATE_PRAZO_3: data.FATURAMENTO_ATE_PRAZO_3 || 0,
+                ID_CLIENTE: faturamento.ID_CLIENTE,
+                ID_REGRA_FATURAMENTO: data.ID_REGRA_FATURAMENTO || null,
+                RAZAO_SOCIAL: faturamento.RAZAO_SOCIAL
+            }
 
             state.modalFaturamentoExclusivoOpened = false
+
+            await actions.btnAlterar()
+
         } catch (error) {
             Swal.fire({
                 icon: "error",

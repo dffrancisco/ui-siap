@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import { onMounted, onUnmounted, reactive } from "vue";
 import serviceRegrasFaturamento from "../services/regrasFaturamento.service";
 
-const emits = defineEmits(["closeModal"]);
+const emits = defineEmits(["closeModal", "selecionarCliente"]);
 
 const state = reactive({
   gridClientesFaturados: <ixGridCreate>null,
@@ -46,11 +46,27 @@ const actions = {
           state.gridClientesFaturados.querySourceAdd(data);
         },
       },
+      dblClick: actions.selecionarCliente,
+      enter: actions.selecionarCliente,
     });
   },
 
   closeModal() {
     emits("closeModal");
+  },
+
+  async selecionarCliente() {
+    const cliente = state.gridClientesFaturados.dataSource();
+
+    if (!cliente) {
+      Swal.fire({
+        title: "Nenhum cliente foi selecionado.",
+        icon: "info",
+      });
+      return;
+    }
+
+    emits("selecionarCliente", cliente);
   },
 
   async getClientesFaturados(offset: number, search: string) {
@@ -124,7 +140,11 @@ onUnmounted(() => {
           variant="outlined"
           >cancelar</v-btn
         >
-        <v-btn color="primary">selecionar</v-btn>
+        <v-btn
+          color="primary"
+          @click="actions.selecionarCliente"
+          >selecionar</v-btn
+        >
       </div>
     </div>
   </v-card>
