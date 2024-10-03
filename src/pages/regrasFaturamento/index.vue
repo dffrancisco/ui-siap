@@ -18,7 +18,15 @@ onMounted(async () => {
       width="600"
       class="pa-4 ma-auto"
     >
-      <span class="text-subtitle-1">Dias para Faturamento</span>
+      <div class="d-flex justify-space-between align-center">
+        <span class="text-subtitle-1">Dias para Faturamento</span>
+        <v-chip
+          v-if="state.dbRegraFaturamento.ID_CLIENTE"
+          size="small"
+          color="success"
+          >{{ state.dbRegraFaturamento.RAZAO_SOCIAL }}</v-chip
+        >
+      </div>
 
       <div class="mt-4">
         <v-row>
@@ -134,7 +142,10 @@ onMounted(async () => {
         </v-row>
       </div>
 
-      <div class="mt-8">
+      <div
+        class="mt-8"
+        v-if="!state.dbRegraFaturamento.ID_CLIENTE"
+      >
         <div class="d-flex ga-2 align-center">
           <span class="text-subtitle-1">Parcelamentos</span>
           <v-btn
@@ -154,7 +165,7 @@ onMounted(async () => {
           />
         </div>
       </div>
-      <div class="d-flex align-center justify-center mt-4 position-relative">
+      <div class="d-flex align-center justify-center mt-8 position-relative">
         <v-btn
           class="position-absolute left-0"
           size="x-small"
@@ -212,6 +223,7 @@ onMounted(async () => {
     max-width="650"
   >
     <ModalFaturamentoExclusivo
+      @selecionarFaturamentoExclusivo="actions.getFaturamentoExclusivo"
       @closeModal="state.modalFaturamentoExclusivoOpened = false"
       @openModalSelecionarCliente="state.modalSelecionarClienteExclusivoOpened = true"
     />

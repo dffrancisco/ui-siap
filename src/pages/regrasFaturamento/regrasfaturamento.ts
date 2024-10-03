@@ -2,6 +2,7 @@ import { computed, nextTick, reactive } from "vue";
 import serviceRegrasFaturamento from "./services/regrasFaturamento.service";
 import Swal from "sweetalert2";
 import {
+    iFaturamentosExclusivo,
     iInsertRegraFaturamentoParcelaParam,
     iRegraFaturamento, iRegraFaturamentoParcelas, iUpdateOrInsertRegraFaturamentoParam,
     iUpdateRegraFaturamentoParcelaParam
@@ -274,6 +275,28 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 title: "Erro ao alterar a parcela da regra de faturamento!",
+                text: error.message
+            })
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getFaturamentoExclusivo(faturamento: iFaturamentosExclusivo) {
+        try {
+            state.loading = true;
+
+            state.dbRegraFaturamento.RAZAO_SOCIAL = faturamento.RAZAO_SOCIAL
+
+            const data = await serviceRegrasFaturamento.getRegraFaturamentoExclusivo(faturamento.ID_REGRA_FATURAMENTO)
+
+            state.dbRegraFaturamento = data
+
+            state.modalFaturamentoExclusivoOpened = false
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao buscar faturamentos exclusivos!",
                 text: error.message
             })
         } finally {

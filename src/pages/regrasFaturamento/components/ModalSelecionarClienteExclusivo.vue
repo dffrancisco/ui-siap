@@ -25,7 +25,7 @@ const actions = {
   },
 
   async btnSearch() {
-    state.gridClientesFaturados.querySourceAdd({
+    state.gridClientesFaturados.queryOpen({
       search: state.inputSearchClienteElement.value,
     });
   },

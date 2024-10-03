@@ -5,7 +5,7 @@ import { onMounted, onUnmounted, reactive } from "vue";
 import serviceRegrasFaturamento from "../services/regrasFaturamento.service";
 import Swal from "sweetalert2";
 
-const emits = defineEmits(["openModalSelecionarCliente", "closeModal"]);
+const emits = defineEmits(["openModalSelecionarCliente", "closeModal", "selecionarFaturamentoExclusivo"]);
 
 const state = reactive({
   gridFaturamentoExclusivo: <ixGridCreate>null,
@@ -43,6 +43,8 @@ const actions = {
           state.gridFaturamentoExclusivo.querySourceAdd(data);
         },
       },
+      enter: actions.selecionarFaturamentoExclusivo,
+      dblClick: actions.selecionarFaturamentoExclusivo,
     });
   },
 
@@ -72,6 +74,20 @@ const actions = {
     state.gridFaturamentoExclusivo.queryOpen({
       search: state.inputSearchElement.value,
     });
+  },
+
+  async selecionarFaturamentoExclusivo() {
+    const faturamento = state.gridFaturamentoExclusivo.dataSource();
+
+    if (!faturamento) {
+      Swal.fire({
+        title: "Nenhum faturamento selecionado.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    emits("selecionarFaturamentoExclusivo", faturamento);
   },
 };
 
@@ -143,7 +159,11 @@ onUnmounted(() => {
           @click="actions.closeModal"
           >cancelar</v-btn
         >
-        <v-btn color="primary">selecionar</v-btn>
+        <v-btn
+          color="primary"
+          @click="actions.selecionarFaturamentoExclusivo"
+          >selecionar</v-btn
+        >
       </div>
     </div>
   </v-card>
