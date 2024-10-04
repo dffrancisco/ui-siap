@@ -1,7 +1,8 @@
 export interface iClienteFaturado {
     ID_CLIENTE: number,
     NOME: string,
-    CGC_CLIENTE: string
+    CGC_CLIENTE: string,
+    OBS_CLIENTE: string
 }
 
 export interface iGetClientesFaturadosResponse extends iClienteFaturado { }
@@ -19,6 +20,7 @@ export interface iOrcamentosClienteFaturado {
     DEVOLUCAO: number,
     VALOR: number,
     NUM_DEVOLUCAO: number,
+    MONTAGEM: number,
 }
 
 export interface iOrcamentosLocalizados extends iOrcamentosClienteFaturado {

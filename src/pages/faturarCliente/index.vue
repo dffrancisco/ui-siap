@@ -193,9 +193,12 @@ onMounted(async () => {
     <v-dialog
       v-model="state.modalGerarBoletoOpened"
       width="1000"
-      persistent
     >
-      <ModalGerarBoleto @closeModal="state.modalGerarBoletoOpened = false" />
+      <ModalGerarBoleto
+        @closeModal="state.modalGerarBoletoOpened = false"
+        :orcamentos="state.dbOrcamentosClienteFaturado"
+        :cliente="state.dbClienteFaturado"
+      />
     </v-dialog>
 
     <v-overlay
