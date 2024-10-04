@@ -51,6 +51,16 @@ export const actions = {
     },
 
     async btnSave() {
+        let faturamentoAte = utils.formatValorUSA(state.dbRegraFaturamento.FATURAMENTO_ATE_VALOR.toString())
+
+        if (faturamentoAte < 0) {
+            Swal.fire({
+                text: 'Os valor para faturamento ate deve ser maior ou igual a zero.',
+                icon: 'warning',
+            })
+            return;
+        }
+
         if (JSON.stringify(state.dbRegraFaturamento) != JSON.stringify(state.dbRegraFaturamentoOld)) {
             await actions.updateOrInsertRegraFaturamento();
         }
