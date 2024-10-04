@@ -16,6 +16,7 @@ onMounted(async () => {
   <v-container>
     <v-card
       width="600"
+      :class="{ borderCardClienteSelecionado: state.dbRegraFaturamento.ID_CLIENTE }"
       class="pa-4 ma-auto"
     >
       <div class="d-flex justify-space-between align-center">
@@ -24,6 +25,7 @@ onMounted(async () => {
           v-if="state.dbRegraFaturamento.ID_CLIENTE"
           size="small"
           color="success"
+          class="font-weight-bold"
           >{{ state.dbRegraFaturamento.RAZAO_SOCIAL }}</v-chip
         >
       </div>
@@ -169,6 +171,7 @@ onMounted(async () => {
         <v-btn
           class="position-absolute left-0"
           size="x-small"
+          v-if="!state.dbRegraFaturamento.ID_CLIENTE"
           :disabled="state.btnAlterarActivated"
           color="primary"
           @click="actions.openModalFaturamentoExclusivo"
@@ -177,6 +180,7 @@ onMounted(async () => {
         />
         <div class="d-flex align-center justify-center ga-4">
           <v-btn
+            v-if="!state.dbRegraFaturamento.ID_CLIENTE"
             size="small"
             color="primary"
             :disabled="state.btnAlterarActivated"
@@ -275,5 +279,9 @@ onMounted(async () => {
   padding: 8px;
   width: 30px;
   text-align: center;
+}
+
+.borderCardClienteSelecionado {
+  border: 1px solid green;
 }
 </style>
