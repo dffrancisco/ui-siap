@@ -21,7 +21,7 @@ export const state = reactive({
     dbRegraFaturamentoParcelaToEdit: <iRegraFaturamentoParcelas>{},
     inputFaturamentoAte: <HTMLInputElement>{},
     modalFaturamentoExclusivoOpened: false,
-    modalSelecionarClienteExclusivoOpened: false
+    modalSelecionarClienteFaturadoOpened: false
 })
 
 export const actions = {
@@ -78,10 +78,10 @@ export const actions = {
         });
     },
 
-    async selecionarClienteExclusivo(cliente: iClienteFaturado) {
+    async selecionarClienteFaturado(cliente: iClienteFaturado) {
         await actions.getFaturamentoExclusivo(cliente)
 
-        state.modalSelecionarClienteExclusivoOpened = false
+        state.modalSelecionarClienteFaturadoOpened = false
     },
 
     async getRegraFaturamento() {

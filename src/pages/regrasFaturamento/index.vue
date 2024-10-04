@@ -5,7 +5,7 @@ import { actions, computeds, state } from "./regrasfaturamento";
 import ModalCadastrarParcela from "./components/ModalCadastrarParcela.vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import ModalFaturamentoExclusivo from "./components/ModalFaturamentoExclusivo.vue";
-import ModalSelecionarClienteExclusivo from "./components/ModalSelecionarClienteExclusivo.vue";
+import ModalSelecionarClienteFaturado from "./components/ModalSelecionarClienteFaturado.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -225,17 +225,17 @@ onMounted(async () => {
     <ModalFaturamentoExclusivo
       @selecionarFaturamentoExclusivo="actions.getFaturamentoExclusivo"
       @closeModal="state.modalFaturamentoExclusivoOpened = false"
-      @openModalSelecionarCliente="state.modalSelecionarClienteExclusivoOpened = true"
+      @openModalSelecionarCliente="state.modalSelecionarClienteFaturadoOpened = true"
     />
   </v-dialog>
 
   <v-dialog
-    v-model="state.modalSelecionarClienteExclusivoOpened"
+    v-model="state.modalSelecionarClienteFaturadoOpened"
     max-width="650"
   >
-    <ModalSelecionarClienteExclusivo
-      @closeModal="state.modalSelecionarClienteExclusivoOpened = false"
-      @selecionarCliente="actions.selecionarClienteExclusivo"
+    <ModalSelecionarClienteFaturado
+      @closeModal="state.modalSelecionarClienteFaturadoOpened = false"
+      @selecionarCliente="actions.selecionarClienteFaturado"
     />
   </v-dialog>
 
