@@ -41,6 +41,15 @@ const actions = {
       return;
     }
 
+    if (faturamentoAcimaDeValor > faturamentoAteValor) {
+      Swal.fire({
+        text: "O valor de faturamento acima de valor não pode ser maior que o valor de faturamento até valor.",
+        icon: "warning",
+      });
+
+      return;
+    }
+
     if (state.dbParcela.ID_REGRA_FATURAMENTO_PARCELA) {
       let dbParcelaFormatada: iRegraFaturamentoParcelas = {
         ID_REGRA_FATURAMENTO_PARCELA: props.dbParcelaToEdit.ID_REGRA_FATURAMENTO_PARCELA,
