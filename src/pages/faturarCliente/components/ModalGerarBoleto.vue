@@ -101,6 +101,7 @@ const computeds = {
                 :items="props.orcamentos"
                 class="border rounded-lg"
                 height="180"
+                items-per-page="-1"
                 fixed-header
                 hide-default-footer
               >
@@ -123,6 +124,7 @@ const computeds = {
                 class="border rounded-lg"
                 height="150"
                 fixed-header
+                items-per-page="-1"
                 hide-default-footer
               >
                 <template v-slot:item.VALOR="{ item }">
