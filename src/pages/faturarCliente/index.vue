@@ -4,23 +4,27 @@ import { actions, computeds, state } from "./faturarCliente";
 import ModalSelecionarCliente from "./components/ModalSelecionarCliente.vue";
 import utils from "@/ts/utils";
 import { useEventListener } from "@vueuse/core";
+import ModalGerarBoleto from "./components/ModalGerarBoleto.vue";
 
 useEventListener(document, "keydown", async (event) => {
   if (!state.modalSelecionarClienteOpened && !state.modalGerarBoletoOpened) {
     if (event.key === "F1" && state.dbOrcamentosClienteFaturado.length > 0) {
       actions.openModalGeralBoleto();
+      event.preventDefault();
+      event.stopPropagation();
     }
 
     if (event.key === "F2") {
       state.modalSelecionarClienteOpened = true;
+      event.preventDefault();
+      event.stopPropagation();
     }
 
     if (event.key === "F3") {
       state.inputLocOrcElement.focus();
+      event.preventDefault();
+      event.stopPropagation();
     }
-
-    event.preventDefault();
-    event.stopPropagation();
   }
 });
 
@@ -188,9 +192,10 @@ onMounted(async () => {
 
     <v-dialog
       v-model="state.modalGerarBoletoOpened"
-      width="800"
+      width="1000"
+      persistent
     >
-      <v-card height="600"></v-card>
+      <ModalGerarBoleto @closeModal="state.modalGerarBoletoOpened = false" />
     </v-dialog>
 
     <v-overlay
