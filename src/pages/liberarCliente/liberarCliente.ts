@@ -95,7 +95,7 @@ export const actions = {
         state.creditoUsado = utils.formatValor(cliente.CREDITO_USADO)
         state.creditoLimite = utils.formatValor(cliente.LIMITE_CREDITO)
         state.creditoLimiteAtual = cliente.LIMITE_CREDITO
-        state.tipoCompra = cliente.FATURADO == "0" ? "Não Faturado" : "Faturado"
+        state.tipoCompra = cliente.FATURADO == "0" ? "Faturado" : "Não Faturado"
         state.tipoFaturamento = cliente.TIPO_FATURAMENTO ? cliente.TIPO_FATURAMENTO == "Q" ? "Quinzenal" : "Mensal" : "";
         state.dividirBoleto = cliente.DIVIDIR_BOLETO ? cliente.DIVIDIR_BOLETO == "S" ? "Sim" : "Não" : "";
         state.diaVencimento = cliente.DIA_VENCIMENTO_BOLETO
@@ -408,7 +408,7 @@ export const actions = {
 
         let param = {
             idCliente: state.idCliente,
-            tipoCompra: state.tipoCompra === "Faturado" ? 1 : 0,
+            tipoCompra: state.tipoCompra === "Faturado" ? 0 : 1,
             creditoLimiteAtual: state.creditoLimiteAtual,
             creditoLimiteNovo: parseFloat(state.creditoLimite.replace(/\./g, '').replace(',', '.')),
             diaVencimento: state.diaVencimento,
