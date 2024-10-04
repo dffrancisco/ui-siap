@@ -113,6 +113,7 @@ onMounted(() => {
             maxlength="2"
             class="obr rounded"
             :clearable="false"
+            @keydown.enter.prevent="actions.btnSave"
           ></v-text-field>
         </v-col>
       </v-row>
