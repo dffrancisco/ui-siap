@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onMounted } from "vue";
-import CardParcelamento from "./components/CardParcelamento.vue";
+import TableParcelamento from "./components/TableParcelamento.vue";
 import { actions, computeds, state } from "./regrasfaturamento";
 import ModalCadastrarParcela from "./components/ModalCadastrarParcela.vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
@@ -160,7 +160,7 @@ onMounted(async () => {
         </div>
 
         <div class="mt-4">
-          <CardParcelamento
+          <TableParcelamento
             @deleteParcela="actions.deleteRegraFaturamentoParcela"
             :regraFaturamentoParcelas="state.dbRegraFaturamentoParcelas"
             @editParcela="actions.openModalCadastrarParcelaToEdit"
