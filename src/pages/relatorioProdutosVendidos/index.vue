@@ -16,17 +16,21 @@ onMounted(async () => {
         <div style="display: flex; gap: 16px">
           <v-text-field
             v-model="state.dataInicio"
-            width="200px"
+            width="180px"
             label="Data Início"
             type="date"
+            :clearable="false"
+            @keydown.enter="state.inputDataFinal.focus()"
           >
           </v-text-field>
 
           <v-text-field
             v-model="state.dataFim"
             label="Data Fim"
-            width="200px"
+            id="DATA_FIM"
+            width="180px"
             type="date"
+            :clearable="false"
             @keypress.enter="actions.validarInputs"
           >
           </v-text-field>
@@ -57,15 +61,6 @@ onMounted(async () => {
         :row-props="actions.getClassCorLinha"
         @update:page="actions.updatePage"
       >
-        <template #no-data>
-          <v-alert
-            :value="true"
-            icon="mdi-information"
-            style="background-color: #ffffff"
-          >
-            Não há dados disponíveis.
-          </v-alert>
-        </template>
       </v-data-table-server>
 
       <div class="pt-2 btnPrint">

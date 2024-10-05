@@ -9,6 +9,7 @@ export const state = reactive({
     loading: false,
     dataInicio: moment().startOf('month').format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
+    inputDataFinal: <HTMLInputElement>{},
     dataInicioImpressao: null,
     dataFimImpressao: null,
     totalItems: 0,
@@ -51,6 +52,7 @@ export const state = reactive({
 
 export const actions = {
     async init() {
+        state.inputDataFinal = <any>document.getElementById('DATA_FIM')
         actions.validarInputs()
     },
 
@@ -115,7 +117,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao trazer os dados para relatório!"
+                text: error?.response?.data?.msg || "Erro ao trazer os dados para relatório!"
             });
         } finally {
             state.loading = false;
@@ -135,11 +137,9 @@ export const actions = {
             ];
 
             const titulo = `
-                <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
-                    <span>&nbsp;</span>
+                <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                    <span>Período: ${moment(state.dataInicioImpressao).format('DD/MM/YYYY')} até ${moment(state.dataFimImpressao).format('DD/MM/YYYY')}</span>
                     <strong style="font-size: 16px;">Relatório Produtos Vendidos</strong>
-                    <span>&nbsp;</span>
-                    <span> - Período: ${moment(state.dataInicioImpressao).format('DD/MM/YYYY')} - ${moment(state.dataFimImpressao).format('DD/MM/YYYY')}</span>
                 </div>
             `;
 
