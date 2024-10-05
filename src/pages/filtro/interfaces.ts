@@ -73,11 +73,11 @@ export interface iParamFiltrar {
 export interface iDadosFiltro {
     QTD_ATUAL: number,
     DATA: string,
-    HORA: string,
     CONFERIDO: string,
     COD_FUNCIONARIO: number
     ID_FILTRO: number,
     DT_FILTRO: string,
+    HR_INICIO: string,
     ID_CRIADOR: number,
     ID_ITENS_FILTRO: number,
     ID_CONFERENTE: number,

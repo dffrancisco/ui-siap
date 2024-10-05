@@ -4,6 +4,7 @@ import { actions, state } from "./filtro";
 import ModalAddItensFiltro from "./components/modalAddItensFiltro.vue";
 import ModalVisualizarFiltro from "./components/modalVisualizarFiltro.vue";
 import ModalNovoFiltro from "./components/modalNovoFiltro.vue";
+import ModalRevisaoFiltro from "./components/modalRevisaoFiltro.vue";
 
 onMounted(async () => {
   actions.init();
@@ -110,7 +111,7 @@ onMounted(async () => {
               class="ml-1"
               :disabled="item.DATA_FIM != null"
               :title="item.DATA_FIM == null ? 'Finalizar Filtro' : 'Filtro Finalizado'"
-              @click="actions.finalizarFiltro(item.ID_FILTRO)"
+              @click="actions.revisarFiltro(item.ID_FILTRO)"
             >
               mdi-checkbox-marked-outline
             </v-icon>
@@ -198,6 +199,19 @@ onMounted(async () => {
       :carros="state.carros"
       @closeModalAddItensFiltro="actions.closeModalAddItensFiltro"
       @cancelarModalAddItensFiltro="actions.cancelarModalAddItensFiltro"
+    />
+  </v-dialog>
+
+  <v-dialog
+    v-model="state.modalRevisaoFiltroOpened"
+    transition="dialog-transition"
+    variant="flat"
+    :persistent="false"
+    @click:outside="actions.closeModalRevisaoFiltro"
+  >
+    <ModalRevisaoFiltro
+      :dadosFiltroSelecionado="state.dadosDoFiltroSelecionado"
+      @closeModalRevisaoFiltro="actions.closeModalRevisaoFiltro"
     />
   </v-dialog>
 </template>

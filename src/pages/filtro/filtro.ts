@@ -24,6 +24,7 @@ export const state = reactive({
     modalVisualizarFiltroOpened: false,
     modalNovoFiltroOpened: false,
     modalAddItensFiltroOpened: false,
+    modalRevisaoFiltroOpened: false,
     nomeNovoFiltro: "",
     nomeConferente: "",
     headers: <any>[
@@ -237,36 +238,55 @@ export const actions = {
         state.modalNovoFiltroOpened = true;
     },
 
-    async finalizarFiltro(idFiltro) {
-        state.idFiltro = idFiltro;
-        if (await msgConfirmSemCodigo("Confirmação", "Deseja finalizar esse filtro?")) {
+    async revisarFiltro(idFiltro) {
 
-            try {
-                state.loading = true;
-                let param = state.idFiltro
-                await serviceFiltro.finalizarFiltro(param)
+        state.selectedFiltro = idFiltro;
 
-                // Atualizar o filtro na state
-                const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
-                if (filtroIndex !== -1) {
-                    state.filtros[filtroIndex].DATA_FIM = new Date().toISOString();
-                }
+        try {
+            state.loading = true;
+            const data = await serviceFiltro.getFiltroSelected(state.selectedFiltro)
+            state.dadosDoFiltroSelecionado = data
+            state.modalRevisaoFiltroOpened = true
 
-                Swal.fire({
-                    icon: "success",
-                    text: "Filtro finalizado com sucesso!",
-                    timer: 1500
-                });
-            } catch {
-                Swal.fire({
-                    icon: "error",
-                    text: "Erro ao finalizar o filtro!"
-                });
-            } finally {
-                state.loading = false;
-            }
-
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar o filtro!"
+            });
+        } finally {
+            state.loading = false;
         }
+
+
+        // state.idFiltro = idFiltro;
+        // if (await msgConfirmSemCodigo("Confirmação", "Deseja finalizar esse filtro?")) {
+
+        //     try {
+        //         state.loading = true;
+        //         let param = state.idFiltro
+        //         await serviceFiltro.finalizarFiltro(param)
+
+        //         // Atualizar o filtro na state
+        //         const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
+        //         if (filtroIndex !== -1) {
+        //             state.filtros[filtroIndex].DATA_FIM = new Date().toISOString();
+        //         }
+
+        //         Swal.fire({
+        //             icon: "success",
+        //             text: "Filtro finalizado com sucesso!",
+        //             timer: 1500
+        //         });
+        //     } catch {
+        //         Swal.fire({
+        //             icon: "error",
+        //             text: "Erro ao finalizar o filtro!"
+        //         });
+        //     } finally {
+        //         state.loading = false;
+        //     }
+
+        // }
     },
 
     async deletarFiltro(idFiltro) {
@@ -398,6 +418,10 @@ export const actions = {
     cancelarModalAddItensFiltro() {
         state.modalAddItensFiltroOpened = false;
         state.modalVisualizarFiltroOpened = false
-    }
+    },
+
+    closeModalRevisaoFiltro() {
+        state.modalRevisaoFiltroOpened = false;
+    },
 
 }
