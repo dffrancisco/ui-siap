@@ -44,14 +44,8 @@ const stateModalRevisaoFiltro = reactive({
     },
     {
       title: "Conferido",
-      key: "CONFERIDO",
+      key: "conferido",
       sortable: true,
-      align: "center",
-    },
-    {
-      title: "Ações",
-      key: "acoes",
-      sortable: false,
       align: "center",
     },
   ],
@@ -107,18 +101,37 @@ const actions = {
         <v-card
           :width="120"
           class="pa-2"
-          style="border: 1px solid #ddd"
-          >ITENS ALTERADOS</v-card
+          style="border: 1px solid #ddd; position: relative; overflow: visible"
         >
+          ITENS ALTERADOS
+          <v-chip
+            color="primary"
+            dark
+            class="chip-number"
+            small
+          >
+            {{ 11 }}
+          </v-chip>
+        </v-card>
+
         <v-card
           :width="120"
           class="ml-4 pa-2"
-          style="border: 1px solid #ddd"
-          >TODOS OS ITENS</v-card
+          style="border: 1px solid #ddd; position: relative; overflow: visible"
         >
+          TODOS OS ITENS
+          <v-chip
+            color="primary"
+            dark
+            class="chip-number"
+            small
+          >
+            {{ 13 }}
+          </v-chip>
+        </v-card>
       </v-row>
 
-      <v-data-table
+      <v-data-table-virtual
         :headers="stateModalRevisaoFiltro.headers"
         items-per-page-text="Itens por página"
         items-per-page="50"
@@ -129,22 +142,28 @@ const actions = {
         item-key="COD_PRODUTO"
         item-value="COD_PRODUTO"
       >
-        <template v-slot:item.acoes="{ item }">
-          <div style="display: flex">
-            <v-icon
-              size="large"
+        <template v-slot:item.conferido="{ item }">
+          <div style="display: flex; align-items: center; padding: 0; margin: 0">
+            <v-checkbox
+              v-model="item.CONFERIDO"
+              :label="item.CONFERIDO === 'SIM' ? 'Sim' : 'Não'"
+              :true-value="'SIM'"
+              :false-value="'NÃO'"
               color="primary"
-              class="ml-1"
-              title="Deletar"
-              :disabled="item.CONFERIDO == 'SIM'"
-            >
-              mdi-delete-outline
-            </v-icon>
+              dense
+              hide-details
+              :disabled="stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO !== null"
+            />
           </div>
         </template>
-      </v-data-table>
+      </v-data-table-virtual>
+      <div style="margin-top: 20px"
+        ><span v-if="stateModalRevisaoFiltro.dadosFiltro[0].CONFERIDO == 'NAO'"
+          >Finalizado por: {{ stateModalRevisaoFiltro.dadosFiltro[0].CONFERIDO }}</span
+        ></div
+      >
 
-      <div style="margin-left: 75%; margin-top: -5px">
+      <div style="margin-left: 75%; margin-top: 0px">
         <v-btn
           variant="outlined"
           color="primary"
@@ -153,7 +172,12 @@ const actions = {
         >
       </div>
       <div style="margin-left: 87%; margin-top: -37px">
-        <v-btn color="primary"> Finalizar</v-btn>
+        <v-btn
+          color="primary"
+          :disabled="stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO !== null"
+        >
+          Finalizar</v-btn
+        >
       </div>
     </v-card>
     <v-overlay
@@ -177,10 +201,6 @@ const actions = {
 .v-overlay__scrim {
   background-color: black;
 }
-
-/* .v-data-table-footer__pagination {
-  padding-right: 230px;
-} */
 </style>
 
 <style scoped>
@@ -189,5 +209,20 @@ const actions = {
   border: 1px solid #ddd;
   display: flex;
   justify-content: space-between;
+}
+
+.chip-number {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #a5a4a4;
+  background-color: white;
 }
 </style>

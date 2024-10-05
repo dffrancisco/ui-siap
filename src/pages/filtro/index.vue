@@ -109,7 +109,6 @@ onMounted(async () => {
               size="large"
               color="primary"
               class="ml-1"
-              :disabled="item.DATA_FIM != null"
               :title="item.DATA_FIM == null ? 'Finalizar Filtro' : 'Filtro Finalizado'"
               @click="actions.revisarFiltro(item.ID_FILTRO)"
             >

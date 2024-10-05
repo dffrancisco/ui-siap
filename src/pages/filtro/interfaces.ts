@@ -78,6 +78,7 @@ export interface iDadosFiltro {
     ID_FILTRO: number,
     DT_FILTRO: string,
     HR_INICIO: string,
+    HR_TERMINO: string,
     ID_CRIADOR: number,
     ID_ITENS_FILTRO: number,
     ID_CONFERENTE: number,
