@@ -12,7 +12,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["closeModal", , "insertParcela", "updateParcela"]);
+const emits = defineEmits(["closeModal", "insertParcela", "updateParcela"]);
 
 const state = reactive({
   dbParcela: <iRegraFaturamentoParcelas>{
@@ -72,7 +72,11 @@ const actions = {
 
 onMounted(() => {
   if (props.dbParcelaToEdit.ID_REGRA_FATURAMENTO_PARCELA) {
-    state.dbParcela = { ...props.dbParcelaToEdit };
+    state.dbParcela = {
+      ...props.dbParcelaToEdit,
+      FATURAMENTO_ACIMA_DE_VALOR: utils.formatValor(props.dbParcelaToEdit.FATURAMENTO_ACIMA_DE_VALOR),
+      FATURAMENTO_ATE_VALOR: utils.formatValor(props.dbParcelaToEdit.FATURAMENTO_ATE_VALOR),
+    };
   }
 });
 </script>

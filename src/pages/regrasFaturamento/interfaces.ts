@@ -35,8 +35,8 @@ export interface iResponseSuccess {
 
 export interface iRegraFaturamentoParcelas {
     ID_REGRA_FATURAMENTO_PARCELA: number,
-    FATURAMENTO_ATE_VALOR: number,
-    FATURAMENTO_ACIMA_DE_VALOR: number,
+    FATURAMENTO_ATE_VALOR: number | string,
+    FATURAMENTO_ACIMA_DE_VALOR: number | string,
     DIVISAO: number
 }
 
