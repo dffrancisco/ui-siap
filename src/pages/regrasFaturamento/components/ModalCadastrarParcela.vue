@@ -43,7 +43,7 @@ const actions = {
 
     if (faturamentoAcimaDeValor > faturamentoAteValor) {
       Swal.fire({
-        text: "O valor de faturamento acima de valor não pode ser maior que o valor de faturamento até valor.",
+        text: `O valor do campo "faturamento acima de valor" não pode ser maior que o valor do campo "faturamento até valor".`,
         icon: "warning",
       });
 
@@ -86,8 +86,8 @@ onMounted(() => {
       <v-row>
         <v-col>
           <v-text-field
-            v-model="state.dbParcela.FATURAMENTO_ATE_VALOR"
-            label="Faturamento Até"
+            v-model="state.dbParcela.FATURAMENTO_ACIMA_DE_VALOR"
+            label="Faturamento Acima De"
             v-mask-decimal.br="2"
             class="obr rounded"
             :clearable="false"
@@ -97,8 +97,8 @@ onMounted(() => {
         </v-col>
         <v-col>
           <v-text-field
-            v-model="state.dbParcela.FATURAMENTO_ACIMA_DE_VALOR"
-            label="Faturamento Acima De"
+            v-model="state.dbParcela.FATURAMENTO_ATE_VALOR"
+            label="Faturamento Até"
             v-mask-decimal.br="2"
             class="obr rounded"
             :clearable="false"
