@@ -61,7 +61,7 @@ function grids() {
         }
       },
       faturado: (r) => {
-        let textoFaturado = r.FATURADO == 1 ? "Faturado" : "Não Faturado";
+        let textoFaturado = r.FATURADO == 1 ? "Não Faturado" : "Faturado";
 
         if (r.BLOQUEADO == "1") {
           // Retorna o texto com cor vermelha se estiver bloqueado
