@@ -31,7 +31,7 @@ onMounted(async () => {
             width="180px"
             type="date"
             :clearable="false"
-            @keypress.enter="actions.validarInputs"
+            @keydown.enter.prevent="actions.validarInputs"
           >
           </v-text-field>
         </div>
