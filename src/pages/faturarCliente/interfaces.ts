@@ -2,7 +2,10 @@ export interface iClienteFaturado {
     ID_CLIENTE: number,
     NOME: string,
     CGC_CLIENTE: string,
-    OBS_CLIENTE: string
+    OBS_CLIENTE: string,
+    DIVIDIR_BOLETO: "S" | 'N',
+    DIA_VENCIMENTO_BOLETO: number,
+    TIPO_FATURAMENTO: "Q" | 'M'
 }
 
 export interface iGetClientesFaturadosResponse extends iClienteFaturado { }
@@ -32,4 +35,28 @@ export interface iGetOrcamentosClienteFaturadoResponse extends iOrcamentosClient
 export interface iGetOrcamentosClienteFaturadoParam {
     dataLimite: string,
     id_cliente: number
+}
+
+export interface iRegraFaturamento {
+    ID_REGRA_FATURAMENTO: number,
+    FATURAMENTO_ATE_VALOR: number,
+    FATURAMENTO_ATE_PRAZO_1: number,
+    FATURAMENTO_ATE_PRAZO_2: number,
+    FATURAMENTO_ATE_PRAZO_3: number,
+    FATURAMENTO_ACIMA_DE_VALOR: number,
+    FATURAMENTO_ACIMA_DE_PRAZO_1: number,
+    FATURAMENTO_ACIMA_DE_PRAZO_2: number,
+    FATURAMENTO_ACIMA_DE_PRAZO_3: number
+}
+
+export interface iRegraFaturamentoParcela {
+    ID_REGRA_FATURAMENTO_PARCELA: number,
+    FATURAMENTO_ATE_VALOR: number,
+    FATURAMENTO_ACIMA_DE_VALOR: number,
+    DIVISAO: number
+}
+
+export interface iGetRegrasFaturamentoResponse {
+    regrasFaturamento: iRegraFaturamento[];
+    regrasFaturamentoParcelas: iRegraFaturamentoParcela[];
 }

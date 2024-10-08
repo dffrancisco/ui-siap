@@ -1,7 +1,8 @@
 import axios from "axios";
 import {
     iGetClientesFaturadosParam, iGetClientesFaturadosResponse, iGetOrcamentosClienteFaturadoParam,
-    iGetOrcamentosClienteFaturadoResponse
+    iGetOrcamentosClienteFaturadoResponse,
+    iGetRegrasFaturamentoResponse
 } from "../interfaces";
 
 const caminho = 'siap/faturarCliente'
@@ -11,6 +12,8 @@ type iGetClientesFaturadosFuction = (param: iGetClientesFaturadosParam, offset: 
 
 type iGetOrcamentosClienteFaturadoFunction = (param: iGetOrcamentosClienteFaturadoParam) =>
     Promise<iGetOrcamentosClienteFaturadoResponse[]>
+type iGetRegrasFaturamentoFunction = (idCliente: number, totalValorOrcamentos: number, dividirBoleto: 'S' | 'N')
+    => Promise<iGetRegrasFaturamentoResponse>
 
 const getClientesFaturados: iGetClientesFaturadosFuction = async (param, offset) => {
     const { data } = await axios.post(caminho, {
@@ -31,7 +34,19 @@ const getOrcamentosClienteFaturado: iGetOrcamentosClienteFaturadoFunction = asyn
     return data;
 }
 
+const getRegrasFaturamento: iGetRegrasFaturamentoFunction = async (idCliente, totalValorOrcamentos, dividirBoleto) => {
+    const { data } = await axios.post(caminho, {
+        call: "getRegrasFaturamento",
+        idCliente,
+        totalValorOrcamentos,
+        dividirBoleto
+    });
+
+    return data;
+}
+
 export default {
     getClientesFaturados,
-    getOrcamentosClienteFaturado
+    getOrcamentosClienteFaturado,
+    getRegrasFaturamento
 }

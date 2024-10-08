@@ -1,7 +1,15 @@
 <script lang="ts" setup>
 import utils from "@/ts/utils";
-import { reactive, computed } from "vue";
-import { iClienteFaturado, iOrcamentosClienteFaturado } from "../interfaces";
+import { reactive, computed, onMounted } from "vue";
+import {
+  iClienteFaturado,
+  iOrcamentosClienteFaturado,
+  iRegraFaturamento,
+  iRegraFaturamentoParcela,
+} from "../interfaces";
+import serviceFaturarCliente from "../services/faturarCliente.service";
+import Swal from "sweetalert2";
+import moment from "moment";
 
 const props = defineProps({
   orcamentos: {
@@ -14,18 +22,16 @@ const props = defineProps({
     required: true,
     default: null,
   },
+  totalValorOrcamentos: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 });
 
 const emits = defineEmits(["closeModal"]);
 
 const state = reactive({
-  desserts: [
-    { ORCAMENTO: 4552, NF: 212, VALOR: 100, MONTAGEM: true },
-    { ORCAMENTO: 4521, NF: 2415, VALOR: 12112, MONTAGEM: false },
-    { ORCAMENTO: 5664, NF: 24132, VALOR: 545, MONTAGEM: true },
-    { ORCAMENTO: 5655, NF: 2124, VALOR: 1523, MONTAGEM: true },
-    { ORCAMENTO: 78941, NF: 5456, VALOR: 32153, MONTAGEM: true },
-  ],
   headers: [
     { title: "ORÇ.", key: "NUM_ORCAMENTO" },
     { title: "NF", key: "NUM_NFE" },
@@ -37,11 +43,111 @@ const state = reactive({
     { title: "ORÇ.", key: "NUM_ORCAMENTO" },
     { title: "VALOR", key: "DEVOLUCAO" },
   ],
+
+  loading: false,
+  regrasFaturamento: <iRegraFaturamento>null,
+  regrasFaturamentoParcelas: <iRegraFaturamentoParcela>null,
+  boletos: [],
 });
 
 const actions = {
+  async init() {
+    await actions.getRegrasFaturamento();
+    await actions.gerarBoletos();
+  },
+
   async closeModal() {
     emits("closeModal");
+  },
+
+  async getRegrasFaturamento() {
+    try {
+      state.loading = true;
+      const idCliente = props.cliente.ID_CLIENTE;
+      const totalValorOrcamentos = props.totalValorOrcamentos;
+      const dividirBoleto = props.cliente.DIVIDIR_BOLETO;
+
+      const data = await serviceFaturarCliente.getRegrasFaturamento(
+        idCliente,
+        totalValorOrcamentos,
+        dividirBoleto
+      );
+
+      state.regrasFaturamento = data.regrasFaturamento[0];
+      state.regrasFaturamentoParcelas = data.regrasFaturamentoParcelas[0];
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Ocorreu um erro ao carregar as regras de faturamento.",
+        text: error.message,
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  async gerarBoletos() {
+    let boletos = [];
+    let dataHoje = moment();
+
+    if (!state.regrasFaturamento?.ID_REGRA_FATURAMENTO) {
+      Swal.fire({
+        icon: "warning",
+        title: "Erro ao Gerar Boletos",
+        text: "Não foram encontradas regras de faturamento cadastradas. Por favor, cadastre as regras de faturamento antes de continuar.",
+      });
+      return;
+    }
+
+    const {
+      FATURAMENTO_ACIMA_DE_PRAZO_1,
+      FATURAMENTO_ACIMA_DE_PRAZO_2,
+      FATURAMENTO_ACIMA_DE_PRAZO_3,
+      FATURAMENTO_ACIMA_DE_VALOR,
+      FATURAMENTO_ATE_PRAZO_1,
+      FATURAMENTO_ATE_PRAZO_2,
+      FATURAMENTO_ATE_PRAZO_3,
+      FATURAMENTO_ATE_VALOR,
+    } = state.regrasFaturamento;
+
+    const valorTotal = computeds.totalizador.value.total_geral;
+    let parcelas =
+      props.cliente.DIVIDIR_BOLETO === "S" && state.regrasFaturamentoParcelas?.ID_REGRA_FATURAMENTO_PARCELA
+        ? state.regrasFaturamentoParcelas.DIVISAO
+        : 3;
+
+    if (props.cliente.DIVIDIR_BOLETO === "N") {
+      const vencimento = moment({ year: 2024, month: 10, day: props.cliente.DIA_VENCIMENTO_BOLETO }).format(
+        "YYYY-MM-DD"
+      );
+      boletos.push({ DATA_VENCIMENTO: vencimento, VALOR: valorTotal });
+      state.boletos = boletos;
+      return;
+    }
+
+    const valorBoletoParcelado = valorTotal / parcelas;
+
+    let prazos = [];
+    let dataVencimento = [];
+
+    if (valorTotal >= FATURAMENTO_ATE_VALOR && valorTotal <= FATURAMENTO_ACIMA_DE_VALOR) {
+      prazos = [FATURAMENTO_ATE_PRAZO_1, FATURAMENTO_ATE_PRAZO_2, FATURAMENTO_ATE_PRAZO_3];
+    } else {
+      prazos = [FATURAMENTO_ACIMA_DE_PRAZO_1, FATURAMENTO_ACIMA_DE_PRAZO_2, FATURAMENTO_ACIMA_DE_PRAZO_3];
+    }
+
+    prazos.forEach((prazo) => {
+      dataVencimento.push(dataHoje.add(prazo, "days").format("YYYY-MM-DD"));
+    });
+
+    for (let i = 0; i < parcelas; i++) {
+      boletos.push({
+        DATA_VENCIMENTO: dataVencimento[i],
+        VALOR: valorBoletoParcelado,
+      });
+    }
+
+    state.boletos = boletos;
   },
 };
 
@@ -53,24 +159,32 @@ const computeds = {
   totalizador: computed(() => {
     let total_orcamentos = 0;
     let total_devolucao = 0;
-    let total_montagem = 0;
+    let total_desc_montagem = 0;
     let total_geral = 0;
 
     props.orcamentos.forEach((item) => {
       total_orcamentos += item.VALOR;
       total_devolucao += item.DEVOLUCAO;
-      total_montagem += item.MONTAGEM;
-      total_geral += item.VALOR - item.DEVOLUCAO;
+
+      if (item.MONTAGEM > 0) {
+        total_desc_montagem += item.MONTAGEM * 0.05; // DESCONTO DE 5% ;
+      }
     });
+
+    total_geral = total_orcamentos - total_devolucao - total_desc_montagem;
 
     return {
       total_orcamentos,
       total_devolucao,
-      total_montagem,
+      total_desc_montagem,
       total_geral,
     };
   }),
 };
+
+onMounted(() => {
+  actions.init();
+});
 </script>
 
 <template>
@@ -106,7 +220,11 @@ const computeds = {
                 hide-default-footer
               >
                 <template v-slot:item.MONTAGEM="{ item }">
-                  <v-icon color="grey-darken-3">{{ item.MONTAGEM > 0 ? "mdi-wrench" : "" }}</v-icon>
+                  <v-icon
+                    title="Montagem"
+                    color="grey-darken-3"
+                    >{{ item.MONTAGEM > 0 ? "mdi-wrench" : "" }}</v-icon
+                  >
                 </template>
                 <template v-slot:item.VALOR="{ item }">
                   {{ utils.formatValor(item.VALOR) }}
@@ -127,8 +245,8 @@ const computeds = {
                 items-per-page="-1"
                 hide-default-footer
               >
-                <template v-slot:item.VALOR="{ item }">
-                  {{ utils.formatValor(item.VALOR) }}
+                <template v-slot:item.DEVOLUCAO="{ item }">
+                  {{ utils.formatValor(item.DEVOLUCAO) }}
                 </template>
               </v-data-table>
             </div>
@@ -159,7 +277,7 @@ const computeds = {
                 <div class="d-flex justify-space-between">
                   <span class="text-body-1">Desc. Montagem</span>
                   <span class="text-body-1 text-error"
-                    >(-) {{ utils.formatValor(computeds.totalizador.value.total_montagem) }}</span
+                    >(-) {{ utils.formatValor(computeds.totalizador.value.total_desc_montagem) }}</span
                   >
                 </div>
               </div>
@@ -187,13 +305,13 @@ const computeds = {
             <div class="containerBoletos">
               <div class="d-flex flex-column ga-2">
                 <v-card
-                  v-for="(i, index) in 3"
+                  v-for="(boleto, index) in state.boletos"
                   class="rounded-lg pa-4 d-flex justify-space-between"
                   color="primary"
                 >
                   <span class="text-body-1 font-weight-bold">#{{ index + 1 }}</span>
-                  <span class="text-body-1 font-weight-bold">14/{{ 10 + index }}/2024</span>
-                  <span class="text-body-1 font-weight-bold">{{ utils.formatValor(1000) }}</span>
+                  <span class="text-body-1 font-weight-bold">{{ utils.dataBrasil(boleto.DATA_VENCIMENTO) }}</span>
+                  <span class="text-body-1 font-weight-bold">{{ utils.formatValor(boleto.VALOR) }}</span>
                 </v-card>
               </div>
             </div>
@@ -205,6 +323,18 @@ const computeds = {
         </v-col>
       </v-row>
     </div>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </v-card>
 </template>
 

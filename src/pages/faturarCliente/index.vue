@@ -198,6 +198,7 @@ onMounted(async () => {
         @closeModal="state.modalGerarBoletoOpened = false"
         :orcamentos="state.dbOrcamentosClienteFaturado"
         :cliente="state.dbClienteFaturado"
+        :totalValorOrcamentos="computeds.totalValorOrcamentos.value"
       />
     </v-dialog>
 
