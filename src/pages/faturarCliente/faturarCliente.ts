@@ -151,6 +151,14 @@ export const actions = ({
     },
 
     async openModalGeralBoleto() {
+        if (computeds.totalValorOrcamentos.value < 40) {
+            Swal.fire({
+                icon: "warning",
+                text: "O valor dos orçamentos é menor que R$ 40,00. Faturar não é possível!"
+            })
+            return
+        }
+
         if (computeds.calcularOrcamentosLocalizados.value.total != computeds.totalValorOrcamentos.value) {
             if (await msgConfirm('Confirmação', 'Alguns orçamentos parecem estar faltando. Deseja continuar mesmo assim?')) {
                 state.modalGerarBoletoOpened = true

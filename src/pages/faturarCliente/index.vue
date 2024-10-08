@@ -47,7 +47,6 @@ onMounted(async () => {
               type="date"
               v-model="state.dataLimite"
               label="Data limite"
-              :hide-spin-buttons="true"
               :clearable="false"
               density="compact"
             />
