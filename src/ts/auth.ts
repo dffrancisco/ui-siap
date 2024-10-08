@@ -18,6 +18,8 @@ export default () => {
     axios.defaults.headers.common["Authorization"] = isAuth.token;
     storeLogin.actions.setAuth(true);
 
+    console.log('oi');
+
 
     if (stateGlobal.DATA == '')
       actions.begin();
