@@ -194,8 +194,10 @@ onMounted(async () => {
       :nomeFiltro="state.nomeNovoFiltro"
       :idFiltro="state.idFiltro"
       :conferente="state.conferente"
+      :qtdItens="state.qtdItens"
       :marcas="state.marcas"
       :carros="state.carros"
+      :itensExistentesNoFiltro="state.dadosDoFiltroSelecionado"
       @closeModalAddItensFiltro="actions.closeModalAddItensFiltro"
       @cancelarModalAddItensFiltro="actions.cancelarModalAddItensFiltro"
     />

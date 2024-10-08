@@ -37,8 +37,14 @@ const stateModalRevisaoFiltro = reactive({
       sortable: true,
     },
     {
-      title: "Qtd",
-      key: "QTD_ESTOQUE",
+      title: "Qtd Antiga",
+      key: "QTO_OLD",
+      sortable: true,
+      align: "center",
+    },
+    {
+      title: "Qtd Nova",
+      key: "QTO_NEW",
       sortable: true,
       align: "center",
     },
@@ -51,7 +57,10 @@ const stateModalRevisaoFiltro = reactive({
   ],
 });
 
-stateModalRevisaoFiltro.dadosFiltro = props.dadosFiltroSelecionado;
+stateModalRevisaoFiltro.dadosFiltro = props.dadosFiltroSelecionado.map((item) => ({
+  ...item,
+  CONFERIDO: "SIM", // Marca todos os checkboxes como 'SIM' inicialmente
+}));
 
 const actions = {
   cancelar() {
@@ -62,6 +71,10 @@ const actions = {
     let classe = dados.index % 2 == 0 ? "cor-zebrada-1" : "cor-zebrada-2";
     return { class: classe };
   },
+
+  // podeDesmarcar(item: iDadosFiltro) {
+  //   return item.QTO_OLD === item.QTO_NEW && item.CONFERIDO === "NAO";
+  // },
 };
 </script>
 <template>
@@ -110,7 +123,11 @@ const actions = {
             class="chip-number"
             small
           >
-            {{ 11 }}
+            {{
+              stateModalRevisaoFiltro.dadosFiltro.filter(
+                (item) => item.QTO_NEW !== item.QTD_ESTOQUE && item.QTO_NEW !== null
+              ).length
+            }}
           </v-chip>
         </v-card>
 
@@ -126,7 +143,7 @@ const actions = {
             class="chip-number"
             small
           >
-            {{ 13 }}
+            {{ stateModalRevisaoFiltro.dadosFiltro.length }}
           </v-chip>
         </v-card>
       </v-row>
@@ -142,17 +159,28 @@ const actions = {
         item-key="COD_PRODUTO"
         item-value="COD_PRODUTO"
       >
+        <template v-slot:item.QTO_OLD="{ item }">
+          <span>
+            {{ item.QTO_OLD !== null ? item.QTO_OLD : "-" }}
+          </span>
+        </template>
+        <template v-slot:item.QTO_NEW="{ item }">
+          <span>
+            {{ item.QTO_NEW !== null ? item.QTO_NEW : "-" }}
+          </span>
+        </template>
         <template v-slot:item.conferido="{ item }">
           <div style="display: flex; align-items: center; padding: 0; margin: 0">
             <v-checkbox
               v-model="item.CONFERIDO"
-              :label="item.CONFERIDO === 'SIM' ? 'Sim' : 'Não'"
               :true-value="'SIM'"
-              :false-value="'NÃO'"
+              :false-value="'NAO'"
               color="primary"
+              default="SIM"
               dense
               hide-details
-              :disabled="stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO !== null"
+              :disabled="item.QTD_ESTOQUE != item.QTO_OLD"
+              :value="'SIM'"
             />
           </div>
         </template>

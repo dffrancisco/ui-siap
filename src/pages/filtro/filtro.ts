@@ -19,6 +19,7 @@ export const state = reactive({
     marcas: <iMarcas[]>[],
     carros: <iCarros[]>[],
     dadosDoFiltroSelecionado: <iDadosFiltro[]>[],
+    filtroParaRevisao: [],
     searchFiltro: "",
     filtroEditar: <iFiltros[]>[],
     modalVisualizarFiltroOpened: false,
@@ -27,6 +28,7 @@ export const state = reactive({
     modalRevisaoFiltroOpened: false,
     nomeNovoFiltro: "",
     nomeConferente: "",
+    qtdItens: 0,
     headers: <any>[
         {
             title: "Data Início",
@@ -244,6 +246,9 @@ export const actions = {
 
         try {
             state.loading = true;
+            // const data = await serviceFiltro.getFiltroParaRevisao(state.selectedFiltro)
+            // state.filtroParaRevisao = data
+
             const data = await serviceFiltro.getFiltroSelected(state.selectedFiltro)
             state.dadosDoFiltroSelecionado = data
             state.modalRevisaoFiltroOpened = true
@@ -325,11 +330,12 @@ export const actions = {
         state.modalAddItensFiltroOpened = true
     },
 
-    async addItensFiltro(idFiltro: number, conferente: number | string, nomeFiltro: string, nomeConferente: string) {
+    async addItensFiltro(idFiltro: number, conferente: number | string, nomeFiltro: string, qtdItens: number, nomeConferente: string) {
         state.idFiltro = idFiltro
         state.conferente = conferente;
         state.nomeNovoFiltro = nomeFiltro;
         state.nomeConferente = nomeConferente
+        state.qtdItens = qtdItens
         state.modalAddItensFiltroOpened = true
     },
 
@@ -421,6 +427,7 @@ export const actions = {
     },
 
     closeModalRevisaoFiltro() {
+        state.dadosDoFiltroSelecionado = []
         state.modalRevisaoFiltroOpened = false;
     },
 

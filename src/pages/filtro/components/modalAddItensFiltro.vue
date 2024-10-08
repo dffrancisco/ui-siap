@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, computed, watch } from "vue";
 import serviceFiltro from "../services/filtro.service";
-import { iCarros, iMarcas, iParamFiltrar, iResultPesquisa } from "../interfaces";
+import { iCarros, iDadosFiltro, iMarcas, iParamFiltrar, iResultPesquisa } from "../interfaces";
 import Swal from "sweetalert2";
 
 const props = defineProps({
@@ -17,12 +17,20 @@ const props = defineProps({
     type: [Number, null],
     required: true,
   },
+  qtdItens: {
+    type: [Number, null],
+    required: false,
+  },
   marcas: {
     type: Array,
     required: true,
   },
   carros: {
     type: Array,
+    required: true,
+  },
+  itensExistentesNoFiltro: {
+    type: Array as () => iDadosFiltro[],
     required: true,
   },
 });
@@ -33,12 +41,14 @@ const stateModalAddItensFiltro = reactive({
   nomeFiltro: "",
   idFiltro: null,
   funcionarioSelecionado: null,
+  qtdItens: 0,
   carros: <iCarros[]>[],
   carroSelecionado: null,
   marcaSelecionada: null,
   marcas: <iMarcas[]>[],
   dadosRetornadosDaPesquisa: <iResultPesquisa[]>[],
   produtosSelecionados: <number[]>[],
+  itensJaExistentesNoFiltro: <iDadosFiltro[]>[],
   produtosSelecionadosDetalhes: <iResultPesquisa[]>[],
   mostrarSomenteSelecionados: false,
   chipSelecionado: false,
@@ -85,6 +95,7 @@ const actions = {
 
     stateModalAddItensFiltro.carros = props.carros as iCarros[];
     stateModalAddItensFiltro.marcas = props.marcas as iMarcas[];
+    stateModalAddItensFiltro.itensJaExistentesNoFiltro = props.itensExistentesNoFiltro;
 
     const inputDescricao = document.querySelector("#descricaoProduto") as HTMLElement;
     if (inputDescricao) {
@@ -98,6 +109,7 @@ const actions = {
     stateModalAddItensFiltro.nomeFiltro = props.nomeFiltro;
     stateModalAddItensFiltro.idFiltro = props.idFiltro;
     stateModalAddItensFiltro.funcionarioSelecionado = props.conferente;
+    stateModalAddItensFiltro.qtdItens = props.qtdItens;
   },
 
   resetStates() {
@@ -108,6 +120,7 @@ const actions = {
     stateModalAddItensFiltro.marcaSelecionada = null;
     stateModalAddItensFiltro.dadosRetornadosDaPesquisa = [];
     stateModalAddItensFiltro.produtosSelecionados = [];
+    stateModalAddItensFiltro.itensJaExistentesNoFiltro = [];
   },
 
   async buscarDadosParaFiltro() {
@@ -155,12 +168,41 @@ const actions = {
       return;
     }
 
+    // Verificar duplicados
+    const produtosDuplicados = stateModalAddItensFiltro.produtosSelecionados
+      .map((produtoSelecionado) => {
+        const itemExistente = stateModalAddItensFiltro.itensJaExistentesNoFiltro.find(
+          (item) => item.COD_PRODUTO === produtoSelecionado
+        );
+        return itemExistente ? itemExistente.DESC_PRODUTO : null;
+      })
+      .filter(Boolean); // Remove valores nulos
+
+    if (produtosDuplicados.length > 0) {
+      Swal.fire({
+        icon: "warning",
+        html: `<strong>Os seguintes itens já estão no filtro:</strong><br><ul>${produtosDuplicados
+          .map((item) => `<li>${item}</li>`)
+          .join("")}</ul>`,
+      });
+      return;
+    }
+
+    if (produtosDuplicados.length > 0) {
+      Swal.fire({
+        icon: "warning",
+        text: "Alguns itens selecionados já estão no filtro!",
+      });
+      return;
+    }
+
     let parametrosInsercao = {
       idFiltro: stateModalAddItensFiltro.idFiltro,
       nomeFiltro: stateModalAddItensFiltro.nomeFiltro,
       funcionario: stateModalAddItensFiltro.funcionarioSelecionado,
       objPesquisa: stateModalAddItensFiltro.paramsPesquisa,
       produtosSelecionados: stateModalAddItensFiltro.produtosSelecionados,
+      qtdItens: stateModalAddItensFiltro.produtosSelecionados.length + stateModalAddItensFiltro.qtdItens,
     };
 
     if (stateModalAddItensFiltro.idFiltro == null) {

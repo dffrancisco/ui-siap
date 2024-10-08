@@ -57,12 +57,12 @@ const actions = {
   },
 
   addItensFiltro() {
-    emit(
-      "addItensFiltro",
-      stateModalVisualizarFiltro.dadosFiltro[0].ID_FILTRO,
-      stateModalVisualizarFiltro.dadosFiltro[0].COD_FUNCIONARIO,
-      stateModalVisualizarFiltro.dadosFiltro[0].NOME_FILTRO
-    );
+    let idFiltro = stateModalVisualizarFiltro.dadosFiltro[0].ID_FILTRO;
+    let conferente = stateModalVisualizarFiltro.dadosFiltro[0].COD_FUNCIONARIO;
+    let nomeFiltro = stateModalVisualizarFiltro.dadosFiltro[0].NOME_FILTRO;
+    let qtdItens = stateModalVisualizarFiltro.dadosFiltro[0].QTD_ITENS;
+
+    emit("addItensFiltro", idFiltro, conferente, nomeFiltro, qtdItens);
     emit("closeModalVisualizarFiltro");
   },
 
@@ -77,7 +77,14 @@ const actions = {
 
     if (await msgConfirmSemCodigo("Confirmação", "Deseja excluir esse item do filtro?")) {
       try {
-        let param = item.ID_ITENS_FILTRO;
+        let idItem = item.ID_ITENS_FILTRO;
+        let idFiltro = stateModalVisualizarFiltro.dadosFiltro[0].ID_FILTRO;
+
+        let param = {
+          idItem,
+          idFiltro,
+        };
+
         stateModalVisualizarFiltro.loading = true;
         await serviceFiltro.deleteItemFiltro(param);
 

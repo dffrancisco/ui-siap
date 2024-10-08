@@ -92,7 +92,11 @@ export interface iDadosFiltro {
     END_EXCESSO: string,
     QTD_ESTOQUE: number,
     CRIADOR: string,
-    CONFERENTE: string
+    CONFERENTE: string,
+    QTD_ITENS: number,
+    QTD_ITENS_CONFERIDOS: number,
+    QTO_OLD: number,
+    QTO_NEW: number
 }
 
 export interface iInsertOuUpdate {
@@ -115,4 +119,9 @@ export interface iUpdateNomeFiltro {
     idFiltro: number;
     nomeFiltro: string;
     funcionario: number;
+}
+
+export interface iDeleteItem {
+    idFiltro: number;
+    idItem: number;
 }
