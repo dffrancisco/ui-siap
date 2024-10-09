@@ -179,7 +179,7 @@ const actions = {
               default="SIM"
               dense
               hide-details
-              :disabled="item.QTD_ESTOQUE != item.QTO_OLD"
+              :disabled="item.QTO_NEW != null"
               :value="'SIM'"
             />
           </div>

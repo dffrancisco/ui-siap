@@ -57,10 +57,10 @@ const actions = {
   },
 
   addItensFiltro() {
-    let idFiltro = stateModalVisualizarFiltro.dadosFiltro[0].ID_FILTRO;
-    let conferente = stateModalVisualizarFiltro.dadosFiltro[0].COD_FUNCIONARIO;
-    let nomeFiltro = stateModalVisualizarFiltro.dadosFiltro[0].NOME_FILTRO;
-    let qtdItens = stateModalVisualizarFiltro.dadosFiltro[0].QTD_ITENS;
+    let idFiltro = stateModalVisualizarFiltro.dadosFiltro[0]?.ID_FILTRO;
+    let conferente = stateModalVisualizarFiltro.dadosFiltro[0]?.COD_FUNCIONARIO;
+    let nomeFiltro = stateModalVisualizarFiltro.dadosFiltro[0]?.NOME_FILTRO;
+    let qtdItens = stateModalVisualizarFiltro.dadosFiltro[0]?.QTD_ITENS;
 
     emit("addItensFiltro", idFiltro, conferente, nomeFiltro, qtdItens);
     emit("closeModalVisualizarFiltro");

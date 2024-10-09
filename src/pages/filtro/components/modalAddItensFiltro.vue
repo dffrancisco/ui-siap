@@ -201,7 +201,7 @@ const actions = {
       nomeFiltro: stateModalAddItensFiltro.nomeFiltro,
       funcionario: stateModalAddItensFiltro.funcionarioSelecionado,
       objPesquisa: stateModalAddItensFiltro.paramsPesquisa,
-      produtosSelecionados: stateModalAddItensFiltro.produtosSelecionados,
+      produtosSelecionados: stateModalAddItensFiltro.produtosSelecionadosDetalhes,
       qtdItens: stateModalAddItensFiltro.produtosSelecionados.length + stateModalAddItensFiltro.qtdItens,
     };
 
