@@ -198,6 +198,7 @@ onMounted(async () => {
         :orcamentos="state.dbOrcamentosClienteFaturado"
         :cliente="state.dbClienteFaturado"
         :totalValorOrcamentos="computeds.totalValorOrcamentos.value"
+        :dataLimite="state.dataLimite"
       />
     </v-dialog>
 

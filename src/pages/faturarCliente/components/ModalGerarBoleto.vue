@@ -27,6 +27,11 @@ const props = defineProps({
     required: true,
     default: 0,
   },
+  dataLimite: {
+    type: String,
+    required: true,
+    default: moment().format("YYYY-MM-DD"),
+  },
 });
 
 const emits = defineEmits(["closeModal"]);
@@ -53,7 +58,7 @@ const state = reactive({
 const actions = {
   async init() {
     await actions.getRegrasFaturamento();
-    await actions.gerarBoletos();
+    await actions.criarBoletos();
   },
 
   async closeModal() {
@@ -86,10 +91,7 @@ const actions = {
     }
   },
 
-  async gerarBoletos() {
-    let boletos = [];
-    let dataHoje = moment();
-
+  async criarBoletos() {
     if (!state.regrasFaturamento?.ID_REGRA_FATURAMENTO) {
       Swal.fire({
         icon: "warning",
@@ -99,50 +101,67 @@ const actions = {
       return;
     }
 
+    let boletos = [];
+    let dataHoje = moment();
+    let mesAtual = dataHoje.month();
+    let anoAtual = dataHoje.year();
+    let dataLimite = moment(props.dataLimite, "YYYY-MM-DD");
+    let diaDataLimite = dataLimite.date();
+
+    // Definir o intervalo de dias para contagem do vencimento
+    let dataComecoContagemVencimento =
+      diaDataLimite < 15 ? moment({ year: anoAtual, month: mesAtual, day: 15 }) : moment().startOf("month");
+
     const {
       FATURAMENTO_ACIMA_DE_PRAZO_1,
       FATURAMENTO_ACIMA_DE_PRAZO_2,
       FATURAMENTO_ACIMA_DE_PRAZO_3,
-      FATURAMENTO_ACIMA_DE_VALOR,
       FATURAMENTO_ATE_PRAZO_1,
       FATURAMENTO_ATE_PRAZO_2,
       FATURAMENTO_ATE_PRAZO_3,
       FATURAMENTO_ATE_VALOR,
     } = state.regrasFaturamento;
 
-    const valorTotal = computeds.totalizador.value.total_geral;
-    let parcelas =
+    const valorTotal = props.totalValorOrcamentos;
+
+    // Definir quantidade de parcelas
+    const parcelas =
       props.cliente.DIVIDIR_BOLETO === "S" && state.regrasFaturamentoParcelas?.ID_REGRA_FATURAMENTO_PARCELA
         ? state.regrasFaturamentoParcelas.DIVISAO
         : 3;
 
+    // Se o cliente não dividir boletos
     if (props.cliente.DIVIDIR_BOLETO === "N") {
-      const vencimento = moment({ year: 2024, month: 10, day: props.cliente.DIA_VENCIMENTO_BOLETO }).format(
-        "YYYY-MM-DD"
-      );
-      boletos.push({ DATA_VENCIMENTO: vencimento, VALOR: valorTotal });
+      const dataVencimento = moment({
+        year: anoAtual,
+        month: mesAtual,
+        day: props.cliente.DIA_VENCIMENTO_BOLETO,
+      }).format("YYYY-MM-DD");
+
+      boletos.push({ DATA_VENCIMENTO: dataVencimento, VALOR: valorTotal });
       state.boletos = boletos;
       return;
     }
 
     const valorBoletoParcelado = valorTotal / parcelas;
 
-    let prazos = [];
-    let dataVencimento = [];
+    // Definir prazos de acordo com o valor total
+    const prazos =
+      valorTotal <= FATURAMENTO_ATE_VALOR
+        ? [FATURAMENTO_ATE_PRAZO_1, FATURAMENTO_ATE_PRAZO_2, FATURAMENTO_ATE_PRAZO_3]
+        : [FATURAMENTO_ACIMA_DE_PRAZO_1, FATURAMENTO_ACIMA_DE_PRAZO_2, FATURAMENTO_ACIMA_DE_PRAZO_3];
 
-    if (valorTotal >= FATURAMENTO_ATE_VALOR && valorTotal <= FATURAMENTO_ACIMA_DE_VALOR) {
-      prazos = [FATURAMENTO_ATE_PRAZO_1, FATURAMENTO_ATE_PRAZO_2, FATURAMENTO_ATE_PRAZO_3];
-    } else {
-      prazos = [FATURAMENTO_ACIMA_DE_PRAZO_1, FATURAMENTO_ACIMA_DE_PRAZO_2, FATURAMENTO_ACIMA_DE_PRAZO_3];
-    }
+    // Calcular datas de vencimento com base nos prazos e parcelas
+    const datasVencimento = [];
 
     prazos.forEach((prazo) => {
-      dataVencimento.push(dataHoje.add(prazo, "days").format("YYYY-MM-DD"));
+      datasVencimento.push(dataComecoContagemVencimento.clone().add(prazo, "days").format("YYYY-MM-DD"));
     });
 
+    // Criar boletos
     for (let i = 0; i < parcelas; i++) {
       boletos.push({
-        DATA_VENCIMENTO: dataVencimento[i],
+        DATA_VENCIMENTO: datasVencimento[i],
         VALOR: valorBoletoParcelado,
       });
     }

@@ -36,6 +36,17 @@ const actions = {
       columns: {
         "Razão Social": { dataField: "NOME" },
         CNPJ: { dataField: "CGC_CLIENTE", width: "25%", center: true },
+        "Tipo de Faturamento": {
+          dataField: "TIPO_FATURAMENTO",
+          compare: "tipoFaturamento",
+          center: true,
+          width: "18%",
+        },
+      },
+      compare: {
+        tipoFaturamento: (rs) => {
+          return rs.TIPO_FATURAMENTO == "M" ? "Mensal" : "Quinzenal";
+        },
       },
       query: {
         async execute(rs) {
