@@ -89,6 +89,10 @@ export const actions = ({
 
     locValorOrcamento() {
 
+        if (!state.locValor) {
+            return
+        }
+
         let isOrcamento = state.locValor.startsWith('+')
         let isDevolucao = state.locValor.toUpperCase().startsWith('DEV')
 
