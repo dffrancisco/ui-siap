@@ -213,6 +213,7 @@ onMounted(async () => {
     <ModalRevisaoFiltro
       :dadosFiltroSelecionado="state.dadosDoFiltroSelecionado"
       @closeModalRevisaoFiltro="actions.closeModalRevisaoFiltro"
+      @finalizarFiltro="actions.finalizarFiltro"
     />
   </v-dialog>
 </template>

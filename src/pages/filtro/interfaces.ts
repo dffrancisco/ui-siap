@@ -94,9 +94,10 @@ export interface iDadosFiltro {
     CRIADOR: string,
     CONFERENTE: string,
     QTD_ITENS: number,
-    QTD_ITENS_CONFERIDOS: number,
     QTO_OLD: number,
-    QTO_NEW: number
+    QTO_NEW: number,
+    FINALIZADOR: string,
+    ID_FINALIZADOR: number,
 }
 
 export interface iInsertOuUpdate {
@@ -124,4 +125,10 @@ export interface iUpdateNomeFiltro {
 export interface iDeleteItem {
     idFiltro: number;
     idItem: number;
+}
+
+export interface iFinalizarFiltro {
+    idFiltro: number;
+    qtdItensConferidos: number;
+    itensConferidos: iDadosFiltro[]
 }

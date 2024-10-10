@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import { iDadosFiltro } from "../interfaces";
-import utils from "@/ts/utils";
+import utils, { msgConfirmSemCodigo } from "@/ts/utils";
+import serviceFiltro from "../services/filtro.service";
+import Swal from "sweetalert2";
 
 const props = defineProps({
   dadosFiltroSelecionado: {
@@ -10,7 +12,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["closeModalRevisaoFiltro"]);
+const emit = defineEmits(["closeModalRevisaoFiltro", "finalizarFiltro"]);
 
 const stateModalRevisaoFiltro = reactive({
   loading: false,
@@ -59,7 +61,7 @@ const stateModalRevisaoFiltro = reactive({
 
 stateModalRevisaoFiltro.dadosFiltro = props.dadosFiltroSelecionado.map((item) => ({
   ...item,
-  CONFERIDO: "SIM", // Marca todos os checkboxes como 'SIM' inicialmente
+  CONFERIDO: "SIM",
 }));
 
 const actions = {
@@ -72,9 +74,37 @@ const actions = {
     return { class: classe };
   },
 
-  // podeDesmarcar(item: iDadosFiltro) {
-  //   return item.QTO_OLD === item.QTO_NEW && item.CONFERIDO === "NAO";
-  // },
+  async finalizarRevisao() {
+    if (await msgConfirmSemCodigo("Confirmação", "Deseja finalizar esse filtro?")) {
+      try {
+        stateModalRevisaoFiltro.loading = true;
+
+        let itensConferidos = stateModalRevisaoFiltro.dadosFiltro.filter((item) => item.CONFERIDO == "SIM");
+
+        let param = {
+          idFiltro: stateModalRevisaoFiltro.dadosFiltro[0].ID_FILTRO,
+          qtdItensConferidos: itensConferidos.length,
+          itensConferidos: stateModalRevisaoFiltro.dadosFiltro,
+        };
+
+        await serviceFiltro.finalizarFiltro(param);
+
+        Swal.fire({
+          icon: "success",
+          text: "Filtro finalizado com sucesso!",
+          timer: 1500,
+        });
+        emit("finalizarFiltro", stateModalRevisaoFiltro.dadosFiltro[0].ID_FILTRO);
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          text: "Erro ao finalizar o filtro!",
+        });
+      } finally {
+        stateModalRevisaoFiltro.loading = false;
+      }
+    }
+  },
 };
 </script>
 <template>
@@ -125,7 +155,7 @@ const actions = {
           >
             {{
               stateModalRevisaoFiltro.dadosFiltro.filter(
-                (item) => item.QTO_NEW !== item.QTD_ESTOQUE && item.QTO_NEW !== null
+                (item) => item.QTO_NEW !== item.QTO_OLD && item.QTO_NEW !== null
               ).length
             }}
           </v-chip>
@@ -153,6 +183,7 @@ const actions = {
         items-per-page-text="Itens por página"
         items-per-page="50"
         height="380"
+        class="mb-5"
         fixed-header
         :row-props="actions.getClassCorLinha"
         :items="stateModalRevisaoFiltro.dadosFiltro"
@@ -179,30 +210,37 @@ const actions = {
               default="SIM"
               dense
               hide-details
-              :disabled="item.QTO_NEW != null"
+              :disabled="item.QTO_NEW != null || stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO !== null"
               :value="'SIM'"
             />
           </div>
         </template>
       </v-data-table-virtual>
-      <div style="margin-top: 20px"
-        ><span v-if="stateModalRevisaoFiltro.dadosFiltro[0].CONFERIDO == 'NAO'"
-          >Finalizado por: {{ stateModalRevisaoFiltro.dadosFiltro[0].CONFERIDO }}</span
-        ></div
-      >
+      <div
+        v-if="stateModalRevisaoFiltro.dadosFiltro[0].FINALIZADOR != null"
+        style="margin-top: 10px"
+        ><span
+          >Finalizado por: {{ stateModalRevisaoFiltro.dadosFiltro[0].FINALIZADOR }} ({{
+            stateModalRevisaoFiltro.dadosFiltro[0].ID_FINALIZADOR
+          }})
+        </span>
+        <span
+          >em {{ utils.dataBrasil(stateModalRevisaoFiltro.dadosFiltro[0]?.DT_TERMINO) }} -
+          {{ utils.formatHora(stateModalRevisaoFiltro.dadosFiltro[0]?.HR_TERMINO) }}
+        </span>
+      </div>
 
-      <div style="margin-left: 75%; margin-top: 0px">
+      <div style="margin-left: 75%">
         <v-btn
           variant="outlined"
           color="primary"
           @click="actions.cancelar"
           >Fechar</v-btn
-        >
-      </div>
-      <div style="margin-left: 87%; margin-top: -37px">
-        <v-btn
+        ><v-btn
           color="primary"
           :disabled="stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO !== null"
+          @click="actions.finalizarRevisao"
+          class="ml-3"
         >
           Finalizar</v-btn
         >

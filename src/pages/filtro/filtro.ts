@@ -246,9 +246,6 @@ export const actions = {
 
         try {
             state.loading = true;
-            // const data = await serviceFiltro.getFiltroParaRevisao(state.selectedFiltro)
-            // state.filtroParaRevisao = data
-
             const data = await serviceFiltro.getFiltroSelected(state.selectedFiltro)
             state.dadosDoFiltroSelecionado = data
             state.modalRevisaoFiltroOpened = true
@@ -261,37 +258,6 @@ export const actions = {
         } finally {
             state.loading = false;
         }
-
-
-        // state.idFiltro = idFiltro;
-        // if (await msgConfirmSemCodigo("Confirmação", "Deseja finalizar esse filtro?")) {
-
-        //     try {
-        //         state.loading = true;
-        //         let param = state.idFiltro
-        //         await serviceFiltro.finalizarFiltro(param)
-
-        //         // Atualizar o filtro na state
-        //         const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
-        //         if (filtroIndex !== -1) {
-        //             state.filtros[filtroIndex].DATA_FIM = new Date().toISOString();
-        //         }
-
-        //         Swal.fire({
-        //             icon: "success",
-        //             text: "Filtro finalizado com sucesso!",
-        //             timer: 1500
-        //         });
-        //     } catch {
-        //         Swal.fire({
-        //             icon: "error",
-        //             text: "Erro ao finalizar o filtro!"
-        //         });
-        //     } finally {
-        //         state.loading = false;
-        //     }
-
-        // }
     },
 
     async deletarFiltro(idFiltro) {
@@ -430,5 +396,15 @@ export const actions = {
         state.dadosDoFiltroSelecionado = []
         state.modalRevisaoFiltroOpened = false;
     },
+
+    finalizarFiltro(idFiltro) {
+        const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
+        if (filtroIndex !== -1) {
+            state.filtros[filtroIndex].DATA_FIM = new Date().toISOString();
+        }
+
+        state.dadosDoFiltroSelecionado = []
+        state.modalRevisaoFiltroOpened = false;
+    }
 
 }
