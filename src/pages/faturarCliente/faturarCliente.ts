@@ -108,7 +108,7 @@ export const actions = ({
 
             if (!orcamento) {
                 Swal.fire({
-                    icon: "error",
+                    icon: "warning",
                     text: "Orçamento não encontrado!"
                 })
 
