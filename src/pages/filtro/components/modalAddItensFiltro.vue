@@ -188,14 +188,6 @@ const actions = {
       return;
     }
 
-    if (produtosDuplicados.length > 0) {
-      Swal.fire({
-        icon: "warning",
-        text: "Alguns itens selecionados já estão no filtro!",
-      });
-      return;
-    }
-
     let parametrosInsercao = {
       idFiltro: stateModalAddItensFiltro.idFiltro,
       nomeFiltro: stateModalAddItensFiltro.nomeFiltro,
