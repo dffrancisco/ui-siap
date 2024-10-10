@@ -11,6 +11,8 @@ import {
 import serviceFaturarCliente from "../services/faturarCliente.service";
 import Swal from "sweetalert2";
 import moment from "moment";
+import { useEventListener } from "@vueuse/core";
+import { msgConfirm } from "@/ts/message";
 
 const props = defineProps({
   orcamentos: {
@@ -64,6 +66,12 @@ const actions = {
 
   async closeModal(esconderBtn: boolean = false) {
     emits("closeModal", esconderBtn);
+  },
+
+  async btnGerarBoleto() {
+    if (await msgConfirm("Confirma?", "Deseja gerar os boletos? Essa ação não poderá ser desfeita!")) {
+      await actions.gerarBoletos();
+    }
   },
 
   async getRegrasFaturamento() {
@@ -233,6 +241,14 @@ const computeds = {
   }),
 };
 
+useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F1") {
+    actions.btnGerarBoleto();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
+
 onMounted(() => {
   actions.init();
 });
@@ -370,9 +386,9 @@ onMounted(() => {
 
           <div class="d-flex justify-end">
             <v-btn
-              @click="actions.gerarBoletos"
+              @click="actions.btnGerarBoleto"
               color="success"
-              >geral boleto (f1)</v-btn
+              >gerar boleto (f1)</v-btn
             >
           </div>
         </v-col>

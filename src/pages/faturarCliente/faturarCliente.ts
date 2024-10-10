@@ -6,6 +6,29 @@ import serviceFaturarCliente from "./services/faturarCliente.service";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
+import { useEventListener } from "@vueuse/core";
+
+useEventListener(document, "keydown", async (event) => {
+    if (!state.modalSelecionarClienteOpened && !state.modalGerarBoletoOpened) {
+        if (event.key === "F1" && state.dbOrcamentosClienteFaturado.length > 0) {
+            actions.openModalGeralBoleto();
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        if (event.key === "F2") {
+            state.modalSelecionarClienteOpened = true;
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        if (event.key === "F3") {
+            state.inputLocOrcElement.focus();
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+});
 
 export const state = reactive({
     gridPedido: <ixGridCreate>{},
