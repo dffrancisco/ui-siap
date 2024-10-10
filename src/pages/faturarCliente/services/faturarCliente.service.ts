@@ -1,5 +1,7 @@
 import axios from "axios";
 import {
+    iGerarBoletosParam,
+    iGerarBoletosResponse,
     iGetClientesFaturadosParam, iGetClientesFaturadosResponse, iGetOrcamentosClienteFaturadoParam,
     iGetOrcamentosClienteFaturadoResponse,
     iGetRegrasFaturamentoResponse
@@ -14,6 +16,7 @@ type iGetOrcamentosClienteFaturadoFunction = (param: iGetOrcamentosClienteFatura
     Promise<iGetOrcamentosClienteFaturadoResponse[]>
 type iGetRegrasFaturamentoFunction = (idCliente: number, totalValorOrcamentos: number, dividirBoleto: 'S' | 'N')
     => Promise<iGetRegrasFaturamentoResponse>
+type iGerarBoletosFunction = (param: iGerarBoletosParam) => Promise<iGerarBoletosResponse>
 
 const getClientesFaturados: iGetClientesFaturadosFuction = async (param, offset) => {
     const { data } = await axios.post(caminho, {
@@ -45,8 +48,18 @@ const getRegrasFaturamento: iGetRegrasFaturamentoFunction = async (idCliente, to
     return data;
 }
 
+const gerarBoletos: iGerarBoletosFunction = async (param) => {
+    const { data } = await axios.post(caminho, {
+        call: "gerarBoletos",
+        param
+    })
+
+    return data;
+}
+
 export default {
     getClientesFaturados,
     getOrcamentosClienteFaturado,
-    getRegrasFaturamento
+    getRegrasFaturamento,
+    gerarBoletos
 }

@@ -149,6 +149,7 @@ onMounted(async () => {
               <div>
                 <v-btn
                   @click="actions.openModalGeralBoleto"
+                  v-if="!state.esconderBtn"
                   :disabled="state.dbOrcamentosClienteFaturado.length == 0"
                   :color="
                     computeds.calcularOrcamentosLocalizados.value.total == computeds.totalValorOrcamentos.value &&
@@ -185,7 +186,7 @@ onMounted(async () => {
       <ModalSelecionarCliente
         :dataLimite="state.dataLimite"
         @selecionarCliente="actions.selecionarCliente"
-        @closeModal="actions.closeModal"
+        @closeModal="actions.closeModalSelecionarCliente"
       />
     </v-dialog>
 
@@ -194,7 +195,7 @@ onMounted(async () => {
       width="1000"
     >
       <ModalGerarBoleto
-        @closeModal="state.modalGerarBoletoOpened = false"
+        @closeModal="actions.closeModalGerarBoleto"
         :orcamentos="state.dbOrcamentosClienteFaturado"
         :cliente="state.dbClienteFaturado"
         :totalValorOrcamentos="computeds.totalValorOrcamentos.value"

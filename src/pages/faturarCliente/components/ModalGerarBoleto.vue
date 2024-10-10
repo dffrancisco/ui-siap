@@ -4,6 +4,7 @@ import { reactive, computed, onMounted } from "vue";
 import {
   iClienteFaturado,
   iOrcamentosClienteFaturado,
+  iGerarBoletosParam,
   iRegraFaturamento,
   iRegraFaturamentoParcela,
 } from "../interfaces";
@@ -61,8 +62,8 @@ const actions = {
     await actions.criarBoletos();
   },
 
-  async closeModal() {
-    emits("closeModal");
+  async closeModal(esconderBtn: boolean = false) {
+    emits("closeModal", esconderBtn);
   },
 
   async getRegrasFaturamento() {
@@ -167,6 +168,37 @@ const actions = {
     }
 
     state.boletos = boletos;
+  },
+
+  async gerarBoletos() {
+    try {
+      state.loading = true;
+
+      let param: iGerarBoletosParam = {
+        BOLETOS: state.boletos,
+        ID_CLIENTE: props.cliente.ID_CLIENTE,
+        ORCAMENTOS: props.orcamentos,
+      };
+
+      const data = await serviceFaturarCliente.gerarBoletos(param);
+
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: data.msg,
+        });
+
+        actions.closeModal(true);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Ocorreu um erro ao gerar os boletos.",
+        text: error.message,
+      });
+    } finally {
+      state.loading = false;
+    }
   },
 };
 
@@ -337,7 +369,11 @@ onMounted(() => {
           </div>
 
           <div class="d-flex justify-end">
-            <v-btn color="success">geral boleto (f1)</v-btn>
+            <v-btn
+              @click="actions.gerarBoletos"
+              color="success"
+              >geral boleto (f1)</v-btn
+            >
           </div>
         </v-col>
       </v-row>

@@ -60,3 +60,21 @@ export interface iGetRegrasFaturamentoResponse {
     regrasFaturamento: iRegraFaturamento[];
     regrasFaturamentoParcelas: iRegraFaturamentoParcela[];
 }
+
+export interface iBoleto {
+    DATA_VENCIMENTO: string,
+    VALOR: number,
+}
+
+export interface iGerarBoletosParam {
+    ID_CLIENTE: number,
+    BOLETOS: iBoleto[],
+    ORCAMENTOS: iOrcamentosClienteFaturado[]
+}
+
+export interface iResponseSuccess {
+    success: boolean,
+    msg: string
+}
+
+export interface iGerarBoletosResponse extends iResponseSuccess { }

@@ -17,7 +17,8 @@ export const state = reactive({
     locValor: null,
     orcamentosLocalizados: <iOrcamentosLocalizados[]>[],
     inputLocOrcElement: <HTMLInputElement>null,
-    modalGerarBoletoOpened: false
+    modalGerarBoletoOpened: false,
+    esconderBtn: false
 })
 
 export const actions = ({
@@ -42,11 +43,20 @@ export const actions = ({
         })
     },
 
-    closeModal() {
+    closeModalSelecionarCliente() {
         state.modalSelecionarClienteOpened = false
     },
 
+    closeModalGerarBoleto(esconderBtn: boolean) {
+        if (esconderBtn == true) {
+            state.esconderBtn = true
+        }
+
+        state.modalGerarBoletoOpened = false
+    },
+
     async selecionarCliente(cliente: iClienteFaturado) {
+        state.esconderBtn = false
         state.dbClienteFaturado = cliente
         state.orcamentosLocalizados = []
         await actions.getOrcamentosClienteFaturado()
