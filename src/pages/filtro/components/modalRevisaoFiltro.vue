@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, reactive } from "vue";
 import { iDadosFiltro } from "../interfaces";
 import utils, { msgConfirmSemCodigo } from "@/ts/utils";
 import serviceFiltro from "../services/filtro.service";
@@ -18,6 +18,7 @@ const emit = defineEmits(["closeModalRevisaoFiltro", "finalizarFiltro"]);
 const stateModalRevisaoFiltro = reactive({
   loading: false,
   dadosFiltro: [] as iDadosFiltro[],
+  filtroSelecionado: "Todos",
   headers: <any>[
     {
       title: "Nº Fabricante",
@@ -65,10 +66,8 @@ stateModalRevisaoFiltro.dadosFiltro = props.dadosFiltroSelecionado.map((item) =>
   CONFERIDO: "SIM",
 }));
 
-const filtroSelecionado = ref("todos");
-
 const dadosFiltrados = computed(() => {
-  if (filtroSelecionado.value === "alterados") {
+  if (stateModalRevisaoFiltro.filtroSelecionado === "Alterados") {
     return stateModalRevisaoFiltro.dadosFiltro.filter(
       (item) => item.QTO_NEW !== item.QTO_OLD && item.QTO_NEW !== null
     );
@@ -217,7 +216,7 @@ const actions = {
           :width="120"
           class="pa-2"
           style="border: 1px solid #ddd; position: relative; overflow: visible"
-          @click="filtroSelecionado = 'alterados'"
+          @click="stateModalRevisaoFiltro.filtroSelecionado = 'Alterados'"
         >
           ITENS ALTERADOS
           <v-chip
@@ -238,7 +237,7 @@ const actions = {
           :width="120"
           class="ml-4 pa-2"
           style="border: 1px solid #ddd; position: relative; overflow: visible"
-          @click="filtroSelecionado = 'todos'"
+          @click="stateModalRevisaoFiltro.filtroSelecionado = 'Todos'"
         >
           TODOS OS ITENS
           <v-chip
