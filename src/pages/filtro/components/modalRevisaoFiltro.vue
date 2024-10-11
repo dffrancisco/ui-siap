@@ -124,12 +124,18 @@ const actions = {
       try {
         stateModalRevisaoFiltro.loading = true;
 
-        let itensConferidos = stateModalRevisaoFiltro.dadosFiltro.filter((item) => item.CONFERIDO == "SIM");
+        let itensConferidos = stateModalRevisaoFiltro.dadosFiltro
+          .filter((item) => item.CONFERIDO === "SIM")
+          .map((item) => ({
+            ID_ITENS_FILTRO: item.ID_ITENS_FILTRO,
+            COD_PRODUTO: item.COD_PRODUTO,
+            QTD_ESTOQUE: item.QTD_ESTOQUE ?? 0,
+          }));
 
         let param = {
           idFiltro: stateModalRevisaoFiltro.dadosFiltro[0].ID_FILTRO,
           qtdItensConferidos: itensConferidos.length,
-          itensConferidos: stateModalRevisaoFiltro.dadosFiltro,
+          itensConferidos: itensConferidos,
         };
 
         await serviceFiltro.finalizarFiltro(param);

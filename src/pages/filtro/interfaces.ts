@@ -133,8 +133,14 @@ export interface iDeleteItem {
     idItem: number;
 }
 
+export interface iItensConferidos {
+    ID_ITENS_FILTRO: number;
+    COD_PRODUTO: number;
+    QTD_ESTOQUE: number;
+}
+
 export interface iFinalizarFiltro {
     idFiltro: number;
     qtdItensConferidos: number;
-    itensConferidos: iDadosFiltro[]
+    itensConferidos: iItensConferidos[]
 }
