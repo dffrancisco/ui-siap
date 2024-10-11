@@ -10,7 +10,7 @@ let eyeShow = ref(false);
 nextTick(() => {
   state.modal = new xModal.create({
     el: "#confirmation",
-    height: 360,
+    height: 280,
     width: 400,
     onOpen() {
       state.modal.setTitle(state.title);
@@ -53,7 +53,7 @@ nextTick(() => {
           label="Senha"
           ref="password"
           id="edtPass"
-          class="mx-5"
+          class="mx-5 mt-2"
           v-model="state.senha"
           :type="eyeShow ? 'text' : 'password'"
           autocomplete="off"
@@ -67,7 +67,12 @@ nextTick(() => {
         ></v-text-field>
 
         <div class="d-flex justify-space-around mt-3">
-          <v-btn variant="text" @click="actions.closeModal"> Cancelar </v-btn>
+          <v-btn
+            variant="text"
+            @click="actions.closeModal"
+          >
+            Cancelar
+          </v-btn>
 
           <v-btn
             :disabled="state.preLoad"
