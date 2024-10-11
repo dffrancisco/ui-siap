@@ -63,16 +63,15 @@ const stateModalAddItensFiltro = reactive({
       align: "left",
     },
     {
-      title: "Nº Fabricante",
+      title: "Nº Fabricante - Nº Fabricante2",
       key: "NUM_FABRICANTE",
       sortable: true,
     },
     {
-      title: "Nº Fabricante2",
-      key: "NUM_FABRICANTE2",
+      title: "End. Estoque - End. Excesso",
+      key: "END_ESTOQUE",
       sortable: true,
     },
-
     {
       title: "Carro",
       key: "CARRO",
@@ -387,6 +386,7 @@ onUnmounted(() => {
             :headers="stateModalAddItensFiltro.headers"
             items-per-page-text="Itens por página"
             items-per-page="50"
+            style="--v-table-row-height: 60px"
             height="360"
             fixed-header
             :items="itensFiltrados"
@@ -397,14 +397,12 @@ onUnmounted(() => {
             show-select
             select-strategy="all"
           >
-            <template #no-data>
-              <v-alert
-                :value="true"
-                icon="mdi-information"
-                style="background-color: #ffffff"
-              >
-                Não há dados disponíveis.
-              </v-alert>
+            <template v-slot:item.NUM_FABRICANTE="{ item }">
+              <div> {{ item.NUM_FABRICANTE }} - {{ item.NUM_FABRICANTE2 }} </div>
+            </template>
+
+            <template v-slot:item.END_ESTOQUE="{ item }">
+              <div> {{ item.END_ESTOQUE }} - {{ item.END_EXCESSO }} </div>
             </template>
           </v-data-table>
         </v-card-text>

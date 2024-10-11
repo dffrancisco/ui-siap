@@ -15,16 +15,15 @@ const stateModalVisualizarFiltro = reactive({
       sortable: true,
     },
     {
-      title: "Nº Fabricante",
+      title: "Nº Fabricante - Nº Fabricante2",
       key: "NUM_FABRICANTE",
       sortable: true,
     },
     {
-      title: "Nº Fabricante 2",
-      key: "NUM_FABRICANTE2",
+      title: "End. Estoque - End. Excesso",
+      key: "END_ESTOQUE",
       sortable: true,
     },
-
     {
       title: "Qtd",
       key: "QTD_ESTOQUE",
@@ -172,6 +171,14 @@ const emit = defineEmits([
           item-key="COD_PRODUTO"
           item-value="COD_PRODUTO"
         >
+          <template v-slot:item.NUM_FABRICANTE="{ item }">
+            <div> {{ item.NUM_FABRICANTE }} - {{ item.NUM_FABRICANTE2 }} </div>
+          </template>
+
+          <template v-slot:item.END_ESTOQUE="{ item }">
+            <div> {{ item.END_ESTOQUE }} - {{ item.END_EXCESSO }} </div>
+          </template>
+
           <template v-slot:item.acoes="{ item }">
             <div style="display: flex">
               <v-icon
@@ -185,15 +192,6 @@ const emit = defineEmits([
                 mdi-delete-outline
               </v-icon>
             </div>
-          </template>
-          <template #no-data>
-            <v-alert
-              :value="true"
-              icon="mdi-information"
-              style="background-color: #ffffff"
-            >
-              Não há dados disponíveis.
-            </v-alert>
           </template>
         </v-data-table>
         <div style="margin-left: 72%; margin-top: -5px">

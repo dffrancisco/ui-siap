@@ -31,14 +31,10 @@ const stateModalRevisaoFiltro = reactive({
       sortable: true,
     },
     {
-      title: "End. Estoque",
+      title: "End. Estoque / End. Excesso",
       key: "END_ESTOQUE",
       sortable: true,
-    },
-    {
-      title: "End. Excesso",
-      key: "END_EXCESSO",
-      sortable: true,
+      align: "center",
     },
     {
       title: "Qtd Antiga",
@@ -268,7 +264,9 @@ const actions = {
         :items="dadosFiltrados"
         item-key="COD_PRODUTO"
         item-value="COD_PRODUTO"
-      >
+        ><template v-slot:item.END_ESTOQUE="{ item }">
+          <div> {{ item.END_ESTOQUE }} - {{ item.END_EXCESSO }} </div>
+        </template>
         <template v-slot:item.QTO_OLD="{ item }">
           <span>
             {{ item.QTO_OLD !== null ? item.QTO_OLD : "-" }}
@@ -295,7 +293,7 @@ const actions = {
           </div>
         </template>
       </v-data-table-virtual>
-      <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center">
+      <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center">
         <div>
           <span v-if="stateModalRevisaoFiltro.dadosFiltro[0].FINALIZADOR != null">
             Finalizado por: {{ stateModalRevisaoFiltro.dadosFiltro[0].FINALIZADOR }} ({{

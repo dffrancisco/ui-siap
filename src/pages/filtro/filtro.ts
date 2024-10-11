@@ -1,4 +1,4 @@
-import utils, { iColumnPrint, msgConfirmSemCodigo } from '@/ts/utils';
+import utils, { iColumnPrint } from '@/ts/utils';
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceFiltro from './services/filtro.service';
@@ -34,6 +34,7 @@ export const state = reactive({
             title: "Data Início",
             key: "DATA_INICIO",
             sortable: true,
+            align: 'center',
             value: (item: any) => utils.dataBrasil(item.DATA_INICIO)
         },
         {

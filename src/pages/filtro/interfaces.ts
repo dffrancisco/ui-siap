@@ -35,7 +35,9 @@ export interface iFiltros {
     CONFERENTE: string;
     CRIADOR: string;
     DATA_FIM: string;
+    HR_TERMINO: string;
     DATA_INICIO: string;
+    HR_INICIO: string;
     ID_FILTRO: number;
     NOME_FILTRO: string;
     QTD_ITENS: number;
