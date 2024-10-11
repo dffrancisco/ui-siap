@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { iDadosFiltro } from "../interfaces";
 import utils, { msgConfirmSemCodigo } from "@/ts/utils";
 import serviceFiltro from "../services/filtro.service";
 import Swal from "sweetalert2";
+import moment from "moment";
 
 const props = defineProps({
   dadosFiltroSelecionado: {
@@ -64,6 +65,51 @@ stateModalRevisaoFiltro.dadosFiltro = props.dadosFiltroSelecionado.map((item) =>
   CONFERIDO: "SIM",
 }));
 
+const filtroSelecionado = ref("todos");
+
+const dadosFiltrados = computed(() => {
+  if (filtroSelecionado.value === "alterados") {
+    return stateModalRevisaoFiltro.dadosFiltro.filter(
+      (item) => item.QTO_NEW !== item.QTO_OLD && item.QTO_NEW !== null
+    );
+  }
+  return stateModalRevisaoFiltro.dadosFiltro;
+});
+
+const duracaoFiltro = computed(() => {
+  const filtro = stateModalRevisaoFiltro.dadosFiltro[0];
+
+  const inicio = moment(filtro.DT_FILTRO).set({
+    hour: moment(filtro.HR_INICIO).utc().hour(),
+    minute: moment(filtro.HR_INICIO).utc().minute(),
+    second: moment(filtro.HR_INICIO).utc().second(),
+  });
+
+  // Se DT_REVISAO e HR_REVISAO existirem, serão usados; caso contrário, usa o momento atual
+  const revisao =
+    filtro.DT_REVISAO && filtro.HR_REVISAO
+      ? moment(filtro.DT_REVISAO).set({
+          hour: moment(filtro.HR_REVISAO).utc().hour(),
+          minute: moment(filtro.HR_REVISAO).utc().minute(),
+          second: moment(filtro.HR_REVISAO).utc().second(),
+        })
+      : moment();
+
+  const duracao = moment.duration(revisao.diff(inicio));
+
+  const horasTotais = Math.floor(duracao.asHours());
+  const minutos = duracao.minutes();
+  const segundos = duracao.seconds();
+
+  if (horasTotais >= 24) {
+    const dias = Math.floor(horasTotais / 24);
+    const horas = horasTotais % 24; // horas restantes
+    return `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+  }
+
+  return `${horasTotais}h ${minutos}m ${segundos}s`;
+});
+
 const actions = {
   cancelar() {
     emit("closeModalRevisaoFiltro");
@@ -105,6 +151,31 @@ const actions = {
       }
     }
   },
+
+  async revisar() {
+    if (await msgConfirmSemCodigo("Confirmação", "Deseja revisar esse filtro?")) {
+      try {
+        stateModalRevisaoFiltro.loading = true;
+        let idFiltro = stateModalRevisaoFiltro.dadosFiltro[0].ID_FILTRO;
+
+        await serviceFiltro.revisarFiltro(idFiltro);
+
+        Swal.fire({
+          icon: "success",
+          text: "Filtro revisado com sucesso!",
+          timer: 1500,
+        });
+        emit("closeModalRevisaoFiltro");
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          text: "Erro ao revisar o filtro!",
+        });
+      } finally {
+        stateModalRevisaoFiltro.loading = false;
+      }
+    }
+  },
 };
 </script>
 <template>
@@ -136,7 +207,8 @@ const actions = {
         <v-chip
           style="font-weight: bold"
           color="primary"
-          >Qtd. Itens: {{ stateModalRevisaoFiltro.dadosFiltro.length }}
+          >Duração:
+          {{ duracaoFiltro }}
         </v-chip>
       </v-card>
 
@@ -145,6 +217,7 @@ const actions = {
           :width="120"
           class="pa-2"
           style="border: 1px solid #ddd; position: relative; overflow: visible"
+          @click="filtroSelecionado = 'alterados'"
         >
           ITENS ALTERADOS
           <v-chip
@@ -165,6 +238,7 @@ const actions = {
           :width="120"
           class="ml-4 pa-2"
           style="border: 1px solid #ddd; position: relative; overflow: visible"
+          @click="filtroSelecionado = 'todos'"
         >
           TODOS OS ITENS
           <v-chip
@@ -186,7 +260,7 @@ const actions = {
         class="mb-5"
         fixed-header
         :row-props="actions.getClassCorLinha"
-        :items="stateModalRevisaoFiltro.dadosFiltro"
+        :items="dadosFiltrados"
         item-key="COD_PRODUTO"
         item-value="COD_PRODUTO"
       >
@@ -216,34 +290,57 @@ const actions = {
           </div>
         </template>
       </v-data-table-virtual>
-      <div
-        v-if="stateModalRevisaoFiltro.dadosFiltro[0].FINALIZADOR != null"
-        style="margin-top: 10px"
-        ><span
-          >Finalizado por: {{ stateModalRevisaoFiltro.dadosFiltro[0].FINALIZADOR }} ({{
-            stateModalRevisaoFiltro.dadosFiltro[0].ID_FINALIZADOR
-          }})
-        </span>
-        <span
-          >em {{ utils.dataBrasil(stateModalRevisaoFiltro.dadosFiltro[0]?.DT_TERMINO) }} -
-          {{ utils.formatHora(stateModalRevisaoFiltro.dadosFiltro[0]?.HR_TERMINO) }}
-        </span>
-      </div>
+      <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center">
+        <div>
+          <span v-if="stateModalRevisaoFiltro.dadosFiltro[0].FINALIZADOR != null">
+            Finalizado por: {{ stateModalRevisaoFiltro.dadosFiltro[0].FINALIZADOR }} ({{
+              stateModalRevisaoFiltro.dadosFiltro[0].ID_FINALIZADOR
+            }}) em {{ utils.dataBrasil(stateModalRevisaoFiltro.dadosFiltro[0]?.DT_TERMINO) }} -
+            {{ utils.formatHora(stateModalRevisaoFiltro.dadosFiltro[0]?.HR_TERMINO) }} </span
+          ><br />
 
-      <div style="margin-left: 75%">
-        <v-btn
-          variant="outlined"
-          color="primary"
-          @click="actions.cancelar"
-          >Fechar</v-btn
-        ><v-btn
-          color="primary"
-          :disabled="stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO !== null"
-          @click="actions.finalizarRevisao"
-          class="ml-3"
-        >
-          Finalizar</v-btn
-        >
+          <span
+            v-if="
+              stateModalRevisaoFiltro.dadosFiltro[0].ID_REVISOR != null &&
+              stateModalRevisaoFiltro.dadosFiltro[0].HR_REVISAO != null
+            "
+          >
+            Revisado por: {{ stateModalRevisaoFiltro.dadosFiltro[0].REVISOR }} ({{
+              stateModalRevisaoFiltro.dadosFiltro[0].ID_REVISOR
+            }}) em {{ utils.dataBrasil(stateModalRevisaoFiltro.dadosFiltro[0]?.DT_REVISAO) }} -
+            {{ utils.formatHora(stateModalRevisaoFiltro.dadosFiltro[0]?.HR_REVISAO) }}
+          </span>
+        </div>
+
+        <div>
+          <v-btn
+            variant="outlined"
+            color="primary"
+            @click="actions.cancelar"
+            style="margin-right: 10px"
+          >
+            Fechar
+          </v-btn>
+
+          <v-btn
+            v-if="stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO == null"
+            color="primary"
+            @click="actions.finalizarRevisao"
+          >
+            Finalizar
+          </v-btn>
+
+          <v-btn
+            v-if="
+              stateModalRevisaoFiltro.dadosFiltro[0].HR_REVISAO == null &&
+              stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO != null
+            "
+            color="primary"
+            @click="actions.revisar"
+          >
+            Revisar
+          </v-btn>
+        </div>
       </div>
     </v-card>
     <v-overlay

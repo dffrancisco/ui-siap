@@ -115,6 +115,15 @@ const getFiltroParaRevisao: iFunctionFiltroParaRevisao = async (param) => {
     return data;
 }
 
+const revisarFiltro = async (idFiltro) => {
+    let { data } = await axios.post(caminho, {
+        call: "revisarFiltro",
+        idFiltro
+    })
+
+    return data
+}
+
 export default {
     getFiltros,
     getDadosParaFiltros,
@@ -126,5 +135,6 @@ export default {
     deletarFiltro,
     deleteItemFiltro,
     updateConferenteNomeFiltro,
-    getFiltroParaRevisao
+    getFiltroParaRevisao,
+    revisarFiltro
 }

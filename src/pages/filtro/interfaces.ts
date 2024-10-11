@@ -40,6 +40,8 @@ export interface iFiltros {
     NOME_FILTRO: string;
     QTD_ITENS: number;
     TIPO: string | null;
+    HR_REVISAO: string;
+    DT_REVISAO: string;
 }
 
 export interface iResultPesquisa {
@@ -98,6 +100,10 @@ export interface iDadosFiltro {
     QTO_NEW: number,
     FINALIZADOR: string,
     ID_FINALIZADOR: number,
+    ID_REVISOR: number,
+    HR_REVISAO: string,
+    DT_REVISAO: string,
+    REVISOR: string,
 }
 
 export interface iInsertOuUpdate {
