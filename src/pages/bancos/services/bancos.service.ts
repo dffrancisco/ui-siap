@@ -12,17 +12,10 @@ import {
 
 const caminho = "siap/bancos";
 
-const BancoChama = {
-  GetBancos: "getBancos",
-  GetDuplicidade: "getDuplicidade",
-  Insert: "insert",
-  Update: "update",
-  Delete: "delete",
-};
 
 const getBancos = async ({ param, offset }: iParamGetBanco): Promise<iBancoResponse> => {
   const { data } = await axios.post(caminho, {
-    call: BancoChama.GetBancos,
+    call: "getBancos",
     offset,
     param,
   });
@@ -31,7 +24,7 @@ const getBancos = async ({ param, offset }: iParamGetBanco): Promise<iBancoRespo
 
 const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
   const { data } = await axios.post(caminho, {
-    call: BancoChama.GetDuplicidade,
+    call: "getDuplicidade",
     value,
     field,
   });
@@ -40,7 +33,7 @@ const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDu
 
 const toInsert = async (newFields: iParamToInsert): Promise<iInsertResponse> => {
   const { data } = await axios.post(caminho, {
-    call: BancoChama.Insert,
+    call: "insert",
     param: newFields,
   });
   return data;
@@ -48,13 +41,13 @@ const toInsert = async (newFields: iParamToInsert): Promise<iInsertResponse> => 
 
 const toUpdate = async (param: iParamToUpdate) => {
   let { data } = await axios.post(caminho, {
-    call: BancoChama.Update,
+    call: "update",
     param,
   });
   return data;
 };
 
-const toDelete = async (cd_banco: string):Promise<iToDeleteResponse>=> {
+const toDelete = async (cd_banco: string): Promise<iToDeleteResponse> => {
   let { data } = await axios.post(caminho, {
     call: "delete",
     cd_banco
