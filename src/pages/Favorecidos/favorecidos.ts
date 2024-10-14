@@ -6,7 +6,6 @@ import { iFavorecidos, iParamGetFavorecido, iFieldDuplicity } from "./interfaces
 import utils from "@/ts/utils";
 import serviceFavorecidos from "./services/favorecidos.service";
 
-
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     pnSearch: false,
@@ -25,6 +24,8 @@ export const actions = {
     },
 
     grids() {
+
+
         state.gridPrincipal = new xGridV2.create({
             el: "#gridPrincipal",
             height: 200,
@@ -51,6 +52,9 @@ export const actions = {
                 el: "#pnCampos",
                 vModel(r) {
                     state.dbFavorecido = r;
+
+
+
                 },
                 duplicity: {
                     dataField: ["NR_CPF", "NR_CNPJ"],
@@ -62,7 +66,7 @@ export const actions = {
 
                         if (dup && Object.keys(dup).length > 0) {
                             state.gridPrincipal.showMessageDuplicity(
-                                rs.text + " já cadastrado."
+                                rs.text + " jacadastrado!"
                             );
                             return true;
                         }
@@ -114,6 +118,7 @@ export const actions = {
         try {
             state.loading = true;
             const data = await serviceFavorecidos.getFavorecidos({ offset, param });
+            console.log('Dados retornados da API:', data);
             return data;
         } catch (error) {
             Swal.fire({
@@ -141,7 +146,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "erro ao verificar duplicidede",
+                title: "erro ao verificar duplicidade!",
                 text: error.message,
             });
         }
@@ -160,7 +165,7 @@ export const actions = {
         if (!state.gridPrincipal.dataSource()) {
             Swal.fire({
                 icon: "info",
-                text: "operação condcelada, nenhum registro selecionado.",
+                text: "operação cancelada, nenhum registro selecionado.",
             });
             return false;
         }
@@ -193,6 +198,7 @@ export const actions = {
         }
 
         if (state.gridPrincipal.dataSource() == false) {
+
             actions.toInsert();
         } else {
             actions.toUpdate();
@@ -270,6 +276,10 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    async removeNumerico(value) {
+        return value.replace(/\D/g, "");
     },
 
 

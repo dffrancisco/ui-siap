@@ -48,8 +48,8 @@ export interface iGetDuplicityResponse {
     SG_BANCO?: string;
     DS_BANCO?: string;
     CD_BANCO?: string;
-    NR_CPF?: string;
     NR_CNPJ?: string;
+    NR_CPF?: string;
 }
 
 export interface iFieldDuplicity {
@@ -69,8 +69,8 @@ export interface iFavorecidoResponse extends iBanco {
     ID_EMPRESA?: number;
     NM_FAVORECIDO: string;
     TP_VINCULO: string; //Auto explicativo mais comentei pra marcar
-    NR_CPF: string;
-    NR_CNPJ: string;
+    NR_CPF: any;
+    NR_CNPJ: any;
     NM_MATRIZ: string;
     TP_VINCULO_DESC?: string;
 }

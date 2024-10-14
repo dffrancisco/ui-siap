@@ -18,6 +18,12 @@ onMounted(async () => {
 onUnmounted(() => {
   removeEventListener("keydown", eventListener);
 });
+
+const vinculoMap = {
+  AD: "Administrativo",
+  OP: "Operacional",
+  RH: "Pessoal",
+};
 </script>
 
 <template>
@@ -49,9 +55,13 @@ onUnmounted(() => {
               name="TP_VINCULO"
               class="obr ss"
             >
-              <option value="AD">Administrativo</option>
-              <option value="OP">Operacional</option>
-              <option value="RH">Pessoal</option>
+              <option
+                v-for="(value, key) in vinculoMap"
+                :key="key"
+                :value="key"
+              >
+                {{ value }}
+              </option>
             </select>
           </v-col>
         </v-row>
@@ -66,6 +76,7 @@ onUnmounted(() => {
               class="obr ss"
               maxlength="60"
               autocomplete="off"
+              v-mask="0"
             />
           </v-col>
           <v-col cols="3">
@@ -77,6 +88,7 @@ onUnmounted(() => {
               name="NR_CNPJ"
               class="obr ss"
               maxlength="18"
+              v-mask="'##.###.###/####-##'"
               autocomplete="off"
             />
           </v-col>
@@ -89,6 +101,7 @@ onUnmounted(() => {
               name="NR_CPF"
               class="obr ss"
               maxlength="14"
+              v-mask="'###.###.###-##'"
               autocomplete="off"
             />
           </v-col>
@@ -115,6 +128,7 @@ onUnmounted(() => {
               name="CD_AGENCIA"
               class="obr ss"
               maxlength="10"
+              v-mask="'####-#'"
               autocomplete="off"
             />
           </v-col>
@@ -127,6 +141,7 @@ onUnmounted(() => {
               name="NR_CONTA"
               class="obr ss"
               maxlength="15"
+              v-mask="'#####-#'"
               autocomplete="off"
             />
           </v-col>

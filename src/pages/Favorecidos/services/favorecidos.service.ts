@@ -8,21 +8,14 @@ import {
     iGetDuplicityResponse,
     iToDeleteResponse,
     iInsertResponse,
+
 } from '../interfaces';
 
 const caminho = "siap/favorecidos";
 
-const FavorecidosChama = {
-    GetFavorecidos: "getFavorecidos",
-    GetDuplicidade: "getDuplicidade",
-    Insert: "insert",
-    Update: "update",
-    Delete: "delete",
-};
-
 const getFavorecidos = async ({ param, offset }: iParamGetFavorecido): Promise<iFavorecidoResponse> => {
     const { data } = await axios.post(caminho, {
-        call: FavorecidosChama.GetFavorecidos,
+        call: "getFavorecidos",
         offset,
         param,
     });
@@ -32,7 +25,7 @@ const getFavorecidos = async ({ param, offset }: iParamGetFavorecido): Promise<i
 
 const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
     const { data } = await axios.post(caminho, {
-        call: FavorecidosChama.GetDuplicidade,
+        call: "getDuplicidade",
         value,
         field,
     });
@@ -41,7 +34,7 @@ const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDu
 
 const toInsert = async (newFields: iParamToInsert): Promise<iInsertResponse> => {
     const { data } = await axios.post(caminho, {
-        call: FavorecidosChama.Insert,
+        call: "insert",
         param: newFields,
     });
     return data;
@@ -50,7 +43,7 @@ const toInsert = async (newFields: iParamToInsert): Promise<iInsertResponse> => 
 
 const toUpdate = async (param: iParamToUpdate) => {
     let { data } = await axios.post(caminho, {
-        call: FavorecidosChama.Update,
+        call: "update",
         param,
     });
     return data;
@@ -58,16 +51,19 @@ const toUpdate = async (param: iParamToUpdate) => {
 
 const toDelete = async (id_favorecido: number): Promise<iToDeleteResponse> => {
     let { data } = await axios.post(caminho, {
-        call: FavorecidosChama.Delete,
+        call: "delete",
         id_favorecido,
     });
     return data;
 };
 
-export default {
-    getFavorecidos,
-    getDuplicidade,
-    toInsert,
-    toUpdate,
-    toDelete,
-};
+
+export default
+    {
+        getFavorecidos,
+        getDuplicidade,
+        toInsert,
+        toUpdate,
+        toDelete,
+
+    };
