@@ -4,6 +4,7 @@ import { reactive } from "vue";
 import serviceFiltro from './services/filtro.service';
 import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iMarcas, iResponseDadosParaFiltros, iUpdateNomeFiltro } from "./interfaces";
 import { msgConfirm } from '@/ts/message';
+import moment from 'moment';
 
 export const state = reactive({
     itensPerPage: 30,
@@ -401,7 +402,7 @@ export const actions = {
     finalizarFiltro(idFiltro) {
         const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
         if (filtroIndex !== -1) {
-            state.filtros[filtroIndex].DATA_FIM = new Date().toISOString();
+            state.filtros[filtroIndex].DATA_FIM = moment().toISOString();
         }
 
         state.dadosDoFiltroSelecionado = []

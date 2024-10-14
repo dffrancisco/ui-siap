@@ -124,11 +124,7 @@ onMounted(async () => {
               color="primary"
               class="ml-1"
               :title="item.HR_REVISAO == null ? 'Revisar Filtro' : 'Visualizar Revisão'"
-              @click="
-                item.HR_REVISAO == null
-                  ? actions.revisarFiltro(item.ID_FILTRO)
-                  : actions.revisarFiltro(item.ID_FILTRO)
-              "
+              @click="actions.revisarFiltro(item.ID_FILTRO)"
             >
               {{ item.HR_REVISAO == null ? "mdi-checkbox-marked-outline" : "mdi-eye-outline" }}
             </v-icon>
