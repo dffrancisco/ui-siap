@@ -2,18 +2,17 @@
 import { actions, state } from "./bancos";
 import { onMounted, onUnmounted } from "vue";
 import { useEventListener } from "@vueuse/core";
-import bancosSearch from "./components/bancosSearch.vue";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (event.key === "F1") {
-    document.getElementById("edtSearch").focus(); 
+    document.getElementById("edtSearch").focus();
     event.preventDefault();
     event.stopPropagation();
   }
 });
 
-onMounted(async () => {  
-  actions.init()
+onMounted(async () => {
+  actions.init();
 });
 
 onUnmounted(() => {
@@ -24,7 +23,10 @@ onUnmounted(() => {
 <template>
   <v-container>
     <title>Gerenciar Bancos</title>
-    <v-card width="700" class="pa-5 ma-auto">
+    <v-card
+      width="700"
+      class="pa-5 ma-auto"
+    >
       <div id="pnCampos">
         <v-row>
           <v-col cols="7">
@@ -45,7 +47,7 @@ onUnmounted(() => {
             <input
               v-model="state.dbBanco.CD_BANCO"
               type="text"
-              id="CD_BANCO" 
+              id="CD_BANCO"
               name="CD_BANCO"
               v-mask="'#####'"
               class="obr ss"
@@ -70,7 +72,7 @@ onUnmounted(() => {
 
         <div class="mt-2 d-flex ga-2">
           <input
-            v-model="state.edtSearch"  
+            v-model="state.edtSearch"
             type="text"
             placeholder="F1 - Buscar"
             :disabled="state.pnSearch"
@@ -102,15 +104,18 @@ onUnmounted(() => {
         ></v-progress-circular>
       </v-overlay>
 
-      <div id="gridPrincipal" class="mt-2"></div>
+      <div
+        id="gridPrincipal"
+        class="mt-2"
+      ></div>
 
-      <div id="pnBotoes" class="mt-2" style="text-align: center"></div>
-
+      <div
+        id="pnBotoes"
+        class="mt-2"
+        style="text-align: center"
+      ></div>
     </v-card>
 
     <div id="pnCodigoTela">Bancos</div>
   </v-container>
 </template>
-
-<style scoped>
-</style>

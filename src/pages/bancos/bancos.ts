@@ -5,7 +5,7 @@ import { msgConfirm } from "@/ts/message";
 import { iBanco, iParamGetBanco, iFieldDuplicity } from "./interfaces";
 import utils from "@/ts/utils";
 import serviceBancos from "./services/bancos.service";
-import { init } from "../trocarMontador/trocarMontador";
+
 
 export const state = reactive({
   gridPrincipal: <ixGridCreate>{},
@@ -203,9 +203,9 @@ export const actions = {
     }
 
     if (state.gridPrincipal.dataSource() == false) {
-       actions.toInsert();
+      actions.toInsert();
     } else {
-       actions.toUpdate();
+      actions.toUpdate();
     }
 
     state.pnSearch = false;
@@ -233,6 +233,10 @@ export const actions = {
       await serviceBancos.toDelete(cd_banco);
 
       state.gridPrincipal.deleteLine();
+      await Swal.fire({
+        icon: "success",
+        text: "Banco deletado com sucesso.",
+      });
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -254,7 +258,12 @@ export const actions = {
       };
 
       await serviceBancos.toInsert(newFields);
-      state.gridPrincipal.insertLine({...newFields});
+      state.gridPrincipal.insertLine({ ...newFields });
+
+      await Swal.fire({
+        icon: "success",
+        text: "Banco adicionado com sucesso.",
+      });
 
     } catch (error) {
       await Swal.fire({
@@ -302,4 +311,3 @@ export const actions = {
 
 };
 
-export default { state, actions };
