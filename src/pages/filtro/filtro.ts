@@ -403,6 +403,7 @@ export const actions = {
         const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
         if (filtroIndex !== -1) {
             state.filtros[filtroIndex].DATA_FIM = moment().toISOString();
+            state.filtros[filtroIndex].HR_TERMINO = moment().toDate();
         }
 
         state.dadosDoFiltroSelecionado = []

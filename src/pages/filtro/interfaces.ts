@@ -35,7 +35,7 @@ export interface iFiltros {
     CONFERENTE: string;
     CRIADOR: string;
     DATA_FIM: string;
-    HR_TERMINO: string;
+    HR_TERMINO: string | Date;
     DATA_INICIO: string;
     HR_INICIO: string;
     ID_FILTRO: number;
