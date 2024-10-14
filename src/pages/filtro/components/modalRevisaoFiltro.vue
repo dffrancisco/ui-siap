@@ -59,7 +59,7 @@ const stateModalRevisaoFiltro = reactive({
 
 stateModalRevisaoFiltro.dadosFiltro = props.dadosFiltroSelecionado.map((item) => ({
   ...item,
-  CONFERIDO: "SIM",
+  CONFERIDO: item.HR_REVISAO !== null ? item.CONFERIDO : "SIM",
 }));
 
 const dadosFiltrados = computed(() => {
@@ -166,7 +166,7 @@ const actions = {
           text: "Filtro revisado com sucesso!",
           timer: 1500,
         });
-        emit("closeModalRevisaoFiltro");
+        emit("finalizarFiltro", stateModalRevisaoFiltro.dadosFiltro[0].ID_FILTRO);
       } catch (error) {
         Swal.fire({
           icon: "error",
@@ -284,11 +284,10 @@ const actions = {
               :true-value="'SIM'"
               :false-value="'NAO'"
               color="primary"
-              default="SIM"
               dense
               hide-details
-              :disabled="item.QTO_NEW != null || stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO !== null"
-              :value="'SIM'"
+              :disabled="item.QTO_NEW != null || stateModalRevisaoFiltro.dadosFiltro[0].HR_REVISAO !== null"
+              :value="item.CONFERIDO"
             />
           </div>
         </template>

@@ -42,7 +42,7 @@ export interface iFiltros {
     NOME_FILTRO: string;
     QTD_ITENS: number;
     TIPO: string | null;
-    HR_REVISAO: string;
+    HR_REVISAO: string | Date;
     DT_REVISAO: string;
 }
 

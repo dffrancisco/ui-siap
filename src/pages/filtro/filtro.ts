@@ -404,6 +404,7 @@ export const actions = {
         if (filtroIndex !== -1) {
             state.filtros[filtroIndex].DATA_FIM = moment().toISOString();
             state.filtros[filtroIndex].HR_TERMINO = moment().toDate();
+            state.filtros[filtroIndex].HR_REVISAO = moment().toDate();
         }
 
         state.dadosDoFiltroSelecionado = []
