@@ -2,9 +2,10 @@ import { nextTick, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
-import { iFavorecidos, iParamGetFavorecido, iFieldDuplicity } from "./interfaces";
+import { iFavorecidos, iParamGetFavorecido, iFieldDuplicity, iBanco } from "./interfaces";
 import utils from "@/ts/utils";
 import serviceFavorecidos from "./services/favorecidos.service";
+
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
@@ -13,7 +14,9 @@ export const state = reactive({
     edtSearch: "",
     dbFavorecido: <iFavorecidos>{},
     loading: false,
+    bancos: <iBanco[]>[],
 });
+
 
 export const actions = {
     async init() {
@@ -24,6 +27,7 @@ export const actions = {
     },
 
     grids() {
+
         state.gridPrincipal = new xGridV2.create({
             el: "#gridPrincipal",
             height: 200,
@@ -34,7 +38,7 @@ export const actions = {
                 "Agência": { dataField: "CD_AGENCIA" },
                 "Conta": { dataField: "NR_CONTA" },
                 "Matriz": { dataField: "NM_MATRIZ" },
-                "Vínculo": { dataField: "TP_VINCULO" },
+                "Vínculo": { dataField: "TP_VINCULO", width: '8%', center: true },
             },
             query: {
                 async execute(rs) {
@@ -42,7 +46,6 @@ export const actions = {
                         offset: rs.offset,
                         param: rs.param,
                     });
-
                     state.gridPrincipal.querySourceAdd(data);
                 },
             },
@@ -58,7 +61,6 @@ export const actions = {
                             value: rs.value.toUpperCase(),
                             field: rs.field,
                         });
-
                         if (dup && Object.keys(dup).length > 0) {
                             state.gridPrincipal.showMessageDuplicity(
                                 rs.text + " já cadastrado!"
@@ -125,11 +127,26 @@ export const actions = {
 
     async search() {
         const searchValue = state.edtSearch?.toUpperCase();
-
         state.gridPrincipal.queryOpen({
             NM_FAVORECIDO: searchValue,
         });
     },
+    async getBancos() {
+        try {
+            state.loading = true;
+            const data = await serviceFavorecidos.getBancos();
+            state.bancos = data;
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao carregar os bancos",
+                text: error.message,
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
@@ -148,7 +165,6 @@ export const actions = {
         state.pnSearch = true;
         state.dbFavorecido = {} as iFavorecidos;
         await nextTick();
-
         state.gridPrincipal.focusField();
         state.gridPrincipal.disable();
     },
@@ -197,7 +213,6 @@ export const actions = {
 
         state.pnSearch = false;
         await nextTick();
-
         state.gridPrincipal.enable();
         state.gridPrincipal.focus();
     },
@@ -206,7 +221,6 @@ export const actions = {
         state.pnSearch = false;
         let linhaGrid = <any>state.gridPrincipal.getIndex();
         await nextTick();
-
         state.gridPrincipal.enable();
         state.gridPrincipal.focus(linhaGrid);
     },
@@ -214,11 +228,9 @@ export const actions = {
     async toDelete() {
         try {
             let id_Favorecido = state.dbFavorecido.ID_FAVORECIDO;
-
             state.loading = true;
 
             await serviceFavorecidos.toDelete(id_Favorecido);
-
             state.gridPrincipal.deleteLine();
             await Swal.fire({
                 icon: "success",
@@ -287,7 +299,6 @@ export const actions = {
             state.loading = true;
 
             await serviceFavorecidos.toUpdate(dadosAtualizados);
-
             state.dbFavorecido = dadosAtualizados as iFavorecidos;
             state.gridPrincipal.dataSource(dadosAtualizados);
 
