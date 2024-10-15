@@ -24,8 +24,6 @@ export const actions = {
     },
 
     grids() {
-
-
         state.gridPrincipal = new xGridV2.create({
             el: "#gridPrincipal",
             height: 200,
@@ -52,9 +50,6 @@ export const actions = {
                 el: "#pnCampos",
                 vModel(r) {
                     state.dbFavorecido = r;
-
-
-
                 },
                 duplicity: {
                     dataField: ["NR_CPF", "NR_CNPJ"],
@@ -66,7 +61,7 @@ export const actions = {
 
                         if (dup && Object.keys(dup).length > 0) {
                             state.gridPrincipal.showMessageDuplicity(
-                                rs.text + " jacadastrado!"
+                                rs.text + " já cadastrado!"
                             );
                             return true;
                         }
@@ -112,8 +107,6 @@ export const actions = {
         });
     },
 
-
-
     async getFavorecido({ offset, param }: iParamGetFavorecido) {
         try {
             state.loading = true;
@@ -122,7 +115,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "erro ao exibir os favorecidos",
+                title: "Erro ao exibir os favorecidos",
                 text: error.message,
             });
         } finally {
@@ -145,7 +138,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "erro ao verificar duplicidade!",
+                title: "Erro ao verificar duplicidade!",
                 text: error.message,
             });
         }
@@ -164,25 +157,24 @@ export const actions = {
         if (!state.gridPrincipal.dataSource()) {
             Swal.fire({
                 icon: "info",
-                text: "operação cancelada, nenhum registro selecionado.",
+                text: "Operação cancelada, nenhum registro selecionado.",
             });
             return false;
         }
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
-
     },
 
     async btnDelete() {
         if (!state.gridPrincipal.dataSource()) {
             Swal.fire({
                 icon: "info",
-                text: "operação cancelada, selecione um registro.",
+                text: "Operação cancelada, selecione um registro.",
             });
             return false;
         }
 
-        if (await msgConfirm("confirmação", "Confirma a exclusão?")) {
+        if (await msgConfirm("Confirmação", "Confirma a exclusão?")) {
             await actions.toDelete();
             state.gridPrincipal.focus();
         }
@@ -198,7 +190,6 @@ export const actions = {
         }
 
         if (state.gridPrincipal.dataSource() == false) {
-
             actions.toInsert();
         } else {
             actions.toUpdate();
@@ -218,7 +209,6 @@ export const actions = {
 
         state.gridPrincipal.enable();
         state.gridPrincipal.focus(linhaGrid);
-
     },
 
     async toDelete() {
@@ -232,12 +222,12 @@ export const actions = {
             state.gridPrincipal.deleteLine();
             await Swal.fire({
                 icon: "success",
-                text: "favorecido excluido com sucesso!",
+                text: "Favorecido excluído com sucesso!",
             });
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "erro ao excluir o favorecido.",
+                title: "Erro ao excluir o favorecido.",
                 text: error.message,
             });
         } finally {
@@ -266,69 +256,55 @@ export const actions = {
             state.gridPrincipal.insertLine({ ...newFields });
             await Swal.fire({
                 icon: "success",
-                text: "favorecido adicionado com sucesso!",
+                text: "Favorecido adicionado com sucesso!",
             });
         } catch (error) {
             await Swal.fire({
                 icon: "error",
-                text: "erro ao adicionar favorecido",
+                text: "Erro ao adicionar favorecido",
             });
         } finally {
             state.loading = false;
         }
     },
 
-
-
     async toUpdate() {
         try {
-
             let dadosDiff = state.gridPrincipal.getDiffTwoJson(false);
 
             if (!dadosDiff.diff) {
                 return;
             }
 
-
             let dadosAtualizados = {
                 ...state.dbFavorecido,
                 ...dadosDiff.new
             };
-
 
             dadosAtualizados.NM_FAVORECIDO = utils.toCapitalize(dadosAtualizados.NM_FAVORECIDO);
             dadosAtualizados.CD_BANCO = dadosAtualizados.CD_BANCO.toUpperCase();
 
             state.loading = true;
 
-
             await serviceFavorecidos.toUpdate(dadosAtualizados);
 
-
             state.dbFavorecido = dadosAtualizados as iFavorecidos;
-
-
             state.gridPrincipal.dataSource(dadosAtualizados);
-
 
             await Swal.fire({
                 icon: "success",
                 text: "Favorecido atualizado com sucesso!",
             });
         } catch (error) {
-
             await Swal.fire({
                 icon: "error",
                 title: "Erro ao atualizar favorecido!",
                 text: error.response?.data || error.message,
             });
         } finally {
-
             state.loading = false;
         }
     }
-
-
 };
 
 export default { state, actions };

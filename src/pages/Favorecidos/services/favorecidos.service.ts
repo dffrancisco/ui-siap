@@ -8,7 +8,6 @@ import {
     iGetDuplicityResponse,
     iToDeleteResponse,
     iInsertResponse,
-
 } from '../interfaces';
 
 const caminho = "siap/favorecidos";
@@ -21,7 +20,6 @@ const getFavorecidos = async ({ param, offset }: iParamGetFavorecido): Promise<i
     });
     return data;
 };
-
 
 const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
     const { data } = await axios.post(caminho, {
@@ -40,30 +38,27 @@ const toInsert = async (newFields: iParamToInsert): Promise<iInsertResponse> => 
     return data;
 };
 
-
 const toUpdate = async (param: iParamToUpdate) => {
-    let { data } = await axios.post(caminho, {
+    const { data } = await axios.post(caminho, {
         call: "update",
         param,
     });
     return data;
 };
 
+
 const toDelete = async (id_favorecido: number): Promise<iToDeleteResponse> => {
-    let { data } = await axios.post(caminho, {
+    const { data } = await axios.post(caminho, {
         call: "delete",
         id_favorecido,
     });
     return data;
 };
 
-
-export default
-    {
-        getFavorecidos,
-        getDuplicidade,
-        toInsert,
-        toUpdate,
-        toDelete,
-
-    };
+export default {
+    getFavorecidos,
+    getDuplicidade,
+    toInsert,
+    toUpdate,
+    toDelete,
+};
