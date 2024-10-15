@@ -60,7 +60,7 @@ export interface iFieldDuplicity {
 export interface iBanco {
     CD_BANCO: string;
     DS_BANCO: string;
-    SG_BANCO: string;
+
 }
 
 export interface iFavorecidoResponse extends iBanco {
@@ -69,8 +69,8 @@ export interface iFavorecidoResponse extends iBanco {
     ID_EMPRESA?: number;
     NM_FAVORECIDO: string;
     TP_VINCULO: string;
-    NR_CPF: any;
-    NR_CNPJ: any;
+    NR_CPF: string;
+    NR_CNPJ: string;
     NM_MATRIZ: string;
     TP_VINCULO_DESC?: string;
 }
@@ -91,4 +91,4 @@ export interface iToDeleteResponse {
     NR_CONTA?: string;
 }
 
-export interface iBancoResponse extends iFavorecidos { }
+export interface iBancoResponse extends iBanco { }
