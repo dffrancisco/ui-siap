@@ -118,7 +118,6 @@ export const actions = {
         try {
             state.loading = true;
             const data = await serviceFavorecidos.getFavorecidos({ offset, param });
-            console.log('Dados retornados da API:', data);
             return data;
         } catch (error) {
             Swal.fire({
@@ -171,6 +170,7 @@ export const actions = {
         }
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
+
     },
 
     async btnDelete() {
@@ -278,43 +278,55 @@ export const actions = {
         }
     },
 
-    async removeNumerico(value) {
-        return value.replace(/\D/g, "");
-    },
 
 
     async toUpdate() {
         try {
-            let param = {
-                NM_FAVORECIDO: state.dbFavorecido.NM_FAVORECIDO?.toUpperCase(),
-                CD_BANCO: state.dbFavorecido.CD_BANCO,
-                CD_AGENCIA: state.dbFavorecido.CD_AGENCIA,
-                CD_OPERACAO: state.dbFavorecido.CD_OPERACAO,
-                NR_CONTA: state.dbFavorecido.NR_CONTA,
-                NM_MATRIZ: state.dbFavorecido.NM_MATRIZ,
-                TP_VINCULO: state.dbFavorecido.TP_VINCULO,
+
+            let dadosDiff = state.gridPrincipal.getDiffTwoJson(false);
+
+            if (!dadosDiff.diff) {
+                return;
+            }
+
+
+            let dadosAtualizados = {
+                ...state.dbFavorecido,
+                ...dadosDiff.new
             };
+
+
+            dadosAtualizados.NM_FAVORECIDO = utils.toCapitalize(dadosAtualizados.NM_FAVORECIDO);
+            dadosAtualizados.CD_BANCO = dadosAtualizados.CD_BANCO.toUpperCase();
 
             state.loading = true;
 
 
-            serviceFavorecidos.toUpdate(param);
-            state.gridPrincipal.dataSource(param);
+            await serviceFavorecidos.toUpdate(dadosAtualizados);
+
+
+            state.dbFavorecido = dadosAtualizados as iFavorecidos;
+
+
+            state.gridPrincipal.dataSource(dadosAtualizados);
+
 
             await Swal.fire({
                 icon: "success",
-                text: "favorecido atualizado com sucesso!",
+                text: "Favorecido atualizado com sucesso!",
             });
         } catch (error) {
-            Swal.fire({
+
+            await Swal.fire({
                 icon: "error",
-                title: "erro atualizar favorecido!",
-                text: error.message,
+                title: "Erro ao atualizar favorecido!",
+                text: error.response?.data || error.message,
             });
         } finally {
+
             state.loading = false;
         }
-    },
+    }
 
 
 };

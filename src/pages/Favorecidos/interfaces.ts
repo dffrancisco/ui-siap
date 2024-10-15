@@ -5,7 +5,7 @@ export interface iFavorecidos {
     NR_CONTA: string;
     CD_OPERACAO: string;
     NM_FAVORECIDO: string;
-    TP_VINCULO: string; //Auto explicativo mais comentei pra marcar
+    TP_VINCULO: string;
     NR_CPF: string;
     NR_CNPJ: string;
     NM_MATRIZ: string;
@@ -68,7 +68,7 @@ export interface iFavorecidoResponse extends iBanco {
     NR_CONTA?: string;
     ID_EMPRESA?: number;
     NM_FAVORECIDO: string;
-    TP_VINCULO: string; //Auto explicativo mais comentei pra marcar
+    TP_VINCULO: string;
     NR_CPF: any;
     NR_CNPJ: any;
     NM_MATRIZ: string;
