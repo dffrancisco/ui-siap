@@ -1,30 +1,16 @@
 <script setup lang="ts">
-import { actions, state } from "./favorecidos";
+import { actions, state, eventListener } from "./favorecidos";
 import { onMounted, onUnmounted } from "vue";
-import { useEventListener } from "@vueuse/core";
-
-const eventListener = useEventListener(document, "keydown", async (event) => {
-  if (event.key === "F1") {
-    document.getElementById("edtSearch").focus();
-    event.preventDefault();
-    event.stopPropagation();
-  }
-});
 
 onMounted(async () => {
   await actions.init();
   await actions.getBancos();
+  window.addEventListener("keydown", eventListener);
 });
 
 onUnmounted(() => {
-  removeEventListener("keydown", eventListener);
+  window.removeEventListener("keydown", eventListener);
 });
-
-const vinculoMap = {
-  AD: "Administrativo",
-  OP: "Operacional",
-  RH: "Pessoal",
-};
 </script>
 
 <template>
@@ -57,7 +43,7 @@ const vinculoMap = {
               class="obr ss"
             >
               <option
-                v-for="(value, key) in vinculoMap"
+                v-for="(value, key) in state.vinculoMap"
                 :key="key"
                 :value="key"
               >

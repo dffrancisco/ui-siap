@@ -5,7 +5,7 @@ import { msgConfirm } from "@/ts/message";
 import { iFavorecidos, iParamGetFavorecido, iFieldDuplicity, iBanco } from "./interfaces";
 import utils from "@/ts/utils";
 import serviceFavorecidos from "./services/favorecidos.service";
-
+import { useEventListener } from "@vueuse/core";
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
@@ -15,8 +15,20 @@ export const state = reactive({
     dbFavorecido: <iFavorecidos>{},
     loading: false,
     bancos: <iBanco[]>[],
+    vinculoMap: {
+        AD: "Administrativo",
+        OP: "Operacional",
+        RH: "Pessoal",
+    },
 });
 
+export const eventListener = useEventListener(document, "keydown", async (event) => {
+    if (event.key === "F1") {
+        document.getElementById("edtSearch")?.focus();
+        event.preventDefault();
+        event.stopPropagation();
+    }
+});
 
 export const actions = {
     async init() {
@@ -27,16 +39,15 @@ export const actions = {
     },
 
     grids() {
-
         state.gridPrincipal = new xGridV2.create({
             el: "#gridPrincipal",
             height: 200,
             count: true,
             columns: {
                 "Nome do Favorecido": { dataField: "NM_FAVORECIDO" },
-                "Banco": { dataField: "CD_BANCO" },
-                "Agência": { dataField: "CD_AGENCIA" },
-                "Conta": { dataField: "NR_CONTA" },
+                "Banco": { dataField: "CD_BANCO", width: '10%', center: true },
+                "Agência": { dataField: "CD_AGENCIA", width: '10%', center: true },
+                "Conta": { dataField: "NR_CONTA", width: '16%' },
                 "Matriz": { dataField: "NM_MATRIZ" },
                 "Vínculo": { dataField: "TP_VINCULO", width: '8%', center: true },
             },
@@ -49,6 +60,8 @@ export const actions = {
                     state.gridPrincipal.querySourceAdd(data);
                 },
             },
+
+
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
@@ -104,7 +117,7 @@ export const actions = {
                 },
             },
             enter: function () {
-                document.getElementById("btnUpdate").click();
+                document.getElementById("btnUpdate")?.click();
             },
         });
     },
@@ -118,7 +131,7 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 title: "Erro ao exibir os favorecidos",
-                text: error.message,
+                text: "erro ao exibir registro de favorecidos",
             });
         } finally {
             state.loading = false;
@@ -131,6 +144,7 @@ export const actions = {
             NM_FAVORECIDO: searchValue,
         });
     },
+
     async getBancos() {
         try {
             state.loading = true;
@@ -140,13 +154,12 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 title: "Erro ao carregar os bancos",
-                text: error.message,
+                text: "erro ao carregar bancos",
             });
         } finally {
             state.loading = false;
         }
     },
-
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
@@ -156,7 +169,7 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 title: "Erro ao verificar duplicidade!",
-                text: error.message,
+                text: "erro ao executar verificação de duplicidade",
             });
         }
     },
@@ -240,7 +253,7 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 title: "Erro ao excluir o favorecido.",
-                text: error.message,
+                text: "erro ao executar exclusão",
             });
         } finally {
             state.loading = false;
@@ -318,4 +331,5 @@ export const actions = {
     }
 };
 
-export default { state, actions };
+export default { state, actions, eventListener };
+

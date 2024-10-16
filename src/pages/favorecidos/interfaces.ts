@@ -30,11 +30,6 @@ export interface iParamGetFavorecido {
     offset: number;
     param: {
         DS_BANCO?: string;
-        CD_BANCO?: string;
-        SG_BANCO?: string;
-        ID_FAVORECIDO?: number;
-        NR_CPF?: string;
-        NR_CNPJ?: string;
     };
 }
 
