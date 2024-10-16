@@ -7,6 +7,18 @@ import { iRegistrarDocumentoAusencia, iRegistrarFalta } from "../interface";
 import Swal from "sweetalert2";
 import gerenciarFolhaPontoDetalhesService from "../services/gerenciarFolhaPontoDetalhes.service";
 
+const props = defineProps({
+  dadosParaQrCode: {
+    type: Object,
+  },
+  opened: {
+    type: Boolean,
+  },
+  cnpj: {
+    type: String,
+  },
+});
+
 watch(
   () => props.opened,
   () => {
@@ -23,18 +35,6 @@ watch(
     }
   }
 );
-
-const props = defineProps({
-  dadosParaQrCode: {
-    type: Object,
-  },
-  opened: {
-    type: Boolean,
-  },
-  cnpj: {
-    type: String,
-  },
-});
 
 const emit = defineEmits(["exibirDadosAtualizados", "fecharModalQrCode", "fecharModalJustificarFalta"]);
 

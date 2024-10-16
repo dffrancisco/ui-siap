@@ -74,6 +74,7 @@ export interface iParamEmitBuscarProdutos {
     ID_CARRO?: number,
     DESC_PRODUTO?: string,
     NUM_FABRICANTE?: string,
+    VER_TODOS_OS_ITENS?: boolean
 }
 
 export interface iParamInsertItemCompra {

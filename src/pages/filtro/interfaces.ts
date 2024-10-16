@@ -2,6 +2,8 @@ export interface iFuncionario {
     COD_FUNCIONARIO: number;
     CPF: string;
     CARGO: string;
+    DELETADO: string;
+    ID_CARGO: number;
     LOGIN: string;
     NOME_COMP: string;
 }
@@ -16,6 +18,17 @@ export interface iMarcas {
 export interface iCarros {
     DESCRICAO: string;
     ID_CARRO: number;
+}
+
+export interface iResponseDadosParaFiltros {
+    funcionarios: iFuncionario[];
+    marcas: iMarcas[];
+    carros: iCarros[];
+}
+
+export interface iResponseFiltros {
+    filtros: iFiltros[];
+    totalFiltros: number;
 }
 
 export interface iFiltros {
@@ -41,31 +54,32 @@ export interface iResultPesquisa {
     QUANTIDADE: number;
 }
 
+export interface iParamFiltros {
+    page: number;
+    itensPerPage: number;
+    search: string;
+    status: undefined | string;
+}
+
 export interface iParamFiltrar {
     search: string;
-    marca: {
-        ID_MARCA: number;
-        DESCRICAO: string;
-        GRUPO: string;
-        ID_MARCA_GRUPO: number;
-    }[];
-    carro: {
-        DESCRICAO: string;
-        ID_CARRO: number;
-    }[];
+    marca: number | null;
+    carro: number | null;
     endEstoque: string;
     numFabricante: string;
     descricaoProduto: string;
 };
 
 export interface iDadosFiltro {
-    QTO_OLD: number,
+    QTD_ATUAL: number,
     DATA: string,
     HORA: string,
     CONFERIDO: string,
+    COD_FUNCIONARIO: number
     ID_FILTRO: number,
     DT_FILTRO: string,
     ID_CRIADOR: number,
+    ID_ITENS_FILTRO: number,
     ID_CONFERENTE: number,
     DT_TERMINO: string,
     COD_PRODUTO: number,
@@ -75,7 +89,7 @@ export interface iDadosFiltro {
     DESC_PRODUTO: string,
     END_ESTOQUE: string,
     END_EXCESSO: string,
-    QUANTIDADE: number,
+    QTD_ESTOQUE: number,
     CRIADOR: string,
     CONFERENTE: string
 }
@@ -96,3 +110,8 @@ export interface iInsertOuUpdate {
     produtosSelecionados: number[];
 }
 
+export interface iUpdateNomeFiltro {
+    idFiltro: number;
+    nomeFiltro: string;
+    funcionario: number;
+}
