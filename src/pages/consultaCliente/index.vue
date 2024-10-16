@@ -112,7 +112,110 @@ import { state, actions } from "./consultaCliente";
 
       <v-card-text>
         <v-window v-model="state.tab">
-          <v-window-item value="dashboard"></v-window-item>
+          <v-window-item value="dashboard"
+            ><v-row
+              ><v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #78350f; padding: 10px"
+                  ><span>Limite Disponível</span><br /><span>0</span></v-card
+                ></v-col
+              >
+              <v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #3f51b5; padding: 10px"
+                >
+                  <span>Crédito Usado</span><br /><span>0</span>
+                </v-card></v-col
+              >
+              <v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #1e1b4b; padding: 10px"
+                >
+                  <span>Limite de Crédito</span><br /><span>0</span>
+                </v-card></v-col
+              >
+              <v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #831843; padding: 10px"
+                >
+                  <span>Ticket Médio</span><br /><span>0</span>
+                </v-card></v-col
+              ></v-row
+            >
+            <v-row
+              ><v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #022c22; padding: 10px"
+                >
+                  <span>Boletos em Aberto</span><br /><span>0</span>
+                </v-card></v-col
+              >
+              <v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #27272a; padding: 10px"
+                >
+                  <span>Boletos Atrasados</span><br /><span>0</span>
+                </v-card></v-col
+              >
+              <v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #30a28d; padding: 10px"
+                >
+                  <span>Boletos em Dia</span><br /><span>0</span>
+                </v-card></v-col
+              >
+              <v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #3c8dbc; padding: 10px"
+                >
+                  <span>Todos Boletos</span><br /><span>0</span>
+                </v-card></v-col
+              ></v-row
+            >
+
+            <v-row
+              ><v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #5a5a5a; padding: 10px"
+                >
+                  <span>Qtd Orçamentos</span><br /><span>0</span>
+                </v-card></v-col
+              >
+              <v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #2563eb; padding: 10px"
+                >
+                  <span>Devoluções</span><br /><span>0</span>
+                </v-card></v-col
+              >
+              <v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #d97706; padding: 10px"
+                >
+                  <span>Vendedor</span><br /><span>0</span>
+                </v-card></v-col
+              >
+              <v-col cols="3"
+                ><v-card
+                  class="cardDashboard"
+                  style="background: #933ec5; padding: 10px"
+                >
+                  <span>Marca</span><br /><span>0</span>
+                </v-card></v-col
+              ></v-row
+            >
+          </v-window-item>
           <v-window-item value="orcamentos"> </v-window-item>
           <v-window-item value="orcamentosNaoFinalizados"> </v-window-item>
           <v-window-item value="todosItens"> </v-window-item>
@@ -137,6 +240,7 @@ import { state, actions } from "./consultaCliente";
         size="64"
       ></v-progress-circular>
     </v-overlay>
+    <div id="pnCodigoTela">consultaCliente</div>
   </v-container>
 
   <!-- <v-dialog
@@ -159,5 +263,13 @@ import { state, actions } from "./consultaCliente";
 
 .obs {
   margin-top: -8px;
+}
+
+.cardDashboard {
+  height: 80px;
+  color: #fff6f6;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
 }
 </style>
