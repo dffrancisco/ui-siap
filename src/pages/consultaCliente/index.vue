@@ -1,81 +1,76 @@
 <script setup lang="ts">
 import { state, actions } from "./consultaCliente";
+import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
 </script>
 
 <template>
   <v-container>
     <v-card
-      :width="800"
+      :width="900"
       class="ma-auto pa-4"
     >
-      <div class="divInputs"
-        ><div style="display: flex; gap: 16px">
+      <v-row>
+        <v-col cols="3">
           <v-text-field
-            v-model="state.dataInicio"
-            width="180px"
+            label="Cliente"
+            :clearable="false"
+          >
+          </v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-text-field
+            label="Telefone"
+            :clearable="false"
+          >
+          </v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-text-field
+            label="CNPJ"
+            :clearable="false"
+          >
+          </v-text-field>
+        </v-col>
+
+        <v-col cols="3">
+          <v-btn
+            title="Consultar"
+            height="40px"
+            color="#3680AB"
+            @click="actions.openModalLocalizarCliente"
+          >
+            Localizar Cliente
+            <v-icon class="ml-2">mdi-magnify</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row class="obs">
+        <v-col cols="6">
+          <v-text-field
+            label="Observação"
+            :clearable="false"
+          >
+          </v-text-field
+        ></v-col>
+        <v-col cols="3"
+          ><v-text-field
             label="Data Início"
             type="date"
             :clearable="false"
-            @keydown.enter="state.inputDataFinal.focus()"
           >
-          </v-text-field>
-
-          <v-text-field
-            v-model="state.dataFim"
+          </v-text-field
+        ></v-col>
+        <v-col cols="3"
+          ><v-text-field
             label="Data Fim"
             id="DATA_FIM"
-            width="180px"
             type="date"
             :clearable="false"
           >
-          </v-text-field>
-
-          <div>
-            <v-btn
-              title="Consultar"
-              height="40px"
-              color="#3680AB"
-            >
-              Localizar Cliente
-              <v-icon class="ml-2">mdi-magnify</v-icon>
-            </v-btn>
-          </div>
-        </div>
-      </div>
-      <div class="mt-3">
-        <v-row>
-          <v-col cols="4">
-            <v-text-field
-              label="Cliente"
-              :clearable="false"
-            >
-            </v-text-field>
-          </v-col>
-          <v-col cols="4">
-            <v-text-field
-              label="Telefone"
-              :clearable="false"
-            >
-            </v-text-field>
-          </v-col>
-          <v-col cols="4">
-            <v-text-field
-              label="CNPJ"
-              :clearable="false"
-            >
-            </v-text-field>
-          </v-col>
-        </v-row>
-        <v-row class="obs">
-          <v-col cols="12">
-            <v-text-field
-              label="Observação"
-              :clearable="false"
-            >
-            </v-text-field
-          ></v-col>
-        </v-row>
-      </div>
+          </v-text-field
+        ></v-col>
+      </v-row>
 
       <v-divider
         horizontal
@@ -87,7 +82,10 @@ import { state, actions } from "./consultaCliente";
         v-model="state.tab"
         bg-color="primary"
       >
-        <v-row>
+        <v-row
+          style="justify-content: space-between"
+          class="mr-1"
+        >
           <v-tab value="dashboard">Dashboard</v-tab>
           <v-tab value="orcamentos">Orçamentos</v-tab>
           <v-tab value="orcamentosNaoFinalizados">Orç. Não Finalizados</v-tab>
@@ -101,7 +99,10 @@ import { state, actions } from "./consultaCliente";
         bg-color="primary"
         class="mt-2"
       >
-        <v-row>
+        <v-row
+          style="justify-content: space-between"
+          class="mr-1"
+        >
           <v-tab value="marca">Marca</v-tab>
           <v-tab value="creditoDevolucao">Crédito de Devolução</v-tab>
           <v-tab value="devolucao">Devolução</v-tab>
@@ -180,7 +181,6 @@ import { state, actions } from "./consultaCliente";
                 </v-card></v-col
               ></v-row
             >
-
             <v-row
               ><v-col cols="3"
                 ><v-card
@@ -243,28 +243,16 @@ import { state, actions } from "./consultaCliente";
     <div id="pnCodigoTela">consultaCliente</div>
   </v-container>
 
-  <!-- <v-dialog
+  <v-dialog
     v-model="state.modalLocalizarClienteOpened"
-    transition="dialog-transition"
-    variant="flat"
-    :persistent="false"
-    @click:outside="actions.closeModalLocalizarCliente"
+    max-width="850"
+    @click:outside="state.modalLocalizarClienteOpened = false"
   >
     <ModalLocalizarCliente @closeModalLocalizarCliente="actions.closeModalLocalizarCliente" />
-  </v-dialog> -->
+  </v-dialog>
 </template>
 
 <style scoped>
-.divInputs {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.obs {
-  margin-top: -8px;
-}
-
 .cardDashboard {
   height: 80px;
   color: #fff6f6;
