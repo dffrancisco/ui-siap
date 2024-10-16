@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import globalActions from "@/store/globalActions";
 import router from "../../router";
 
 import login from "../login/login";
 </script>
 
 <template>
+  <v-btn
+    @click="globalActions.toggleTheme()"
+    variant="text"
+    class="btnDark"
+    color="gray"
+    icon="mdi-theme-light-dark"
+  ></v-btn>
   <v-main>
     <v-container>
       <v-card
@@ -152,7 +160,12 @@ import login from "../login/login";
               >Compras
             </v-btn>
 
-            <v-btn @click="router.push('/consultaMontagem')"> Consulta Montagem </v-btn>
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/consultaMontagem')"
+            >
+              Consulta Montagem
+            </v-btn>
 
             <v-btn
               class="mr-4 mb-4"
@@ -249,6 +262,42 @@ import login from "../login/login";
               @click="router.push('/faturarCliente')"
               >Faturar Cliente
             </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/regrasFaturamento')"
+              >Regras de Faturamento
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/liberarCliente')"
+              >Liberar Cliente
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/relatorioFaturamento')"
+              >Relatorio Faturamento
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/relatorioConferenciaAlteracoes')"
+              >Relatório Conferência e Alterações
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/requisicaoCompra')"
+              >Requisição Compra</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/relatorioProdutosVendidos')"
+              >Relatório Produtos Vendidos</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
