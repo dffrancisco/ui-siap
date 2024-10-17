@@ -73,7 +73,7 @@ onUnmounted(() => {
               type="text"
               id="NR_CNPJ"
               name="NR_CNPJ"
-              class="obr ss"
+              class="ss"
               maxlength="18"
               v-mask="'##.###.###/####-##'"
               autocomplete="off"
@@ -86,7 +86,7 @@ onUnmounted(() => {
               type="text"
               id="NR_CPF"
               name="NR_CPF"
-              class="obr ss"
+              class="ss"
               maxlength="14"
               v-mask="'###.###.###-##'"
               autocomplete="off"
@@ -102,7 +102,6 @@ onUnmounted(() => {
               name="bankSelect"
               class="obr ss"
             >
-              <option value="">Selecione um banco</option>
               <option
                 v-for="banco in state.bancos"
                 :key="banco.CD_BANCO"

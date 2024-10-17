@@ -1,3 +1,4 @@
+
 import { nextTick, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
@@ -60,7 +61,6 @@ export const actions = {
                     state.gridPrincipal.querySourceAdd(data);
                 },
             },
-
 
             sideBySide: {
                 el: "#pnCampos",
@@ -163,13 +163,17 @@ export const actions = {
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
+
+            if (!value) {
+                return null;
+            }
             const data = await serviceFavorecidos.getDuplicidade({ value, field });
             return data;
         } catch (error) {
             Swal.fire({
                 icon: "error",
                 title: "Erro ao verificar duplicidade!",
-                text: "erro ao executar verificação de duplicidade",
+                text: "Erro ao executar verificação de duplicidade",
             });
         }
     },
@@ -264,6 +268,7 @@ export const actions = {
         try {
             state.loading = true;
 
+
             let newFields = {
                 NM_FAVORECIDO: state.dbFavorecido.NM_FAVORECIDO?.toUpperCase(),
                 CD_BANCO: state.dbFavorecido.CD_BANCO,
@@ -273,9 +278,19 @@ export const actions = {
                 TP_VINCULO: state.dbFavorecido.TP_VINCULO,
                 ID_FAVORECIDO: state.dbFavorecido.ID_FAVORECIDO,
                 CD_OPERACAO: state.dbFavorecido.CD_OPERACAO,
-                NR_CPF: state.dbFavorecido.NR_CPF,
-                NR_CNPJ: state.dbFavorecido.NR_CNPJ,
+                NR_CPF: state.dbFavorecido.NR_CPF || null,
+                NR_CNPJ: state.dbFavorecido.NR_CNPJ || null,
             };
+
+
+            if (!newFields.NR_CPF && !newFields.NR_CNPJ) {
+                await Swal.fire({
+                    icon: "warning",
+                    title: "Campo obrigatório!",
+                    text: "CPF ou CNPJ deve ser preenchido.",
+                });
+                return;
+            }
 
             await serviceFavorecidos.toInsert(newFields);
             state.gridPrincipal.insertLine({ ...newFields });
@@ -332,4 +347,3 @@ export const actions = {
 };
 
 export default { state, actions, eventListener };
-

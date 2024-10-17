@@ -21,8 +21,8 @@ export interface iParamToInsert {
     CD_OPERACAO: string;
     NM_FAVORECIDO: string;
     TP_VINCULO: string;
-    NR_CPF: string;
-    NR_CNPJ: string;
+    NR_CP?: string;
+    NR_CNPJ?: string;
     NM_MATRIZ: string;
 }
 
@@ -64,8 +64,8 @@ export interface iFavorecidoResponse extends iBanco {
     ID_EMPRESA?: number;
     NM_FAVORECIDO: string;
     TP_VINCULO: string;
-    NR_CPF: string;
-    NR_CNPJ: string;
+    NR_CPF?: string;
+    NR_CNPJ?: string;
     NM_MATRIZ: string;
     TP_VINCULO_DESC?: string;
 }
