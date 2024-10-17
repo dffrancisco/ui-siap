@@ -10,24 +10,21 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
       class="ma-auto pa-4"
     >
       <v-row>
-        <v-col cols="3">
+        <v-col cols="5">
           <v-text-field
+            v-model="state.cliente"
             label="Cliente"
             :clearable="false"
+            :disabled="true"
           >
           </v-text-field>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="4">
           <v-text-field
-            label="Telefone"
-            :clearable="false"
-          >
-          </v-text-field>
-        </v-col>
-        <v-col cols="3">
-          <v-text-field
+            v-model="state.cnpj"
             label="CNPJ"
             :clearable="false"
+            :disabled="true"
           >
           </v-text-field>
         </v-col>
@@ -37,7 +34,7 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
             title="Consultar"
             height="40px"
             color="#3680AB"
-            @click="actions.openModalLocalizarCliente"
+            @click="state.modalLocalizarClienteOpened = true"
           >
             Localizar Cliente
             <v-icon class="ml-2">mdi-magnify</v-icon>
@@ -45,28 +42,46 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
         </v-col>
       </v-row>
 
-      <v-row class="obs">
-        <v-col cols="6">
-          <v-text-field
-            label="Observação"
+      <v-row>
+        <v-col cols="5"
+          ><v-text-field
+            v-model="state.telefone"
+            label="Telefone"
             :clearable="false"
+            :disabled="true"
           >
           </v-text-field
         ></v-col>
-        <v-col cols="3"
+        <v-col cols="3.5"
           ><v-text-field
+            v-model="state.dataInicio"
             label="Data Início"
             type="date"
             :clearable="false"
+            :disabled="true"
           >
           </v-text-field
         ></v-col>
-        <v-col cols="3"
+        <v-col cols="3.5"
           ><v-text-field
+            v-model="state.dataFim"
             label="Data Fim"
             id="DATA_FIM"
             type="date"
             :clearable="false"
+            :disabled="true"
+          >
+          </v-text-field
+        ></v-col>
+      </v-row>
+
+      <v-row class="obs">
+        <v-col cols="12">
+          <v-text-field
+            v-model="state.observacao"
+            label="Observação"
+            :clearable="false"
+            :disabled="true"
           >
           </v-text-field
         ></v-col>
@@ -74,7 +89,7 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
 
       <v-divider
         horizontal
-        class="divider mt-3 mb-3"
+        class="divider mt-4 mb-4"
         :thickness="4"
       ></v-divider>
 
@@ -245,10 +260,13 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
 
   <v-dialog
     v-model="state.modalLocalizarClienteOpened"
-    max-width="850"
+    max-width="900"
     @click:outside="state.modalLocalizarClienteOpened = false"
   >
-    <ModalLocalizarCliente @closeModalLocalizarCliente="actions.closeModalLocalizarCliente" />
+    <ModalLocalizarCliente
+      @selecionarCliente="actions.selecionarCliente"
+      @closeModalLocalizarCliente="actions.closeModalLocalizarCliente"
+    />
   </v-dialog>
 </template>
 
