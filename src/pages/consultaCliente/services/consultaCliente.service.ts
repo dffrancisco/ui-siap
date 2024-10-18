@@ -1,10 +1,10 @@
 import axios from "axios";
-import { iClientes, iGetClientes, iParamRequisicoes } from "../interfaces";
+import { iClientes, iGetClientes, iParamRequisicoes, iResponseDadosCliente } from "../interfaces";
 
 const caminho = 'siap/consultaCliente'
 
 type iGetClientesFuction = (param: iGetClientes, offset: number) => Promise<iClientes>
-type iGetDadosClienteFunction = (param: iParamRequisicoes) => Promise<any>
+type iGetDadosClienteFunction = (param: iParamRequisicoes) => Promise<iResponseDadosCliente>
 
 const getClientes: iGetClientesFuction = async (param, offset) => {
     const { data } = await axios.post(caminho, {

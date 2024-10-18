@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { state, actions } from "./consultaCliente";
 import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
+import utils from "@/ts/utils";
 </script>
 
 <template>
@@ -126,7 +127,7 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
         </v-row>
       </v-tabs>
 
-      <v-card-text>
+      <div class="mt-3">
         <v-window v-model="state.tab">
           <v-window-item value="dashboard"
             ><v-row
@@ -134,23 +135,31 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
                 ><v-card
                   class="cardDashboard"
                   style="background: #78350f; padding: 10px"
-                  ><span>Limite Disponível</span><br /><span>0</span></v-card
-                ></v-col
-              >
+                  ><span
+                    >Limite Disponível<br />
+                    {{ utils.formatValor(state.limiteDisponivelDashboard) }}</span
+                  ><br /></v-card
+              ></v-col>
               <v-col cols="3"
                 ><v-card
                   class="cardDashboard"
                   style="background: #3f51b5; padding: 10px"
                 >
-                  <span>Crédito Usado</span><br /><span>0</span>
-                </v-card></v-col
+                  <span
+                    >Crédito Usado<br />
+                    {{ utils.formatValor(state.creditoUsadoDashboard) }}</span
+                  ></v-card
+                ></v-col
               >
               <v-col cols="3"
                 ><v-card
                   class="cardDashboard"
                   style="background: #1e1b4b; padding: 10px"
                 >
-                  <span>Limite de Crédito</span><br /><span>0</span>
+                  <span
+                    >Limite de Crédito<br />
+                    {{ utils.formatValor(state.limiteCreditoDashboard) }}</span
+                  >
                 </v-card></v-col
               >
               <v-col cols="3"
@@ -158,7 +167,10 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
                   class="cardDashboard"
                   style="background: #831843; padding: 10px"
                 >
-                  <span>Ticket Médio</span><br /><span>0</span>
+                  <span
+                    >Ticket Médio<br />
+                    {{ utils.formatValor(state.ticketMedioDashboard) }}</span
+                  >
                 </v-card></v-col
               ></v-row
             >
@@ -168,7 +180,10 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
                   class="cardDashboard"
                   style="background: #022c22; padding: 10px"
                 >
-                  <span>Boletos em Aberto</span><br /><span>0</span>
+                  <span
+                    >Boletos em Aberto<br />
+                    {{ state.boletosEmAbertoDashboard }}</span
+                  >
                 </v-card></v-col
               >
               <v-col cols="3"
@@ -176,7 +191,10 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
                   class="cardDashboard"
                   style="background: #27272a; padding: 10px"
                 >
-                  <span>Boletos Atrasados</span><br /><span>0</span>
+                  <span
+                    >Boletos Atrasados<br />
+                    {{ state.boletosAtrasadosDashboard }}</span
+                  >
                 </v-card></v-col
               >
               <v-col cols="3"
@@ -184,7 +202,10 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
                   class="cardDashboard"
                   style="background: #30a28d; padding: 10px"
                 >
-                  <span>Boletos em Dia</span><br /><span>0</span>
+                  <span
+                    >Boletos em Dia<br />
+                    {{ state.boletosEmDiaDashboard }}</span
+                  >
                 </v-card></v-col
               >
               <v-col cols="3"
@@ -192,7 +213,10 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
                   class="cardDashboard"
                   style="background: #3c8dbc; padding: 10px"
                 >
-                  <span>Todos Boletos</span><br /><span>0</span>
+                  <span
+                    >Todos Boletos<br />
+                    {{ state.todosBoletosDashboard }}</span
+                  >
                 </v-card></v-col
               ></v-row
             >
@@ -202,7 +226,10 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
                   class="cardDashboard"
                   style="background: #5a5a5a; padding: 10px"
                 >
-                  <span>Qtd Orçamentos</span><br /><span>0</span>
+                  <span
+                    >Qtd Orçamentos<br />
+                    {{ state.qtdOrcamentosDashboard }}</span
+                  >
                 </v-card></v-col
               >
               <v-col cols="3"
@@ -210,7 +237,10 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
                   class="cardDashboard"
                   style="background: #2563eb; padding: 10px"
                 >
-                  <span>Devoluções</span><br /><span>0</span>
+                  <span
+                    >Devoluções<br />
+                    {{ state.devolucoesDashboard }}</span
+                  >
                 </v-card></v-col
               >
               <v-col cols="3"
@@ -218,7 +248,10 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
                   class="cardDashboard"
                   style="background: #d97706; padding: 10px"
                 >
-                  <span>Vendedor</span><br /><span>0</span>
+                  <span
+                    >Vendedor<br />
+                    {{ state.vendedorDashboard }}</span
+                  >
                 </v-card></v-col
               >
               <v-col cols="3"
@@ -226,22 +259,100 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
                   class="cardDashboard"
                   style="background: #933ec5; padding: 10px"
                 >
-                  <span>Marca</span><br /><span>0</span>
+                  <span
+                    >Marca<br />
+                    {{ state.marcaDashboard }}</span
+                  >
                 </v-card></v-col
               ></v-row
             >
           </v-window-item>
-          <v-window-item value="orcamentos"> </v-window-item>
-          <v-window-item value="orcamentosNaoFinalizados"> </v-window-item>
-          <v-window-item value="todosItens"> </v-window-item>
-          <v-window-item value="comprasFaturadas"> </v-window-item>
+          <v-window-item value="orcamentos">
+            <v-data-table-virtual
+              class="tableOrcamentos"
+              style="border-radius: 5px; --v-table-row-height: 45px"
+              height="280"
+              fixed-header
+              :headers="state.headersOrcamentos"
+              :loading="state.loading"
+              :items="state.tableOrcamentos"
+              :row-props="actions.getClassCorLinha"
+              ><template v-slot:item.inf="{ item }">
+                <v-icon
+                  size="large"
+                  color="primary"
+                  title="Ver detalhes"
+                  @click="actions.openModalDetalhesOrcamento(item)"
+                >
+                  mdi-information
+                </v-icon>
+              </template>
+            </v-data-table-virtual>
+          </v-window-item>
+          <v-window-item value="orcamentosNaoFinalizados">
+            <v-data-table-virtual
+              class="tableOrcamentosNaoFinalizados"
+              style="border-radius: 5px; --v-table-row-height: 45px"
+              height="280"
+              fixed-header
+              :headers="state.headersOrcamentosNaoFinalizados"
+              :loading="state.loading"
+              :items="state.tableOrcamentosNaoFinalizados"
+              :row-props="actions.getClassCorLinha"
+            >
+            </v-data-table-virtual>
+          </v-window-item>
+          <v-window-item value="todosItens">
+            <v-data-table-virtual
+              class="tableTodosItens"
+              style="border-radius: 5px; --v-table-row-height: 45px"
+              height="280"
+              fixed-header
+              :headers="state.headersTodosItensOrcamentos"
+              :loading="state.loading"
+              :items="state.tableTodosItensOrcamentos"
+              :row-props="actions.getClassCorLinha"
+              ><template v-slot:item.inf="{ item }">
+                <v-icon
+                  size="large"
+                  color="primary"
+                  title="Ver detalhes"
+                  @click="actions.openModalDetalhesItemOrcamento(item)"
+                >
+                  mdi-information
+                </v-icon>
+              </template>
+            </v-data-table-virtual>
+          </v-window-item>
+          <v-window-item value="comprasFaturadas">
+            <v-data-table-virtual
+              class="tableComprasFaturadas"
+              style="border-radius: 5px; --v-table-row-height: 45px"
+              height="280"
+              fixed-header
+              :headers="state.headersComprasFaturadas"
+              :loading="state.loading"
+              :items="state.tableComprasFaturadas"
+              :row-props="actions.getClassCorLinha"
+              ><template v-slot:item.inf="{ item }">
+                <v-icon
+                  size="large"
+                  color="primary"
+                  title="Ver detalhes"
+                  @click="actions.openModalDetalhesOrcamento(item)"
+                >
+                  mdi-information
+                </v-icon>
+              </template>
+            </v-data-table-virtual>
+          </v-window-item>
           <v-window-item value="marca"> </v-window-item>
           <v-window-item value="creditoDevolucao"> </v-window-item>
           <v-window-item value="devolucao"> </v-window-item>
           <v-window-item value="vendaPorVendedor"> </v-window-item>
           <v-window-item value="vendasPorAno"> </v-window-item>
         </v-window>
-      </v-card-text>
+      </div>
     </v-card>
 
     <v-overlay
@@ -270,11 +381,21 @@ import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
   </v-dialog>
 </template>
 
+<style>
+.v-overlay__scrim {
+  background-color: black;
+}
+
+.cor-zebrada-1 {
+  background-color: #f0f0f0;
+}
+</style>
+
 <style scoped>
 .cardDashboard {
   height: 80px;
   color: #fff6f6;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: bold;
   text-align: center;
 }
