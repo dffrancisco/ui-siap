@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { state, actions } from "./consultaCliente";
+import { state, actions, graficoVendaPorVendedor, graficoVendasPorAno } from "./consultaCliente";
 import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
 import utils from "@/ts/utils";
+import VueApexCharts from "vue3-apexcharts";
 </script>
 
 <template>
@@ -339,18 +340,163 @@ import utils from "@/ts/utils";
                   size="large"
                   color="primary"
                   title="Ver detalhes"
-                  @click="actions.openModalDetalhesOrcamento(item)"
+                  @click="actions.openModalDetalhesComprasFaturadas(item)"
                 >
                   mdi-information
                 </v-icon>
               </template>
             </v-data-table-virtual>
           </v-window-item>
-          <v-window-item value="marca"> </v-window-item>
-          <v-window-item value="creditoDevolucao"> </v-window-item>
-          <v-window-item value="devolucao"> </v-window-item>
-          <v-window-item value="vendaPorVendedor"> </v-window-item>
-          <v-window-item value="vendasPorAno"> </v-window-item>
+          <v-window-item value="marca">
+            <v-data-table-virtual
+              class="tableMarcas"
+              style="border-radius: 5px; --v-table-row-height: 45px"
+              height="280"
+              fixed-header
+              :headers="state.headersMarcas"
+              :loading="state.loading"
+              :items="state.tableMarcas"
+              :row-props="actions.getClassCorLinha"
+              ><template v-slot:item.inf="{ item }">
+                <v-icon
+                  size="large"
+                  color="primary"
+                  title="Ver detalhes"
+                  @click="actions.openModalDetalhesMarca(item)"
+                >
+                  mdi-information
+                </v-icon>
+              </template>
+            </v-data-table-virtual>
+          </v-window-item>
+          <v-window-item value="creditoDevolucao">
+            <v-data-table-virtual
+              class="tableCreditoDevolucao"
+              style="border-radius: 5px; --v-table-row-height: 45px"
+              height="280"
+              fixed-header
+              :headers="state.headersCreditoDevolucao"
+              :loading="state.loading"
+              :items="state.tableCreditoDevolucao"
+              :row-props="actions.getClassCorLinha"
+              ><template v-slot:item.inf="{ item }">
+                <v-icon
+                  size="large"
+                  color="primary"
+                  title="Ver detalhes"
+                  @click="actions.openModalDetalhesCreditoDevolucao(item)"
+                >
+                  mdi-information
+                </v-icon>
+              </template>
+            </v-data-table-virtual>
+          </v-window-item>
+          <v-window-item value="devolucao">
+            <v-data-table-virtual
+              class="tableDevolucao"
+              style="border-radius: 5px; --v-table-row-height: 45px"
+              height="280"
+              fixed-header
+              :headers="state.headersDevolucao"
+              :loading="state.loading"
+              :items="state.tableDevolucao"
+              :row-props="actions.getClassCorLinha"
+              ><template v-slot:item.inf="{ item }">
+                <v-icon
+                  size="large"
+                  color="primary"
+                  title="Ver detalhes"
+                  @click="actions.openModalDetalhesDevolucao(item)"
+                >
+                  mdi-information
+                </v-icon>
+              </template>
+            </v-data-table-virtual>
+          </v-window-item>
+          <v-window-item value="vendaPorVendedor">
+            <VueApexCharts
+              width="100%"
+              height="240"
+              type="bar"
+              :options="{
+                            chart: {
+                                id: 'venda-por-vendedor',
+                            },
+                            xaxis: {
+                                categories: graficoVendaPorVendedor.labels,
+                            },
+                            yaxis: {
+                                labels: {
+                                    formatter: (value: number) => utils.formatValor(value),
+                                },
+                            },
+                            dataLabels: {
+                                enabled: false,
+                            },
+                            plotOptions: {
+                                bar: {
+                                    distributed: true,
+                                },
+                            },
+                            fill: {
+                                colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#FF00F5'],
+                            },
+                        }"
+              :series="[
+                {
+                  name: 'Venda por Vendedor',
+                  data: graficoVendaPorVendedor.series,
+                },
+              ]"
+            />
+          </v-window-item>
+          <v-window-item value="vendasPorAno">
+            <VueApexCharts
+              width="100%"
+              height="240"
+              type="line"
+              :options="{
+                            chart: {
+                                id: 'venda-por-ano',
+                            },
+                            xaxis: {
+                                categories: graficoVendasPorAno.labels,
+                            },
+                            yaxis: {
+                                labels: {
+                                    formatter: (value: number) => utils.formatValor(value),
+                                },
+                            },
+                            dataLabels: {
+                                enabled: true,
+                                style: {
+                                    colors: ['#000'],
+                                    fontSize: '12px',
+                                },
+                                background: {
+                                    enabled: true,
+                                    borderRadius: 2,
+                                },
+                                offsetY: -10
+                            },
+                            markers: {
+                                size: 5,
+                                colors: ['#FF4560'],
+                                strokeColors: '#fff',
+                                strokeWidth: 2,
+                                hover: {
+                                    size: 7,
+                                },
+                            },
+                        }"
+              :series="[
+                {
+                  name: 'Venda por Mês',
+                  data: graficoVendasPorAno.series,
+                },
+              ]"
+            />
+          </v-window-item>
         </v-window>
       </div>
     </v-card>

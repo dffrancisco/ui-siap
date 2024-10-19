@@ -1,5 +1,5 @@
-import { reactive } from "vue";
-import { iClientes, iComprasFaturadas, iOrcamento, iOrcamentosEmAndamento, iParamRequisicoes, iResponseDadosCliente, iTabs, iTodosItens } from "./interfaces";
+import { computed, reactive } from "vue";
+import { iClientes, iComprasFaturadas, iCreditoDevolucao, iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamRequisicoes, iResponseDadosCliente, iTabs, iTodosItens, iVendaPorVendedor, iVendasPorAno } from "./interfaces";
 import moment from "moment";
 import serviceConsultaCliente from "./services/consultaCliente.service"
 import Swal from "sweetalert2";
@@ -215,6 +215,100 @@ export const state = reactive({
             align: 'center',
         },
     ],
+    tableMarcas: <iMarca[]>[],
+    headersMarcas: <any>[
+        {
+            title: "Quantidade",
+            key: "QUANTIDADE",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Marca",
+            key: "DESCRICAO",
+            sortable: true,
+            align: 'left'
+        },
+        {
+            title: 'Inf',
+            key: 'inf',
+            sortable: false,
+            align: 'center',
+        },
+    ],
+    tableCreditoDevolucao: <iCreditoDevolucao[]>[],
+    headersCreditoDevolucao: <any>[
+        {
+            title: "Nº Orçamento",
+            key: "NUM_ORCAMENTO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Valor",
+            key: "VALOR",
+            sortable: true,
+            align: 'left',
+            value: (item: any) => utils.formatValor(item.VALOR)
+        },
+        {
+            title: "Data do Crédito",
+            key: "DATA_CREDITO",
+            sortable: true,
+            align: 'center',
+            value: (item: any) => utils.dataBrasil(item.DATA_CREDITO)
+        },
+        {
+            title: "Data do Uso",
+            key: "DATA_DO_USO",
+            sortable: true,
+            align: 'center',
+            value: (item: any) => utils.dataBrasil(item.DATA_DO_USO)
+        },
+        {
+            title: 'Inf',
+            key: 'inf',
+            sortable: false,
+            align: 'center',
+        },
+    ],
+    tableDevolucao: <iDevolucao[]>[],
+    headersDevolucao: <any>[
+        {
+            title: "Nº Orçamento",
+            key: "NUM_ORCAMENTO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Nº Devolução",
+            key: "ID_DEVOLUCAO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Data Devolução",
+            key: "DATA",
+            sortable: true,
+            align: 'center',
+            value: (item: any) => utils.dataBrasil(item.DATA)
+        },
+        {
+            title: "Data Venda",
+            key: "DATA_VENDA",
+            sortable: true,
+            align: 'center',
+            value: (item: any) => utils.dataBrasil(item.DATA_VENDA)
+        },
+        {
+            title: 'Inf',
+            key: 'inf',
+            sortable: false,
+            align: 'center',
+        },
+    ],
+    graficoVendaPorVendedor: <iVendaPorVendedor[]>[],
+    graficoVendasPorAno: <iVendasPorAno[]>[]
 })
 
 export const actions = {
@@ -256,7 +350,7 @@ export const actions = {
             }
 
             const dadosCliente = await serviceConsultaCliente.requisicoesDadosCliente(param);
-            actions.popularDashboard(dadosCliente);
+            actions.popularDashboardETabelas(dadosCliente);
         } catch (error) {
             const errorMessage = error.response?.data?.msg || "Erro ao buscar os dados.";
             Swal.fire({
@@ -269,7 +363,7 @@ export const actions = {
         }
     },
 
-    popularDashboard(dadosCliente: iResponseDadosCliente) {
+    popularDashboardETabelas(dadosCliente: iResponseDadosCliente) {
         state.loading = true
 
         state.limiteDisponivelDashboard = state.clienteSelecionado.LIMITE_CREDITO - state.clienteSelecionado.CREDITO_USADO;
@@ -288,6 +382,12 @@ export const actions = {
         state.tableOrcamentosNaoFinalizados = dadosCliente.orcamentosEmAndamento
         state.tableTodosItensOrcamentos = dadosCliente.todosItens
         state.tableComprasFaturadas = dadosCliente.comprasFaturadas
+        state.tableMarcas = dadosCliente.marca
+        state.tableCreditoDevolucao = dadosCliente.creditoDevolucao
+        state.tableDevolucao = dadosCliente.devolucao
+
+        state.graficoVendaPorVendedor = dadosCliente.vendaPorVendedor
+        state.graficoVendasPorAno = dadosCliente.vendasPorAno
 
         state.loading = false;
     },
@@ -298,5 +398,55 @@ export const actions = {
 
     openModalDetalhesItemOrcamento(item) {
         console.log(item);
+    },
+
+    openModalDetalhesComprasFaturadas(item) {
+        console.log(item);
+    },
+
+    openModalDetalhesMarca(item) {
+        console.log(item);
+    },
+
+    openModalDetalhesCreditoDevolucao(item) {
+        console.log(item);
+    },
+
+    openModalDetalhesDevolucao(item) {
+        console.log(item);
     }
 }
+
+export const graficoVendaPorVendedor = computed(() => {
+    const cabecalho = [];
+    const dados = [];
+
+    if (state.graficoVendaPorVendedor.length > 0) {
+        state.graficoVendaPorVendedor.forEach((item) => {
+            cabecalho.push(item.VENDEDOR);
+            dados.push(item.VENDAS);
+        });
+    }
+
+    return {
+        labels: cabecalho,
+        series: dados,
+    };
+});
+
+export const graficoVendasPorAno = computed(() => {
+    const cabecalho = [];
+    const dados = [];
+
+    if (state.graficoVendasPorAno.length > 0) {
+        state.graficoVendasPorAno.forEach((item) => {
+            cabecalho.push(`Mês ${item.MES}`);
+            dados.push(item.VALOR);
+        });
+    }
+
+    return {
+        labels: cabecalho,
+        series: dados,
+    };
+});

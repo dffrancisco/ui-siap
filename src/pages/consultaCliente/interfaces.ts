@@ -129,6 +129,16 @@ export interface iDevolucao {
     NUM_ORCAMENTO: number;
 }
 
+export interface iVendaPorVendedor {
+    VENDAS: number;
+    VENDEDOR: string;
+}
+
+export interface iVendasPorAno {
+    MES: number;
+    VALOR: number;
+}
+
 export interface iResponseDadosCliente {
     boletosDashboard: iBoletoDashboard[];
     comprasFaturadas: iComprasFaturadas[];
@@ -141,4 +151,6 @@ export interface iResponseDadosCliente {
     orcamentosEmAndamento: iOrcamentosEmAndamento[];
     ticketMedioDashboard: iTicketMedioDashboard[];
     todosItens: iTodosItens[];
+    vendaPorVendedor: iVendaPorVendedor[];
+    vendasPorAno: iVendasPorAno[];
 }
