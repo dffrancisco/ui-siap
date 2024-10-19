@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { state, actions, graficoVendaPorVendedor, graficoVendasPorAno } from "./consultaCliente";
 import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
+import ModalBoletosAbertos from "./components/modalBoletosAbertos.vue";
+import ModalBoletosAtrasados from "./components/modalBoletosAtrasados.vue";
+import ModalBoletosEmDia from "./components/modalBoletosEmDia.vue";
+import ModalTodosBoletos from "./components/modalTodosBoletos.vue";
 import utils from "@/ts/utils";
 import VueApexCharts from "vue3-apexcharts";
 </script>
@@ -8,7 +12,7 @@ import VueApexCharts from "vue3-apexcharts";
 <template>
   <v-container>
     <v-card
-      :width="900"
+      :width="960"
       class="ma-auto pa-4"
     >
       <v-row>
@@ -34,12 +38,13 @@ import VueApexCharts from "vue3-apexcharts";
         <v-col cols="3">
           <v-btn
             title="Consultar"
-            height="40px"
+            height="38px"
+            width="230px"
             color="#3680AB"
             @click="state.modalLocalizarClienteOpened = true"
           >
             Localizar Cliente
-            <v-icon class="ml-2">mdi-magnify</v-icon>
+            <v-icon class="ml-4">mdi-magnify</v-icon>
           </v-btn>
         </v-col>
       </v-row>
@@ -180,7 +185,13 @@ import VueApexCharts from "vue3-apexcharts";
                 ><v-card
                   class="cardDashboard"
                   style="background: #022c22; padding: 10px"
-                >
+                  @click="actions.openModalBoletosAbertos"
+                  :disabled="Object.keys(state.clienteSelecionado).length === 0"
+                  ><v-icon
+                    size="18"
+                    class="mr-2"
+                    >mdi-link-variant</v-icon
+                  >
                   <span
                     >Boletos em Aberto<br />
                     {{ state.boletosEmAbertoDashboard }}</span
@@ -191,7 +202,13 @@ import VueApexCharts from "vue3-apexcharts";
                 ><v-card
                   class="cardDashboard"
                   style="background: #27272a; padding: 10px"
-                >
+                  @click="actions.openModalBoletosAtrasados"
+                  :disabled="Object.keys(state.clienteSelecionado).length === 0"
+                  ><v-icon
+                    size="18"
+                    class="mr-2"
+                    >mdi-link-variant</v-icon
+                  >
                   <span
                     >Boletos Atrasados<br />
                     {{ state.boletosAtrasadosDashboard }}</span
@@ -202,7 +219,13 @@ import VueApexCharts from "vue3-apexcharts";
                 ><v-card
                   class="cardDashboard"
                   style="background: #30a28d; padding: 10px"
-                >
+                  @click="actions.openModalBoletosEmDia"
+                  :disabled="Object.keys(state.clienteSelecionado).length === 0"
+                  ><v-icon
+                    size="18"
+                    class="mr-2"
+                    >mdi-link-variant</v-icon
+                  >
                   <span
                     >Boletos em Dia<br />
                     {{ state.boletosEmDiaDashboard }}</span
@@ -213,7 +236,13 @@ import VueApexCharts from "vue3-apexcharts";
                 ><v-card
                   class="cardDashboard"
                   style="background: #3c8dbc; padding: 10px"
-                >
+                  @click="actions.openModalTodosBoletos"
+                  :disabled="Object.keys(state.clienteSelecionado).length === 0"
+                  ><v-icon
+                    size="18"
+                    class="mr-2"
+                    >mdi-link-variant</v-icon
+                  >
                   <span
                     >Todos Boletos<br />
                     {{ state.todosBoletosDashboard }}</span
@@ -515,6 +544,7 @@ import VueApexCharts from "vue3-apexcharts";
     <div id="pnCodigoTela">consultaCliente</div>
   </v-container>
 
+  <!-- modalLocalizarCliente -->
   <v-dialog
     v-model="state.modalLocalizarClienteOpened"
     max-width="900"
@@ -522,7 +552,55 @@ import VueApexCharts from "vue3-apexcharts";
   >
     <ModalLocalizarCliente
       @selecionarCliente="actions.selecionarCliente"
-      @closeModalLocalizarCliente="actions.closeModalLocalizarCliente"
+      @closeModalLocalizarCliente="state.modalLocalizarClienteOpened = false"
+    />
+  </v-dialog>
+
+  <!-- modalBoletosEmAberto -->
+  <v-dialog
+    v-model="state.modalBoletosEmAbertoOpened"
+    max-width="700"
+    @click:outside="state.modalBoletosEmAbertoOpened = false"
+  >
+    <ModalBoletosAbertos
+      :boletos-em-aberto="state.boletosEmAberto"
+      @closeModalBoletosEmAberto="state.modalBoletosEmAbertoOpened = false"
+    />
+  </v-dialog>
+
+  <!-- modalBoletosAtrasados -->
+  <v-dialog
+    v-model="state.modalBoletosAtrasadosOpened"
+    max-width="700"
+    @click:outside="state.modalBoletosAtrasadosOpened = false"
+  >
+    <ModalBoletosAtrasados
+      :boletos-atrasados="state.boletosAtrasados"
+      @closeModalBoletosAtrasados="state.modalBoletosEmAbertoOpened = false"
+    />
+  </v-dialog>
+
+  <!-- modalBoletosEmDia -->
+  <v-dialog
+    v-model="state.modalBoletosEmDiaOpened"
+    max-width="700"
+    @click:outside="state.modalBoletosEmDiaOpened = false"
+  >
+    <ModalBoletosEmDia
+      :boletos-em-dia="state.boletosEmDia"
+      @closeModalBoletosEmDia="state.modalBoletosEmDiaOpened = false"
+    />
+  </v-dialog>
+
+  <!-- modalTodosBoletos -->
+  <v-dialog
+    v-model="state.modalTodosBoletosOpened"
+    max-width="700"
+    @click:outside="state.modalTodosBoletosOpened = false"
+  >
+    <ModalTodosBoletos
+      :todos-boletos="state.todosBoletos"
+      @closeModalTodosBoletos="state.modalTodosBoletosOpened = false"
     />
   </v-dialog>
 </template>
@@ -544,5 +622,9 @@ import VueApexCharts from "vue3-apexcharts";
   font-size: 18px;
   font-weight: bold;
   text-align: center;
+}
+
+.v-col {
+  padding: 6px;
 }
 </style>

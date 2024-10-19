@@ -1,5 +1,5 @@
 import { computed, reactive } from "vue";
-import { iClientes, iComprasFaturadas, iCreditoDevolucao, iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamRequisicoes, iResponseDadosCliente, iTabs, iTodosItens, iVendaPorVendedor, iVendasPorAno } from "./interfaces";
+import { iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia, iClientes, iComprasFaturadas, iCreditoDevolucao, iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamRequisicoes, iResponseDadosCliente, iTabs, iTodosBoletos, iTodosItens, iVendaPorVendedor, iVendasPorAno } from "./interfaces";
 import moment from "moment";
 import serviceConsultaCliente from "./services/consultaCliente.service"
 import Swal from "sweetalert2";
@@ -8,6 +8,14 @@ import utils from "@/ts/utils";
 export const state = reactive({
     loading: false,
     modalLocalizarClienteOpened: false,
+    modalBoletosEmAbertoOpened: false,
+    modalBoletosAtrasadosOpened: false,
+    modalBoletosEmDiaOpened: false,
+    modalTodosBoletosOpened: false,
+    boletosEmAberto: <iBoletosAbertos[]>[],
+    boletosAtrasados: <iBoletosAtrasados[]>[],
+    boletosEmDia: <iBoletosEmDia[]>[],
+    todosBoletos: <iTodosBoletos[]>[],
     dataInicio: moment().startOf("month").format("YYYY-MM-DD"),
     dataFim: moment().format("YYYY-MM-DD"),
     tab: <iTabs>{},
@@ -221,7 +229,7 @@ export const state = reactive({
             title: "Quantidade",
             key: "QUANTIDADE",
             sortable: true,
-            align: 'left',
+            align: 'center',
         },
         {
             title: "Marca",
@@ -318,10 +326,6 @@ export const actions = {
         return { class: classe }
     },
 
-    closeModalLocalizarCliente() {
-        state.modalLocalizarClienteOpened = false;
-    },
-
     selecionarCliente(clienteSelecionado: iClientes, dataInicio, dataFim) {
         state.clienteSelecionado = clienteSelecionado;
         actions.popularInputs(clienteSelecionado, dataInicio, dataFim)
@@ -385,11 +389,82 @@ export const actions = {
         state.tableMarcas = dadosCliente.marca
         state.tableCreditoDevolucao = dadosCliente.creditoDevolucao
         state.tableDevolucao = dadosCliente.devolucao
-
         state.graficoVendaPorVendedor = dadosCliente.vendaPorVendedor
         state.graficoVendasPorAno = dadosCliente.vendasPorAno
 
         state.loading = false;
+    },
+
+    async openModalBoletosAbertos() {
+        try {
+            state.loading = true;
+            const boletosEmAberto = await serviceConsultaCliente.getBoletosEmAberto(state.idCliente);
+
+            state.boletosEmAberto = boletosEmAberto
+            state.modalBoletosEmAbertoOpened = true
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os boletos em aberto."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async openModalBoletosAtrasados() {
+        try {
+            state.loading = true;
+            const boletosAtrasados = await serviceConsultaCliente.getBoletosAtrasados(state.idCliente);
+
+            state.boletosAtrasados = boletosAtrasados
+            state.modalBoletosAtrasadosOpened = true
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os boletos em atraso."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async openModalBoletosEmDia() {
+        try {
+            state.loading = true;
+            const boletosEmDia = await serviceConsultaCliente.getBoletosEmDia(state.idCliente);
+
+            state.boletosEmDia = boletosEmDia
+            state.modalBoletosEmDiaOpened = true
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os boletos."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async openModalTodosBoletos() {
+        try {
+            state.loading = true;
+            const todosBoletos = await serviceConsultaCliente.getTodosBoletos(state.idCliente);
+
+            state.todosBoletos = todosBoletos
+            state.modalTodosBoletosOpened = true
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os boletos."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
     },
 
     openModalDetalhesOrcamento(item) {

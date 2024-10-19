@@ -154,3 +154,33 @@ export interface iResponseDadosCliente {
     vendaPorVendedor: iVendaPorVendedor[];
     vendasPorAno: iVendasPorAno[];
 }
+
+export interface iBoletosAbertos {
+    DATA_PROCESSAMENTO: string | null;
+    DATA_QUITACAO: string | null;
+    DATA_REEMPRESSAO: string | null;
+    DATA_VENCIMENTO: string;
+    DIASATRAZO: number | string | null;
+    DIVISAO: string;
+    HISTORICO: string;
+    ID_CLIENTE: number;
+    ID_EMPRESA: number;
+    LOG: string;
+    NUM_BOLETO: number;
+    VALOR: number;
+    VALOR_QUITACAO: number | null;
+    VALOR_REEMPRESSAO: number | null;
+}
+
+export interface iBoletosAtrasados extends iBoletosAbertos { }
+
+export interface iBoletosEmDia {
+    DATA_PROCESSAMENTO: string | null;
+    DATA_QUITACAO: string | null;
+    DATA_VENCIMENTO: string;
+    DIVISAO: string;
+    NUM_BOLETO: number;
+    VALOR: number;
+}
+
+export interface iTodosBoletos extends iBoletosEmDia { }
