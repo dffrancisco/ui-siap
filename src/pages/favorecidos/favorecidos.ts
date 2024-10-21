@@ -218,6 +218,15 @@ export const actions = {
             return false;
         }
 
+        if (!state.dbFavorecido.NR_CPF && !state.dbFavorecido.NR_CNPJ) {
+            await Swal.fire({
+                icon: "warning",
+                title: "Campo obrigatório!",
+                text: "CPF ou CNPJ deve ser preenchido.",
+            });
+            return false
+        }
+
         if (await state.gridPrincipal.getDuplicityAll()) {
             return false;
         }
@@ -268,7 +277,6 @@ export const actions = {
         try {
             state.loading = true;
 
-
             let newFields = {
                 NM_FAVORECIDO: state.dbFavorecido.NM_FAVORECIDO?.toUpperCase(),
                 CD_BANCO: state.dbFavorecido.CD_BANCO,
@@ -281,16 +289,6 @@ export const actions = {
                 NR_CPF: state.dbFavorecido.NR_CPF || null,
                 NR_CNPJ: state.dbFavorecido.NR_CNPJ || null,
             };
-
-
-            if (!newFields.NR_CPF && !newFields.NR_CNPJ) {
-                await Swal.fire({
-                    icon: "warning",
-                    title: "Campo obrigatório!",
-                    text: "CPF ou CNPJ deve ser preenchido.",
-                });
-                return;
-            }
 
             await serviceFavorecidos.toInsert(newFields);
             state.gridPrincipal.insertLine({ ...newFields });
