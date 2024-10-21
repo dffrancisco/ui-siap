@@ -186,7 +186,7 @@ import VueApexCharts from "vue3-apexcharts";
                   class="cardDashboard"
                   style="background: #022c22; padding: 10px"
                   @click="actions.openModalBoletosAbertos"
-                  :disabled="Object.keys(state.clienteSelecionado).length === 0"
+                  :disabled="state.boletosEmAbertoDashboard == 0"
                   ><v-icon
                     size="18"
                     class="mr-2"
@@ -203,7 +203,7 @@ import VueApexCharts from "vue3-apexcharts";
                   class="cardDashboard"
                   style="background: #27272a; padding: 10px"
                   @click="actions.openModalBoletosAtrasados"
-                  :disabled="Object.keys(state.clienteSelecionado).length === 0"
+                  :disabled="state.boletosAtrasadosDashboard == 0"
                   ><v-icon
                     size="18"
                     class="mr-2"
@@ -220,7 +220,7 @@ import VueApexCharts from "vue3-apexcharts";
                   class="cardDashboard"
                   style="background: #30a28d; padding: 10px"
                   @click="actions.openModalBoletosEmDia"
-                  :disabled="Object.keys(state.clienteSelecionado).length === 0"
+                  :disabled="state.boletosEmDiaDashboard == 0"
                   ><v-icon
                     size="18"
                     class="mr-2"
@@ -237,7 +237,7 @@ import VueApexCharts from "vue3-apexcharts";
                   class="cardDashboard"
                   style="background: #3c8dbc; padding: 10px"
                   @click="actions.openModalTodosBoletos"
-                  :disabled="Object.keys(state.clienteSelecionado).length === 0"
+                  :disabled="state.todosBoletosDashboard == 0"
                   ><v-icon
                     size="18"
                     class="mr-2"
