@@ -11,7 +11,22 @@ nextTick(() => {
 <template>
   <v-container>
     <v-card class="pa-5 main-card">
-      <div class="d-flex justify-end align-end ga-4 pb-4">
+      <div
+        id="pnCampos"
+        class="d-flex justify-end align-end ga-4 pb-4"
+      >
+        <div class="container-data">
+          <label for="tipoData">Tipo de Data</label>
+          <select
+            id="tipoData"
+            v-model="state.selectedTipoData"
+            class="ss obr"
+            style="height: 28px"
+          >
+            <option value="DATA_VENDA">Data Venda</option>
+            <option value="DATA">Data Devolução</option>
+          </select>
+        </div>
         <div class="container-data">
           <span>Data Inicial</span>
           <input
@@ -130,6 +145,6 @@ nextTick(() => {
 }
 
 .container-data {
-  width: 140px;
+  width: 150px;
 }
 </style>
