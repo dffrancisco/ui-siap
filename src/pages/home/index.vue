@@ -299,6 +299,11 @@ import login from "../login/login";
             >
               Logout
             </v-btn>
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/Bancos')"
+              >Bancos
+            </v-btn>
           </div>
         </v-row>
       </v-card>
