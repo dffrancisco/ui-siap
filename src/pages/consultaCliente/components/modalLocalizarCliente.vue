@@ -8,12 +8,12 @@ import Swal from "sweetalert2";
 
 const emits = defineEmits(["closeModalLocalizarCliente", "selecionarCliente"]);
 const inputSearch = ref();
+const dataFimRef = ref();
 
 const state = reactive({
   loading: false,
   dataInicio: moment().startOf("month").format("YYYY-MM-DD"),
   dataFim: moment().format("YYYY-MM-DD"),
-  inputDataFinal: <HTMLInputElement>{},
   gridClientes: <ixGridCreate>{},
   dbClientes: <iClientes>{},
 });
@@ -53,7 +53,6 @@ const actions = {
       state.loading = true;
 
       const data = await serviceConsultaCliente.getClientes(param, offset);
-
       return data;
     } catch (error) {
       Swal.fire({
@@ -119,6 +118,17 @@ const actions = {
   },
 };
 
+const focusDataFim = () => {
+  const inputElement = dataFimRef.value?.$el.querySelector("input");
+  if (inputElement) {
+    inputElement.focus();
+  }
+};
+
+const focusSearch = () => {
+  inputSearch.value.focus();
+};
+
 onMounted(async () => {
   await actions.init();
 
@@ -128,7 +138,6 @@ onMounted(async () => {
     },
     () => {
       inputSearch.value.focus();
-      state.inputDataFinal = <any>document.getElementById("DATA_FIM");
     }
   );
 });
@@ -136,6 +145,26 @@ onMounted(async () => {
 <template
   ><v-card class="pa-4"
     ><div style="display: flex; gap: 16px">
+      <v-text-field
+        v-model="state.dataInicio"
+        label="Data Início"
+        type="date"
+        :clearable="false"
+        @keydown.enter.prevent="focusDataFim"
+      >
+      </v-text-field>
+
+      <v-text-field
+        v-model="state.dataFim"
+        label="Data Fim"
+        id="DATA_FIM"
+        type="date"
+        ref="dataFimRef"
+        :clearable="false"
+        @keydown.enter.prevent="focusSearch"
+      >
+      </v-text-field>
+
       <v-text-field
         label="Razão social / CNPJ"
         :clearable="true"
@@ -146,24 +175,6 @@ onMounted(async () => {
         @keydown.enter.prevent="actions.btnSearch"
         @keydown.arrow.down.prevent="state.gridClientes.focus()"
       ></v-text-field>
-
-      <v-text-field
-        v-model="state.dataInicio"
-        label="Data Início"
-        type="date"
-        :clearable="false"
-        @keydown.enter="state.inputDataFinal.focus()"
-      >
-      </v-text-field>
-
-      <v-text-field
-        v-model="state.dataFim"
-        label="Data Fim"
-        id="DATA_FIM"
-        type="date"
-        :clearable="false"
-      >
-      </v-text-field>
 
       <div class="d-flex align-center">
         <v-btn

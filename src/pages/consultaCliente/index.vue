@@ -194,7 +194,7 @@ import VueApexCharts from "vue3-apexcharts";
                   >
                   <span
                     >Boletos em Aberto<br />
-                    {{ state.boletosEmAbertoDashboard }}</span
+                    {{ state.boletosEmAbertoDashboard || 0 }}</span
                   >
                 </v-card></v-col
               >
@@ -211,7 +211,7 @@ import VueApexCharts from "vue3-apexcharts";
                   >
                   <span
                     >Boletos Atrasados<br />
-                    {{ state.boletosAtrasadosDashboard }}</span
+                    {{ state.boletosAtrasadosDashboard || 0 }}</span
                   >
                 </v-card></v-col
               >
@@ -228,7 +228,7 @@ import VueApexCharts from "vue3-apexcharts";
                   >
                   <span
                     >Boletos em Dia<br />
-                    {{ state.boletosEmDiaDashboard }}</span
+                    {{ state.boletosEmDiaDashboard || 0 }}</span
                   >
                 </v-card></v-col
               >
@@ -245,7 +245,7 @@ import VueApexCharts from "vue3-apexcharts";
                   >
                   <span
                     >Todos Boletos<br />
-                    {{ state.todosBoletosDashboard }}</span
+                    {{ state.todosBoletosDashboard || 0 }}</span
                   >
                 </v-card></v-col
               ></v-row
@@ -399,7 +399,7 @@ import VueApexCharts from "vue3-apexcharts";
             </v-data-table-virtual>
           </v-window-item>
           <v-window-item value="creditoDevolucao">
-            <v-data-table-virtual
+            <v-data-table
               class="tableCreditoDevolucao"
               style="border-radius: 5px; --v-table-row-height: 45px"
               height="280"
@@ -418,7 +418,7 @@ import VueApexCharts from "vue3-apexcharts";
                   mdi-information
                 </v-icon>
               </template>
-            </v-data-table-virtual>
+            </v-data-table>
           </v-window-item>
           <v-window-item value="devolucao">
             <v-data-table-virtual
