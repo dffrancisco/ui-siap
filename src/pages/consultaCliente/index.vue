@@ -186,7 +186,7 @@ import VueApexCharts from "vue3-apexcharts";
                   class="cardDashboard"
                   style="background: #022c22; padding: 10px"
                   @click="actions.openModalBoletosAbertos"
-                  :disabled="state.boletosEmAbertoDashboard == 0"
+                  :disabled="state.boletosEmAbertoDashboard == undefined || state.boletosEmAbertoDashboard == 0"
                   ><v-icon
                     size="18"
                     class="mr-2"
@@ -203,7 +203,7 @@ import VueApexCharts from "vue3-apexcharts";
                   class="cardDashboard"
                   style="background: #27272a; padding: 10px"
                   @click="actions.openModalBoletosAtrasados"
-                  :disabled="state.boletosAtrasadosDashboard == 0"
+                  :disabled="state.boletosAtrasadosDashboard == undefined || state.boletosAtrasadosDashboard == 0"
                   ><v-icon
                     size="18"
                     class="mr-2"
@@ -220,7 +220,7 @@ import VueApexCharts from "vue3-apexcharts";
                   class="cardDashboard"
                   style="background: #30a28d; padding: 10px"
                   @click="actions.openModalBoletosEmDia"
-                  :disabled="state.boletosEmDiaDashboard == 0"
+                  :disabled="state.boletosEmDiaDashboard == undefined || state.boletosEmDiaDashboard == 0"
                   ><v-icon
                     size="18"
                     class="mr-2"
@@ -237,7 +237,7 @@ import VueApexCharts from "vue3-apexcharts";
                   class="cardDashboard"
                   style="background: #3c8dbc; padding: 10px"
                   @click="actions.openModalTodosBoletos"
-                  :disabled="state.todosBoletosDashboard == 0"
+                  :disabled="state.todosBoletosDashboard == undefined || state.todosBoletosDashboard == 0"
                   ><v-icon
                     size="18"
                     class="mr-2"
@@ -298,10 +298,10 @@ import VueApexCharts from "vue3-apexcharts";
             >
           </v-window-item>
           <v-window-item value="orcamentos">
-            <v-data-table-virtual
+            <v-data-table
               class="tableOrcamentos"
               style="border-radius: 5px; --v-table-row-height: 45px"
-              height="280"
+              height="250"
               fixed-header
               :headers="state.headersOrcamentos"
               :loading="state.loading"
@@ -317,26 +317,26 @@ import VueApexCharts from "vue3-apexcharts";
                   mdi-information
                 </v-icon>
               </template>
-            </v-data-table-virtual>
+            </v-data-table>
           </v-window-item>
           <v-window-item value="orcamentosNaoFinalizados">
-            <v-data-table-virtual
+            <v-data-table
               class="tableOrcamentosNaoFinalizados"
               style="border-radius: 5px; --v-table-row-height: 45px"
-              height="280"
+              height="250"
               fixed-header
               :headers="state.headersOrcamentosNaoFinalizados"
               :loading="state.loading"
               :items="state.tableOrcamentosNaoFinalizados"
               :row-props="actions.getClassCorLinha"
             >
-            </v-data-table-virtual>
+            </v-data-table>
           </v-window-item>
           <v-window-item value="todosItens">
-            <v-data-table-virtual
+            <v-data-table
               class="tableTodosItens"
               style="border-radius: 5px; --v-table-row-height: 45px"
-              height="280"
+              height="250"
               fixed-header
               :headers="state.headersTodosItensOrcamentos"
               :loading="state.loading"
@@ -352,13 +352,13 @@ import VueApexCharts from "vue3-apexcharts";
                   mdi-information
                 </v-icon>
               </template>
-            </v-data-table-virtual>
+            </v-data-table>
           </v-window-item>
           <v-window-item value="comprasFaturadas">
-            <v-data-table-virtual
+            <v-data-table
               class="tableComprasFaturadas"
               style="border-radius: 5px; --v-table-row-height: 45px"
-              height="280"
+              height="250"
               fixed-header
               :headers="state.headersComprasFaturadas"
               :loading="state.loading"
@@ -374,13 +374,13 @@ import VueApexCharts from "vue3-apexcharts";
                   mdi-information
                 </v-icon>
               </template>
-            </v-data-table-virtual>
+            </v-data-table>
           </v-window-item>
           <v-window-item value="marca">
-            <v-data-table-virtual
+            <v-data-table
               class="tableMarcas"
               style="border-radius: 5px; --v-table-row-height: 45px"
-              height="280"
+              height="250"
               fixed-header
               :headers="state.headersMarcas"
               :loading="state.loading"
@@ -396,13 +396,13 @@ import VueApexCharts from "vue3-apexcharts";
                   mdi-information
                 </v-icon>
               </template>
-            </v-data-table-virtual>
+            </v-data-table>
           </v-window-item>
           <v-window-item value="creditoDevolucao">
             <v-data-table
               class="tableCreditoDevolucao"
               style="border-radius: 5px; --v-table-row-height: 45px"
-              height="280"
+              height="250"
               fixed-header
               :headers="state.headersCreditoDevolucao"
               :loading="state.loading"
@@ -421,10 +421,10 @@ import VueApexCharts from "vue3-apexcharts";
             </v-data-table>
           </v-window-item>
           <v-window-item value="devolucao">
-            <v-data-table-virtual
+            <v-data-table
               class="tableDevolucao"
               style="border-radius: 5px; --v-table-row-height: 45px"
-              height="280"
+              height="250"
               fixed-header
               :headers="state.headersDevolucao"
               :loading="state.loading"
@@ -440,7 +440,7 @@ import VueApexCharts from "vue3-apexcharts";
                   mdi-information
                 </v-icon>
               </template>
-            </v-data-table-virtual>
+            </v-data-table>
           </v-window-item>
           <v-window-item value="vendaPorVendedor">
             <VueApexCharts
@@ -559,7 +559,7 @@ import VueApexCharts from "vue3-apexcharts";
   <!-- modalBoletosEmAberto -->
   <v-dialog
     v-model="state.modalBoletosEmAbertoOpened"
-    max-width="700"
+    max-width="750"
     @click:outside="state.modalBoletosEmAbertoOpened = false"
   >
     <ModalBoletosAbertos
@@ -571,19 +571,19 @@ import VueApexCharts from "vue3-apexcharts";
   <!-- modalBoletosAtrasados -->
   <v-dialog
     v-model="state.modalBoletosAtrasadosOpened"
-    max-width="700"
+    max-width="750"
     @click:outside="state.modalBoletosAtrasadosOpened = false"
   >
     <ModalBoletosAtrasados
       :boletos-atrasados="state.boletosAtrasados"
-      @closeModalBoletosAtrasados="state.modalBoletosEmAbertoOpened = false"
+      @closeModalBoletosAtrasados="state.modalBoletosAtrasadosOpened = false"
     />
   </v-dialog>
 
   <!-- modalBoletosEmDia -->
   <v-dialog
     v-model="state.modalBoletosEmDiaOpened"
-    max-width="700"
+    max-width="750"
     @click:outside="state.modalBoletosEmDiaOpened = false"
   >
     <ModalBoletosEmDia
@@ -595,7 +595,7 @@ import VueApexCharts from "vue3-apexcharts";
   <!-- modalTodosBoletos -->
   <v-dialog
     v-model="state.modalTodosBoletosOpened"
-    max-width="700"
+    max-width="750"
     @click:outside="state.modalTodosBoletosOpened = false"
   >
     <ModalTodosBoletos
@@ -612,6 +612,10 @@ import VueApexCharts from "vue3-apexcharts";
 
 .cor-zebrada-1 {
   background-color: #f0f0f0;
+}
+
+.v-data-table-footer {
+  max-height: 50px;
 }
 </style>
 

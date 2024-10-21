@@ -14,7 +14,7 @@ const state = reactive({
   boletosEmAberto: <iBoletosAbertos[]>[],
   headers: <any>[
     { title: "Nº Boleto", key: "NUM_BOLETO", align: "left" },
-    { title: "Valor", key: "VALOR", align: "left" },
+    { title: "Valor", key: "VALOR", align: "left", value: (item: any) => utils.formatValor(item.VALOR) },
     {
       title: "Data Processamento",
       key: "DATA_PROCESSAMENTO",
