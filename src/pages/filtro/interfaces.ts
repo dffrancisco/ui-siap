@@ -78,6 +78,7 @@ export interface iDadosFiltro {
     QTD_ATUAL: number,
     DATA: string,
     CONFERIDO: string,
+    CONFERIDO_ESTOQUISTA: string,
     COD_FUNCIONARIO: number
     ID_FILTRO: number,
     DT_FILTRO: string,

@@ -75,34 +75,30 @@ const duracaoFiltro = computed(() => {
   const filtro = stateModalRevisaoFiltro.dadosFiltro[0];
 
   const inicio = moment(filtro.DT_FILTRO).set({
-    hour: moment(filtro.HR_INICIO).utc().hour(),
-    minute: moment(filtro.HR_INICIO).utc().minute(),
-    second: moment(filtro.HR_INICIO).utc().second(),
+    hour: moment(filtro.HR_INICIO).hour(),
+    minute: moment(filtro.HR_INICIO).minute(),
   });
 
   // Se DT_REVISAO e HR_REVISAO existirem, serão usados; caso contrário, usa o momento atual
   const revisao =
     filtro.DT_REVISAO && filtro.HR_REVISAO
       ? moment(filtro.DT_REVISAO).set({
-          hour: moment(filtro.HR_REVISAO).utc().hour(),
-          minute: moment(filtro.HR_REVISAO).utc().minute(),
-          second: moment(filtro.HR_REVISAO).utc().second(),
+          hour: moment(filtro.HR_REVISAO).hour(),
+          minute: moment(filtro.HR_REVISAO).minute(),
         })
       : moment();
 
   const duracao = moment.duration(revisao.diff(inicio));
-
   const horasTotais = Math.floor(duracao.asHours());
   const minutos = duracao.minutes();
-  const segundos = duracao.seconds();
 
   if (horasTotais >= 24) {
     const dias = Math.floor(horasTotais / 24);
     const horas = horasTotais % 24; // horas restantes
-    return `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+    return `${dias}d ${horas}h ${minutos}m`;
   }
 
-  return `${horasTotais}h ${minutos}m ${segundos}s`;
+  return `${horasTotais}h ${minutos}m`;
 });
 
 const actions = {
@@ -217,6 +213,7 @@ const actions = {
         <v-card
           :width="120"
           class="pa-2"
+          :class="{ 'card-selecionado': stateModalRevisaoFiltro.filtroSelecionado === 'Alterados' }"
           style="border: 1px solid #ddd; position: relative; overflow: visible"
           @click="stateModalRevisaoFiltro.filtroSelecionado = 'Alterados'"
         >
@@ -224,6 +221,7 @@ const actions = {
           <v-chip
             color="primary"
             dark
+            :class="{ 'chip-selecionado': stateModalRevisaoFiltro.filtroSelecionado === 'Alterados' }"
             class="chip-number"
             small
           >
@@ -238,6 +236,7 @@ const actions = {
         <v-card
           :width="120"
           class="ml-4 pa-2"
+          :class="{ 'card-selecionado': stateModalRevisaoFiltro.filtroSelecionado === 'Todos' }"
           style="border: 1px solid #ddd; position: relative; overflow: visible"
           @click="stateModalRevisaoFiltro.filtroSelecionado = 'Todos'"
         >
@@ -245,6 +244,7 @@ const actions = {
           <v-chip
             color="primary"
             dark
+            :class="{ 'chip-selecionado': stateModalRevisaoFiltro.filtroSelecionado === 'Todos' }"
             class="chip-number"
             small
           >
@@ -265,8 +265,15 @@ const actions = {
         item-key="COD_PRODUTO"
         item-value="COD_PRODUTO"
         ><template v-slot:item.END_ESTOQUE="{ item }">
-          <div> {{ item.END_ESTOQUE }} - {{ item.END_EXCESSO }} </div>
+          <div>
+            <span v-if="item.END_ESTOQUE && item.END_ESTOQUE != 0">{{ item.END_ESTOQUE }}</span>
+            <span v-if="item.END_ESTOQUE && item.END_ESTOQUE != 0 && item.END_EXCESSO && item.END_EXCESSO != 0">
+              -
+            </span>
+            <span v-if="item.END_EXCESSO && item.END_EXCESSO != 0">{{ item.END_EXCESSO }}</span>
+          </div>
         </template>
+
         <template v-slot:item.QTO_OLD="{ item }">
           <span>
             {{ item.QTO_OLD !== null ? item.QTO_OLD : "-" }}
@@ -286,7 +293,11 @@ const actions = {
               color="primary"
               dense
               hide-details
-              :disabled="item.QTO_NEW != null || stateModalRevisaoFiltro.dadosFiltro[0].HR_REVISAO !== null"
+              :disabled="
+                item.QTO_NEW != null ||
+                stateModalRevisaoFiltro.dadosFiltro[0].HR_REVISAO !== null ||
+                item.CONFERIDO_ESTOQUISTA == 'SIM'
+              "
               :value="item.CONFERIDO"
             />
           </div>
@@ -374,6 +385,16 @@ const actions = {
   border: 1px solid #ddd;
   display: flex;
   justify-content: space-between;
+}
+
+.card-selecionado {
+  border: 2px solid #1976d2;
+  background-color: #bbdefb;
+}
+
+.chip-selecionado {
+  background-color: #1976d2 !important;
+  color: white !important;
 }
 
 .chip-number {

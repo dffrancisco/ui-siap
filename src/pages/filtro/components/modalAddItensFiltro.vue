@@ -63,12 +63,12 @@ const stateModalAddItensFiltro = reactive({
       align: "left",
     },
     {
-      title: "Nº Fabricante - Nº Fabricante2",
+      title: "Nº Fabricante / Nº Fabricante2",
       key: "NUM_FABRICANTE",
       sortable: true,
     },
     {
-      title: "End. Estoque - End. Excesso",
+      title: "End. Estoque / End. Excesso",
       key: "END_ESTOQUE",
       sortable: true,
     },
@@ -398,11 +398,32 @@ onUnmounted(() => {
             select-strategy="all"
           >
             <template v-slot:item.NUM_FABRICANTE="{ item }">
-              <div> {{ item.NUM_FABRICANTE }} - {{ item.NUM_FABRICANTE2 }} </div>
+              <div>
+                <span v-if="item.NUM_FABRICANTE && item.NUM_FABRICANTE != 0">{{ item.NUM_FABRICANTE }}</span>
+                <span
+                  v-if="
+                    item.NUM_FABRICANTE &&
+                    item.NUM_FABRICANTE != 0 &&
+                    item.NUM_FABRICANTE2 &&
+                    item.NUM_FABRICANTE2 != 0
+                  "
+                >
+                  -
+                </span>
+                <span v-if="item.NUM_FABRICANTE2 && item.NUM_FABRICANTE2 != 0">{{ item.NUM_FABRICANTE2 }}</span>
+              </div>
             </template>
 
             <template v-slot:item.END_ESTOQUE="{ item }">
-              <div> {{ item.END_ESTOQUE }} - {{ item.END_EXCESSO }} </div>
+              <div>
+                <span v-if="item.END_ESTOQUE && item.END_ESTOQUE != 0">{{ item.END_ESTOQUE }}</span>
+                <span
+                  v-if="item.END_ESTOQUE && item.END_ESTOQUE != 0 && item.END_EXCESSO && item.END_EXCESSO != 0"
+                >
+                  -
+                </span>
+                <span v-if="item.END_EXCESSO && item.END_EXCESSO != 0">{{ item.END_EXCESSO }}</span>
+              </div>
             </template>
           </v-data-table>
         </v-card-text>
