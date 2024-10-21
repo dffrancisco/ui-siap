@@ -128,6 +128,7 @@ onMounted(async () => {
     },
     () => {
       inputSearch.value.focus();
+      state.inputDataFinal = <any>document.getElementById("DATA_FIM");
     }
   );
 });
