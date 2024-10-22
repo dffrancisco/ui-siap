@@ -5,6 +5,7 @@ import ModalBoletosAbertos from "./components/modalBoletosAbertos.vue";
 import ModalBoletosAtrasados from "./components/modalBoletosAtrasados.vue";
 import ModalBoletosEmDia from "./components/modalBoletosEmDia.vue";
 import ModalTodosBoletos from "./components/modalTodosBoletos.vue";
+import ModalDetalhesOrcamento from "./components/modalDetalhesOrcamento.vue";
 import utils from "@/ts/utils";
 import VueApexCharts from "vue3-apexcharts";
 </script>
@@ -12,7 +13,7 @@ import VueApexCharts from "vue3-apexcharts";
 <template>
   <v-container>
     <v-card
-      :width="960"
+      :width="1080"
       class="ma-auto pa-4"
     >
       <v-row>
@@ -100,354 +101,351 @@ import VueApexCharts from "vue3-apexcharts";
         :thickness="4"
       ></v-divider>
 
-      <v-tabs
-        v-model="state.tab"
-        bg-color="primary"
-      >
-        <v-row
-          style="justify-content: space-between"
-          class="mr-1"
-        >
-          <v-tab value="dashboard">Dashboard</v-tab>
-          <v-tab value="orcamentos">Orçamentos</v-tab>
-          <v-tab value="orcamentosNaoFinalizados">Orç. Não Finalizados</v-tab>
-          <v-tab value="todosItens">Todos Itens</v-tab>
-          <v-tab value="comprasFaturadas">Compras Faturadas</v-tab>
-        </v-row>
-      </v-tabs>
+      <v-row>
+        <!-- menu lateral -->
+        <v-col cols="2">
+          <div
+            v-for="item in state.menuItems"
+            :key="item.value"
+            class="menu-btn-wrapper"
+          >
+            <v-btn
+              block
+              :color="state.tab === item.value ? 'primary' : 'grey'"
+              @click="state.tab = item.value"
+            >
+              {{ item.title }}
+            </v-btn>
+          </div>
+        </v-col>
 
-      <v-tabs
-        v-model="state.tab"
-        bg-color="primary"
-        class="mt-2"
-      >
-        <v-row
-          style="justify-content: space-between"
-          class="mr-1"
+        <!-- conteudo das abas -->
+        <v-col
+          cols="10"
+          style="padding-left: 30px; margin-top: -10px"
         >
-          <v-tab value="marca">Marca</v-tab>
-          <v-tab value="creditoDevolucao">Crédito de Devolução</v-tab>
-          <v-tab value="devolucao">Devolução</v-tab>
-          <v-tab value="vendaPorVendedor">Venda por Vendedor</v-tab>
-          <v-tab value="vendasPorAno">Vendas por Ano</v-tab>
-        </v-row>
-      </v-tabs>
+          <v-container>
+            <v-window v-model="state.tab">
+              <v-window-item value="dashboard"
+                ><v-row
+                  ><v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #78350f"
+                      ><span
+                        >Limite Disponível<br />
+                        {{ utils.formatValor(state.limiteDisponivelDashboard) }}</span
+                      ><br /></v-card
+                  ></v-col>
+                  <v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #3f51b5"
+                    >
+                      <span
+                        >Crédito Usado<br />
+                        {{ utils.formatValor(state.creditoUsadoDashboard) }}</span
+                      ></v-card
+                    ></v-col
+                  >
+                  <v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #1e1b4b"
+                    >
+                      <span
+                        >Limite de Crédito<br />
+                        {{ utils.formatValor(state.limiteCreditoDashboard) }}</span
+                      >
+                    </v-card></v-col
+                  >
+                </v-row>
+                <v-row
+                  ><v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #022c22"
+                      @click="actions.openModalBoletosAbertos"
+                      :disabled="
+                        state.boletosEmAbertoDashboard == undefined || state.boletosEmAbertoDashboard == 0
+                      "
+                      ><v-icon
+                        size="18"
+                        class="mr-2"
+                        >mdi-link-variant</v-icon
+                      >
+                      <span
+                        >Boletos em Aberto<br />
+                        {{ state.boletosEmAbertoDashboard || 0 }}</span
+                      >
+                    </v-card></v-col
+                  >
+                  <v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #27272a"
+                      @click="actions.openModalBoletosAtrasados"
+                      :disabled="
+                        state.boletosAtrasadosDashboard == undefined || state.boletosAtrasadosDashboard == 0
+                      "
+                      ><v-icon
+                        size="18"
+                        class="mr-2"
+                        >mdi-link-variant</v-icon
+                      >
+                      <span
+                        >Boletos Atrasados<br />
+                        {{ state.boletosAtrasadosDashboard || 0 }}</span
+                      >
+                    </v-card></v-col
+                  >
+                  <v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #30a28d"
+                      @click="actions.openModalBoletosEmDia"
+                      :disabled="state.boletosEmDiaDashboard == undefined || state.boletosEmDiaDashboard == 0"
+                      ><v-icon
+                        size="18"
+                        class="mr-2"
+                        >mdi-link-variant</v-icon
+                      >
+                      <span
+                        >Boletos em Dia<br />
+                        {{ state.boletosEmDiaDashboard || 0 }}</span
+                      >
+                    </v-card></v-col
+                  >
+                </v-row>
+                <v-row>
+                  <v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #3c8dbc"
+                      @click="actions.openModalTodosBoletos"
+                      :disabled="state.todosBoletosDashboard == undefined || state.todosBoletosDashboard == 0"
+                      ><v-icon
+                        size="18"
+                        class="mr-2"
+                        >mdi-link-variant</v-icon
+                      >
+                      <span
+                        >Todos Boletos<br />
+                        {{ state.todosBoletosDashboard || 0 }}</span
+                      >
+                    </v-card></v-col
+                  >
 
-      <div class="mt-3">
-        <v-window v-model="state.tab">
-          <v-window-item value="dashboard"
-            ><v-row
-              ><v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #78350f; padding: 10px"
-                  ><span
-                    >Limite Disponível<br />
-                    {{ utils.formatValor(state.limiteDisponivelDashboard) }}</span
-                  ><br /></v-card
-              ></v-col>
-              <v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #3f51b5; padding: 10px"
+                  <v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #2563eb"
+                    >
+                      <span
+                        >Devoluções<br />
+                        {{ state.devolucoesDashboard }}</span
+                      >
+                    </v-card></v-col
+                  >
+                  <v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #d97706"
+                    >
+                      <span
+                        >Vendedor<br />
+                        {{ state.vendedorDashboard }}</span
+                      >
+                    </v-card></v-col
+                  >
+                </v-row>
+                <v-row>
+                  <v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #831843"
+                    >
+                      <span
+                        >Ticket Médio<br />
+                        {{ utils.formatValor(state.ticketMedioDashboard) }}</span
+                      >
+                    </v-card></v-col
+                  >
+                  <v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #5a5a5a"
+                    >
+                      <span
+                        >Qtd Orçamentos<br />
+                        {{ state.qtdOrcamentosDashboard }}</span
+                      >
+                    </v-card></v-col
+                  >
+                  <v-col cols="4"
+                    ><v-card
+                      class="cardDashboard"
+                      style="background: #933ec5"
+                    >
+                      <span
+                        >Marca<br />
+                        {{ state.marcaDashboard }}</span
+                      >
+                    </v-card></v-col
+                  >
+                </v-row>
+              </v-window-item>
+              <v-window-item value="orcamentos">
+                <v-data-table
+                  class="tableOrcamentos"
+                  style="border-radius: 5px; --v-table-row-height: 45px"
+                  height="390"
+                  fixed-header
+                  :headers="state.headersOrcamentos"
+                  :loading="state.loading"
+                  :items="state.tableOrcamentos"
+                  :row-props="actions.getClassCorLinha"
+                  ><template v-slot:item.inf="{ item }">
+                    <v-icon
+                      size="large"
+                      color="primary"
+                      title="Ver detalhes"
+                      @click="actions.openModalDetalhesOrcamento(item)"
+                    >
+                      mdi-information
+                    </v-icon>
+                  </template>
+                </v-data-table>
+              </v-window-item>
+              <v-window-item value="orcamentosNaoFinalizados">
+                <v-data-table
+                  class="tableOrcamentosNaoFinalizados"
+                  style="border-radius: 5px; --v-table-row-height: 45px"
+                  height="390"
+                  fixed-header
+                  :headers="state.headersOrcamentosNaoFinalizados"
+                  :loading="state.loading"
+                  :items="state.tableOrcamentosNaoFinalizados"
+                  :row-props="actions.getClassCorLinha"
                 >
-                  <span
-                    >Crédito Usado<br />
-                    {{ utils.formatValor(state.creditoUsadoDashboard) }}</span
-                  ></v-card
-                ></v-col
-              >
-              <v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #1e1b4b; padding: 10px"
-                >
-                  <span
-                    >Limite de Crédito<br />
-                    {{ utils.formatValor(state.limiteCreditoDashboard) }}</span
-                  >
-                </v-card></v-col
-              >
-              <v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #831843; padding: 10px"
-                >
-                  <span
-                    >Ticket Médio<br />
-                    {{ utils.formatValor(state.ticketMedioDashboard) }}</span
-                  >
-                </v-card></v-col
-              ></v-row
-            >
-            <v-row
-              ><v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #022c22; padding: 10px"
-                  @click="actions.openModalBoletosAbertos"
-                  :disabled="state.boletosEmAbertoDashboard == undefined || state.boletosEmAbertoDashboard == 0"
-                  ><v-icon
-                    size="18"
-                    class="mr-2"
-                    >mdi-link-variant</v-icon
-                  >
-                  <span
-                    >Boletos em Aberto<br />
-                    {{ state.boletosEmAbertoDashboard || 0 }}</span
-                  >
-                </v-card></v-col
-              >
-              <v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #27272a; padding: 10px"
-                  @click="actions.openModalBoletosAtrasados"
-                  :disabled="state.boletosAtrasadosDashboard == undefined || state.boletosAtrasadosDashboard == 0"
-                  ><v-icon
-                    size="18"
-                    class="mr-2"
-                    >mdi-link-variant</v-icon
-                  >
-                  <span
-                    >Boletos Atrasados<br />
-                    {{ state.boletosAtrasadosDashboard || 0 }}</span
-                  >
-                </v-card></v-col
-              >
-              <v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #30a28d; padding: 10px"
-                  @click="actions.openModalBoletosEmDia"
-                  :disabled="state.boletosEmDiaDashboard == undefined || state.boletosEmDiaDashboard == 0"
-                  ><v-icon
-                    size="18"
-                    class="mr-2"
-                    >mdi-link-variant</v-icon
-                  >
-                  <span
-                    >Boletos em Dia<br />
-                    {{ state.boletosEmDiaDashboard || 0 }}</span
-                  >
-                </v-card></v-col
-              >
-              <v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #3c8dbc; padding: 10px"
-                  @click="actions.openModalTodosBoletos"
-                  :disabled="state.todosBoletosDashboard == undefined || state.todosBoletosDashboard == 0"
-                  ><v-icon
-                    size="18"
-                    class="mr-2"
-                    >mdi-link-variant</v-icon
-                  >
-                  <span
-                    >Todos Boletos<br />
-                    {{ state.todosBoletosDashboard || 0 }}</span
-                  >
-                </v-card></v-col
-              ></v-row
-            >
-            <v-row
-              ><v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #5a5a5a; padding: 10px"
-                >
-                  <span
-                    >Qtd Orçamentos<br />
-                    {{ state.qtdOrcamentosDashboard }}</span
-                  >
-                </v-card></v-col
-              >
-              <v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #2563eb; padding: 10px"
-                >
-                  <span
-                    >Devoluções<br />
-                    {{ state.devolucoesDashboard }}</span
-                  >
-                </v-card></v-col
-              >
-              <v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #d97706; padding: 10px"
-                >
-                  <span
-                    >Vendedor<br />
-                    {{ state.vendedorDashboard }}</span
-                  >
-                </v-card></v-col
-              >
-              <v-col cols="3"
-                ><v-card
-                  class="cardDashboard"
-                  style="background: #933ec5; padding: 10px"
-                >
-                  <span
-                    >Marca<br />
-                    {{ state.marcaDashboard }}</span
-                  >
-                </v-card></v-col
-              ></v-row
-            >
-          </v-window-item>
-          <v-window-item value="orcamentos">
-            <v-data-table
-              class="tableOrcamentos"
-              style="border-radius: 5px; --v-table-row-height: 45px"
-              height="250"
-              fixed-header
-              :headers="state.headersOrcamentos"
-              :loading="state.loading"
-              :items="state.tableOrcamentos"
-              :row-props="actions.getClassCorLinha"
-              ><template v-slot:item.inf="{ item }">
-                <v-icon
-                  size="large"
-                  color="primary"
-                  title="Ver detalhes"
-                  @click="actions.openModalDetalhesOrcamento(item)"
-                >
-                  mdi-information
-                </v-icon>
-              </template>
-            </v-data-table>
-          </v-window-item>
-          <v-window-item value="orcamentosNaoFinalizados">
-            <v-data-table
-              class="tableOrcamentosNaoFinalizados"
-              style="border-radius: 5px; --v-table-row-height: 45px"
-              height="250"
-              fixed-header
-              :headers="state.headersOrcamentosNaoFinalizados"
-              :loading="state.loading"
-              :items="state.tableOrcamentosNaoFinalizados"
-              :row-props="actions.getClassCorLinha"
-            >
-            </v-data-table>
-          </v-window-item>
-          <v-window-item value="todosItens">
-            <v-data-table
-              class="tableTodosItens"
-              style="border-radius: 5px; --v-table-row-height: 45px"
-              height="250"
-              fixed-header
-              :headers="state.headersTodosItensOrcamentos"
-              :loading="state.loading"
-              :items="state.tableTodosItensOrcamentos"
-              :row-props="actions.getClassCorLinha"
-              ><template v-slot:item.inf="{ item }">
-                <v-icon
-                  size="large"
-                  color="primary"
-                  title="Ver detalhes"
-                  @click="actions.openModalDetalhesItemOrcamento(item)"
-                >
-                  mdi-information
-                </v-icon>
-              </template>
-            </v-data-table>
-          </v-window-item>
-          <v-window-item value="comprasFaturadas">
-            <v-data-table
-              class="tableComprasFaturadas"
-              style="border-radius: 5px; --v-table-row-height: 45px"
-              height="250"
-              fixed-header
-              :headers="state.headersComprasFaturadas"
-              :loading="state.loading"
-              :items="state.tableComprasFaturadas"
-              :row-props="actions.getClassCorLinha"
-              ><template v-slot:item.inf="{ item }">
-                <v-icon
-                  size="large"
-                  color="primary"
-                  title="Ver detalhes"
-                  @click="actions.openModalDetalhesComprasFaturadas(item)"
-                >
-                  mdi-information
-                </v-icon>
-              </template>
-            </v-data-table>
-          </v-window-item>
-          <v-window-item value="marca">
-            <v-data-table
-              class="tableMarcas"
-              style="border-radius: 5px; --v-table-row-height: 45px"
-              height="250"
-              fixed-header
-              :headers="state.headersMarcas"
-              :loading="state.loading"
-              :items="state.tableMarcas"
-              :row-props="actions.getClassCorLinha"
-              ><template v-slot:item.inf="{ item }">
-                <v-icon
-                  size="large"
-                  color="primary"
-                  title="Ver detalhes"
-                  @click="actions.openModalDetalhesMarca(item)"
-                >
-                  mdi-information
-                </v-icon>
-              </template>
-            </v-data-table>
-          </v-window-item>
-          <v-window-item value="creditoDevolucao">
-            <v-data-table
-              class="tableCreditoDevolucao"
-              style="border-radius: 5px; --v-table-row-height: 45px"
-              height="250"
-              fixed-header
-              :headers="state.headersCreditoDevolucao"
-              :loading="state.loading"
-              :items="state.tableCreditoDevolucao"
-              :row-props="actions.getClassCorLinha"
-              ><template v-slot:item.inf="{ item }">
-                <v-icon
-                  size="large"
-                  color="primary"
-                  title="Ver detalhes"
-                  @click="actions.openModalDetalhesCreditoDevolucao(item)"
-                >
-                  mdi-information
-                </v-icon>
-              </template>
-            </v-data-table>
-          </v-window-item>
-          <v-window-item value="devolucao">
-            <v-data-table
-              class="tableDevolucao"
-              style="border-radius: 5px; --v-table-row-height: 45px"
-              height="250"
-              fixed-header
-              :headers="state.headersDevolucao"
-              :loading="state.loading"
-              :items="state.tableDevolucao"
-              :row-props="actions.getClassCorLinha"
-              ><template v-slot:item.inf="{ item }">
-                <v-icon
-                  size="large"
-                  color="primary"
-                  title="Ver detalhes"
-                  @click="actions.openModalDetalhesDevolucao(item)"
-                >
-                  mdi-information
-                </v-icon>
-              </template>
-            </v-data-table>
-          </v-window-item>
-          <v-window-item value="vendaPorVendedor">
-            <VueApexCharts
-              width="100%"
-              height="240"
-              type="bar"
-              :options="{
+                </v-data-table>
+              </v-window-item>
+              <v-window-item value="todosItens">
+                <v-data-table
+                  class="tableTodosItens"
+                  style="border-radius: 5px; --v-table-row-height: 45px"
+                  height="390"
+                  fixed-header
+                  :headers="state.headersTodosItensOrcamentos"
+                  :loading="state.loading"
+                  :items="state.tableTodosItensOrcamentos"
+                  :row-props="actions.getClassCorLinha"
+                  ><template v-slot:item.inf="{ item }">
+                    <v-icon
+                      size="large"
+                      color="primary"
+                      title="Ver detalhes"
+                      @click="actions.openModalDetalhesItemOrcamento(item)"
+                    >
+                      mdi-information
+                    </v-icon>
+                  </template>
+                </v-data-table>
+              </v-window-item>
+              <v-window-item value="comprasFaturadas">
+                <v-data-table
+                  class="tableComprasFaturadas"
+                  style="border-radius: 5px; --v-table-row-height: 45px"
+                  height="390"
+                  fixed-header
+                  :headers="state.headersComprasFaturadas"
+                  :loading="state.loading"
+                  :items="state.tableComprasFaturadas"
+                  :row-props="actions.getClassCorLinha"
+                  ><template v-slot:item.inf="{ item }">
+                    <v-icon
+                      size="large"
+                      color="primary"
+                      title="Ver detalhes"
+                      @click="actions.openModalDetalhesComprasFaturadas(item)"
+                    >
+                      mdi-information
+                    </v-icon>
+                  </template>
+                </v-data-table>
+              </v-window-item>
+              <v-window-item value="marca">
+                <v-data-table
+                  class="tableMarcas"
+                  style="border-radius: 5px; --v-table-row-height: 45px"
+                  height="390"
+                  fixed-header
+                  :headers="state.headersMarcas"
+                  :loading="state.loading"
+                  :items="state.tableMarcas"
+                  :row-props="actions.getClassCorLinha"
+                  ><template v-slot:item.inf="{ item }">
+                    <v-icon
+                      size="large"
+                      color="primary"
+                      title="Ver detalhes"
+                      @click="actions.openModalDetalhesMarca(item)"
+                    >
+                      mdi-information
+                    </v-icon>
+                  </template>
+                </v-data-table>
+              </v-window-item>
+              <v-window-item value="creditoDevolucao">
+                <v-data-table
+                  class="tableCreditoDevolucao"
+                  style="border-radius: 5px; --v-table-row-height: 45px"
+                  height="390"
+                  fixed-header
+                  :headers="state.headersCreditoDevolucao"
+                  :loading="state.loading"
+                  :items="state.tableCreditoDevolucao"
+                  :row-props="actions.getClassCorLinha"
+                  ><template v-slot:item.inf="{ item }">
+                    <v-icon
+                      size="large"
+                      color="primary"
+                      title="Ver detalhes"
+                      @click="actions.openModalDetalhesCreditoDevolucao(item)"
+                    >
+                      mdi-information
+                    </v-icon>
+                  </template>
+                </v-data-table>
+              </v-window-item>
+              <v-window-item value="devolucao">
+                <v-data-table
+                  class="tableDevolucao"
+                  style="border-radius: 5px; --v-table-row-height: 45px"
+                  height="390"
+                  fixed-header
+                  :headers="state.headersDevolucao"
+                  :loading="state.loading"
+                  :items="state.tableDevolucao"
+                  :row-props="actions.getClassCorLinha"
+                  ><template v-slot:item.inf="{ item }">
+                    <v-icon
+                      size="large"
+                      color="primary"
+                      title="Ver detalhes"
+                      @click="actions.openModalDetalhesDevolucao(item)"
+                    >
+                      mdi-information
+                    </v-icon>
+                  </template>
+                </v-data-table>
+              </v-window-item>
+              <v-window-item value="vendaPorVendedor">
+                <VueApexCharts
+                  width="100%"
+                  height="400"
+                  type="bar"
+                  :options="{
                             chart: {
                                 id: 'venda-por-vendedor',
                             },
@@ -471,20 +469,20 @@ import VueApexCharts from "vue3-apexcharts";
                                 colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#FF00F5'],
                             },
                         }"
-              :series="[
-                {
-                  name: 'Venda por Vendedor',
-                  data: graficoVendaPorVendedor.series,
-                },
-              ]"
-            />
-          </v-window-item>
-          <v-window-item value="vendasPorAno">
-            <VueApexCharts
-              width="100%"
-              height="240"
-              type="line"
-              :options="{
+                  :series="[
+                    {
+                      name: 'Venda por Vendedor',
+                      data: graficoVendaPorVendedor.series,
+                    },
+                  ]"
+                />
+              </v-window-item>
+              <v-window-item value="vendasPorAno">
+                <VueApexCharts
+                  width="100%"
+                  height="400"
+                  type="line"
+                  :options="{
                             chart: {
                                 id: 'venda-por-ano',
                             },
@@ -518,16 +516,18 @@ import VueApexCharts from "vue3-apexcharts";
                                 },
                             },
                         }"
-              :series="[
-                {
-                  name: 'Venda por Mês',
-                  data: graficoVendasPorAno.series,
-                },
-              ]"
-            />
-          </v-window-item>
-        </v-window>
-      </div>
+                  :series="[
+                    {
+                      name: 'Venda por Mês',
+                      data: graficoVendasPorAno.series,
+                    },
+                  ]"
+                />
+              </v-window-item>
+            </v-window>
+          </v-container>
+        </v-col>
+      </v-row>
     </v-card>
 
     <v-overlay
@@ -603,6 +603,20 @@ import VueApexCharts from "vue3-apexcharts";
       @closeModalTodosBoletos="state.modalTodosBoletosOpened = false"
     />
   </v-dialog>
+
+  <!-- modalDetalhesOrcamento -->
+  <v-dialog
+    v-model="state.modalDetalhesOrcamentoOpened"
+    max-width="750"
+    max-height="400"
+    @click:outside="state.modalDetalhesOrcamentoOpened = false"
+  >
+    <ModalDetalhesOrcamento
+      :detalhesItensOrcamento="state.itensOrcamento"
+      :detalhesMontagem="state.montagemOrcamento"
+      @closeModalDetalhesOrcamento="state.modalDetalhesOrcamentoOpened = false"
+    />
+  </v-dialog>
 </template>
 
 <style>
@@ -621,14 +635,20 @@ import VueApexCharts from "vue3-apexcharts";
 
 <style scoped>
 .cardDashboard {
-  height: 80px;
+  height: 104px;
   color: #fff6f6;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   text-align: center;
+  padding: 20px;
 }
 
 .v-col {
   padding: 6px;
+}
+
+.menu-btn-wrapper {
+  width: 200px;
+  margin-bottom: 10px;
 }
 </style>

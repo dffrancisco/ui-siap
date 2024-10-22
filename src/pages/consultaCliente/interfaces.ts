@@ -184,3 +184,34 @@ export interface iBoletosEmDia {
 }
 
 export interface iTodosBoletos extends iBoletosEmDia { }
+
+export interface iParamDetalhesOrc {
+    numOrcamento: number;
+    data: string;
+}
+
+export interface iDetalhesItensOrc {
+    CARRO: string;
+    DESC_PRODUTO: string;
+    NUM_FABRICANTE: string;
+    NUM_ORCAMENTO: number;
+    QTO: number;
+    SUBTOTAL: number;
+    UNIDADE: string;
+    VALOR: number;
+}
+
+export interface iDetalhesMontagemOrc {
+    DESC_MONTAGEN: string;
+    CARRO: string;
+    MODELO: string;
+    PLACA: string;
+    VALOR: number;
+    DATA: string;
+    MONTADOR: string;
+}
+
+export interface iDetalhesOrcamento {
+    itensOrcamento?: iDetalhesItensOrc[];
+    montagemOrcamento?: iDetalhesMontagemOrc[]
+}

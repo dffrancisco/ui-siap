@@ -1,5 +1,5 @@
 import axios from "axios";
-import { iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia, iClientes, iGetClientes, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos } from "../interfaces";
+import { iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia, iClientes, iDetalhesOrcamento, iGetClientes, iParamDetalhesOrc, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos } from "../interfaces";
 
 const caminho = 'siap/consultaCliente'
 
@@ -9,6 +9,7 @@ type iGetBoletosEmAbertoFunction = (param: number) => Promise<iBoletosAbertos[]>
 type iGetBoletosAtrasadosFunction = (param: number) => Promise<iBoletosAtrasados[]>
 type iGetBoletosEmDiaFunction = (param: number) => Promise<iBoletosEmDia[]>
 type iGetTodosBoletosFunction = (param: number) => Promise<iTodosBoletos[]>
+type iGetDetalhesOrcamentoFunction = (param: iParamDetalhesOrc) => Promise<iDetalhesOrcamento>
 
 const getClientes: iGetClientesFuction = async (param, offset) => {
     const { data } = await axios.post(caminho, {
@@ -65,11 +66,22 @@ const getTodosBoletos: iGetTodosBoletosFunction = async (param) => {
     return data;
 }
 
+const getDetalhesOrcamento: iGetDetalhesOrcamentoFunction = async (param) => {
+    const { data } = await axios.post(caminho, {
+        call: "getDetalhesOrcamento",
+        param
+    });
+
+    return data;
+}
+
+
 export default {
     getClientes,
     requisicoesDadosCliente,
     getBoletosEmAberto,
     getBoletosAtrasados,
     getBoletosEmDia,
-    getTodosBoletos
+    getTodosBoletos,
+    getDetalhesOrcamento
 }

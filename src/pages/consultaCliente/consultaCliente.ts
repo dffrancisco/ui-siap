@@ -1,24 +1,37 @@
 import { computed, reactive } from "vue";
-import { iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia, iClientes, iComprasFaturadas, iCreditoDevolucao, iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamRequisicoes, iResponseDadosCliente, iTabs, iTodosBoletos, iTodosItens, iVendaPorVendedor, iVendasPorAno } from "./interfaces";
+import { iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia, iClientes, iComprasFaturadas, iCreditoDevolucao, iDetalhesItensOrc, iDetalhesMontagemOrc, iDetalhesOrcamento, iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamRequisicoes, iResponseDadosCliente, iTabs, iTodosBoletos, iTodosItens, iVendaPorVendedor, iVendasPorAno } from "./interfaces";
 import moment from "moment";
 import serviceConsultaCliente from "./services/consultaCliente.service"
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 
 export const state = reactive({
+    menuItems: [
+        { title: "Dashboard", value: "dashboard" },
+        { title: "Orçamentos", value: "orcamentos" },
+        { title: "Orç. Não Finalizados", value: "orcamentosNaoFinalizados" },
+        { title: "Todos Itens", value: "todosItens" },
+        { title: "Compras Faturadas", value: "comprasFaturadas" },
+        { title: "Marca", value: "marca" },
+        { title: "Crédito de Devolução", value: "creditoDevolucao" },
+        { title: "Devolução", value: "devolucao" },
+        { title: "Venda por Vendedor", value: "vendaPorVendedor" },
+        { title: "Vendas por Ano", value: "vendasPorAno" },
+    ],
     loading: false,
     modalLocalizarClienteOpened: false,
     modalBoletosEmAbertoOpened: false,
     modalBoletosAtrasadosOpened: false,
     modalBoletosEmDiaOpened: false,
     modalTodosBoletosOpened: false,
+    modalDetalhesOrcamentoOpened: false,
     boletosEmAberto: <iBoletosAbertos[]>[],
     boletosAtrasados: <iBoletosAtrasados[]>[],
     boletosEmDia: <iBoletosEmDia[]>[],
     todosBoletos: <iTodosBoletos[]>[],
     dataInicio: moment().startOf("month").format("YYYY-MM-DD"),
     dataFim: moment().format("YYYY-MM-DD"),
-    tab: <iTabs>{},
+    tab: "dashboard",
     clienteSelecionado: <iClientes>{},
     cliente: "",
     telefone: "",
@@ -316,7 +329,10 @@ export const state = reactive({
         },
     ],
     graficoVendaPorVendedor: <iVendaPorVendedor[]>[],
-    graficoVendasPorAno: <iVendasPorAno[]>[]
+    graficoVendasPorAno: <iVendasPorAno[]>[],
+    // detalhesOrcamento: <iDetalhesOrcamento[]>[],
+    itensOrcamento: <iDetalhesItensOrc[]>[],
+    montagemOrcamento: <iDetalhesMontagemOrc[]>[],
 })
 
 export const actions = {
@@ -467,8 +483,28 @@ export const actions = {
         }
     },
 
-    openModalDetalhesOrcamento(item) {
-        console.log(item);
+    async openModalDetalhesOrcamento(item) {
+        try {
+            state.loading = true;
+
+            let param: any = {
+                numOrcamento: item.NUM_ORCAMENTO,
+                data: item.DATA
+            }
+            const detalhesOrcamento = await serviceConsultaCliente.getDetalhesOrcamento(param);
+            state.itensOrcamento = detalhesOrcamento.itensOrcamento
+            state.montagemOrcamento = detalhesOrcamento.montagemOrcamento
+
+            state.modalDetalhesOrcamentoOpened = true
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os dados do item."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
     },
 
     openModalDetalhesItemOrcamento(item) {
