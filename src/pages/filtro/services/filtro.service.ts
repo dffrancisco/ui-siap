@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
-    iDadosFiltro, iDeleteItem, iFinalizarFiltro, iInsertOuUpdate, iParamFiltrar, iParamFiltros,
-    iResponseDadosParaFiltros, iResponseFiltros, iResultPesquisa, iUpdateNomeFiltro
+    iDadosFiltro, iDeleteItem, iFiltroRevisao, iFinalizarFiltro, iInsertOuUpdate, iParamFiltrar,
+    iParamFiltros, iResponseDadosParaFiltros, iResponseFiltros, iResultPesquisa, iUpdateNomeFiltro
 } from "../interfaces";
 
 const caminho = 'siap/filtro'
@@ -15,7 +15,7 @@ type iFunctionDeletarFiltro = (param: number) => Promise<string[]>
 type iDeletarItem = (param: iDeleteItem) => Promise<string[]>
 type iFunctionUpdateNomeFiltro = (param: iUpdateNomeFiltro) => Promise<string[]>
 type iGetDadosParaFiltros = () => Promise<iResponseDadosParaFiltros>
-type iFunctionFiltroParaRevisao = (param: number) => Promise<any[]>
+type iGetDadosFiltroRevisao = (param: number) => Promise<iFiltroRevisao>
 
 const getDadosParaFiltros: iGetDadosParaFiltros = async () => {
     let { data } = await axios.post(caminho, {
@@ -34,10 +34,10 @@ const getFiltros: iGetFiltros = async (param) => {
     return data;
 }
 
-const getFiltroSelected: iGetDadosFiltroSelecionado = async (param) => {
+const getDadosFiltroSelecionado: iGetDadosFiltroSelecionado = async (idFiltro) => {
     let { data } = await axios.post(caminho, {
-        call: "getFiltroSelected",
-        param
+        call: "getDadosFiltroSelecionado",
+        idFiltro
     });
 
     return data;
@@ -106,15 +106,6 @@ const updateConferenteNomeFiltro: iFunctionUpdateNomeFiltro = async (param) => {
     return data;
 }
 
-const getFiltroParaRevisao: iFunctionFiltroParaRevisao = async (param) => {
-    let { data } = await axios.post(caminho, {
-        call: "getFiltroParaRevisao",
-        param
-    });
-
-    return data;
-}
-
 const revisarFiltro = async (idFiltro) => {
     let { data } = await axios.post(caminho, {
         call: "revisarFiltro",
@@ -124,10 +115,19 @@ const revisarFiltro = async (idFiltro) => {
     return data
 }
 
+const getDadosFiltroRevisao: iGetDadosFiltroRevisao = async (idFiltro) => {
+    let { data } = await axios.post(caminho, {
+        call: "getDadosFiltroRevisao",
+        idFiltro
+    });
+
+    return data;
+}
+
 export default {
     getFiltros,
     getDadosParaFiltros,
-    getFiltroSelected,
+    getDadosFiltroSelecionado,
     getDadosParaFiltragem,
     atualizarFiltro,
     inserirFiltro,
@@ -135,6 +135,6 @@ export default {
     deletarFiltro,
     deleteItemFiltro,
     updateConferenteNomeFiltro,
-    getFiltroParaRevisao,
+    getDadosFiltroRevisao,
     revisarFiltro
 }

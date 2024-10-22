@@ -216,7 +216,8 @@ onMounted(async () => {
     @click:outside="actions.closeModalRevisaoFiltro"
   >
     <ModalRevisaoFiltro
-      :dadosFiltroSelecionado="state.dadosDoFiltroSelecionado"
+      :dadosFiltroRevisao="state.dadosFiltroRevisao"
+      :itensFiltroRevisao="state.itensFiltroRevisao"
       @closeModalRevisaoFiltro="actions.closeModalRevisaoFiltro"
       @finalizarFiltro="actions.finalizarFiltro"
     />

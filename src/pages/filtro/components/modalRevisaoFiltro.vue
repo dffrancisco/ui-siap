@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
-import { iDadosFiltro } from "../interfaces";
+import { iDadosFiltroRevisao, iItensFiltroRevisao } from "../interfaces";
 import utils, { msgConfirmSemCodigo } from "@/ts/utils";
 import serviceFiltro from "../services/filtro.service";
 import Swal from "sweetalert2";
 import moment from "moment";
 
-const props = defineProps({
-  dadosFiltroSelecionado: {
-    type: Array as () => iDadosFiltro[],
-    required: true,
-  },
-});
+const props = defineProps<{
+  dadosFiltroRevisao: iDadosFiltroRevisao;
+  itensFiltroRevisao: iItensFiltroRevisao[];
+}>();
 
 const emit = defineEmits(["closeModalRevisaoFiltro", "finalizarFiltro"]);
 
 const stateModalRevisaoFiltro = reactive({
   loading: false,
-  dadosFiltro: [] as iDadosFiltro[],
+  dadosFiltroRevisao: <iDadosFiltroRevisao>{},
+  itensFiltroRevisao: [] as iItensFiltroRevisao[],
   filtroSelecionado: "Todos",
   headers: <any>[
     {
@@ -57,22 +56,24 @@ const stateModalRevisaoFiltro = reactive({
   ],
 });
 
-stateModalRevisaoFiltro.dadosFiltro = props.dadosFiltroSelecionado.map((item) => ({
+stateModalRevisaoFiltro.itensFiltroRevisao = props.itensFiltroRevisao.map((item) => ({
   ...item,
   CONFERIDO: item.HR_REVISAO !== null ? item.CONFERIDO : "SIM",
 }));
 
+stateModalRevisaoFiltro.dadosFiltroRevisao = props.dadosFiltroRevisao;
+
 const dadosFiltrados = computed(() => {
   if (stateModalRevisaoFiltro.filtroSelecionado === "Alterados") {
-    return stateModalRevisaoFiltro.dadosFiltro.filter(
+    return stateModalRevisaoFiltro.itensFiltroRevisao.filter(
       (item) => item.QTO_NEW !== item.QTO_OLD && item.QTO_NEW !== null
     );
   }
-  return stateModalRevisaoFiltro.dadosFiltro;
+  return stateModalRevisaoFiltro.itensFiltroRevisao;
 });
 
 const duracaoFiltro = computed(() => {
-  const filtro = stateModalRevisaoFiltro.dadosFiltro[0];
+  const filtro = stateModalRevisaoFiltro.dadosFiltroRevisao;
 
   const inicio = moment(filtro.DT_FILTRO).set({
     hour: moment(filtro.HR_INICIO).hour(),
@@ -116,7 +117,7 @@ const actions = {
       try {
         stateModalRevisaoFiltro.loading = true;
 
-        let itensConferidos = stateModalRevisaoFiltro.dadosFiltro
+        let itensConferidos = stateModalRevisaoFiltro.itensFiltroRevisao
           .filter((item) => item.CONFERIDO === "SIM")
           .map((item) => ({
             ID_ITENS_FILTRO: item.ID_ITENS_FILTRO,
@@ -125,7 +126,7 @@ const actions = {
           }));
 
         let param = {
-          idFiltro: stateModalRevisaoFiltro.dadosFiltro[0].ID_FILTRO,
+          idFiltro: stateModalRevisaoFiltro.dadosFiltroRevisao.ID_FILTRO,
           qtdItensConferidos: itensConferidos.length,
           itensConferidos: itensConferidos,
         };
@@ -137,7 +138,7 @@ const actions = {
           text: "Filtro finalizado com sucesso!",
           timer: 1500,
         });
-        emit("finalizarFiltro", stateModalRevisaoFiltro.dadosFiltro[0].ID_FILTRO);
+        emit("finalizarFiltro", stateModalRevisaoFiltro.dadosFiltroRevisao.ID_FILTRO);
       } catch (error) {
         Swal.fire({
           icon: "error",
@@ -153,7 +154,7 @@ const actions = {
     if (await msgConfirmSemCodigo("Confirmação", "Deseja revisar esse filtro?")) {
       try {
         stateModalRevisaoFiltro.loading = true;
-        let idFiltro = stateModalRevisaoFiltro.dadosFiltro[0].ID_FILTRO;
+        let idFiltro = stateModalRevisaoFiltro.dadosFiltroRevisao.ID_FILTRO;
 
         await serviceFiltro.revisarFiltro(idFiltro);
 
@@ -162,7 +163,7 @@ const actions = {
           text: "Filtro revisado com sucesso!",
           timer: 1500,
         });
-        emit("finalizarFiltro", stateModalRevisaoFiltro.dadosFiltro[0].ID_FILTRO);
+        emit("finalizarFiltro", stateModalRevisaoFiltro.dadosFiltroRevisao.ID_FILTRO);
       } catch (error) {
         Swal.fire({
           icon: "error",
@@ -185,20 +186,20 @@ const actions = {
         <v-chip
           style="font-weight: bold"
           color="primary"
-          >Nome do Filtro: {{ stateModalRevisaoFiltro.dadosFiltro[0]?.NOME_FILTRO || "-------" }}
+          >Nome do Filtro: {{ stateModalRevisaoFiltro.dadosFiltroRevisao.NOME_FILTRO || "-------" }}
         </v-chip>
 
         <v-chip
           style="font-weight: bold"
           color="primary"
-          >Conferente: {{ stateModalRevisaoFiltro.dadosFiltro[0]?.CONFERENTE || "-------" }}
+          >Conferente: {{ stateModalRevisaoFiltro.dadosFiltroRevisao.CONFERENTE || "-------" }}
         </v-chip>
 
         <v-chip
           style="font-weight: bold"
           color="primary"
-          >Início: {{ utils.dataBrasil(stateModalRevisaoFiltro.dadosFiltro[0]?.DT_FILTRO) }} -
-          {{ utils.formatHora(stateModalRevisaoFiltro.dadosFiltro[0]?.HR_INICIO) }}
+          >Início: {{ utils.dataBrasil(stateModalRevisaoFiltro.dadosFiltroRevisao.DT_FILTRO) }} -
+          {{ utils.formatHora(stateModalRevisaoFiltro.dadosFiltroRevisao.HR_INICIO) }}
         </v-chip>
 
         <v-chip
@@ -226,7 +227,7 @@ const actions = {
             small
           >
             {{
-              stateModalRevisaoFiltro.dadosFiltro.filter(
+              stateModalRevisaoFiltro.itensFiltroRevisao.filter(
                 (item) => item.QTO_NEW !== item.QTO_OLD && item.QTO_NEW !== null
               ).length
             }}
@@ -248,7 +249,7 @@ const actions = {
             class="chip-number"
             small
           >
-            {{ stateModalRevisaoFiltro.dadosFiltro.length }}
+            {{ stateModalRevisaoFiltro.itensFiltroRevisao.length }}
           </v-chip>
         </v-card>
       </v-row>
@@ -295,7 +296,7 @@ const actions = {
               hide-details
               :disabled="
                 item.QTO_NEW != null ||
-                stateModalRevisaoFiltro.dadosFiltro[0].HR_REVISAO !== null ||
+                stateModalRevisaoFiltro.itensFiltroRevisao[0].HR_REVISAO !== null ||
                 item.CONFERIDO_ESTOQUISTA == 'SIM'
               "
               :value="item.CONFERIDO"
@@ -305,23 +306,23 @@ const actions = {
       </v-data-table-virtual>
       <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center">
         <div>
-          <span v-if="stateModalRevisaoFiltro.dadosFiltro[0].FINALIZADOR != null">
-            Finalizado por: {{ stateModalRevisaoFiltro.dadosFiltro[0].FINALIZADOR }} ({{
-              stateModalRevisaoFiltro.dadosFiltro[0].ID_FINALIZADOR
-            }}) em {{ utils.dataBrasil(stateModalRevisaoFiltro.dadosFiltro[0]?.DT_TERMINO) }} -
-            {{ utils.formatHora(stateModalRevisaoFiltro.dadosFiltro[0]?.HR_TERMINO) }} </span
+          <span v-if="stateModalRevisaoFiltro.dadosFiltroRevisao.FINALIZADOR != null">
+            Finalizado por: {{ stateModalRevisaoFiltro.dadosFiltroRevisao.FINALIZADOR }} ({{
+              stateModalRevisaoFiltro.dadosFiltroRevisao.ID_FINALIZADOR
+            }}) em {{ utils.dataBrasil(stateModalRevisaoFiltro.dadosFiltroRevisao.DT_TERMINO) }} -
+            {{ utils.formatHora(stateModalRevisaoFiltro.dadosFiltroRevisao.HR_TERMINO) }} </span
           ><br />
 
           <span
             v-if="
-              stateModalRevisaoFiltro.dadosFiltro[0].ID_REVISOR != null &&
-              stateModalRevisaoFiltro.dadosFiltro[0].HR_REVISAO != null
+              stateModalRevisaoFiltro.dadosFiltroRevisao.ID_REVISOR != null &&
+              stateModalRevisaoFiltro.dadosFiltroRevisao.HR_REVISAO != null
             "
           >
-            Revisado por: {{ stateModalRevisaoFiltro.dadosFiltro[0].REVISOR }} ({{
-              stateModalRevisaoFiltro.dadosFiltro[0].ID_REVISOR
-            }}) em {{ utils.dataBrasil(stateModalRevisaoFiltro.dadosFiltro[0]?.DT_REVISAO) }} -
-            {{ utils.formatHora(stateModalRevisaoFiltro.dadosFiltro[0]?.HR_REVISAO) }}
+            Revisado por: {{ stateModalRevisaoFiltro.dadosFiltroRevisao?.REVISOR }} ({{
+              stateModalRevisaoFiltro.dadosFiltroRevisao?.ID_REVISOR
+            }}) em {{ utils.dataBrasil(stateModalRevisaoFiltro.dadosFiltroRevisao?.DT_REVISAO) }} -
+            {{ utils.formatHora(stateModalRevisaoFiltro.dadosFiltroRevisao?.HR_REVISAO) }}
           </span>
         </div>
 
@@ -336,7 +337,7 @@ const actions = {
           </v-btn>
 
           <v-btn
-            v-if="stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO == null"
+            v-if="stateModalRevisaoFiltro.dadosFiltroRevisao.HR_TERMINO == null"
             color="primary"
             @click="actions.finalizarRevisao"
           >
@@ -345,8 +346,8 @@ const actions = {
 
           <v-btn
             v-if="
-              stateModalRevisaoFiltro.dadosFiltro[0].HR_REVISAO == null &&
-              stateModalRevisaoFiltro.dadosFiltro[0].HR_TERMINO != null
+              stateModalRevisaoFiltro.dadosFiltroRevisao.HR_REVISAO == null &&
+              stateModalRevisaoFiltro.dadosFiltroRevisao.HR_TERMINO != null
             "
             color="primary"
             @click="actions.revisar"

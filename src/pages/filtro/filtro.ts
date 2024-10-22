@@ -2,7 +2,7 @@ import utils, { iColumnPrint } from '@/ts/utils';
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceFiltro from './services/filtro.service';
-import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iMarcas, iResponseDadosParaFiltros, iUpdateNomeFiltro } from "./interfaces";
+import { iCarros, iDadosFiltro, iDadosFiltroRevisao, iFiltros, iFuncionario, iItensFiltroRevisao, iMarcas, iResponseDadosParaFiltros, iUpdateNomeFiltro } from "./interfaces";
 import { msgConfirm } from '@/ts/message';
 import moment from 'moment';
 
@@ -69,7 +69,9 @@ export const state = reactive({
             sortable: false,
             align: 'center',
         },
-    ]
+    ],
+    dadosFiltroRevisao: <iDadosFiltroRevisao>{},
+    itensFiltroRevisao: <iItensFiltroRevisao[]>[],
 })
 
 export const actions = {
@@ -83,7 +85,7 @@ export const actions = {
 
         try {
             state.loading = true;
-            const data = await serviceFiltro.getFiltroSelected(state.selectedFiltro)
+            const data = await serviceFiltro.getDadosFiltroSelecionado(state.selectedFiltro)
             state.dadosDoFiltroSelecionado = data
             state.modalVisualizarFiltroOpened = true;
 
@@ -190,7 +192,7 @@ export const actions = {
 
     async imprimirFiltroSelecionado(idFiltro: number) {
         try {
-            const filtro = await serviceFiltro.getFiltroSelected(idFiltro)
+            const filtro = await serviceFiltro.getDadosFiltroSelecionado(idFiltro)
             const filtroFormatado = actions.formatarDadosImpressao([...filtro]);
 
             const columns: iColumnPrint[] = [
@@ -247,9 +249,11 @@ export const actions = {
         state.selectedFiltro = idFiltro;
 
         try {
-            state.loading = true;
-            const data = await serviceFiltro.getFiltroSelected(state.selectedFiltro)
-            state.dadosDoFiltroSelecionado = data
+            // state.loading = true;
+            const data = await serviceFiltro.getDadosFiltroRevisao(state.selectedFiltro)
+            // state.dadosDoFiltroSelecionado = data
+            state.dadosFiltroRevisao = data.dadosFiltro
+            state.itensFiltroRevisao = data.itensFiltro
             state.modalRevisaoFiltroOpened = true
 
         } catch (error) {
@@ -258,7 +262,7 @@ export const actions = {
                 text: "Erro ao buscar o filtro!"
             });
         } finally {
-            state.loading = false;
+            // state.loading = false;
         }
     },
 

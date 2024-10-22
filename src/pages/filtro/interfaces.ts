@@ -147,3 +147,46 @@ export interface iFinalizarFiltro {
     qtdItensConferidos: number;
     itensConferidos: iItensConferidos[]
 }
+
+export interface iDadosFiltroRevisao {
+    COD_FUNCIONARIO_CONFERENTE: number
+    CONFERENTE: string
+    CRIADOR: string
+    DT_FILTRO: string
+    DT_REVISAO: string | null
+    DT_TERMINO: string | null
+    FINALIZADOR: string | null
+    HR_INICIO: string
+    HR_REVISAO: string | null
+    HR_TERMINO: string | null
+    ID_CRIADOR: number
+    ID_FILTRO: number
+    ID_FINALIZADOR: number | null
+    ID_REVISOR: number | null
+    NOME_FILTRO: string
+    QTD_ITENS: number
+    QTD_ITENS_CONFERIDOS: number | null
+    REVISOR: string | null
+}
+
+export interface iItensFiltroRevisao {
+    COD_PRODUTO: number
+    CONFERIDO: string
+    CONFERENTE: string
+    CONFERIDO_ESTOQUISTA: string
+    DESC_PRODUTO: string
+    END_ESTOQUE: string | null
+    END_EXCESSO: string | null
+    ID_ITENS_FILTRO: number
+    NUM_FABRICANTE: string
+    NUM_FABRICANTE2: string | null
+    QTD_ESTOQUE: number
+    QTO_NEW: number | null
+    QTO_OLD: number
+    HR_REVISAO: string | null
+}
+
+export interface iFiltroRevisao {
+    dadosFiltro: iDadosFiltroRevisao;
+    itensFiltro: iItensFiltroRevisao[]
+}
