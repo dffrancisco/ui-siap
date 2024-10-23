@@ -23,7 +23,7 @@ const state = reactive({
       align: "center",
       value: (item: any) => utils.formatValor(item.VALOR),
     },
-    { title: "Loja", key: "LOJA", align: "center", value: (item: any) => utils.dataBrasil(item.DATA_DO_USO) },
+    { title: "Loja", key: "LOJA", align: "left" },
     {
       title: "Local Uso Crédito",
       key: "NOME_USA_CREDITO",

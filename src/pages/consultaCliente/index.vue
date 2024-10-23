@@ -10,6 +10,7 @@ import ModalDetalhesItensOrcamento from "./components/modalDetalhesItensOrcament
 import ModalDetalhesComprasFaturadas from "./components/modalDetalhesComprasFaturadas.vue";
 import ModalDetalhesItensMarca from "./components/modalDetalhesItensMarca.vue";
 import ModalDetalhesCredito from "./components/modalDetalhesCredito.vue";
+import ModalDetalhesDevolucao from "./components/modalDetalhesDevolucao.vue";
 import utils from "@/ts/utils";
 import VueApexCharts from "vue3-apexcharts";
 </script>
@@ -667,6 +668,18 @@ import VueApexCharts from "vue3-apexcharts";
       :detalhesUsoCredito="state.detalhesUsoCredito"
       :detalhesItensCredito="state.detalhesItensCredito"
       @closeModalDetalhesCredito="state.modalDetalhesCreditoOpened = false"
+    />
+  </v-dialog>
+
+  <!-- modalDetalhesDevolucao -->
+  <v-dialog
+    v-model="state.modalDetalhesDevolucaoOpened"
+    max-width="750"
+    @click:outside="state.modalDetalhesDevolucaoOpened = false"
+  >
+    <ModalDetalhesDevolucao
+      :detalhesDevolucao="state.detalhesDevolucao"
+      @closeModalDetalhesDevolucao="state.modalDetalhesDevolucaoOpened = false"
     />
   </v-dialog>
 </template>

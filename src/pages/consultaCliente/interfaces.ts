@@ -273,3 +273,19 @@ export interface iDetalhesCredito {
     usoCredito?: iDetalhesUsoCredito[];
     itensCredito?: iDetalhesItensCredito[]
 }
+
+export interface iParamDetalhesDevolucao {
+    idDevolucao: number;
+    dataDevolucao: string;
+    numOrcamento: number;
+}
+
+export interface iDetalhesDevolucao {
+    DATA: string;
+    DESC_PRODUTO: string;
+    COD_PRODUTO: number;
+    QUANTIDADE: number;
+    VENDA: number;
+    NUM_FABRICANTE: string;
+    ID_DEVOLUCAO: number
+}

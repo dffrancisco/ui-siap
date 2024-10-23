@@ -1,11 +1,13 @@
 import { computed, reactive } from "vue";
 import {
-    iBoletosAbertos, iBoletosAtrasados, iBoletosComprasFaturadas, iBoletosEmDia, iClientes, iComprasFaturadas,
-    iCreditoDevolucao, iDetalhesItensCredito, iDetalhesItensMarca, iDetalhesItensOrc, iDetalhesItensOrcamento, iDetalhesMontagemOrc,
-    iDetalhesUsoCredito,
-    iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamComprasFaturadas, iParamDetalhesCredito, iParamDetalhesItensOrc,
-    iParamDetalhesOrc, iParamItensMarca, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos, iTodosItens,
-    iVendaPorVendedor, iVendasPorAno
+    iBoletosAbertos, iBoletosAtrasados, iBoletosComprasFaturadas, iBoletosEmDia,
+    iClientes, iComprasFaturadas, iCreditoDevolucao, iDetalhesDevolucao,
+    iDetalhesItensCredito, iDetalhesItensMarca, iDetalhesItensOrc,
+    iDetalhesItensOrcamento, iDetalhesMontagemOrc, iDetalhesUsoCredito,
+    iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamComprasFaturadas,
+    iParamDetalhesCredito, iParamDetalhesDevolucao, iParamDetalhesItensOrc,
+    iParamDetalhesOrc, iParamItensMarca, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos,
+    iTodosItens, iVendaPorVendedor, iVendasPorAno
 } from "./interfaces";
 import moment from "moment";
 import serviceConsultaCliente from "./services/consultaCliente.service"
@@ -36,6 +38,7 @@ export const state = reactive({
     modalDetalhesComprasFaturadasOpened: false,
     modalDetalhesItensMarcaOpened: false,
     modalDetalhesCreditoOpened: false,
+    modalDetalhesDevolucaoOpened: false,
     boletosEmAberto: <iBoletosAbertos[]>[],
     boletosAtrasados: <iBoletosAtrasados[]>[],
     boletosEmDia: <iBoletosEmDia[]>[],
@@ -322,14 +325,14 @@ export const state = reactive({
             title: "Data Devolução",
             key: "DATA",
             sortable: true,
-            align: 'center',
+            align: 'left',
             value: (item: any) => utils.dataBrasil(item.DATA)
         },
         {
             title: "Data Venda",
             key: "DATA_VENDA",
             sortable: true,
-            align: 'center',
+            align: 'left',
             value: (item: any) => utils.dataBrasil(item.DATA_VENDA)
         },
         {
@@ -348,6 +351,7 @@ export const state = reactive({
     detalhesItensMarca: <iDetalhesItensMarca[]>[],
     detalhesUsoCredito: <iDetalhesUsoCredito[]>[],
     detalhesItensCredito: <iDetalhesItensCredito[]>[],
+    detalhesDevolucao: <iDetalhesDevolucao[]>[]
 })
 
 export const actions = {
@@ -623,8 +627,29 @@ export const actions = {
         }
     },
 
-    openModalDetalhesDevolucao(item) {
-        console.log(item);
+    async openModalDetalhesDevolucao(item) {
+        try {
+            state.loading = true;
+
+            let param: iParamDetalhesDevolucao = {
+                numOrcamento: item.NUM_ORCAMENTO,
+                dataDevolucao: item.DATA,
+                idDevolucao: item.ID_DEVOLUCAO
+            }
+
+            const detalhesDevolucao = await serviceConsultaCliente.getDetalhesDevolucao(param);
+            state.detalhesDevolucao = detalhesDevolucao
+
+            state.modalDetalhesDevolucaoOpened = true
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os dados do item."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
     }
 }
 

@@ -1,8 +1,8 @@
 import axios from "axios";
 import {
     iBoletosAbertos, iBoletosAtrasados, iBoletosComprasFaturadas, iBoletosEmDia,
-    iClientes, iDetalhesCredito, iDetalhesItensMarca, iDetalhesItensOrcamento, iDetalhesOrcamento,
-    iGetClientes, iParamComprasFaturadas, iParamDetalhesCredito, iParamDetalhesItensOrc,
+    iClientes, iDetalhesCredito, iDetalhesDevolucao, iDetalhesItensMarca, iDetalhesItensOrcamento, iDetalhesOrcamento,
+    iGetClientes, iParamComprasFaturadas, iParamDetalhesCredito, iParamDetalhesDevolucao, iParamDetalhesItensOrc,
     iParamDetalhesOrc, iParamItensMarca, iParamRequisicoes, iResponseDadosCliente,
     iTodosBoletos
 } from "../interfaces";
@@ -20,6 +20,7 @@ type iGetDetalhesItensOrcamentoFunction = (param: iParamDetalhesItensOrc) => Pro
 type iGetBoletosComprasFaturadasFunction = (param: iParamComprasFaturadas) => Promise<iBoletosComprasFaturadas[]>
 type iGetDetalhesItensMarca = (param: iParamItensMarca) => Promise<iDetalhesItensMarca[]>
 type iGetDetalhesCredito = (param: iParamDetalhesCredito) => Promise<iDetalhesCredito>
+type iGetDetalhesDevolucao = (param: iParamDetalhesDevolucao) => Promise<iDetalhesDevolucao[]>
 
 const getClientes: iGetClientesFuction = async (param, offset) => {
     const { data } = await axios.post(caminho, {
@@ -121,6 +122,15 @@ const getDetalhesCredito: iGetDetalhesCredito = async (param) => {
     return data;
 }
 
+const getDetalhesDevolucao: iGetDetalhesDevolucao = async (param) => {
+    const { data } = await axios.post(caminho, {
+        call: "getDetalhesDevolucao",
+        param
+    });
+
+    return data;
+}
+
 export default {
     getClientes,
     requisicoesDadosCliente,
@@ -132,5 +142,6 @@ export default {
     getDetalhesItensOrcamento,
     getBoletosComprasFaturadas,
     getDetalhesItensMarca,
-    getDetalhesCredito
+    getDetalhesCredito,
+    getDetalhesDevolucao
 }
