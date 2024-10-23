@@ -8,6 +8,8 @@ import ModalTodosBoletos from "./components/modalTodosBoletos.vue";
 import ModalDetalhesOrcamento from "./components/modalDetalhesOrcamento.vue";
 import ModalDetalhesItensOrcamento from "./components/modalDetalhesItensOrcamento.vue";
 import ModalDetalhesComprasFaturadas from "./components/modalDetalhesComprasFaturadas.vue";
+import ModalDetalhesItensMarca from "./components/modalDetalhesItensMarca.vue";
+import ModalDetalhesCredito from "./components/modalDetalhesCredito.vue";
 import utils from "@/ts/utils";
 import VueApexCharts from "vue3-apexcharts";
 </script>
@@ -19,7 +21,7 @@ import VueApexCharts from "vue3-apexcharts";
       class="ma-auto pa-4"
     >
       <v-row>
-        <v-col cols="5">
+        <v-col cols="6">
           <v-text-field
             v-model="state.cliente"
             label="Cliente"
@@ -38,16 +40,16 @@ import VueApexCharts from "vue3-apexcharts";
           </v-text-field>
         </v-col>
 
-        <v-col cols="3">
+        <v-col cols="2">
           <v-btn
             title="Consultar"
             height="38px"
-            width="230px"
+            width="250px"
             color="#3680AB"
             @click="state.modalLocalizarClienteOpened = true"
           >
-            Localizar Cliente
-            <v-icon class="ml-4">mdi-magnify</v-icon>
+            Loc. Cliente
+            <v-icon class="ml-2">mdi-magnify</v-icon>
           </v-btn>
         </v-col>
       </v-row>
@@ -640,6 +642,31 @@ import VueApexCharts from "vue3-apexcharts";
     <ModalDetalhesComprasFaturadas
       :detalhesComprasFaturadas="state.detalhesComprasFaturadas"
       @closeModalDetalhesComprasFaturadas="state.modalDetalhesComprasFaturadasOpened = false"
+    />
+  </v-dialog>
+
+  <!-- modalDetalhesItensMarca -->
+  <v-dialog
+    v-model="state.modalDetalhesItensMarcaOpened"
+    max-width="750"
+    @click:outside="state.modalDetalhesItensMarcaOpened = false"
+  >
+    <ModalDetalhesItensMarca
+      :detalhesItensMarca="state.detalhesItensMarca"
+      @closeModalDetalhesItensMarca="state.modalDetalhesItensMarcaOpened = false"
+    />
+  </v-dialog>
+
+  <!-- modalDetalhesCredito -->
+  <v-dialog
+    v-model="state.modalDetalhesCreditoOpened"
+    max-width="750"
+    @click:outside="state.modalDetalhesCreditoOpened = false"
+  >
+    <ModalDetalhesCredito
+      :detalhesUsoCredito="state.detalhesUsoCredito"
+      :detalhesItensCredito="state.detalhesItensCredito"
+      @closeModalDetalhesCredito="state.modalDetalhesCreditoOpened = false"
     />
   </v-dialog>
 </template>

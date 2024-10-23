@@ -1,9 +1,10 @@
 import { computed, reactive } from "vue";
 import {
-    iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia, iClientes, iComprasFaturadas,
-    iCreditoDevolucao, iDetalhesItensOrc, iDetalhesItensOrcamento, iDetalhesMontagemOrc,
-    iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamComprasFaturadas, iParamDetalhesItensOrc,
-    iParamDetalhesOrc, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos, iTodosItens,
+    iBoletosAbertos, iBoletosAtrasados, iBoletosComprasFaturadas, iBoletosEmDia, iClientes, iComprasFaturadas,
+    iCreditoDevolucao, iDetalhesItensCredito, iDetalhesItensMarca, iDetalhesItensOrc, iDetalhesItensOrcamento, iDetalhesMontagemOrc,
+    iDetalhesUsoCredito,
+    iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamComprasFaturadas, iParamDetalhesCredito, iParamDetalhesItensOrc,
+    iParamDetalhesOrc, iParamItensMarca, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos, iTodosItens,
     iVendaPorVendedor, iVendasPorAno
 } from "./interfaces";
 import moment from "moment";
@@ -33,6 +34,8 @@ export const state = reactive({
     modalDetalhesOrcamentoOpened: false,
     modalDetalhesItensOrcamentoOpened: false,
     modalDetalhesComprasFaturadasOpened: false,
+    modalDetalhesItensMarcaOpened: false,
+    modalDetalhesCreditoOpened: false,
     boletosEmAberto: <iBoletosAbertos[]>[],
     boletosAtrasados: <iBoletosAtrasados[]>[],
     boletosEmDia: <iBoletosEmDia[]>[],
@@ -341,7 +344,10 @@ export const state = reactive({
     itensOrcamento: <iDetalhesItensOrc[]>[],
     montagemOrcamento: <iDetalhesMontagemOrc[]>[],
     detalhesItensOrcamento: <iDetalhesItensOrcamento[]>[],
-    detalhesComprasFaturadas: <any[]>[]
+    detalhesComprasFaturadas: <iBoletosComprasFaturadas[]>[],
+    detalhesItensMarca: <iDetalhesItensMarca[]>[],
+    detalhesUsoCredito: <iDetalhesUsoCredito[]>[],
+    detalhesItensCredito: <iDetalhesItensCredito[]>[],
 })
 
 export const actions = {
@@ -566,12 +572,55 @@ export const actions = {
         }
     },
 
-    openModalDetalhesMarca(item) {
-        console.log(item);
+    async openModalDetalhesMarca(item) {
+        try {
+            state.loading = true;
+
+            let param: iParamItensMarca = {
+                idMarca: item.ID_MARCA,
+                idCliente: item.ID_CLIENTE,
+                dataInicio: state.dataInicio,
+                dataFim: state.dataFim
+            }
+
+            const detalhesItensMarca = await serviceConsultaCliente.getDetalhesItensMarca(param);
+            state.detalhesItensMarca = detalhesItensMarca
+
+            state.modalDetalhesItensMarcaOpened = true
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os dados do item."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
     },
 
-    openModalDetalhesCreditoDevolucao(item) {
-        console.log(item);
+    async openModalDetalhesCreditoDevolucao(item) {
+        try {
+            state.loading = true;
+
+            let param: iParamDetalhesCredito = {
+                numOrcamento: item.NUM_ORCAMENTO,
+                dataOrcamento: item.DATA_ORCAMENTO
+            }
+
+            const detalhesCredito = await serviceConsultaCliente.getDetalhesCredito(param);
+            state.detalhesUsoCredito = detalhesCredito.usoCredito
+            state.detalhesItensCredito = detalhesCredito.itensCredito
+
+            state.modalDetalhesCreditoOpened = true
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os dados do item."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
     },
 
     openModalDetalhesDevolucao(item) {

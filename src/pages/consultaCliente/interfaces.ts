@@ -231,3 +231,45 @@ export interface iBoletosComprasFaturadas {
     DATA_QUITACAO: string;
     DIVISAO: string;
 }
+
+export interface iParamItensMarca {
+    idMarca: number;
+    dataInicio: string;
+    dataFim: string;
+    idCliente: number;
+}
+
+export interface iDetalhesItensMarca {
+    DATA: string;
+    DESC_PRODUTO: string;
+    NUM_ORCAMENTO: number;
+    QUANTIDADE: number;
+}
+
+export interface iParamDetalhesCredito {
+    numOrcamento: number;
+    dataOrcamento: string;
+}
+
+export interface iDetalhesUsoCredito {
+    DATA_DO_USO: string;
+    LOJA: string;
+    NOME_USA_CREDITO: string;
+    VALOR: number;
+}
+
+export interface iDetalhesItensCredito {
+    COD_PRODUTO: number;
+    DATA: string;
+    DESCRICAO: string;
+    DESC_PRODUTO: string;
+    HORA: string;
+    NUM_FABRICANTE: string;
+    QUANTIDADE: number;
+    VENDA: number;
+}
+
+export interface iDetalhesCredito {
+    usoCredito?: iDetalhesUsoCredito[];
+    itensCredito?: iDetalhesItensCredito[]
+}

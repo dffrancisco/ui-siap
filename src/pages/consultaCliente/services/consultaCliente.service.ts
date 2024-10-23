@@ -1,5 +1,11 @@
 import axios from "axios";
-import { iBoletosAbertos, iBoletosAtrasados, iBoletosComprasFaturadas, iBoletosEmDia, iClientes, iDetalhesItensOrcamento, iDetalhesOrcamento, iGetClientes, iParamComprasFaturadas, iParamDetalhesItensOrc, iParamDetalhesOrc, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos } from "../interfaces";
+import {
+    iBoletosAbertos, iBoletosAtrasados, iBoletosComprasFaturadas, iBoletosEmDia,
+    iClientes, iDetalhesCredito, iDetalhesItensMarca, iDetalhesItensOrcamento, iDetalhesOrcamento,
+    iGetClientes, iParamComprasFaturadas, iParamDetalhesCredito, iParamDetalhesItensOrc,
+    iParamDetalhesOrc, iParamItensMarca, iParamRequisicoes, iResponseDadosCliente,
+    iTodosBoletos
+} from "../interfaces";
 
 const caminho = 'siap/consultaCliente'
 
@@ -12,6 +18,8 @@ type iGetTodosBoletosFunction = (param: number) => Promise<iTodosBoletos[]>
 type iGetDetalhesOrcamentoFunction = (param: iParamDetalhesOrc) => Promise<iDetalhesOrcamento>
 type iGetDetalhesItensOrcamentoFunction = (param: iParamDetalhesItensOrc) => Promise<iDetalhesItensOrcamento[]>
 type iGetBoletosComprasFaturadasFunction = (param: iParamComprasFaturadas) => Promise<iBoletosComprasFaturadas[]>
+type iGetDetalhesItensMarca = (param: iParamItensMarca) => Promise<iDetalhesItensMarca[]>
+type iGetDetalhesCredito = (param: iParamDetalhesCredito) => Promise<iDetalhesCredito>
 
 const getClientes: iGetClientesFuction = async (param, offset) => {
     const { data } = await axios.post(caminho, {
@@ -95,6 +103,24 @@ const getBoletosComprasFaturadas: iGetBoletosComprasFaturadasFunction = async (p
     return data;
 }
 
+const getDetalhesItensMarca: iGetDetalhesItensMarca = async (param) => {
+    const { data } = await axios.post(caminho, {
+        call: "getDetalhesItensMarca",
+        param
+    });
+
+    return data;
+}
+
+const getDetalhesCredito: iGetDetalhesCredito = async (param) => {
+    const { data } = await axios.post(caminho, {
+        call: "getDetalhesCredito",
+        param
+    });
+
+    return data;
+}
+
 export default {
     getClientes,
     requisicoesDadosCliente,
@@ -104,5 +130,7 @@ export default {
     getTodosBoletos,
     getDetalhesOrcamento,
     getDetalhesItensOrcamento,
-    getBoletosComprasFaturadas
+    getBoletosComprasFaturadas,
+    getDetalhesItensMarca,
+    getDetalhesCredito
 }
