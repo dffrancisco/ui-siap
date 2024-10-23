@@ -1,9 +1,10 @@
-import utils, { iColumnPrint, msgConfirmSemCodigo } from '@/ts/utils';
+import utils, { iColumnPrint } from '@/ts/utils';
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceFiltro from './services/filtro.service';
-import { iCarros, iDadosFiltro, iFiltros, iFuncionario, iMarcas, iResponseDadosParaFiltros, iUpdateNomeFiltro } from "./interfaces";
+import { iCarros, iDadosFiltro, iDadosFiltroRevisao, iFiltros, iFuncionario, iItensFiltroRevisao, iMarcas, iResponseDadosParaFiltros, iUpdateNomeFiltro } from "./interfaces";
 import { msgConfirm } from '@/ts/message';
+import moment from 'moment';
 
 export const state = reactive({
     itensPerPage: 30,
@@ -19,18 +20,22 @@ export const state = reactive({
     marcas: <iMarcas[]>[],
     carros: <iCarros[]>[],
     dadosDoFiltroSelecionado: <iDadosFiltro[]>[],
+    filtroParaRevisao: [],
     searchFiltro: "",
     filtroEditar: <iFiltros[]>[],
     modalVisualizarFiltroOpened: false,
     modalNovoFiltroOpened: false,
     modalAddItensFiltroOpened: false,
+    modalRevisaoFiltroOpened: false,
     nomeNovoFiltro: "",
     nomeConferente: "",
+    qtdItens: 0,
     headers: <any>[
         {
             title: "Data Início",
             key: "DATA_INICIO",
             sortable: true,
+            align: 'center',
             value: (item: any) => utils.dataBrasil(item.DATA_INICIO)
         },
         {
@@ -64,7 +69,9 @@ export const state = reactive({
             sortable: false,
             align: 'center',
         },
-    ]
+    ],
+    dadosFiltroRevisao: <iDadosFiltroRevisao>{},
+    itensFiltroRevisao: <iItensFiltroRevisao[]>[],
 })
 
 export const actions = {
@@ -78,7 +85,7 @@ export const actions = {
 
         try {
             state.loading = true;
-            const data = await serviceFiltro.getFiltroSelected(state.selectedFiltro)
+            const data = await serviceFiltro.getDadosFiltroSelecionado(state.selectedFiltro)
             state.dadosDoFiltroSelecionado = data
             state.modalVisualizarFiltroOpened = true;
 
@@ -185,7 +192,7 @@ export const actions = {
 
     async imprimirFiltroSelecionado(idFiltro: number) {
         try {
-            const filtro = await serviceFiltro.getFiltroSelected(idFiltro)
+            const filtro = await serviceFiltro.getDadosFiltroSelecionado(idFiltro)
             const filtroFormatado = actions.formatarDadosImpressao([...filtro]);
 
             const columns: iColumnPrint[] = [
@@ -237,35 +244,24 @@ export const actions = {
         state.modalNovoFiltroOpened = true;
     },
 
-    async finalizarFiltro(idFiltro) {
-        state.idFiltro = idFiltro;
-        if (await msgConfirmSemCodigo("Confirmação", "Deseja finalizar esse filtro?")) {
+    async revisarFiltro(idFiltro) {
 
-            try {
-                state.loading = true;
-                let param = state.idFiltro
-                await serviceFiltro.finalizarFiltro(param)
+        state.selectedFiltro = idFiltro;
 
-                // Atualizar o filtro na state
-                const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
-                if (filtroIndex !== -1) {
-                    state.filtros[filtroIndex].DATA_FIM = new Date().toISOString();
-                }
+        try {
+            state.loading = true;
+            const data = await serviceFiltro.getDadosFiltroRevisao(state.selectedFiltro)
+            state.dadosFiltroRevisao = data.dadosFiltro
+            state.itensFiltroRevisao = data.itensFiltro
+            state.modalRevisaoFiltroOpened = true
 
-                Swal.fire({
-                    icon: "success",
-                    text: "Filtro finalizado com sucesso!",
-                    timer: 1500
-                });
-            } catch {
-                Swal.fire({
-                    icon: "error",
-                    text: "Erro ao finalizar o filtro!"
-                });
-            } finally {
-                state.loading = false;
-            }
-
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar o filtro!"
+            });
+        } finally {
+            state.loading = false;
         }
     },
 
@@ -305,11 +301,12 @@ export const actions = {
         state.modalAddItensFiltroOpened = true
     },
 
-    async addItensFiltro(idFiltro: number, conferente: number | string, nomeFiltro: string, nomeConferente: string) {
+    async addItensFiltro(idFiltro: number, conferente: number | string, nomeFiltro: string, qtdItens: number, nomeConferente: string) {
         state.idFiltro = idFiltro
         state.conferente = conferente;
         state.nomeNovoFiltro = nomeFiltro;
         state.nomeConferente = nomeConferente
+        state.qtdItens = qtdItens
         state.modalAddItensFiltroOpened = true
     },
 
@@ -398,6 +395,23 @@ export const actions = {
     cancelarModalAddItensFiltro() {
         state.modalAddItensFiltroOpened = false;
         state.modalVisualizarFiltroOpened = false
+    },
+
+    closeModalRevisaoFiltro() {
+        state.dadosDoFiltroSelecionado = []
+        state.modalRevisaoFiltroOpened = false;
+    },
+
+    finalizarFiltro(idFiltro) {
+        const filtroIndex = state.filtros.findIndex(filtro => filtro.ID_FILTRO === idFiltro);
+        if (filtroIndex !== -1) {
+            state.filtros[filtroIndex].DATA_FIM = moment().toISOString();
+            state.filtros[filtroIndex].HR_TERMINO = moment().toDate();
+            state.filtros[filtroIndex].HR_REVISAO = moment().toDate();
+        }
+
+        state.dadosDoFiltroSelecionado = []
+        state.modalRevisaoFiltroOpened = false;
     }
 
 }
