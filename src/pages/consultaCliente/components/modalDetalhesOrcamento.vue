@@ -120,8 +120,10 @@ const getClassCorLinha = (dados: any) => {
             :headers="state.headers1"
             :items="state.detalhesItensOrcamento"
             items-per-page="5"
+            fixed-header
+            height="220"
             :row-props="getClassCorLinha"
-            class="mb-4"
+            class="mb-1"
           ></v-data-table>
         </v-window-item>
 
@@ -131,6 +133,9 @@ const getClassCorLinha = (dados: any) => {
             :headers="state.headers2"
             :items="state.detalhesMontagem"
             items-per-page="5"
+            fixed-header
+            height="220"
+            class="mb-1"
             :row-props="getClassCorLinha"
           ></v-data-table>
         </v-window-item>

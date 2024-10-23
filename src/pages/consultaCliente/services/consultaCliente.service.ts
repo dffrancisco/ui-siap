@@ -1,5 +1,5 @@
 import axios from "axios";
-import { iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia, iClientes, iDetalhesOrcamento, iGetClientes, iParamDetalhesOrc, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos } from "../interfaces";
+import { iBoletosAbertos, iBoletosAtrasados, iBoletosComprasFaturadas, iBoletosEmDia, iClientes, iDetalhesItensOrcamento, iDetalhesOrcamento, iGetClientes, iParamComprasFaturadas, iParamDetalhesItensOrc, iParamDetalhesOrc, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos } from "../interfaces";
 
 const caminho = 'siap/consultaCliente'
 
@@ -10,6 +10,8 @@ type iGetBoletosAtrasadosFunction = (param: number) => Promise<iBoletosAtrasados
 type iGetBoletosEmDiaFunction = (param: number) => Promise<iBoletosEmDia[]>
 type iGetTodosBoletosFunction = (param: number) => Promise<iTodosBoletos[]>
 type iGetDetalhesOrcamentoFunction = (param: iParamDetalhesOrc) => Promise<iDetalhesOrcamento>
+type iGetDetalhesItensOrcamentoFunction = (param: iParamDetalhesItensOrc) => Promise<iDetalhesItensOrcamento[]>
+type iGetBoletosComprasFaturadasFunction = (param: iParamComprasFaturadas) => Promise<iBoletosComprasFaturadas[]>
 
 const getClientes: iGetClientesFuction = async (param, offset) => {
     const { data } = await axios.post(caminho, {
@@ -75,6 +77,23 @@ const getDetalhesOrcamento: iGetDetalhesOrcamentoFunction = async (param) => {
     return data;
 }
 
+const getDetalhesItensOrcamento: iGetDetalhesItensOrcamentoFunction = async (param) => {
+    const { data } = await axios.post(caminho, {
+        call: "getDetalhesItensOrcamento",
+        param
+    });
+
+    return data;
+}
+
+const getBoletosComprasFaturadas: iGetBoletosComprasFaturadasFunction = async (param) => {
+    const { data } = await axios.post(caminho, {
+        call: "getBoletosComprasFaturadas",
+        param
+    });
+
+    return data;
+}
 
 export default {
     getClientes,
@@ -83,5 +102,7 @@ export default {
     getBoletosAtrasados,
     getBoletosEmDia,
     getTodosBoletos,
-    getDetalhesOrcamento
+    getDetalhesOrcamento,
+    getDetalhesItensOrcamento,
+    getBoletosComprasFaturadas
 }

@@ -1,5 +1,11 @@
 import { computed, reactive } from "vue";
-import { iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia, iClientes, iComprasFaturadas, iCreditoDevolucao, iDetalhesItensOrc, iDetalhesMontagemOrc, iDetalhesOrcamento, iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamRequisicoes, iResponseDadosCliente, iTabs, iTodosBoletos, iTodosItens, iVendaPorVendedor, iVendasPorAno } from "./interfaces";
+import {
+    iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia, iClientes, iComprasFaturadas,
+    iCreditoDevolucao, iDetalhesItensOrc, iDetalhesItensOrcamento, iDetalhesMontagemOrc,
+    iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamComprasFaturadas, iParamDetalhesItensOrc,
+    iParamDetalhesOrc, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos, iTodosItens,
+    iVendaPorVendedor, iVendasPorAno
+} from "./interfaces";
 import moment from "moment";
 import serviceConsultaCliente from "./services/consultaCliente.service"
 import Swal from "sweetalert2";
@@ -25,6 +31,8 @@ export const state = reactive({
     modalBoletosEmDiaOpened: false,
     modalTodosBoletosOpened: false,
     modalDetalhesOrcamentoOpened: false,
+    modalDetalhesItensOrcamentoOpened: false,
+    modalDetalhesComprasFaturadasOpened: false,
     boletosEmAberto: <iBoletosAbertos[]>[],
     boletosAtrasados: <iBoletosAtrasados[]>[],
     boletosEmDia: <iBoletosEmDia[]>[],
@@ -330,9 +338,10 @@ export const state = reactive({
     ],
     graficoVendaPorVendedor: <iVendaPorVendedor[]>[],
     graficoVendasPorAno: <iVendasPorAno[]>[],
-    // detalhesOrcamento: <iDetalhesOrcamento[]>[],
     itensOrcamento: <iDetalhesItensOrc[]>[],
     montagemOrcamento: <iDetalhesMontagemOrc[]>[],
+    detalhesItensOrcamento: <iDetalhesItensOrcamento[]>[],
+    detalhesComprasFaturadas: <any[]>[]
 })
 
 export const actions = {
@@ -487,7 +496,7 @@ export const actions = {
         try {
             state.loading = true;
 
-            let param: any = {
+            let param: iParamDetalhesOrc = {
                 numOrcamento: item.NUM_ORCAMENTO,
                 data: item.DATA
             }
@@ -499,6 +508,32 @@ export const actions = {
         } catch {
             Swal.fire({
                 icon: "error",
+                text: "Erro ao buscar os dados do orçamento."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async openModalDetalhesItemOrcamento(item) {
+        try {
+            state.loading = true;
+
+            let param: iParamDetalhesItensOrc = {
+                codProduto: item.COD_PRODUTO,
+                idCliente: state.idCliente,
+                dataInicio: state.dataInicio,
+                dataFim: state.dataFim
+            }
+
+            const detalhesItensOrcamento = await serviceConsultaCliente.getDetalhesItensOrcamento(param);
+            state.detalhesItensOrcamento = detalhesItensOrcamento
+
+            state.modalDetalhesItensOrcamentoOpened = true
+        } catch {
+            Swal.fire({
+                icon: "error",
                 text: "Erro ao buscar os dados do item."
             });
             return;
@@ -507,12 +542,28 @@ export const actions = {
         }
     },
 
-    openModalDetalhesItemOrcamento(item) {
-        console.log(item);
-    },
+    async openModalDetalhesComprasFaturadas(item) {
+        try {
+            state.loading = true;
 
-    openModalDetalhesComprasFaturadas(item) {
-        console.log(item);
+            let param: iParamComprasFaturadas = {
+                numOrcamento: item.NUM_ORCAMENTO,
+                data: item.DATA
+            }
+
+            const detalhesComprasFaturadas = await serviceConsultaCliente.getBoletosComprasFaturadas(param);
+            state.detalhesComprasFaturadas = detalhesComprasFaturadas
+
+            state.modalDetalhesComprasFaturadasOpened = true
+        } catch {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar os dados do item."
+            });
+            return;
+        } finally {
+            state.loading = false;
+        }
     },
 
     openModalDetalhesMarca(item) {

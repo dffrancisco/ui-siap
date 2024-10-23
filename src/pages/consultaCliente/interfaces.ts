@@ -1,16 +1,3 @@
-export interface iTabs {
-    dashboard: boolean;
-    orcamentos: boolean;
-    orcamentosNaoFinalizados: boolean;
-    todosItens: boolean;
-    comprasFaturadas: boolean;
-    marca: boolean;
-    creditoDevolucao: boolean;
-    devolucao: boolean;
-    vendaPorVendedor: boolean;
-    vendasPorAno: boolean;
-}
-
 export interface iClientes {
     CGC_CLIENTE: string;
     CREDITO_USADO: number;
@@ -214,4 +201,33 @@ export interface iDetalhesMontagemOrc {
 export interface iDetalhesOrcamento {
     itensOrcamento?: iDetalhesItensOrc[];
     montagemOrcamento?: iDetalhesMontagemOrc[]
+}
+
+export interface iParamDetalhesItensOrc {
+    codProduto: number;
+    idCliente: number;
+    dataInicio: string;
+    dataFim: string;
+}
+
+export interface iDetalhesItensOrcamento {
+    DATA: string;
+    DESC_PRODUTO: string;
+    HORA: string;
+    NUM_ORCAMENTO: number;
+    QUANTIDADE: number;
+}
+
+export interface iParamComprasFaturadas {
+    numOrcamento: number;
+    data: string;
+}
+
+export interface iBoletosComprasFaturadas {
+    NUM_BOLETO: number;
+    DATA_VENCIMENTO: string;
+    VALOR: number;
+    DATA_PROCESSAMENTO: string;
+    DATA_QUITACAO: string;
+    DIVISAO: string;
 }

@@ -1,42 +1,36 @@
 <script lang="ts" setup>
 import { onMounted, reactive } from "vue";
-import { iBoletosAbertos } from "../interfaces";
+import { iDetalhesItensOrcamento } from "../interfaces";
 import utils from "@/ts/utils";
 
 const props = defineProps<{
-  boletosEmAberto: iBoletosAbertos[] | null;
+  detalhesItens: iDetalhesItensOrcamento[] | null;
 }>();
 
-const emit = defineEmits(["closeModalBoletosEmAberto"]);
+const emit = defineEmits(["closeModalDetalhesItensOrcamento"]);
 
 const state = reactive({
   loading: false,
-  boletosEmAberto: <iBoletosAbertos[]>[],
+  detalhesItens: <iDetalhesItensOrcamento[]>[],
   headers: <any>[
-    { title: "Nº Boleto", key: "NUM_BOLETO", align: "left" },
-    { title: "Valor", key: "VALOR", align: "left", value: (item: any) => utils.formatValor(item.VALOR) },
+    { title: "Quantidade", key: "QUANTIDADE", align: "left" },
+    { title: "Nº Orçamento", key: "NUM_ORCAMENTO", align: "left" },
     {
-      title: "Data Processamento",
-      key: "DATA_PROCESSAMENTO",
-      align: "center",
-      value: (item: any) => utils.dataBrasil(item.DATA_PROCESSAMENTO),
+      title: "Data",
+      key: "DATA",
+      align: "left",
+      value: (item: any) => utils.dataBrasil(item.DATA),
     },
-    {
-      title: "Data Vencimento",
-      key: "DATA_VENCIMENTO",
-      align: "center",
-      value: (item: any) => utils.dataBrasil(item.DATA_VENCIMENTO),
-    },
-    { title: "Divisão", key: "DIVISAO", align: "center" },
+    { title: "Descrição Itens", key: "DESC_PRODUTO", align: "left" },
   ],
 });
 
 onMounted(async () => {
-  state.boletosEmAberto = props.boletosEmAberto;
+  state.detalhesItens = props.detalhesItens;
 });
 
 const cancelar = () => {
-  emit("closeModalBoletosEmAberto");
+  emit("closeModalDetalhesItensOrcamento");
 };
 
 const getClassCorLinha = (dados: any) => {
@@ -47,11 +41,11 @@ const getClassCorLinha = (dados: any) => {
 
 <template>
   <v-card>
-    <v-card-title class="py-3"> Boletos em Aberto </v-card-title>
+    <v-card-title class="py-3"> Orçamento do Item</v-card-title>
     <v-card-text>
       <v-data-table
         :headers="state.headers"
-        :items="state.boletosEmAberto"
+        :items="state.detalhesItens"
         fixed-header
         items-per-page-text="Itens por página"
         :row-props="getClassCorLinha"

@@ -58,6 +58,7 @@ const getClassCorLinha = (dados: any) => {
       <v-data-table
         :headers="state.headers"
         :items="state.todosBoletos"
+        fixed-header
         items-per-page-text="Itens por página"
         :row-props="getClassCorLinha"
         height="310"

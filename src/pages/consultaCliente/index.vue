@@ -6,6 +6,8 @@ import ModalBoletosAtrasados from "./components/modalBoletosAtrasados.vue";
 import ModalBoletosEmDia from "./components/modalBoletosEmDia.vue";
 import ModalTodosBoletos from "./components/modalTodosBoletos.vue";
 import ModalDetalhesOrcamento from "./components/modalDetalhesOrcamento.vue";
+import ModalDetalhesItensOrcamento from "./components/modalDetalhesItensOrcamento.vue";
+import ModalDetalhesComprasFaturadas from "./components/modalDetalhesComprasFaturadas.vue";
 import utils from "@/ts/utils";
 import VueApexCharts from "vue3-apexcharts";
 </script>
@@ -608,13 +610,36 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalDetalhesOrcamentoOpened"
     max-width="750"
-    max-height="400"
     @click:outside="state.modalDetalhesOrcamentoOpened = false"
   >
     <ModalDetalhesOrcamento
       :detalhesItensOrcamento="state.itensOrcamento"
       :detalhesMontagem="state.montagemOrcamento"
       @closeModalDetalhesOrcamento="state.modalDetalhesOrcamentoOpened = false"
+    />
+  </v-dialog>
+
+  <!-- modalDetalhesItensOrcamento -->
+  <v-dialog
+    v-model="state.modalDetalhesItensOrcamentoOpened"
+    max-width="750"
+    @click:outside="state.modalDetalhesItensOrcamentoOpened = false"
+  >
+    <ModalDetalhesItensOrcamento
+      :detalhesItens="state.detalhesItensOrcamento"
+      @closeModalDetalhesItensOrcamento="state.modalDetalhesItensOrcamentoOpened = false"
+    />
+  </v-dialog>
+
+  <!-- modalDetalhesComprasFaturadas -->
+  <v-dialog
+    v-model="state.modalDetalhesComprasFaturadasOpened"
+    max-width="750"
+    @click:outside="state.modalDetalhesComprasFaturadasOpened = false"
+  >
+    <ModalDetalhesComprasFaturadas
+      :detalhesComprasFaturadas="state.detalhesComprasFaturadas"
+      @closeModalDetalhesComprasFaturadas="state.modalDetalhesComprasFaturadasOpened = false"
     />
   </v-dialog>
 </template>

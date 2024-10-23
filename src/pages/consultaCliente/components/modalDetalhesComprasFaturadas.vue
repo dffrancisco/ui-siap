@@ -1,48 +1,48 @@
 <script lang="ts" setup>
 import { onMounted, reactive } from "vue";
-import { iBoletosAtrasados } from "../interfaces";
+import { iBoletosComprasFaturadas } from "../interfaces";
 import utils from "@/ts/utils";
 
 const props = defineProps<{
-  boletosAtrasados: iBoletosAtrasados[] | null;
+  detalhesComprasFaturadas: iBoletosComprasFaturadas[] | null;
 }>();
 
-const emit = defineEmits(["closeModalBoletosAtrasados"]);
+const emit = defineEmits(["closeModalDetalhesComprasFaturadas"]);
 
 const state = reactive({
   loading: false,
-  boletosAtrasados: <iBoletosAtrasados[]>[],
+  detalhesComprasFaturadas: <iBoletosComprasFaturadas[]>[],
   headers: <any>[
-    { title: "Nº Boleto", key: "NUM_BOLETO", align: "left" },
+    { title: "Número do Boleto", key: "NUM_BOLETO", align: "left" },
     { title: "Valor", key: "VALOR", align: "left", value: (item: any) => utils.formatValor(item.VALOR) },
     {
-      title: "Data Processamento",
+      title: "Data do Processamento",
       key: "DATA_PROCESSAMENTO",
-      align: "center",
+      align: "left",
       value: (item: any) => utils.dataBrasil(item.DATA_PROCESSAMENTO),
     },
     {
-      title: "Data Vencimento",
+      title: "Data do Vencimento",
       key: "DATA_VENCIMENTO",
-      align: "center",
+      align: "left",
       value: (item: any) => utils.dataBrasil(item.DATA_VENCIMENTO),
     },
     {
-      title: "Data Quitação",
+      title: "Data da Quitação",
       key: "DATA_QUITACAO",
-      align: "center",
+      align: "left",
       value: (item: any) => utils.dataBrasil(item.DATA_QUITACAO),
     },
-    { title: "Divisão", key: "DIVISAO", align: "center" },
+    { title: "Divisão", key: "DIVISAO", align: "left" },
   ],
 });
 
 onMounted(async () => {
-  state.boletosAtrasados = props.boletosAtrasados;
+  state.detalhesComprasFaturadas = props.detalhesComprasFaturadas;
 });
 
 const cancelar = () => {
-  emit("closeModalBoletosAtrasados");
+  emit("closeModalDetalhesComprasFaturadas");
 };
 
 const getClassCorLinha = (dados: any) => {
@@ -53,11 +53,11 @@ const getClassCorLinha = (dados: any) => {
 
 <template>
   <v-card>
-    <v-card-title class="py-3"> Boletos Atrasados </v-card-title>
+    <v-card-title class="py-3"> Informações do Boleto </v-card-title>
     <v-card-text>
       <v-data-table
         :headers="state.headers"
-        :items="state.boletosAtrasados"
+        :items="state.detalhesComprasFaturadas"
         fixed-header
         items-per-page-text="Itens por página"
         :row-props="getClassCorLinha"
