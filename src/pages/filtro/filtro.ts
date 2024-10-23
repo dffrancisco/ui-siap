@@ -249,9 +249,8 @@ export const actions = {
         state.selectedFiltro = idFiltro;
 
         try {
-            // state.loading = true;
+            state.loading = true;
             const data = await serviceFiltro.getDadosFiltroRevisao(state.selectedFiltro)
-            // state.dadosDoFiltroSelecionado = data
             state.dadosFiltroRevisao = data.dadosFiltro
             state.itensFiltroRevisao = data.itensFiltro
             state.modalRevisaoFiltroOpened = true
@@ -262,7 +261,7 @@ export const actions = {
                 text: "Erro ao buscar o filtro!"
             });
         } finally {
-            // state.loading = false;
+            state.loading = false;
         }
     },
 
