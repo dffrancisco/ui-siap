@@ -212,6 +212,12 @@ export const state = reactive({
             align: 'left',
         },
         {
+            title: "Cliente",
+            key: "NOME_CLIENTE",
+            sortable: true,
+            align: 'left',
+        },
+        {
             title: "Valor",
             key: "VALOR",
             sortable: true,
@@ -238,13 +244,7 @@ export const state = reactive({
             sortable: true,
             align: 'center',
             value: (item: any) => utils.formatValor(item.VALOR_MONTAGEN)
-        },
-        {
-            title: "Cliente",
-            key: "NOME_CLIENTE",
-            sortable: true,
-            align: 'left',
-        },
+        }
     ],
     tableMarcas: <iMarca[]>[],
     headersMarcas: <any>[
