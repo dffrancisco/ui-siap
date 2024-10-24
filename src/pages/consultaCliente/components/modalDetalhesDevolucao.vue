@@ -51,7 +51,7 @@ const getClassCorLinha = (dados: any) => {
 
 <template>
   <v-card>
-    <v-card-title class="py-3"> Itens Comprados por Marca </v-card-title>
+    <v-card-title class="py-3"> Itens Devolução </v-card-title>
     <v-card-text>
       <v-data-table
         :headers="state.headers"

@@ -126,6 +126,23 @@ export interface iVendasPorAno {
     VALOR: number;
 }
 
+export interface iBoletos {
+    DATA_PROCESSAMENTO: string | null;
+    DATA_QUITACAO: string | null;
+    DATA_REEMPRESSAO: string | null;
+    DATA_VENCIMENTO: string;
+    DIASATRAZO: number | string | null;
+    DIVISAO: string;
+    HISTORICO: string;
+    ID_CLIENTE: number;
+    ID_EMPRESA: number;
+    LOG: string;
+    NUM_BOLETO: number;
+    VALOR: number;
+    VALOR_QUITACAO: number | null;
+    VALOR_REEMPRESSAO: number | null;
+}
+
 export interface iResponseDadosCliente {
     boletosDashboard: iBoletoDashboard[];
     comprasFaturadas: iComprasFaturadas[];
@@ -140,6 +157,7 @@ export interface iResponseDadosCliente {
     todosItens: iTodosItens[];
     vendaPorVendedor: iVendaPorVendedor[];
     vendasPorAno: iVendasPorAno[];
+    boletos: iBoletos[];
 }
 
 export interface iBoletosAbertos {
@@ -216,20 +234,6 @@ export interface iDetalhesItensOrcamento {
     HORA: string;
     NUM_ORCAMENTO: number;
     QUANTIDADE: number;
-}
-
-export interface iParamComprasFaturadas {
-    numOrcamento: number;
-    data: string;
-}
-
-export interface iBoletosComprasFaturadas {
-    NUM_BOLETO: number;
-    DATA_VENCIMENTO: string;
-    VALOR: number;
-    DATA_PROCESSAMENTO: string;
-    DATA_QUITACAO: string;
-    DIVISAO: string;
 }
 
 export interface iParamItensMarca {

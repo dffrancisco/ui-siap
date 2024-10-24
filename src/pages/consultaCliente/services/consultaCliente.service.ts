@@ -1,8 +1,8 @@
 import axios from "axios";
 import {
-    iBoletosAbertos, iBoletosAtrasados, iBoletosComprasFaturadas, iBoletosEmDia,
+    iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia,
     iClientes, iDetalhesCredito, iDetalhesDevolucao, iDetalhesItensMarca, iDetalhesItensOrcamento, iDetalhesOrcamento,
-    iGetClientes, iParamComprasFaturadas, iParamDetalhesCredito, iParamDetalhesDevolucao, iParamDetalhesItensOrc,
+    iGetClientes, iParamDetalhesCredito, iParamDetalhesDevolucao, iParamDetalhesItensOrc,
     iParamDetalhesOrc, iParamItensMarca, iParamRequisicoes, iResponseDadosCliente,
     iTodosBoletos
 } from "../interfaces";
@@ -17,7 +17,6 @@ type iGetBoletosEmDiaFunction = (param: number) => Promise<iBoletosEmDia[]>
 type iGetTodosBoletosFunction = (param: number) => Promise<iTodosBoletos[]>
 type iGetDetalhesOrcamentoFunction = (param: iParamDetalhesOrc) => Promise<iDetalhesOrcamento>
 type iGetDetalhesItensOrcamentoFunction = (param: iParamDetalhesItensOrc) => Promise<iDetalhesItensOrcamento[]>
-type iGetBoletosComprasFaturadasFunction = (param: iParamComprasFaturadas) => Promise<iBoletosComprasFaturadas[]>
 type iGetDetalhesItensMarca = (param: iParamItensMarca) => Promise<iDetalhesItensMarca[]>
 type iGetDetalhesCredito = (param: iParamDetalhesCredito) => Promise<iDetalhesCredito>
 type iGetDetalhesDevolucao = (param: iParamDetalhesDevolucao) => Promise<iDetalhesDevolucao[]>
@@ -95,15 +94,6 @@ const getDetalhesItensOrcamento: iGetDetalhesItensOrcamentoFunction = async (par
     return data;
 }
 
-const getBoletosComprasFaturadas: iGetBoletosComprasFaturadasFunction = async (param) => {
-    const { data } = await axios.post(caminho, {
-        call: "getBoletosComprasFaturadas",
-        param
-    });
-
-    return data;
-}
-
 const getDetalhesItensMarca: iGetDetalhesItensMarca = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "getDetalhesItensMarca",
@@ -140,7 +130,6 @@ export default {
     getTodosBoletos,
     getDetalhesOrcamento,
     getDetalhesItensOrcamento,
-    getBoletosComprasFaturadas,
     getDetalhesItensMarca,
     getDetalhesCredito,
     getDetalhesDevolucao

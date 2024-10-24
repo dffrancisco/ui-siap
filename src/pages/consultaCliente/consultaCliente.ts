@@ -1,10 +1,11 @@
 import { computed, reactive } from "vue";
 import {
-    iBoletosAbertos, iBoletosAtrasados, iBoletosComprasFaturadas, iBoletosEmDia,
+    iBoletos,
+    iBoletosAbertos, iBoletosAtrasados, iBoletosEmDia,
     iClientes, iComprasFaturadas, iCreditoDevolucao, iDetalhesDevolucao,
     iDetalhesItensCredito, iDetalhesItensMarca, iDetalhesItensOrc,
     iDetalhesItensOrcamento, iDetalhesMontagemOrc, iDetalhesUsoCredito,
-    iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento, iParamComprasFaturadas,
+    iDevolucao, iMarca, iOrcamento, iOrcamentosEmAndamento,
     iParamDetalhesCredito, iParamDetalhesDevolucao, iParamDetalhesItensOrc,
     iParamDetalhesOrc, iParamItensMarca, iParamRequisicoes, iResponseDadosCliente, iTodosBoletos,
     iTodosItens, iVendaPorVendedor, iVendasPorAno
@@ -26,6 +27,7 @@ export const state = reactive({
         { title: "Devolução", value: "devolucao" },
         { title: "Venda por Vendedor", value: "vendaPorVendedor" },
         { title: "Vendas por Ano", value: "vendasPorAno" },
+        { title: "Boletos", value: "boletos" },
     ],
     loading: false,
     modalLocalizarClienteOpened: false,
@@ -35,7 +37,7 @@ export const state = reactive({
     modalTodosBoletosOpened: false,
     modalDetalhesOrcamentoOpened: false,
     modalDetalhesItensOrcamentoOpened: false,
-    modalDetalhesComprasFaturadasOpened: false,
+    modalDetalhesBoletosOpened: false,
     modalDetalhesItensMarcaOpened: false,
     modalDetalhesCreditoOpened: false,
     modalDetalhesDevolucaoOpened: false,
@@ -80,7 +82,7 @@ export const state = reactive({
             value: (item: any) => utils.dataBrasil(item.DATA)
         },
         {
-            title: "Nome Cliente",
+            title: "Cliente",
             key: "NOME_CLIENTE",
             sortable: true,
             align: 'left',
@@ -92,14 +94,14 @@ export const state = reactive({
             align: 'left',
         },
         {
-            title: "Montagem",
+            title: "Mont.",
             key: "VALOR_MONTAGEN",
             sortable: true,
             align: 'center',
             value: (item: any) => utils.formatValor(item.VALOR_MONTAGEN)
         },
         {
-            title: "Desconto",
+            title: "Desc.",
             key: "DESCONTO",
             sortable: true,
             align: 'center',
@@ -243,12 +245,6 @@ export const state = reactive({
             sortable: true,
             align: 'left',
         },
-        {
-            title: 'Inf',
-            key: 'inf',
-            sortable: false,
-            align: 'center',
-        },
     ],
     tableMarcas: <iMarca[]>[],
     headersMarcas: <any>[
@@ -342,12 +338,61 @@ export const state = reactive({
             align: 'center',
         },
     ],
+    tableBoletos: <iBoletos[]>[],
+    boletoSelecionado: <iBoletos>{},
+    headersBoletos: <any>[
+        {
+            title: "Nº Boleto",
+            key: "NUM_BOLETO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Valor",
+            key: "VALOR",
+            sortable: true,
+            align: 'left',
+            value: (item: any) => utils.formatValor(item.VALOR)
+        },
+        {
+            title: "Data",
+            key: "DATA_PROCESSAMENTO",
+            sortable: true,
+            align: 'left',
+            value: (item: any) => utils.dataBrasil(item.DATA_PROCESSAMENTO)
+        },
+        {
+            title: "Data Vencimento",
+            key: "DATA_VENCIMENTO",
+            sortable: true,
+            align: 'left',
+            value: (item: any) => utils.dataBrasil(item.DATA_VENCIMENTO)
+        },
+        {
+            title: "Data Quitação",
+            key: "DATA_QUITACAO",
+            sortable: true,
+            align: 'left',
+            value: (item: any) => utils.dataBrasil(item.DATA_QUITACAO)
+        },
+        {
+            title: "Divisão",
+            key: "DIVISAO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: 'Inf',
+            key: 'inf',
+            sortable: false,
+            align: 'center',
+        },
+    ],
     graficoVendaPorVendedor: <iVendaPorVendedor[]>[],
     graficoVendasPorAno: <iVendasPorAno[]>[],
     itensOrcamento: <iDetalhesItensOrc[]>[],
     montagemOrcamento: <iDetalhesMontagemOrc[]>[],
     detalhesItensOrcamento: <iDetalhesItensOrcamento[]>[],
-    detalhesComprasFaturadas: <iBoletosComprasFaturadas[]>[],
     detalhesItensMarca: <iDetalhesItensMarca[]>[],
     detalhesUsoCredito: <iDetalhesUsoCredito[]>[],
     detalhesItensCredito: <iDetalhesItensCredito[]>[],
@@ -426,6 +471,7 @@ export const actions = {
         state.tableDevolucao = dadosCliente.devolucao
         state.graficoVendaPorVendedor = dadosCliente.vendaPorVendedor
         state.graficoVendasPorAno = dadosCliente.vendasPorAno
+        state.tableBoletos = dadosCliente.boletos
 
         state.loading = false;
     },
@@ -552,30 +598,6 @@ export const actions = {
         }
     },
 
-    async openModalDetalhesComprasFaturadas(item) {
-        try {
-            state.loading = true;
-
-            let param: iParamComprasFaturadas = {
-                numOrcamento: item.NUM_ORCAMENTO,
-                data: item.DATA
-            }
-
-            const detalhesComprasFaturadas = await serviceConsultaCliente.getBoletosComprasFaturadas(param);
-            state.detalhesComprasFaturadas = detalhesComprasFaturadas
-
-            state.modalDetalhesComprasFaturadasOpened = true
-        } catch {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao buscar os dados do item."
-            });
-            return;
-        } finally {
-            state.loading = false;
-        }
-    },
-
     async openModalDetalhesMarca(item) {
         try {
             state.loading = true;
@@ -650,6 +672,13 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    openModalDetalhesBoletos(item) {
+        state.loading = true;
+        state.boletoSelecionado = item
+        state.modalDetalhesBoletosOpened = true
+        state.loading = false;
     }
 }
 

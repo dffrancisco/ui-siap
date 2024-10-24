@@ -7,10 +7,10 @@ import ModalBoletosEmDia from "./components/modalBoletosEmDia.vue";
 import ModalTodosBoletos from "./components/modalTodosBoletos.vue";
 import ModalDetalhesOrcamento from "./components/modalDetalhesOrcamento.vue";
 import ModalDetalhesItensOrcamento from "./components/modalDetalhesItensOrcamento.vue";
-import ModalDetalhesComprasFaturadas from "./components/modalDetalhesComprasFaturadas.vue";
 import ModalDetalhesItensMarca from "./components/modalDetalhesItensMarca.vue";
 import ModalDetalhesCredito from "./components/modalDetalhesCredito.vue";
 import ModalDetalhesDevolucao from "./components/modalDetalhesDevolucao.vue";
+import ModalDetalhesBoletos from "./components/modalDetalhesBoletos.vue";
 import utils from "@/ts/utils";
 import VueApexCharts from "vue3-apexcharts";
 </script>
@@ -18,7 +18,7 @@ import VueApexCharts from "vue3-apexcharts";
 <template>
   <v-container>
     <v-card
-      :width="1080"
+      :width="990"
       class="ma-auto pa-4"
     >
       <v-row>
@@ -108,7 +108,10 @@ import VueApexCharts from "vue3-apexcharts";
 
       <v-row>
         <!-- menu lateral -->
-        <v-col cols="2">
+        <v-col
+          cols="3"
+          class="menu-scrollable"
+        >
           <div
             v-for="item in state.menuItems"
             :key="item.value"
@@ -125,10 +128,7 @@ import VueApexCharts from "vue3-apexcharts";
         </v-col>
 
         <!-- conteudo das abas -->
-        <v-col
-          cols="10"
-          style="padding-left: 30px; margin-top: -10px"
-        >
+        <v-col cols="9">
           <v-container>
             <v-window v-model="state.tab">
               <v-window-item value="dashboard"
@@ -360,23 +360,14 @@ import VueApexCharts from "vue3-apexcharts";
               <v-window-item value="comprasFaturadas">
                 <v-data-table
                   class="tableComprasFaturadas"
-                  style="border-radius: 5px; --v-table-row-height: 45px"
+                  style="border-radius: 5px; --v-table-row-height: 45px; width: 700px"
                   height="390"
                   fixed-header
                   :headers="state.headersComprasFaturadas"
                   :loading="state.loading"
                   :items="state.tableComprasFaturadas"
                   :row-props="actions.getClassCorLinha"
-                  ><template v-slot:item.inf="{ item }">
-                    <v-icon
-                      size="large"
-                      color="primary"
-                      title="Ver detalhes"
-                      @click="actions.openModalDetalhesComprasFaturadas(item)"
-                    >
-                      mdi-information
-                    </v-icon>
-                  </template>
+                >
                 </v-data-table>
               </v-window-item>
               <v-window-item value="marca">
@@ -411,7 +402,8 @@ import VueApexCharts from "vue3-apexcharts";
                   :loading="state.loading"
                   :items="state.tableCreditoDevolucao"
                   :row-props="actions.getClassCorLinha"
-                  ><template v-slot:item.inf="{ item }">
+                >
+                  <template v-slot:item.inf="{ item }">
                     <v-icon
                       size="large"
                       color="primary"
@@ -448,7 +440,7 @@ import VueApexCharts from "vue3-apexcharts";
               <v-window-item value="vendaPorVendedor">
                 <VueApexCharts
                   width="100%"
-                  height="400"
+                  height="405"
                   type="bar"
                   :options="{
                             chart: {
@@ -485,7 +477,7 @@ import VueApexCharts from "vue3-apexcharts";
               <v-window-item value="vendasPorAno">
                 <VueApexCharts
                   width="100%"
-                  height="400"
+                  height="405"
                   type="line"
                   :options="{
                             chart: {
@@ -528,6 +520,29 @@ import VueApexCharts from "vue3-apexcharts";
                     },
                   ]"
                 />
+              </v-window-item>
+              <v-window-item value="boletos">
+                <v-data-table
+                  class="tableBoletos"
+                  style="border-radius: 5px; --v-table-row-height: 45px; width: 700px"
+                  height="390"
+                  fixed-header
+                  :headers="state.headersBoletos"
+                  :loading="state.loading"
+                  :items="state.tableBoletos"
+                  :row-props="actions.getClassCorLinha"
+                >
+                  <template v-slot:item.inf="{ item }">
+                    <v-icon
+                      size="large"
+                      color="primary"
+                      title="Ver detalhes"
+                      @click="actions.openModalDetalhesBoletos(item)"
+                    >
+                      mdi-information
+                    </v-icon>
+                  </template>
+                </v-data-table>
               </v-window-item>
             </v-window>
           </v-container>
@@ -634,15 +649,15 @@ import VueApexCharts from "vue3-apexcharts";
     />
   </v-dialog>
 
-  <!-- modalDetalhesComprasFaturadas -->
+  <!-- modalDetalhesBoletos -->
   <v-dialog
-    v-model="state.modalDetalhesComprasFaturadasOpened"
+    v-model="state.modalDetalhesBoletosOpened"
     max-width="750"
-    @click:outside="state.modalDetalhesComprasFaturadasOpened = false"
+    @click:outside="state.modalDetalhesBoletosOpened = false"
   >
-    <ModalDetalhesComprasFaturadas
-      :detalhesComprasFaturadas="state.detalhesComprasFaturadas"
-      @closeModalDetalhesComprasFaturadas="state.modalDetalhesComprasFaturadasOpened = false"
+    <ModalDetalhesBoletos
+      :detalhesBoleto="state.boletoSelecionado"
+      @closeModalDetalhesBoletos="state.modalDetalhesBoletosOpened = false"
     />
   </v-dialog>
 
@@ -700,9 +715,9 @@ import VueApexCharts from "vue3-apexcharts";
 
 <style scoped>
 .cardDashboard {
-  height: 104px;
+  height: 105px;
   color: #fff6f6;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: bold;
   text-align: center;
   padding: 20px;
@@ -712,8 +727,16 @@ import VueApexCharts from "vue3-apexcharts";
   padding: 6px;
 }
 
+.menu-scrollable {
+  max-height: 450px;
+  overflow-y: auto;
+  margin-top: 15px;
+  padding-left: 10px;
+  margin-bottom: 15px;
+}
+
 .menu-btn-wrapper {
-  width: 200px;
+  width: 210px;
   margin-bottom: 10px;
 }
 </style>
