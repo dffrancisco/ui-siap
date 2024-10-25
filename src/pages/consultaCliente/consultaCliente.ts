@@ -676,8 +676,10 @@ export const actions = {
 
     openModalDetalhesBoletos(item) {
         state.loading = true;
+
         state.boletoSelecionado = item
         state.modalDetalhesBoletosOpened = true
+
         state.loading = false;
     }
 }
