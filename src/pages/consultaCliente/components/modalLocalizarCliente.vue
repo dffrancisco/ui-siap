@@ -143,48 +143,56 @@ onMounted(async () => {
 });
 </script>
 <template
-  ><v-card class="pa-4"
-    ><div style="display: flex; gap: 16px">
-      <v-text-field
-        v-model="state.dataInicio"
-        label="Data Início"
-        type="date"
-        :clearable="false"
-        @keydown.enter.prevent="focusDataFim"
-      >
-      </v-text-field>
+  ><v-card class="pa-4">
+    <v-row>
+      <v-col cols="3">
+        <v-text-field
+          v-model="state.dataInicio"
+          label="Data Início"
+          type="date"
+          :clearable="false"
+          @keydown.enter.prevent="focusDataFim"
+        >
+        </v-text-field>
+      </v-col>
 
-      <v-text-field
-        v-model="state.dataFim"
-        label="Data Fim"
-        id="DATA_FIM"
-        type="date"
-        ref="dataFimRef"
-        :clearable="false"
-        @keydown.enter.prevent="focusSearch"
-      >
-      </v-text-field>
+      <v-col cols="3">
+        <v-text-field
+          v-model="state.dataFim"
+          label="Data Fim"
+          id="DATA_FIM"
+          type="date"
+          ref="dataFimRef"
+          :clearable="false"
+          @keydown.enter.prevent="focusSearch"
+        >
+        </v-text-field>
+      </v-col>
 
-      <v-text-field
-        label="Razão social / CNPJ"
-        :clearable="true"
-        width="300px"
-        density="compact"
-        autofocus
-        ref="inputSearch"
-        @keydown.enter.prevent="actions.btnSearch"
-        @keydown.arrow.down.prevent="state.gridClientes.focus()"
-      ></v-text-field>
+      <v-col>
+        <div class="d-flex ga-2">
+          <v-text-field
+            label="Razão social / CNPJ"
+            :clearable="true"
+            width="300px"
+            density="compact"
+            autofocus
+            ref="inputSearch"
+            @keydown.enter.prevent="actions.btnSearch"
+            @keydown.arrow.down.prevent="state.gridClientes.focus()"
+          ></v-text-field>
 
-      <div class="d-flex align-center">
-        <v-btn
-          icon="mdi-magnify"
-          size="39"
-          color="primary"
-          @click="actions.btnSearch"
-        />
-      </div>
-    </div>
+          <div class="d-flex align-center">
+            <v-btn
+              icon="mdi-magnify"
+              size="39"
+              color="primary"
+              @click="actions.btnSearch"
+            />
+          </div>
+        </div>
+      </v-col>
+    </v-row>
     <div
       class="mt-4"
       id="gridClientes"
@@ -204,4 +212,3 @@ onMounted(async () => {
     </div>
   </v-card>
 </template>
-<style scoped></style>
