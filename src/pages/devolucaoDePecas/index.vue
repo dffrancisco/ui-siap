@@ -73,6 +73,13 @@ nextTick(() => {
         <template v-slot:item.NF_DEVOLUCAO="{ item }">
           <div class="nf-container">{{ item.NF_DEVOLUCAO }}</div>
         </template>
+
+        <template v-slot:item.TIPO_PAGAMENTO="{ item }">
+          <span v-if="item.TIPO_PAGAMENTO in state.tiposPagamentos">
+            {{ state.tiposPagamentos[item.TIPO_PAGAMENTO].texto }}
+          </span>
+        </template>
+
         <template v-slot:item.inf="{ item }">
           <v-icon
             size="large"

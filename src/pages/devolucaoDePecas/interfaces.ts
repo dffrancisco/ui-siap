@@ -11,6 +11,7 @@ export interface iDevolucao {
     VALOR: number,
     NF_DEVOLUCAO: string,
     CREDITO: number,
+    TIPO_PAGAMENT0: string,
     LOGIN: string,
     STATUS: 'ABERTA' | 'FINALIZADA'
 }

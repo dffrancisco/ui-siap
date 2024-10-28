@@ -42,9 +42,8 @@ export const state = reactive({
             align: 'center',
         },
         {
-            title: 'Crédito', key: 'CREDITO',
+            title: 'Tipo Pag.', key: 'TIPO_PAGAMENTO',
             align: 'center',
-            value: (item: iDevolucao) => utils.formatValor(item.CREDITO)
         },
         {
             title: 'Funcionário', key: 'LOGIN',
@@ -62,7 +61,20 @@ export const state = reactive({
         },
     ],
     dataInicioImpressao: null,
-    dataFimImpressao: null
+    dataFimImpressao: null,
+    tiposPagamentos: {
+        "0": { texto: "Requisição" },
+        "1": { texto: "Dinheiro" },
+        "2": { texto: "Cartão" },
+        "3": { texto: "Cheque" },
+        "4": { texto: "Pedido" },
+        "5": { texto: "Detalhado" },
+        "6": { texto: "Ent. Rec" },
+        "7": { texto: "Vale-Peça" },
+        "8": { texto: "Depósito" },
+        "9": { texto: "Crédito" },
+        "P": { texto: "Pix" }
+    }
 })
 
 export const actions = {
