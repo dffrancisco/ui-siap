@@ -1,6 +1,7 @@
 export interface iParamGetDevolucoes {
     dataInicio: string;
     dataFim: string;
+    tipoData: string;
 }
 
 export interface iDevolucao {

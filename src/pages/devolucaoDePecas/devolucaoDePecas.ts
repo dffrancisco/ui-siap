@@ -11,6 +11,7 @@ export const dataHoje = moment().format('YYYY-MM-DD')
 export const state = reactive({
     dataInicio: moment().format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
+    selectedTipoData: 'DATA_VENDA',
     loading: false,
     dbDevolucoes: <iDevolucao[]>[],
     inputElementDataFim: <HTMLInputElement>{},
@@ -133,7 +134,9 @@ export const actions = {
             let dataInicio = moment(state.dataInicio).format('YYYY-MM-DD');
             let dataFim = moment(state.dataFim).format('YYYY-MM-DD');
 
-            const data = await serviceDevolucaodePecas.getDevolucoes({ dataInicio, dataFim })
+            let tipoData = state.selectedTipoData
+
+            const data = await serviceDevolucaodePecas.getDevolucoes({ dataInicio, dataFim, tipoData })
 
             state.dbDevolucoes = data
             state.dataInicioImpressao = dataInicio

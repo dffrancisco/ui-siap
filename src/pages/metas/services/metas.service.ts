@@ -3,7 +3,7 @@ import { iGetFeriadosParam, iGetFeriadosResponse, iGetMetasTracadasParam, iGetMe
 
 const caminho = '/siap/metas'
 
-type iGetMetasTracadasFunction = (param: iGetMetasTracadasParam) => Promise<iGetMetasTracadasResponse[]>
+type iGetMetasTracadasFunction = (param: iGetMetasTracadasParam) => Promise<iGetMetasTracadasResponse>
 type iGetValoresFunction = (param: iGetValoresParam) => Promise<iGetValoresResponse>
 type iGetFeriadosFunction = (param: iGetFeriadosParam) => Promise<iGetFeriadosResponse>
 
