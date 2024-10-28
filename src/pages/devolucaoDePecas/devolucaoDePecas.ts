@@ -44,6 +44,8 @@ export const state = reactive({
         {
             title: 'Tipo Pag.', key: 'TIPO_PAGAMENTO',
             align: 'center',
+            value: (item: iDevolucao) => actions.formatarTipoPagamento(item.TIPO_PAGAMENTO)
+
         },
         {
             title: 'Funcionário', key: 'LOGIN',
@@ -62,19 +64,6 @@ export const state = reactive({
     ],
     dataInicioImpressao: null,
     dataFimImpressao: null,
-    tiposPagamentos: {
-        "0": { texto: "Requisição" },
-        "1": { texto: "Dinheiro" },
-        "2": { texto: "Cartão" },
-        "3": { texto: "Cheque" },
-        "4": { texto: "Pedido" },
-        "5": { texto: "Detalhado" },
-        "6": { texto: "Ent. Rec" },
-        "7": { texto: "Vale-Peça" },
-        "8": { texto: "Depósito" },
-        "9": { texto: "Crédito" },
-        "P": { texto: "Pix" }
-    }
 })
 
 export const actions = {
@@ -88,7 +77,7 @@ export const actions = {
         state.modalDetalhesItensDevolucao = new xModal.create({
             el: "#modalDetalhesItensDevolucao",
             height: 400,
-            width: 800,
+            width: 900,
             title: 'Detalhes itens devolução',
             theme: 'xModal-blue',
             onOpen: () => { state.modalDetalhesItensDevolucaoOpened = true; },
@@ -103,7 +92,8 @@ export const actions = {
             COD_PRODUTO: produto.COD_PRODUTO,
             QUAL_TIPO_AVARIA: produto.QUAL_TIPO_AVARIA,
             MOTIVO_DEVOLUCAO: produto.MOTIVO_DEVOLUCAO,
-            DESC_PRODUTO: produto.DESC_PRODUTO
+            DESC_PRODUTO: produto.DESC_PRODUTO,
+            CREDITO: item.CREDITO,
         }));
 
         state.modalDetalhesItensDevolucao.open()
@@ -172,7 +162,7 @@ export const actions = {
                 DATA: utils.dataBrasil(item.DATA) ?? '',
                 VALOR: utils.formatValor(item.VALOR) ?? '',
                 NF_DEVOLUCAO: item.NF_DEVOLUCAO ?? '',
-                CREDITO: utils.formatValor(item.CREDITO) ?? '',
+                TIPO_PAGAMENTO: actions.formatarTipoPagamento(item.TIPO_PAGAMENTO) ?? '',
                 LOGIN: item.LOGIN ?? '',
                 STATUS: item.STATUS ?? ''
             }
@@ -206,9 +196,9 @@ export const actions = {
                 width: "80%"
             },
             {
-                key: 'CREDITO',
-                label: "Crédito",
-                align: 'right',
+                key: 'TIPO_PAGAMENTO',
+                label: "Tipo Pag.",
+                align: 'center',
             },
             {
                 key: 'LOGIN',
@@ -246,4 +236,23 @@ export const actions = {
             state.loading = false
         }
     },
+
+    formatarTipoPagamento(tipoPagamento: string) {
+        const tipos = {
+            "0": 'Requisição',
+            "1": 'Dinheiro',
+            "2": 'Cartão',
+            "3": 'Cheque',
+            "4": 'Pedido',
+            "5": 'Detalhado',
+            "6": 'Ent. Rec',
+            "7": 'Vale-Peça',
+            "8": 'Depósito',
+            "9": 'Crédito',
+            "P": 'Pix',
+            "M": 'Mercado Livre'
+        };
+
+        return tipos[tipoPagamento] || '';
+    }
 }
