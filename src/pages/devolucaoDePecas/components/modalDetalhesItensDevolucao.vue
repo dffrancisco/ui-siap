@@ -66,6 +66,9 @@ nextTick(() => {
     <div>
       <div id="gridDetalhesItensDevolucao"></div>
     </div>
+    <span class="text-subtitle-1">
+      Valor do Crédito igual a 0,00 (zero) significa que o cliente já usou o crédito
+    </span>
   </v-container>
 </template>
 

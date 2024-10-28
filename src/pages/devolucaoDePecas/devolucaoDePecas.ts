@@ -42,10 +42,8 @@ export const state = reactive({
             align: 'center',
         },
         {
-            title: 'Tipo Pag.', key: 'TIPO_PAGAMENTO',
+            title: 'Tipo Pag.', key: 'DESCRICAO_PAGAMENTO',
             align: 'center',
-            value: (item: iDevolucao) => actions.formatarTipoPagamento(item.TIPO_PAGAMENTO)
-
         },
         {
             title: 'Funcionário', key: 'LOGIN',
@@ -76,7 +74,7 @@ export const actions = {
     createModal() {
         state.modalDetalhesItensDevolucao = new xModal.create({
             el: "#modalDetalhesItensDevolucao",
-            height: 400,
+            height: 420,
             width: 900,
             title: 'Detalhes itens devolução',
             theme: 'xModal-blue',
@@ -162,7 +160,7 @@ export const actions = {
                 DATA: utils.dataBrasil(item.DATA) ?? '',
                 VALOR: utils.formatValor(item.VALOR) ?? '',
                 NF_DEVOLUCAO: item.NF_DEVOLUCAO ?? '',
-                TIPO_PAGAMENTO: actions.formatarTipoPagamento(item.TIPO_PAGAMENTO) ?? '',
+                DESCRICAO_PAGAMENTO: item.DESCRICAO_PAGAMENTO ?? '',
                 LOGIN: item.LOGIN ?? '',
                 STATUS: item.STATUS ?? ''
             }
@@ -196,7 +194,7 @@ export const actions = {
                 width: "80%"
             },
             {
-                key: 'TIPO_PAGAMENTO',
+                key: 'DESCRICAO_PAGAMENTO',
                 label: "Tipo Pag.",
                 align: 'center',
             },
@@ -235,24 +233,5 @@ export const actions = {
         } finally {
             state.loading = false
         }
-    },
-
-    formatarTipoPagamento(tipoPagamento: string) {
-        const tipos = {
-            "0": 'Requisição',
-            "1": 'Dinheiro',
-            "2": 'Cartão',
-            "3": 'Cheque',
-            "4": 'Pedido',
-            "5": 'Detalhado',
-            "6": 'Ent. Rec',
-            "7": 'Vale-Peça',
-            "8": 'Depósito',
-            "9": 'Crédito',
-            "P": 'Pix',
-            "M": 'Mercado Livre'
-        };
-
-        return tipos[tipoPagamento] || '';
     }
 }
