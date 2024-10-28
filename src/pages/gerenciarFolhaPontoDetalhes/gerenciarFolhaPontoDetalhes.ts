@@ -622,11 +622,11 @@ export const tipoFaltaModal = computed(() => {
     }
 
     if (pontosBatidos.length == 3) {
-        return tipoFaltas.filter(tipoFalta => ![7, 10, 11, 12, 13, 14].includes(tipoFalta.TIPO));
+        return tipoFaltas.filter(tipoFalta => ![7, 10, 11, 12, 14].includes(tipoFalta.TIPO));
     }
 
     if (pontosBatidos.length == 1 || pontosBatidos.length == 2) {
-        return tipoFaltas.filter(tipoFalta => ![7, 10, 13, 14].includes(tipoFalta.TIPO));
+        return tipoFaltas.filter(tipoFalta => ![7, 10, 14].includes(tipoFalta.TIPO));
     }
 
     if (pontosBatidos.length == 0) {
