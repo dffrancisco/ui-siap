@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { state, actions, graficoVendaPorVendedor, graficoVendasPorAno } from "./consultaCliente";
-import ModalLocalizarCliente from "./components/modalLocalizarCliente.vue";
-import ModalBoletosAbertos from "./components/modalBoletosAbertos.vue";
-import ModalBoletosAtrasados from "./components/modalBoletosAtrasados.vue";
-import ModalBoletosEmDia from "./components/modalBoletosEmDia.vue";
-import ModalTodosBoletos from "./components/modalTodosBoletos.vue";
-import ModalDetalhesOrcamento from "./components/modalDetalhesOrcamento.vue";
-import ModalDetalhesItensOrcamento from "./components/modalDetalhesItensOrcamento.vue";
-import ModalDetalhesItensMarca from "./components/modalDetalhesItensMarca.vue";
-import ModalDetalhesCredito from "./components/modalDetalhesCredito.vue";
-import ModalDetalhesDevolucao from "./components/modalDetalhesDevolucao.vue";
-import ModalDetalhesBoletos from "./components/modalDetalhesBoletos.vue";
+import ModalLocalizarCliente from "./components/ModalLocalizarCliente.vue";
+import ModalBoletosAbertos from "./components/ModalBoletosAbertos.vue";
+import ModalBoletosAtrasados from "./components/ModalBoletosAtrasados.vue";
+import ModalBoletosEmDia from "./components/ModalBoletosEmDia.vue";
+import ModalTodosBoletos from "./components/ModalTodosBoletos.vue";
+import ModalDetalhesOrcamento from "./components/ModalDetalhesOrcamento.vue";
+import ModalDetalhesItensOrcamento from "./components/ModalDetalhesItensOrcamento.vue";
+import ModalDetalhesItensMarca from "./components/ModalDetalhesItensMarca.vue";
+import ModalDetalhesCredito from "./components/ModalDetalhesCredito.vue";
+import ModalDetalhesDevolucao from "./components/ModalDetalhesDevolucao.vue";
+import ModalDetalhesBoletos from "./components/ModalDetalhesBoletos.vue";
 import utils from "@/ts/utils";
 import VueApexCharts from "vue3-apexcharts";
 </script>
@@ -56,7 +56,7 @@ import VueApexCharts from "vue3-apexcharts";
       </v-row>
 
       <v-row>
-        <v-col cols="5"
+        <v-col cols="6"
           ><v-text-field
             v-model="state.telefone"
             label="Telefone"
@@ -65,7 +65,7 @@ import VueApexCharts from "vue3-apexcharts";
           >
           </v-text-field
         ></v-col>
-        <v-col cols="3.5"
+        <v-col cols="3"
           ><v-text-field
             v-model="state.dataInicio"
             label="Data Início"
@@ -75,7 +75,7 @@ import VueApexCharts from "vue3-apexcharts";
           >
           </v-text-field
         ></v-col>
-        <v-col cols="3.5"
+        <v-col cols="3"
           ><v-text-field
             v-model="state.dataFim"
             label="Data Fim"
@@ -568,7 +568,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalLocalizarClienteOpened"
     max-width="900"
-    @click:outside="state.modalLocalizarClienteOpened = false"
   >
     <ModalLocalizarCliente
       @selecionarCliente="actions.selecionarCliente"
@@ -580,7 +579,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalBoletosEmAbertoOpened"
     max-width="750"
-    @click:outside="state.modalBoletosEmAbertoOpened = false"
   >
     <ModalBoletosAbertos
       :boletos-em-aberto="state.boletosEmAberto"
@@ -592,7 +590,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalBoletosAtrasadosOpened"
     max-width="750"
-    @click:outside="state.modalBoletosAtrasadosOpened = false"
   >
     <ModalBoletosAtrasados
       :boletos-atrasados="state.boletosAtrasados"
@@ -604,7 +601,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalBoletosEmDiaOpened"
     max-width="750"
-    @click:outside="state.modalBoletosEmDiaOpened = false"
   >
     <ModalBoletosEmDia
       :boletos-em-dia="state.boletosEmDia"
@@ -616,7 +612,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalTodosBoletosOpened"
     max-width="750"
-    @click:outside="state.modalTodosBoletosOpened = false"
   >
     <ModalTodosBoletos
       :todos-boletos="state.todosBoletos"
@@ -628,7 +623,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalDetalhesOrcamentoOpened"
     max-width="750"
-    @click:outside="state.modalDetalhesOrcamentoOpened = false"
   >
     <ModalDetalhesOrcamento
       :detalhesItensOrcamento="state.itensOrcamento"
@@ -641,7 +635,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalDetalhesItensOrcamentoOpened"
     max-width="750"
-    @click:outside="state.modalDetalhesItensOrcamentoOpened = false"
   >
     <ModalDetalhesItensOrcamento
       :detalhesItens="state.detalhesItensOrcamento"
@@ -653,7 +646,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalDetalhesBoletosOpened"
     max-width="750"
-    @click:outside="state.modalDetalhesBoletosOpened = false"
   >
     <ModalDetalhesBoletos
       :detalhesBoleto="state.boletoSelecionado"
@@ -665,7 +657,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalDetalhesItensMarcaOpened"
     max-width="750"
-    @click:outside="state.modalDetalhesItensMarcaOpened = false"
   >
     <ModalDetalhesItensMarca
       :detalhesItensMarca="state.detalhesItensMarca"
@@ -677,7 +668,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalDetalhesCreditoOpened"
     max-width="750"
-    @click:outside="state.modalDetalhesCreditoOpened = false"
   >
     <ModalDetalhesCredito
       :detalhesUsoCredito="state.detalhesUsoCredito"
@@ -690,7 +680,6 @@ import VueApexCharts from "vue3-apexcharts";
   <v-dialog
     v-model="state.modalDetalhesDevolucaoOpened"
     max-width="750"
-    @click:outside="state.modalDetalhesDevolucaoOpened = false"
   >
     <ModalDetalhesDevolucao
       :detalhesDevolucao="state.detalhesDevolucao"

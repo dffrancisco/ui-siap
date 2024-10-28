@@ -129,18 +129,12 @@ export interface iVendasPorAno {
 export interface iBoletos {
     DATA_PROCESSAMENTO: string | null;
     DATA_QUITACAO: string | null;
-    DATA_REEMPRESSAO: string | null;
     DATA_VENCIMENTO: string;
-    DIASATRAZO: number | string | null;
     DIVISAO: string;
     HISTORICO: string;
     ID_CLIENTE: number;
-    ID_EMPRESA: number;
-    LOG: string;
     NUM_BOLETO: number;
     VALOR: number;
-    VALOR_QUITACAO: number | null;
-    VALOR_REEMPRESSAO: number | null;
 }
 
 export interface iResponseDadosCliente {
@@ -160,35 +154,13 @@ export interface iResponseDadosCliente {
     boletos: iBoletos[];
 }
 
-export interface iBoletosAbertos {
-    DATA_PROCESSAMENTO: string | null;
-    DATA_QUITACAO: string | null;
-    DATA_REEMPRESSAO: string | null;
-    DATA_VENCIMENTO: string;
-    DIASATRAZO: number | string | null;
-    DIVISAO: string;
-    HISTORICO: string;
-    ID_CLIENTE: number;
-    ID_EMPRESA: number;
-    LOG: string;
-    NUM_BOLETO: number;
-    VALOR: number;
-    VALOR_QUITACAO: number | null;
-    VALOR_REEMPRESSAO: number | null;
-}
+export interface iBoletosAbertos extends iBoletos { }
 
-export interface iBoletosAtrasados extends iBoletosAbertos { }
+export interface iBoletosAtrasados extends iBoletos { }
 
-export interface iBoletosEmDia {
-    DATA_PROCESSAMENTO: string | null;
-    DATA_QUITACAO: string | null;
-    DATA_VENCIMENTO: string;
-    DIVISAO: string;
-    NUM_BOLETO: number;
-    VALOR: number;
-}
+export interface iBoletosEmDia extends iBoletos { }
 
-export interface iTodosBoletos extends iBoletosEmDia { }
+export interface iTodosBoletos extends iBoletos { }
 
 export interface iParamDetalhesOrc {
     numOrcamento: number;
