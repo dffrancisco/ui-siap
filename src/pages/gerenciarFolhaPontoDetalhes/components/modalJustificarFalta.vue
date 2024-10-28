@@ -167,7 +167,7 @@ onMounted(() => {
             label="Após gerar PDF, fazer upload do mesmo assinado pelo funcionário."
             id="justificativa"
             class="pt-5"
-            maxLength="250"
+            maxLength="100"
             v-model="state.justificativa"
             :disabled="desabilitarJustificativa"
           >
