@@ -53,7 +53,6 @@ export const setup = (emit: any, props: any) => {
         }
 
         if ([
-            TIPO_DIA_FOLGA,
             TIPO_FERIADO,
             TIPO_EM_OUTRA_LOJA,
             TIPO_SEM_SISTEMA
