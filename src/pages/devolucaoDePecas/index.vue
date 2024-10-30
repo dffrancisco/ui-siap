@@ -65,6 +65,7 @@ nextTick(() => {
         items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
         height="480"
+        id="tableDevolucaoPecas"
         items-per-page="50"
         fixed-header
         class="pb-4"
@@ -135,7 +136,7 @@ nextTick(() => {
   width: 130px;
 }
 
-.v-data-table-footer {
+#tableDevolucaoPecas .v-data-table-footer {
   max-height: 50px;
   padding-right: 80px;
   padding-top: 15px;
