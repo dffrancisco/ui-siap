@@ -68,6 +68,7 @@ actions.begin();
                 rows="3"
                 label="DESCREVA COM O MÁXIMO DE DETALHES O MOTIVO DO CHAMADO"
                 required
+                maxlength="500"
               ></v-textarea>
             </v-col>
             <v-col cols="12">
