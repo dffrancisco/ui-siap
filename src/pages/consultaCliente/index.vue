@@ -727,7 +727,7 @@ import VueApexCharts from "vue3-apexcharts";
 .menu-scrollable {
   max-height: 360px;
   overflow-y: auto;
-  margin-top: 15px;
+  margin-top: 20px;
   padding-left: 10px;
   margin-bottom: 15px;
 }
