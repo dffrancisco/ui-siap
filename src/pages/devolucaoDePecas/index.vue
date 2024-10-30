@@ -10,7 +10,10 @@ nextTick(() => {
 
 <template>
   <v-container>
-    <v-card class="pa-5 main-card">
+    <v-card
+      :width="980"
+      class="pa-5 main-card"
+    >
       <div
         id="pnCampos"
         class="d-flex justify-end align-end ga-4 pb-4"
@@ -64,7 +67,7 @@ nextTick(() => {
         :items="state.dbDevolucoes"
         items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
-        height="480"
+        height="380"
         id="tableDevolucaoPecas"
         items-per-page="50"
         fixed-header

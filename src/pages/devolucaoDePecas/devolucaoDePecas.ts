@@ -24,11 +24,11 @@ export const state = reactive({
             align: 'center'
         },
         {
-            title: 'N° Orçamento', key: 'NUM_ORCAMENTO',
+            title: 'N° Orç.', key: 'NUM_ORCAMENTO',
             align: 'center'
         },
         {
-            title: 'Data Orçamento', key: 'DATA',
+            title: 'Data Orç.', key: 'DATA',
             align: 'center',
             value: (item: iDevolucao) => utils.dataBrasil(item.DATA)
         },
