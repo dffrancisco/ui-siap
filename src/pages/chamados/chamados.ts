@@ -13,7 +13,6 @@ export const state = reactive(({
     anexos: ([]),
     chamados: <iChamados[]>[],
     loadingSalvar: false,
-    loadingBuscarDetalhes: false,
     loading: false,
     totalItems: 0,
     itemsPerPage: 5,
@@ -54,7 +53,7 @@ export const actions = {
             solicitante: state.solicitante,
             loja: state.loja,
             assunto: state.assunto,
-            descricao: state.descricao,
+            descricao: state.descricao.toUpperCase(),
             anexos: state.anexos,
             dataAtual: dataAtual
         };
@@ -83,25 +82,29 @@ export const actions = {
 
     async getChamados({ page, itemsPerPage, sortBy, search }: iParamGetChamados) {
         try {
+            state.loading = true
+
             const data = await serviceChamados.getChamados({ page, itemsPerPage, sortBy, search });
 
             state.chamados = data.chamados.map((chamado: iChamados) => ({
                 ...chamado,
                 dataFormatada: dataBrasil(chamado.DATA_CRIACAO),
             }));
-            state.totalItems = data.chamados.length
+            state.totalItems = data.total
         } catch (error) {
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao exibir os dados'
             })
+        } finally {
+            state.loading = false;
         }
     },
 
     async verDetalhesChamado(keyJira: string, descricao: string, solicitante: string, dataFormatada: string) {
 
         try {
-            state.loadingBuscarDetalhes = true
+            state.loading = true
 
             const data = await serviceChamados.verDetalhesChamado(keyJira)
 
@@ -120,7 +123,7 @@ export const actions = {
                 text: 'Erro ao buscar os dados do chamado.'
             })
         } finally {
-            state.loadingBuscarDetalhes = false
+            state.loading = false
         }
     },
 
