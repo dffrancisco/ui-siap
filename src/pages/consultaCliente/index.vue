@@ -102,7 +102,7 @@ import VueApexCharts from "vue3-apexcharts";
 
       <v-divider
         horizontal
-        class="divider mt-4 mb-4"
+        class="divider mt-4"
         :thickness="4"
       ></v-divider>
 
@@ -304,8 +304,9 @@ import VueApexCharts from "vue3-apexcharts";
                 <v-data-table
                   class="tableOrcamentos"
                   style="border-radius: 5px; --v-table-row-height: 45px"
-                  height="390"
+                  height="295"
                   fixed-header
+                  id="tablesConsultaCliente"
                   :headers="state.headersOrcamentos"
                   :loading="state.loading"
                   :items="state.tableOrcamentos"
@@ -326,8 +327,9 @@ import VueApexCharts from "vue3-apexcharts";
                 <v-data-table
                   class="tableOrcamentosNaoFinalizados"
                   style="border-radius: 5px; --v-table-row-height: 45px"
-                  height="390"
+                  height="295"
                   fixed-header
+                  id="tablesConsultaCliente"
                   :headers="state.headersOrcamentosNaoFinalizados"
                   :loading="state.loading"
                   :items="state.tableOrcamentosNaoFinalizados"
@@ -339,8 +341,9 @@ import VueApexCharts from "vue3-apexcharts";
                 <v-data-table
                   class="tableTodosItens"
                   style="border-radius: 5px; --v-table-row-height: 45px"
-                  height="390"
+                  height="295"
                   fixed-header
+                  id="tablesConsultaCliente"
                   :headers="state.headersTodosItensOrcamentos"
                   :loading="state.loading"
                   :items="state.tableTodosItensOrcamentos"
@@ -361,8 +364,9 @@ import VueApexCharts from "vue3-apexcharts";
                 <v-data-table
                   class="tableComprasFaturadas"
                   style="border-radius: 5px; --v-table-row-height: 45px; width: 700px"
-                  height="390"
+                  height="295"
                   fixed-header
+                  id="tablesConsultaCliente"
                   :headers="state.headersComprasFaturadas"
                   :loading="state.loading"
                   :items="state.tableComprasFaturadas"
@@ -374,8 +378,9 @@ import VueApexCharts from "vue3-apexcharts";
                 <v-data-table
                   class="tableMarcas"
                   style="border-radius: 5px; --v-table-row-height: 45px"
-                  height="390"
+                  height="295"
                   fixed-header
+                  id="tablesConsultaCliente"
                   :headers="state.headersMarcas"
                   :loading="state.loading"
                   :items="state.tableMarcas"
@@ -396,7 +401,8 @@ import VueApexCharts from "vue3-apexcharts";
                 <v-data-table
                   class="tableCreditoDevolucao"
                   style="border-radius: 5px; --v-table-row-height: 45px"
-                  height="390"
+                  height="295"
+                  id="tablesConsultaCliente"
                   fixed-header
                   :headers="state.headersCreditoDevolucao"
                   :loading="state.loading"
@@ -419,7 +425,8 @@ import VueApexCharts from "vue3-apexcharts";
                 <v-data-table
                   class="tableDevolucao"
                   style="border-radius: 5px; --v-table-row-height: 45px"
-                  height="390"
+                  height="295"
+                  id="tablesConsultaCliente"
                   fixed-header
                   :headers="state.headersDevolucao"
                   :loading="state.loading"
@@ -440,7 +447,7 @@ import VueApexCharts from "vue3-apexcharts";
               <v-window-item value="vendaPorVendedor">
                 <VueApexCharts
                   width="100%"
-                  height="405"
+                  height="315"
                   type="bar"
                   :options="{
                             chart: {
@@ -477,7 +484,7 @@ import VueApexCharts from "vue3-apexcharts";
               <v-window-item value="vendasPorAno">
                 <VueApexCharts
                   width="100%"
-                  height="405"
+                  height="315"
                   type="line"
                   :options="{
                             chart: {
@@ -525,8 +532,9 @@ import VueApexCharts from "vue3-apexcharts";
                 <v-data-table
                   class="tableBoletos"
                   style="border-radius: 5px; --v-table-row-height: 45px; width: 700px"
-                  height="390"
+                  height="295"
                   fixed-header
+                  id="tablesConsultaCliente"
                   :headers="state.headersBoletos"
                   :loading="state.loading"
                   :items="state.tableBoletos"
@@ -697,27 +705,27 @@ import VueApexCharts from "vue3-apexcharts";
   background-color: #f0f0f0;
 }
 
-.v-data-table-footer {
+#tablesConsultaCliente .v-data-table-footer {
   max-height: 50px;
 }
 </style>
 
 <style scoped>
 .cardDashboard {
-  height: 105px;
+  height: 84px;
   color: #fff6f6;
   font-size: 17px;
   font-weight: bold;
   text-align: center;
-  padding: 20px;
+  padding: 10px;
 }
 
 .v-col {
-  padding: 6px;
+  padding: 5px;
 }
 
 .menu-scrollable {
-  max-height: 450px;
+  max-height: 360px;
   overflow-y: auto;
   margin-top: 15px;
   padding-left: 10px;
