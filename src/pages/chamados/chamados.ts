@@ -54,7 +54,7 @@ export const actions = {
             solicitante: state.solicitante,
             loja: state.loja,
             assunto: state.assunto,
-            descricao: state.descricao,
+            descricao: state.descricao.toUpperCase(),
             anexos: state.anexos,
             dataAtual: dataAtual
         };
@@ -89,7 +89,7 @@ export const actions = {
                 ...chamado,
                 dataFormatada: dataBrasil(chamado.DATA_CRIACAO),
             }));
-            state.totalItems = data.chamados.length
+            state.totalItems = data.total
         } catch (error) {
             Swal.fire({
                 icon: 'error',

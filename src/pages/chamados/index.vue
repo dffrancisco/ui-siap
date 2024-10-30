@@ -64,11 +64,10 @@ actions.begin();
               <v-textarea
                 v-model="state.descricao"
                 id="descricao"
-                class="obr ss"
+                class="obr text-uppercase rounded"
                 rows="3"
                 label="DESCREVA COM O MÁXIMO DE DETALHES O MOTIVO DO CHAMADO"
                 required
-                @input="state.descricao = state.descricao.toUpperCase()"
               ></v-textarea>
             </v-col>
             <v-col cols="12">
