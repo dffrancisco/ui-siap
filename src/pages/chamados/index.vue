@@ -88,6 +88,7 @@ actions.begin();
             :items="state.chamados"
             :loading="state.loading"
             :search="state.search"
+            :height="300"
             class="elevation-1"
             item-value="ID_CHAMADO"
             @update:options="actions.getChamados"
@@ -136,23 +137,26 @@ actions.begin();
         </v-form>
       </div>
     </v-card>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+        persistent
+      ></v-progress-circular>
+    </v-overlay>
   </v-container>
 
-  <div id="pnModalDetalhes" title="Detalhes do Chamado">
+  <div
+    id="pnModalDetalhes"
+    title="Detalhes do Chamado"
+  >
     <c-modal-detalhes />
   </div>
-
-  <v-overlay
-    :model-value="state.loadingBuscarDetalhes"
-    class="align-center justify-center"
-  >
-    <v-progress-circular
-      color="primary"
-      indeterminate
-      size="64"
-      persistent
-    ></v-progress-circular>
-  </v-overlay>
 </template>
 
 <style scoped>
@@ -164,7 +168,6 @@ actions.begin();
 .cardChamado {
   width: 700px;
   margin: 0 auto;
-  margin-top: 30px;
 }
 .pnCampos {
   margin-top: 25px;
