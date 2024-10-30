@@ -1,8 +1,9 @@
-import utils from "@/ts/utils";
+import utils, { iColumnPrint } from "@/ts/utils";
 import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceRelatorioEntregarReceber from './services/relatorioEntregarReceber.service'
+import { iDadosRelatorioEntregarReceber } from "./interfaces";
 
 export const state = reactive({
     loading: false,
@@ -14,7 +15,7 @@ export const state = reactive({
     totalItems: 0,
     itemsPerPage: 30,
     page: 1,
-    dadosRelatorio: <any[]>[],
+    dadosRelatorio: <iDadosRelatorioEntregarReceber[]>[],
     headers: <any>[
         {
             title: "Nº Orçamento",
@@ -49,20 +50,12 @@ export const state = reactive({
             align: 'left',
         },
         {
-            title: "Valor",
-            key: "VALOR_TOTAL",
-            sortable: true,
-            align: 'left',
-            value: (item: any) => utils.formatValor(item.VALOR_TOTAL),
-        },
-        {
-            title: "Recebido",
+            title: "Valor Recebido",
             key: "VALOR_RECEBIDO",
             sortable: true,
-            align: 'left',
+            align: 'center',
             value: (item: any) => utils.formatValor(item.VALOR_RECEBIDO),
         }
-
     ]
 })
 
@@ -90,13 +83,12 @@ export const actions = {
             return;
         }
 
-        //converter para poder comparar
         const dataInicioMoment = moment(state.dataInicio);
         const dataFimMoment = moment(state.dataFim);
         const diferencaEmMeses = dataFimMoment.diff(dataInicioMoment, 'months');
-        if (diferencaEmMeses > 3) {
+        if (diferencaEmMeses > 6) {
             await Swal.fire({
-                text: "O intervalo entre as datas não pode ser maior que 3 meses!",
+                text: "O intervalo entre as datas não pode ser maior que 6 meses!",
                 icon: "warning"
             });
             return;
@@ -142,34 +134,46 @@ export const actions = {
 
 
     async onClickImprimir() {
-        // try {
-        //     state.loading = true;
+        try {
+            state.loading = true;
+            let relatorio = state.dadosRelatorio
+            const relatorioFormatado = actions.formatarDadosImpressao([...relatorio])
 
-        //     const columns: iColumnPrint[] = [
-        //         { key: 'DESC_PRODUTO', label: 'Produto', width: '35%', align: 'left' },
-        //         { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '15%', align: 'left' },
-        //         { key: 'QTO_ESTOQUE', label: 'Qtd. Estoque', width: '17%', align: 'center' },
-        //         { key: 'QTO_VENDA', label: 'Qtd. Venda', width: '17%', align: 'center' },
-        //         { key: 'END_ESTOQUE', label: 'End. Estoque', width: '16%', align: 'left' }
-        //     ];
+            const columns: iColumnPrint[] = [
+                { key: 'NUM_ORCAMENTO', label: 'Nº Orçamento', width: '15%', align: 'left' },
+                { key: 'DATA', label: 'Data', width: '20%', align: 'center' },
+                { key: 'DATA_RECEBIMENTO', label: 'Data Rec.', width: '20%', align: 'center' },
+                { key: 'VALOR_RECEBIDO', label: 'Valor', width: '15%', align: 'center' },
+                { key: 'DESCRICAO_PAGAMENTO', label: 'Tipo Pagamento', width: '17%', align: 'center' },
+                { key: 'LOGIN', label: 'Funcionário', width: '17%', align: 'center' },
+            ];
 
-        //     const titulo = `
-        //         <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
-        //             <span>Período: ${moment(state.dataInicioImpressao).format('DD/MM/YYYY')} até ${moment(state.dataFimImpressao).format('DD/MM/YYYY')}</span>
-        //             <strong style="font-size: 16px;">Relatório Produtos Vendidos</strong>
-        //         </div>
-        //     `;
+            const titulo = `
+                <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                    <span>Período: ${moment(state.dataInicioImpressao).format('DD/MM/YYYY')} até ${moment(state.dataFimImpressao).format('DD/MM/YYYY')}</span>
+                    <strong style="font-size: 16px;">Relatório Entregar e Receber</strong>
+                </div>
+            `;
 
-        //     await utils.printComCabecalho(columns, state.dadosRelatorio, titulo);
+            await utils.printComCabecalho(columns, relatorioFormatado, titulo);
 
-        // } catch (error) {
-        //     Swal.fire({
-        //         icon: "error",
-        //         text: "Erro ao imprimir o relatório."
-        //     });
-        // } finally {
-        //     state.loading = false;
-        // }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    formatarDadosImpressao(data) {
+        return data.map(item => ({
+            ...item,
+            DATA: item.DATA ? utils.dataBrasil(item.DATA) : '-----',
+            DATA_RECEBIMENTO: item.DATA_RECEBIMENTO ? utils.dataBrasil(item.DATA_RECEBIMENTO) : '-----',
+            VALOR_RECEBIDO: item.VALOR_RECEBIDO ? utils.formatValor(item.VALOR_RECEBIDO) : '-----',
+        }));
     }
 
 }
