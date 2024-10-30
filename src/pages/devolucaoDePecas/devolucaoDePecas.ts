@@ -42,9 +42,8 @@ export const state = reactive({
             align: 'center',
         },
         {
-            title: 'Crédito', key: 'CREDITO',
+            title: 'Tipo Pag.', key: 'DESCRICAO_PAGAMENTO',
             align: 'center',
-            value: (item: iDevolucao) => utils.formatValor(item.CREDITO)
         },
         {
             title: 'Funcionário', key: 'LOGIN',
@@ -62,7 +61,7 @@ export const state = reactive({
         },
     ],
     dataInicioImpressao: null,
-    dataFimImpressao: null
+    dataFimImpressao: null,
 })
 
 export const actions = {
@@ -75,8 +74,8 @@ export const actions = {
     createModal() {
         state.modalDetalhesItensDevolucao = new xModal.create({
             el: "#modalDetalhesItensDevolucao",
-            height: 400,
-            width: 800,
+            height: 420,
+            width: 900,
             title: 'Detalhes itens devolução',
             theme: 'xModal-blue',
             onOpen: () => { state.modalDetalhesItensDevolucaoOpened = true; },
@@ -91,7 +90,8 @@ export const actions = {
             COD_PRODUTO: produto.COD_PRODUTO,
             QUAL_TIPO_AVARIA: produto.QUAL_TIPO_AVARIA,
             MOTIVO_DEVOLUCAO: produto.MOTIVO_DEVOLUCAO,
-            DESC_PRODUTO: produto.DESC_PRODUTO
+            DESC_PRODUTO: produto.DESC_PRODUTO,
+            CREDITO: item.CREDITO,
         }));
 
         state.modalDetalhesItensDevolucao.open()
@@ -160,7 +160,7 @@ export const actions = {
                 DATA: utils.dataBrasil(item.DATA) ?? '',
                 VALOR: utils.formatValor(item.VALOR) ?? '',
                 NF_DEVOLUCAO: item.NF_DEVOLUCAO ?? '',
-                CREDITO: utils.formatValor(item.CREDITO) ?? '',
+                DESCRICAO_PAGAMENTO: item.DESCRICAO_PAGAMENTO ?? '',
                 LOGIN: item.LOGIN ?? '',
                 STATUS: item.STATUS ?? ''
             }
@@ -194,9 +194,9 @@ export const actions = {
                 width: "80%"
             },
             {
-                key: 'CREDITO',
-                label: "Crédito",
-                align: 'right',
+                key: 'DESCRICAO_PAGAMENTO',
+                label: "Tipo Pag.",
+                align: 'center',
             },
             {
                 key: 'LOGIN',
@@ -233,5 +233,5 @@ export const actions = {
         } finally {
             state.loading = false
         }
-    },
+    }
 }
