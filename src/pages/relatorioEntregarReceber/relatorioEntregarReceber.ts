@@ -24,7 +24,13 @@ export const state = reactive({
             align: 'left',
         },
         {
-            title: "Data",
+            title: "Nome Cliente",
+            key: "NOME_CLIENTE",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Data Venda",
             key: "DATA",
             sortable: true,
             align: 'center',
@@ -38,16 +44,16 @@ export const state = reactive({
             value: (item: any) => utils.dataBrasil(item.DATA_RECEBIMENTO),
         },
         {
-            title: "Tipo Pag.",
-            key: "DESCRICAO_PAGAMENTO",
-            sortable: true,
-            align: 'left',
-        },
-        {
             title: "Funcionário",
             key: "LOGIN",
             sortable: true,
-            align: 'left',
+            align: 'center',
+        },
+        {
+            title: "Tipo Pagamento",
+            key: "DESCRICAO_PAGAMENTO",
+            sortable: true,
+            align: 'center',
         },
         {
             title: "Valor Recebido",
@@ -141,11 +147,12 @@ export const actions = {
 
             const columns: iColumnPrint[] = [
                 { key: 'NUM_ORCAMENTO', label: 'Nº Orçamento', width: '15%', align: 'left' },
-                { key: 'DATA', label: 'Data', width: '20%', align: 'center' },
-                { key: 'DATA_RECEBIMENTO', label: 'Data Rec.', width: '20%', align: 'center' },
-                { key: 'VALOR_RECEBIDO', label: 'Valor', width: '15%', align: 'center' },
-                { key: 'DESCRICAO_PAGAMENTO', label: 'Tipo Pagamento', width: '17%', align: 'center' },
+                { key: 'NOME_CLIENTE', label: 'Cliente', width: '15%', align: 'left' },
+                { key: 'DATA', label: 'Data Venda', width: '20%', align: 'center' },
+                { key: 'DATA_RECEBIMENTO', label: 'Data Recebimento', width: '20%', align: 'center' },
                 { key: 'LOGIN', label: 'Funcionário', width: '17%', align: 'center' },
+                { key: 'DESCRICAO_PAGAMENTO', label: 'Tipo Pagamento', width: '17%', align: 'center' },
+                { key: 'VALOR_RECEBIDO', label: 'Valor Recebido', width: '15%', align: 'center' },
             ];
 
             const titulo = `

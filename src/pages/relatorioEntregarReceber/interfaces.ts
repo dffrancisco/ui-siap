@@ -5,10 +5,10 @@ export interface iDadosRelatorioEntregarReceber {
     DESCRICAO_PAGAMENTO: string;
     HORA: string;
     LOGIN: string;
+    NOME_CLIENTE: string;
     NUM_ORCAMENTO: number;
     TIPO_PAGAMENTO: string;
     VALOR_RECEBIDO: number;
-    VALOR_TOTAL: number;
 }
 
 export interface iParamsParaRelatorio {
