@@ -1,10 +1,14 @@
 export interface iDadosRelatorioEntregarReceber {
-    // COD_PRODUTO: number;
-    // DESC_PRODUTO: string;
-    // END_ESTOQUE: string;
-    // NUM_FABRICANTE: string;
-    // QTO_ESTOQUE: number;
-    // QTO_VENDA: number;
+    COD_FUNCIONARIO: number;
+    DATA: string;
+    DATA_RECEBIMENTO: string;
+    DESCRICAO_PAGAMENTO: string;
+    HORA: string;
+    LOGIN: string;
+    NUM_ORCAMENTO: number;
+    TIPO_PAGAMENTO: string;
+    VALOR_RECEBIDO: number;
+    VALOR_TOTAL: number;
 }
 
 export interface iParamsParaRelatorio {

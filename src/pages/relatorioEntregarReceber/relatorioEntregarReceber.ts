@@ -15,7 +15,55 @@ export const state = reactive({
     itemsPerPage: 30,
     page: 1,
     dadosRelatorio: <any[]>[],
-    headers: <any>[]
+    headers: <any>[
+        {
+            title: "Nº Orçamento",
+            key: "NUM_ORCAMENTO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Data",
+            key: "DATA",
+            sortable: true,
+            align: 'center',
+            value: (item: any) => utils.dataBrasil(item.DATA),
+        },
+        {
+            title: "Data Recebimento",
+            key: "DATA_RECEBIMENTO",
+            sortable: true,
+            align: 'center',
+            value: (item: any) => utils.dataBrasil(item.DATA_RECEBIMENTO),
+        },
+        {
+            title: "Tipo Pag.",
+            key: "DESCRICAO_PAGAMENTO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Funcionário",
+            key: "LOGIN",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Valor",
+            key: "VALOR_TOTAL",
+            sortable: true,
+            align: 'left',
+            value: (item: any) => utils.formatValor(item.VALOR_TOTAL),
+        },
+        {
+            title: "Recebido",
+            key: "VALOR_RECEBIDO",
+            sortable: true,
+            align: 'left',
+            value: (item: any) => utils.formatValor(item.VALOR_RECEBIDO),
+        }
+
+    ]
 })
 
 

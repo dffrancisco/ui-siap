@@ -54,7 +54,8 @@ onMounted(async () => {
         v-model:itemsPerPage="state.itemsPerPage"
         :items-length="state.totalItems"
         style="border-radius: 5px"
-        height="460"
+        id="tableRelatorioEntregarReceber"
+        height="395"
         fixed-header
         :items="state.dadosRelatorio"
         :headers="state.headers"
@@ -101,12 +102,12 @@ onMounted(async () => {
   background-color: #f0f0f0;
 }
 
-.v-data-table-footer {
+#tableRelatorioEntregarReceber .v-data-table-footer {
   max-height: 2px;
   padding-top: 20px;
 }
 
-.v-data-table-footer__pagination {
+#tableRelatorioEntregarReceber .v-data-table-footer__pagination {
   padding-right: 50px;
 }
 </style>
