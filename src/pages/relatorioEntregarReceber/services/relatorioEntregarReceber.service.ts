@@ -1,12 +1,12 @@
 import axios from "axios";
-// import { iParamsParaRelatorio, iResponseDadosProdutosVendidos } from "../interfaces";
+import { iParamsParaRelatorio, iResponseDadosEntregarReceber } from "../interfaces";
 
 const caminho = 'siap/relatorioEntregarReceber';
 
-// type iGetDadosProdutosVendidos = (param: iParamsParaRelatorio) => Promise<iResponseDadosProdutosVendidos>;
+type iGetDadosEntregarReceber = (param: iParamsParaRelatorio) => Promise<iResponseDadosEntregarReceber>;
 
 
-const getDadosParaRelatorio: any = async (param) => {
+const getDadosParaRelatorio: iGetDadosEntregarReceber = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getDadosParaRelatorio",
         param
