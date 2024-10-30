@@ -2,6 +2,7 @@ import utils from "@/ts/utils";
 import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
+import serviceRelatorioEntregarReceber from './services/relatorioEntregarReceber.service'
 
 export const state = reactive({
     loading: false,
@@ -67,28 +68,28 @@ export const actions = {
     },
 
     async getDadosParaRelatorio() {
-        // try {
-        //     state.loading = true;
+        try {
+            state.loading = true;
 
-        //     const data = await serviceRelatorioProdutosVendidos.getDadosParaRelatorio({
-        //         page: state.page,
-        //         itemsPerPage: state.itemsPerPage,
-        //         dataInicio: state.dataInicio,
-        //         dataFim: state.dataFim,
-        //     });
-        //     state.dadosRelatorio = data.dadosRelatorio;
-        //     state.totalItems = data.totalDadosRelatorio[0].TOTAL;
+            const data = await serviceRelatorioEntregarReceber.getDadosParaRelatorio({
+                page: state.page,
+                itemsPerPage: state.itemsPerPage,
+                dataInicio: state.dataInicio,
+                dataFim: state.dataFim,
+            });
+            state.dadosRelatorio = data.dadosRelatorio;
+            state.totalItems = data.totalDadosRelatorio[0].TOTAL;
 
-        //     state.dataInicioImpressao = state.dataInicio
-        //     state.dataFimImpressao = state.dataFim
-        // } catch (error) {
-        //     Swal.fire({
-        //         icon: "error",
-        //         text: error?.response?.data?.msg || "Erro ao trazer os dados para relatório!"
-        //     });
-        // } finally {
-        //     state.loading = false;
-        // }
+            state.dataInicioImpressao = state.dataInicio
+            state.dataFimImpressao = state.dataFim
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.msg || "Erro ao trazer os dados para relatório!"
+            });
+        } finally {
+            state.loading = false;
+        }
     },
 
 

@@ -10,7 +10,7 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      :width="800"
+      :width="900"
       class="ma-auto pa-4"
     >
       <div class="divInputs">
