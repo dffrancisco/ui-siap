@@ -65,6 +65,7 @@ nextTick(() => {
         items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
         height="480"
+        id="tableDevolucaoPecas"
         items-per-page="50"
         fixed-header
         class="pb-4"
@@ -73,6 +74,7 @@ nextTick(() => {
         <template v-slot:item.NF_DEVOLUCAO="{ item }">
           <div class="nf-container">{{ item.NF_DEVOLUCAO }}</div>
         </template>
+
         <template v-slot:item.inf="{ item }">
           <v-icon
             size="large"
@@ -85,10 +87,7 @@ nextTick(() => {
         </template>
       </v-data-table>
 
-      <div class="d-flex justify-space-between align-center">
-        <span class="text-subtitle-1">
-          Valor do Crédito igual a 0,00 (zero) significa que o cliente já usou o crédito
-        </span>
+      <div class="btnPrint">
         <v-btn
           icon="mdi-printer"
           color="primary"
@@ -136,6 +135,12 @@ nextTick(() => {
   white-space: normal;
   width: 130px;
 }
+
+#tableDevolucaoPecas .v-data-table-footer {
+  max-height: 50px;
+  padding-right: 80px;
+  padding-top: 15px;
+}
 </style>
 
 <style scoped>
@@ -146,5 +151,12 @@ nextTick(() => {
 
 .container-data {
   width: 150px;
+}
+
+.btnPrint {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -45px;
+  padding-right: 15px;
 }
 </style>
