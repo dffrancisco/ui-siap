@@ -227,8 +227,8 @@ onMounted(async () => {
           height="20"
           style="border-radius: 10px"
         >
-          <template v-slot:default="{ value }">
-            <strong>{{ Math.ceil(value) }}%</strong>
+          <template v-slot:default>
+            <strong>{{ Math.ceil(totalizadorMetas.percentualMetaAcumulada) }}%</strong>
           </template>
         </v-progress-linear>
       </div>
@@ -258,12 +258,13 @@ onMounted(async () => {
           <template #item.PROGRESSO="{ item }">
             <v-progress-linear
               v-model="item.PROGRESSO"
+              :value="item.PROGRESSO"
               color="primary"
               height="20"
               style="border-radius: 10px"
             >
-              <template v-slot:default="{ value }">
-                <strong class="progress-value">{{ Math.ceil(value) }}%</strong>
+              <template v-slot:default>
+                <strong class="progress-value">{{ Math.ceil(item.PROGRESSO) }}%</strong>
               </template>
             </v-progress-linear>
           </template>
