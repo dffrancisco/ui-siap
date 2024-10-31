@@ -250,6 +250,7 @@ onMounted(async () => {
         size="64"
       ></v-progress-circular>
     </v-overlay>
+    <div id="pnCodigoTela">liberarCliente</div>
   </v-container>
 
   <div
