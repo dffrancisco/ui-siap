@@ -50,6 +50,7 @@ export const state = reactive({
 export const actions = ({
     async init() {
         actions.criarGrid()
+        state.gridPedido.disable()
         state.inputLocOrcElement = document.getElementById('inputLocOrc') as HTMLInputElement
     },
 
@@ -106,6 +107,37 @@ export const actions = ({
 
             state.gridPedido.source(data)
             state.dbOrcamentosClienteFaturado = data
+
+            const mainDiv = document.querySelector('#gridOrcamentosClienteFaturado .xGridV2-content');
+
+            const rows = mainDiv.querySelectorAll('.xGridV2-row') as any;
+
+            rows.forEach(row => {
+                let valorCompra = 0
+                let valorDevolucao = 0
+
+                const cols = row.querySelectorAll('.xGridV2-col');
+
+                cols.forEach(col => {
+
+                    const nameCol = col.getAttribute('name');
+
+                    if (nameCol == 'VALOR') {
+                        valorCompra += parseFloat(col.textContent.trim());
+                    }
+
+                    if (nameCol == 'DEVOLUCAO') {
+                        valorDevolucao += parseFloat(col.textContent.trim());
+                    }
+
+                    if (valorDevolucao > 0) {
+                        if (valorCompra == valorDevolucao) {
+                            row.style.backgroundColor = '#7AB2D3';
+                        }
+                    }
+                });
+            });
+
             state.inputLocOrcElement.focus()
 
         } catch (error) {
@@ -124,19 +156,12 @@ export const actions = ({
             return
         }
 
-        let isOrcamento = state.locValor.startsWith('+')
+        let num_orcamento = state.locValor.startsWith('+') ? state.locValor.substring(1) : state.locValor
+
         let isDevolucao = state.locValor.toUpperCase().startsWith('DEV')
 
-        if (!isOrcamento && !isDevolucao) {
-            Swal.fire({
-                icon: "error",
-                text: "Orçamento inválido!"
-            })
-        }
+        if (!isDevolucao) {
 
-        if (isOrcamento) {
-
-            let num_orcamento = state.locValor.slice(1)
             let orcamento: iOrcamentosLocalizados = state.dbOrcamentosClienteFaturado.find((orc) =>
                 orc.NUM_ORCAMENTO == num_orcamento
             )

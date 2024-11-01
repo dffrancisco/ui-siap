@@ -194,6 +194,12 @@ onMounted(async () => {
   </v-container>
 </template>
 
+<style>
+#gridOrcamentosClienteFaturado .xGridV2-disable {
+  background-color: transparent !important;
+}
+</style>
+
 <style scoped>
 .custom-scroll {
   padding-right: 10px;
