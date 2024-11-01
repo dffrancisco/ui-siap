@@ -31,12 +31,12 @@ onMounted(async () => {
           <v-col class="d-flex ga-4">
             <v-text-field
               type="text"
-              label="Cliente"
+              label="Cliente (Pesquisar F2)"
               density="compact"
               readonly
-              :disabled="!state.dbClienteFaturado.ID_CLIENTE"
               :clearable="false"
               v-model="state.dbClienteFaturado.NOME"
+              @click="state.modalSelecionarClienteOpened = true"
             />
             <div class="d-flex align-center">
               <v-btn
@@ -126,7 +126,6 @@ onMounted(async () => {
               <div>
                 <v-btn
                   @click="actions.openModalGeralBoleto"
-                  v-if="!state.esconderBtn"
                   :disabled="state.dbOrcamentosClienteFaturado.length == 0"
                   :color="
                     computeds.calcularOrcamentosLocalizados.value.total == computeds.totalValorOrcamentos.value &&

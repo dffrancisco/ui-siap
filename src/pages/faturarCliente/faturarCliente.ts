@@ -10,8 +10,11 @@ import { useEventListener } from "@vueuse/core";
 
 useEventListener(document, "keydown", async (event) => {
     if (!state.modalSelecionarClienteOpened && !state.modalGerarBoletoOpened) {
-        if (event.key === "F1" && state.dbOrcamentosClienteFaturado.length > 0) {
-            actions.openModalGeralBoleto();
+        if (event.key === "F1") {
+            if (state.dbOrcamentosClienteFaturado.length > 0) {
+                actions.openModalGeralBoleto();
+            }
+
             event.preventDefault();
             event.stopPropagation();
         }
@@ -41,7 +44,7 @@ export const state = reactive({
     orcamentosLocalizados: <iOrcamentosLocalizados[]>[],
     inputLocOrcElement: <HTMLInputElement>null,
     modalGerarBoletoOpened: false,
-    esconderBtn: false
+    dbClienteFaturadoProximo: <iClienteFaturado>{}
 })
 
 export const actions = ({
@@ -70,17 +73,22 @@ export const actions = ({
         state.modalSelecionarClienteOpened = false
     },
 
-    closeModalGerarBoleto(esconderBtn: boolean) {
-        if (esconderBtn == true) {
-            state.esconderBtn = true
+    async closeModalGerarBoleto(boletoGerado: boolean) {
+        if (boletoGerado == true && state.dbClienteFaturadoProximo?.ID_CLIENTE) {
+            state.dbClienteFaturado = state.dbClienteFaturadoProximo
+            await actions.getOrcamentosClienteFaturado()
+        } else {
+            state.dbClienteFaturado = {} as iClienteFaturado
+            state.dbOrcamentosClienteFaturado = []
+            state.gridPedido.clear()
         }
 
         state.modalGerarBoletoOpened = false
     },
 
-    async selecionarCliente(cliente: iClienteFaturado) {
-        state.esconderBtn = false
+    async selecionarCliente(cliente: iClienteFaturado, clienteProximo: iClienteFaturado) {
         state.dbClienteFaturado = cliente
+        state.dbClienteFaturadoProximo = clienteProximo
         state.orcamentosLocalizados = []
         await actions.getOrcamentosClienteFaturado()
     },

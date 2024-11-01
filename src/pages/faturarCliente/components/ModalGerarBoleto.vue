@@ -64,8 +64,8 @@ const actions = {
     await actions.criarBoletos();
   },
 
-  async closeModal(esconderBtn: boolean = false) {
-    emits("closeModal", esconderBtn);
+  async closeModal(boletoGerado: boolean = false) {
+    emits("closeModal", boletoGerado);
   },
 
   async btnGerarBoleto() {
