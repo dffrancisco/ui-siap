@@ -351,7 +351,7 @@ export const actions = {
             if (!state.tipoFaturamento || !state.dividirBoleto) {
                 Swal.fire({
                     icon: "warning",
-                    title: "Preencha todos os dados de faturamento",
+                    title: "Preencha todos os dados de faturamento!",
                 });
                 actions.alterar()
                 return false
