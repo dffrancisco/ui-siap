@@ -50,7 +50,6 @@ export const state = reactive({
 export const actions = ({
     async init() {
         actions.criarGrid()
-        state.gridPedido.disable()
         state.inputLocOrcElement = document.getElementById('inputLocOrc') as HTMLInputElement
     },
 
