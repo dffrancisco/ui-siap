@@ -277,8 +277,40 @@ export const actions = ({
         }
 
         state.modalGerarBoletoOpened = true
-    }
+    },
 
+
+    excluirOrcLocalizado(orcamento?: iOrcamentosLocalizados) {
+        if (!orcamento.NUM_ORCAMENTO) {
+            state.gridPedido.source(state.dbOrcamentosClienteFaturado);
+            state.orcamentosLocalizados = [];
+            return;
+        }
+
+        const { NUM_ORCAMENTO, DATA } = orcamento;
+
+        state.orcamentosLocalizados = state.orcamentosLocalizados.filter(
+            orcLoc => !(orcLoc.NUM_ORCAMENTO === NUM_ORCAMENTO && orcLoc.DATA === DATA)
+        );
+
+        let columnLine = 0
+
+        document.querySelectorAll('.xGridV2-col[name="NUM_ORCAMENTO"]').forEach(col => {
+            columnLine++
+
+            let originalBackgroundGrid = (columnLine % 2 === 0) ? '#edf2f7' : '#ffffff';
+            let orifinalColorFontGrid = '#1f2937'
+
+            if (col.textContent.trim() == NUM_ORCAMENTO.toString()) {
+                const parentRow = col.closest('.xGridV2-row') as HTMLBodyElement;
+
+                if (parentRow && parentRow.querySelector('.xGridV2-col[name="DATA"]')?.textContent?.trim() === utils.dataBrasil(DATA)) {
+                    parentRow.style.backgroundColor = originalBackgroundGrid;
+                    parentRow.style.color = orifinalColorFontGrid;
+                }
+            }
+        });
+    }
 })
 
 export const computeds = ({

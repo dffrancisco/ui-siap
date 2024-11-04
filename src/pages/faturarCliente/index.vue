@@ -63,39 +63,54 @@ onMounted(async () => {
             <div id="gridOrcamentosClienteFaturado"></div>
           </v-col>
           <v-col class="d-flex">
-            <div class="border rounded-lg d-flex flex-grow-1 flex-column justify-space-between pa-3">
+            <div class="border rounded-lg d-flex flex-grow-1 flex-column justify-space-between px-2 py-3">
               <div class="custom-scroll">
                 <div v-for="orcamento in state.orcamentosLocalizados">
-                  <div
-                    v-if="!orcamento.ISDEVOLUCAO"
-                    class="d-flex justify-space-between"
-                  >
-                    <span class="text-body-1">+{{ orcamento.NUM_ORCAMENTO }}</span>
-                    <span
-                      class="text-body-1 font-weight-bold"
-                      style="color: #60a5fa"
-                      >{{ utils.formatValor(orcamento.VALOR) }}</span
+                  <div class="d-flex ga-2">
+                    <div
+                      v-if="!orcamento.ISDEVOLUCAO"
+                      class="d-flex justify-space-between flex-grow-1"
                     >
-                  </div>
-                  <div
-                    v-else
-                    class="d-flex justify-space-between"
-                  >
-                    <span class="text-body-1">D{{ orcamento.NUM_DEVOLUCAO }}</span>
-                    <span
-                      class="text-body-1 font-weight-bold"
-                      style="color: #f87171"
+                      <span class="text-body-1">+{{ orcamento.NUM_ORCAMENTO }}</span>
+                      <span
+                        class="text-body-1 font-weight-bold"
+                        style="color: #60a5fa"
+                        >{{ utils.formatValor(orcamento.VALOR) }}</span
+                      >
+                    </div>
+                    <div
+                      v-else
+                      class="d-flex justify-space-between flex-grow-1"
                     >
-                      -{{ utils.formatValor(orcamento.DEVOLUCAO) }}
-                    </span>
+                      <span class="text-body-1">D{{ orcamento.NUM_DEVOLUCAO }}</span>
+                      <span
+                        class="text-body-1 font-weight-bold"
+                        style="color: #f87171"
+                      >
+                        -{{ utils.formatValor(orcamento.DEVOLUCAO) }}
+                      </span>
+                    </div>
+                    <v-icon
+                      @click="actions.excluirOrcLocalizado(orcamento)"
+                      title="Excluir orçamento"
+                      >mdi-delete</v-icon
+                    >
                   </div>
                 </div>
               </div>
               <div class="d-flex flex-column">
-                <span class="text-body-2"
-                  ><strong>Qtd. Orç: </strong
-                  >{{ computeds.calcularOrcamentosLocalizados.value.qtdOrcamentos }}</span
-                >
+                <div class="d-flex justify-space-between">
+                  <span class="text-body-2"
+                    ><strong>Qtd. Orç: </strong
+                    >{{ computeds.calcularOrcamentosLocalizados.value.qtdOrcamentos }}</span
+                  >
+                  <v-icon
+                    @click="actions.excluirOrcLocalizado"
+                    v-if="state.orcamentosLocalizados.length > 0"
+                    title="Excluir todos os orçamentos"
+                    >mdi-delete</v-icon
+                  >
+                </div>
                 <span class="text-body-2"
                   ><strong>Somatório: </strong
                   >{{ utils.formatValor(computeds.calcularOrcamentosLocalizados.value.total) }}</span
@@ -196,7 +211,7 @@ onMounted(async () => {
 
 <style scoped>
 .custom-scroll {
-  padding-right: 10px;
+  padding-right: 4px;
   overflow: auto;
   height: 300px;
   scrollbar-width: thin;
