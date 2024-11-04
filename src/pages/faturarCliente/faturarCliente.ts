@@ -149,75 +149,114 @@ export const actions = ({
         }
     },
 
-    locValorOrcamento() {
-
+    async locValorOrcamento() {
         if (!state.locValor) {
-            return
+            return;
         }
 
-        let num_orcamento = state.locValor.startsWith('+') ? state.locValor.substring(1) : state.locValor
-
-        let isDevolucao = state.locValor.toUpperCase().startsWith('DEV')
-
-        if (!isDevolucao) {
-
-            let orcamento: iOrcamentosLocalizados = state.dbOrcamentosClienteFaturado.find((orc) =>
-                orc.NUM_ORCAMENTO == num_orcamento
-            )
-
-            if (!orcamento) {
-                Swal.fire({
-                    icon: "warning",
-                    text: "Orçamento não encontrado!"
-                })
-
-                state.locValor = null
-
-                return
-            }
-
-            document.querySelectorAll('.xGridV2-col[name="NUM_ORCAMENTO"]').forEach(col => {
-                if (col.textContent.trim() == num_orcamento) {
-                    const parentRow = col.closest('.xGridV2-row') as HTMLBodyElement;
-                    if (parentRow) {
-                        parentRow.style.backgroundColor = '#4ade80';
-                        parentRow.style.color = 'black';
-                    }
-
-                    orcamento = {
-                        ...orcamento,
-                        ISDEVOLUCAO: false
-                    }
-
-                    state.orcamentosLocalizados.push(orcamento)
-                }
-            });
-        }
+        let num_orcamento = state.locValor.startsWith('+') ? state.locValor.substring(1) : state.locValor;
+        let isDevolucao = state.locValor.toUpperCase().startsWith('DEV');
 
         if (isDevolucao) {
-
-            let num_devolucao = state.locValor.slice(3)
-
-            let orcamento: iOrcamentosLocalizados = state.dbOrcamentosClienteFaturado.find((orc) => orc.NUM_DEVOLUCAO == num_devolucao)
+            let num_devolucao = state.locValor.slice(3);
+            let orcamento: iOrcamentosLocalizados = state.dbOrcamentosClienteFaturado.find(
+                (orc) => orc.NUM_DEVOLUCAO == num_devolucao
+            );
 
             if (orcamento) {
                 orcamento = {
                     ...orcamento,
                     ISDEVOLUCAO: true
-                }
-
-                state.orcamentosLocalizados.push(orcamento)
-
+                };
+                state.orcamentosLocalizados.push(orcamento);
             } else {
                 Swal.fire({
                     icon: "error",
                     text: "Orçamento de devolução não encontrado!"
-                })
+                });
             }
+        } else {
+            let orcamentosByNumOrcamento: iOrcamentosLocalizados[] = state.dbOrcamentosClienteFaturado.filter(
+                (orc) => orc.NUM_ORCAMENTO == num_orcamento
+            );
+
+            if (orcamentosByNumOrcamento.length == 0) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "Orçamento não encontrado!"
+                });
+                state.locValor = null;
+                return;
+            }
+
+            let orcamentosNaoAdicionados = orcamentosByNumOrcamento.filter((orc) =>
+                !state.orcamentosLocalizados.some((orcLocalizado) =>
+                    orcLocalizado.NUM_ORCAMENTO == orc.NUM_ORCAMENTO &&
+                    orcLocalizado.DATA == orc.DATA
+                )
+            );
+
+            if (orcamentosNaoAdicionados.length === 0) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "Este orçamento já foi adicionado!"
+                });
+                state.locValor = null;
+                return;
+            }
+
+            let selectedOrcamento: iOrcamentosLocalizados;
+
+            if (orcamentosNaoAdicionados.length === 1) {
+                selectedOrcamento = orcamentosNaoAdicionados[0];
+            } else {
+                // Se há mais de um orçamento, exibe o diálogo para o usuário escolher
+                const options = orcamentosNaoAdicionados.map((orc, index) => ({
+                    text: `Orçamento ${num_orcamento} - Data: ${utils.dataBrasil(orc.DATA)}`,
+                    value: index
+                }));
+
+                const { value: selectedIndex } = await Swal.fire({
+                    title: 'Selecione o Orçamento',
+                    input: 'select',
+                    inputOptions: options.reduce((acc, option) => {
+                        acc[option.value] = option.text;
+                        return acc;
+                    }, {}),
+                    inputPlaceholder: 'Escolha uma opção',
+                    showCancelButton: true
+                });
+
+                if (selectedIndex === undefined) {
+                    state.locValor = null;
+                    return;
+                }
+
+                selectedOrcamento = orcamentosNaoAdicionados[selectedIndex];
+            }
+
+            document.querySelectorAll('.xGridV2-col[name="NUM_ORCAMENTO"]').forEach(col => {
+                if (col.textContent.trim() == num_orcamento) {
+                    const parentRow = col.closest('.xGridV2-row') as HTMLBodyElement;
+
+                    if (parentRow && parentRow.querySelector('.xGridV2-col[name="DATA"]')?.textContent?.trim() === utils.dataBrasil(selectedOrcamento.DATA)) {
+                        parentRow.style.backgroundColor = '#4ade80';
+                        parentRow.style.color = 'black';
+
+                        selectedOrcamento = {
+                            ...selectedOrcamento,
+                            ISDEVOLUCAO: false
+                        };
+
+                        state.orcamentosLocalizados.push(selectedOrcamento);
+                    }
+                }
+            });
         }
 
-        state.locValor = null
+        state.locValor = null;
     },
+
 
     async openModalGeralBoleto() {
         if (computeds.totalValorOrcamentos.value < 40) {
@@ -229,7 +268,7 @@ export const actions = ({
         }
 
         if (computeds.calcularOrcamentosLocalizados.value.total != computeds.totalValorOrcamentos.value) {
-            if (await msgConfirm('Confirmação', 'Alguns orçamentos parecem estar faltando. Deseja continuar mesmo assim?')) {
+            if (await msgConfirm('Confirmação', 'Os valores dos orçamentos não batem. Deseja continuar mesmo assim?')) {
                 state.modalGerarBoletoOpened = true
                 return
             }
@@ -257,9 +296,10 @@ export const computeds = ({
         }
 
         state.orcamentosLocalizados.forEach(orcamento => {
-            total += orcamento.VALOR - orcamento.DEVOLUCAO;
-
-            if (!orcamento.ISDEVOLUCAO) {
+            if (orcamento.ISDEVOLUCAO) {
+                total = total - orcamento.DEVOLUCAO;
+            } else {
+                total += orcamento.VALOR
                 qtdOrcamentos++;
             }
         });
