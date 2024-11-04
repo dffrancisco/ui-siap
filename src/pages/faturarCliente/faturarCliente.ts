@@ -74,16 +74,25 @@ export const actions = ({
     },
 
     async closeModalGerarBoleto(boletoGerado: boolean) {
-        if (boletoGerado == true && state.dbClienteFaturadoProximo?.ID_CLIENTE) {
-            state.dbClienteFaturado = state.dbClienteFaturadoProximo
-            await actions.getOrcamentosClienteFaturado()
-        } else {
-            state.dbClienteFaturado = {} as iClienteFaturado
-            state.dbOrcamentosClienteFaturado = []
-            state.gridPedido.clear()
+        if (!boletoGerado) {
+            state.modalGerarBoletoOpened = false;
+            return;
         }
 
-        state.modalGerarBoletoOpened = false
+        if (state.dbClienteFaturadoProximo?.ID_CLIENTE) {
+            state.dbClienteFaturado = state.dbClienteFaturadoProximo;
+            await actions.getOrcamentosClienteFaturado();
+        } else {
+            actions.resetClienteFaturado();
+        }
+
+        state.modalGerarBoletoOpened = false;
+    },
+
+    resetClienteFaturado() {
+        state.dbClienteFaturado = {} as iClienteFaturado;
+        state.dbOrcamentosClienteFaturado = [];
+        state.gridPedido.clear();
     },
 
     async selecionarCliente(cliente: iClienteFaturado, clienteProximo: iClienteFaturado) {

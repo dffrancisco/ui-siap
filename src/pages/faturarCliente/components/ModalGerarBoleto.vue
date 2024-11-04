@@ -10,7 +10,7 @@ import {
 } from "../interfaces";
 import serviceFaturarCliente from "../services/faturarCliente.service";
 import Swal from "sweetalert2";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { useEventListener } from "@vueuse/core";
 import { msgConfirm } from "@/ts/message";
 
@@ -133,32 +133,24 @@ const actions = {
 
     const valorTotal = props.totalValorOrcamentos;
 
-    // Definir quantidade de parcelas
-    const parcelas =
-      props.cliente.DIVIDIR_BOLETO === "S" && state.regrasFaturamentoParcelas?.ID_REGRA_FATURAMENTO_PARCELA
-        ? state.regrasFaturamentoParcelas.DIVISAO
-        : 3;
-
-    // Se o cliente não dividir boletos
-    if (props.cliente.DIVIDIR_BOLETO === "N") {
-      const dataVencimento = moment({
-        year: anoAtual,
-        month: mesAtual,
-        day: props.cliente.DIA_VENCIMENTO_BOLETO,
-      }).format("YYYY-MM-DD");
-
-      boletos.push({ DATA_VENCIMENTO: dataVencimento, VALOR: valorTotal });
-      state.boletos = boletos;
-      return;
-    }
-
-    const valorBoletoParcelado = valorTotal / parcelas;
-
     // Definir prazos de acordo com o valor total
     const prazos =
       valorTotal <= FATURAMENTO_ATE_VALOR
         ? [FATURAMENTO_ATE_PRAZO_1, FATURAMENTO_ATE_PRAZO_2, FATURAMENTO_ATE_PRAZO_3]
         : [FATURAMENTO_ACIMA_DE_PRAZO_1, FATURAMENTO_ACIMA_DE_PRAZO_2, FATURAMENTO_ACIMA_DE_PRAZO_3];
+
+    // Se o cliente não dividir boletos
+    if (props.cliente.DIVIDIR_BOLETO === "N") {
+      actions.criarBoletoIndividual(anoAtual, mesAtual, valorTotal, prazos[0], dataComecoContagemVencimento);
+      return;
+    }
+
+    // Definir quantidade de parcelas
+    const parcelas = state.regrasFaturamentoParcelas?.ID_REGRA_FATURAMENTO_PARCELA
+      ? state.regrasFaturamentoParcelas.DIVISAO
+      : 3;
+
+    const valorBoletoParcelado = valorTotal / parcelas;
 
     // Calcular datas de vencimento com base nos prazos e parcelas
     const datasVencimento = [];
@@ -176,6 +168,29 @@ const actions = {
     }
 
     state.boletos = boletos;
+  },
+
+  async criarBoletoIndividual(
+    ano: number,
+    mes: number,
+    valor: number,
+    prazo: number,
+    dataComecoContagemVencimento: Moment
+  ) {
+    if (props.cliente.DIA_VENCIMENTO_BOLETO) {
+      const dataVencimento = moment({
+        year: ano,
+        month: mes,
+        day: props.cliente.DIA_VENCIMENTO_BOLETO,
+      }).format("YYYY-MM-DD");
+
+      let boleto = [{ DATA_VENCIMENTO: dataVencimento, VALOR: valor }];
+      state.boletos = boleto;
+    } else {
+      const dataVencimento = dataComecoContagemVencimento.clone().add(prazo, "days").format("YYYY-MM-DD");
+      let boleto = [{ DATA_VENCIMENTO: dataVencimento, VALOR: valor }];
+      state.boletos = boleto;
+    }
   },
 
   async gerarBoletos() {
@@ -261,7 +276,7 @@ onMounted(() => {
       <v-icon
         size="30"
         title="Fechar"
-        @click="actions.closeModal"
+        @click="actions.closeModal(false)"
         >mdi-close
       </v-icon>
     </div>
