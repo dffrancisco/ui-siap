@@ -239,7 +239,12 @@ const actions = {
             >O item foi consultado <strong>{{ produto[MAP_COL_PRODUTO.QTD_CONSULTA_LOJAS] }}x </strong>em outras
             lojas no último mês.</span
           >
-          <span class="item-venda-perdida">No mês anterior o item teve <strong>5 </strong>vendas perdidas.</span>
+          <span
+            class="item-venda-perdida"
+            v-if="produto[MAP_COL_PRODUTO.QTD_VENDA_PERDIDA] !== 0"
+            >No mês anterior o item teve <strong>{{ produto[MAP_COL_PRODUTO.QTD_VENDA_PERDIDA] }} </strong> vendas
+            perdidas.</span
+          >
         </v-col>
       </v-row>
     </div>

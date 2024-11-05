@@ -14,6 +14,7 @@ export const MAP_COL_PRODUTO = {
     'CURVA_ABC_G': 'CG',
     'CURVA_ABC_M': 'CM',
     'QTD_CONSULTA_LOJAS': 'O',
+    'QTD_VENDA_PERDIDA': 'P'
 }
 
 export const MAP_COL_ULTIMAS_VENDAS = {
