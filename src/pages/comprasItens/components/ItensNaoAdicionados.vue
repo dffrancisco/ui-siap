@@ -240,7 +240,7 @@ const actions = {
             lojas no último mês.</span
           >
           <span
-            class="item-venda-perdida"
+            class="item-venda-perdida pt-1"
             v-if="produto[MAP_COL_PRODUTO.QTD_VENDA_PERDIDA] !== 0"
             >No mês anterior o item teve <strong>{{ produto[MAP_COL_PRODUTO.QTD_VENDA_PERDIDA] }} </strong> vendas
             perdidas.</span
