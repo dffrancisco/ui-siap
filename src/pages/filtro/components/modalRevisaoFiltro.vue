@@ -258,7 +258,7 @@ const actions = {
         :headers="stateModalRevisaoFiltro.headers"
         items-per-page-text="Itens por página"
         items-per-page="50"
-        height="380"
+        height="280"
         class="mb-5"
         fixed-header
         :row-props="actions.getClassCorLinha"
