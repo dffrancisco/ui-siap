@@ -212,6 +212,11 @@ const actions = {
         });
 
         actions.closeModal(true);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: data.msg,
+        });
       }
     } catch (error) {
       Swal.fire({
