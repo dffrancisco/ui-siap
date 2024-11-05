@@ -13,6 +13,7 @@ export const MAP_COL_PRODUTO = {
     'PRODUTO_NOVO': 'N',
     'CURVA_ABC_G': 'CG',
     'CURVA_ABC_M': 'CM',
+    'QTD_CONSULTA_LOJAS': 'O',
 }
 
 export const MAP_COL_ULTIMAS_VENDAS = {

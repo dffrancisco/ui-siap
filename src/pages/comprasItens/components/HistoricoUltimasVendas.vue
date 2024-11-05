@@ -160,7 +160,7 @@ const actions = {
   flex-direction: column;
   border-radius: 8px;
   margin-top: 8px;
-  height: 175px;
+  height: 190px;
 }
 
 .historico-ultima-venda-cabecalho {
