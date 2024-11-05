@@ -5,7 +5,8 @@ export interface iClienteFaturado {
     OBS_CLIENTE: string,
     DIVIDIR_BOLETO: "S" | 'N',
     DIA_VENCIMENTO_BOLETO: number,
-    TIPO_FATURAMENTO: "Q" | 'M'
+    TIPO_FATURAMENTO: "Q" | 'M',
+    ID_REGRA_FATURAMENTO: number
 }
 
 export interface iGetClientesFaturadosResponse extends iClienteFaturado { }
@@ -56,10 +57,7 @@ export interface iRegraFaturamentoParcela {
     DIVISAO: number
 }
 
-export interface iGetRegrasFaturamentoResponse {
-    regrasFaturamento: iRegraFaturamento[];
-    regrasFaturamentoParcelas: iRegraFaturamentoParcela[];
-}
+export interface iGetRegrasFaturamentoGeralResponse extends iRegrasFaturamentoGeral { }
 
 export interface iBoleto {
     DATA_VENCIMENTO: string,
@@ -78,3 +76,8 @@ export interface iResponseSuccess {
 }
 
 export interface iGerarBoletosResponse extends iResponseSuccess { }
+
+export interface iRegrasFaturamentoGeral {
+    regrasFaturamento: iRegraFaturamento,
+    regrasFaturamentoParcelas: iRegraFaturamentoParcela[]
+}

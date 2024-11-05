@@ -97,11 +97,8 @@ const actions = {
     }
 
     const clienteSelecionado = state.gridCliente.dataSource();
-    const indexClienteSelecionado = state.gridCliente.getIndex();
-    const listaClientes = state.gridCliente.data();
-    const proximoCliente = listaClientes[Number(indexClienteSelecionado) + 1];
 
-    emits("selecionarCliente", clienteSelecionado, proximoCliente);
+    emits("selecionarCliente", clienteSelecionado);
 
     actions.closeModal();
   },

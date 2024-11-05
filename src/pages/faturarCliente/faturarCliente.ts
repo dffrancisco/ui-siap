@@ -1,7 +1,7 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iClienteFaturado, iGetOrcamentosClienteFaturadoParam, iOrcamentosClienteFaturado, iOrcamentosLocalizados } from "./interfaces";
+import { iClienteFaturado, iGetOrcamentosClienteFaturadoParam, iOrcamentosClienteFaturado, iOrcamentosLocalizados, iRegrasFaturamentoGeral } from "./interfaces";
 import serviceFaturarCliente from "./services/faturarCliente.service";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
@@ -44,12 +44,13 @@ export const state = reactive({
     orcamentosLocalizados: <iOrcamentosLocalizados[]>[],
     inputLocOrcElement: <HTMLInputElement>null,
     modalGerarBoletoOpened: false,
-    dbClienteFaturadoProximo: <iClienteFaturado>{}
+    regrasFaturamentoGeral: <iRegrasFaturamentoGeral>{}
 })
 
 export const actions = ({
     async init() {
         actions.criarGrid()
+        actions.getRegrasFaturamento()
         state.inputLocOrcElement = document.getElementById('inputLocOrc') as HTMLInputElement
     },
 
@@ -74,15 +75,8 @@ export const actions = ({
     },
 
     async closeModalGerarBoleto(boletoGerado: boolean) {
-        if (!boletoGerado) {
-            state.modalGerarBoletoOpened = false;
-            return;
-        }
-
-        if (state.dbClienteFaturadoProximo?.ID_CLIENTE) {
-            state.dbClienteFaturado = state.dbClienteFaturadoProximo;
-            await actions.getOrcamentosClienteFaturado();
-        } else {
+        if (boletoGerado == true) {
+            state.modalSelecionarClienteOpened = true;
             actions.resetClienteFaturado();
         }
 
@@ -92,12 +86,12 @@ export const actions = ({
     resetClienteFaturado() {
         state.dbClienteFaturado = {} as iClienteFaturado;
         state.dbOrcamentosClienteFaturado = [];
+        state.orcamentosLocalizados = []
         state.gridPedido.clear();
     },
 
-    async selecionarCliente(cliente: iClienteFaturado, clienteProximo: iClienteFaturado) {
+    async selecionarCliente(cliente: iClienteFaturado) {
         state.dbClienteFaturado = cliente
-        state.dbClienteFaturadoProximo = clienteProximo
         state.orcamentosLocalizados = []
         await actions.getOrcamentosClienteFaturado()
     },
@@ -319,6 +313,23 @@ export const actions = ({
                 }
             }
         });
+    },
+
+    async getRegrasFaturamento() {
+        try {
+            state.loading = true
+
+            const data = await serviceFaturarCliente.getRegrasFaturamentoGeral()
+            state.regrasFaturamentoGeral = data
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao carregar as regras de faturamento!"
+            })
+        } finally {
+            state.loading = false
+        }
     }
 })
 

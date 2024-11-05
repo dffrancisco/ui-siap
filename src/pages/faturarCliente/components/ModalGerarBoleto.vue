@@ -5,8 +5,7 @@ import {
   iClienteFaturado,
   iOrcamentosClienteFaturado,
   iGerarBoletosParam,
-  iRegraFaturamento,
-  iRegraFaturamentoParcela,
+  iRegrasFaturamentoGeral,
 } from "../interfaces";
 import serviceFaturarCliente from "../services/faturarCliente.service";
 import Swal from "sweetalert2";
@@ -25,15 +24,15 @@ const props = defineProps({
     required: true,
     default: null,
   },
-  totalValorOrcamentos: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
   dataLimite: {
     type: String,
     required: true,
     default: moment().format("YYYY-MM-DD"),
+  },
+  regrasFaturamentoGeral: {
+    type: Object as () => iRegrasFaturamentoGeral,
+    required: true,
+    default: null,
   },
 });
 
@@ -53,14 +52,13 @@ const state = reactive({
   ],
 
   loading: false,
-  regrasFaturamento: <iRegraFaturamento>null,
-  regrasFaturamentoParcelas: <iRegraFaturamentoParcela>null,
+  regrasFaturamento: <iRegrasFaturamentoGeral>{},
   boletos: [],
 });
 
 const actions = {
   async init() {
-    await actions.getRegrasFaturamento();
+    state.regrasFaturamento = props.regrasFaturamentoGeral;
     await actions.criarBoletos();
   },
 
@@ -74,34 +72,12 @@ const actions = {
     }
   },
 
-  async getRegrasFaturamento() {
-    try {
-      state.loading = true;
-      const idCliente = props.cliente.ID_CLIENTE;
-      const totalValorOrcamentos = props.totalValorOrcamentos;
-      const dividirBoleto = props.cliente.DIVIDIR_BOLETO;
-
-      const data = await serviceFaturarCliente.getRegrasFaturamento(
-        idCliente,
-        totalValorOrcamentos,
-        dividirBoleto
-      );
-
-      state.regrasFaturamento = data.regrasFaturamento[0];
-      state.regrasFaturamentoParcelas = data.regrasFaturamentoParcelas[0];
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Ocorreu um erro ao carregar as regras de faturamento.",
-        text: error.message,
-      });
-    } finally {
-      state.loading = false;
-    }
-  },
-
   async criarBoletos() {
-    if (!state.regrasFaturamento?.ID_REGRA_FATURAMENTO) {
+    const { regrasFaturamento, regrasFaturamentoParcelas } = state.regrasFaturamento;
+
+    console.log(regrasFaturamento);
+
+    if (!regrasFaturamento?.ID_REGRA_FATURAMENTO) {
       Swal.fire({
         icon: "warning",
         title: "Erro ao Gerar Boletos",
@@ -129,9 +105,9 @@ const actions = {
       FATURAMENTO_ATE_PRAZO_2,
       FATURAMENTO_ATE_PRAZO_3,
       FATURAMENTO_ATE_VALOR,
-    } = state.regrasFaturamento;
+    } = regrasFaturamento;
 
-    const valorTotal = props.totalValorOrcamentos;
+    const valorTotal = computeds.totalizador.value.total_geral;
 
     // Definir prazos de acordo com o valor total
     const prazos =
@@ -146,9 +122,14 @@ const actions = {
     }
 
     // Definir quantidade de parcelas
-    const parcelas = state.regrasFaturamentoParcelas?.ID_REGRA_FATURAMENTO_PARCELA
-      ? state.regrasFaturamentoParcelas.DIVISAO
-      : 3;
+    let parcelas = 3;
+
+    for (const parcela of regrasFaturamentoParcelas) {
+      if (valorTotal <= parcela.FATURAMENTO_ATE_VALOR && valorTotal >= parcela.FATURAMENTO_ACIMA_DE_VALOR) {
+        parcelas = parcela.DIVISAO;
+        break;
+      }
+    }
 
     const valorBoletoParcelado = valorTotal / parcelas;
 
@@ -406,6 +387,7 @@ onMounted(() => {
 
           <div class="d-flex justify-end">
             <v-btn
+              :disabled="state.boletos.length == 0"
               @click="actions.btnGerarBoleto"
               color="success"
               >gerar boleto (f1)</v-btn
