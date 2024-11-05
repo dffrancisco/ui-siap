@@ -58,7 +58,7 @@ const state = reactive({
 
 const actions = {
   async init() {
-    state.regrasFaturamento = props.regrasFaturamentoGeral;
+    state.regrasFaturamento = { ...props.regrasFaturamentoGeral };
 
     if (props.cliente.ID_REGRA_FATURAMENTO) {
       await actions.getFaturamentoExclusivo();
