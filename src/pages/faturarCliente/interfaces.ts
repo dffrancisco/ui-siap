@@ -81,3 +81,5 @@ export interface iRegrasFaturamentoGeral {
     regrasFaturamento: iRegraFaturamento,
     regrasFaturamentoParcelas: iRegraFaturamentoParcela[]
 }
+
+export interface iGerRegrasFaturamentoExclusivoResponse extends iRegraFaturamento { }

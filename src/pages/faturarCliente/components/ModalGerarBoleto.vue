@@ -59,6 +59,11 @@ const state = reactive({
 const actions = {
   async init() {
     state.regrasFaturamento = props.regrasFaturamentoGeral;
+
+    if (props.cliente.ID_REGRA_FATURAMENTO) {
+      await actions.getFaturamentoExclusivo();
+    }
+
     await actions.criarBoletos();
   },
 
@@ -203,6 +208,22 @@ const actions = {
       Swal.fire({
         icon: "error",
         title: "Ocorreu um erro ao gerar os boletos.",
+        text: error.message,
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  async getFaturamentoExclusivo() {
+    try {
+      state.loading = true;
+      const data = await serviceFaturarCliente.getRegrasFaturamentoExclusivo(props.cliente.ID_CLIENTE);
+      state.regrasFaturamento.regrasFaturamento = data[0];
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Ocorreu um erro ao buscar as regras de faturamento exclusivas.",
         text: error.message,
       });
     } finally {
