@@ -26,6 +26,8 @@ onMounted(async () => {
               label="Data limite"
               :clearable="false"
               density="compact"
+              @keydown.enter.prevent="actions.dataLimiteEventEnter"
+              @blur="actions.dataLimiteEventFocusOut"
             />
           </v-col>
           <v-col class="d-flex ga-4">

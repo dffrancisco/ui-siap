@@ -44,7 +44,8 @@ export const state = reactive({
     orcamentosLocalizados: <iOrcamentosLocalizados[]>[],
     inputLocOrcElement: <HTMLInputElement>null,
     modalGerarBoletoOpened: false,
-    regrasFaturamentoGeral: <iRegrasFaturamentoGeral>{}
+    regrasFaturamentoGeral: <iRegrasFaturamentoGeral>{},
+    setDataLimite: null
 })
 
 export const actions = ({
@@ -153,6 +154,8 @@ export const actions = ({
             });
 
             state.inputLocOrcElement.focus()
+
+            state.setDataLimite = state.dataLimite
 
         } catch (error) {
             Swal.fire({
@@ -342,7 +345,24 @@ export const actions = ({
         } finally {
             state.loading = false
         }
-    }
+    },
+
+    async dataLimiteEventEnter() {
+        if (!state.dbClienteFaturado?.ID_CLIENTE) {
+            state.modalSelecionarClienteOpened = true
+            return
+        }
+
+        state.inputLocOrcElement.focus()
+    },
+
+    async dataLimiteEventFocusOut() {
+        if (!state.dbClienteFaturado?.ID_CLIENTE || state.setDataLimite == state.dataLimite) {
+            return
+        }
+
+        actions.getOrcamentosClienteFaturado()
+    },
 })
 
 export const computeds = ({
