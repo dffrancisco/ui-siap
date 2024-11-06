@@ -65,9 +65,10 @@ export interface iBoleto {
 }
 
 export interface iGerarBoletosParam {
-    ID_CLIENTE: number,
     BOLETOS: iBoleto[],
-    ORCAMENTOS: iOrcamentosClienteFaturado[]
+    CLIENTE: iClienteFaturado,
+    DATA_LIMITE: string,
+    REGRAS_FATURAMENTO: iRegrasFaturamentoGeral
 }
 
 export interface iResponseSuccess {

@@ -80,8 +80,6 @@ const actions = {
   async criarBoletos() {
     const { regrasFaturamento, regrasFaturamentoParcelas } = state.regrasFaturamento;
 
-    console.log(regrasFaturamento);
-
     if (!regrasFaturamento?.ID_REGRA_FATURAMENTO) {
       Swal.fire({
         icon: "warning",
@@ -93,14 +91,11 @@ const actions = {
 
     let boletos = [];
     let dataHoje = moment();
-    let mesAtual = dataHoje.month();
-    let anoAtual = dataHoje.year();
-    let dataLimite = moment(props.dataLimite, "YYYY-MM-DD");
-    let diaDataLimite = dataLimite.date();
+    let dataQuinzena = moment({ year: dataHoje.year(), month: dataHoje.month(), day: 15 });
+    let dataMesAnterior = dataHoje.clone().subtract(1, "months");
 
     // Definir o intervalo de dias para contagem do vencimento
-    let dataComecoContagemVencimento =
-      diaDataLimite < 15 ? moment({ year: anoAtual, month: mesAtual, day: 15 }) : moment().startOf("month");
+    let dataComecoContagemVencimento = dataHoje.date() < 15 ? dataMesAnterior.endOf("months") : dataQuinzena;
 
     const {
       FATURAMENTO_ACIMA_DE_PRAZO_1,
@@ -122,7 +117,7 @@ const actions = {
 
     // Se o cliente não dividir boletos
     if (props.cliente.DIVIDIR_BOLETO === "N") {
-      actions.criarBoletoIndividual(anoAtual, mesAtual, valorTotal, prazos[0], dataComecoContagemVencimento);
+      actions.criarBoletoIndividual(valorTotal, prazos[0], dataComecoContagemVencimento);
       return;
     }
 
@@ -156,16 +151,15 @@ const actions = {
     state.boletos = boletos;
   },
 
-  async criarBoletoIndividual(
-    ano: number,
-    mes: number,
-    valor: number,
-    prazo: number,
-    dataComecoContagemVencimento: Moment
-  ) {
+  async criarBoletoIndividual(valor: number, prazo: number, dataComecoContagemVencimento: Moment) {
     if (props.cliente.DIA_VENCIMENTO_BOLETO) {
+      let mes =
+        dataComecoContagemVencimento.date() > props.cliente.DIA_VENCIMENTO_BOLETO
+          ? dataComecoContagemVencimento.clone().add(1, "months").month()
+          : dataComecoContagemVencimento.month();
+
       const dataVencimento = moment({
-        year: ano,
+        year: dataComecoContagemVencimento.year(),
         month: mes,
         day: props.cliente.DIA_VENCIMENTO_BOLETO,
       }).format("YYYY-MM-DD");
@@ -185,8 +179,9 @@ const actions = {
 
       let param: iGerarBoletosParam = {
         BOLETOS: state.boletos,
-        ID_CLIENTE: props.cliente.ID_CLIENTE,
-        ORCAMENTOS: props.orcamentos,
+        CLIENTE: props.cliente,
+        DATA_LIMITE: props.dataLimite,
+        REGRAS_FATURAMENTO: state.regrasFaturamento,
       };
 
       const data = await serviceFaturarCliente.gerarBoletos(param);
