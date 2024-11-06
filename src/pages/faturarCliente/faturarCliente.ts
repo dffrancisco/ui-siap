@@ -35,7 +35,7 @@ useEventListener(document, "keydown", async (event) => {
 
 export const state = reactive({
     gridPedido: <ixGridCreate>{},
-    dataLimite: moment().format('YYYY-MM-DD'),
+    dataLimite: null,
     modalSelecionarClienteOpened: false,
     dbClienteFaturado: <iClienteFaturado>{},
     loading: false,
@@ -51,6 +51,18 @@ export const actions = ({
     async init() {
         actions.criarGrid()
         actions.getRegrasFaturamento()
+
+        let dataHoje = moment()
+
+        let dataQuinzena = moment({ year: dataHoje.year(), month: dataHoje.month(), day: 15 })
+        let dataMesAnterior = dataHoje.clone().subtract(1, 'months');
+
+        if (dataHoje.date() <= 15) {
+            state.dataLimite = dataMesAnterior.endOf('months').format('YYYY-MM-DD')
+        } else {
+            state.dataLimite = dataQuinzena.format('YYYY-MM-DD')
+        }
+
         state.inputLocOrcElement = document.getElementById('inputLocOrc') as HTMLInputElement
     },
 
