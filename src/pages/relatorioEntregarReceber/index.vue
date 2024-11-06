@@ -62,6 +62,7 @@ onMounted(async () => {
         :loading="state.loading"
         :row-props="actions.getClassCorLinha"
         @update:page="actions.updatePage"
+        @update:options="actions.getDadosParaRelatorio"
       >
       </v-data-table-server>
 
