@@ -61,7 +61,8 @@ export const state = reactive(({
     historicoErro: false,
     isAlteracao: false,
     menuConfigOpened: false,
-    verTodosOsItens: false
+    verTodosOsItens: false,
+    verVendasEComprasEntreLojas: false
 }))
 
 setInterval(async () => {
@@ -115,6 +116,7 @@ export const actions = {
         state.historicoMesesCompra = [...historicoMesesDefault]
 
         state.verTodosOsItens = JSON.parse(localStorage.getItem('verTodosOsItens'))
+        state.verVendasEComprasEntreLojas = JSON.parse(localStorage.getItem('verVendasEComprasEntreLojas'))
 
         state.loading = true;
 
@@ -594,7 +596,12 @@ export const actions = {
         await actions.buscarProdutos({ ID_MARCA: state.edtMarca })
 
         state.qtdMaxItensVistosByMarca = {}
-    }
+    },
+
+    btnVerVendasEComprasEntreLojas() {
+        state.verVendasEComprasEntreLojas = !state.verVendasEComprasEntreLojas
+        localStorage.setItem('verVendasEComprasEntreLojas', JSON.stringify(state.verVendasEComprasEntreLojas))
+    },
 }
 
 export const computeds = {
@@ -693,9 +700,14 @@ export const computeds = {
             return []
         }
 
-        return state.historicoVendasGeral[keyProdutoSelecionado].ultimasVendas.sort((a, b) => {
-            return a[MAP_COL_ULTIMAS_VENDAS.POSICAO] - b[MAP_COL_ULTIMAS_VENDAS.POSICAO]
-        })
+        let vendasFiltradas = state.historicoVendasGeral[keyProdutoSelecionado].ultimasVendas;
+        if (!state.verVendasEComprasEntreLojas) {
+            vendasFiltradas = vendasFiltradas.filter(venda => venda[MAP_COL_ULTIMAS_VENDAS.MESMO_GRUPO] !== 1);
+        }
+
+        return vendasFiltradas.sort((a, b) =>
+            a[MAP_COL_ULTIMAS_VENDAS.POSICAO] - b[MAP_COL_ULTIMAS_VENDAS.POSICAO]
+        );
     }),
 
     ultimasCompras: computed(() => {
@@ -709,9 +721,14 @@ export const computeds = {
             return []
         }
 
-        return state.historicoComprasGeral[keyProdutoSelecionado].ultimasCompras.sort((a, b) => {
-            return a[MAP_COL_ULTIMAS_COMPRAS.POSICAO] - b[MAP_COL_ULTIMAS_COMPRAS.POSICAO]
-        })
+        let comprasFiltradas = state.historicoComprasGeral[keyProdutoSelecionado].ultimasCompras;
+        if (!state.verVendasEComprasEntreLojas) {
+            comprasFiltradas = comprasFiltradas.filter(compra => compra[MAP_COL_ULTIMAS_VENDAS.MESMO_GRUPO] !== "1");
+        }
+
+        return comprasFiltradas.sort((a, b) =>
+            a[MAP_COL_ULTIMAS_COMPRAS.POSICAO] - b[MAP_COL_ULTIMAS_COMPRAS.POSICAO]
+        );
     }),
 
     mediaQtdItemSelecionado: computed(() => {
