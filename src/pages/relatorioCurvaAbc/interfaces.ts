@@ -1,14 +1,3 @@
-export interface iFuncionarios {
-    CARGO: string;
-    LOGIN: string;
-    CPF: string;
-    ID_CARGO: number;
-    COD_FUNCIONARIO: number;
-}
-
-export interface iTelas {
-    TELA: string;
-}
 
 export interface iParams {
     page: number;
@@ -16,7 +5,7 @@ export interface iParams {
     dataInicio?: string;
     dataFim?: string;
     curva: string[];
-    marca?: string;
+    marca: { value: string; label: string }[] | undefined;
     filtro: string;
     numFabricante?: string;
     funcionario?: number[];
@@ -25,6 +14,11 @@ export interface iParams {
 export interface iResponseDadosInput {
     curvas: string[];
     marcas: string[];
+}
+
+export interface iResponseMarca {
+    curvas: string[];
+    marca: { ID_MARCA: number; MARCA: string }[];
 }
 
 export interface iDadosRelatorio {
