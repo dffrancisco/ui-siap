@@ -26,6 +26,7 @@ onMounted(async () => {
               label="Data limite"
               :clearable="false"
               density="compact"
+              disabled
               @keydown.enter.prevent="actions.dataLimiteEventEnter"
               @blur="actions.dataLimiteEventFocusOut"
             />
@@ -175,6 +176,7 @@ onMounted(async () => {
     <v-dialog
       v-model="state.modalSelecionarClienteOpened"
       width="600"
+      :retain-focus="false"
     >
       <ModalSelecionarCliente
         :dataLimite="state.dataLimite"
