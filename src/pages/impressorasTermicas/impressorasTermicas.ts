@@ -274,7 +274,11 @@ export const actions = {
             state.loading = false
 
             state.gridPrincipal.deleteLine();
-        }catch(error){
+            Swal.fire({
+                icon: "success",
+                text: "Impressora excluída com sucesso!"
+            });
+        } catch (error) {
             state.loading = false
             Swal.fire({
                 icon: "error",
