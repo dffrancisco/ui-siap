@@ -2,22 +2,22 @@ import { reactive } from 'vue';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceRelatorioCurvaAbc from './services/relatorioCurvaAbc.service';
-import { iDadosRelatorio, iResponseRelatorio } from './interfaces';
+import { iDadosRelatorio, iMarcas, iResponseMarca, iResponseRelatorio } from './interfaces';
 import utils, { iColumnPrint } from "@/ts/utils";
 
 export const state = reactive({
     loading: false,
     curva: [] as string[],
-    marca: [] as any[],
+    dbSelectMarca: [] as any[],
     filtro: '',
     numFabricante: '',
     marcas: [] as any[],
     dadosRelatorio: [] as iDadosRelatorio[],
     totalItems: 0,
+
     itemsPerPage: 30,
     page: 1,
     headers: <any>[
-
         { key: 'NUM_FABRICANTE', title: 'Nº Fabricante', sortable: true, align: 'left' },
         { key: 'DESC_PRODUTO', title: 'Descrição', sortable: true, align: 'left' },
         { key: 'MARCA', title: 'Marca', sortable: true, align: 'left' },
@@ -26,11 +26,9 @@ export const state = reactive({
         { key: 'QTD_VENDIDA', title: 'Vendas', sortable: true, align: 'right' },
         { key: 'CURVA_ABC_G', title: 'ABC G.', sortable: true, align: 'center' },
         { key: 'CURVA_ABC_M', title: 'ABC M.', sortable: true, align: 'center' },
-
     ],
-
 });
-;
+
 export const actions = {
     async init() {
         await actions.getMarcas();
@@ -60,24 +58,13 @@ export const actions = {
     async getMarcas() {
         try {
             state.loading = true;
-            const response = await serviceRelatorioCurvaAbc.getMarcas();
-
-            console.log("getMarcas:", response);
-
-            if (response && response.marca) {
-                state.marca = response.marca.map((marca: any) => ({
-                    value: marca.ID_MARCA,
-                    label: marca.MARCA,
-                }));
-            } else {
-                state.marcas = [];
-                Swal.fire({
-                    icon: 'warning',
-                    text: 'Nenhuma marca encontrada.',
-                });
-            }
+            const data = await serviceRelatorioCurvaAbc.getMarcas();
+            state.marcas = data.map((marca: iMarcas) => ({
+                value: marca.ID_MARCA,
+                label: marca.MARCA,
+            }));
         } catch (error) {
-            console.error("Erro ao buscar marcas:", error);
+            console.error("Erro ao buscar marca:", error);
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao buscar marcas',
@@ -87,9 +74,16 @@ export const actions = {
         }
     },
 
-    getClassCorLinha(dados: any) {
-        let classe = dados.index % 2 == 0 ? 'cor-zebrada-1' : 'cor-zebrada-2'
-        return { class: classe }
+    buscarMarcas(buscar: string) {
+
+        if (buscar) {
+            state.dbSelectMarca = state.marcas.filter((marca: any) =>
+                marca.label.toLowerCase().includes(buscar.toLowerCase())
+            );
+        } else {
+
+            state.dbSelectMarca = [...state.marcas];
+        }
     },
 
     async getDadosParaRelatorio() {
@@ -136,7 +130,7 @@ export const actions = {
         if (!state.dadosRelatorio.length) {
             Swal.fire({
                 icon: 'info',
-                text: 'Não a dados para realizar a impressão.',
+                text: 'Não há dados para realizar a impressão.',
             });
             return;
         }
@@ -155,7 +149,6 @@ export const actions = {
                 { key: 'QTD_VENDIDA', label: 'Vendas', align: 'right' },
                 { key: 'CURVA_ABC_G', label: 'ABC G.', align: 'center' },
                 { key: 'CURVA_ABC_M', label: 'ABC M.', align: 'center' },
-
             ];
 
             const titulo = `
@@ -183,11 +176,9 @@ export const actions = {
         }));
     },
 
-    limparFiltros() {
-        state.curva = [];
-        state.numFabricante = '';
-        state.page = 1;
-        state.itemsPerPage = 30;
+    getClassCorLinha(dados: any) {
+        let classe = dados.index % 2 == 0 ? 'cor-zebrada-1' : 'cor-zebrada-2';
+        return { class: classe };
     },
 
     updatePage(page: number) {

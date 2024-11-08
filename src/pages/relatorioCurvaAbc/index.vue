@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { state, actions } from "./relatorioCurvaAbc";
 
 onMounted(() => {
@@ -40,24 +40,14 @@ onMounted(() => {
           <span>Marca</span>
           <v-select
             id="slMarca"
-            v-model="state.marca"
-            :items="state.marca"
+            v-model="state.dbSelectMarca"
+            :items="state.marcas"
             item-value="value"
             item-title="label"
             clearable
-            :disabled="state.marca.length === 0"
             style="width: 100%"
-          >
-            <template>
-              <v-list-item
-                v-for="marca in state.marca"
-                :key="marca.value"
-                :value="marca.value"
-              >
-                <v-list-item-title>{{ marca.label }}</v-list-item-title>
-              </v-list-item>
-            </template>
-          </v-select>
+            label="Buscar marca..."
+          ></v-select>
         </v-col>
 
         <v-col cols="3">

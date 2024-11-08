@@ -18,7 +18,6 @@ export interface iResponseDadosInput {
 
 export interface iResponseMarca {
     curvas: string[];
-    marca: { ID_MARCA: number; MARCA: string }[];
 }
 
 export interface iDadosRelatorio {
@@ -31,6 +30,11 @@ export interface iDadosRelatorio {
     VENDAS: number;
     ABC_GERAL: string;
     ABC_MARCA: string;
+}
+
+export interface iMarcas {
+    ID_MARCA: number;
+    MARCA: string;
 }
 
 export interface iCount {

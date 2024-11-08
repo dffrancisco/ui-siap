@@ -1,12 +1,12 @@
 import axios from "axios";
-import { iParams, iResponseDadosInput, iResponseMarca, iResponseRelatorio } from "../interfaces";
+import { iMarcas, iParams, iResponseDadosInput, iResponseRelatorio } from "../interfaces";
 
 const caminho = 'siap/relatorioCurvaAbc';
 
 
 type iGetDadosParaInputs = () => Promise<iResponseDadosInput>;
 type iGetDadosParaRelatorio = (param: iParams) => Promise<iResponseRelatorio>;
-type iGetMarcas = () => Promise<iResponseMarca>;
+type iGetMarcas = () => Promise<iMarcas[]>;
 
 
 const getDadosParaInputs: iGetDadosParaInputs = async () => {
