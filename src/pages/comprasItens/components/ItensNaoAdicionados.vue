@@ -227,6 +227,26 @@ const actions = {
           >
         </v-col>
       </v-row>
+
+      <v-row>
+        <v-col
+          cols="12"
+          class="d-flex flex-column"
+          ><span
+            class="item-venda-perdida"
+            v-if="produto[MAP_COL_PRODUTO.QTD_VENDA_PERDIDA] !== 0"
+            ><v-icon>mdi-currency-usd-off</v-icon> No mês anterior o item teve
+            <strong>{{ produto[MAP_COL_PRODUTO.QTD_VENDA_PERDIDA] }} </strong> vendas perdidas.</span
+          >
+          <span
+            class="item-consulta-lojas pt-1"
+            v-if="produto[MAP_COL_PRODUTO.QTD_CONSULTA_LOJAS] !== 0"
+            ><v-icon>mdi-magnify</v-icon> O item foi consultado
+            <strong>{{ produto[MAP_COL_PRODUTO.QTD_CONSULTA_LOJAS] }}x </strong>em outras lojas no último
+            mês.</span
+          >
+        </v-col>
+      </v-row>
     </div>
     <div class="item-paginacao">
       <div>
@@ -339,5 +359,13 @@ const actions = {
   padding: 8px 12px;
   display: flex;
   justify-content: space-between;
+}
+
+.item-consulta-lojas {
+  color: var(--warning-500);
+}
+
+.item-venda-perdida {
+  color: var(--danger-500);
 }
 </style>
