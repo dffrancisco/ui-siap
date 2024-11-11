@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { nextTick, reactive } from 'vue';
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import Swal from 'sweetalert2';
 import { iDrivers, iFieldDuplicity, iParamGetImpressorasTermicas } from './intefaces'
@@ -143,15 +143,17 @@ export const actions = {
         
     },
 
-    btnInsert() {
+    async btnInsert() {
         state.disableSearch = true;
+        await nextTick();
         state.gridPrincipal.focusField();
         state.gridPrincipal.disable();
         state.gridPrincipal.clearElementSideBySide();
     },
 
-    btnEdit() {
+    async btnEdit() {
         state.disableSearch = true;
+        await nextTick();
         state.gridPrincipal.disable();
     },
 
@@ -186,13 +188,16 @@ export const actions = {
             actions.toUpdate();
         }
 
+        await nextTick();
+
         state.gridPrincipal.enable();
         state.disableSearch = false;
         state.gridPrincipal.focus();
     },
 
-    btnCancel() {
+    async btnCancel() {
         state.disableSearch = false;
+        await nextTick();
         state.gridPrincipal.enable();
         state.gridPrincipal.focus();
     },
