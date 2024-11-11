@@ -9,12 +9,8 @@ import utils from '@/ts/utils';
 import { msgConfirm } from '@/ts/message';
 import xModal, { iModalCreate } from '@/plugins/xModal/xModal';
 
-interface _ixGridCreate extends ixGridCreate {
-    dataSource: (obj?: object) => iImpressorasTermicas
-}
-
 export const state = reactive({
-    gridPrincipal: <_ixGridCreate>{},
+    gridPrincipal: <ixGridCreate>{},
     disableSearch: false,
     edtSearch: <HTMLInputElement>{},
     dbImpressorasTermicas: <iImpressorasTermicas>{},
@@ -67,7 +63,7 @@ export const actions = {
             },
             sideBySide: {
                 el: '#pnCampos',
-                vModel(r) { state.dbImpressorasTermicas = r },
+                vModel(r) { state.dbImpressorasTermicas = { ...r } },
                 duplicity: {
                     dataField: ['IP'],
                     async execute(rs) {
@@ -145,16 +141,27 @@ export const actions = {
 
     async btnInsert() {
         state.disableSearch = true;
+        state.dbImpressorasTermicas = {} as iImpressorasTermicas
         await nextTick();
+
         state.gridPrincipal.focusField();
         state.gridPrincipal.disable();
-        state.gridPrincipal.clearElementSideBySide();
     },
 
     async btnEdit() {
+        if (state.gridPrincipal.dataSource() == false) {
+            Swal.fire({
+                icon: "warning",
+                text: "Nenhum registro selecionado, operação cancelada!"
+            })
+            return false;
+        }
+
         state.disableSearch = true;
         await nextTick();
+
         state.gridPrincipal.disable();
+        state.gridPrincipal.focusField();
     },
 
     onClickModelo() {
@@ -162,17 +169,18 @@ export const actions = {
     },
 
     async btnDelete() {
-        //@ts-ignore
-        if(state.gridPrincipal.dataSource() === false) {
+        if (state.gridPrincipal.dataSource() === false) {
             Swal.fire({
-                icon: 'info',
+                icon: 'warning',
                 text: 'Nenhum registro selecionado para alteração, operação cancelada!'
             })
             return false
         }
-        if(await msgConfirm("Confirmação", "Confirma exclusão deste registro?"))
-        await actions.toDelete();
-        state.gridPrincipal.focus();
+
+        if (await msgConfirm("Confirmação", "Confirma exclusão deste registro?")) {
+            await actions.toDelete();
+            state.gridPrincipal.focus();
+        }
     },
 
     async btnSave() {
@@ -181,25 +189,26 @@ export const actions = {
 
         if (await state.gridPrincipal.getDuplicityAll() == true) return false;
 
-        //@ts-ignore
         if (state.gridPrincipal.dataSource() == false) {
             actions.toInsert();
         } else {
             actions.toUpdate();
         }
 
+        state.disableSearch = false;
         await nextTick();
 
         state.gridPrincipal.enable();
-        state.disableSearch = false;
         state.gridPrincipal.focus();
     },
 
     async btnCancel() {
         state.disableSearch = false;
+        let linhaGrid = <any>state.gridPrincipal.getIndex()
         await nextTick();
+
         state.gridPrincipal.enable();
-        state.gridPrincipal.focus();
+        state.gridPrincipal.focus(linhaGrid);
     },
 
     async getImpressorasTermicas({ offset, param }: iParamGetImpressorasTermicas) {
