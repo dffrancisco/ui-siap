@@ -35,7 +35,7 @@ onUnmounted(() => {
     >
       <div id="pnCampos">
         <v-row>
-          <v-col cols="4"> 
+          <v-col cols="3">
             <span>IP</span>
             <input
               v-model="state.dbImpressorasTermicas.IP"
@@ -47,8 +47,8 @@ onUnmounted(() => {
               v-mask="'###.###.###.##'"
             />
           </v-col>
-          <v-col cols="4"> 
-            <span>Local de Instalação</span> 
+          <v-col cols="3">
+            <span>Local de Instalação</span>
             <input
               v-model="state.dbImpressorasTermicas.LOCAL"
               id="LOCAL"
@@ -57,8 +57,8 @@ onUnmounted(() => {
               class="obr ss"
             />
           </v-col>
-          <v-col cols="4"> 
-            <span>Carrossel</span> 
+          <v-col cols="3">
+            <span>Carrossel</span>
             <select
               v-model="state.dbImpressorasTermicas.CARROSSEL"
               class="obr ss"
@@ -69,7 +69,21 @@ onUnmounted(() => {
             <option value="N">NÃO</option>
             </select>
           </v-col>
-          <v-col cols="3"> 
+          <v-col cols="3"
+            ><span>Imp. Caixa</span>
+            <select
+              v-model="state.dbImpressorasTermicas.CAIXA"
+              class="obr ss"
+              name="CAIXA"
+              id="CAIXA"
+            >
+              <option value="S">SIM</option>
+              <option value="N">NÃO</option>
+            </select></v-col
+          >
+        </v-row>
+        <v-row
+          ><v-col cols="3">
             <span>Situação</span>
             <select
               v-model="state.dbImpressorasTermicas.STATUS"
@@ -118,9 +132,8 @@ onUnmounted(() => {
               name="QTO_IMP"
               type="text"
               class="ss"
-            />
-          </v-col>
-        </v-row>
+            /> </v-col
+        ></v-row>
       </div>
 
       <impressorasSearch />

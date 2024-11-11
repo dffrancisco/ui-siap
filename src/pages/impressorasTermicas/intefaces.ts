@@ -6,7 +6,8 @@ export interface iImpressorasTermicas {
     STATUS: string;
     QTO_IMP: number;
     PORTA: number;
-    DRIVER: string
+    DRIVER: string;
+    CAIXA: string;
 }
 
 export interface iDrivers{
