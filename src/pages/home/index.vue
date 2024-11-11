@@ -301,20 +301,22 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/consultaCliente')"
-              >Consulta Cliente</v-btn
+              @click="router.push('/Bancos')"
+              >Bancos
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/relatorioEntregarReceber')"
+              >Relatório Entregar Receber</v-btn
             >
 
             <v-btn
               class="mr-4 mb-4"
               @click="login.actions.confirmarSaida()"
+              color="primary"
             >
               Logout
-            </v-btn>
-            <v-btn
-              class="mr-4 mb-4"
-              @click="router.push('/Bancos')"
-              >Bancos
             </v-btn>
           </div>
         </v-row>
