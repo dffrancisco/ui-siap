@@ -129,7 +129,7 @@ export const actions = {
     gridLiberacoes() {
         state.gridLiberacoes = new xGridV2.create({
             el: "#gridLiberacoes",
-            height: 250,
+            height: 245,
             count: true,
             columns: {
                 Data: { dataField: "DATA", width: "15%", render: utils.dataBrasil, center: true },
@@ -156,12 +156,12 @@ export const actions = {
     gridBloqueiosDesbloqueios() {
         state.gridBloqueiosDesbloqueios = new xGridV2.create({
             el: "#gridBloqueiosDesbloqueios",
-            height: 250,
+            height: 245,
             count: true,
             columns: {
-                'Data Bloqueio': { dataField: "DATA_BLOQUEIO", width: "10%", render: utils.dataBrasil, center: true },
-                'Data Desbloqueio': { dataField: "DATA_DESBLOQUEIO", width: "11%", render: utils.dataBrasil, center: true },
-                Observação: { dataField: "OBS" },
+                'Data Bloqueio': { dataField: "DATA_BLOQUEIO", width: "15%", render: utils.dataBrasil, center: true },
+                'Data Desbloqueio': { dataField: "DATA_DESBLOQUEIO", width: "15%", render: utils.dataBrasil, center: true },
+                Observação: { dataField: "OBS", center: true },
                 Bloqueador: { dataField: "BLOQUEADOR", width: "10%", compare: "formatNomeBloqueador" },
                 Liberador: { dataField: "LIBERADOR", width: "10%", compare: "formatNomeLiberador" },
             },
@@ -196,19 +196,19 @@ export const actions = {
     gridCompras() {
         state.gridCompras = new xGridV2.create({
             el: "#gridCompras",
-            height: 250,
+            height: 245,
             count: true,
             columns: {
-                'Nº Orç': { dataField: "NUM_ORCAMENTO", width: "8%" },
-                Data: { dataField: "DATA", render: utils.dataBrasil },
-                Hora: { dataField: "HORA", render: utils.formatHora, width: "10%" },
+                'Nº Orç': { dataField: "NUM_ORCAMENTO", width: "7%" },
+                Data: { dataField: "DATA", render: utils.dataBrasil, width: "13%", center: true },
+                Hora: { dataField: "HORA", render: utils.formatHora, width: "10%", center: true },
                 Caixa: { dataField: "CAIXA", compare: "formatNome" },
                 Vendedor: { dataField: "VENDEDOR", compare: "formatVendedor" },
-                'Tipo Pg.': { dataField: "TIPO_PAGAMENTO", width: "5%", center: true },
-                Valor: { dataField: "VALOR", render: utils.formatValor, right: true },
-                Desconto: { dataField: "DESCONTO", render: utils.formatValor, right: true },
-                Devolução: { dataField: "DEVOLUCAO", render: utils.formatValor, right: true },
-                Montagem: { dataField: "VALOR_MONTAGEM", render: utils.formatValor, right: true },
+                'Tipo Pg.': { dataField: "TIPO_PAGAMENTO", width: "6%", center: true },
+                Valor: { dataField: "VALOR", render: utils.formatValor, width: "10%", center: true },
+                'Desc.': { dataField: "DESCONTO", render: utils.formatValor, width: "6%", center: true },
+                'Dev.': { dataField: "DEVOLUCAO", render: utils.formatValor, width: "6%", center: true },
+                'Mont.': { dataField: "VALOR_MONTAGEM", render: utils.formatValor, width: "6%", center: true },
                 Nome: { dataField: "NOME_CLIENTE" },
             },
             query: {
@@ -242,10 +242,10 @@ export const actions = {
     gridBoletos() {
         state.gridBoletos = new xGridV2.create({
             el: "#gridBoletos",
-            height: 250,
+            height: 245,
             count: true,
             columns: {
-                'Nº Boleto': { dataField: "NUM_BOLETO", right: true },
+                'Nº Boleto': { dataField: "NUM_BOLETO", center: true },
                 Parcela: { dataField: "PARCELA", center: true },
                 Processamento: { dataField: "DATA_PROCESSAMENTO", render: utils.dataBrasil, center: true },
                 Vencimento: { dataField: "DATA_VENCIMENTO", render: utils.dataBrasil, center: true },
@@ -351,7 +351,7 @@ export const actions = {
             if (!state.tipoFaturamento || !state.dividirBoleto) {
                 Swal.fire({
                     icon: "warning",
-                    title: "Preencha todos os dados de faturamento",
+                    title: "Preencha todos os dados de faturamento!",
                 });
                 actions.alterar()
                 return false
