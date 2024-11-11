@@ -102,7 +102,7 @@ actions.init();
                       <span
                         style="color: var(--grey-100)"
                         class="text-subtitle-1"
-                        >Venda entre lojas</span
+                        >Ver venda entre lojas</span
                       ></div
                     >
                   </v-card>
