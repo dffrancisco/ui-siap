@@ -11,7 +11,7 @@ onMounted(() => {
   <v-container>
     <v-card
       class="pa-5 ma-auto"
-      :max-width="800"
+      :max-width="900"
       :max-height="600"
     >
       <v-row>
@@ -67,17 +67,22 @@ onMounted(() => {
         </v-col>
 
         <v-col cols="1">
-          <v-btn
-            color="primary"
-            icon="mdi-magnify"
-            @click="actions.getDadosParaRelatorio"
-            style="margin-top: 13px; height: 27px; width: 27px"
-          />
+          <div class="btnPesquisar">
+            <v-btn
+              color="primary"
+              icon="mdi-magnify"
+              size="36px"
+              @click="actions.getDadosParaRelatorio"
+              style="margin-top: 13px"
+            >
+            </v-btn
+          ></div>
         </v-col>
       </v-row>
 
       <div class="mt-4">
         <v-data-table-server
+          class="tableRelatorioCurva pt-5"
           v-model:items-per-page="state.itemsPerPage"
           :items="state.dadosRelatorio"
           :loading="state.loading"
@@ -92,11 +97,14 @@ onMounted(() => {
         </v-data-table-server>
       </div>
 
-      <div class="right-align">
+      <div class="pt-5 btnPrint">
         <v-btn
           color="primary"
           @click="actions.onClickImprimir"
           :disabled="state.dadosRelatorio.length === 0"
+          icon="mdi-printer"
+          size="36px"
+          title="Imprimir"
         >
           <v-icon left>mdi-printer</v-icon>
         </v-btn>
@@ -114,12 +122,25 @@ onMounted(() => {
     </v-overlay>
   </v-container>
 </template>
-
-<style scoped>
-.right-align {
-  text-align: right;
+<style>
+.v-data-table-footer {
+  max-height: 2px;
+  padding-top: 20px;
 }
+
+.v-data-table-footer__pagination {
+  padding-right: 50px;
+}
+
 .cor-zebrada-1 {
   background-color: #f0f0f0;
+}
+</style>
+
+<style scoped>
+.btnPrint {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -10px;
 }
 </style>

@@ -18,11 +18,11 @@ export const state = reactive({
     itemsPerPage: 30,
     page: 1,
     headers: <any>[
-        { key: 'NUM_FABRICANTE', title: 'Nº Fabricante', sortable: true, align: 'left' },
+        { key: 'NUM_FABRICANTE', title: 'Nº Fabricante', sortable: true, align: 'centrer' },
         { key: 'DESC_PRODUTO', title: 'Descrição', sortable: true, align: 'left' },
         { key: 'MARCA', title: 'Marca', sortable: true, align: 'left' },
         { key: 'END_ESTOQUE', title: 'Endereço', sortable: true, align: 'left' },
-        { key: 'QUANTIDADE', title: 'Quantidade', sortable: true, align: 'left' },
+        { key: 'QUANTIDADE', title: 'Qtd', sortable: true, align: 'left' },
         { key: 'QTD_VENDIDA', title: 'Vendas', sortable: true, align: 'left' },
         { key: 'CURVA_ABC_G', title: 'ABC G.', sortable: true, align: 'left' },
         { key: 'CURVA_ABC_M', title: 'ABC M.', sortable: true, align: 'left' },
@@ -34,6 +34,7 @@ export const actions = {
         await actions.getMarcas();
         await actions.getDadosParaRelatorio();
     },
+
 
     validarInputs(): boolean {
         if (!state.curva.length) {
@@ -100,8 +101,8 @@ export const actions = {
         } catch (error) {
             console.error("Erro ao buscar os produtos", error);
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao buscar itens ou produtos.',
+                icon: 'info',
+                text: 'Selecione uma marca para realizar o filtro',
             });
         } finally {
             state.loading = false;
