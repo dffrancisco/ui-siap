@@ -2,7 +2,7 @@ import { reactive } from 'vue';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceRelatorioCurvaAbc from './services/relatorioCurvaAbc.service';
-import { iDadosRelatorio, iMarcas, iResponseMarca, iResponseRelatorio } from './interfaces';
+import { iDadosRelatorio, iMarcas, iResponseRelatorio, iCount } from './interfaces';
 import utils, { iColumnPrint } from "@/ts/utils";
 
 export const state = reactive({
@@ -14,7 +14,7 @@ export const state = reactive({
     marcas: [] as any[],
     dadosRelatorio: [] as iDadosRelatorio[],
     totalItems: 0,
-
+    searchMarca: '',
     itemsPerPage: 30,
     page: 1,
     headers: <any>[
@@ -22,10 +22,10 @@ export const state = reactive({
         { key: 'DESC_PRODUTO', title: 'Descrição', sortable: true, align: 'left' },
         { key: 'MARCA', title: 'Marca', sortable: true, align: 'left' },
         { key: 'END_ESTOQUE', title: 'Endereço', sortable: true, align: 'left' },
-        { key: 'QUANTIDADE', title: 'Qtd', sortable: true, align: 'right' },
-        { key: 'QTD_VENDIDA', title: 'Vendas', sortable: true, align: 'right' },
-        { key: 'CURVA_ABC_G', title: 'ABC G.', sortable: true, align: 'center' },
-        { key: 'CURVA_ABC_M', title: 'ABC M.', sortable: true, align: 'center' },
+        { key: 'QUANTIDADE', title: 'Quantidade', sortable: true, align: 'left' },
+        { key: 'QTD_VENDIDA', title: 'Vendas', sortable: true, align: 'left' },
+        { key: 'CURVA_ABC_G', title: 'ABC G.', sortable: true, align: 'left' },
+        { key: 'CURVA_ABC_M', title: 'ABC M.', sortable: true, align: 'left' },
     ],
 });
 
@@ -37,20 +37,9 @@ export const actions = {
 
     validarInputs(): boolean {
         if (!state.curva.length) {
-            Swal.fire({
-                icon: 'warning',
-                text: 'Selecione uma curva a ser filtrada.',
-            });
             return false;
         }
 
-        if (state.numFabricante && state.numFabricante.trim().length === 0) {
-            Swal.fire({
-                icon: 'warning',
-                text: 'Número do fabricante não pode estar vazio.',
-            });
-            return false;
-        }
 
         return true;
     },
@@ -63,6 +52,7 @@ export const actions = {
                 value: marca.ID_MARCA,
                 label: marca.MARCA,
             }));
+            state.dbSelectMarca = [];
         } catch (error) {
             console.error("Erro ao buscar marca:", error);
             Swal.fire({
@@ -74,14 +64,12 @@ export const actions = {
         }
     },
 
-    buscarMarcas(buscar: string) {
-
-        if (buscar) {
+    handleSearchMarca() {
+        if (state.searchMarca) {
             state.dbSelectMarca = state.marcas.filter((marca: any) =>
-                marca.label.toLowerCase().includes(buscar.toLowerCase())
+                marca.label.toLowerCase().includes(state.searchMarca.toLowerCase())
             );
         } else {
-
             state.dbSelectMarca = [...state.marcas];
         }
     },
@@ -92,28 +80,22 @@ export const actions = {
         try {
             state.loading = true;
 
+
             const params = {
                 curva: state.curva.length > 0 ? state.curva : undefined,
-                marca: state.marcas.length > 0 ? state.marcas : undefined,
-                filtro: state.filtro,
-                numFabricante: state.numFabricante ? state.numFabricante.trim() : undefined,
+                marca: state.dbSelectMarca,
+                filtro: state.filtro || undefined,   //alterei para undefined
+
                 page: state.page,
                 itemsPerPage: state.itemsPerPage,
             };
 
             const data: iResponseRelatorio = await serviceRelatorioCurvaAbc.getDadosParaRelatorio(params);
 
-            if (data && data.dadosRelatorio.length > 0) {
-                state.dadosRelatorio = data.dadosRelatorio;
-                state.totalItems = data.totalDadosRelatorio[0]?.TOTAL || 0;
-            } else {
-                state.dadosRelatorio = [];
-                state.totalItems = 0;
-                Swal.fire({
-                    icon: 'info',
-                    text: 'Nenhum dado foi encontrado com o filtro atual.',
-                });
-            }
+            state.dadosRelatorio = data.dadosRelatorio;
+            state.totalItems = data.totalDadosRelatorio[0].TOTAL;
+
+
 
         } catch (error) {
             console.error("Erro ao buscar os produtos", error);
@@ -140,6 +122,14 @@ export const actions = {
             let relatorio = state.dadosRelatorio;
             const relatorioAjustado = actions.formatarDadosImpressao([...relatorio]);
 
+            if (!relatorioAjustado || !relatorioAjustado.length) {
+                Swal.fire({
+                    icon: 'info',
+                    text: 'Não há dados ajustados para imprimir.',
+                });
+                return;
+            }
+
             const columns: iColumnPrint[] = [
                 { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', align: 'left' },
                 { key: 'DESC_PRODUTO', label: 'Descrição', align: 'left' },
@@ -153,7 +143,7 @@ export const actions = {
 
             const titulo = `
                 <div style="text-align: center;">
-                    <strong style="font-size: 16px;"> Relatorio Curva ABC </strong>
+                    <strong style="font-size: 16px;"> Relatório Curva ABC </strong>
                 </div>
             `;
 
@@ -162,7 +152,7 @@ export const actions = {
             console.error("Erro ao imprimir o relatorio:", error);
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao imprimir relatorio:',
+                text: 'Erro ao imprimir relatório.',
             });
         } finally {
             state.loading = false;
@@ -182,7 +172,9 @@ export const actions = {
     },
 
     updatePage(page: number) {
-        state.page = page;
-        actions.getDadosParaRelatorio();
+        if (page > 0 && page <= Math.ceil(state.totalItems / state.itemsPerPage)) {
+            state.page = page;
+            actions.getDadosParaRelatorio();
+        }
     },
 };

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { state, actions } from "./relatorioCurvaAbc";
 
 onMounted(() => {
@@ -10,11 +10,12 @@ onMounted(() => {
 <template>
   <v-container>
     <v-card
-      class="pa-5"
-      style="width: 900px; margin: 0 auto"
+      class="pa-5 ma-auto"
+      :max-width="800"
+      :max-height="600"
     >
       <v-row>
-        <v-col cols="5">
+        <v-col cols="4">
           <span>Curva</span>
           <v-select
             id="slCurva"
@@ -36,9 +37,9 @@ onMounted(() => {
           ></v-select>
         </v-col>
 
-        <v-col cols="3">
+        <v-col cols="4">
           <span>Marca</span>
-          <v-select
+          <v-autocomplete
             id="slMarca"
             v-model="state.dbSelectMarca"
             :items="state.marcas"
@@ -46,8 +47,7 @@ onMounted(() => {
             item-title="label"
             clearable
             style="width: 100%"
-            label="Buscar marca..."
-          ></v-select>
+          ></v-autocomplete>
         </v-col>
 
         <v-col cols="3">
@@ -70,34 +70,32 @@ onMounted(() => {
           <v-btn
             color="primary"
             icon="mdi-magnify"
-            @click="actions.getDadosParaRelatorio()"
+            @click="actions.getDadosParaRelatorio"
             style="margin-top: 13px; height: 27px; width: 27px"
           />
         </v-col>
       </v-row>
 
-      <v-row>
-        <v-col cols="11">
-          <v-data-table-server
-            v-model:items-per-page="state.itemsPerPage"
-            :items="state.dadosRelatorio"
-            :loading="state.loading"
-            :headers="state.headers"
-            :items-length="state.totalItems"
-            height="350px"
-            fixed-header
-            :row-props="actions.getClassCorLinha"
-            @update:page="actions.updatePage"
-            @update:options="actions.getDadosParaRelatorio"
-          >
-          </v-data-table-server>
-        </v-col>
-      </v-row>
+      <div class="mt-4">
+        <v-data-table-server
+          v-model:items-per-page="state.itemsPerPage"
+          :items="state.dadosRelatorio"
+          :loading="state.loading"
+          :headers="state.headers"
+          :items-length="state.totalItems"
+          height="350px"
+          fixed-header
+          :row-props="actions.getClassCorLinha"
+          @update:page="actions.updatePage"
+          @update:options="actions.getDadosParaRelatorio"
+        >
+        </v-data-table-server>
+      </div>
 
       <div class="right-align">
         <v-btn
           color="light-blue darken-2"
-          @click="actions.onClickImprimir()"
+          @click="actions.onClickImprimir"
           :disabled="state.dadosRelatorio.length === 0"
         >
           <v-icon left>mdi-printer</v-icon>
@@ -108,7 +106,13 @@ onMounted(() => {
 
     <div id="pnCodigoTela">CURVA_ABC</div>
 
-    <v-overlay :value="state.loading"> indeterminate color="primary" size="64" </v-overlay>
+    <v-overlay :value="state.loading">
+      <v-progress-circular
+        indeterminate
+        color="primary"
+        size="64"
+      />
+    </v-overlay>
   </v-container>
 </template>
 

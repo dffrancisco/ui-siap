@@ -5,7 +5,7 @@ export interface iParams {
     dataInicio?: string;
     dataFim?: string;
     curva: string[];
-    marca: { value: string; label: string }[] | undefined;
+    marca?: number[]
     filtro: string;
     numFabricante?: string;
     funcionario?: number[];
@@ -17,19 +17,19 @@ export interface iResponseDadosInput {
 }
 
 export interface iResponseMarca {
-    curvas: string[];
+    CURVA?: string[];
 }
 
 export interface iDadosRelatorio {
     NUM_FABRICANTE: string;
-    ULTIMA_ENTRADA: string;
+    DESC_PRODUTO: string;
     DESCRICAO: string;
     MARCA: string;
     ENDERECO: string;
     QUANTIDADE: number;
     VENDAS: number;
-    ABC_GERAL: string;
-    ABC_MARCA: string;
+    CURVA_ABC_G: string;
+    CURVA_ABC_M: string;
 }
 
 export interface iMarcas {
