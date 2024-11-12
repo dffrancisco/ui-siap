@@ -311,7 +311,7 @@ export const actions = {
 
             await servicesImpressorasTermicas.toUpdate(dadosAlterados)
 
-            state.dbImpressorasTermicas = {... state.dbImpressorasTermicas, ...alterarImpressora } as iImpressorasTermicas;
+            state.dbImpressorasTermicas = dadosAlterados
             state.gridPrincipal.dataSource(dadosAlterados)
         }catch(error){
             state.loading = false
