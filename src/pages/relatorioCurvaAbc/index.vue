@@ -94,12 +94,11 @@ onMounted(() => {
 
       <div class="right-align">
         <v-btn
-          color="light-blue darken-2"
+          color="primary"
           @click="actions.onClickImprimir"
           :disabled="state.dadosRelatorio.length === 0"
         >
           <v-icon left>mdi-printer</v-icon>
-          Imprimir
         </v-btn>
       </div>
     </v-card>
