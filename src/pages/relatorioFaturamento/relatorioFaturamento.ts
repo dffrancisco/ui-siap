@@ -156,10 +156,10 @@ export const actions = {
 
         let footer =
             `<div style="margin-top: 16px; display: flex; justify-content: space-between;">
-                <span>Total Líquido: ${utils.formatValor(totalLiquido)}</span>
-                <span>Total Devolução: ${utils.formatValor(totalDevolucao)}</span>
-                <span>Total Montagem: ${utils.formatValor(totalMontagem)}</span>
-                <span>Total Orçamentos: ${utils.formatValor(totalOrcamentos)}</span>
+                <span style="font-size: 14px;">Total Líquido: ${utils.formatValor(totalLiquido)}</span>
+                <span style="font-size: 14px;">Total Devolução: ${utils.formatValor(totalDevolucao)}</span>
+                <span style="font-size: 14px;">Total Montagem: ${utils.formatValor(totalMontagem)}</span>
+                <span style="font-size: 14px;">Total Orçamentos: ${utils.formatValor(totalOrcamentos)}</span>
              </div>`;
 
         try {
