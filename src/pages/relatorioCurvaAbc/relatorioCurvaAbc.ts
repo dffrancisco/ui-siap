@@ -18,7 +18,7 @@ export const state = reactive({
     itemsPerPage: 30,
     page: 1,
     headers: <any>[
-        { key: 'NUM_FABRICANTE', title: 'Nº Fabricante', sortable: true, align: 'centrer' },
+        { key: 'NUM_FABRICANTE', title: 'Nº Fabricante', sortable: true, align: 'center' },
         { key: 'DESC_PRODUTO', title: 'Descrição', sortable: true, align: 'left' },
         { key: 'MARCA', title: 'Marca', sortable: true, align: 'left' },
         { key: 'END_ESTOQUE', title: 'Endereço', sortable: true, align: 'left' },
@@ -32,15 +32,32 @@ export const state = reactive({
 export const actions = {
     async init() {
         await actions.getMarcas();
-        await actions.getDadosParaRelatorio();
     },
-
 
     validarInputs(): boolean {
         if (!state.curva.length) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Selecione uma curva para realizar o filtro.',
+            });
             return false;
         }
 
+        if (!state.filtro) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Seleção de filtro obrigatória.',
+            });
+            return false;
+        }
+
+        if (!state.dbSelectMarca.length) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Selecione uma marca para realizar o filtro.',
+            });
+            return false;
+        }
 
         return true;
     },
@@ -76,17 +93,16 @@ export const actions = {
     },
 
     async getDadosParaRelatorio() {
+
         if (!actions.validarInputs()) return;
 
         try {
             state.loading = true;
 
-
             const params = {
                 curva: state.curva.length > 0 ? state.curva : undefined,
                 marca: state.dbSelectMarca,
-                filtro: state.filtro || undefined,   //alterei para undefined
-
+                filtro: state.filtro || undefined,
                 page: state.page,
                 itemsPerPage: state.itemsPerPage,
             };
@@ -96,13 +112,11 @@ export const actions = {
             state.dadosRelatorio = data.dadosRelatorio;
             state.totalItems = data.totalDadosRelatorio[0].TOTAL;
 
-
-
         } catch (error) {
             console.error("Erro ao buscar os produtos", error);
             Swal.fire({
-                icon: 'info',
-                text: 'Selecione uma marca para realizar o filtro',
+                icon: 'error',
+                text: 'Erro ao buscar itens ou produtos.',
             });
         } finally {
             state.loading = false;
