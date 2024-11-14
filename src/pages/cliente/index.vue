@@ -10,7 +10,7 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      :width="950"
+      :width="980"
       class="ma-auto pa-4"
     >
       <div class="btns">
@@ -131,7 +131,7 @@ onMounted(async () => {
         <v-col cols="2"
           ><v-text-field
             v-model="state.contatoFinanceiro"
-            label="Contato Financeiro"
+            label="Cont. Financeiro"
             maxLength="60"
             :clearable="false"
             :disabled="state.desativarInputs"
@@ -141,7 +141,7 @@ onMounted(async () => {
         <v-col cols="2">
           <v-text-field
             v-model="state.contatoCompras"
-            label="Contato Compras"
+            label="Cont. Compras"
             maxLength="60"
             :clearable="false"
             :disabled="state.desativarInputs"

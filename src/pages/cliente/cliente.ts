@@ -155,6 +155,7 @@ export const actions = {
         state.obsAdministrativo = "";
         state.obsVendas = "";
         state.cep = "";
+        state.apelido = "";
         state.endereco = "";
         state.selectBairro = "";
         state.selectCidade = "";
@@ -232,7 +233,6 @@ export const actions = {
         try {
             // await serviceCliente.insertOuUpdateCliente(param);
 
-
             Swal.fire({
                 icon: "success",
                 title: "Cliente atualizado com sucesso.",
@@ -270,8 +270,7 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 
         if (event.key === "F3") {
             state.cnpjMode = !state.cnpjMode;
-            state.cnpj_cpf = "";
-            state.inscricaoEstadualOuIdentidade = "";
+            actions.limparInputs()
             event.preventDefault();
             event.stopPropagation();
         }
