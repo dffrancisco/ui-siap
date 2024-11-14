@@ -33,36 +33,65 @@ onMounted(async () => {
       </div>
 
       <v-row class="mt-2">
-        <v-col cols="3"
-          ><v-text-field
-            v-model="state.cnpj_cpf"
-            label="CNPJ / CPF"
-            id="inputCNPJ_CPF"
-            maxLength="20"
-            :clearable="false"
-            :disabled="state.desativarInputs"
-          >
-          </v-text-field
-        ></v-col>
-        <v-col cols="6">
+        <v-col cols="3">
+          <template v-if="state.cnpjMode">
+            <!-- CNPJ Mode -->
+            <v-text-field
+              v-model="state.cnpj_cpf"
+              label="CNPJ - (F3) p/ CPF"
+              id="inputCNPJ_CPF"
+              maxLength="18"
+              v-mask="'##.###.###/####-##'"
+              :clearable="false"
+              :disabled="state.desativarInputs"
+            ></v-text-field>
+          </template>
+          <template v-else>
+            <!-- CPF Mode -->
+            <v-text-field
+              v-model="state.cnpj_cpf"
+              label="CPF - (F3) p/ CNPJ"
+              id="inputCNPJ_CPF"
+              maxLength="14"
+              v-mask="'###.###.###-##'"
+              :clearable="false"
+              :disabled="state.desativarInputs"
+            ></v-text-field>
+          </template>
+        </v-col>
+
+        <v-col cols="5">
           <v-text-field
             v-model="state.razaoSocial"
             label="Razão Social / Nome"
             maxLength="50"
             :clearable="false"
             :disabled="state.desativarInputs"
-          >
-          </v-text-field>
+          ></v-text-field>
         </v-col>
-        <v-col cols="3">
-          <v-text-field
-            v-model="state.inscricaoEstadual"
-            label="Inscrição Estadual / Identidade"
-            maxLength="17"
-            :clearable="false"
-            :disabled="state.desativarInputs"
-          >
-          </v-text-field>
+
+        <v-col cols="4">
+          <template v-if="state.cnpjMode">
+            <!-- Inscrição Estadual Mode -->
+            <v-text-field
+              v-model="state.inscricaoEstadualOuIdentidade"
+              label="Inscrição Estadual - (F3) p/ Identidade"
+              maxLength="17"
+              v-mask="'##.###.###/###-##'"
+              :clearable="false"
+              :disabled="state.desativarInputs"
+            ></v-text-field>
+          </template>
+          <template v-else>
+            <!-- Identidade Mode -->
+            <v-text-field
+              v-model="state.inscricaoEstadualOuIdentidade"
+              label="Identidade - (F3) p/ Inscrição Estadual"
+              maxLength="11"
+              :clearable="false"
+              :disabled="state.desativarInputs"
+            ></v-text-field>
+          </template>
         </v-col>
       </v-row>
 
@@ -82,6 +111,7 @@ onMounted(async () => {
             v-model="state.telefone"
             label="Telefone"
             maxLength="15"
+            v-mask="'(##) ####-####'"
             :clearable="false"
             :disabled="state.desativarInputs"
           >
@@ -92,6 +122,7 @@ onMounted(async () => {
             v-model="state.telefoneAdicional"
             label="Telefone Adicional"
             maxLength="15"
+            v-mask="'(##) ####-####'"
             :clearable="false"
             :disabled="state.desativarInputs"
           >
@@ -162,7 +193,8 @@ onMounted(async () => {
           <v-text-field
             v-model="state.cep"
             label="CEP"
-            maxLength="10"
+            v-mask="'#####-###'"
+            maxLength="9"
             :clearable="false"
             :disabled="state.desativarInputs"
           >
@@ -302,7 +334,7 @@ onMounted(async () => {
           <v-btn
             color="primary"
             :disabled="state.desativarBtns"
-            @click="actions.insertNovoCliente"
+            @click="actions.validarInsertOuUpdate"
             >salvar</v-btn
           >
         </div>

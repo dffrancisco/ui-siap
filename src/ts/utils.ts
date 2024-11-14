@@ -938,6 +938,7 @@ export function getErrorMessage(error: any): string {
 
 export default {
   validMail,
+  validaCPF_CNPJ,
   formatValor,
   formatValorUSA,
   dataBrasil,

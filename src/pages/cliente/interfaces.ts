@@ -24,6 +24,7 @@ export interface iDadosInputs {
 export interface iClientes {
     APELIDO: string;
     BOLETO_EMAIL: number;
+    BLOQUEADO: number;
     CEP: string;
     CEP_COR: string;
     CGC_CLIENTE: string;
@@ -35,11 +36,12 @@ export interface iClientes {
     EMAIL_FOR_BOLETO: string;
     ENDERECO: string;
     ENDERECO_COR: string;
+    FATURADO: number;
     FISICA: string;
     ID_BAIRRO: number;
     BAIRRO: string;
     ID_EMPRESA: number;
-    ID_CLIENTE: number;
+    ID_CLIENTE: number | string;
     TELEFONE1: string;
     TELEFONE2: string;
     TELEFONE3: string;
@@ -47,7 +49,8 @@ export interface iClientes {
     OBS_VENDAS: string;
     NOME: string;
     OBS: string;
-    MESMO_GRUPO: string;
+    MESMO_GRUPO: number;
+    PJ_OU_PF: string;
     UF: string;
     ATIVIDADE_CNAE: iAtividadesCNAE[]
 }
