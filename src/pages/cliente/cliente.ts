@@ -1,9 +1,10 @@
-import { nextTick, reactive, ref } from "vue";
+import { nextTick, reactive } from "vue";
 import { iAtividadesCNAE, iBairros, iCidades, iClientes, iUF } from "./interfaces";
 import serviceCliente from "./services/cliente.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
 import utils from "@/ts/utils";
+import { msgConfirm } from "@/ts/message";
 
 export const state = reactive({
     apelido: "",
@@ -72,7 +73,6 @@ export const actions = {
     },
 
     popularStates(clienteSelecionado: iClientes) {
-        console.log(clienteSelecionado);
         state.cnpj_cpf = clienteSelecionado.CGC_CLIENTE;
         state.razaoSocial = clienteSelecionado.NOME;
         state.inscricaoEstadualOuIdentidade = clienteSelecionado.INSC_ESTADUAL;
@@ -102,7 +102,7 @@ export const actions = {
 
     novoCliente() {
         if (state.clienteSelecionado.ID_CLIENTE) {
-            actions.limparInputs()
+            actions.limparStates()
         }
 
         state.desativarBtns = false;
@@ -114,7 +114,7 @@ export const actions = {
 
     editarDadosCliente() {
         state.desativarInputs = false;
-        if (!state.clienteSelecionado.ID_CLIENTE) {
+        if (!state.idCliente) {
             Swal.fire({
                 icon: "warning",
                 text: "Nenhum cliente foi selecionado!"
@@ -126,23 +126,46 @@ export const actions = {
         });
     },
 
-    deletarCliente() {
-        if (!state.clienteSelecionado.ID_CLIENTE) {
+    async deletarCliente() {
+        if (!state.idCliente) {
             Swal.fire({
                 icon: "warning",
                 text: "Nenhum cliente foi selecionado!"
             });
             return;
         }
+
+        if (await msgConfirm("Confirmação", "Confirma que deseja excluir esse cliente?")) {
+
+            try {
+                state.loading = true;
+                await serviceCliente.deletarCliente(state.idCliente);
+                Swal.fire({
+                    icon: "success",
+                    title: "Cliente deletado com sucesso.",
+                    showConfirmButton: false,
+                    timer: 1000,
+                });
+
+            } catch (error) {
+                Swal.fire({
+                    icon: "error",
+                    text: "Ocorreu um erro ao deletar cliente.",
+                });
+            } finally {
+                actions.limparStates()
+                state.loading = false;
+            }
+        }
     },
 
     cancelar() {
         state.desativarInputs = true;
         state.desativarBtns = true;
-        actions.limparInputs();
+        actions.limparStates();
     },
 
-    limparInputs() {
+    limparStates() {
         state.cnpj_cpf = "";
         state.razaoSocial = "";
         state.inscricaoEstadualOuIdentidade = "";
@@ -161,6 +184,11 @@ export const actions = {
         state.selectBairro = null;
         state.selectCidade = null;
         state.selectUF = "";
+        state.mesmoGrupo = 0;
+        state.pjOuPf = "";
+        state.bloqueado = 0;
+        state.faturado = 1;
+        state.idCliente = null;
         state.atividadeCNAE = <iAtividadesCNAE[]>[];
         state.clienteSelecionado = <iClientes>{};
     },
@@ -182,7 +210,6 @@ export const actions = {
     },
 
     validarInsertOuUpdate() {
-
         const CPF_CNPJ_Valido = utils.validaCPF_CNPJ(state.cnpj_cpf);
         if (!CPF_CNPJ_Valido) {
             Swal.fire({
@@ -251,9 +278,9 @@ export const actions = {
             UF: state.selectUF,
         }
 
-        console.log(param);
         try {
-            await serviceCliente.insertOuUpdateCliente(param);
+            let idClienteInserido = await serviceCliente.insertOuUpdateCliente(param);
+            state.idCliente = idClienteInserido.idCliente;
 
             Swal.fire({
                 icon: "success",
@@ -351,6 +378,44 @@ export const actions = {
         }
     },
 
+    async copiarDadosCliente() {
+
+        const dadosParaCopiar = {
+            cnpj_cpf: state.cnpj_cpf,
+            razaoSocial: state.razaoSocial,
+            inscricaoEstadualOuIdentidade: state.inscricaoEstadualOuIdentidade,
+            apelido: state.apelido,
+            telefone: state.telefone,
+            telefoneAdicional: state.telefoneAdicional,
+            email: state.email,
+            emailParaBoletos: state.emailParaBoletos,
+            contatoFinanceiro: state.contatoFinanceiro,
+            contatoCompras: state.contatoCompras,
+            cep: state.cep,
+            endereco: state.endereco,
+            bairro: state.selectBairro,
+            cidade: state.selectCidade,
+            uf: state.selectUF,
+        };
+
+        const dadosFormatados = JSON.stringify(dadosParaCopiar, null, 2);
+
+        try {
+            await navigator.clipboard.writeText(dadosFormatados);
+            Swal.fire({
+                icon: "success",
+                title: "Dados do cliente copiados com sucesso!",
+                showConfirmButton: false,
+                timer: 1000,
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao copiar os dados do cliente.",
+            });
+        }
+    }
+
 }
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -371,7 +436,7 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 
         if (event.key === "F3") {
             state.cnpjMode = !state.cnpjMode;
-            // actions.limparInputs()
+            // actions.limparStates()
             event.preventDefault();
             event.stopPropagation();
         }

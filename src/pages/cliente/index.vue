@@ -254,7 +254,8 @@ onMounted(async () => {
           ><v-icon
             style="padding: 20px"
             title="Copiar dados do cliente"
-            :disabled="state.desativarInputs"
+            :disabled="!state.idCliente"
+            @click="actions.copiarDadosCliente"
             >mdi-content-copy</v-icon
           ></v-col
         >
@@ -322,6 +323,7 @@ onMounted(async () => {
             size="39"
             :disabled="state.desativarBtns"
             color="primary"
+            @click="actions.deletarCliente"
           />
         </div>
         <div class="d-flex justify-end ga-2">

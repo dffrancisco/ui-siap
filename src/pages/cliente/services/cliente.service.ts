@@ -2,7 +2,8 @@ import axios from "axios";
 import { iClientes, iDadosInputs, iGetClientes, iInsertOrUpdateCliente } from "../interfaces";
 type iGetDadosParaInputs = () => Promise<iDadosInputs>
 type iGetClientesFuction = (param: iGetClientes, offset: number) => Promise<iClientes>
-type iInsertUpdateCliente = (param: iInsertOrUpdateCliente) => Promise<string>
+type iInsertUpdateCliente = (param: iInsertOrUpdateCliente) => Promise<any>
+type iDeleteCliente = (param: number) => Promise<string>
 
 const caminho = 'siap/cliente'
 
@@ -25,7 +26,6 @@ const getClientes: iGetClientesFuction = async (param, offset) => {
 
 const buscarCEP = async (cep: string) => {
     let data = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-
     return data;
 }
 
@@ -37,9 +37,18 @@ const insertOuUpdateCliente: iInsertUpdateCliente = async (param) => {
     return data;
 }
 
+const deletarCliente: iDeleteCliente = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "deletarCliente",
+        param
+    });
+    return data;
+}
+
 export default {
     getDadosParaInputs,
     getClientes,
     buscarCEP,
     insertOuUpdateCliente,
+    deletarCliente
 }
