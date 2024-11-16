@@ -24,7 +24,7 @@ export const state = reactive({
     emailParaBoletos: "",
     endereco: "",
     faturado: 1,
-    idCliente: <any>"",
+    idCliente: <number>null,
     inscricaoEstadualOuIdentidade: "",
     inputCNPJ_CPF: <HTMLInputElement>null,
     loading: false,
@@ -34,9 +34,9 @@ export const state = reactive({
     obsVendas: "",
     pjOuPf: "",
     razaoSocial: "",
-    selectBairro: "",
-    selectCidade: "",
-    selectUF: "",
+    selectBairro: <number>null,
+    selectCidade: <number>null,
+    selectUF: <string>"",
     telefone: "",
     telefoneAdicional: "",
     ufs: <iUF[]>[],
@@ -89,8 +89,8 @@ export const actions = {
         state.apelido = clienteSelecionado.APELIDO;
         state.atividadeCNAE = clienteSelecionado.ATIVIDADE_CNAE
         state.boletoEmail = clienteSelecionado.BOLETO_EMAIL
-        state.selectBairro = clienteSelecionado.BAIRRO;
-        state.selectCidade = clienteSelecionado.CIDADE;
+        state.selectBairro = clienteSelecionado.ID_BAIRRO;
+        state.selectCidade = clienteSelecionado.COD_CIDADE;
         state.selectUF = clienteSelecionado.UF;
         state.mesmoGrupo = clienteSelecionado.MESMO_GRUPO;
         state.pjOuPf = clienteSelecionado.PJ_OU_PF;
@@ -153,13 +153,15 @@ export const actions = {
         state.contatoFinanceiro = "";
         state.contatoCompras = "";
         state.obsAdministrativo = "";
+        state.boletoEmail = 0;
         state.obsVendas = "";
         state.cep = "";
         state.apelido = "";
         state.endereco = "";
-        state.selectBairro = "";
-        state.selectCidade = "";
+        state.selectBairro = null;
+        state.selectCidade = null;
         state.selectUF = "";
+        state.atividadeCNAE = <iAtividadesCNAE[]>[];
         state.clienteSelecionado = <iClientes>{};
     },
 
@@ -181,19 +183,39 @@ export const actions = {
 
     validarInsertOuUpdate() {
 
-        // if (utils.validaCPF_CNPJ(state.cnpj_cpf)) {
-        //     Swal.fire({
-        //         icon: "warning",
-        //         text: "cpf invalido!"
-        //     });
-        //     return false;
-        // }
+        const CPF_CNPJ_Valido = utils.validaCPF_CNPJ(state.cnpj_cpf);
+        if (!CPF_CNPJ_Valido) {
+            Swal.fire({
+                icon: "warning",
+                text: state.cnpjMode ? "CNPJ inválido!" : "CPF inválido!",
+            });
+            return false;
+        }
 
-        utils.validaCPF_CNPJ(state.cnpj_cpf)
+        //F = CLIENTE FISICO, T = CLIENTE JURIDICO
+        state.pjOuPf = state.cnpjMode ? "T" : "F";
+        const camposObrigatorio = [
+            { field: state.cnpj_cpf, name: "CNPJ/CPF" },
+            { field: state.razaoSocial, name: "Razão Social" },
+            { field: state.inscricaoEstadualOuIdentidade, name: "Inscrição Estadual/Identidade" },
+            { field: state.endereco, name: "Endereço" },
+            { field: state.selectCidade, name: "Cidade" },
+            { field: state.selectBairro, name: "Bairro" },
+            { field: state.cep, name: "CEP" },
+        ];
 
-        console.log("aqui na validacao");
+        for (const item of camposObrigatorio) {
+            if (!item.field) {
+                Swal.fire({
+                    icon: "warning",
+                    text: `${item.name} é obrigatório!`,
+                });
+                return false;
+            }
+        }
 
         actions.insertOuUpdateCliente();
+        return true;
     },
 
     async insertOuUpdateCliente() {
@@ -224,14 +246,14 @@ export const actions = {
             NOME: state.razaoSocial,
             OBS: state.obsAdministrativo,
             OBS_VENDAS: state.obsVendas,
-            TELEFONE2: state.telefoneAdicional,
-            TELEFONE3: state.telefoneAdicional,
-            UF: state.selectUF,
             TELEFONE1: state.telefone,
+            TELEFONE2: state.telefoneAdicional,
+            UF: state.selectUF,
         }
 
+        console.log(param);
         try {
-            // await serviceCliente.insertOuUpdateCliente(param);
+            await serviceCliente.insertOuUpdateCliente(param);
 
             Swal.fire({
                 icon: "success",
@@ -249,7 +271,86 @@ export const actions = {
             state.loading = false;
         }
 
-    }
+    },
+
+    async preencherEndereco() {
+        const cep = state.cep.replace("-", "");
+        if (cep.length !== 8) {
+            Swal.fire({
+                icon: "warning",
+                text: "CEP inválido!",
+            });
+            return;
+        }
+
+        const enderecoData = await actions.buscarEnderecoPorCEP(cep);
+
+        if (enderecoData) {
+            state.endereco = enderecoData.logradouro;
+            state.selectUF = enderecoData.uf;
+
+            const tratarStringBairroCidade = (str: string) =>
+                str
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-zA-Z0-9\s]/g, "")
+                    .toUpperCase()
+                    .trim();
+
+            const extrairTexto = (str: string): string | null => {
+                const match = str.match(/\(([^)]+)\)/);
+                return match ? match[1] : null;
+            };
+
+            const enderecoBairro = tratarStringBairroCidade(enderecoData.bairro);
+            const bairroDentroParenteses = extrairTexto(enderecoData.bairro);
+            const enderecoCidade = tratarStringBairroCidade(enderecoData.localidade);
+
+            const bairroEncontrado = state.bairros.find((bairro) => {
+                const bairroNormalizado = tratarStringBairroCidade(bairro.DESCRICAO);
+
+                if (bairroDentroParenteses) {
+                    const textoParentesesNormalizado = tratarStringBairroCidade(bairroDentroParenteses);
+                    if (bairroNormalizado.includes(textoParentesesNormalizado)) {
+                        return true;
+                    }
+                }
+                return bairroNormalizado.includes(enderecoBairro);
+            });
+
+            const cidadeEncontrada = state.cidades.find((cidade) =>
+                tratarStringBairroCidade(cidade.DESCRICAO).includes(enderecoCidade)
+            );
+
+            state.selectBairro = bairroEncontrado ? bairroEncontrado.ID_BAIRRO : null;
+            state.selectCidade = cidadeEncontrada ? cidadeEncontrada.COD_CIDADE : null;
+        }
+    },
+
+    async buscarEnderecoPorCEP(cep: string) {
+        try {
+            state.loading = true;
+            let response = await serviceCliente.buscarCEP(cep);
+            console.log(response);
+            if (response.data.erro) {
+                Swal.fire({
+                    icon: "error",
+                    text: "CEP não encontrado!",
+                });
+                return null;
+            }
+            return response.data;
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar o CEP.",
+            });
+            return null;
+        } finally {
+            state.loading = false;
+        }
+    },
+
 }
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -270,7 +371,7 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 
         if (event.key === "F3") {
             state.cnpjMode = !state.cnpjMode;
-            actions.limparInputs()
+            // actions.limparInputs()
             event.preventDefault();
             event.stopPropagation();
         }

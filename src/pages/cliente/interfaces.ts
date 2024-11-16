@@ -41,7 +41,7 @@ export interface iClientes {
     ID_BAIRRO: number;
     BAIRRO: string;
     ID_EMPRESA: number;
-    ID_CLIENTE: number | string;
+    ID_CLIENTE: number | null;
     TELEFONE1: string;
     TELEFONE2: string;
     TELEFONE3: string;
@@ -65,4 +65,34 @@ export interface iAtividadesCNAE {
     DESC_ATIVIDADE: string;
     CNPJ: string;
     ID_ATIVIDADE_EMPRESA: number;
+}
+
+export interface iInsertOrUpdateCliente {
+    APELIDO: string,
+    BOLETO_EMAIL: number,
+    BLOQUEADO: number,
+    CEP: string,
+    CEP_COR: string,
+    CGC_CLIENTE: string,
+    COD_CIDADE: number,
+    COD_CIDADE_COR: number,
+    CONT_COMPRAS: string,
+    CONT_FINANCEIRO: string,
+    EMAIL: string,
+    EMAIL_FOR_BOLETO: string,
+    ENDERECO: string,
+    ENDERECO_COR: string,
+    FATURADO: number,
+    FISICA: string,
+    ID_BAIRRO: number,
+    ID_BAIRRO_COR: number,
+    ID_CLIENTE: any,
+    INSC_ESTADUAL_OU_IDENTIDADE: string,
+    MESMO_GRUPO: number,
+    NOME: string,
+    OBS: string,
+    OBS_VENDAS: string,
+    TELEFONE1: string,
+    TELEFONE2: string,
+    UF: string,
 }

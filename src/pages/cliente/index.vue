@@ -197,6 +197,7 @@ onMounted(async () => {
             maxLength="9"
             :clearable="false"
             :disabled="state.desativarInputs"
+            @blur="actions.preencherEndereco"
           >
           </v-text-field
         ></v-col>
@@ -220,7 +221,7 @@ onMounted(async () => {
             item-title="DESCRICAO"
             item-value="ID_BAIRRO"
             label="Bairro"
-            :clearable="false"
+            :clearable="true"
             :disabled="state.desativarInputs"
           >
           </v-select
@@ -232,7 +233,7 @@ onMounted(async () => {
             item-title="DESCRICAO"
             item-value="COD_CIDADE"
             label="Cidade"
-            :clearable="false"
+            :clearable="true"
             :disabled="state.desativarInputs"
           >
           </v-select>
@@ -244,7 +245,7 @@ onMounted(async () => {
             item-title="SIGLA"
             item-value="CODIGO"
             label="UF"
-            :clearable="false"
+            :clearable="true"
             :disabled="state.desativarInputs"
             >UF</v-select
           ></v-col
