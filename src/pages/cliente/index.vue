@@ -41,7 +41,7 @@ onMounted(async () => {
               label="CNPJ - (F3) p/ CPF"
               id="inputCNPJ_CPF"
               maxLength="18"
-              v-mask="'##.###.###/####-##'"
+              v-mask="'##.###.###.####-##'"
               :clearable="false"
               :disabled="state.desativarInputs"
             ></v-text-field>
@@ -256,9 +256,17 @@ onMounted(async () => {
             title="Copiar dados do cliente"
             :disabled="!state.idCliente"
             @click="actions.copiarDadosCliente"
-            >mdi-content-copy</v-icon
-          ></v-col
-        >
+            >mdi-content-copy
+          </v-icon>
+          <v-icon
+            title="Buscar CNAE do cliente"
+            :disabled="!state.idCliente"
+            size="20px"
+            @click="actions.buscarCNAE"
+          >
+            mdi-refresh</v-icon
+          >
+        </v-col>
       </v-row>
 
       <v-row>

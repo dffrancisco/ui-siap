@@ -98,6 +98,13 @@ export const actions = {
         state.faturado = clienteSelecionado.FATURADO;
         state.idCliente = clienteSelecionado.ID_CLIENTE
         state.desativarBtns = false;
+
+        // const cnpjCpfLength = state.cnpj_cpf.replace(/\D/g, '').length;
+        // if (cnpjCpfLength == 11) {
+        //     state.cnpjMode = false;
+        // } else if (cnpjCpfLength == 14) {
+        //     state.cnpjMode = true;
+        // }
     },
 
     novoCliente() {
@@ -358,7 +365,6 @@ export const actions = {
         try {
             state.loading = true;
             let response = await serviceCliente.buscarCEP(cep);
-            console.log(response);
             if (response.data.erro) {
                 Swal.fire({
                     icon: "error",
@@ -404,7 +410,7 @@ export const actions = {
             await navigator.clipboard.writeText(dadosFormatados);
             Swal.fire({
                 icon: "success",
-                title: "Dados do cliente copiados com sucesso!",
+                title: "Dados do cliente copiados!",
                 showConfirmButton: false,
                 timer: 1000,
             });
@@ -413,6 +419,33 @@ export const actions = {
                 icon: "error",
                 text: "Ocorreu um erro ao copiar os dados do cliente.",
             });
+        }
+    },
+
+    async buscarCNAE() {
+        if (!state.cnpjMode) {
+            Swal.fire({
+                icon: "warning",
+                text: "É necessário ser cliente CNPJ para buscar o CNAE.",
+            });
+            return;
+        }
+
+        try {
+            state.loading = true;
+            let param = {
+                cnpj: state.cnpj_cpf.replace(/[^0-9]/g, ''),
+                cnpjSemFormatar: state.cnpj_cpf,
+            }
+
+            const response = await serviceCliente.buscarCNAE(param);
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar o CNAE.",
+            });
+        } finally {
+            state.loading = false;
         }
     }
 

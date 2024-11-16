@@ -45,10 +45,19 @@ const deletarCliente: iDeleteCliente = async (param) => {
     return data;
 }
 
+const buscarCNAE = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "buscarCNAE",
+        param
+    });
+    return data;
+}
+
 export default {
     getDadosParaInputs,
     getClientes,
     buscarCEP,
     insertOuUpdateCliente,
-    deletarCliente
+    deletarCliente,
+    buscarCNAE
 }
