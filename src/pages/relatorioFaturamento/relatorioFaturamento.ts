@@ -114,6 +114,7 @@ export const actions = {
         const dados = state.gridOrcamentosFaturados.data() as iOrcamentosClienteFaturado[]
 
         let totalOrcamentos = 0;
+        let totalMontagem = 0;
         let totalDevolucao = 0;
         let totalLiquido = 0;
 
@@ -122,7 +123,9 @@ export const actions = {
 
             totalDevolucao += orcamento.DEVOLUCAO || 0;
 
-            totalLiquido += (orcamento.VALOR || 0) - (orcamento.DEVOLUCAO || 0);
+            totalMontagem += orcamento.MONTAGEM || 0;
+
+            totalLiquido += (orcamento.VALOR || 0) - (orcamento.DEVOLUCAO || 0) + orcamento.MONTAGEM;
 
             totalOrcamentos += orcamento.VALOR || 0;
         });
@@ -130,6 +133,7 @@ export const actions = {
         return {
             totalOrcamentos,
             totalDevolucao,
+            totalMontagem,
             totalLiquido
         }
     },
@@ -148,13 +152,14 @@ export const actions = {
       </div>
       `;
 
-        let { totalLiquido, totalDevolucao, totalOrcamentos } = await actions.calcularOrcamentosToPrint()
+        let { totalLiquido, totalDevolucao, totalOrcamentos, totalMontagem } = await actions.calcularOrcamentosToPrint()
 
         let footer =
             `<div style="margin-top: 16px; display: flex; justify-content: space-between;">
-                <span>Total Líquido: ${utils.formatValor(totalLiquido)}</span>
-                <span>Total Devolução: ${utils.formatValor(totalDevolucao)}</span>
-                <span>Total Orçamentos: ${utils.formatValor(totalOrcamentos)}</span>
+                <span style="font-size: 14px;">Total Líquido: ${utils.formatValor(totalLiquido)}</span>
+                <span style="font-size: 14px;">Total Devolução: ${utils.formatValor(totalDevolucao)}</span>
+                <span style="font-size: 14px;">Total Montagem: ${utils.formatValor(totalMontagem)}</span>
+                <span style="font-size: 14px;">Total Orçamentos: ${utils.formatValor(totalOrcamentos)}</span>
              </div>`;
 
         try {
