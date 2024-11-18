@@ -61,7 +61,8 @@ export const state = reactive(({
     historicoErro: false,
     isAlteracao: false,
     menuConfigOpened: false,
-    verTodosOsItens: false
+    verTodosOsItens: false,
+    verVendasEComprasEntreLojas: false
 }))
 
 setInterval(async () => {
@@ -115,6 +116,7 @@ export const actions = {
         state.historicoMesesCompra = [...historicoMesesDefault]
 
         state.verTodosOsItens = JSON.parse(localStorage.getItem('verTodosOsItens'))
+        state.verVendasEComprasEntreLojas = JSON.parse(localStorage.getItem('verVendasEComprasEntreLojas'))
 
         state.loading = true;
 
@@ -229,6 +231,7 @@ export const actions = {
         }
 
         param.VER_TODOS_OS_ITENS = state.verTodosOsItens
+        param.VER_VENDAS_COMPRAS_ENTRE_LOJAS = state.verVendasEComprasEntreLojas
 
         state.loading = true;
         state.indexProdutoSelecionado = 0;
@@ -594,7 +597,14 @@ export const actions = {
         await actions.buscarProdutos({ ID_MARCA: state.edtMarca })
 
         state.qtdMaxItensVistosByMarca = {}
-    }
+    },
+
+    async btnVerVendasEComprasEntreLojas() {
+        state.verVendasEComprasEntreLojas = !state.verVendasEComprasEntreLojas
+        localStorage.setItem('verVendasEComprasEntreLojas', JSON.stringify(state.verVendasEComprasEntreLojas))
+
+        await actions.buscarProdutos({ ID_MARCA: state.edtMarca })
+    },
 }
 
 export const computeds = {
@@ -668,6 +678,7 @@ export const computeds = {
         if (state.abaHistorico == 'vendas' && historicoVendaProduto) {
             let mesesVendas = [] as iHistoricoMes[];
             let historicoMesesVenda = state.historicoVendasGeral[keyProdutoSelecionado].meses
+
 
             for (let mes of historicoMesesDefault) {
                 mesesVendas.push({

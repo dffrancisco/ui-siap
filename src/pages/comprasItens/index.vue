@@ -77,7 +77,7 @@ actions.init();
                   <v-card
                     color="var(--grey-700)"
                     width=""
-                    class="px-4"
+                    class="px-4 d-flex flex-column"
                   >
                     <div class="d-flex align-center ga-4">
                       <v-switch
@@ -92,6 +92,19 @@ actions.init();
                         >Ver todos os itens</span
                       >
                     </div>
+                    <div class="d-flex align-center ga-4">
+                      <v-switch
+                        v-model="state.verVendasEComprasEntreLojas"
+                        color="var(--primary-600)"
+                        hide-details
+                        @click="actions.btnVerVendasEComprasEntreLojas"
+                      ></v-switch>
+                      <span
+                        style="color: var(--grey-100)"
+                        class="text-subtitle-1"
+                        >Ver venda entre lojas</span
+                      ></div
+                    >
                   </v-card>
                 </v-menu>
               </div>
