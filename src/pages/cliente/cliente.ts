@@ -1,13 +1,10 @@
-import { nextTick, reactive, watch } from "vue";
+import { nextTick, reactive } from "vue";
 import { iAtividadesCNAE, iBairros, iCidades, iClientes, iUF } from "./interfaces";
 import serviceCliente from "./services/cliente.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
-
-
-
 
 export const state = reactive({
     apelido: "",
@@ -30,7 +27,7 @@ export const state = reactive({
     faturado: 1,
     idCliente: <number>null,
     inscricaoEstadualOuIdentidade: "",
-    inputCNPJ_CPF: <HTMLInputElement>null,
+    inputCNPJ: <HTMLInputElement>null,
     loading: false,
     modalClienteOpened: false,
     mesmoGrupo: 0,
@@ -49,7 +46,7 @@ export const state = reactive({
 export const actions = {
     async init() {
         actions.getDadosParaInputs()
-        state.inputCNPJ_CPF = document.getElementById('inputCNPJ_CPF') as HTMLInputElement
+        state.inputCNPJ = document.getElementById('inputCNPJ') as HTMLInputElement
     },
 
     async getDadosParaInputs() {
@@ -118,7 +115,7 @@ export const actions = {
         state.desativarBtns = false;
         state.desativarInputs = false;
         nextTick(() => {
-            state.inputCNPJ_CPF.focus();
+            state.inputCNPJ.focus();
         });
     },
 
@@ -132,7 +129,7 @@ export const actions = {
             return;
         }
         nextTick(() => {
-            state.inputCNPJ_CPF.focus();
+            state.inputCNPJ.focus();
         });
     },
 

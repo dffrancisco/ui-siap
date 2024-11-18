@@ -39,7 +39,7 @@ onMounted(async () => {
             <v-text-field
               v-model="state.cnpj_cpf"
               label="CNPJ - (F3) p/ CPF"
-              id="inputCNPJ_CPF"
+              id="inputCNPJ"
               maxLength="18"
               v-mask="'##.###.###.####-##'"
               :clearable="false"
@@ -51,7 +51,7 @@ onMounted(async () => {
             <v-text-field
               v-model="state.cnpj_cpf"
               label="CPF - (F3) p/ CNPJ"
-              id="inputCNPJ_CPF"
+              id="inputCPF"
               maxLength="14"
               v-mask="'###.###.###-##'"
               :clearable="false"
