@@ -223,6 +223,7 @@ onMounted(async () => {
             label="Bairro"
             :clearable="true"
             :disabled="state.desativarInputs"
+            @update:model-value="actions.atualizarTextoBairro"
           >
           </v-select
         ></v-col>
@@ -235,6 +236,7 @@ onMounted(async () => {
             label="Cidade"
             :clearable="true"
             :disabled="state.desativarInputs"
+            @update:model-value="actions.atualizarTextoCidade"
           >
           </v-select>
         </v-col>

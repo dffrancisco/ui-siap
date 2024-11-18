@@ -31,6 +31,8 @@ export const state = reactive({
     loading: false,
     modalClienteOpened: false,
     mesmoGrupo: 0,
+    nomeBairro: "",
+    nomeCidade: "",
     obsAdministrativo: "",
     obsVendas: "",
     pjOuPf: "",
@@ -105,6 +107,9 @@ export const actions = {
         } else if (cnpjCpfLength == 14) {
             state.cnpjMode = true;
         }
+
+        actions.atualizarTextoBairro()
+        actions.atualizarTextoCidade()
     },
 
     novoCliente() {
@@ -385,32 +390,28 @@ export const actions = {
     },
 
     async copiarDadosCliente() {
+        function substituirVazio(valor: string | null | undefined): string {
+            return valor ? valor : "";
+        }
 
-        const dadosParaCopiar = {
-            cnpj_cpf: state.cnpj_cpf,
-            razaoSocial: state.razaoSocial,
-            inscricaoEstadualOuIdentidade: state.inscricaoEstadualOuIdentidade,
-            apelido: state.apelido,
-            telefone: state.telefone,
-            telefoneAdicional: state.telefoneAdicional,
-            email: state.email,
-            emailParaBoletos: state.emailParaBoletos,
-            contatoFinanceiro: state.contatoFinanceiro,
-            contatoCompras: state.contatoCompras,
-            cep: state.cep,
-            endereco: state.endereco,
-            bairro: state.selectBairro,
-            cidade: state.selectCidade,
-            uf: state.selectUF,
-        };
-
-        const dadosFormatados = JSON.stringify(dadosParaCopiar, null, 2);
+        const dadosCliente =
+            substituirVazio(state.cnpj_cpf) + "|" +
+            substituirVazio(state.razaoSocial) + "|" +
+            substituirVazio(state.cep) + "|" +
+            substituirVazio(state.endereco) + "|" +
+            substituirVazio(state.selectUF) + "|" +
+            substituirVazio(state.nomeBairro) + "|" +
+            substituirVazio(state.nomeCidade) + "|" +
+            substituirVazio(state.telefone) + "|" +
+            substituirVazio(state.telefoneAdicional) + "|" +
+            substituirVazio(state.email) + "|";
 
         try {
-            await navigator.clipboard.writeText(dadosFormatados);
+            await navigator.clipboard.writeText(dadosCliente);
+
             Swal.fire({
                 icon: "success",
-                title: "Dados do cliente copiados!",
+                title: "Dados do cliente copiados para a área de transferência!",
                 showConfirmButton: false,
                 timer: 1000,
             });
@@ -448,22 +449,34 @@ export const actions = {
         } finally {
             state.loading = false;
         }
-    }
+    },
+
+    atualizarTextoBairro() {
+        const bairroSelecionado = state.bairros.find(
+            (bairro) => bairro.ID_BAIRRO === state.selectBairro
+        );
+        state.nomeBairro = bairroSelecionado ? bairroSelecionado.DESCRICAO : "";
+    },
+
+    atualizarTextoCidade() {
+        const cidadeSelecionada = state.cidades.find(
+            (cidade) => cidade.COD_CIDADE === state.selectCidade
+        );
+        state.nomeCidade = cidadeSelecionada ? cidadeSelecionada.DESCRICAO : "";
+    },
 
 }
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
     if (!state.modalClienteOpened) {
         if (event.key === "F1") {
-            const button = document.getElementById("btnGetClientes");
-            button.click();
+            state.modalClienteOpened = true
             event.preventDefault();
             event.stopPropagation();
         }
 
         if (event.key === "F2") {
-            const button = document.getElementById("btnNovoCliente");
-            button.click();
+            actions.novoCliente()
             event.preventDefault();
             event.stopPropagation();
         }
