@@ -254,13 +254,13 @@ onMounted(async () => {
           ><v-icon
             style="padding: 20px"
             title="Copiar dados do cliente"
-            :disabled="!state.idCliente"
+            :disabled="!state.cnpj_cpf"
             @click="actions.copiarDadosCliente"
             >mdi-content-copy
           </v-icon>
           <v-icon
             title="Buscar CNAE do cliente"
-            :disabled="!state.idCliente"
+            :disabled="!state.cnpj_cpf"
             size="20px"
             @click="actions.buscarCNAE"
           >
@@ -298,12 +298,12 @@ onMounted(async () => {
         <v-col cols="12">
           <div
             class="atividadeCNAE"
-            v-if="state.atividadeCNAE[0]?.DESC_ATIVIDADE"
+            v-if="state.atividadeCNAE && state.atividadeCNAE.length"
           >
             <label class="ml-2">Atividade CNAE</label>
             <v-chip-group>
               <v-chip
-                v-for="atividade in state.clienteSelecionado.ATIVIDADE_CNAE"
+                v-for="atividade in state.atividadeCNAE"
                 :key="atividade.ID_ATIVIDADE_EMPRESA"
                 @click="actions.visualizarCNAE(atividade)"
               >

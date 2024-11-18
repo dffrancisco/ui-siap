@@ -1,10 +1,13 @@
-import { nextTick, reactive } from "vue";
+import { nextTick, reactive, watch } from "vue";
 import { iAtividadesCNAE, iBairros, iCidades, iClientes, iUF } from "./interfaces";
 import serviceCliente from "./services/cliente.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
+
+
+
 
 export const state = reactive({
     apelido: "",
@@ -99,12 +102,12 @@ export const actions = {
         state.idCliente = clienteSelecionado.ID_CLIENTE
         state.desativarBtns = false;
 
-        // const cnpjCpfLength = state.cnpj_cpf.replace(/\D/g, '').length;
-        // if (cnpjCpfLength == 11) {
-        //     state.cnpjMode = false;
-        // } else if (cnpjCpfLength == 14) {
-        //     state.cnpjMode = true;
-        // }
+        const cnpjCpfLength = state.cnpj_cpf.replace(/\D/g, '').length;
+        if (cnpjCpfLength == 11) {
+            state.cnpjMode = false;
+        } else if (cnpjCpfLength == 14) {
+            state.cnpjMode = true;
+        }
     },
 
     novoCliente() {
@@ -439,6 +442,7 @@ export const actions = {
             }
 
             const response = await serviceCliente.buscarCNAE(param);
+            state.atividadeCNAE = [...response]
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -469,7 +473,6 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 
         if (event.key === "F3") {
             state.cnpjMode = !state.cnpjMode;
-            // actions.limparStates()
             event.preventDefault();
             event.stopPropagation();
         }
