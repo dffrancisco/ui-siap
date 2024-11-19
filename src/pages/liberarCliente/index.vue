@@ -244,7 +244,8 @@ onMounted(async () => {
             size="small"
             icon="mdi-account-cash mdi-24px"
             title="Liberar Limite Cliente"
-            :disabled="!state.idCliente"
+            :disabled="!state.idCliente || !state.botaoAlterarHabilitado"
+            @click="actions.btnLiberarLimiteCliente"
           >
           </v-btn>
         </div>

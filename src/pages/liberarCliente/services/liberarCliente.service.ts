@@ -63,7 +63,7 @@ const updateCliente: iUpdateCliente = async (param) => {
 
 const liberarLimite: iLiberarLimiteFuction = async (ID_CLIENTE) => {
     let { data } = await axios.post('liberarLimite', {
-        call: 'liberarLimite',
+        call: 'liberarLimiteCliente',
         ID_CLIENTE
     })
     return data

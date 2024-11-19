@@ -454,7 +454,7 @@ export const actions = {
 
             if (data.success) {
                 let novoValorUsado = utils.formatValorUSA(state.creditoUsado) - data.valorLiberado
-                state.creditoLimite = utils.formatValor(novoValorUsado)
+                state.creditoUsado = utils.formatValor(novoValorUsado)
 
                 Swal.fire({
                     icon: "success",
