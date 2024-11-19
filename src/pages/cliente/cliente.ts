@@ -36,6 +36,7 @@ export const state = reactive({
     obsAdministrativo: "",
     obsVendas: "",
     pjOuPf: "",
+    produtorRural: "",
     razaoSocial: "",
     selectBairro: <number>null,
     selectCidade: <number>null,
@@ -96,6 +97,7 @@ export const actions = {
         state.selectUF = clienteSelecionado.UF;
         state.mesmoGrupo = clienteSelecionado.MESMO_GRUPO;
         state.pjOuPf = clienteSelecionado.PJ_OU_PF;
+        state.produtorRural = clienteSelecionado.PRODUTOR_RURAL;
         state.bloqueado = clienteSelecionado.BLOQUEADO;
         state.faturado = clienteSelecionado.FATURADO;
         state.idCliente = clienteSelecionado.ID_CLIENTE
@@ -200,6 +202,7 @@ export const actions = {
         state.pjOuPf = "";
         state.bloqueado = 0;
         state.faturado = 1;
+        state.produtorRural = "";
         state.idCliente = null;
         state.atividadeCNAE = <iAtividadesCNAE[]>[];
         state.clienteSelecionado = <iClientes>{};
@@ -236,7 +239,6 @@ export const actions = {
         const camposObrigatorio = [
             { field: state.cnpj_cpf, name: "CNPJ/CPF" },
             { field: state.razaoSocial, name: "Razão Social" },
-            { field: state.inscricaoEstadualOuIdentidade, name: "Inscrição Estadual/Identidade" },
             { field: state.endereco, name: "Endereço" },
             { field: state.selectCidade, name: "Cidade" },
             { field: state.selectBairro, name: "Bairro" },
@@ -285,6 +287,7 @@ export const actions = {
             NOME: state.razaoSocial,
             OBS: state.obsAdministrativo,
             OBS_VENDAS: state.obsVendas,
+            PRODUTOR_RURAL: state.produtorRural,
             TELEFONE1: state.telefone,
             TELEFONE2: state.telefoneAdicional,
             UF: state.selectUF,
@@ -296,7 +299,7 @@ export const actions = {
 
             Swal.fire({
                 icon: "success",
-                title: "Cliente atualizado com sucesso.",
+                title: "Cliente inserido/atualizado com sucesso.",
                 showConfirmButton: false,
                 timer: 1000,
             });
@@ -413,7 +416,7 @@ export const actions = {
                 icon: "success",
                 title: "Dados do cliente copiados para a área de transferência!",
                 showConfirmButton: false,
-                timer: 1000,
+                timer: 1500,
             });
         } catch (error) {
             Swal.fire({
@@ -476,12 +479,19 @@ export const eventListener = useEventListener(document, "keydown", async (event)
         }
 
         if (event.key === "F2") {
-            actions.novoCliente()
+
+            nextTick(() => {
+                actions.novoCliente()
+            });
+
             event.preventDefault();
             event.stopPropagation();
         }
 
         if (event.key === "F3") {
+            if (state.idCliente) {
+                return false
+            }
             state.cnpjMode = !state.cnpjMode;
             event.preventDefault();
             event.stopPropagation();

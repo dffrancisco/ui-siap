@@ -10,7 +10,7 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      :width="980"
+      :width="1000"
       class="ma-auto pa-4"
     >
       <div class="btns">
@@ -20,7 +20,7 @@ onMounted(async () => {
           color="primary"
           @click="state.modalClienteOpened = true"
         >
-          Pesquisar Cliente (F1)
+          Pesquisar (F1)
           <v-icon class="ml-2">mdi-magnify</v-icon>
         </v-btn>
         <v-btn
@@ -28,7 +28,7 @@ onMounted(async () => {
           color="primary"
           @click="actions.novoCliente"
         >
-          Novo Cliente (F2)
+          Novo (F2)
         </v-btn>
       </div>
 
@@ -38,7 +38,7 @@ onMounted(async () => {
             <!-- CNPJ Mode -->
             <v-text-field
               v-model="state.cnpj_cpf"
-              label="CNPJ - (F3) p/ CPF"
+              label="CNPJ - (F3) p/ CPF *"
               id="inputCNPJ"
               maxLength="18"
               v-mask="'##.###.###.####-##'"
@@ -50,7 +50,7 @@ onMounted(async () => {
             <!-- CPF Mode -->
             <v-text-field
               v-model="state.cnpj_cpf"
-              label="CPF - (F3) p/ CNPJ"
+              label="CPF - (F3) p/ CNPJ *"
               id="inputCPF"
               maxLength="14"
               v-mask="'###.###.###-##'"
@@ -63,7 +63,7 @@ onMounted(async () => {
         <v-col cols="5">
           <v-text-field
             v-model="state.razaoSocial"
-            label="Razão Social / Nome"
+            label="Razão Social / Nome *"
             maxLength="50"
             :clearable="false"
             :disabled="state.desativarInputs"
@@ -71,32 +71,6 @@ onMounted(async () => {
         </v-col>
 
         <v-col cols="4">
-          <template v-if="state.cnpjMode">
-            <!-- Inscrição Estadual Mode -->
-            <v-text-field
-              v-model="state.inscricaoEstadualOuIdentidade"
-              label="Inscrição Estadual - (F3) p/ Identidade"
-              maxLength="17"
-              v-mask="'##.###.###/###-##'"
-              :clearable="false"
-              :disabled="state.desativarInputs"
-            ></v-text-field>
-          </template>
-          <template v-else>
-            <!-- Identidade Mode -->
-            <v-text-field
-              v-model="state.inscricaoEstadualOuIdentidade"
-              label="Identidade - (F3) p/ Inscrição Estadual"
-              maxLength="11"
-              :clearable="false"
-              :disabled="state.desativarInputs"
-            ></v-text-field>
-          </template>
-        </v-col>
-      </v-row>
-
-      <v-row class="mt-2">
-        <v-col cols="2">
           <v-text-field
             v-model="state.apelido"
             label="Apelido Cliente"
@@ -106,7 +80,40 @@ onMounted(async () => {
           >
           </v-text-field>
         </v-col>
-        <v-col cols="3">
+      </v-row>
+
+      <v-row class="mt-2">
+        <template v-if="!state.cnpjMode">
+          <v-col cols="4">
+            <v-select
+              v-model="state.produtorRural"
+              :items="[
+                { text: 'Sim', value: 'S' },
+                { text: 'Não', value: 'N' },
+              ]"
+              item-title="text"
+              item-value="value"
+              label="Produtor Rural"
+              :clearable="false"
+              :disabled="state.desativarInputs"
+            ></v-select>
+          </v-col>
+        </template>
+
+        <template v-if="state.cnpjMode || state.produtorRural == 'S'">
+          <v-col cols="3">
+            <v-text-field
+              v-model="state.inscricaoEstadualOuIdentidade"
+              label="Inscrição Estadual *"
+              maxLength="17"
+              v-mask="'##.###.###/###-##'"
+              :clearable="false"
+              :disabled="state.desativarInputs"
+            ></v-text-field>
+          </v-col>
+        </template>
+
+        <v-col cols="2.5">
           <v-text-field
             v-model="state.telefone"
             label="Telefone"
@@ -117,7 +124,7 @@ onMounted(async () => {
           >
           </v-text-field>
         </v-col>
-        <v-col cols="3"
+        <v-col cols="2.5"
           ><v-text-field
             v-model="state.telefoneAdicional"
             label="Telefone Adicional"
@@ -128,26 +135,28 @@ onMounted(async () => {
           >
           </v-text-field
         ></v-col>
-        <v-col cols="2"
-          ><v-text-field
-            v-model="state.contatoFinanceiro"
-            label="Cont. Financeiro"
-            maxLength="60"
-            :clearable="false"
-            :disabled="state.desativarInputs"
-          >
-          </v-text-field
-        ></v-col>
-        <v-col cols="2">
-          <v-text-field
-            v-model="state.contatoCompras"
-            label="Cont. Compras"
-            maxLength="60"
-            :clearable="false"
-            :disabled="state.desativarInputs"
-          >
-          </v-text-field>
-        </v-col>
+
+        <!-- Campos exclusivos de CNPJ -->
+        <template v-if="state.cnpjMode">
+          <v-col cols="2">
+            <v-text-field
+              v-model="state.contatoFinanceiro"
+              label="Cont. Financeiro"
+              maxLength="60"
+              :clearable="false"
+              :disabled="state.desativarInputs"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-text-field
+              v-model="state.contatoCompras"
+              label="Cont. Compras"
+              maxLength="60"
+              :clearable="false"
+              :disabled="state.desativarInputs"
+            ></v-text-field>
+          </v-col>
+        </template>
       </v-row>
 
       <v-row class="mt-2">
@@ -180,7 +189,7 @@ onMounted(async () => {
             ]"
             item-title="text"
             item-value="value"
-            label="Ativar Envio"
+            label="Enviar Boletos"
             :clearable="false"
             :disabled="state.desativarInputs"
           >
@@ -188,11 +197,13 @@ onMounted(async () => {
         </v-col>
       </v-row>
 
+      <v-divider class="mt-5 mb-5"></v-divider>
+
       <v-row>
-        <v-col cols="3">
+        <v-col cols="2">
           <v-text-field
             v-model="state.cep"
-            label="CEP"
+            label="CEP *"
             v-mask="'#####-###'"
             maxLength="9"
             :clearable="false"
@@ -201,39 +212,39 @@ onMounted(async () => {
           >
           </v-text-field
         ></v-col>
-        <v-col cols="9"
+        <v-col cols="6"
           ><v-text-field
             v-model="state.endereco"
-            label="Endereço"
+            label="Endereço *"
             maxLength="40"
             :clearable="false"
             :disabled="state.desativarInputs"
           >
           </v-text-field
         ></v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="5"
-          ><v-select
+        <v-col cols="4">
+          <v-select
             v-model="state.selectBairro"
             :items="state.bairros"
             item-title="DESCRICAO"
             item-value="ID_BAIRRO"
-            label="Bairro"
+            label="Bairro *"
             :clearable="true"
             :disabled="state.desativarInputs"
             @update:model-value="actions.atualizarTextoBairro"
           >
-          </v-select
-        ></v-col>
+          </v-select>
+        </v-col>
+      </v-row>
+
+      <v-row>
         <v-col cols="4"
           ><v-select
             v-model="state.selectCidade"
             :items="state.cidades"
             item-title="DESCRICAO"
             item-value="COD_CIDADE"
-            label="Cidade"
+            label="Cidade *"
             :clearable="true"
             :disabled="state.desativarInputs"
             @update:model-value="actions.atualizarTextoCidade"
@@ -246,43 +257,12 @@ onMounted(async () => {
             :items="state.ufs"
             item-title="SIGLA"
             item-value="CODIGO"
-            label="UF"
+            label="UF *"
             :clearable="true"
             :disabled="state.desativarInputs"
             >UF</v-select
           ></v-col
         >
-        <v-col cols="1"
-          ><v-icon
-            style="padding: 20px"
-            title="Copiar dados do cliente"
-            :disabled="!state.cnpj_cpf"
-            @click="actions.copiarDadosCliente"
-            >mdi-content-copy
-          </v-icon>
-          <v-icon
-            title="Buscar CNAE do cliente"
-            :disabled="!state.cnpj_cpf"
-            size="20px"
-            @click="actions.buscarCNAE"
-          >
-            mdi-refresh</v-icon
-          >
-        </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="6">
-          <v-textarea
-            v-model="state.obsAdministrativo"
-            label="Obs. Administrativo"
-            maxLength="300"
-            :clearable="false"
-            rows="1"
-            :disabled="state.desativarInputs"
-          >
-          </v-textarea>
-        </v-col>
         <v-col cols="6">
           <v-textarea
             v-model="state.obsVendas"
@@ -298,11 +278,26 @@ onMounted(async () => {
 
       <v-row>
         <v-col cols="12">
+          <v-textarea
+            v-model="state.obsAdministrativo"
+            label="Obs. Administrativo"
+            maxLength="300"
+            :clearable="false"
+            rows="1"
+            :disabled="state.desativarInputs"
+          >
+          </v-textarea>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="11">
           <div
             class="atividadeCNAE"
             v-if="state.atividadeCNAE && state.atividadeCNAE.length"
           >
-            <label class="ml-2">Atividade CNAE</label>
+            <label class="ml-2">Atividade CNAE </label>
+
             <v-chip-group>
               <v-chip
                 v-for="atividade in state.atividadeCNAE"
@@ -313,6 +308,23 @@ onMounted(async () => {
               </v-chip>
             </v-chip-group>
           </div>
+        </v-col>
+        <v-col cols="1">
+          <v-icon
+            title="Buscar CNAE do cliente"
+            :disabled="!state.cnpj_cpf"
+            size="20px"
+            @click="actions.buscarCNAE"
+          >
+            mdi-refresh</v-icon
+          >
+          <v-icon
+            style="padding: 20px"
+            title="Copiar dados do cliente"
+            :disabled="!state.cnpj_cpf"
+            @click="actions.copiarDadosCliente"
+            >mdi-content-copy
+          </v-icon>
         </v-col>
       </v-row>
 
@@ -387,7 +399,7 @@ onMounted(async () => {
 }
 
 .v-col {
-  padding: 8px;
+  padding: 10px;
 }
 
 .atividadeCNAE {
@@ -397,7 +409,7 @@ onMounted(async () => {
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  max-height: 200px;
+  max-height: 100px !important;
   overflow-y: auto;
   overflow-x: auto;
 }

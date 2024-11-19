@@ -52,7 +52,9 @@ export interface iClientes {
     MESMO_GRUPO: number;
     PJ_OU_PF: string;
     UF: string;
-    ATIVIDADE_CNAE: iAtividadesCNAE[]
+    ATIVIDADE_CNAE: iAtividadesCNAE[];
+    DELETADO: string;
+    PRODUTOR_RURAL: string;
 }
 
 export interface iGetClientes {
