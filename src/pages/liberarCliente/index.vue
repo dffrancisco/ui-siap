@@ -217,25 +217,37 @@ onMounted(async () => {
         </v-window>
       </v-card-text>
 
-      <div class="divBtns">
-        <v-btn
-          color="primary"
-          @click="actions.alterar"
-          :disabled="!state.botaoAlterarHabilitado || state.idCliente == null || state.status == 'Bloqueado'"
-          >Alterar</v-btn
-        >
-        <v-btn
-          color="primary"
-          @click="actions.salvar"
-          :disabled="!state.botaoSalvarHabilitado"
-          >Salvar</v-btn
-        >
-        <v-btn
-          color="primary"
-          @click="actions.cancelar"
-          :disabled="!state.botaoCancelarHabilitado"
-          >Cancelar</v-btn
-        >
+      <div class="d-flex align-center justify-center">
+        <div class="divBtns">
+          <v-btn
+            color="primary"
+            @click="actions.alterar"
+            :disabled="!state.botaoAlterarHabilitado || state.idCliente == null || state.status == 'Bloqueado'"
+            >Alterar</v-btn
+          >
+          <v-btn
+            color="primary"
+            @click="actions.salvar"
+            :disabled="!state.botaoSalvarHabilitado"
+            >Salvar</v-btn
+          >
+          <v-btn
+            color="primary"
+            @click="actions.cancelar"
+            :disabled="!state.botaoCancelarHabilitado"
+            >Cancelar</v-btn
+          >
+        </div>
+        <div class="position-absolute right-0 pr-5">
+          <v-btn
+            color="primary"
+            size="small"
+            icon="mdi-account-cash mdi-24px"
+            title="Liberar Limite Cliente"
+            :disabled="!state.idCliente"
+          >
+          </v-btn>
+        </div>
       </div>
     </v-card>
 

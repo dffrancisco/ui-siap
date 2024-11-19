@@ -1,11 +1,12 @@
 import axios from "axios"
-import { iGetClientesResponse, iParamDetalhesCliente, iParamGetCliente, iParamUpdateCliente } from "../interfaces"
+import { iGetClientesResponse, iLiberarLimiteResponse, iParamDetalhesCliente, iParamGetCliente, iParamUpdateCliente } from "../interfaces"
 
 const caminho = 'siap/liberarCliente'
 
 type iGetClientesFunction = (param: iParamGetCliente) => Promise<iGetClientesResponse>
 type iGetDetalhesCliente = (param: iParamDetalhesCliente) => Promise<any>
 type iUpdateCliente = (param: iParamUpdateCliente) => Promise<any>
+type iLiberarLimiteFuction = (ID_CLIENTE: number) => Promise<iLiberarLimiteResponse>
 
 const getClientes: iGetClientesFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
@@ -60,11 +61,20 @@ const updateCliente: iUpdateCliente = async (param) => {
     return data
 }
 
+const liberarLimite: iLiberarLimiteFuction = async (ID_CLIENTE) => {
+    let { data } = await axios.post('liberarLimite', {
+        call: 'liberarLimite',
+        ID_CLIENTE
+    })
+    return data
+}
+
 export default {
     getClientes,
     getLiberacoes,
     getBloqueiosDesbloqueios,
     getCompras,
     getBoletos,
-    updateCliente
+    updateCliente,
+    liberarLimite
 }

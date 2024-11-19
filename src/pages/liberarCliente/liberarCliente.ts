@@ -5,6 +5,7 @@ import { iCliente, iParamDetalhesCliente, iParamUpdateCliente, iResetStates, iTa
 import Swal from "sweetalert2";
 import serviceLiberarCliente from "./services/liberarCliente.service"
 import utils, { msgConfirmSemCodigo } from "@/ts/utils";
+import { msgConfirm } from "@/ts/message";
 
 export const state = reactive({
     loading: false,
@@ -439,6 +440,37 @@ export const actions = {
             }
         }
     },
+
+    async btnLiberarLimiteCliente() {
+        if (await msgConfirm('Confirmação', 'Confirma a liberação de crédito para este cliente?')) {
+            await actions.liberarLimiteCliente()
+        }
+    },
+
+    async liberarLimiteCliente() {
+        try {
+            state.loading = true;
+            const data = await serviceLiberarCliente.liberarLimite(state.idCliente);
+
+            if (data.success) {
+                let novoValorUsado = utils.formatValorUSA(state.creditoUsado) - data.valorLiberado
+                state.creditoLimite = utils.formatValor(novoValorUsado)
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Limite liberado com sucesso",
+                });
+            }
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao liberar limite para o cliente",
+            });
+        } finally {
+            state.loading = false
+        }
+    }
 }
 
 export const naoFaturado = computed(() => state.tipoCompra === "Não Faturado");
