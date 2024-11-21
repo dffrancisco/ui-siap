@@ -89,7 +89,7 @@ export interface iInsertOrUpdateCliente {
     ID_BAIRRO: number,
     ID_BAIRRO_COR: number,
     ID_CLIENTE: any,
-    INSC_ESTADUAL_OU_IDENTIDADE: string,
+    INSC_ESTADUAL: string,
     MESMO_GRUPO: number,
     NOME: string,
     OBS: string,

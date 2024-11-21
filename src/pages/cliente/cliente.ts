@@ -6,6 +6,7 @@ import { useEventListener } from "@vueuse/core";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
 
+
 export const state = reactive({
     apelido: "",
     atividadeCNAE: <iAtividadesCNAE[]>[],
@@ -20,13 +21,12 @@ export const state = reactive({
     contatoFinanceiro: "",
     cnpj_cpf: "",
     desativarInputs: true,
-    desativarBtns: true,
     email: "",
     emailParaBoletos: "",
     endereco: "",
     faturado: 1,
     idCliente: <number>null,
-    inscricaoEstadualOuIdentidade: "",
+    inscricaoEstadual: "",
     inputCNPJ: <HTMLInputElement>null,
     loading: false,
     modalClienteOpened: false,
@@ -78,7 +78,7 @@ export const actions = {
     popularStates(clienteSelecionado: iClientes) {
         state.cnpj_cpf = clienteSelecionado.CGC_CLIENTE;
         state.razaoSocial = clienteSelecionado.NOME;
-        state.inscricaoEstadualOuIdentidade = clienteSelecionado.INSC_ESTADUAL;
+        state.inscricaoEstadual = clienteSelecionado.INSC_ESTADUAL;
         state.telefone = clienteSelecionado.TELEFONE1;
         state.telefoneAdicional = clienteSelecionado.TELEFONE2;
         state.email = clienteSelecionado.EMAIL;
@@ -101,7 +101,6 @@ export const actions = {
         state.bloqueado = clienteSelecionado.BLOQUEADO;
         state.faturado = clienteSelecionado.FATURADO;
         state.idCliente = clienteSelecionado.ID_CLIENTE
-        state.desativarBtns = false;
 
         const cnpjCpfLength = state.cnpj_cpf.replace(/\D/g, '').length;
         if (cnpjCpfLength == 11) {
@@ -119,7 +118,6 @@ export const actions = {
             actions.limparStates()
         }
 
-        state.desativarBtns = false;
         state.desativarInputs = false;
         nextTick(() => {
             state.inputCNPJ.focus();
@@ -127,7 +125,6 @@ export const actions = {
     },
 
     editarDadosCliente() {
-        state.desativarInputs = false;
         if (!state.idCliente) {
             Swal.fire({
                 icon: "warning",
@@ -135,6 +132,7 @@ export const actions = {
             });
             return;
         }
+        state.desativarInputs = false;
         nextTick(() => {
             state.inputCNPJ.focus();
         });
@@ -175,14 +173,16 @@ export const actions = {
 
     cancelar() {
         state.desativarInputs = true;
-        state.desativarBtns = true;
-        actions.limparStates();
+
+        if (state.idCliente) {
+            actions.popularStates(state.clienteSelecionado)
+        }
     },
 
     limparStates() {
         state.cnpj_cpf = "";
         state.razaoSocial = "";
-        state.inscricaoEstadualOuIdentidade = "";
+        state.inscricaoEstadual = "";
         state.telefone = "";
         state.telefoneAdicional = "";
         state.email = "";
@@ -225,18 +225,12 @@ export const actions = {
     },
 
     validarInsertOuUpdate() {
-        const CPF_CNPJ_Valido = utils.validaCPF_CNPJ(state.cnpj_cpf);
-        if (!CPF_CNPJ_Valido) {
-            Swal.fire({
-                icon: "warning",
-                text: state.cnpjMode ? "CNPJ inválido!" : "CPF inválido!",
-            });
-            return false;
+
+        if (state.idCliente && state.produtorRural == 'N') {
+            state.inscricaoEstadual = ""
         }
 
-        //F = CLIENTE FISICO, T = CLIENTE JURIDICO
-        state.pjOuPf = state.cnpjMode ? "T" : "F";
-        const camposObrigatorio = [
+        const camposObrigatorios = [
             { field: state.cnpj_cpf, name: "CNPJ/CPF" },
             { field: state.razaoSocial, name: "Razão Social" },
             { field: state.endereco, name: "Endereço" },
@@ -245,7 +239,7 @@ export const actions = {
             { field: state.cep, name: "CEP" },
         ];
 
-        for (const item of camposObrigatorio) {
+        for (const item of camposObrigatorios) {
             if (!item.field) {
                 Swal.fire({
                     icon: "warning",
@@ -255,12 +249,24 @@ export const actions = {
             }
         }
 
+        const CPF_CNPJ_Valido = utils.validaCPF_CNPJ(state.cnpj_cpf);
+        if (!CPF_CNPJ_Valido) {
+            Swal.fire({
+                icon: "warning",
+                text: state.cnpjMode ? "CNPJ inválido!" : "CPF inválido!",
+            });
+            return false;
+        }
+
         actions.insertOuUpdateCliente();
         return true;
     },
 
     async insertOuUpdateCliente() {
         state.loading = true;
+
+        //F = CLIENTE FISICO, T = CLIENTE JURIDICO
+        state.pjOuPf = state.cnpjMode ? "T" : "F";
 
         const param = {
             APELIDO: state.apelido,
@@ -282,7 +288,7 @@ export const actions = {
             ID_BAIRRO: state.selectBairro,
             ID_BAIRRO_COR: state.selectBairro,
             ID_CLIENTE: state.idCliente,
-            INSC_ESTADUAL_OU_IDENTIDADE: state.inscricaoEstadualOuIdentidade,
+            INSC_ESTADUAL: state.inscricaoEstadual,
             MESMO_GRUPO: state.mesmoGrupo,
             NOME: state.razaoSocial,
             OBS: state.obsAdministrativo,

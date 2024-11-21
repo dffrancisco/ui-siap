@@ -19,6 +19,7 @@ onMounted(async () => {
           id="btnGetClientes"
           color="primary"
           @click="state.modalClienteOpened = true"
+          :disabled="!state.desativarInputs"
         >
           Pesquisar (F1)
           <v-icon class="ml-2">mdi-magnify</v-icon>
@@ -26,6 +27,7 @@ onMounted(async () => {
         <v-btn
           id="btnNovoCliente"
           color="primary"
+          :disabled="!state.desativarInputs"
           @click="actions.novoCliente"
         >
           Novo (F2)
@@ -103,7 +105,7 @@ onMounted(async () => {
         <template v-if="state.cnpjMode || state.produtorRural == 'S'">
           <v-col cols="3">
             <v-text-field
-              v-model="state.inscricaoEstadualOuIdentidade"
+              v-model="state.inscricaoEstadual"
               label="Inscrição Estadual *"
               maxLength="17"
               v-mask="'##.###.###/###-##'"
@@ -312,7 +314,7 @@ onMounted(async () => {
         <v-col cols="1">
           <v-icon
             title="Buscar CNAE do cliente"
-            :disabled="!state.cnpj_cpf"
+            :disabled="!state.cnpj_cpf || !state.desativarInputs"
             size="20px"
             @click="actions.buscarCNAE"
           >
@@ -321,7 +323,7 @@ onMounted(async () => {
           <v-icon
             style="padding: 20px"
             title="Copiar dados do cliente"
-            :disabled="!state.cnpj_cpf"
+            :disabled="!state.cnpj_cpf || !state.desativarInputs"
             @click="actions.copiarDadosCliente"
             >mdi-content-copy
           </v-icon>
@@ -335,7 +337,7 @@ onMounted(async () => {
             icon="mdi-pen"
             size="39"
             color="primary"
-            :disabled="state.desativarBtns"
+            :disabled="!state.idCliente || !state.desativarInputs"
             @click="actions.editarDadosCliente"
           />
           <v-btn
@@ -343,8 +345,8 @@ onMounted(async () => {
             title="Excluir"
             icon="mdi-delete"
             size="39"
-            :disabled="state.desativarBtns"
             color="primary"
+            :disabled="!state.idCliente || !state.desativarInputs"
             @click="actions.deletarCliente"
           />
         </div>
@@ -352,14 +354,14 @@ onMounted(async () => {
           <v-btn
             color="primary"
             variant="outlined"
-            :disabled="state.desativarBtns"
+            :disabled="state.desativarInputs"
             @click="actions.cancelar"
             >cancelar</v-btn
           >
           <v-btn
             color="primary"
-            :disabled="state.desativarBtns"
             @click="actions.validarInsertOuUpdate"
+            :disabled="state.desativarInputs"
             >salvar</v-btn
           >
         </div>
