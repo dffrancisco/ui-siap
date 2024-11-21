@@ -1,5 +1,5 @@
 
-export interface iParams {
+export interface iParamDadosParaRelatorio {
     page: number;
     itemsPerPage: number;
     dataInicio?: string;

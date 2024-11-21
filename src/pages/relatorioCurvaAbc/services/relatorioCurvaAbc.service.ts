@@ -1,11 +1,11 @@
 import axios from "axios";
-import { iMarcas, iParams, iResponseRelatorio } from "../interfaces";
+import { iMarcas, iParamDadosParaRelatorio, iResponseRelatorio } from "../interfaces";
 
 const caminho = 'siap/relatorioCurvaAbc';
 
 
 
-type iGetDadosParaRelatorio = (param: iParams) => Promise<iResponseRelatorio>;
+type iGetDadosParaRelatorio = (param: iParamDadosParaRelatorio) => Promise<iResponseRelatorio>;
 type iGetMarcas = () => Promise<iMarcas[]>;
 
 
