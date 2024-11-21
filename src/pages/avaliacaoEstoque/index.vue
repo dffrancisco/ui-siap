@@ -63,7 +63,7 @@ onMounted(() => {
       </v-row>
 
       <div class="mt-4">
-        <v-data-table
+        <v-data-table-server
           class="avaliacaoEstoque pt-5"
           v-model:items-per-page="state.itemsPerPage"
           :items="state.dadosRelatorio"
@@ -74,7 +74,7 @@ onMounted(() => {
           :row-props="actions.getClassCorLinha"
           @update:page="actions.updatePage"
         >
-        </v-data-table>
+        </v-data-table-server>
       </div>
 
       <div class="pt-5">

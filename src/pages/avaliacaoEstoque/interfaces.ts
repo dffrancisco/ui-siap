@@ -26,7 +26,7 @@ export interface iColumnPrint {
     key: string;
     label: string;
     width: string;
-    align: 'left' | 'center' | 'right';
+    align: 'left';
 }
 
 

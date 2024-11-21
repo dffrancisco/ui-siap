@@ -70,7 +70,7 @@ export const actions = {
             const relatorioAjustado = actions.formatarDadosImpressao([...relatorio]);
 
 
-            const columns = [
+            const columns: iColumnPrint[] = [
                 { key: 'ID_AVALIACAO', label: 'ID Avaliação', width: '10%', align: 'left' },
                 { key: 'DT_AVALIACAO', label: 'Data Avaliação', width: '15%', align: 'left' },
                 { key: 'COR_CORREDOR', label: 'Cor Corredor', width: '10%', align: 'left' },
