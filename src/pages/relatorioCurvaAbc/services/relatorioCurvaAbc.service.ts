@@ -1,20 +1,13 @@
 import axios from "axios";
-import { iMarcas, iParams, iResponseDadosInput, iResponseRelatorio } from "../interfaces";
+import { iMarcas, iParams, iResponseRelatorio } from "../interfaces";
 
 const caminho = 'siap/relatorioCurvaAbc';
 
 
-type iGetDadosParaInputs = () => Promise<iResponseDadosInput>;
+
 type iGetDadosParaRelatorio = (param: iParams) => Promise<iResponseRelatorio>;
 type iGetMarcas = () => Promise<iMarcas[]>;
 
-
-const getDadosParaInputs: iGetDadosParaInputs = async () => {
-    const { data } = await axios.post(caminho, {
-        call: "getDadosParaInputs",
-    });
-    return data;
-}
 
 const getDadosParaRelatorio: iGetDadosParaRelatorio = async (param) => {
     const { data } = await axios.post(caminho, {
@@ -23,7 +16,6 @@ const getDadosParaRelatorio: iGetDadosParaRelatorio = async (param) => {
     });
     return data;
 };
-
 
 const getMarcas: iGetMarcas = async () => {
     const { data } = await axios.post(caminho, {
@@ -34,7 +26,6 @@ const getMarcas: iGetMarcas = async () => {
 
 
 export default {
-    getDadosParaInputs,
     getDadosParaRelatorio,
     getMarcas,
 };

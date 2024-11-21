@@ -20,15 +20,7 @@ onMounted(() => {
           <v-select
             id="slCurva"
             v-model="state.curva"
-            :items="[
-              { value: 'AA', label: 'AA' },
-              { value: 'A', label: 'A' },
-              { value: 'B', label: 'B' },
-              { value: 'C', label: 'C' },
-              { value: 'D', label: 'D' },
-              { value: 'E', label: 'E' },
-              { value: 'F', label: 'F' },
-            ]"
+            :items="state.curvasOptions"
             multiple
             item-value="value"
             item-title="label"
@@ -55,10 +47,7 @@ onMounted(() => {
           <v-select
             id="slFiltro"
             v-model="state.filtro"
-            :items="[
-              { value: 'CURVA_ABC_G', label: 'Curva ABC Geral' },
-              { value: 'CURVA_ABC_M', label: 'Curva ABC Marca' },
-            ]"
+            :items="state.filtroOptions"
             item-value="value"
             item-title="label"
             clearable
@@ -75,8 +64,8 @@ onMounted(() => {
               @click="actions.getDadosParaRelatorio"
               style="margin-top: 13px"
             >
-            </v-btn
-          ></div>
+            </v-btn>
+          </div>
         </v-col>
       </v-row>
 
@@ -91,8 +80,6 @@ onMounted(() => {
           height="350px"
           fixed-header
           :row-props="actions.getClassCorLinha"
-          @update:page="actions.updatePage"
-          @update:options="actions.getDadosParaRelatorio"
         >
         </v-data-table-server>
       </div>
@@ -122,6 +109,7 @@ onMounted(() => {
     </v-overlay>
   </v-container>
 </template>
+
 <style>
 .v-data-table-footer {
   max-height: 2px;

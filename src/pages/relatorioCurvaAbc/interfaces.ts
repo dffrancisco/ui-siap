@@ -11,14 +11,6 @@ export interface iParams {
     funcionario?: number[];
 }
 
-export interface iResponseDadosInput {
-    curvas: string[];
-    marcas: string[];
-}
-
-export interface iResponseMarca {
-    CURVA?: string[];
-}
 
 export interface iDadosRelatorio {
     NUM_FABRICANTE: string;

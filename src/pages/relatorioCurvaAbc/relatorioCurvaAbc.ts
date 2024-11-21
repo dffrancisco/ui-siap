@@ -5,6 +5,7 @@ import serviceRelatorioCurvaAbc from './services/relatorioCurvaAbc.service';
 import { iDadosRelatorio, iMarcas, iResponseRelatorio, iCount } from './interfaces';
 import utils, { iColumnPrint } from "@/ts/utils";
 
+
 export const state = reactive({
     loading: false,
     curva: [] as string[],
@@ -14,7 +15,6 @@ export const state = reactive({
     marcas: [] as any[],
     dadosRelatorio: [] as iDadosRelatorio[],
     totalItems: 0,
-    searchMarca: '',
     itemsPerPage: 30,
     page: 1,
     headers: <any>[
@@ -27,6 +27,19 @@ export const state = reactive({
         { key: 'CURVA_ABC_G', title: 'ABC G.', sortable: true, align: 'left' },
         { key: 'CURVA_ABC_M', title: 'ABC M.', sortable: true, align: 'left' },
     ],
+    curvasOptions: [
+        { value: 'AA', label: 'AA' },
+        { value: 'A', label: 'A' },
+        { value: 'B', label: 'B' },
+        { value: 'C', label: 'C' },
+        { value: 'D', label: 'D' },
+        { value: 'E', label: 'E' },
+        { value: 'F', label: 'F' },
+    ],
+    filtroOptions: [
+        { value: 'CURVA_ABC_G', label: 'Curva ABC Geral' },
+        { value: 'CURVA_ABC_M', label: 'Curva ABC Marca' },
+    ]
 });
 
 export const actions = {
@@ -35,13 +48,15 @@ export const actions = {
     },
 
     validarInputs(): boolean {
-        if (!state.curva.length) {
+
+        if (!state.curva || state.curva.length === 0) {
             Swal.fire({
                 icon: 'warning',
                 text: 'Selecione uma curva para realizar o filtro.',
             });
             return false;
         }
+
 
         if (!state.filtro) {
             Swal.fire({
@@ -51,10 +66,11 @@ export const actions = {
             return false;
         }
 
-        if (!state.dbSelectMarca.length) {
+
+        if (state.filtro === 'CURVA_ABC_M' && (!state.dbSelectMarca || state.dbSelectMarca.length === 0)) {
             Swal.fire({
                 icon: 'warning',
-                text: 'Selecione uma marca para realizar o filtro.',
+                text: 'Selecione uma marca para realizar o filtro quando usar "Curva ABC Marca".',
             });
             return false;
         }
@@ -82,19 +98,10 @@ export const actions = {
         }
     },
 
-    handleSearchMarca() {
-        if (state.searchMarca) {
-            state.dbSelectMarca = state.marcas.filter((marca: any) =>
-                marca.label.toLowerCase().includes(state.searchMarca.toLowerCase())
-            );
-        } else {
-            state.dbSelectMarca = [...state.marcas];
-        }
-    },
-
     async getDadosParaRelatorio() {
-
-        if (!actions.validarInputs()) return;
+        if (!actions.validarInputs()) {
+            return;
+        }
 
         try {
             state.loading = true;
@@ -106,17 +113,14 @@ export const actions = {
                 page: state.page,
                 itemsPerPage: state.itemsPerPage,
             };
-
-            const data: iResponseRelatorio = await serviceRelatorioCurvaAbc.getDadosParaRelatorio(params);
-
-            state.dadosRelatorio = data.dadosRelatorio;
-            state.totalItems = data.totalDadosRelatorio[0].TOTAL;
-
+            const { dadosRelatorio, totalDadosRelatorio }: iResponseRelatorio = await serviceRelatorioCurvaAbc.getDadosParaRelatorio(params);
+            state.dadosRelatorio = dadosRelatorio;
+            state.totalItems = totalDadosRelatorio[0]?.TOTAL || 0;
         } catch (error) {
-            console.error("Erro ao buscar os produtos", error);
+            console.error("Erro ao obter os dados:", error);
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao buscar itens ou produtos.',
+                text: 'Erro ao buscar dados para o relatório.',
             });
         } finally {
             state.loading = false;
@@ -124,9 +128,13 @@ export const actions = {
     },
 
     async onClickImprimir() {
-        if (!state.dadosRelatorio.length) {
+        if (!actions.validarInputs()) {
+            return;
+        }
+
+        if (!state.dadosRelatorio) {
             Swal.fire({
-                icon: 'info',
+                icon: 'warning',
                 text: 'Não há dados para realizar a impressão.',
             });
             return;
@@ -137,9 +145,9 @@ export const actions = {
             let relatorio = state.dadosRelatorio;
             const relatorioAjustado = actions.formatarDadosImpressao([...relatorio]);
 
-            if (!relatorioAjustado || !relatorioAjustado.length) {
+            if (!relatorioAjustado || !relatorioAjustado) {
                 Swal.fire({
-                    icon: 'info',
+                    icon: 'warning',
                     text: 'Não há dados ajustados para imprimir.',
                 });
                 return;
@@ -164,7 +172,7 @@ export const actions = {
 
             await utils.printComCabecalho(columns, relatorioAjustado, titulo);
         } catch (error) {
-            console.error("Erro ao imprimir o relatorio:", error);
+            console.error("Erro ao imprimir o relatório:", error);
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao imprimir relatório.',
@@ -184,12 +192,5 @@ export const actions = {
     getClassCorLinha(dados: any) {
         let classe = dados.index % 2 == 0 ? 'cor-zebrada-1' : 'cor-zebrada-2';
         return { class: classe };
-    },
-
-    updatePage(page: number) {
-        if (page > 0 && page <= Math.ceil(state.totalItems / state.itemsPerPage)) {
-            state.page = page;
-            actions.getDadosParaRelatorio();
-        }
     },
 };
