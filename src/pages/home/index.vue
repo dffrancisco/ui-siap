@@ -253,6 +253,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/favorecidos')"
+              >Favorecidos
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/faturarCliente')"
               >Faturar Cliente
             </v-btn>
@@ -296,12 +302,25 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/relatorioCurvaAbc')"
-              >Relatório Curva ABC</v-btn
+              >Relatório Curva ABC
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/Bancos')"
+              >Bancos
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/relatorioEntregarReceber')"
+              >Relatório Entregar Receber</v-btn
             >
 
             <v-btn
               class="mr-4 mb-4"
               @click="login.actions.confirmarSaida()"
+              color="primary"
             >
               Logout
             </v-btn>

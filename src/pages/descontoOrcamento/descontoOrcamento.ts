@@ -434,7 +434,7 @@ export const actions = {
         numOrcamento: state.dataOrcamento.NUM_ORCAMENTO,
         valorDesconto: formatValorUSA(state.descontoValor),
         valorOrcamento: state.dataOrcamento.VALOR,
-        valorProduto: state.produtoSelected.VALOR,
+        valorProduto: state.produtoSelected.VALOR * state.produtoSelected.QTO,
         obs: state.obs,
         codProduto: state.produtoSelected.COD_PRODUTO
 

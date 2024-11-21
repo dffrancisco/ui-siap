@@ -4,6 +4,8 @@ import { actions, state } from "./filtro";
 import ModalAddItensFiltro from "./components/modalAddItensFiltro.vue";
 import ModalVisualizarFiltro from "./components/modalVisualizarFiltro.vue";
 import ModalNovoFiltro from "./components/modalNovoFiltro.vue";
+import ModalRevisaoFiltro from "./components/modalRevisaoFiltro.vue";
+import utils from "@/ts/utils";
 
 onMounted(async () => {
   actions.init();
@@ -62,7 +64,7 @@ onMounted(async () => {
 
       <v-data-table-server
         class="tableFiltros"
-        style="border-radius: 5px; padding-top: 20px"
+        style="border-radius: 5px; padding-top: 20px; --v-table-row-height: 70px"
         height="400"
         items-per-page-text="Itens por página"
         v-model:itemsPerPage="state.itensPerPage"
@@ -74,6 +76,19 @@ onMounted(async () => {
         :row-props="actions.getClassCorLinha"
         @update:page="actions.updatePage"
       >
+        <template v-slot:item.DATA_INICIO="{ item }">
+          <div>
+            <div>{{ utils.dataBrasil(item.DATA_INICIO) }}</div>
+            <div>{{ utils.formatHora(item.HR_INICIO) }}</div>
+          </div>
+        </template>
+
+        <template v-slot:item.DATA_FIM="{ item }">
+          <div>
+            <div>{{ item.DATA_FIM ? utils.dataBrasil(item.DATA_FIM) : "-" }}</div>
+            <div>{{ item.HR_TERMINO ? utils.formatHora(item.HR_TERMINO) : "-" }}</div>
+          </div>
+        </template>
         <template v-slot:item.acoes="{ item }">
           <div style="display: flex">
             <v-icon
@@ -108,22 +123,12 @@ onMounted(async () => {
               size="large"
               color="primary"
               class="ml-1"
-              :disabled="item.DATA_FIM != null"
-              :title="item.DATA_FIM == null ? 'Finalizar Filtro' : 'Filtro Finalizado'"
-              @click="actions.finalizarFiltro(item.ID_FILTRO)"
+              :title="item.HR_REVISAO == null ? 'Revisar Filtro' : 'Visualizar Revisão'"
+              @click="actions.revisarFiltro(item.ID_FILTRO)"
             >
-              mdi-checkbox-marked-outline
+              {{ item.HR_REVISAO == null ? "mdi-checkbox-marked-outline" : "mdi-eye-outline" }}
             </v-icon>
           </div>
-        </template>
-        <template #no-data>
-          <v-alert
-            :value="true"
-            icon="mdi-information"
-            style="background-color: #ffffff"
-          >
-            Não há dados disponíveis.
-          </v-alert>
         </template>
       </v-data-table-server>
 
@@ -194,10 +199,27 @@ onMounted(async () => {
       :nomeFiltro="state.nomeNovoFiltro"
       :idFiltro="state.idFiltro"
       :conferente="state.conferente"
+      :qtdItens="state.qtdItens"
       :marcas="state.marcas"
       :carros="state.carros"
+      :itensExistentesNoFiltro="state.dadosDoFiltroSelecionado"
       @closeModalAddItensFiltro="actions.closeModalAddItensFiltro"
       @cancelarModalAddItensFiltro="actions.cancelarModalAddItensFiltro"
+    />
+  </v-dialog>
+
+  <v-dialog
+    v-model="state.modalRevisaoFiltroOpened"
+    transition="dialog-transition"
+    variant="flat"
+    :persistent="false"
+    @click:outside="actions.closeModalRevisaoFiltro"
+  >
+    <ModalRevisaoFiltro
+      :dadosFiltroRevisao="state.dadosFiltroRevisao"
+      :itensFiltroRevisao="state.itensFiltroRevisao"
+      @closeModalRevisaoFiltro="actions.closeModalRevisaoFiltro"
+      @finalizarFiltro="actions.finalizarFiltro"
     />
   </v-dialog>
 </template>

@@ -11,6 +11,7 @@ export const dataHoje = moment().format('YYYY-MM-DD')
 export const state = reactive({
     dataInicio: moment().format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
+    selectedTipoData: 'DATA_VENDA',
     loading: false,
     dbDevolucoes: <iDevolucao[]>[],
     inputElementDataFim: <HTMLInputElement>{},
@@ -23,11 +24,11 @@ export const state = reactive({
             align: 'center'
         },
         {
-            title: 'N° Orçamento', key: 'NUM_ORCAMENTO',
+            title: 'N° Orç.', key: 'NUM_ORCAMENTO',
             align: 'center'
         },
         {
-            title: 'Data Orçamento', key: 'DATA',
+            title: 'Data Orç.', key: 'DATA',
             align: 'center',
             value: (item: iDevolucao) => utils.dataBrasil(item.DATA)
         },
@@ -41,9 +42,8 @@ export const state = reactive({
             align: 'center',
         },
         {
-            title: 'Crédito', key: 'CREDITO',
+            title: 'Tipo Pag.', key: 'DESCRICAO_PAGAMENTO',
             align: 'center',
-            value: (item: iDevolucao) => utils.formatValor(item.CREDITO)
         },
         {
             title: 'Funcionário', key: 'LOGIN',
@@ -61,7 +61,7 @@ export const state = reactive({
         },
     ],
     dataInicioImpressao: null,
-    dataFimImpressao: null
+    dataFimImpressao: null,
 })
 
 export const actions = {
@@ -74,8 +74,8 @@ export const actions = {
     createModal() {
         state.modalDetalhesItensDevolucao = new xModal.create({
             el: "#modalDetalhesItensDevolucao",
-            height: 400,
-            width: 800,
+            height: 420,
+            width: 900,
             title: 'Detalhes itens devolução',
             theme: 'xModal-blue',
             onOpen: () => { state.modalDetalhesItensDevolucaoOpened = true; },
@@ -90,7 +90,8 @@ export const actions = {
             COD_PRODUTO: produto.COD_PRODUTO,
             QUAL_TIPO_AVARIA: produto.QUAL_TIPO_AVARIA,
             MOTIVO_DEVOLUCAO: produto.MOTIVO_DEVOLUCAO,
-            DESC_PRODUTO: produto.DESC_PRODUTO
+            DESC_PRODUTO: produto.DESC_PRODUTO,
+            CREDITO: item.CREDITO,
         }));
 
         state.modalDetalhesItensDevolucao.open()
@@ -133,7 +134,9 @@ export const actions = {
             let dataInicio = moment(state.dataInicio).format('YYYY-MM-DD');
             let dataFim = moment(state.dataFim).format('YYYY-MM-DD');
 
-            const data = await serviceDevolucaodePecas.getDevolucoes({ dataInicio, dataFim })
+            let tipoData = state.selectedTipoData
+
+            const data = await serviceDevolucaodePecas.getDevolucoes({ dataInicio, dataFim, tipoData })
 
             state.dbDevolucoes = data
             state.dataInicioImpressao = dataInicio
@@ -157,7 +160,7 @@ export const actions = {
                 DATA: utils.dataBrasil(item.DATA) ?? '',
                 VALOR: utils.formatValor(item.VALOR) ?? '',
                 NF_DEVOLUCAO: item.NF_DEVOLUCAO ?? '',
-                CREDITO: utils.formatValor(item.CREDITO) ?? '',
+                DESCRICAO_PAGAMENTO: item.DESCRICAO_PAGAMENTO ?? '',
                 LOGIN: item.LOGIN ?? '',
                 STATUS: item.STATUS ?? ''
             }
@@ -191,9 +194,9 @@ export const actions = {
                 width: "80%"
             },
             {
-                key: 'CREDITO',
-                label: "Crédito",
-                align: 'right',
+                key: 'DESCRICAO_PAGAMENTO',
+                label: "Tipo Pag.",
+                align: 'center',
             },
             {
                 key: 'LOGIN',
@@ -230,5 +233,5 @@ export const actions = {
         } finally {
             state.loading = false
         }
-    },
+    }
 }

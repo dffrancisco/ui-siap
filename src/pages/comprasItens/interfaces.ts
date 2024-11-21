@@ -75,6 +75,7 @@ export interface iParamEmitBuscarProdutos {
     DESC_PRODUTO?: string,
     NUM_FABRICANTE?: string,
     VER_TODOS_OS_ITENS?: boolean
+    VER_VENDAS_COMPRAS_ENTRE_LOJAS?: boolean
 }
 
 export interface iParamInsertItemCompra {

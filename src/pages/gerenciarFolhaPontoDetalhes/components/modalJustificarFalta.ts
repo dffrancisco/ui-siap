@@ -53,7 +53,6 @@ export const setup = (emit: any, props: any) => {
         }
 
         if ([
-            TIPO_DIA_FOLGA,
             TIPO_FERIADO,
             TIPO_EM_OUTRA_LOJA,
             TIPO_SEM_SISTEMA
@@ -289,6 +288,14 @@ export const setup = (emit: any, props: any) => {
         },
 
         async deletarFalta() {
+            if (state.selectedTipoFalta == 6) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "Exclusão de suspensão deve ser feita pela tela de funcionários.",
+                });
+                return
+            }
+
             let dataFalta = props.dadosAusencia;
             dataFalta = actions.ajustarData(dataFalta);
 
@@ -388,7 +395,15 @@ export const setup = (emit: any, props: any) => {
 
             let cpf = props.funcionario.cpf.replace(/\D/g, "");
             let file_name = props.dadosDocumento[0].nome_arquivo;
-            let urlPdf = `http://www.reallatas.com.br/doc_funcionario/documentos/${cpf}/ausencia/${file_name}`;
+
+            let urlPdf: string;
+
+            // Verifica se o nome do arquivo contém 'suspensao'
+            if (file_name.toLowerCase().includes("suspensao")) {
+                urlPdf = `http://www.reallatas.com.br/doc_funcionario/documentos/${cpf}/suspensao/${file_name}`;
+            } else {
+                urlPdf = `http://www.reallatas.com.br/doc_funcionario/documentos/${cpf}/ausencia/${file_name}`;
+            }
 
             if (file_name.toLowerCase().endsWith(".pdf")) {
                 window.open(`${urlPdf}`, "_blank");

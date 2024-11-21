@@ -3,13 +3,14 @@ import { iGetDevolucoesResponse, iParamGetDevolucoes } from "../interfaces";
 
 const caminho = 'siap/devolucaoDePecas'
 
-type iGetDevolucoesFunction = ({ dataInicio, dataFim }: iParamGetDevolucoes) => Promise<iGetDevolucoesResponse[]>
+type iGetDevolucoesFunction = ({ dataInicio, dataFim, tipoData }: iParamGetDevolucoes) => Promise<iGetDevolucoesResponse[]>
 
-const getDevolucoes: iGetDevolucoesFunction = async ({ dataInicio, dataFim }) => {
+const getDevolucoes: iGetDevolucoesFunction = async ({ dataInicio, dataFim, tipoData }) => {
     let { data } = await axios.post(caminho, {
         call: 'getDevolucoes',
         dataInicio,
         dataFim,
+        tipoData
     })
     return data;
 }

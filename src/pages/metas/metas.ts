@@ -37,7 +37,7 @@ export const actions = {
 
         await actions.getMetasTracadas()
 
-        if (!state.metasTracada) {
+        if (!state.metasTracada.geral) {
             Swal.fire({
                 icon: "info",
                 text: "Nenhuma meta encontrada para a data informada."
@@ -64,7 +64,7 @@ export const actions = {
             };
 
             const data = await metasService.getMetasTracadas(param);
-            state.metasTracada = data[0];
+            state.metasTracada = data;
 
         } catch (erro) {
             Swal.fire({

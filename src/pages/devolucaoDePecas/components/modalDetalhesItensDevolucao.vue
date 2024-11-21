@@ -2,6 +2,7 @@
 import { nextTick, reactive, watch } from "vue";
 import { iDetalhesDevolucao } from "../interfaces";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
+import utils from "@/ts/utils";
 
 const props = defineProps<{
   devolucaoSelecionada: iDetalhesDevolucao[];
@@ -25,24 +26,30 @@ const actions = {
   criarGrid() {
     state.gridDetalhesItensDevolucao = new xGridV2.create({
       el: "#gridDetalhesItensDevolucao",
-      width: 750,
+      width: 850,
       height: 300,
       count: false,
       columns: {
         Produto: {
           dataField: "DESC_PRODUTO",
           center: true,
-          width: "40%",
+          width: "30%",
         },
         Motivo: {
           dataField: "MOTIVO_DEVOLUCAO",
           center: true,
-          width: "35%",
+          width: "30%",
         },
         Observação: {
           dataField: "QUAL_TIPO_AVARIA",
           center: true,
-          width: "25%",
+          width: "28%",
+        },
+        "Crédito Restante": {
+          dataField: "CREDITO",
+          center: true,
+          render: utils.formatValor,
+          width: "12%",
         },
       },
     });
@@ -59,6 +66,9 @@ nextTick(() => {
     <div>
       <div id="gridDetalhesItensDevolucao"></div>
     </div>
+    <span class="text-subtitle-1">
+      Valor do Crédito igual a 0,00 (zero) significa que o cliente já usou o crédito
+    </span>
   </v-container>
 </template>
 

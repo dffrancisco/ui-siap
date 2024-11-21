@@ -10,8 +10,26 @@ nextTick(() => {
 
 <template>
   <v-container>
-    <v-card class="pa-5 main-card">
-      <div class="d-flex justify-end align-end ga-4 pb-4">
+    <v-card
+      :width="980"
+      class="pa-5 main-card"
+    >
+      <div
+        id="pnCampos"
+        class="d-flex justify-end align-end ga-4 pb-4"
+      >
+        <div class="container-data">
+          <label for="tipoData">Tipo de Data</label>
+          <select
+            id="tipoData"
+            v-model="state.selectedTipoData"
+            class="ss obr"
+            style="height: 28px"
+          >
+            <option value="DATA_VENDA">Data Venda</option>
+            <option value="DATA">Data Devolução</option>
+          </select>
+        </div>
         <div class="container-data">
           <span>Data Inicial</span>
           <input
@@ -49,7 +67,8 @@ nextTick(() => {
         :items="state.dbDevolucoes"
         items-per-page-text="Itens por página"
         no-data-text="Não há dados disponíveis"
-        height="480"
+        height="380"
+        id="tableDevolucaoPecas"
         items-per-page="50"
         fixed-header
         class="pb-4"
@@ -58,6 +77,7 @@ nextTick(() => {
         <template v-slot:item.NF_DEVOLUCAO="{ item }">
           <div class="nf-container">{{ item.NF_DEVOLUCAO }}</div>
         </template>
+
         <template v-slot:item.inf="{ item }">
           <v-icon
             size="large"
@@ -70,10 +90,7 @@ nextTick(() => {
         </template>
       </v-data-table>
 
-      <div class="d-flex justify-space-between align-center">
-        <span class="text-subtitle-1">
-          Valor do Crédito igual a 0,00 (zero) significa que o cliente já usou o crédito
-        </span>
+      <div class="btnPrint">
         <v-btn
           icon="mdi-printer"
           color="primary"
@@ -121,6 +138,12 @@ nextTick(() => {
   white-space: normal;
   width: 130px;
 }
+
+#tableDevolucaoPecas .v-data-table-footer {
+  max-height: 50px;
+  padding-right: 80px;
+  padding-top: 15px;
+}
 </style>
 
 <style scoped>
@@ -130,6 +153,13 @@ nextTick(() => {
 }
 
 .container-data {
-  width: 140px;
+  width: 150px;
+}
+
+.btnPrint {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -45px;
+  padding-right: 15px;
 }
 </style>

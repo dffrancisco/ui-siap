@@ -15,16 +15,15 @@ const stateModalVisualizarFiltro = reactive({
       sortable: true,
     },
     {
-      title: "Nº Fabricante",
+      title: "Nº Fabricante / Nº Fabricante2",
       key: "NUM_FABRICANTE",
       sortable: true,
     },
     {
-      title: "Nº Fabricante 2",
-      key: "NUM_FABRICANTE2",
+      title: "End. Estoque / End. Excesso",
+      key: "END_ESTOQUE",
       sortable: true,
     },
-
     {
       title: "Qtd",
       key: "QTD_ESTOQUE",
@@ -57,12 +56,12 @@ const actions = {
   },
 
   addItensFiltro() {
-    emit(
-      "addItensFiltro",
-      stateModalVisualizarFiltro.dadosFiltro[0].ID_FILTRO,
-      stateModalVisualizarFiltro.dadosFiltro[0].COD_FUNCIONARIO,
-      stateModalVisualizarFiltro.dadosFiltro[0].NOME_FILTRO
-    );
+    let idFiltro = stateModalVisualizarFiltro.dadosFiltro[0]?.ID_FILTRO;
+    let conferente = stateModalVisualizarFiltro.dadosFiltro[0]?.COD_FUNCIONARIO;
+    let nomeFiltro = stateModalVisualizarFiltro.dadosFiltro[0]?.NOME_FILTRO;
+    let qtdItens = stateModalVisualizarFiltro.dadosFiltro[0]?.QTD_ITENS;
+
+    emit("addItensFiltro", idFiltro, conferente, nomeFiltro, qtdItens);
     emit("closeModalVisualizarFiltro");
   },
 
@@ -77,7 +76,14 @@ const actions = {
 
     if (await msgConfirmSemCodigo("Confirmação", "Deseja excluir esse item do filtro?")) {
       try {
-        let param = item.ID_ITENS_FILTRO;
+        let idItem = item.ID_ITENS_FILTRO;
+        let idFiltro = stateModalVisualizarFiltro.dadosFiltro[0].ID_FILTRO;
+
+        let param = {
+          idItem,
+          idFiltro,
+        };
+
         stateModalVisualizarFiltro.loading = true;
         await serviceFiltro.deleteItemFiltro(param);
 
@@ -165,6 +171,33 @@ const emit = defineEmits([
           item-key="COD_PRODUTO"
           item-value="COD_PRODUTO"
         >
+          <template v-slot:item.NUM_FABRICANTE="{ item }">
+            <div>
+              <span v-if="item.NUM_FABRICANTE && item.NUM_FABRICANTE != 0">{{ item.NUM_FABRICANTE }}</span>
+              <span
+                v-if="
+                  item.NUM_FABRICANTE &&
+                  item.NUM_FABRICANTE != 0 &&
+                  item.NUM_FABRICANTE2 &&
+                  item.NUM_FABRICANTE2 != 0
+                "
+              >
+                -
+              </span>
+              <span v-if="item.NUM_FABRICANTE2 && item.NUM_FABRICANTE2 != 0">{{ item.NUM_FABRICANTE2 }}</span>
+            </div>
+          </template>
+
+          <template v-slot:item.END_ESTOQUE="{ item }">
+            <div>
+              <span v-if="item.END_ESTOQUE && item.END_ESTOQUE != 0">{{ item.END_ESTOQUE }}</span>
+              <span v-if="item.END_ESTOQUE && item.END_ESTOQUE != 0 && item.END_EXCESSO && item.END_EXCESSO != 0">
+                -
+              </span>
+              <span v-if="item.END_EXCESSO && item.END_EXCESSO != 0">{{ item.END_EXCESSO }}</span>
+            </div>
+          </template>
+
           <template v-slot:item.acoes="{ item }">
             <div style="display: flex">
               <v-icon
@@ -178,15 +211,6 @@ const emit = defineEmits([
                 mdi-delete-outline
               </v-icon>
             </div>
-          </template>
-          <template #no-data>
-            <v-alert
-              :value="true"
-              icon="mdi-information"
-              style="background-color: #ffffff"
-            >
-              Não há dados disponíveis.
-            </v-alert>
           </template>
         </v-data-table>
         <div style="margin-left: 72%; margin-top: -5px">
