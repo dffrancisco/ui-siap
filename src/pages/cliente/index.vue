@@ -46,6 +46,7 @@ onMounted(async () => {
               v-mask="'##.###.###.####-##'"
               :clearable="false"
               :disabled="state.desativarInputs"
+              @blur="actions.verificarSeClienteExiste"
             ></v-text-field>
           </template>
           <template v-else>
@@ -58,6 +59,7 @@ onMounted(async () => {
               v-mask="'###.###.###-##'"
               :clearable="false"
               :disabled="state.desativarInputs"
+              @blur="actions.verificarSeClienteExiste"
             ></v-text-field>
           </template>
         </v-col>

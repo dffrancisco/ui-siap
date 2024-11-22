@@ -176,6 +176,8 @@ export const actions = {
 
         if (state.idCliente) {
             actions.popularStates(state.clienteSelecionado)
+        } else {
+            actions.limparStates()
         }
     },
 
@@ -473,6 +475,60 @@ export const actions = {
         );
         state.nomeCidade = cidadeSelecionada ? cidadeSelecionada.DESCRICAO : "";
     },
+
+    async verificarSeClienteExiste() {
+        if (state.cnpj_cpf.length < 13) {
+            return;
+        }
+
+        try {
+            state.loading = true;
+
+            const param = {
+                CPF_OU_CNPJ: state.cnpj_cpf,
+            };
+
+            const cliente: iClientes = await serviceCliente.verificarSeClienteExiste(param);
+
+            if (!cliente) {
+                return;
+            }
+
+            console.log(cliente);
+
+            if (cliente[0].DELETADO == 'S') {
+                const mensagem = `
+                    <strong>Esse cliente está inativo. Deseja ativá-lo novamente?</strong>
+                `;
+
+                const result = await Swal.fire({
+                    icon: "info",
+                    title: "Cliente já existe",
+                    html: mensagem,
+                    confirmButtonText: "Sim",
+                    showCancelButton: true,
+                    cancelButtonText: "Não",
+                });
+
+                if (result.isConfirmed) {
+                    //await serviceCliente.ativarCliente(cliente.ID_CLIENTE);
+                    Swal.fire({
+                        icon: "success",
+                        title: "Cliente ativado",
+                        text: "O cliente foi ativado com sucesso!",
+                    });
+                }
+            }
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao verificar se o cliente existe.",
+            });
+        } finally {
+            state.loading = false;
+        }
+    }
 
 }
 

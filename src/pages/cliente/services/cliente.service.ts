@@ -53,11 +53,29 @@ const buscarCNAE = async (param) => {
     return data;
 }
 
+const verificarSeClienteExiste = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "verificarSeClienteExiste",
+        param
+    });
+    return data;
+}
+
+const ativarCliente = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "ativarCliente",
+        param
+    });
+    return data;
+}
+
 export default {
     getDadosParaInputs,
     getClientes,
     buscarCEP,
     insertOuUpdateCliente,
     deletarCliente,
-    buscarCNAE
+    buscarCNAE,
+    verificarSeClienteExiste,
+    ativarCliente
 }
