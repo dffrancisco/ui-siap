@@ -1,28 +1,28 @@
 import axios from "axios";
-import { iParams, iResponseRelatorio } from "../interfaces";
+import { iParams, iDadosAvaliacao, iResponseRelatorio } from "../interfaces";
 
-const caminho = 'siap/relatorioAvaliacoes';
+const caminho = 'siap/avaliacaoEstoque'
 
-type iGetAvaliacao = (param: iParams) => Promise<iResponseRelatorio>;
-type iGetProdutosAvaliados = (param: iParams) => Promise<iResponseRelatorio>;
+type iGetDadosParaInputs = () => Promise<iDadosAvaliacao>;
+type iGetDadosParaRelatorio = (param: iParams) => Promise<iResponseRelatorio>;
 
-const getAvaliacao: iGetAvaliacao = async (param) => {
-    const { data } = await axios.post(caminho, {
-        call: "getAvaliacao",
-        param,
+const getDadosParaInputs: iGetDadosParaInputs = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getDadosParaInputs",
     });
     return data;
-};
+}
 
-const getProdutosAvaliados: iGetProdutosAvaliados = async (param) => {
-    const { data } = await axios.post(caminho, {
-        call: "getProdutosAvaliados",
-        param,
+
+const getDadosParaRelatorio: iGetDadosParaRelatorio = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getDadosParaRelatorio",
+        param
     });
     return data;
-};
+}
 
 export default {
-    getAvaliacao,
-    getProdutosAvaliados,
-};
+    getDadosParaInputs,
+    getDadosParaRelatorio
+}

@@ -1,4 +1,3 @@
-
 export interface iParams {
     mes: number;
     ano: number;
@@ -12,7 +11,6 @@ export interface iParams {
     id_sociedade: string;
     ax: string;
 }
-
 
 export interface iDadosAvaliacao {
     ID_AVALIACAO: number;
@@ -32,7 +30,7 @@ export interface iColumnPrint {
     key: string;
     label: string;
     width: string;
-    align: 'left';
+    align: 'left' | 'center' | 'right';
 }
 
 export interface iResponseRelatorio {

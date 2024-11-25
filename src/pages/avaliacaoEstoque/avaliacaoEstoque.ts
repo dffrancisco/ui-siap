@@ -23,6 +23,7 @@ export const state = reactive({
         { value: 8, label: 'Agosto' },
         { value: 9, label: 'Setembro' },
         { value: 10, label: 'Outubro' },
+        { value: 11, label: 'Novembro' },
         { value: 12, label: 'Dezembro' },
     ],
     dadosRelatorio: <iDadosAvaliacao[]>[],
@@ -112,9 +113,11 @@ export const actions = {
                 ano: state.anoSelecionado,
                 page: state.page,
                 itemsPerPage: state.itemsPerPage,
+                id_sociedade: '',
+                ax: '',
             };
 
-            const data: iResponseRelatorio = await serviceRelatorioCurvaAbc.getAvaliacao(params);
+            const data: iResponseRelatorio = await serviceRelatorioCurvaAbc.getDadosParaRelatorio(params);
 
             state.dadosRelatorio = data.dadosRelatorio || [];
             state.totalItems = data.totalDadosRelatorio?.[0]?.TOTAL || 0;
