@@ -70,7 +70,7 @@ export const actions = {
     },
 
 
-    selecionarCliente(clienteSelecionado: iClientes) {
+    salvarClienteSelecionadoNaState(clienteSelecionado: iClientes) {
         state.clienteSelecionado = clienteSelecionado;
         actions.popularStates(clienteSelecionado)
     },
@@ -260,6 +260,16 @@ export const actions = {
             return false;
         }
 
+        const email = utils.validMail(state.email);
+        const emailParaBoletos = utils.validMail(state.emailParaBoletos)
+        if (!email || !emailParaBoletos) {
+            Swal.fire({
+                icon: "warning",
+                text: "E-mail inválido!",
+            });
+            return false;
+        }
+
         actions.insertOuUpdateCliente();
         return true;
     },
@@ -271,7 +281,7 @@ export const actions = {
         state.pjOuPf = state.cnpjMode ? "T" : "F";
 
         const param = {
-            APELIDO: state.apelido,
+            APELIDO: state.apelido.toUpperCase(),
             BOLETO_EMAIL: state.boletoEmail,
             BLOQUEADO: state.bloqueado,
             CEP: state.cep,
@@ -292,7 +302,7 @@ export const actions = {
             ID_CLIENTE: state.idCliente,
             INSC_ESTADUAL: state.inscricaoEstadual,
             MESMO_GRUPO: state.mesmoGrupo,
-            NOME: state.razaoSocial,
+            NOME: state.razaoSocial.toUpperCase(),
             OBS: state.obsAdministrativo,
             OBS_VENDAS: state.obsVendas,
             PRODUTOR_RURAL: state.produtorRural,
@@ -312,6 +322,7 @@ export const actions = {
                 timer: 1000,
             });
 
+            state.desativarInputs = true;
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -481,60 +492,55 @@ export const actions = {
             return;
         }
 
-        try {
-            state.loading = true;
+        state.loading = true;
 
-            const param = {
-                CPF_OU_CNPJ: state.cnpj_cpf,
-            };
+        const param = {
+            CPF_OU_CNPJ: state.cnpj_cpf,
+        };
 
-            const cliente: iClientes = await serviceCliente.verificarSeClienteExiste(param);
+        const cliente: iClientes[] = await serviceCliente.verificarSeClienteExiste(param);
 
-            if (!cliente) {
-                return;
-            }
+        if (cliente.length == 0) {
+            state.loading = false;
+            return;
+        }
 
-            console.log(cliente);
-
-            if (cliente[0].DELETADO == 'S') {
-                const mensagem = `
+        if (cliente[0]?.DELETADO == 'S') {
+            const mensagem = `
                     <strong>Esse cliente está inativo. Deseja ativá-lo novamente?</strong>
                 `;
 
-                const result = await Swal.fire({
-                    icon: "info",
-                    title: "Cliente já existe",
-                    html: mensagem,
-                    confirmButtonText: "Sim",
-                    showCancelButton: true,
-                    cancelButtonText: "Não",
-                });
-
-                if (result.isConfirmed) {
-                    //await serviceCliente.ativarCliente(cliente.ID_CLIENTE);
-                    Swal.fire({
-                        icon: "success",
-                        title: "Cliente ativado",
-                        text: "O cliente foi ativado com sucesso!",
-                    });
-                }
-            }
-
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao verificar se o cliente existe.",
+            const result = await Swal.fire({
+                icon: "info",
+                title: "Cliente já existe",
+                html: mensagem,
+                confirmButtonText: "Sim",
+                showCancelButton: true,
+                cancelButtonText: "Não",
             });
-        } finally {
-            state.loading = false;
+
+            if (result.isConfirmed) {
+                await serviceCliente.ativarCliente(cliente[0].ID_CLIENTE);
+                actions.salvarClienteSelecionadoNaState(cliente[0])
+                Swal.fire({
+                    icon: "success",
+                    title: "Cliente ativado",
+                    text: "O cliente foi ativado com sucesso!",
+                });
+            }
+        } else {
+            actions.salvarClienteSelecionadoNaState(cliente[0])
         }
+
+        state.loading = false;
+
     }
 
 }
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
     if (!state.modalClienteOpened) {
-        if (event.key === "F1") {
+        if (event.key === "F1" && state.desativarInputs == true) {
             state.modalClienteOpened = true
             event.preventDefault();
             event.stopPropagation();

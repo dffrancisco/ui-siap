@@ -10,7 +10,7 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      :width="1000"
+      :max-width="1000"
       class="ma-auto pa-4"
     >
       <div class="btns">
@@ -316,7 +316,7 @@ onMounted(async () => {
         <v-col cols="1">
           <v-icon
             title="Buscar CNAE do cliente"
-            :disabled="!state.cnpj_cpf || !state.desativarInputs"
+            :disabled="!state.idCliente || !state.desativarInputs"
             size="20px"
             @click="actions.buscarCNAE"
           >
@@ -390,7 +390,7 @@ onMounted(async () => {
     max-width="900"
   >
     <ModalCliente
-      @selecionarCliente="actions.selecionarCliente"
+      @selecionarCliente="actions.salvarClienteSelecionadoNaState"
       @closeModalCliente="state.modalClienteOpened = false"
     />
   </v-dialog>
