@@ -108,7 +108,7 @@ export const actions = {
 
             const params = {
                 curva: state.curva.length > 0 ? state.curva : undefined,
-                marca: state.dbSelectMarca,
+                marca: state.dbSelectMarca.length > 0 ? state.dbSelectMarca : null,
                 filtro: state.filtro || undefined,
                 page: state.page,
                 itemsPerPage: state.itemsPerPage,
@@ -188,6 +188,11 @@ export const actions = {
             ULTIMA_ENTRADA: item.ULTIMA_ENTRADA ? moment(item.ULTIMA_ENTRADA).format('DD/MM/YYYY') : '----',
         }));
     },
+    updatePage(newPage: number) {
+        state.page = newPage;
+        actions.getDadosParaRelatorio();
+    },
+
 
     getClassCorLinha(dados: any) {
         let classe = dados.index % 2 == 0 ? 'cor-zebrada-1' : 'cor-zebrada-2';

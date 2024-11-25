@@ -58,11 +58,11 @@ onMounted(() => {
         <v-col cols="1">
           <div class="btnPesquisar">
             <v-btn
+              class="mt-3"
               color="primary"
               icon="mdi-magnify"
               size="36px"
               @click="actions.getDadosParaRelatorio"
-              style="margin-top: 13px"
             >
             </v-btn>
           </div>
@@ -78,8 +78,11 @@ onMounted(() => {
           :headers="state.headers"
           :items-length="state.totalItems"
           height="350px"
+          style="border-radius: 5px"
           fixed-header
           :row-props="actions.getClassCorLinha"
+          @update:page="actions.updatePage"
+          @update:options="actions.getDadosParaRelatorio"
         >
         </v-data-table-server>
       </div>
@@ -130,5 +133,11 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   margin-top: -10px;
+}
+
+.btnPesquisar {
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 </style>
