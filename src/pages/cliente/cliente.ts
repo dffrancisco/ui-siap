@@ -260,8 +260,9 @@ export const actions = {
             return false;
         }
 
-        const email = utils.validMail(state.email);
-        const emailParaBoletos = utils.validMail(state.emailParaBoletos)
+        const email = state.email ? utils.validMail(state.email) : true;
+        const emailParaBoletos = state.emailParaBoletos ? utils.validMail(state.emailParaBoletos) : true;
+
         if (!email || !emailParaBoletos) {
             Swal.fire({
                 icon: "warning",
@@ -324,9 +325,10 @@ export const actions = {
 
             state.desativarInputs = true;
         } catch (error) {
+            state.loading = false;
             Swal.fire({
                 icon: "error",
-                text: "Ocorreu um erro ao inserir cliente.",
+                text: error?.response?.data?.msg || "Erro ao inserir cliente!",
             });
         } finally {
             state.loading = false;
@@ -498,11 +500,7 @@ export const actions = {
 
         state.loading = true;
 
-        const param = {
-            CPF_OU_CNPJ: state.cnpj_cpf,
-        };
-
-        const cliente: iClientes[] = await serviceCliente.verificarSeClienteExiste(param);
+        const cliente: iClientes[] = await serviceCliente.verificarSeClienteExiste(state.cnpj_cpf);
 
         if (cliente.length == 0) {
             state.loading = false;
