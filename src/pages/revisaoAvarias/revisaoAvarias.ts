@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import { iFiltro, iTipoDestino } from "./interfaces";
+import { iFiltro, iAvariaDestino } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceRevisaoAvarias from "./services/serviceRevisaoAvarias.service";
 
@@ -50,23 +50,23 @@ export const headersDataTable = [
 
 export const state = reactive({
     loading: false,
-    tiposDestinosLista: <iTipoDestino[]>[],
+    avariasDestinosLista: <iAvariaDestino[]>[],
     filtros: <iFiltro>{}
 })
 
 export const actions = {
     async init() {
-        await actions.getTiposDestinos()
+        await actions.getAvariasDestinos()
     },
 
-    async getTiposDestinos() {
+    async getAvariasDestinos() {
         try {
             state.loading = true
-            state.tiposDestinosLista = await serviceRevisaoAvarias.getTiposDestinos()
+            state.avariasDestinosLista = await serviceRevisaoAvarias.getAvariasDestinos()
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                title: 'Ocorreu um erro ao buscar os tipos de destino',
+                title: 'Ocorreu um erro ao buscar os destinos de avarias',
                 text: error.message
             })
         } finally {

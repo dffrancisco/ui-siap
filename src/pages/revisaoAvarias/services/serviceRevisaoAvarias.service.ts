@@ -1,18 +1,18 @@
 import axios from "axios"
-import { iGetTiposDestinosResponse } from "../interfaces"
+import { iGetAvariasDestinosResponse } from "../interfaces"
 
 const caminho = 'siap/revisaoAvarias'
 
-type iGetTiposDestinosFunction = () => Promise<iGetTiposDestinosResponse[]>
+type iGetAvariasDestinosFunction = () => Promise<iGetAvariasDestinosResponse[]>
 
-const getTiposDestinos: iGetTiposDestinosFunction = async () => {
+const getAvariasDestinos: iGetAvariasDestinosFunction = async () => {
     const { data } = await axios.post(caminho, {
-        call: 'getTiposDestinos'
+        call: 'getAvariasDestinos'
     })
 
     return data;
 }
 
 export default {
-    getTiposDestinos
+    getAvariasDestinos
 }

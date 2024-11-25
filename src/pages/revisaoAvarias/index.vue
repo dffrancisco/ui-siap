@@ -38,7 +38,7 @@ onMounted(async () => {
             <v-select
               v-model="state.filtros.DESTINO"
               label="Destino"
-              :items="state.tiposDestinosLista"
+              :items="state.avariasDestinosLista"
               item-title="DESCRICAO"
               item-value="ID_TIPO_DESTINO"
               :clearable="false"

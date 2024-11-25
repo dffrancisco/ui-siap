@@ -1,6 +1,6 @@
-export interface iGetTiposDestinosResponse extends iTipoDestino { }
+export interface iGetAvariasDestinosResponse extends iAvariaDestino { }
 
-export interface iTipoDestino {
+export interface iAvariaDestino {
     ID_TIPO_DESTINO: number,
     DESCRICAO: string
 }
