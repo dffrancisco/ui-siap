@@ -39,19 +39,16 @@ onMounted(async () => {
           ></v-select
         ></v-col>
         <v-col cols="4">
-          <v-text-field
+          <v-text-fieldstate.dbAvarias.map
             id="ano"
             class="ano"
             type="number"
             label="Ano"
             v-model="state.ano"
             :clearable="false"
-          ></v-text-field
-        ></v-col>
-      </v-row>
-
-      <v-row
-        ><v-col cols="4">
+          ></v-text-fieldstate.dbAvarias.map((avaria) => {
+                avaria.NUM_FABRICANTE_PRODUTO = avaria.NUM_FABRICANTE + ' - ' + avaria.DESC_PRODUTO
+            })
           <v-autocomplete
             :clearable="true"
             label="Funcionário"

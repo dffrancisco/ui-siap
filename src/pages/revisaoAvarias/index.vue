@@ -18,7 +18,7 @@ onMounted(async () => {
         <v-row>
           <v-col cols="6">
             <v-text-field
-              v-model="state.filtros.NUM_FABRICANTE"
+              v-model="state.filtros.NUM_FABRICANTE_PRODUTO"
               label="Nº Fabricante / Produto"
             >
             </v-text-field>
@@ -30,7 +30,6 @@ onMounted(async () => {
               :items="revisadaConteudo"
               item-title="label"
               item-value="value"
-              :clearable="false"
             >
             </v-select>
           </v-col>
@@ -40,8 +39,7 @@ onMounted(async () => {
               label="Destino"
               :items="state.avariasDestinosLista"
               item-title="DESCRICAO"
-              item-value="ID_TIPO_DESTINO"
-              :clearable="false"
+              item-value="ID_AVARIA_DESTINO"
             >
             </v-select>
           </v-col>
@@ -52,6 +50,7 @@ onMounted(async () => {
             size="small"
             icon="mdi-magnify mdi-24px"
             title="Pesquisar"
+            @click="actions.getAvarias"
           ></v-btn>
         </div>
       </div>
@@ -60,6 +59,7 @@ onMounted(async () => {
         <v-data-table
           :headers="headersDataTable"
           height="350"
+          :items="state.dbAvarias"
         >
         </v-data-table>
       </div>
@@ -74,6 +74,17 @@ onMounted(async () => {
         </v-btn>
       </div>
     </v-card>
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
     <div id="pnCodigoTela">revisaoAvarias</div>
   </v-container>
 </template>
