@@ -281,7 +281,7 @@ export const actions = {
         state.pjOuPf = state.cnpjMode ? "T" : "F";
 
         const param = {
-            APELIDO: state.apelido.toUpperCase(),
+            APELIDO: state.apelido?.toUpperCase(),
             BOLETO_EMAIL: state.boletoEmail,
             BLOQUEADO: state.bloqueado,
             CEP: state.cep,
@@ -492,6 +492,10 @@ export const actions = {
             return;
         }
 
+        if (state.cnpj_cpf == state.clienteSelecionado.CGC_CLIENTE) {
+            return
+        }
+
         state.loading = true;
 
         const param = {
@@ -529,7 +533,22 @@ export const actions = {
                 });
             }
         } else {
-            actions.salvarClienteSelecionadoNaState(cliente[0])
+            const mensagem = `
+            <strong>Esse cliente já existe, deseja editar os dados dele?</strong>
+            `;
+
+            const result = await Swal.fire({
+                icon: "info",
+                title: "Cliente já existe",
+                html: mensagem,
+                confirmButtonText: "Sim",
+                showCancelButton: true,
+                cancelButtonText: "Não",
+            });
+
+            if (result.isConfirmed) {
+                actions.salvarClienteSelecionadoNaState(cliente[0])
+            }
         }
 
         state.loading = false;
