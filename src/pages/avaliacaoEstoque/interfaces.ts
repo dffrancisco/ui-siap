@@ -1,9 +1,16 @@
 
 export interface iParams {
-    id_sociedade: string;
-    ax: string;
     mes: number;
     ano: number;
+    avaliadores?: number[];
+    avaliados?: number[];
+    produtos?: string[];
+    situacao?: string;
+    pontuacaoMinima?: number;
+    page: number;
+    itemsPerPage: number;
+    id_sociedade: string;
+    ax: string;
 }
 
 
@@ -17,7 +24,6 @@ export interface iDadosAvaliacao {
     ST_SITUACAO: string;
 }
 
-
 export interface iCount {
     TOTAL: number;
 }
@@ -28,8 +34,6 @@ export interface iColumnPrint {
     width: string;
     align: 'left';
 }
-
-
 
 export interface iResponseRelatorio {
     dadosRelatorio: iDadosAvaliacao[];

@@ -14,7 +14,6 @@ const getAvaliacao: iGetAvaliacao = async (param) => {
     return data;
 };
 
-
 const getProdutosAvaliados: iGetProdutosAvaliados = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "getProdutosAvaliados",
