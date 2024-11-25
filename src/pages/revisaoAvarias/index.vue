@@ -1,5 +1,10 @@
 <script lang="ts" setup>
-import { state, selectRevisadaConteudo, headersDataTable } from "./revisaoAvarias";
+import { onMounted } from "vue";
+import { state, revisadaConteudo, headersDataTable, actions } from "./revisaoAvarias";
+
+onMounted(async () => {
+  await actions.init();
+});
 </script>
 
 <template>
@@ -12,12 +17,17 @@ import { state, selectRevisadaConteudo, headersDataTable } from "./revisaoAvaria
       <div class="d-flex ga-4">
         <v-row>
           <v-col cols="6">
-            <v-text-field label="Nº Fabricante / Produto"> </v-text-field>
+            <v-text-field
+              v-model="state.filtros.NUM_FABRICANTE"
+              label="Nº Fabricante / Produto"
+            >
+            </v-text-field>
           </v-col>
           <v-col cols="2">
             <v-select
+              v-model="state.filtros.REVISADA"
               label="Revisada"
-              :items="selectRevisadaConteudo"
+              :items="revisadaConteudo"
               item-title="label"
               item-value="value"
               :clearable="false"
@@ -25,7 +35,15 @@ import { state, selectRevisadaConteudo, headersDataTable } from "./revisaoAvaria
             </v-select>
           </v-col>
           <v-col>
-            <v-text-field label="Destino"> </v-text-field>
+            <v-select
+              v-model="state.filtros.DESTINO"
+              label="Destino"
+              :items="state.tiposDestinosLista"
+              item-title="DESCRICAO"
+              item-value="ID_TIPO_DESTINO"
+              :clearable="false"
+            >
+            </v-select>
           </v-col>
         </v-row>
         <div>
