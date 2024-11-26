@@ -43,6 +43,7 @@ export const headersDataTable = [
     {
         title: "Ações",
         width: "18%",
+        key: "ACAO",
         align: 'center',
         sortable: false,
     }

@@ -61,6 +61,41 @@ onMounted(async () => {
           height="350"
           :items="state.dbAvarias"
         >
+          <template v-slot:item.ACAO="{ item }">
+            <div class="d-flex justify-center ga-4">
+              <v-icon
+                v-if="item.FINALIZADO == 'N'"
+                size="large"
+                color="primary"
+                icon="mdi-file-sign"
+                title="Revisar"
+                :disabled="item.CONFERIDO == 'SIM'"
+                @click=""
+              >
+              </v-icon>
+
+              <v-icon
+                size="large"
+                color="primary"
+                icon="mdi-delete-outline"
+                title="Deletar"
+                :disabled="item.CONFERIDO == 'SIM'"
+                @click=""
+              >
+              </v-icon>
+
+              <v-icon
+                v-if="item.FINALIZADO == 'S'"
+                size="large"
+                color="primary"
+                icon="mdi-eye"
+                title="Vizualizar"
+                :disabled="item.CONFERIDO == 'SIM'"
+                @click=""
+              >
+              </v-icon>
+            </div>
+          </template>
         </v-data-table>
       </div>
 
