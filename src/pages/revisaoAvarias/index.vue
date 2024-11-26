@@ -69,7 +69,6 @@ onMounted(async () => {
                 color="primary"
                 icon="mdi-file-sign"
                 title="Revisar"
-                :disabled="item.CONFERIDO == 'SIM'"
                 @click=""
               >
               </v-icon>
@@ -79,7 +78,6 @@ onMounted(async () => {
                 color="primary"
                 icon="mdi-delete-outline"
                 title="Deletar"
-                :disabled="item.CONFERIDO == 'SIM'"
                 @click=""
               >
               </v-icon>
@@ -90,7 +88,6 @@ onMounted(async () => {
                 color="primary"
                 icon="mdi-eye"
                 title="Vizualizar"
-                :disabled="item.CONFERIDO == 'SIM'"
                 @click=""
               >
               </v-icon>
