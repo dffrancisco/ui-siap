@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import { iFiltro, iAvariaDestino, iAvaria } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceRevisaoAvarias from "./services/serviceRevisaoAvarias.service";
@@ -53,7 +53,7 @@ export const state = reactive({
     loading: false,
     avariasDestinosLista: <iAvariaDestino[]>[],
     filtros: <iFiltro>{},
-    dbAvarias: <iAvaria[]>[]
+    dbAvarias: <iAvaria[]>[],
 })
 
 export const actions = {
@@ -90,4 +90,10 @@ export const actions = {
             state.loading = false
         }
     }
+}
+
+export const computeds = {
+    avariasSemRevisao: computed(() => {
+        return state.dbAvarias.filter(avaria => avaria.FINALIZADO === 'N')
+    })
 }

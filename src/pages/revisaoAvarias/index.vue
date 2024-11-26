@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onMounted } from "vue";
-import { state, revisadaConteudo, headersDataTable, actions } from "./revisaoAvarias";
+import { state, revisadaConteudo, headersDataTable, actions, computeds } from "./revisaoAvarias";
 
 onMounted(async () => {
   await actions.init();
@@ -14,51 +14,61 @@ onMounted(async () => {
       maxHeight="550"
       class="ma-auto pa-4"
     >
-      <div class="d-flex ga-4">
-        <v-row>
-          <v-col cols="6">
-            <v-text-field
-              v-model="state.filtros.NUM_FABRICANTE_PRODUTO"
-              label="Nº Fabricante / Produto"
-            >
-            </v-text-field>
-          </v-col>
-          <v-col cols="2">
-            <v-select
-              v-model="state.filtros.REVISADA"
-              label="Revisada"
-              :items="revisadaConteudo"
-              item-title="label"
-              item-value="value"
-            >
-            </v-select>
-          </v-col>
-          <v-col>
-            <v-select
-              v-model="state.filtros.DESTINO"
-              label="Destino"
-              :items="state.avariasDestinosLista"
-              item-title="DESCRICAO"
-              item-value="ID_AVARIA_DESTINO"
-            >
-            </v-select>
-          </v-col>
-        </v-row>
-        <div>
-          <v-btn
-            color="primary"
-            size="small"
-            icon="mdi-magnify mdi-24px"
-            title="Pesquisar"
-            @click="actions.getAvarias"
-          ></v-btn>
+      <div class="d-flex flex-column ga-2">
+        <div class="d-flex ga-4">
+          <v-row>
+            <v-col cols="6">
+              <v-text-field
+                v-model="state.filtros.NUM_FABRICANTE_PRODUTO"
+                label="Nº Fabricante / Produto"
+              >
+              </v-text-field>
+            </v-col>
+            <v-col cols="2">
+              <v-select
+                v-model="state.filtros.REVISADA"
+                label="Revisada"
+                :items="revisadaConteudo"
+                item-title="label"
+                item-value="value"
+              >
+              </v-select>
+            </v-col>
+            <v-col>
+              <v-select
+                v-model="state.filtros.DESTINO"
+                label="Destino"
+                :items="state.avariasDestinosLista"
+                item-title="DESCRICAO"
+                item-value="ID_AVARIA_DESTINO"
+              >
+              </v-select>
+            </v-col>
+          </v-row>
+          <div>
+            <v-btn
+              color="primary"
+              size="small"
+              icon="mdi-magnify mdi-24px"
+              title="Pesquisar"
+              @click="actions.getAvarias"
+            ></v-btn>
+          </div>
+        </div>
+        <div
+          v-if="computeds.avariasSemRevisao.value.length > 0"
+          style="color: #b71c1c; font-size: 12px"
+          class="d-flex ga-2"
+        >
+          <v-icon>mdi-rhombus-outline</v-icon>
+          <span>{{ computeds.avariasSemRevisao.value.length }} Avaria sem revisão</span>
         </div>
       </div>
 
       <div class="mt-2">
         <v-data-table
           :headers="headersDataTable"
-          height="350"
+          height="330"
           :items="state.dbAvarias"
         >
           <template v-slot:item.ACAO="{ item }">
