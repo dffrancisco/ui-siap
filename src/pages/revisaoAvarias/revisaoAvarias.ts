@@ -4,11 +4,11 @@ import Swal from "sweetalert2";
 import serviceRevisaoAvarias from "./services/serviceRevisaoAvarias.service";
 
 export const revisadaConteudo = [{
-    value: "1",
+    value: 1,
     label: "Sim"
 },
 {
-    value: "0",
+    value: 0,
     label: "Não"
 }];
 
@@ -18,6 +18,7 @@ export const headersDataTable = [
         key: "NUM_FABRICANTE_PRODUTO",
         width: '30%',
         sortable: true,
+        value: (item: iAvaria) => `${item.NUM_FABRICANTE} - ${item.DESC_PRODUTO}`
     },
     {
         title: "Identificado por",
@@ -32,11 +33,11 @@ export const headersDataTable = [
         width: '10%',
         align: 'center',
         sortable: true,
+        value: (item: iAvaria) => item.FINALIZADO == 'S' ? 'Sim' : 'Não'
     },
     {
         title: "Destino",
-        align: 'DESTINO',
-        key: "ACAO",
+        key: "DESTINO",
         sortable: true,
     },
     {
@@ -78,10 +79,6 @@ export const actions = {
         try {
             state.loading = true
             state.dbAvarias = await serviceRevisaoAvarias.getAvarias(state.filtros)
-
-            state.dbAvarias.map((avaria) => {
-                avaria.NUM_FABRICANTE_PRODUTO = avaria.NUM_FABRICANTE + ' - ' + avaria.DESC_PRODUTO
-            })
         } catch (error) {
             Swal.fire({
                 icon: 'error',
