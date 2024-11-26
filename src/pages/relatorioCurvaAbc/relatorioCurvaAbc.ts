@@ -10,7 +10,7 @@ export const state = reactive({
     loading: false,
     curva: [] as string[],
     dbSelectMarca: [] as any[],
-    filtro: '',
+    filtro: 'CURVA_ABC_G',
     numFabricante: '',
     marcas: [] as any[],
     dadosRelatorio: [] as iDadosRelatorio[],
@@ -48,7 +48,6 @@ export const actions = {
     },
 
     validarInputs(): boolean {
-
         if (!state.curva || state.curva.length === 0) {
             Swal.fire({
                 icon: 'warning',
@@ -57,7 +56,6 @@ export const actions = {
             return false;
         }
 
-
         if (!state.filtro) {
             Swal.fire({
                 icon: 'warning',
@@ -65,7 +63,6 @@ export const actions = {
             });
             return false;
         }
-
 
         if (state.filtro === 'CURVA_ABC_M' && (!state.dbSelectMarca || state.dbSelectMarca.length === 0)) {
             Swal.fire({
@@ -77,6 +74,43 @@ export const actions = {
 
         return true;
     },
+
+    async buscarDadosComValidacao() {
+        if (!actions.validarInputs()) {
+            return;
+        }
+        await actions.getDadosParaRelatorio();
+    },
+
+    async getDadosParaRelatorio() {
+        try {
+            state.loading = true;
+
+            const params = {
+                curva: state.curva.length > 0 ? state.curva : undefined,
+                marca: state.dbSelectMarca,
+                filtro: state.filtro || undefined,
+                page: state.page,
+                itemsPerPage: state.itemsPerPage,
+            };
+
+            const { dadosRelatorio, totalDadosRelatorio }: iResponseRelatorio =
+                await serviceRelatorioCurvaAbc.getDadosParaRelatorio(params);
+
+            state.dadosRelatorio = dadosRelatorio;
+            state.totalItems = totalDadosRelatorio[0]?.TOTAL || 0;
+        } catch (error) {
+            console.error("Erro ao obter os dados:", error);
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao buscar dados para o relatório.',
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+
 
     async getMarcas() {
         try {
@@ -92,35 +126,6 @@ export const actions = {
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao buscar marcas',
-            });
-        } finally {
-            state.loading = false;
-        }
-    },
-
-    async getDadosParaRelatorio() {
-        if (!actions.validarInputs()) {
-            return;
-        }
-
-        try {
-            state.loading = true;
-
-            const params = {
-                curva: state.curva.length > 0 ? state.curva : undefined,
-                marca: state.dbSelectMarca.length > 0 ? state.dbSelectMarca : null,
-                filtro: state.filtro || undefined,
-                page: state.page,
-                itemsPerPage: state.itemsPerPage,
-            };
-            const { dadosRelatorio, totalDadosRelatorio }: iResponseRelatorio = await serviceRelatorioCurvaAbc.getDadosParaRelatorio(params);
-            state.dadosRelatorio = dadosRelatorio;
-            state.totalItems = totalDadosRelatorio[0]?.TOTAL || 0;
-        } catch (error) {
-            console.error("Erro ao obter os dados:", error);
-            Swal.fire({
-                icon: 'error',
-                text: 'Erro ao buscar dados para o relatório.',
             });
         } finally {
             state.loading = false;
@@ -181,6 +186,7 @@ export const actions = {
             state.loading = false;
         }
     },
+
 
     formatarDadosImpressao(data: any[]) {
         return data.map(item => ({

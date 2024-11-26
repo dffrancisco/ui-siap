@@ -62,7 +62,7 @@ onMounted(() => {
               color="primary"
               icon="mdi-magnify"
               size="36px"
-              @click="actions.getDadosParaRelatorio"
+              @click="actions.buscarDadosComValidacao"
             >
             </v-btn>
           </div>
@@ -74,7 +74,6 @@ onMounted(() => {
           class="tableRelatorioCurva pt-5"
           v-model:items-per-page="state.itemsPerPage"
           :items="state.dadosRelatorio"
-          :loading="state.loading"
           :headers="state.headers"
           :items-length="state.totalItems"
           height="350px"
@@ -103,12 +102,16 @@ onMounted(() => {
 
     <div id="pnCodigoTela">CURVA_ABC</div>
 
-    <v-overlay :value="state.loading">
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
       <v-progress-circular
-        indeterminate
         color="primary"
+        indeterminate
         size="64"
-      />
+      ></v-progress-circular>
     </v-overlay>
   </v-container>
 </template>
