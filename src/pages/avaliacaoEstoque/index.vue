@@ -27,6 +27,7 @@ onMounted(() => {
 
         <v-col cols="4">
           <v-text-field
+            max-length="4"
             v-model="state.anoSelecionado"
             type="number"
             label="Ano"
@@ -41,19 +42,18 @@ onMounted(() => {
             color="primary"
             icon="mdi-magnify"
             size="36px"
-            @click="actions.init()"
+            @click="actions.validarFiltros"
           >
             <v-icon left>mdi-magnify</v-icon>
           </v-btn>
         </v-col>
       </v-row>
 
-      <v-data-table-server
+      <v-data-table
         class="mt-4 pt-5"
         v-model:items-per-page="state.itemsPerPage"
         :items="state.dadosRelatorio"
         :headers="state.headers"
-        :loading="state.loading"
         :items-length="state.totalItems"
         height="350px"
         fixed-header
@@ -62,13 +62,12 @@ onMounted(() => {
         <template #no-data>
           <v-alert
             :value="true"
-            icon="mdi-information"
             class="text-center"
           >
             Não há dados disponíveis.
           </v-alert>
         </template>
-      </v-data-table-server>
+      </v-data-table>
 
       <div class="d-flex justify-end pt-5">
         <v-btn

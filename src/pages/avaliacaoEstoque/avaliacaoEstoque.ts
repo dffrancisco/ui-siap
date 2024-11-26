@@ -2,7 +2,7 @@ import { reactive } from 'vue';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceRelatorioCurvaAbc from './services/avaliacaoEstoque.service';
-import { iParams, iResponseRelatorio, iDadosAvaliacao } from './interfaces';
+import { iParamsRelatorio, iResponseRelatorio, iDadosAvaliacao } from './interfaces';
 import utils, { iColumnPrint } from '@/ts/utils';
 
 const anoAtual = moment().year();
@@ -28,56 +28,24 @@ export const state = reactive({
     ],
     dadosRelatorio: <iDadosAvaliacao[]>[],
     totalItems: 0,
-    itemsPerPage: 30,
+    itemsPerPage: 10,
     page: 1,
     headers: <any>[
+        { title: "Nome do Avaliador", key: "AVALIADOR", sortable: true, align: "left" },
+        { title: "Nome do Estoquista", key: "AVALIADO", sortable: true, align: "left" },
+
         {
-            title: "ID Avaliação",
-            key: "ID_AVALIACAO",
-            sortable: true,
-            align: "left",
+            title: "Data Avaliação", key: "DT_AVALIACAO", sortable: true, align: "left",
+            value: (item: iDadosAvaliacao) => moment(item.DT_AVALIACAO).format("DD/MM/YYYY HH:mm:ss")
         },
-        {
-            title: "Data Avaliação",
-            key: "DT_AVALIACAO",
-            sortable: true,
-            align: "left",
-            value: (item: iDadosAvaliacao) => moment(item.DT_AVALIACAO).format("DD/MM/YYYY HH:mm:ss"),
-        },
-        {
-            title: "Cor Corredor",
-            key: "COR_CORREDOR",
-            sortable: true,
-            align: "left",
-        },
-        {
-            title: "Pontuação",
-            key: "NT_PONTUACAO",
-            sortable: true,
-            align: "left",
-        },
-        {
-            title: "Avaliado",
-            key: "AVALIADO",
-            sortable: true,
-            align: "left",
-        },
-        {
-            title: "Avaliador",
-            key: "AVALIADOR",
-            sortable: true,
-            align: "left",
-        },
-        {
-            title: "Situação",
-            key: "ST_SITUACAO",
-            sortable: true,
-            align: "left",
-        },
+        { title: "Pontuação", key: "NT_PONTUACAO", sortable: true, align: "center" },
+        { title: "Situação", key: "ST_SITUACAO", sortable: true, align: "left" },
+        { title: "Cor Corredor", key: "COR_CORREDOR", sortable: true, align: "left" },
     ],
 });
 
 export const actions = {
+
     async init() {
         actions.validarFiltros();
     },
@@ -85,21 +53,24 @@ export const actions = {
     validarFiltros() {
         const { anoSelecionado, mesSelecionado } = state;
 
+
         if (!anoSelecionado || anoSelecionado > anoAtual) {
             Swal.fire({
                 icon: "warning",
-                text: "Insira um ano válido para continuar.",
+                text: "Insira um ano válido para continuar"
             });
             return;
         }
 
-        if (!mesSelecionado || mesSelecionado < 1 || mesSelecionado > 12 || (anoSelecionado === anoAtual && mesSelecionado > mesAtual)) {
+
+        if (!mesSelecionado || (anoSelecionado === anoAtual && mesSelecionado > mesAtual)) {
             Swal.fire({
                 icon: "warning",
-                text: "Insira um mês válido para continuar.",
+                text: "Insira um mês válido para continuar"
             });
             return;
         }
+
 
         actions.getDadosRelatorio();
     },
@@ -108,32 +79,19 @@ export const actions = {
         try {
             state.loading = true;
 
-            const params: iParams = {
+            const params: iParamsRelatorio = {
                 mes: state.mesSelecionado,
                 ano: state.anoSelecionado,
                 page: state.page,
                 itemsPerPage: state.itemsPerPage,
-                id_sociedade: '',
-                ax: '',
             };
 
-            const data: iResponseRelatorio = await serviceRelatorioCurvaAbc.getDadosParaRelatorio(params);
+            const response: iResponseRelatorio = await serviceRelatorioCurvaAbc.getDadosParaRelatorio(params);
+            state.dadosRelatorio = response.dadosRelatorio || [];
+            state.totalItems = response.totalDadosRelatorio?.[0]?.TOTAL || 0;
 
-            state.dadosRelatorio = data.dadosRelatorio || [];
-            state.totalItems = data.totalDadosRelatorio?.[0]?.TOTAL || 0;
+            if (!state.dadosRelatorio) { }
 
-            if (!state.dadosRelatorio.length) {
-                Swal.fire({
-                    icon: "info",
-                    text: "Nenhum dado encontrado.",
-                });
-            }
-        } catch (error) {
-            console.error("Erro ao buscar dados:", error);
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao buscar dados do relatório.",
-            });
         } finally {
             state.loading = false;
         }
@@ -141,17 +99,13 @@ export const actions = {
 
     async onClickImprimir() {
         try {
-            if (!state.dadosRelatorio.length) {
-                Swal.fire({
-                    icon: "warning",
-                    text: "Nenhum dado disponível para impressão.",
-                });
+            if (!state.dadosRelatorio || state.dadosRelatorio.length === 0) {
+                Swal.fire({ icon: "warning", text: "Nenhum dado disponível para impressão." });
                 return;
             }
 
             state.loading = true;
-
-            const relatorioAjustado = actions.formatarDadosImpressao([...state.dadosRelatorio]);
+            const relatorioAjustado = actions.formatarDadosImpressao(state.dadosRelatorio);
 
             const columns: iColumnPrint[] = [
                 { key: 'ID_AVALIACAO', label: 'ID Avaliação', width: '10%', align: 'left' },
@@ -164,7 +118,7 @@ export const actions = {
             ];
 
             const titulo = `
-                <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
+                <div style="text-align: center; margin-top: 10px;">
                     <strong style="font-size: 16px;">Relatório de Avaliação de Estoque</strong>
                 </div>
             `;
@@ -172,10 +126,7 @@ export const actions = {
             await utils.printComCabecalho(columns, relatorioAjustado, titulo);
         } catch (error) {
             console.error("Erro ao imprimir o relatório:", error);
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao imprimir o relatório.",
-            });
+            Swal.fire({ icon: "error", text: "Erro ao imprimir o relatório." });
         } finally {
             state.loading = false;
         }
@@ -190,13 +141,7 @@ export const actions = {
         }));
     },
 
-    updatePage(newPage: number) {
-        state.page = newPage;
-        actions.getDadosRelatorio();
-    },
-
     getClassCorLinha(dados: iDadosAvaliacao) {
-        const classe = dados.ID_AVALIACAO % 2 === 0 ? 'cor-zebrada-1' : 'cor-zebrada-2';
-        return { class: classe };
+        return { class: dados.ID_AVALIACAO % 2 === 0 ? 'cor-zebrada-1' : 'cor-zebrada-2' };
     },
 };
