@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onMounted } from "vue";
 import { state, revisadaConteudo, headersDataTable, actions, computeds } from "./revisaoAvarias";
+import ModalRevisao from "./components/ModalRevisao.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -79,7 +80,7 @@ onMounted(async () => {
                 color="primary"
                 icon="mdi-file-sign"
                 title="Revisar"
-                @click=""
+                @click="actions.openModalRevisao(item)"
               >
               </v-icon>
 
@@ -127,6 +128,19 @@ onMounted(async () => {
         size="64"
       ></v-progress-circular>
     </v-overlay>
+
+    <v-dialog
+      v-model="state.modalRevisaoAvariasOpen"
+      max-width="800px"
+    >
+      <ModalRevisao
+        @closeModal="state.modalRevisaoAvariasOpen = false"
+        :avaria="state.avariaSelecionada"
+        :destinos="state.avariasDestinosLista"
+        :funcionarios="state.funcionariosLista"
+      />
+    </v-dialog>
+
     <div id="pnCodigoTela">revisaoAvarias</div>
   </v-container>
 </template>

@@ -1,5 +1,5 @@
 import { computed, reactive } from "vue";
-import { iFiltro, iAvariaDestino, iAvaria } from "./interfaces";
+import { iFiltro, iAvariaDestino, iAvaria, iFuncionario } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceRevisaoAvarias from "./services/serviceRevisaoAvarias.service";
 
@@ -54,21 +54,34 @@ export const state = reactive({
     avariasDestinosLista: <iAvariaDestino[]>[],
     filtros: <iFiltro>{},
     dbAvarias: <iAvaria[]>[],
+    modalRevisaoAvariasOpen: false,
+    avariaSelecionada: <iAvaria>{},
+    funcionariosLista: <iFuncionario[]>[]
 })
 
 export const actions = {
     async init() {
-        await actions.getAvariasDestinos()
+        await actions.getDadosToSelect()
+        await actions.getAvarias()
     },
 
-    async getAvariasDestinos() {
+    async openModalRevisao(avaria: iAvaria) {
+        state.avariaSelecionada = avaria
+        state.modalRevisaoAvariasOpen = true
+    },
+
+    async getDadosToSelect() {
         try {
             state.loading = true
-            state.avariasDestinosLista = await serviceRevisaoAvarias.getAvariasDestinos()
+            const data = await serviceRevisaoAvarias.getDadosToSelects()
+
+            state.avariasDestinosLista = data.avariasDestinos
+            state.funcionariosLista = data.funcionarios
+
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                title: 'Ocorreu um erro ao buscar os destinos de avarias',
+                title: 'Ocorreu um erro ao buscar os dados para os selects.',
                 text: error.message
             })
         } finally {

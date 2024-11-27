@@ -1,14 +1,14 @@
 import axios from "axios"
-import { iFiltro, iGetAvariasDestinosResponse, iGetAvariasResponse } from "../interfaces"
+import { iFiltro, iGetDadosToSelectsResponse, iGetAvariasResponse } from "../interfaces"
 
 const caminho = 'siap/revisaoAvarias'
 
-type iGetAvariasDestinosFunction = () => Promise<iGetAvariasDestinosResponse[]>
+type iGetDadosToSelects = () => Promise<iGetDadosToSelectsResponse>
 type iGetAvariasFunction = (filtros: iFiltro) => Promise<iGetAvariasResponse[]>
 
-const getAvariasDestinos: iGetAvariasDestinosFunction = async () => {
+const getDadosToSelects: iGetDadosToSelects = async () => {
     const { data } = await axios.post(caminho, {
-        call: 'getAvariasDestinos'
+        call: 'getDadosToSelects'
     })
 
     return data;
@@ -24,6 +24,6 @@ const getAvarias: iGetAvariasFunction = async (filtros) => {
 }
 
 export default {
-    getAvariasDestinos,
+    getDadosToSelects,
     getAvarias
 }
