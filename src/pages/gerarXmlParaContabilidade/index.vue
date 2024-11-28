@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
 import { actions, state, meses } from "./gerarXmlParaContabilidade";
-
-onMounted(async () => {
-  actions.init();
-});
 </script>
 
 <template>
@@ -37,7 +32,7 @@ onMounted(async () => {
       </v-row>
 
       <v-row
-        v-if="state.optionSelect === '0'"
+        v-if="state.optionSelect == '0'"
         class="mt-4"
         justify="center"
       >
@@ -68,7 +63,7 @@ onMounted(async () => {
       </v-row>
 
       <v-row
-        v-if="state.optionSelect === '1'"
+        v-if="state.optionSelect == '1'"
         class="mt-4"
         justify="center"
       >
@@ -113,6 +108,8 @@ onMounted(async () => {
             title="Gerar XML Para Contabilidade"
             id="btnGerarXML"
             color="primary"
+            :loading="state.loading"
+            @click="actions.validarInputs()"
           >
             Gerar XML Para Contabilidade
             <v-icon class="ml-2">mdi-content-save-all</v-icon>
