@@ -115,6 +115,8 @@ onMounted(async () => {
           size="small"
           icon="mdi-printer mdi-24px"
           title="Imprimir"
+          :disabled="state.dbAvarias.length == 0"
+          @click="actions.imprimirAvarias"
         >
         </v-btn>
       </div>

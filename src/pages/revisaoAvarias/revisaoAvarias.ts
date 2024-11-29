@@ -3,6 +3,8 @@ import { iFiltro, iAvariaDestino, iAvaria, iFuncionario, iDadosPreencherAvaria }
 import Swal from "sweetalert2";
 import serviceRevisaoAvarias from "./services/serviceRevisaoAvarias.service";
 import { msgConfirm } from "@/ts/message";
+import utils, { iColumnPrint } from "@/ts/utils";
+import moment from "moment";
 
 export const revisadaConteudo = [{
     value: 'S',
@@ -154,6 +156,43 @@ export const actions = {
 
         } finally {
             state.loading = false
+        }
+    },
+
+    formatarDadosImpressao(data: iAvaria[]) {
+        return data.map(item => ({
+            ...item,
+            NUM_FABRICANTE_PRODUTO: `${item.NUM_FABRICANTE} - ${item.DESC_PRODUTO}`,
+            FINALIZADO: item.FINALIZADO == 'S' ? 'Sim' : 'Não',
+            DESTINO: item.DESTINO || ''
+        }))
+    },
+
+    async imprimirAvarias() {
+        try {
+            const dadosAvariasFormatado = actions.formatarDadosImpressao([...state.dbAvarias]);
+
+            const columns: iColumnPrint[] = [
+                { key: 'NUM_FABRICANTE_PRODUTO', label: 'Nº Fabricante | Produto', width: '50%' },
+                { key: 'NOME_FUNCIONARIO_IDENTIFICOU', label: 'Identificado Por', width: '25%' },
+                { key: 'FINALIZADO', label: 'Revisada', width: '5%', align: 'center' },
+                { key: 'DESTINO', label: 'Destino' },
+            ];
+
+            const titulo = `
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 10px">
+                    <span>Data: ${moment().format('DD/MM/YYYY')}</span>
+                    <strong style="font-size: 20px;">Avarias</strong>
+                </div>
+            `;
+
+            await utils.printComCabecalho(columns, dadosAvariasFormatado, titulo);
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
+            });
         }
     }
 }
