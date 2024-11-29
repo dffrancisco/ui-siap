@@ -85,6 +85,7 @@ onMounted(async () => {
               </v-icon>
 
               <v-icon
+                v-if="item.FINALIZADO == 'N'"
                 size="large"
                 color="primary"
                 icon="mdi-delete-outline"
@@ -132,6 +133,7 @@ onMounted(async () => {
     <v-dialog
       v-model="state.modalRevisaoAvariasOpen"
       max-width="800px"
+      style="z-index: 1000"
     >
       <ModalRevisao
         @closeModal="state.modalRevisaoAvariasOpen = false"

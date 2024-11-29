@@ -35,3 +35,8 @@ export interface iFuncionario {
     COD_FUNCIONARIO: number,
     LOGIN: string,
 }
+
+export interface iGetImgsResponse {
+    imgs: string[],
+    cnpjEmpresa: string
+}

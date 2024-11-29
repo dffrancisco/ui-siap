@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive } from "vue";
 import { iAvaria, iAvariaDestino, iFuncionario } from "../interfaces";
+import serviceRevisaoAvarias from "../services/serviceRevisaoAvarias.service";
+import Swal from "sweetalert2";
 
 const props = defineProps({
   avaria: {
@@ -36,29 +38,47 @@ const origemConteudo = [
 
 const state = reactive({
   dbAvaria: <iAvaria>{},
+  loading: false,
+  imgs: <string[]>[],
+  cnpjEmpresa: "",
 });
 
 const actions = {
+  async init() {
+    state.dbAvaria = { ...props.avaria };
+    await actions.getImgs();
+  },
+
   closeModal() {
     emits("closeModal");
   },
-};
 
-const computeds = {
-  origemDescricao: computed(() => {
-    switch (state.dbAvaria.ORIGEM_AVARIA) {
-      case "L":
-        return "Loja";
-      case "D":
-        return "Devolução";
-      case "F":
-        return "Fornecedor";
+  imgAvariaFormatada(img: string) {
+    const cnpjSanitizado = state.cnpjEmpresa.replace(/[.\-\/]/g, "");
+    return `https://reallatas.com.br/avarias/${cnpjSanitizado}/${img}`;
+  },
+
+  async getImgs() {
+    try {
+      state.loading = true;
+      const data = await serviceRevisaoAvarias.getImgs(props.avaria.ID_AVARIA);
+
+      state.imgs = data.imgs;
+      state.cnpjEmpresa = data.cnpjEmpresa;
+    } catch (error) {
+      Swal.fire({
+        title: "Erro ao carregar imagens",
+        text: error.message,
+        icon: "error",
+      });
+    } finally {
+      state.loading = false;
     }
-  }),
+  },
 };
 
-onMounted(() => {
-  state.dbAvaria = { ...props.avaria };
+onMounted(async () => {
+  await actions.init();
 });
 </script>
 
@@ -128,7 +148,7 @@ onMounted(() => {
             <v-textarea
               v-model="state.dbAvaria.DESCRICAO_AVARIA"
               label="Descrição da Avaria*"
-              rows="3"
+              rows="2"
             ></v-textarea>
           </v-col>
         </v-row>
@@ -136,6 +156,19 @@ onMounted(() => {
 
       <div class="mt-4">
         <span class="text-h6">Fotos</span>
+
+        <div class="mt-2 containerImg">
+          <PhotoProvider
+            v-for="img in state.imgs"
+            :default-backdrop-opacity="0.8"
+          >
+            <PhotoConsumer :src="actions.imgAvariaFormatada(img)">
+              <img
+                :src="actions.imgAvariaFormatada(img)"
+                class="view-box img-miniatura"
+            /></PhotoConsumer>
+          </PhotoProvider>
+        </div>
       </div>
 
       <div class="mt-4 d-flex justify-space-between align-center">
@@ -154,4 +187,51 @@ onMounted(() => {
       </div>
     </div>
   </v-card>
+
+  <v-overlay
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
+
+<style>
+.PhotoSlider__Wrapper .PhotoSlider__BannerWrap {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__BannerRight svg:nth-child(1),
+.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__BannerRight svg:nth-child(4),
+.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__BannerRight svg:nth-child(5) {
+  display: none;
+}
+
+.PhotoSlider__Wrapper .PhotoSlider__BannerWrap .PhotoSlider__Counter {
+  color: transparent;
+}
+</style>
+
+<style scoped>
+.img-miniatura {
+  width: 180px;
+  border-radius: 8px;
+  max-height: 120px;
+  object-fit: cover;
+  object-position: center;
+  cursor: pointer;
+}
+
+.containerImg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 180px;
+  overflow: auto;
+}
+</style>
