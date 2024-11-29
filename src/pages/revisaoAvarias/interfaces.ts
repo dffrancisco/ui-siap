@@ -70,3 +70,5 @@ export interface iDadosPreencherAvaria {
     ORIGEM_AVARIA: 'D' | 'F' | 'L',
     DESCRICAO_AVARIA: string
 }
+
+export interface iDeletarAvariaResponse extends iSuccessResponse { }

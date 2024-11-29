@@ -1,5 +1,5 @@
 import axios from "axios"
-import { iFiltro, iGetDadosToSelectsResponse, iGetAvariasResponse, iGetImgsResponse, iFinalizarAvariaParam, iFinalizarAvariaResponse } from "../interfaces"
+import { iFiltro, iGetDadosToSelectsResponse, iGetAvariasResponse, iGetImgsResponse, iFinalizarAvariaParam, iFinalizarAvariaResponse, iDeletarAvariaResponse } from "../interfaces"
 
 const caminho = 'siap/revisaoAvarias'
 
@@ -7,6 +7,7 @@ type iGetDadosToSelects = () => Promise<iGetDadosToSelectsResponse>
 type iGetAvariasFunction = (filtros: iFiltro) => Promise<iGetAvariasResponse[]>
 type iGetImgsFunction = (idAvaria: number) => Promise<iGetImgsResponse>
 type iFinalizarAvariaFunction = (param: iFinalizarAvariaParam) => Promise<iFinalizarAvariaResponse>
+type iDeletarAvariaFunction = (idAvaria: number) => Promise<iDeletarAvariaResponse>
 
 const getDadosToSelects: iGetDadosToSelects = async () => {
     const { data } = await axios.post(caminho, {
@@ -43,9 +44,19 @@ const finalizarAvaria: iFinalizarAvariaFunction = async (param) => {
     return data;
 }
 
+const deletarAvaria: iDeletarAvariaFunction = async (idAvaria) => {
+    const { data } = await axios.post(caminho, {
+        call: 'deletarAvaria',
+        idAvaria
+    })
+
+    return data;
+}
+
 export default {
     getDadosToSelects,
     getAvarias,
     getImgs,
     finalizarAvaria,
+    deletarAvaria
 }

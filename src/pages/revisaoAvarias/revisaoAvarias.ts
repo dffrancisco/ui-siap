@@ -2,6 +2,7 @@ import { computed, reactive } from "vue";
 import { iFiltro, iAvariaDestino, iAvaria, iFuncionario, iDadosPreencherAvaria } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceRevisaoAvarias from "./services/serviceRevisaoAvarias.service";
+import { msgConfirm } from "@/ts/message";
 
 export const revisadaConteudo = [{
     value: 'S',
@@ -128,6 +129,33 @@ export const actions = {
 
         state.modalRevisaoAvariasOpen = false
     },
+
+    async btnDeletarAvaria(idAvaria: number) {
+        if (await msgConfirm('Confirmação', 'Deseja deletar essa avaria?')) {
+            await actions.deletarAvaria(idAvaria)
+        }
+    },
+
+    async deletarAvaria(idAvaria: number) {
+        try {
+            state.loading = true
+            const data = await serviceRevisaoAvarias.deletarAvaria(idAvaria)
+
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: data.msg,
+                })
+
+                state.dbAvarias = state.dbAvarias.filter(avaria => avaria.ID_AVARIA !== idAvaria)
+            }
+
+        } catch (error) {
+
+        } finally {
+            state.loading = false
+        }
+    }
 }
 
 export const computeds = {

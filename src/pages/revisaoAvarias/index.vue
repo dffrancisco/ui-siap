@@ -91,7 +91,7 @@ onMounted(async () => {
                 color="primary"
                 icon="mdi-delete-outline"
                 title="Deletar"
-                @click=""
+                @click="actions.btnDeletarAvaria(item.ID_AVARIA)"
               >
               </v-icon>
 
