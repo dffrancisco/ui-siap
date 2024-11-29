@@ -59,6 +59,7 @@ onUnmounted(() => {
             />
           </v-col>
         </v-row>
+
         <v-row class="mt-n1">
           <v-col cols="4">
             <span>Nome Fantasia</span>
@@ -98,6 +99,7 @@ onUnmounted(() => {
             />
           </v-col>
         </v-row>
+
         <v-row class="mt-n1">
           <v-col cols="4">
             <span>CEP</span>
@@ -125,6 +127,7 @@ onUnmounted(() => {
             />
           </v-col>
         </v-row>
+
         <v-row class="mt-n1">
           <v-col cols="4">
             <span>Bairro</span>
@@ -169,7 +172,34 @@ onUnmounted(() => {
           </v-col>
         </v-row>
 
-        <!-- Busca -->
+        <v-row class="mt-n1">
+          <v-col cols="10">
+            <span>Nome do Representante</span>
+            <input
+              v-model="state.dbFornecedor.REPRESENTANTE"
+              type="text"
+              id="REPRESENTANTE"
+              name="REPRESENTANTE"
+              class="ss"
+              maxlength="60"
+              autocomplete="off"
+              placeholder="Digite o nome do representante"
+            />
+          </v-col>
+          <v-col
+            cols="2"
+            class="d-flex align-center"
+          >
+            <v-btn
+              color="primary"
+              @click="actions.searchRepresentative()"
+              icon="mdi-magnify"
+              class="ss"
+              size="30"
+            />
+          </v-col>
+        </v-row>
+
         <div class="mt-4 d-flex ga-2">
           <input
             v-model="state.edtSearch"
@@ -190,7 +220,6 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Overlay de Carregamento -->
       <v-overlay
         :model-value="state.loading"
         class="align-center justify-center"
@@ -203,13 +232,11 @@ onUnmounted(() => {
         ></v-progress-circular>
       </v-overlay>
 
-      <!-- Grid -->
       <div
         id="gridPrincipal"
         class="mt-4"
       ></div>
 
-      <!-- Botões -->
       <div
         id="pnBotoes"
         class="mt-4"

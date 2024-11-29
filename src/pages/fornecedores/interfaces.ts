@@ -4,7 +4,18 @@ export interface iFornecedores {
     cdAgencia: string;
     nrConta: string;
     nomeFornecedor: string;
-    cnpj: string;
+    CNPJ: string;
+    IE: string;
+    RAZAO_SOCIAL: string;
+    NOME_FANTASIA: string;
+    TELEFONE: string;
+    EMAIL: string;
+    CEP: string;
+    ENDERECO: string;
+    BAIRRO: string;
+    CIDADE: string;
+    UF: string;
+
 }
 
 export interface iParamToInsertFornecedor {
@@ -28,6 +39,3 @@ export interface iFieldDuplicity {
     field: string;
 }
 
-export interface iGetFornecedoresParam {
-
-}

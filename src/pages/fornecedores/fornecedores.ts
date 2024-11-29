@@ -4,27 +4,10 @@ import Swal from "sweetalert2";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
-import serviceFornecedores from "@/services/fornecedores.service";
+import serviceFornecedores from "./services/fornecedores.service";
+import { iFornecedores, iParamToInsertFornecedor, iParamGetFornecedor, iFieldDuplicity } from "./interfaces";
 
-interface iFornecedores {
-    idFornecedor: number;
-    CNPJ: string;
-    IE: string;
-    RAZAO_SOCIAL: string;
-    NOME_FANTASIA: string;
-    TELEFONE: string;
-    EMAIL: string;
-    CEP: string;
-    ENDERECO: string;
-    BAIRRO: string;
-    CIDADE: string;
-    UF: string;
-}
 
-interface iFieldDuplicity {
-    value: string;
-    field: string;
-}
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
@@ -58,10 +41,10 @@ export const actions = {
             height: 300,
             count: true,
             columns: {
-                CNPJ: { dataField: "CNPJ", width: "20%" },
-                "Razão Social": { dataField: "RAZAO_SOCIAL", width: "25%" },
-                Cidade: { dataField: "CIDADE", width: "15%" },
-                UF: { dataField: "UF", width: "10%" },
+                CNPJ: { dataField: "CNPJ" },
+                "Razão Social": { dataField: "RAZAO_SOCIAL" },
+                Cidade: { dataField: "CIDADE" },
+
             },
             query: {
                 async execute(rs) {
