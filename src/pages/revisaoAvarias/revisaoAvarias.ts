@@ -1,14 +1,14 @@
 import { computed, reactive } from "vue";
-import { iFiltro, iAvariaDestino, iAvaria, iFuncionario } from "./interfaces";
+import { iFiltro, iAvariaDestino, iAvaria, iFuncionario, iDadosPreencherAvaria } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceRevisaoAvarias from "./services/serviceRevisaoAvarias.service";
 
 export const revisadaConteudo = [{
-    value: 1,
+    value: 'S',
     label: "Sim"
 },
 {
-    value: 0,
+    value: 'N',
     label: "Não"
 }];
 
@@ -102,7 +102,32 @@ export const actions = {
         } finally {
             state.loading = false
         }
-    }
+    },
+
+    async preencherDadosAoFinalizarAvaria(dadosAvariaPreencher: iDadosPreencherAvaria) {
+        let avariaLocalizada = state.dbAvarias.find(avaria => avaria.ID_AVARIA == dadosAvariaPreencher.ID_AVARIA)
+        let funcionarioIdentificouLocalizado = state.funcionariosLista.find(funcionario => {
+            return funcionario.COD_FUNCIONARIO == dadosAvariaPreencher.COD_FUNCIONARIO_IDENTIFICOU
+        })
+        let destinoLocalizado = state.avariasDestinosLista.find(destino => {
+            return destino.ID_AVARIA_DESTINO == dadosAvariaPreencher.ID_AVARIA_DESTINO
+        })
+
+        if (avariaLocalizada) {
+            avariaLocalizada.FINALIZADO = 'S'
+            avariaLocalizada.NOME_FUNCIONARIO_IDENTIFICOU = funcionarioIdentificouLocalizado.LOGIN
+            avariaLocalizada.NOME_FUNCIONARIO_VALIDOU = dadosAvariaPreencher.NOME_FUNCIONARIO_VALIDOU
+            avariaLocalizada.COD_FUNCIONARIO_IDENTIFICOU = dadosAvariaPreencher.COD_FUNCIONARIO_IDENTIFICOU
+            avariaLocalizada.DESTINO = destinoLocalizado.DESCRICAO
+            avariaLocalizada.ID_AVARIA_DESTINO = dadosAvariaPreencher.ID_AVARIA_DESTINO
+            avariaLocalizada.DATA_HORA_VALIDACAO = dadosAvariaPreencher.DATA_HORA_VALIDACAO
+            avariaLocalizada.ORIGEM_AVARIA = dadosAvariaPreencher.ORIGEM_AVARIA
+            avariaLocalizada.DESCRICAO_AVARIA = dadosAvariaPreencher.DESCRICAO_AVARIA
+            state.dbAvarias = [...state.dbAvarias]
+        }
+
+        state.modalRevisaoAvariasOpen = false
+    },
 }
 
 export const computeds = {

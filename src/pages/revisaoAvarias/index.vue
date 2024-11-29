@@ -22,6 +22,7 @@ onMounted(async () => {
               <v-text-field
                 v-model="state.filtros.NUM_FABRICANTE_PRODUTO"
                 label="Nº Fabricante / Produto"
+                @keydown.enter.prevent="actions.getAvarias"
               >
               </v-text-field>
             </v-col>
@@ -100,7 +101,7 @@ onMounted(async () => {
                 color="primary"
                 icon="mdi-eye"
                 title="Vizualizar"
-                @click=""
+                @click="actions.openModalRevisao(item)"
               >
               </v-icon>
             </div>
@@ -132,7 +133,8 @@ onMounted(async () => {
 
     <v-dialog
       v-model="state.modalRevisaoAvariasOpen"
-      max-width="800px"
+      max-width="950px"
+      :retain-focus="false"
       style="z-index: 1000"
     >
       <ModalRevisao
@@ -140,6 +142,7 @@ onMounted(async () => {
         :avaria="state.avariaSelecionada"
         :destinos="state.avariasDestinosLista"
         :funcionarios="state.funcionariosLista"
+        @finalizarAvaria="actions.preencherDadosAoFinalizarAvaria"
       />
     </v-dialog>
 

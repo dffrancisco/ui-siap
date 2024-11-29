@@ -1,8 +1,10 @@
 <script lang="ts" setup>
-import { computed, onMounted, reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import { iAvaria, iAvariaDestino, iFuncionario } from "../interfaces";
 import serviceRevisaoAvarias from "../services/serviceRevisaoAvarias.service";
 import Swal from "sweetalert2";
+import moment from "moment";
+import { msgConfirm } from "@/ts/message";
 
 const props = defineProps({
   avaria: {
@@ -19,7 +21,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["closeModal"]);
+const emits = defineEmits(["closeModal", "finalizarAvaria"]);
 
 const origemConteudo = [
   {
@@ -58,6 +60,34 @@ const actions = {
     return `https://reallatas.com.br/avarias/${cnpjSanitizado}/${img}`;
   },
 
+  async btnRevisar() {
+    if (
+      !state.dbAvaria.ORIGEM_AVARIA ||
+      !state.dbAvaria.COD_FUNCIONARIO_IDENTIFICOU ||
+      !state.dbAvaria.ID_AVARIA_DESTINO ||
+      state.dbAvaria?.DESCRICAO_AVARIA.trim() == ""
+    ) {
+      Swal.fire({
+        title: "Todos os campos são obrigatórios.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    let destinoLocalizado = props.destinos.find((destino) => {
+      return destino.ID_AVARIA_DESTINO === state.dbAvaria.ID_AVARIA_DESTINO;
+    });
+
+    if (
+      await msgConfirm(
+        "Confirmação",
+        `Tem certeza que deseja revisar o produto "${state.dbAvaria.DESC_PRODUTO}" com o destino "${destinoLocalizado.DESCRICAO}" ?`
+      )
+    ) {
+      await actions.finalizarAvaria();
+    }
+  },
+
   async getImgs() {
     try {
       state.loading = true;
@@ -68,6 +98,45 @@ const actions = {
     } catch (error) {
       Swal.fire({
         title: "Erro ao carregar imagens",
+        text: error.message,
+        icon: "error",
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  async finalizarAvaria() {
+    try {
+      state.loading = true;
+
+      const data = await serviceRevisaoAvarias.finalizarAvaria({
+        COD_FUNCIONARIO_IDENTIFICOU: state.dbAvaria.COD_FUNCIONARIO_IDENTIFICOU,
+        ID_AVARIA: state.dbAvaria.ID_AVARIA,
+        ID_AVARIA_DESTINO: state.dbAvaria.ID_AVARIA_DESTINO,
+        ORIGEM_AVARIA: state.dbAvaria.ORIGEM_AVARIA,
+        DESCRICAO: state.dbAvaria.DESCRICAO_AVARIA,
+      });
+
+      if (data.success) {
+        Swal.fire({
+          title: data.msg,
+          icon: "success",
+        });
+
+        emits("finalizarAvaria", {
+          ID_AVARIA: state.dbAvaria.ID_AVARIA,
+          COD_FUNCIONARIO_IDENTIFICOU: state.dbAvaria.COD_FUNCIONARIO_IDENTIFICOU,
+          ID_AVARIA_DESTINO: state.dbAvaria.ID_AVARIA_DESTINO,
+          DATA_HORA_VALIDACAO: moment(),
+          NOME_FUNCIONARIO_VALIDOU: "VINICIUS MEDEIROS",
+          DESCRICAO_AVARIA: state.dbAvaria.DESCRICAO_AVARIA,
+          ORIGEM_AVARIA: state.dbAvaria.ORIGEM_AVARIA,
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Erro ao finalizar avaria",
         text: error.message,
         icon: "error",
       });
@@ -102,15 +171,17 @@ onMounted(async () => {
           <v-col cols="4">
             <v-text-field
               v-model="state.dbAvaria.NUM_FABRICANTE"
-              disabled
+              readonly
               label="Nº Fabricante"
+              :clearable="false"
             ></v-text-field>
           </v-col>
           <v-col cols="8">
             <v-text-field
               v-model="state.dbAvaria.DESC_PRODUTO"
-              disabled
+              readonly
               label="Produto"
+              :clearable="false"
             ></v-text-field>
           </v-col>
           <v-col>
@@ -120,6 +191,7 @@ onMounted(async () => {
               item-value="value"
               item-title="label"
               label="Origem*"
+              :readonly="state.dbAvaria.FINALIZADO == 'S'"
               :clearable="false"
             ></v-select>
           </v-col>
@@ -127,6 +199,7 @@ onMounted(async () => {
             <v-select
               v-model="state.dbAvaria.COD_FUNCIONARIO_IDENTIFICOU"
               :items="props.funcionarios"
+              :readonly="state.dbAvaria.FINALIZADO == 'S'"
               item-value="COD_FUNCIONARIO"
               item-title="LOGIN"
               label="Identificador da Avaria*"
@@ -137,6 +210,7 @@ onMounted(async () => {
             <v-select
               v-model="state.dbAvaria.ID_AVARIA_DESTINO"
               :items="props.destinos"
+              :readonly="state.dbAvaria.FINALIZADO == 'S'"
               item-value="ID_AVARIA_DESTINO"
               item-title="DESCRICAO"
               label="Destino*"
@@ -148,7 +222,9 @@ onMounted(async () => {
             <v-textarea
               v-model="state.dbAvaria.DESCRICAO_AVARIA"
               label="Descrição da Avaria*"
+              :readonly="state.dbAvaria.FINALIZADO == 'S'"
               rows="2"
+              :clearable="state.dbAvaria.FINALIZADO == 'N'"
             ></v-textarea>
           </v-col>
         </v-row>
@@ -176,12 +252,15 @@ onMounted(async () => {
           ><span
             v-if="props.avaria.FINALIZADO == 'S'"
             class="text-body-1"
-            >Revisada por Vinicius em 26/11/2024 ás 16h49</span
+            >Revisada por {{ state.dbAvaria.NOME_FUNCIONARIO_VALIDOU }} em
+            {{ moment(state.dbAvaria.DATA_HORA_VALIDACAO).format("DD/MM/YYYY") }} ás
+            {{ moment(state.dbAvaria.DATA_HORA_VALIDACAO).format("HH:mm") }}</span
           ></div
         >
         <v-btn
           v-if="props.avaria.FINALIZADO == 'N'"
           color="primary"
+          @click="actions.btnRevisar"
           >revisar</v-btn
         >
       </div>
