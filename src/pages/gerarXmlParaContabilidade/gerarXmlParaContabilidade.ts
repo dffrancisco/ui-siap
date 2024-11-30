@@ -60,18 +60,20 @@ export const actions = {
     },
 
     async gerarXmlParaContabilidade() {
-        if (
-            await msgConfirm(
-                "Confirmação",
-                "Gostaria de gerar o XML das notas fiscais para a Contabilidade?"
-            )
-        ) {
+        // if (
+        //     await msgConfirm(
+        //         "Confirmação",
+        //         "Gostaria de gerar o XML das notas fiscais para a Contabilidade?"
+        //     )
+        // ) 
+        {
             let param: iParamGerarXml = {
                 dataInicio: "",
                 dataFim: "",
                 ano: 2024,
                 mes: 0,
                 nomeMes: "",
+                buscarNotasEntrada: false,
             };
 
             //dataInicio e dataFim
@@ -83,6 +85,7 @@ export const actions = {
                 param.mes = inicio.month() + 1;
                 const nomeMes = meses.find((m) => m.value === param.mes)?.title || "";
                 param.nomeMes = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+                param.buscarNotasEntrada = false;
 
                 //mes e ano   
             } else if (state.optionSelect == "1") {
@@ -94,6 +97,7 @@ export const actions = {
                 param.ano = state.ano;
                 const nomeMes = meses.find((m) => m.value === state.mes)?.title || "";
                 param.nomeMes = nomeMes;
+                param.buscarNotasEntrada = true;
             }
 
             try {

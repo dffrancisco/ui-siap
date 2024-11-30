@@ -4,4 +4,5 @@ export interface iParamGerarXml {
     ano: number | string,
     mes: number,
     nomeMes: string,
+    buscarNotasEntrada: boolean
 }
