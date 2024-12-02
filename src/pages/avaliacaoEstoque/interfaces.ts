@@ -1,15 +1,8 @@
 export interface iParamsRelatorio {
     mes: number;
     ano: number;
-    avaliadores?: number[];
-    avaliados?: number[];
-    produtos?: string[];
-    situacao?: string;
-    pontuacaoMinima?: number;
     page: number;
     itemsPerPage: number;
-    id_sociedade?: string;
-    ax?: string;
 }
 
 export interface iDadosAvaliacao {
@@ -20,14 +13,11 @@ export interface iDadosAvaliacao {
     AVALIADO: string;
     AVALIADOR: string;
     ST_SITUACAO: string;
-}
 
-export interface iCount {
-    TOTAL: number;
 }
 
 
 export interface iResponseRelatorio {
     dadosRelatorio: iDadosAvaliacao[];
-    totalDadosRelatorio: iCount[];
+    totalDadosRelatorio: { TOTAL: number }[];
 }

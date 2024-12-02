@@ -1,31 +1,22 @@
 import { reactive } from 'vue';
+import { mesesToSelect } from "@/constants/constants";
 import Swal from 'sweetalert2';
 import moment from 'moment';
-import serviceRelatorioCurvaAbc from './services/avaliacaoEstoque.service';
+import serviceAvaliacaoEstoque from './services/avaliacaoEstoque.service';
 import { iParamsRelatorio, iResponseRelatorio, iDadosAvaliacao } from './interfaces';
 import utils, { iColumnPrint } from '@/ts/utils';
 
-const anoAtual = moment().year();
-const mesAtual = moment().month() + 1;
+
+export const meses = mesesToSelect;
+const ano = moment().year();
+const mes = moment().month() + 1;
 
 export const state = reactive({
     loading: false,
-    mesSelecionado: mesAtual,
-    anoSelecionado: anoAtual,
-    meses: [
-        { value: 1, label: 'Janeiro' },
-        { value: 2, label: 'Fevereiro' },
-        { value: 3, label: 'Março' },
-        { value: 4, label: 'Abril' },
-        { value: 5, label: 'Maio' },
-        { value: 6, label: 'Junho' },
-        { value: 7, label: 'Julho' },
-        { value: 8, label: 'Agosto' },
-        { value: 9, label: 'Setembro' },
-        { value: 10, label: 'Outubro' },
-        { value: 11, label: 'Novembro' },
-        { value: 12, label: 'Dezembro' },
-    ],
+    mes: mes,
+    ano: ano || "",
+    mesSelecionado: mes,
+    anoSelecionado: ano,
     dadosRelatorio: <iDadosAvaliacao[]>[],
     totalItems: 0,
     itemsPerPage: 10,
@@ -48,13 +39,20 @@ export const actions = {
 
     async init() {
         actions.validarFiltros();
+
     },
 
     validarFiltros() {
-        const { anoSelecionado, mesSelecionado } = state;
 
+        if (!state.anoSelecionado || state.anoSelecionado > ano || (state.anoSelecionado === ano && state.mesSelecionado > mes)) {
+            Swal.fire({
+                icon: "warning",
+                text: "Insira um mês e ano válidos para continuar"
+            });
+            return;
+        }
 
-        if (!anoSelecionado || anoSelecionado > anoAtual) {
+        if (!state.anoSelecionado || state.anoSelecionado > ano) {
             Swal.fire({
                 icon: "warning",
                 text: "Insira um ano válido para continuar"
@@ -62,8 +60,7 @@ export const actions = {
             return;
         }
 
-
-        if (!mesSelecionado || (anoSelecionado === anoAtual && mesSelecionado > mesAtual)) {
+        if (state.mesSelecionado > mes && state.anoSelecionado >= ano) {
             Swal.fire({
                 icon: "warning",
                 text: "Insira um mês válido para continuar"
@@ -86,12 +83,18 @@ export const actions = {
                 itemsPerPage: state.itemsPerPage,
             };
 
-            const response: iResponseRelatorio = await serviceRelatorioCurvaAbc.getDadosParaRelatorio(params);
-            state.dadosRelatorio = response.dadosRelatorio || [];
-            state.totalItems = response.totalDadosRelatorio?.[0]?.TOTAL || 0;
+            const response: iResponseRelatorio = await serviceAvaliacaoEstoque.getDadosParaRelatorio(params);
 
-            if (!state.dadosRelatorio) { }
-
+            if (response && response.dadosRelatorio) {
+                state.dadosRelatorio = response.dadosRelatorio || [];
+                state.totalItems = response.totalDadosRelatorio?.[0]?.TOTAL || 0;
+            } else {
+                state.dadosRelatorio = [];
+                state.totalItems = 0;
+            }
+        } catch (error) {
+            console.error("Erro ao buscar dados do relatório:", error);
+            Swal.fire({ icon: "error", text: "Erro ao buscar os dados do relatório." });
         } finally {
             state.loading = false;
         }
@@ -135,9 +138,7 @@ export const actions = {
     formatarDadosImpressao(data: iDadosAvaliacao[]) {
         return data.map(item => ({
             ...item,
-            DT_AVALIACAO: item.DT_AVALIACAO
-                ? moment(item.DT_AVALIACAO).format('DD/MM/YYYY HH:mm:ss')
-                : '----',
+            DT_AVALIACAO: item.DT_AVALIACAO ? utils.dataBrasil(item.DT_AVALIACAO) : '-------',
         }));
     },
 

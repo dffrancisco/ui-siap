@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, actions } from "./avaliacaoEstoque";
+import { state, actions, meses } from "./avaliacaoEstoque";
 
 onMounted(() => {
   actions.init();
@@ -16,12 +16,14 @@ onMounted(() => {
       <v-row>
         <v-col cols="4">
           <v-select
-            v-model="state.mesSelecionado"
-            :items="state.meses"
-            item-value="value"
-            item-title="label"
+            id="mes"
             label="Mês"
-            clearable
+            class="mes"
+            v-model="state.mes"
+            item-title="title"
+            item-value="value"
+            :items="meses"
+            :clearable="false"
           ></v-select>
         </v-col>
 
@@ -31,6 +33,7 @@ onMounted(() => {
             v-model="state.anoSelecionado"
             type="number"
             label="Ano"
+            :clearable="false"
           ></v-text-field>
         </v-col>
 
@@ -51,6 +54,7 @@ onMounted(() => {
 
       <v-data-table
         class="mt-4 pt-5"
+        id="tabela"
         v-model:items-per-page="state.itemsPerPage"
         :items="state.dadosRelatorio"
         :headers="state.headers"
@@ -102,12 +106,12 @@ onMounted(() => {
 </template>
 
 <style>
-.v-data-table-footer {
+#tabela .v-data-table-footer {
   max-height: 2px;
   padding-top: 20px;
 }
 
-.v-data-table-footer__pagination {
+#tabela .v-data-table-footer__pagination {
   padding-right: 50px;
 }
 
