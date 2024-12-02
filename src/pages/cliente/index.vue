@@ -45,7 +45,7 @@ onMounted(async () => {
               maxLength="18"
               v-mask="'##.###.###.####-##'"
               :clearable="false"
-              :disabled="state.desativarInputs"
+              :disabled="state.desativarInputs || state.idCliente != null"
               @blur="actions.verificarSeClienteExiste"
             ></v-text-field>
           </template>
@@ -54,11 +54,10 @@ onMounted(async () => {
             <v-text-field
               v-model="state.cnpj_cpf"
               label="CPF - (F3) p/ CNPJ *"
-              id="inputCPF"
               maxLength="14"
               v-mask="'###.###.###-##'"
               :clearable="false"
-              :disabled="state.desativarInputs"
+              :disabled="state.desativarInputs || state.idCliente != null"
               @blur="actions.verificarSeClienteExiste"
             ></v-text-field>
           </template>
@@ -68,6 +67,7 @@ onMounted(async () => {
           <v-text-field
             v-model="state.razaoSocial"
             label="Razão Social / Nome *"
+            id="inputRazaoSocial"
             maxLength="50"
             :clearable="false"
             :disabled="state.desativarInputs"

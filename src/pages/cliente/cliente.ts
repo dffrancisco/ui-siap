@@ -28,6 +28,7 @@ export const state = reactive({
     idCliente: <number>null,
     inscricaoEstadual: "",
     inputCNPJ: <HTMLInputElement>null,
+    inputRazaoSocial: <HTMLInputElement>null,
     loading: false,
     modalClienteOpened: false,
     mesmoGrupo: 0,
@@ -44,12 +45,14 @@ export const state = reactive({
     telefone: "",
     telefoneAdicional: "",
     ufs: <iUF[]>[],
+    updateCliente: false,
 })
 
 export const actions = {
     async init() {
         actions.getDadosParaInputs()
         state.inputCNPJ = document.getElementById('inputCNPJ') as HTMLInputElement
+        state.inputRazaoSocial = document.getElementById('inputRazaoSocial') as HTMLInputElement
     },
 
     async getDadosParaInputs() {
@@ -68,7 +71,6 @@ export const actions = {
             state.loading = false;
         }
     },
-
 
     salvarClienteSelecionadoNaState(clienteSelecionado: iClientes) {
         state.clienteSelecionado = clienteSelecionado;
@@ -101,6 +103,7 @@ export const actions = {
         state.bloqueado = clienteSelecionado.BLOQUEADO;
         state.faturado = clienteSelecionado.FATURADO;
         state.idCliente = clienteSelecionado.ID_CLIENTE
+        state.updateCliente = true;
 
         const cnpjCpfLength = state.cnpj_cpf.replace(/\D/g, '').length;
         if (cnpjCpfLength == 11) {
@@ -118,6 +121,7 @@ export const actions = {
             actions.limparStates()
         }
 
+        state.updateCliente = false
         state.desativarInputs = false;
         nextTick(() => {
             state.inputCNPJ.focus();
@@ -132,9 +136,11 @@ export const actions = {
             });
             return;
         }
+
+        state.updateCliente = true
         state.desativarInputs = false;
         nextTick(() => {
-            state.inputCNPJ.focus();
+            state.inputRazaoSocial.focus();
         });
     },
 
@@ -208,6 +214,7 @@ export const actions = {
         state.idCliente = null;
         state.atividadeCNAE = <iAtividadesCNAE[]>[];
         state.clienteSelecionado = <iClientes>{};
+        state.updateCliente = false;
     },
 
     visualizarCNAE(atividade) {
@@ -310,6 +317,7 @@ export const actions = {
             TELEFONE1: state.telefone,
             TELEFONE2: state.telefoneAdicional,
             UF: state.selectUF,
+            updateCliente: state.updateCliente
         }
 
         try {

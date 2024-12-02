@@ -97,4 +97,5 @@ export interface iInsertOrUpdateCliente {
     TELEFONE1: string,
     TELEFONE2: string,
     UF: string,
+    updateCliente: boolean,
 }
