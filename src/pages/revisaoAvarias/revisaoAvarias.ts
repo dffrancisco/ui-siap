@@ -59,7 +59,10 @@ export const state = reactive({
     dbAvarias: <iAvaria[]>[],
     modalRevisaoAvariasOpen: false,
     avariaSelecionada: <iAvaria>{},
-    funcionariosLista: <iFuncionario[]>[]
+    funcionariosLista: <iFuncionario[]>[],
+    totalItems: 0,
+    itemsPerPage: 30,
+    page: 1
 })
 
 export const actions = {
@@ -95,7 +98,11 @@ export const actions = {
     async getAvarias() {
         try {
             state.loading = true
-            state.dbAvarias = await serviceRevisaoAvarias.getAvarias(state.filtros)
+            const data = await serviceRevisaoAvarias.getAvarias(state.filtros, state.itemsPerPage, state.page)
+
+            state.dbAvarias = data.avarias
+            state.totalItems = data.total
+
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -194,6 +201,11 @@ export const actions = {
                 text: "Erro ao imprimir o relatório."
             });
         }
+    },
+
+    async updatePage(newPage: number) {
+        state.page = newPage
+        await actions.getAvarias()
     }
 }
 

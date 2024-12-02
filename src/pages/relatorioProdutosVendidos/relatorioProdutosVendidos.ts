@@ -14,7 +14,7 @@ export const state = reactive({
     dataFimImpressao: null,
     totalItems: 0,
     itemsPerPage: 30,
-    page: 1,
+    page: 0,
     dadosRelatorio: <iDadosRelatorioProdutosVendidos[]>[],
     headers: <any>[
         {

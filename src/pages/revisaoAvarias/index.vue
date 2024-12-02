@@ -68,10 +68,13 @@ onMounted(async () => {
       </div>
 
       <div class="mt-2">
-        <v-data-table
+        <v-data-table-server
+          v-model:itemsPerPage="state.itemsPerPage"
           :headers="headersDataTable"
+          :items-length="state.totalItems"
           height="330"
           :items="state.dbAvarias"
+          @update:page="actions.updatePage"
         >
           <template v-slot:item.ACAO="{ item }">
             <div class="d-flex justify-center ga-4">
@@ -106,7 +109,7 @@ onMounted(async () => {
               </v-icon>
             </div>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </div>
 
       <div>

@@ -31,7 +31,10 @@ export interface iAvaria {
     DATA_HORA_VALIDACAO?: string | Moment,
 }
 
-export interface iGetAvariasResponse extends iAvaria { }
+export interface iGetAvariasResponse {
+    avarias: iAvaria[],
+    total: number
+}
 
 export interface iFuncionario {
     COD_FUNCIONARIO: number,

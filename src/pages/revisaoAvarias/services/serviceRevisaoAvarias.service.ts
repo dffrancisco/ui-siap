@@ -4,7 +4,7 @@ import { iFiltro, iGetDadosToSelectsResponse, iGetAvariasResponse, iGetImgsRespo
 const caminho = 'siap/revisaoAvarias'
 
 type iGetDadosToSelects = () => Promise<iGetDadosToSelectsResponse>
-type iGetAvariasFunction = (filtros: iFiltro) => Promise<iGetAvariasResponse[]>
+type iGetAvariasFunction = (filtros: iFiltro, itemsPerPage: number, page: number) => Promise<iGetAvariasResponse>
 type iGetImgsFunction = (idAvaria: number) => Promise<iGetImgsResponse>
 type iFinalizarAvariaFunction = (param: iFinalizarAvariaParam) => Promise<iFinalizarAvariaResponse>
 type iDeletarAvariaFunction = (idAvaria: number) => Promise<iDeletarAvariaResponse>
@@ -17,10 +17,12 @@ const getDadosToSelects: iGetDadosToSelects = async () => {
     return data;
 }
 
-const getAvarias: iGetAvariasFunction = async (filtros) => {
+const getAvarias: iGetAvariasFunction = async (filtros, itemsPerPage, page) => {
     const { data } = await axios.post(caminho, {
         call: 'getAvarias',
-        filtros
+        filtros,
+        itemsPerPage,
+        page
     })
 
     return data;
