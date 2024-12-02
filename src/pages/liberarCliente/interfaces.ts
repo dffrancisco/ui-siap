@@ -42,3 +42,9 @@ export interface iParamUpdateCliente {
 
 export interface iResetStates extends iCliente {
 }
+
+export interface iLiberarLimiteResponse {
+    msg: string;
+    success: boolean;
+    valorLiberado: number;
+}
