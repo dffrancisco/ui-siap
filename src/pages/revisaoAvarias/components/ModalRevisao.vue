@@ -116,6 +116,7 @@ const actions = {
         ID_AVARIA_DESTINO: state.dbAvaria.ID_AVARIA_DESTINO,
         ORIGEM_AVARIA: state.dbAvaria.ORIGEM_AVARIA,
         DESCRICAO: state.dbAvaria.DESCRICAO_AVARIA,
+        COD_PRODUTO: state.dbAvaria.COD_PRODUTO,
       });
 
       if (data.success) {

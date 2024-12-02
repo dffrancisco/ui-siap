@@ -29,6 +29,7 @@ export interface iAvaria {
     DESCRICAO_AVARIA: string,
     NOME_FUNCIONARIO_VALIDOU?: string,
     DATA_HORA_VALIDACAO?: string | Moment,
+    COD_PRODUTO: number
 }
 
 export interface iGetAvariasResponse {
@@ -52,6 +53,7 @@ export interface iFinalizarAvariaParam {
     DESCRICAO: string,
     ID_AVARIA_DESTINO: number,
     ID_AVARIA: number,
+    COD_PRODUTO: number
 }
 
 export interface iSuccessResponse {
