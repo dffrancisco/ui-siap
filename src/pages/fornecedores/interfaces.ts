@@ -4,38 +4,63 @@ export interface iFornecedores {
     cdAgencia: string;
     nrConta: string;
     nomeFornecedor: string;
-    CNPJ: string;
-    IE: string;
-    RAZAO_SOCIAL: string;
-    NOME_FANTASIA: string;
-    TELEFONE: string;
-    EMAIL: string;
-    CEP: string;
-    ENDERECO: string;
-    BAIRRO: string;
-    CIDADE: string;
-    UF: string;
-
-}
-
-export interface iParamToInsertFornecedor {
-    nomeFornecedor: string;
-    cdBanco: string;
-    cdAgencia: string;
-    nrConta: string;
     cnpj: string;
+    ie: string;
+    razaoSocial: string;
+    nomeFantasia: string;
+    telefone: string;
+    email: string;
+    cep: string;
+    endereco: string;
+    bairro: string;
+    cidade: string;
+    uf: string;
 }
+
 
 export interface iParamGetFornecedor {
     offset: number;
     param: {
-        nomeFornecedor?: string;
+        razaoSocial?: string;
+        deletado?: boolean;
     };
 }
 
 export interface iFieldDuplicity {
-    cnpj: string;
     value: string;
     field: string;
 }
 
+export interface iParamToInsert {
+    cnpj: string;
+    razaoSocial: string;
+    nomeFantasia: string;
+    ie: string;
+    endereco: string;
+    codCidade: string;
+    bairro: string;
+    telefone1: string;
+    telefone2?: string;
+    fax?: string;
+    cep: string;
+    homePage?: string;
+    email: string;
+    obs?: string;
+}
+
+export interface iParamToUpdate {
+    idFornecedor: number;
+    razaoSocial: string;
+    nomeFantasia: string;
+    ie: string;
+    endereco: string;
+    codCidade: string;
+    bairro: string;
+    telefone1: string;
+    telefone2?: string;
+    fax?: string;
+    cep: string;
+    homePage?: string;
+    email: string;
+    obs?: string;
+}
