@@ -24,7 +24,6 @@ onMounted(() => {
             multiple
             item-value="value"
             item-title="label"
-            clearable
             style="width: 100%"
           ></v-select>
         </v-col>
@@ -50,7 +49,7 @@ onMounted(() => {
             :items="state.filtroOptions"
             item-value="value"
             item-title="label"
-            clearable
+            :clearable="false"
             style="width: 100%"
           ></v-select>
         </v-col>
@@ -71,6 +70,7 @@ onMounted(() => {
 
       <div class="mt-4">
         <v-data-table-server
+          id="tabela"
           class="tableRelatorioCurva pt-5"
           v-model:items-per-page="state.itemsPerPage"
           :items="state.dadosRelatorio"
@@ -81,7 +81,6 @@ onMounted(() => {
           fixed-header
           :row-props="actions.getClassCorLinha"
           @update:page="actions.updatePage"
-          @update:options="actions.getDadosParaRelatorio"
         >
         </v-data-table-server>
       </div>
@@ -117,12 +116,12 @@ onMounted(() => {
 </template>
 
 <style>
-.v-data-table-footer {
+#tabela .v-data-table-footer {
   max-height: 2px;
   padding-top: 20px;
 }
 
-.v-data-table-footer__pagination {
+#tabela .v-data-table-footer__pagination {
   padding-right: 50px;
 }
 
