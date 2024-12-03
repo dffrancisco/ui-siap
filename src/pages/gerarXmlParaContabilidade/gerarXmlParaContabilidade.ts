@@ -22,7 +22,7 @@ export const state = reactive({
 
 export const actions = {
     validarInputs() {
-        //dataInicio e dataFim
+
         if (state.optionSelect == "0") {
 
             if (!state.dataInicio || !state.dataFim) {
@@ -44,7 +44,6 @@ export const actions = {
                 return;
             }
 
-            //mes e ano
         } else if (state.optionSelect == "1") {
 
             if (!state.mes || !state.ano || state.ano > ano) {
