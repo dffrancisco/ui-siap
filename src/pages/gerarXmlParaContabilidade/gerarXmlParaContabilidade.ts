@@ -60,13 +60,12 @@ export const actions = {
     },
 
     async gerarXmlParaContabilidade() {
-        // if (
-        //     await msgConfirm(
-        //         "Confirmação",
-        //         "Gostaria de gerar o XML das notas fiscais para a Contabilidade?"
-        //     )
-        // ) 
-        {
+        if (
+            await msgConfirm(
+                "Confirmação",
+                "Gostaria de gerar o XML das notas fiscais para a Contabilidade?"
+            )
+        ) {
             let param: iParamGerarXml = {
                 dataInicio: "",
                 dataFim: "",
@@ -113,7 +112,7 @@ export const actions = {
             } catch (error) {
                 Swal.fire({
                     icon: "error",
-                    text: "Ocorreu um erro ao gerar XML.",
+                    text: error?.response?.data?.msg || "Ocorreu um erro ao gerar os xml!",
                 });
             } finally {
                 state.loading = false;

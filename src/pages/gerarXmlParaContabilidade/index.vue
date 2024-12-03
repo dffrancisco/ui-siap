@@ -118,6 +118,17 @@ import { actions, state, meses } from "./gerarXmlParaContabilidade";
       </v-row>
     </v-card>
     <div id="pnCodigoTela">gerarXmlParaContabilidade</div>
+    <v-overlay
+      :model-value="state.loading"
+      class="align-center justify-center"
+      persistent
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </v-container>
 </template>
 
