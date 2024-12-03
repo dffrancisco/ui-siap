@@ -3,15 +3,8 @@ import { iParamsRelatorio, iDadosAvaliacao, iResponseRelatorio } from "../interf
 
 const caminho = 'siap/avaliacaoEstoque'
 
-type iGetDadosParaInputs = () => Promise<iDadosAvaliacao>;
-type iGetDadosParaRelatorio = (param: iParamsRelatorio) => Promise<iResponseRelatorio>;
 
-const getDadosParaInputs: iGetDadosParaInputs = async () => {
-    let { data } = await axios.post(caminho, {
-        call: "getDadosParaInputs",
-    });
-    return data;
-}
+type iGetDadosParaRelatorio = (param: iParamsRelatorio) => Promise<iResponseRelatorio>;
 
 
 const getDadosParaRelatorio: iGetDadosParaRelatorio = async (param) => {
@@ -23,6 +16,6 @@ const getDadosParaRelatorio: iGetDadosParaRelatorio = async (param) => {
 }
 
 export default {
-    getDadosParaInputs,
+
     getDadosParaRelatorio
 }

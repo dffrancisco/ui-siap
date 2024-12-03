@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { state, actions, meses } from "./avaliacaoEstoque";
+import { mesesToSelect } from "@/constants/constants";
 
 onMounted(() => {
   actions.init();
@@ -29,10 +30,11 @@ onMounted(() => {
 
         <v-col cols="4">
           <v-text-field
-            max-length="4"
-            v-model="state.anoSelecionado"
+            id="ano"
+            class="ano"
             type="number"
             label="Ano"
+            v-model="state.ano"
             :clearable="false"
           ></v-text-field>
         </v-col>
@@ -53,8 +55,8 @@ onMounted(() => {
       </v-row>
 
       <v-data-table
-        class="mt-4 pt-5"
         id="tabela"
+        class="mt-4 pt-5"
         v-model:items-per-page="state.itemsPerPage"
         :items="state.dadosRelatorio"
         :headers="state.headers"

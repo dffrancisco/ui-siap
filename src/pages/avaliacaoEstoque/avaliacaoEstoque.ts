@@ -1,22 +1,20 @@
 import { reactive } from 'vue';
-import { mesesToSelect } from "@/constants/constants";
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceAvaliacaoEstoque from './services/avaliacaoEstoque.service';
 import { iParamsRelatorio, iResponseRelatorio, iDadosAvaliacao } from './interfaces';
 import utils, { iColumnPrint } from '@/ts/utils';
-
+import { mesesToSelect } from "@/constants/constants";
 
 export const meses = mesesToSelect;
 const ano = moment().year();
 const mes = moment().month() + 1;
 
+
 export const state = reactive({
     loading: false,
     mes: mes,
     ano: ano || "",
-    mesSelecionado: mes,
-    anoSelecionado: ano,
     dadosRelatorio: <iDadosAvaliacao[]>[],
     totalItems: 0,
     itemsPerPage: 10,
@@ -39,20 +37,13 @@ export const actions = {
 
     async init() {
         actions.validarFiltros();
-
     },
 
     validarFiltros() {
+        const { ano, mes } = state;
 
-        if (!state.anoSelecionado || state.anoSelecionado > ano || (state.anoSelecionado === ano && state.mesSelecionado > mes)) {
-            Swal.fire({
-                icon: "warning",
-                text: "Insira um mês e ano válidos para continuar"
-            });
-            return;
-        }
 
-        if (!state.anoSelecionado || state.anoSelecionado > ano) {
+        if (!ano || ano > ano) {
             Swal.fire({
                 icon: "warning",
                 text: "Insira um ano válido para continuar"
@@ -60,7 +51,8 @@ export const actions = {
             return;
         }
 
-        if (state.mesSelecionado > mes && state.anoSelecionado >= ano) {
+
+        if (!mes || (ano === ano && mes > mes)) {
             Swal.fire({
                 icon: "warning",
                 text: "Insira um mês válido para continuar"
@@ -77,28 +69,33 @@ export const actions = {
             state.loading = true;
 
             const params: iParamsRelatorio = {
-                mes: state.mesSelecionado,
-                ano: state.anoSelecionado,
+                mes: state.mes,
+                ano: state.ano,
                 page: state.page,
                 itemsPerPage: state.itemsPerPage,
             };
 
             const response: iResponseRelatorio = await serviceAvaliacaoEstoque.getDadosParaRelatorio(params);
+            state.dadosRelatorio = response.dadosRelatorio || [];
+            state.totalItems = response.totalDadosRelatorio?.[0]?.TOTAL || 0;
 
-            if (response && response.dadosRelatorio) {
-                state.dadosRelatorio = response.dadosRelatorio || [];
-                state.totalItems = response.totalDadosRelatorio?.[0]?.TOTAL || 0;
-            } else {
-                state.dadosRelatorio = [];
-                state.totalItems = 0;
+            if (!state.dadosRelatorio) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "Nenhum dado foi retornado para os filtros aplicados.",
+                });
             }
         } catch (error) {
-            console.error("Erro ao buscar dados do relatório:", error);
-            Swal.fire({ icon: "error", text: "Erro ao buscar os dados do relatório." });
+            Swal.fire({
+                icon: "warning",
+                title: "Erro",
+                text: "Nenhum dado disponível para relatorio",
+            });
         } finally {
             state.loading = false;
         }
     },
+
 
     async onClickImprimir() {
         try {
