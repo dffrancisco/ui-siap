@@ -92,7 +92,8 @@ export const actions = {
                 text: "Nenhum dado disponível para relatorio",
             });
         } finally {
-            state.loading = false;
+            setTimeout(() => { state.loading = false; }, 200)
+
         }
     },
 
@@ -142,4 +143,5 @@ export const actions = {
     getClassCorLinha(dados: iDadosAvaliacao) {
         return { class: dados.ID_AVALIACAO % 2 === 0 ? 'cor-zebrada-1' : 'cor-zebrada-2' };
     },
+
 };
