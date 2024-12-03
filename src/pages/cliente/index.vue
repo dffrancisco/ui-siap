@@ -88,7 +88,7 @@ onMounted(async () => {
 
       <v-row class="mt-2">
         <template v-if="!state.cnpjMode">
-          <v-col cols="4">
+          <v-col cols="3">
             <v-select
               v-model="state.produtorRural"
               :items="[
