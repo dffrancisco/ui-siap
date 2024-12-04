@@ -1,66 +1,87 @@
 export interface iFornecedores {
     idFornecedor: number;
-    cdBanco: string;
-    cdAgencia: string;
-    nrConta: string;
-    nomeFornecedor: string;
-    cnpj: string;
-    ie: string;
-    razaoSocial: string;
-    nomeFantasia: string;
-    telefone: string;
-    email: string;
-    cep: string;
-    endereco: string;
-    bairro: string;
-    cidade: string;
-    uf: string;
+    NOMEFORNECEDOR: string;
+    CNPJ: string;
+    IE: string;
+    RAZAOSOCIAL: string;
+    NOMEFANTASIA: string;
+    TELEFONE: string;
+    EMAIL: string;
+    CEP: string;
+    ENDERECO: string;
+    BAIRRO: string;
+    CIDADE: string;
+    RAZAO_SOCIAL: string;
+    NOME_FANTASIA: string;
+    REPRESENTANTE: string;
+    SITE: string;
+    RESPONSAVEL: string;
+    TELEFONE2: string;
+    TELEFONE3: string;
+    DATA_CADASTRO: Date;
+    OBSERVACOES: string;
 }
 
-
 export interface iParamGetFornecedor {
-    offset: number;
+    offset?: number;
+    limit?: number;
     param: {
         razaoSocial?: string;
         deletado?: boolean;
+        cnpj?: string;
+        cidade?: string;
     };
 }
 
-export interface iFieldDuplicity {
+export interface iGetDuplicityResponse {
     value: string;
     field: string;
 }
 
-export interface iParamToInsert {
-    cnpj: string;
-    razaoSocial: string;
-    nomeFantasia: string;
-    ie: string;
-    endereco: string;
-    codCidade: string;
-    bairro: string;
-    telefone1: string;
-    telefone2?: string;
-    fax?: string;
-    cep: string;
-    homePage?: string;
-    email: string;
-    obs?: string;
+export interface iInsertResponse {
+    id: number;
+    idFornecedor: number;
+    NOMEFORNECEDOR: string;
+    CNPJ: string;
+    IE: string;
+    RAZAOSOCIAL: string;
+    NOMEFANTASIA: string;
+    TELEFONE: string;
+    EMAIL: string;
+    CEP: string;
+    ENDERECO: string;
+    BAIRRO: string;
+    CIDADE: string;
+    RAZAO_SOCIAL: string;
+    NOME_FANTASIA: string;
+    REPRESENTANTE: string;
+    SITE: string;
+    RESPONSAVEL: string;
+    TELEFONE2: string;
+    TELEFONE3: string;
+    DATA_CADASTRO: Date;
+    OBSERVACOES: string;
 }
 
 export interface iParamToUpdate {
     idFornecedor: number;
+    cnpj: string;
     razaoSocial: string;
     nomeFantasia: string;
-    ie: string;
+    ie?: string;
     endereco: string;
-    codCidade: string;
     bairro: string;
+    cidade: string;
     telefone1: string;
     telefone2?: string;
-    fax?: string;
-    cep: string;
-    homePage?: string;
+    telefone3?: string;
     email: string;
-    obs?: string;
+    site?: string;
+    cep: string;
+    value: any;
+    observacoes?: string;
+}
+
+export interface iToDeleteResponse {
+    idDeleted?: number;
 }

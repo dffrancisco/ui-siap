@@ -5,10 +5,15 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
 import serviceFornecedores from "./services/fornecedores.service";
-import { iFornecedores, iParamToInsertFornecedor, iParamGetFornecedor, iFieldDuplicity } from "./interfaces";
+import {
+    iFornecedores,
+    iParamGetFornecedor,
+    iGetDuplicityResponse,
+    iInsertResponse,
+    iParamToUpdate
+} from "./interfaces";
 
-
-
+// Estado reativo para armazenar o estado do componente
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     pnSearch: false,
@@ -16,9 +21,9 @@ export const state = reactive({
     edtSearch: "",
     dbFornecedor: <iFornecedores>{},
     loading: false,
-    ufs: ["AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"],
 });
 
+// Listener para atalhos de teclado
 export const eventListener = (event: KeyboardEvent) => {
     if (event.key === "F1") {
         document.getElementById("edtSearch")?.focus();
@@ -27,6 +32,7 @@ export const eventListener = (event: KeyboardEvent) => {
     }
 };
 
+// Ações disponíveis no componente
 export const actions = {
     async init() {
         actions.grids();
@@ -44,7 +50,6 @@ export const actions = {
                 CNPJ: { dataField: "CNPJ" },
                 "Razão Social": { dataField: "RAZAO_SOCIAL" },
                 Cidade: { dataField: "CIDADE" },
-
             },
             query: {
                 async execute(rs) {
@@ -58,7 +63,7 @@ export const actions = {
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
-                    state.dbFornecedor = r;
+                    state.dbFornecedor = r as iFornecedores;
                 },
                 duplicity: {
                     dataField: ["CNPJ"],
@@ -88,24 +93,37 @@ export const actions = {
         });
     },
 
-    async getFornecedores({ offset, param }: { offset: number; param: Record<string, any> }) {
+    async getFornecedores({ offset, param }: iParamGetFornecedor) {
         try {
             state.loading = true;
-            return await serviceFornecedores.getFornecedores({ offset, param });
+            const fornecedores = await serviceFornecedores.getFornecedores({ offset, param });
+            return fornecedores;
         } catch (error) {
             Swal.fire("Erro", "Erro ao carregar fornecedores.", "error");
+            throw error;
         } finally {
             state.loading = false;
         }
     },
 
-    async getDuplicidade({ value, field }: iFieldDuplicity) {
+    async getDuplicidade({ value, field }: iGetDuplicityResponse) {
         try {
-            return value ? await serviceFornecedores.getDuplicidade({ value, field }) : null;
+            return await serviceFornecedores.getDuplicidade({ value, field });
         } catch (error) {
             Swal.fire("Erro", "Erro ao verificar duplicidade.", "error");
+            throw error;
         }
     },
+
+    async search() {
+        const searchValue = state.edtSearch?.toUpperCase();
+
+        state.gridPrincipal.queryOpen({
+            razaoSocial: searchValue,
+        });
+
+    },
+
 
     async btnInsert() {
         state.pnSearch = true;
@@ -116,7 +134,8 @@ export const actions = {
     },
 
     btnEdit() {
-        if (!state.gridPrincipal.dataSource()) {
+        const selectedFornecedor = state.gridPrincipal.dataSource() as iFornecedores;
+        if (!selectedFornecedor) {
             Swal.fire("Atenção", "Nenhum registro selecionado.", "info");
             return false;
         }
@@ -125,23 +144,25 @@ export const actions = {
     },
 
     async btnDelete() {
-        if (!state.gridPrincipal.dataSource()) {
+        const selectedFornecedor = state.gridPrincipal.dataSource() as iFornecedores;
+        if (!selectedFornecedor) {
             Swal.fire("Atenção", "Selecione um registro.", "info");
             return false;
         }
         if (await msgConfirm("Confirmação", "Confirma a exclusão?")) {
-            await actions.deleteFornecedor();
+            await actions.deleteFornecedor(selectedFornecedor.idFornecedor);
         }
     },
 
-    async deleteFornecedor() {
+    async deleteFornecedor(idFornecedor: number) {
         try {
             state.loading = true;
-            await serviceFornecedores.deleteFornecedor(state.dbFornecedor.idFornecedor);
+            await serviceFornecedores.toDelete(idFornecedor);
             state.gridPrincipal.deleteLine();
             Swal.fire("Sucesso", "Fornecedor excluído com sucesso.", "success");
         } catch (error) {
             Swal.fire("Erro", "Erro ao excluir fornecedor.", "error");
+            throw error;
         } finally {
             state.loading = false;
         }
@@ -168,11 +189,12 @@ export const actions = {
     async createFornecedor() {
         try {
             state.loading = true;
-            const fornecedor = await serviceFornecedores.createFornecedor(state.dbFornecedor);
+            const fornecedor = await serviceFornecedores.toInsert(state.dbFornecedor);
             state.gridPrincipal.insertLine({ ...state.dbFornecedor, idFornecedor: fornecedor.id });
             Swal.fire("Sucesso", "Fornecedor criado com sucesso.", "success");
         } catch (error) {
             Swal.fire("Erro", "Erro ao criar fornecedor.", "error");
+            throw error;
         } finally {
             state.loading = false;
         }
@@ -183,15 +205,17 @@ export const actions = {
             const diff = state.gridPrincipal.getDiffTwoJson(false);
             if (!diff.diff) return;
 
-            const updatedFornecedor = { ...state.dbFornecedor, ...diff.new };
+            const updatedFornecedor: iParamToUpdate = { ...state.dbFornecedor, ...diff.new };
             state.loading = true;
 
-            await serviceFornecedores.updateFornecedor(updatedFornecedor);
+            await serviceFornecedores.toUpdate(updatedFornecedor);
+
             state.gridPrincipal.dataSource(updatedFornecedor);
 
             Swal.fire("Sucesso", "Fornecedor atualizado com sucesso.", "success");
         } catch (error) {
             Swal.fire("Erro", "Erro ao atualizar fornecedor.", "error");
+            throw error;
         } finally {
             state.loading = false;
         }
@@ -200,6 +224,5 @@ export const actions = {
     async btnCancel() {
         state.pnSearch = false;
         state.gridPrincipal.enable();
-        state.gridPrincipal.focus(state.gridPrincipal.getIndex());
     },
 };

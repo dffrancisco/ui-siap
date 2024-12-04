@@ -1,5 +1,5 @@
 import axios from "axios";
-import { iParamGetFornecedor, iFornecedores, iFieldDuplicity, iParamToInsert, iParamToUpdate, } from '../interfaces';
+import { iParamGetFornecedor, iFornecedores, iGetDuplicityResponse, iInsertResponse, iParamToUpdate, iToDeleteResponse } from '../interfaces';
 
 const caminho = "siap/fornecedores";
 
@@ -21,7 +21,7 @@ const getRepresentantes = async (offset: number, nome: string) => {
     return data;
 };
 
-const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
+const getDuplicidade = async ({ value, field }: iGetDuplicityResponse): Promise<iGetDuplicityResponse> => {
     const { data } = await axios.post(caminho, {
         call: "getDuplicidade",
         value,
@@ -30,7 +30,7 @@ const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDu
     return data;
 };
 
-const toInsert = async (newFields: iParamToInsert): Promise<iInsertResponse> => {
+const toInsert = async (newFields: iInsertResponse): Promise<iInsertResponse> => {
     const { data } = await axios.post(caminho, {
         call: "insert",
         param: newFields,
