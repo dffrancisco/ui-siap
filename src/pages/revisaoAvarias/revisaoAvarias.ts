@@ -62,7 +62,8 @@ export const state = reactive({
     funcionariosLista: <iFuncionario[]>[],
     totalItems: 0,
     itemsPerPage: 30,
-    page: 1
+    page: 1,
+    modalConfigurarImpressao: false
 })
 
 export const actions = {
@@ -114,7 +115,7 @@ export const actions = {
         }
     },
 
-    async preencherDadosAoFinalizarAvaria(dadosAvariaPreencher: iDadosPreencherAvaria) {
+    async finalizarAvaria(dadosAvariaPreencher: iDadosPreencherAvaria) {
         let avariaLocalizada = state.dbAvarias.find(avaria => avaria.ID_AVARIA == dadosAvariaPreencher.ID_AVARIA)
         let funcionarioIdentificouLocalizado = state.funcionariosLista.find(funcionario => {
             return funcionario.COD_FUNCIONARIO == dadosAvariaPreencher.COD_FUNCIONARIO_IDENTIFICOU
@@ -137,6 +138,8 @@ export const actions = {
         }
 
         state.modalRevisaoAvariasOpen = false
+
+        state.modalConfigurarImpressao = true
     },
 
     async btnDeletarAvaria(idAvaria: number) {

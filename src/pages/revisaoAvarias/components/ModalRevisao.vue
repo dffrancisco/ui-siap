@@ -120,11 +120,6 @@ const actions = {
       });
 
       if (data.success) {
-        Swal.fire({
-          title: data.msg,
-          icon: "success",
-        });
-
         emits("finalizarAvaria", {
           ID_AVARIA: state.dbAvaria.ID_AVARIA,
           COD_FUNCIONARIO_IDENTIFICOU: state.dbAvaria.COD_FUNCIONARIO_IDENTIFICOU,

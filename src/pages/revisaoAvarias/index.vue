@@ -2,6 +2,7 @@
 import { onMounted } from "vue";
 import { state, revisadaConteudo, headersDataTable, actions, computeds } from "./revisaoAvarias";
 import ModalRevisao from "./components/ModalRevisao.vue";
+import ModalConfigurarImpressao from "./components/ModalConfigurarImpressao.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -147,8 +148,17 @@ onMounted(async () => {
         :avaria="state.avariaSelecionada"
         :destinos="state.avariasDestinosLista"
         :funcionarios="state.funcionariosLista"
-        @finalizarAvaria="actions.preencherDadosAoFinalizarAvaria"
+        @finalizarAvaria="actions.finalizarAvaria"
       />
+    </v-dialog>
+
+    <v-dialog
+      v-model="state.modalConfigurarImpressao"
+      max-width="700px"
+      persistent
+      :retain-focus="false"
+    >
+      <ModalConfigurarImpressao @closeModal="state.modalConfigurarImpressao = false" />
     </v-dialog>
 
     <div id="pnCodigoTela">revisaoAvarias</div>
