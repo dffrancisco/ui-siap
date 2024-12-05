@@ -1,39 +1,19 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { actions, state } from "./chamados";
 import CModalDetalhes from "./components/cModalDetalhes.vue";
 
-const headers = [
-  {
-    title: "Assunto",
-    key: "ASSUNTO",
-    sortable: true,
-  },
-  {
-    title: "Solicitante",
-    key: "SOLICITANTE",
-    sortable: true,
-  },
-  {
-    title: "Data",
-    key: "dataFormatada",
-    sortable: true,
-  },
-  {
-    title: "Ação",
-    key: "ACAO",
-    sortable: false,
-  },
-];
-
-actions.begin();
+onMounted(async () => {
+  actions.init();
+});
 </script>
 
 <template>
   <v-container class="containerChamados">
     <title>Cadastro de Chamados</title>
     <v-card
-      style="width: 800px; margin: 0 auto"
-      class="pa-4"
+      :max-width="1000"
+      class="ma-auto pa-4"
     >
       <h1 class="tituloChamados">Abertura de Chamados - CPD</h1>
       <span class="subtitle">
@@ -46,29 +26,40 @@ actions.begin();
       >
         <v-form>
           <v-row>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-            >
-              <span>Assunto</span>
-              <select
+            <v-col cols="6">
+              <v-select
                 v-model="state.assunto"
-                id="assunto"
-                class="obr ss"
-                required
-              >
-                <option value="">Selecionar Assunto</option>
-                <option value="SISTEMA">Sistema</option>
-                <option value="EQUIPAMENTO">Equipamento</option>
-                <option value="REDE">Rede</option>
-                <option value="TELEFONIA">Telefonia</option>
-                <option value="ALARME">Alarme</option>
-                <option value="CAMERA">Câmera</option>
-                <option value="ELETRICA">Elétrica</option>
-                <option value="DESIGN MARKETING">Design / Marketing</option>
-              </select>
+                class="obr text-uppercase rounded"
+                :items="[
+                  { text: 'Sistema', value: 'SISTEMA' },
+                  { text: 'Equipamento', value: 'EQUIPAMENTO' },
+                  { text: 'Rede', value: 'REDE' },
+                  { text: 'Telefonia', value: 'TELEFONIA' },
+                  { text: 'Alarme', value: 'ALARME' },
+                  { text: 'Câmera', value: 'EQUICAMERAPAMENTO' },
+                  { text: 'Elétrica', value: 'ELETRICA' },
+                  { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
+                ]"
+                item-title="text"
+                item-value="value"
+                label="Assunto"
+                density="compact"
+                :clearable="false"
+              ></v-select>
             </v-col>
+            <v-col cols="6">
+              <v-file-input
+                v-model="state.anexos"
+                label="Anexos"
+                variant="outlined"
+                accept=".pdf, .jpg, .jpeg"
+                density="compact"
+                multiple
+              ></v-file-input>
+            </v-col>
+          </v-row>
+
+          <v-row style="margin-top: -20px">
             <v-col cols="12">
               <v-textarea
                 v-model="state.descricao"
@@ -80,24 +71,17 @@ actions.begin();
                 maxlength="500"
               ></v-textarea>
             </v-col>
-            <v-col cols="12">
-              <v-file-input
-                v-if="false"
-                v-model="state.anexos"
-                label="Anexos"
-                multiple
-              ></v-file-input>
-            </v-col>
           </v-row>
 
           <v-data-table-server
             v-model:itemsPerPage="state.itemsPerPage"
-            :headers="headers"
+            :headers="state.headers"
             :items-length="state.totalItems"
             :items="state.chamados"
             :loading="state.loading"
             :search="state.search"
             fixed-header
+            class="mt-4"
             :height="200"
             id="tableChamados"
             item-value="ID_CHAMADO"
@@ -198,6 +182,7 @@ actions.begin();
 
 .subtitle {
   font-size: 16px;
+  padding-bottom: 10px;
   text-align: center;
   align-items: center;
   display: flex;

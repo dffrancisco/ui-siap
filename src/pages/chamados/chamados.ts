@@ -1,4 +1,4 @@
-import { nextTick, reactive } from "vue";
+import { reactive } from "vue";
 import Swal from "sweetalert2";
 import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
@@ -16,16 +16,37 @@ export const state = reactive(({
     totalItems: 0,
     itemsPerPage: 15,
     search: (""),
+    headers: [
+        {
+            title: "Assunto",
+            key: "ASSUNTO",
+            sortable: true,
+        },
+        {
+            title: "Solicitante",
+            key: "SOLICITANTE",
+            sortable: true,
+        },
+        {
+            title: "Data",
+            key: "dataFormatada",
+            sortable: true,
+        },
+        {
+            title: "Ação",
+            key: "ACAO",
+            sortable: false,
+        },
+    ],
     detalhes: <iVerDetalhesChamadoResponse>{},
     pnModalDetalhes: <iModalCreate>(<unknown>null),
+    imagensChamado: ""
 }))
 
 export const actions = {
 
-    begin() {
-        nextTick(() => {
-            actions.modal();
-        });
+    async init() {
+        actions.criarModais();
     },
 
     resetForm() {
@@ -60,7 +81,18 @@ export const actions = {
         try {
             state.loading = true;
 
-            await serviceChamados.insertChamado(param)
+            let dadosChamado = await serviceChamados.insertChamado(param)
+            console.log(dadosChamado);
+
+            const filePaths = await actions.uploadAnexos(dadosChamado);
+
+            let paramUpdate = {
+                descricao: state.descricao,
+                chaveJira: dadosChamado.chaveJira,
+                filePaths
+            }
+
+            await actions.updateChamado(paramUpdate);
 
             Swal.fire({
                 icon: 'success',
@@ -115,6 +147,14 @@ export const actions = {
             state.detalhes.statusJira = data.statusJira;
             state.detalhes.comentarios = data.comentarios;
 
+            let paramGetImg = {
+                keyJira: keyJira,
+                cnpj: data.cnpj,
+            }
+
+            state.imagensChamado = await serviceChamados.getImgChamado(paramGetImg);
+            console.log(state.imagensChamado);
+
             state.pnModalDetalhes.open();
         } catch (error) {
             Swal.fire({
@@ -126,21 +166,58 @@ export const actions = {
         }
     },
 
-    modal() {
-
+    criarModais() {
         state.pnModalDetalhes = new xModal.create({
             height: 500,
             width: 600,
             el: '#pnModalDetalhes'
         })
-    }
+    },
 
+    async uploadAnexos(dadosChamado) {
+        const { chaveJira, cnpj } = dadosChamado;
+        const files = state.anexos;
+
+        if (!files.length) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("call", "uploadImg");
+        formData.append("cnpj", cnpj);
+        formData.append("idChamado", chaveJira);
+
+        files.forEach((file, index) => {
+            formData.append(`files[${index}]`, file);
+        });
+
+        try {
+            let result = await serviceChamados.uploadAnexos(formData);
+
+            if (result.success) {
+                console.log("Arquivos enviados:", result.files);
+                return result.files;
+            } else {
+                throw new Error(result.msg || "Falha no upload dos arquivos");
+            }
+        } catch (error) {
+            console.error("Erro ao enviar os arquivos:", error.message);
+        }
+    },
+
+    async updateChamado(paramUpdate) {
+        try {
+            await serviceChamados.updateChamado(paramUpdate)
+        } catch (error) {
+            console.error("Erro ao fazer update do chamado: " + error);
+        }
+    }
 
 }
 
 function showValidationError(message: string) {
     Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Preencha os campos obrigatórios',
         text: message,
     });
