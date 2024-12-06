@@ -2,9 +2,8 @@ import { reactive } from "vue";
 import Swal from "sweetalert2";
 import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados, iInsertChamado } from "./interfaces";
+import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados } from "./interfaces";
 import { dataBrasil } from "@/ts/utils";
-import moment from "moment";
 
 export const state = reactive(({
     solicitante: (""),
@@ -43,6 +42,8 @@ export const state = reactive(({
     pnModalDetalhes: <iModalCreate>(<unknown>null),
     imagensChamado: "",
     cnpj: "",
+    keyJira: "",
+    loginUsuario: ""
 }))
 
 export const actions = {
@@ -87,21 +88,27 @@ export const actions = {
 
             const filePaths = await actions.uploadAnexos(dadosChamado.chaveJira, dadosChamado.cnpj);
 
-            let paramUpdate = {
-                descricao: state.descricao,
-                chaveJira: dadosChamado.chaveJira,
-                filePaths
+            if (filePaths) {
+                const paramUpdate = {
+                    chaveJira: dadosChamado.chaveJira,
+                    filePaths,
+                };
+                await actions.updateChamado(paramUpdate);
             }
 
-            await actions.updateChamado(paramUpdate);
+            actions.getChamados({
+                page: 1,
+                itemsPerPage: state.itemsPerPage,
+                sortBy: null,
+                search: state.search,
+            });
 
             Swal.fire({
-                icon: 'success',
-                text: 'Chamado cadastrado com sucesso'
-            })
+                icon: "success",
+                text: "Chamado cadastrado com sucesso",
+            });
 
-            actions.resetForm()
-            actions.getChamados({ page: 1, itemsPerPage: state.itemsPerPage, sortBy: null, search: state.search });
+            actions.resetForm();
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -122,6 +129,7 @@ export const actions = {
                 ...chamado,
                 dataFormatada: dataBrasil(chamado.DATA_CRIACAO),
             }));
+            state.loginUsuario = data.usuario
             state.totalItems = data.total
         } catch (error) {
             Swal.fire({
@@ -154,13 +162,14 @@ export const actions = {
             }
 
             state.cnpj = data.cnpj.replaceAll(".", "").replaceAll("-", "");
+            state.keyJira = keyJira
             state.imagensChamado = await serviceChamados.getImgChamado(paramGetImg);
 
             state.pnModalDetalhes.open();
         } catch (error) {
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao buscar os dados do chamado.'
+                icon: 'warning',
+                text: error?.response?.data?.msg || "Erro ao buscar os dados do chamado",
             })
         } finally {
             state.loading = false
@@ -169,8 +178,8 @@ export const actions = {
 
     criarModais() {
         state.pnModalDetalhes = new xModal.create({
-            height: 550,
-            width: 600,
+            height: 530,
+            width: 650,
             el: '#pnModalDetalhes'
         })
     },
@@ -206,13 +215,9 @@ export const actions = {
                 formData.append(`files[${index}]`, file);
             });
 
-
-            // await serviceChamados.uploadAnexos(formData);
-
             let result = await serviceChamados.uploadAnexos(formData);
 
             if (result.success) {
-                console.log("Arquivos enviados:", result.files);
                 return result.files;
             } else {
                 throw new Error(result.msg || "Falha no upload dos arquivos");
@@ -274,8 +279,6 @@ export const actions = {
             reader.readAsDataURL(file);
         });
     }
-
-
 }
 
 function showValidationError(message: string) {

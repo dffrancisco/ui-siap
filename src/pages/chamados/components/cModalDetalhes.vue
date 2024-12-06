@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import { state } from "../chamados";
+import { actions, state } from "../chamados";
 import { dataBrasil } from "@/ts/utils";
-import { computed, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import serviceChamados from "../services/chamados.service";
+import Swal from "sweetalert2";
+
+const stateModal = reactive({
+  anexo: [],
+  novoComentario: "",
+});
 
 const prioridadeMappings = {
   Lowest: { label: "Baixíssima", icon: "mdi-arrow-down-bold" },
@@ -13,7 +19,16 @@ const prioridadeMappings = {
 };
 
 const comentariosFiltrados = computed(() => {
-  return state.detalhes.comentarios?.filter((comentario) => comentario.autor !== "Real Acessórios Dev");
+  return state.detalhes.comentarios
+    .filter((comentario) => {
+      return !comentario.texto.startsWith(" Anexos:");
+    })
+    .map((comentario) => {
+      if (comentario.autor === "Real Acessórios Dev") {
+        return { ...comentario, autor: state.loginUsuario };
+      }
+      return comentario;
+    });
 });
 
 function getTraducaoPrioridade(prioridade: string) {
@@ -52,11 +67,8 @@ function imgChamadoFormatado(img: string) {
   return `https://reallatas.com.br/chamados/${state.cnpj}/${img}`;
 }
 
-const novoComentario = ref("");
-const anexo = ref<File | null>(null);
-
 async function enviarComentario() {
-  if (!novoComentario.value.trim() && !anexo.value) {
+  if (!stateModal.novoComentario.trim() && (!stateModal.anexo || stateModal.anexo.length === 0)) {
     alert("Por favor, envie um comentário ou anexe um arquivo.");
     return;
   }
@@ -64,19 +76,79 @@ async function enviarComentario() {
   try {
     state.loading = true;
 
-    if (novoComentario.value.trim()) {
-      //console.log("Enviando comentário:", novoComentario.value);
-      await serviceChamados.enviarComentario(novoComentario.value);
-    } else if (anexo.value) {
-      //console.log("Enviando anexo:", anexo.value.name);
-      //await serviceChamados.enviarAnexo(anexo.value);
+    const promises = [];
+
+    // Envio do comentário
+    if (stateModal.novoComentario.trim()) {
+      const param = {
+        chaveJira: state.keyJira,
+        comentario: stateModal.novoComentario.trim(),
+        autor: state.loginUsuario,
+      };
+      promises.push(serviceChamados.enviarComentario(param));
+    }
+
+    // Envio dos anexos
+    if (stateModal.anexo && stateModal.anexo.length > 0) {
+      const files = stateModal.anexo;
+
+      const formData = new FormData();
+      formData.append("call", "uploadImg");
+      formData.append("cnpj", state.cnpj);
+      formData.append("idChamado", state.keyJira);
+
+      // Redimensionar imagens antes do envio
+      const redimensionados = await Promise.all(
+        files.map(async (file) => {
+          if (file.type.startsWith("image/")) {
+            return await actions.redimensionarImagem(file, 500);
+          }
+          return file;
+        })
+      );
+
+      redimensionados.forEach((file, index) => {
+        formData.append(`files[${index}]`, file);
+      });
+
+      // Adicionar ao array de promises
+      promises.push(
+        serviceChamados.uploadAnexos(formData).then((result) => {
+          if (!result.success) {
+            throw new Error(result.msg || "Falha no upload dos arquivos");
+          }
+
+          // Atualizar chamado após envio dos anexos
+          const paramUpdate = {
+            chaveJira: state.keyJira,
+            filePaths: result.files,
+          };
+          return actions.updateChamado(paramUpdate);
+        })
+      );
+    }
+
+    // Aguarda todas as operações (comentário e/ou anexos)
+    if (promises.length > 0) {
+      await Promise.all(promises);
+
+      Swal.fire({
+        icon: "success",
+        text: "Comentário e/ou anexos enviados com sucesso!",
+      });
+    } else {
+      throw new Error("Nenhuma operação foi executada.");
     }
   } catch (error) {
-    console.error("Erro ao enviar:", error);
+    Swal.fire({
+      icon: "error",
+      text: "Erro ao enviar comentário ou anexos. Tente novamente.",
+    });
   } finally {
     state.loading = false;
-    novoComentario.value = "";
-    anexo.value = null;
+    stateModal.novoComentario = "";
+    stateModal.anexo = [];
+    state.pnModalDetalhes.close();
   }
 }
 </script>
@@ -134,7 +206,7 @@ async function enviarComentario() {
     <v-divider></v-divider>
 
     <v-row>
-      <v-col cols="6">
+      <v-col cols="5">
         <div class="detalhe-descricao">
           <label class="pt-2">Descrição:</label>
           <label>{{ state.detalhes.descricao }}</label>
@@ -146,7 +218,7 @@ async function enviarComentario() {
         </div></v-col
       >
 
-      <v-col cols="6">
+      <v-col cols="7">
         <div v-if="state.imagensChamado">
           <label class="ml-2">Imagens do chamado:</label>
 
@@ -173,7 +245,7 @@ async function enviarComentario() {
       class="comentarios"
       v-if="state.detalhes.comentarios"
     >
-      <label class="ml-1">Comentários:</label>
+      <label class="ml-2">Comentários:</label>
       <div
         class="comentario"
         v-for="comentario in comentariosFiltrados"
@@ -192,25 +264,23 @@ async function enviarComentario() {
 
       <v-divider class="mt-4"></v-divider>
     </div>
-    <!-- Novo comentário ou anexo -->
+
     <div class="novo-comentario mt-4">
       <v-textarea
-        v-model="novoComentario"
+        v-model="stateModal.novoComentario"
         outlined
         label="Escreva seu comentário"
         rows="2"
-        :disabled="!!anexo"
       ></v-textarea>
 
       <v-row>
         <v-col cols="9">
           <v-file-input
-            v-model="anexo"
+            v-model="stateModal.anexo"
             label="Anexos"
             variant="outlined"
             accept=".pdf, .jpg, .jpeg"
             density="compact"
-            :disabled="!!novoComentario.trim()"
             class="mt-2"
           ></v-file-input>
         </v-col>
@@ -220,6 +290,7 @@ async function enviarComentario() {
             class="mt-2"
             width="200px"
             @click="enviarComentario"
+            :disabled="!stateModal.novoComentario.trim() && stateModal.anexo.length == 0"
             >Enviar</v-btn
           >
         </v-col>
@@ -240,14 +311,14 @@ async function enviarComentario() {
   gap: 12px;
   align-items: center;
   justify-content: start;
-  max-height: 180px;
+  max-height: 150px;
   overflow-y: auto;
   padding: 8px;
 }
 
 .img-miniatura {
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   border-radius: 8px;
   object-fit: cover;
   object-position: center;
@@ -270,7 +341,7 @@ async function enviarComentario() {
 }
 
 .divider {
-  margin-right: 20px;
+  margin: 5px;
 }
 
 .detalhes-container {

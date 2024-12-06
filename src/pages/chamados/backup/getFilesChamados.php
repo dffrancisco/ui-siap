@@ -39,7 +39,12 @@ class Files
             }
 
             $timestamp = date('d-m-Y-H-i-s');
-            $filename = "{$idChamado}-{$timestamp}-{$key}.jpg";
+            // Detectar a extensão original do arquivo
+            $originalName = $_FILES['files']['name'][$key];
+            $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+
+            // Criar o nome do arquivo com a extensão correta
+            $filename = "{$idChamado}-{$timestamp}-{$key}.{$extension}";
             $filePath = $dirCNPJ . $filename;
 
             if (move_uploaded_file($tmpName, $filePath)) {

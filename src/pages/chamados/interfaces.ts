@@ -35,6 +35,7 @@ export interface iParamGetChamados {
 export interface iGetChamadosResponse {
     chamados: iChamados[];
     total: number;
+    usuario: string;
 }
 
 export interface iInsertChamado {
