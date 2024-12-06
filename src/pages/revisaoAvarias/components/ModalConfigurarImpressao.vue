@@ -50,8 +50,8 @@ const actions = {
     const etiquetaHeight = 55.8;
     const margemTop = 0;
     const margemLeft = 0;
-    const gapVertical = 5;
-    const gapHorizontal = 5;
+    const gapVertical = 8;
+    const gapHorizontal = 18;
 
     const etiquetasPorLinha = 2;
     const row = Math.floor((posicao - 1) / etiquetasPorLinha);
