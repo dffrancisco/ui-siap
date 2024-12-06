@@ -134,6 +134,7 @@ export const actions = {
             avariaLocalizada.DATA_HORA_VALIDACAO = dadosAvariaPreencher.DATA_HORA_VALIDACAO
             avariaLocalizada.ORIGEM_AVARIA = dadosAvariaPreencher.ORIGEM_AVARIA
             avariaLocalizada.DESCRICAO_AVARIA = dadosAvariaPreencher.DESCRICAO_AVARIA
+            avariaLocalizada.QTD = dadosAvariaPreencher.QTD
             state.dbAvarias = [...state.dbAvarias]
         }
 

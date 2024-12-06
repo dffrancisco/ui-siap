@@ -74,6 +74,22 @@ const actions = {
       return;
     }
 
+    if (state.dbAvaria.QTD <= 0) {
+      Swal.fire({
+        title: "A quantidade de produtos não pode menor que zero.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    if (state.dbAvaria.QTD > 9999) {
+      Swal.fire({
+        title: "A quantidade de produtos não pode ser maior que 9999.",
+        icon: "warning",
+      });
+      return;
+    }
+
     let destinoLocalizado = props.destinos.find((destino) => {
       return destino.ID_AVARIA_DESTINO === state.dbAvaria.ID_AVARIA_DESTINO;
     });
@@ -117,6 +133,7 @@ const actions = {
         ORIGEM_AVARIA: state.dbAvaria.ORIGEM_AVARIA,
         DESCRICAO: state.dbAvaria.DESCRICAO_AVARIA,
         COD_PRODUTO: state.dbAvaria.COD_PRODUTO,
+        QTD: state.dbAvaria.QTD,
       });
 
       if (data.success) {
@@ -128,6 +145,7 @@ const actions = {
           NOME_FUNCIONARIO_VALIDOU: "VINICIUS MEDEIROS",
           DESCRICAO_AVARIA: state.dbAvaria.DESCRICAO_AVARIA,
           ORIGEM_AVARIA: state.dbAvaria.ORIGEM_AVARIA,
+          QTD: state.dbAvaria.QTD,
         });
       }
     } catch (error) {
@@ -172,11 +190,20 @@ onMounted(async () => {
               :clearable="false"
             ></v-text-field>
           </v-col>
-          <v-col cols="8">
+          <v-col cols="6">
             <v-text-field
               v-model="state.dbAvaria.DESC_PRODUTO"
               readonly
               label="Produto"
+              :clearable="false"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-text-field
+              v-model="state.dbAvaria.QTD"
+              :readonly="state.dbAvaria.FINALIZADO == 'S'"
+              label="Quantidade*"
+              type="number"
               :clearable="false"
             ></v-text-field>
           </v-col>
@@ -187,7 +214,6 @@ onMounted(async () => {
               item-value="value"
               item-title="label"
               label="Origem*"
-              :readonly="state.dbAvaria.FINALIZADO == 'S'"
               :clearable="false"
             ></v-select>
           </v-col>
