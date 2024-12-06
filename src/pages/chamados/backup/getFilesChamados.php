@@ -59,86 +59,64 @@ class Files
 
     function getImgChamado()
     {
-        $jsonData = file_get_contents('php://input');
-        $data = json_decode($jsonData, true);
+        $jsonData = file_get_contents('php://input'); // Captura o corpo JSON da requisição
+        $data = json_decode($jsonData, true); // Decodifica os dados JSON para um array associativo
 
+        // Valida se os dados esperados foram enviados
         if (!isset($data['cnpj'], $data['id_chamado'])) {
             echo json_encode(['error' => 'Dados incompletos: cnpj ou id_chamado ausentes.']);
             return;
         }
 
-        $cnpj = $data['cnpj'];
-        $id_chamado = $data['id_chamado'];
+        $cnpj = preg_replace('/[^0-9]/', '', $data['cnpj']); // Normaliza o CNPJ
+        $id_chamado = $data['id_chamado']; // Captura o ID do chamado
 
-        $dir = "./" . preg_replace('/[^0-9]/', '', $cnpj); // Limitar caracteres não numéricos no CNPJ
+        // Verifique se o diretório do cliente existe
+        $dir = "./" . $cnpj;
 
-        // Verifica se o diretório existe
         if (!is_dir($dir)) {
             echo json_encode(['error' => 'O diretório não existe.']);
             return;
         }
 
-        // Verifica se o diretório é legível
-        if (!is_readable($dir)) {
-            // Tentativa de mudar as permissões para 777
-            if (chmod($dir, 0777)) {
-                echo json_encode(['message' => 'Permissões de leitura e escrita foram ajustadas para o diretório.']);
-            } else {
-                echo json_encode(['error' => 'Falha ao alterar permissões do diretório.']);
-                return;
-            }
-        }
-
-        // Tenta escanear o diretório
         $files = scandir($dir);
-
-        // Verifica se foi possível escanear o diretório
-        if ($files === false) {
-            echo json_encode(['error' => 'Falha ao ler o diretório.']);
+        if (!$files) {
+            echo json_encode(['error' => 'Erro ao acessar o diretório.']);
             return;
         }
 
-        $json = [];
-
+        $result = [];
         foreach ($files as $file) {
-            // Ignora os diretórios '.' e '..'
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-
-            $extension = pathinfo($file, PATHINFO_EXTENSION);
-            $name = pathinfo($file, PATHINFO_FILENAME);
-
-            // Verifica se o nome do arquivo começa com "$id_chamado-" e a extensão é válida
-            if (strpos($name, "$id_chamado-") === 0 && in_array(strtolower($extension), ['jpg', 'jpeg', 'pdf'])) {
-                $json[] = $file;
+            if (strpos($file, $id_chamado . '-') === 0) { // Verifica se o arquivo começa com o ID do chamado
+                $result[] = $file;
             }
         }
 
-        // Se não encontrar arquivos, exibe mensagem
-        if (empty($json)) {
-            echo json_encode(['message' => 'Nenhum arquivo encontrado para a avaria especificada.']);
-        } else {
-            echo json_encode($json);
-        }
+        echo json_encode($result);
     }
 }
 
-// Verificar o método chamado
+// Identificar a `call` corretamente
 $jsonData = file_get_contents('php://input');
 $data = json_decode($jsonData, true);
 
-// Verificar o método chamado
-if (!isset($_REQUEST['call'])) {
+$call = $_REQUEST['call'] ?? $data['call'] ?? null;
+
+if (!$call) {
     echo json_encode(['success' => false, 'msg' => 'Chamada não especificada.']);
     exit;
 }
 
 $class = new Files();
-$call = $_REQUEST['call'];
 
 if (method_exists($class, $call)) {
-    $class->$call($_REQUEST);
+    if ($call === 'uploadImg') {
+        // `uploadImg` usa `$_FILES` e `$_POST`
+        $class->$call($_POST);
+    } else {
+        // Para chamadas como `getImgChamado`, usamos o corpo JSON
+        $class->$call($data);
+    }
 } else {
     echo json_encode(['success' => false, 'msg' => "Função '{$call}' não encontrada."]);
 }

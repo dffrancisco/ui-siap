@@ -2,8 +2,9 @@ import { reactive } from "vue";
 import Swal from "sweetalert2";
 import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados } from "./interfaces";
+import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados, iInsertChamado } from "./interfaces";
 import { dataBrasil } from "@/ts/utils";
+import moment from "moment";
 
 export const state = reactive(({
     solicitante: (""),
@@ -40,7 +41,8 @@ export const state = reactive(({
     ],
     detalhes: <iVerDetalhesChamadoResponse>{},
     pnModalDetalhes: <iModalCreate>(<unknown>null),
-    imagensChamado: ""
+    imagensChamado: "",
+    cnpj: "",
 }))
 
 export const actions = {
@@ -82,9 +84,8 @@ export const actions = {
             state.loading = true;
 
             let dadosChamado = await serviceChamados.insertChamado(param)
-            console.log(dadosChamado);
 
-            const filePaths = await actions.uploadAnexos(dadosChamado);
+            const filePaths = await actions.uploadAnexos(dadosChamado.chaveJira, dadosChamado.cnpj);
 
             let paramUpdate = {
                 descricao: state.descricao,
@@ -152,8 +153,8 @@ export const actions = {
                 cnpj: data.cnpj,
             }
 
+            state.cnpj = data.cnpj.replaceAll(".", "").replaceAll("-", "");
             state.imagensChamado = await serviceChamados.getImgChamado(paramGetImg);
-            console.log(state.imagensChamado);
 
             state.pnModalDetalhes.open();
         } catch (error) {
@@ -168,14 +169,13 @@ export const actions = {
 
     criarModais() {
         state.pnModalDetalhes = new xModal.create({
-            height: 500,
+            height: 550,
             width: 600,
             el: '#pnModalDetalhes'
         })
     },
 
-    async uploadAnexos(dadosChamado) {
-        const { chaveJira, cnpj } = dadosChamado;
+    async uploadAnexos(chaveJira: string, cnpj: string) {
         const files = state.anexos;
 
         if (!files.length) {
@@ -192,6 +192,23 @@ export const actions = {
         });
 
         try {
+
+            const redimensionados = await Promise.all(
+                files.map(async (file) => {
+                    if (file.type.startsWith("image/")) {
+                        return await actions.redimensionarImagem(file, 500);
+                    }
+                    return file;
+                })
+            );
+
+            redimensionados.forEach((file, index) => {
+                formData.append(`files[${index}]`, file);
+            });
+
+
+            // await serviceChamados.uploadAnexos(formData);
+
             let result = await serviceChamados.uploadAnexos(formData);
 
             if (result.success) {
@@ -211,7 +228,53 @@ export const actions = {
         } catch (error) {
             console.error("Erro ao fazer update do chamado: " + error);
         }
+    },
+
+    async redimensionarImagem(file: File, maxSizeKB: number): Promise<File> {
+        const maxSizeBytes = maxSizeKB * 1024;
+
+        if (file.size <= maxSizeBytes) {
+            return file;
+        }
+
+        const img = new Image();
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+
+        return new Promise<File>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                img.src = reader.result as string;
+            };
+            reader.onerror = reject;
+
+            img.onload = () => {
+                const ratio = Math.sqrt(maxSizeBytes / file.size);
+                canvas.width = img.width * ratio;
+                canvas.height = img.height * ratio;
+
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(
+                    (blob) => {
+                        if (blob) {
+                            const newFile = new File([blob], file.name, {
+                                type: file.type,
+                            });
+                            resolve(newFile);
+                        } else {
+                            reject(new Error("Erro ao criar Blob da imagem redimensionada."));
+                        }
+                    },
+                    file.type,
+                    0.9
+                );
+            };
+            img.onerror = reject;
+            reader.readAsDataURL(file);
+        });
     }
+
 
 }
 

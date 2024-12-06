@@ -42,7 +42,7 @@ export interface iInsertChamado {
     loja: string;
     assunto: string;
     descricao: string;
-    anexos: any[];
+    anexos: string[];
     dataAtual: string;
 }
 
@@ -51,7 +51,8 @@ export interface iInsertChamadoResponse {
     loja: string;
     assunto: string;
     descricao: string;
-    anexos: any[];
+    anexos: string[];
     dataAtual: string;
     chaveJira: string;
+    cnpj: string;
 }

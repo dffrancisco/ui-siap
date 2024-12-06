@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { state } from "../chamados";
 import { dataBrasil } from "@/ts/utils";
+import { computed, ref } from "vue";
+import serviceChamados from "../services/chamados.service";
 
 const prioridadeMappings = {
   Lowest: { label: "Baixíssima", icon: "mdi-arrow-down-bold" },
@@ -9,6 +11,10 @@ const prioridadeMappings = {
   High: { label: "Alta", icon: "mdi-arrow-up" },
   Highest: { label: "Altíssima", icon: "mdi-arrow-up-bold" },
 };
+
+const comentariosFiltrados = computed(() => {
+  return state.detalhes.comentarios?.filter((comentario) => comentario.autor !== "Real Acessórios Dev");
+});
 
 function getTraducaoPrioridade(prioridade: string) {
   return prioridadeMappings[prioridade]?.label || prioridade;
@@ -41,115 +47,240 @@ function getStatusIcon(status: string) {
     return "mdi-information";
   }
 }
+
+function imgChamadoFormatado(img: string) {
+  return `https://reallatas.com.br/chamados/${state.cnpj}/${img}`;
+}
+
+const novoComentario = ref("");
+const anexo = ref<File | null>(null);
+
+async function enviarComentario() {
+  if (!novoComentario.value.trim() && !anexo.value) {
+    alert("Por favor, envie um comentário ou anexe um arquivo.");
+    return;
+  }
+
+  try {
+    state.loading = true;
+
+    if (novoComentario.value.trim()) {
+      //console.log("Enviando comentário:", novoComentario.value);
+      await serviceChamados.enviarComentario(novoComentario.value);
+    } else if (anexo.value) {
+      //console.log("Enviando anexo:", anexo.value.name);
+      //await serviceChamados.enviarAnexo(anexo.value);
+    }
+  } catch (error) {
+    console.error("Erro ao enviar:", error);
+  } finally {
+    state.loading = false;
+    novoComentario.value = "";
+    anexo.value = null;
+  }
+}
 </script>
 
 <template>
-  <div class="detalhes-chamado">
+  <v-card
+    max-height="auto"
+    class="pa-2 modalDetalhes"
+  >
     <div class="detalhes-container">
       <div class="detalhe">
-        <span>Solicitante: </span>
-        <span>{{ state.detalhes.solicitante }}</span>
+        <label>Solicitante: </label>
+        <label>{{ state.detalhes.solicitante }}</label>
       </div>
 
-      <v-divider vertical class="divider"></v-divider>
+      <v-divider
+        vertical
+        class="divider"
+      ></v-divider>
 
       <div class="detalhe">
-        <span>Data: </span>
-        <span>{{ state.detalhes.dataFormatada }}</span>
+        <label>Data: </label>
+        <label>{{ state.detalhes.dataFormatada }}</label>
       </div>
 
-      <v-divider vertical class="divider"></v-divider>
+      <v-divider
+        vertical
+        class="divider"
+      ></v-divider>
 
       <div class="detalhe">
-        <span>Prioridade:</span>
-        <span
-          ><v-icon :color="getPrioridadeIconColor(state.detalhes.prioridade)">
+        <label>Prioridade:</label>
+        <label>
+          <v-icon :color="getPrioridadeIconColor(state.detalhes.prioridade)">
             {{ getPrioridadeIcon(state.detalhes.prioridade) }}
           </v-icon>
           {{ getTraducaoPrioridade(state.detalhes.prioridade) }}
-        </span>
+        </label>
       </div>
 
-      <v-divider vertical class="divider"></v-divider>
+      <v-divider
+        vertical
+        class="divider"
+      ></v-divider>
 
       <div class="detalhe">
-        <span>Status: </span>
-        <span
-          >{{ state.detalhes.statusJira
-          }}<v-icon class="ml-2">{{
-            getStatusIcon(state.detalhes.statusJira)
-          }}</v-icon>
-        </span>
+        <label>Status: </label>
+        <label>
+          {{ state.detalhes.statusJira }}
+          <v-icon class="ml-2">{{ getStatusIcon(state.detalhes.statusJira) }}</v-icon>
+        </label>
       </div>
     </div>
+
     <v-divider></v-divider>
 
-    <div class="detalhes-responsavel">
-      <div class="detalhe-descricao">
-        <span><u>Descrição:</u> </span>
-        <span>{{ state.detalhes.descricao }}</span>
-      </div>
+    <v-row>
+      <v-col cols="6">
+        <div class="detalhe-descricao">
+          <label class="pt-2">Descrição:</label>
+          <label>{{ state.detalhes.descricao }}</label>
 
-      <div class="detalhe">
-        <span><u>Responsável:</u></span>
-        <span>{{ state.detalhes.responsavel }}</span>
-      </div>
-    </div>
+          <div class="pt-5">
+            <label>Responsável:</label><br />
+            <label>{{ state.detalhes.responsavel }}</label></div
+          >
+        </div></v-col
+      >
+
+      <v-col cols="6">
+        <div v-if="state.imagensChamado">
+          <label class="ml-2">Imagens do chamado:</label>
+
+          <div class="mt-2 containerImg">
+            <PhotoProvider
+              v-for="img in state.imagensChamado"
+              :default-backdrop-opacity="0.8"
+            >
+              <PhotoConsumer :src="imgChamadoFormatado(img)">
+                <img
+                  :src="imgChamadoFormatado(img)"
+                  class="view-box img-miniatura"
+                />
+              </PhotoConsumer>
+            </PhotoProvider>
+          </div>
+        </div>
+      </v-col>
+    </v-row>
+
     <v-divider></v-divider>
 
-    <div class="comentarios">
-      <span class="titleComents">Comentários:</span>
+    <div
+      class="comentarios"
+      v-if="state.detalhes.comentarios"
+    >
+      <label class="ml-1">Comentários:</label>
       <div
         class="comentario"
-        v-for="comentario in state.detalhes.comentarios"
+        v-for="comentario in comentariosFiltrados"
         :key="comentario.criacao"
       >
         <div>
-          <span>Autor: {{ comentario.autor }}</span>
+          <label>Autor: {{ comentario.autor }}</label>
         </div>
         <div>
-          <span>Data: {{ dataBrasil(comentario.criacao) }}</span>
+          <label>Data: {{ dataBrasil(comentario.criacao) }}</label>
         </div>
         <div class="comentarios-comentario">
-          <span>Comentário: "{{ comentario.texto }}"</span>
+          <label>Comentário: {{ comentario.texto }}</label>
         </div>
       </div>
+
+      <v-divider class="mt-4"></v-divider>
     </div>
-  </div>
+    <!-- Novo comentário ou anexo -->
+    <div class="novo-comentario mt-4">
+      <v-textarea
+        v-model="novoComentario"
+        outlined
+        label="Escreva seu comentário"
+        rows="2"
+        :disabled="!!anexo"
+      ></v-textarea>
+
+      <v-row>
+        <v-col cols="9">
+          <v-file-input
+            v-model="anexo"
+            label="Anexos"
+            variant="outlined"
+            accept=".pdf, .jpg, .jpeg"
+            density="compact"
+            :disabled="!!novoComentario.trim()"
+            class="mt-2"
+          ></v-file-input>
+        </v-col>
+        <v-col cols="3">
+          <v-btn
+            color="primary"
+            class="mt-2"
+            width="200px"
+            @click="enviarComentario"
+            >Enviar</v-btn
+          >
+        </v-col>
+      </v-row>
+    </div>
+  </v-card>
 </template>
 
 <style scoped>
+.novo-comentario {
+  display: flex;
+  flex-direction: column;
+}
+
+.containerImg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: start;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.img-miniatura {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
+  object-position: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.img-miniatura:hover {
+  transform: scale(1.1);
+}
+
 .detalhes-responsavel {
   margin-left: 5px;
 }
+
 .detalhe-descricao {
   margin-right: 20px;
-  margin-bottom: 10px;
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
 }
+
 .divider {
   margin-right: 20px;
 }
+
 .detalhes-container {
   display: flex;
   justify-content: space-between;
-}
-.detalhes-chamado {
-  width: 100%;
-  padding: 20px;
-}
-
-.detalhe {
-  margin-right: 20px;
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
+  font-size: 12px;
 }
 
 .comentarios {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .comentario {
@@ -163,8 +294,11 @@ function getStatusIcon(status: string) {
   margin-top: 5px;
 }
 
-.titleComents {
-  text-decoration-line: underline;
-  margin-left: 5px;
+.detalhe {
+  padding: 5px;
+}
+
+.modalDetalhes {
+  font-size: 12px;
 }
 </style>

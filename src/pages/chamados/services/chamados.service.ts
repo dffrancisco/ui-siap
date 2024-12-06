@@ -51,20 +51,27 @@ const uploadAnexos = async (formData) => {
     return result;
 }
 
-
 const getImgChamado = async (param) => {
-    console.log(param.keyJira);
     let { data } = await axios.post('http://www.reallatas.com.br/chamados/getFilesChamados.php', {
         call: 'getImgChamado',
         cnpj: param.cnpj,
-        id_chamado: param.keyjira
+        id_chamado: param.keyJira,
     });
     return data;
 };
 
+
 const updateChamado = async (param) => {
     let { data } = await axios.post('siap/chamados', {
         call: 'updateChamado',
+        param
+    });
+    return data;
+}
+
+const enviarComentario = async (param) => {
+    let { data } = await axios.post('siap/chamados', {
+        call: 'enviarComentario',
         param
     });
     return data;
@@ -76,5 +83,6 @@ export default {
     insertChamado,
     updateChamado,
     getImgChamado,
-    uploadAnexos
+    uploadAnexos,
+    enviarComentario,
 }
