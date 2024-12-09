@@ -48,18 +48,61 @@ onMounted(async () => {
               ></v-select>
             </v-col>
             <v-col cols="6">
-              <v-file-input
-                v-model="state.anexos"
-                label="Anexos"
-                variant="outlined"
-                accept=".pdf, .jpg, .jpeg"
-                density="compact"
-                multiple
-              ></v-file-input>
+              <div class="custom-file-input">
+                <label
+                  @click="actions.selecionarAnexos"
+                  class="file-label"
+                  >Anexar imagem</label
+                >
+                <v-btn
+                  icon
+                  size="30px"
+                  color="primary"
+                  @click="actions.selecionarAnexos"
+                >
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+
+                <v-file-input
+                  id="fileInput"
+                  v-model="state.anexos"
+                  class="hidden-file-input"
+                  accept=".pdf, .jpg, .jpeg"
+                  density="compact"
+                  multiple
+                  @change="actions.visualizarPreviaAnexo"
+                ></v-file-input>
+
+                <div class="image-preview-container">
+                  <PhotoProvider
+                    v-for="(file, index) in state.previews"
+                    :key="index"
+                    :default-backdrop-opacity="0.8"
+                  >
+                    <PhotoConsumer :src="file">
+                      <div class="preview-wrapper">
+                        <img
+                          :src="file"
+                          class="view-box img-miniatura"
+                        />
+                        <v-btn
+                          icon
+                          size="20px"
+                          color="outline"
+                          @click="actions.removerAnexo(index)"
+                          class="remove-icon-btn"
+                        >
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                      </div>
+                    </PhotoConsumer>
+                  </PhotoProvider>
+                </div>
+              </div>
             </v-col>
           </v-row>
 
-          <v-row style="margin-top: -20px">
+          <v-row>
             <v-col cols="12">
               <v-textarea
                 v-model="state.descricao"
@@ -98,14 +141,6 @@ onMounted(async () => {
                   actions.verDetalhesChamado(item.KEY_JIRA, item.DESCRICAO, item.SOLICITANTE, item.dataFormatada)
                 "
               ></v-btn>
-            </template>
-            <template #no-data>
-              <v-alert
-                :value="true"
-                icon="mdi-information"
-              >
-                Não há chamados disponíveis.
-              </v-alert>
             </template>
           </v-data-table-server>
 
@@ -182,7 +217,7 @@ onMounted(async () => {
 
 .subtitle {
   font-size: 16px;
-  padding-bottom: 10px;
+  margin-bottom: 20px;
   text-align: center;
   align-items: center;
   display: flex;
@@ -194,5 +229,67 @@ onMounted(async () => {
     margin: 0 auto;
     margin-top: 20px;
   }
+}
+.custom-file-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.image-preview-container {
+  display: flex;
+  gap: 10px;
+  margin-top: -15px;
+  padding-left: 5px;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  max-height: 100px;
+  justify-content: flex-start;
+}
+
+.preview-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.preview-wrapper img {
+  width: 70px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.remove-icon-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 50%;
+  padding: 4px;
+  z-index: 10;
+}
+
+.v-btn.remove-icon-btn {
+  padding: 0;
+  min-width: 20px;
+  height: 20px;
+}
+
+.preview-wrapper img {
+  border: 2px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+.preview-wrapper img:hover {
+  border-color: #ff4081;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.file-label {
+  font-size: 14px;
 }
 </style>

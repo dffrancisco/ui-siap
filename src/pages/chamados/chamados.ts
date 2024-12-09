@@ -40,10 +40,11 @@ export const state = reactive(({
     ],
     detalhes: <iVerDetalhesChamadoResponse>{},
     pnModalDetalhes: <iModalCreate>(<unknown>null),
-    imagensChamado: "",
+    imagensChamado: [] as string[],
     cnpj: "",
     keyJira: "",
-    loginUsuario: ""
+    loginUsuario: "",
+    previews: [] as string[],
 }))
 
 export const actions = {
@@ -58,6 +59,7 @@ export const actions = {
         state.assunto = '';
         state.descricao = '';
         state.anexos = [];
+        state.previews = [];
     },
 
     async submitForm() {
@@ -182,6 +184,29 @@ export const actions = {
             width: 650,
             el: '#pnModalDetalhes'
         })
+    },
+
+    selecionarAnexos() {
+        const fileInputElement = document.getElementById('fileInput');
+        fileInputElement.click();
+    },
+
+    visualizarPreviaAnexo() {
+        state.anexos.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (e.target?.result) {
+                    state.previews.push(e.target.result.toString());
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    },
+
+
+    removerAnexo(index: number) {
+        state.anexos.splice(index, 1);
+        state.previews.splice(index, 1);
     },
 
     async uploadAnexos(chaveJira: string, cnpj: string) {

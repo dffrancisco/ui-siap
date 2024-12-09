@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { actions, state } from "../chamados";
 import { dataBrasil } from "@/ts/utils";
-import { computed, reactive, ref } from "vue";
+import { computed, onMounted, reactive } from "vue";
 import serviceChamados from "../services/chamados.service";
 import Swal from "sweetalert2";
 
 const stateModal = reactive({
   anexo: [],
   novoComentario: "",
+  previews: [] as string[],
 });
 
 const prioridadeMappings = {
@@ -149,8 +150,74 @@ async function enviarComentario() {
     stateModal.novoComentario = "";
     stateModal.anexo = [];
     state.pnModalDetalhes.close();
+    limparAnexos();
   }
 }
+
+function removerAnexo(img: string) {
+  Swal.fire({
+    title: "Confirmação",
+    text: "Deseja remover este anexo permanentemente?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sim, remover",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      let param = {
+        nomeImagem: img,
+        cnpj: state.cnpj,
+      };
+
+      try {
+        state.loading = true;
+        serviceChamados.removerImagemChamado(param);
+
+        state.imagensChamado = state.imagensChamado.filter((i) => i !== img);
+        Swal.fire("Removido!", "O anexo foi removido com sucesso.", "success");
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          text: "Falha ao remover o anexo. Tente novamente.",
+        });
+        return;
+      } finally {
+        state.loading = false;
+      }
+    }
+  });
+}
+
+function visualizarPreviaAnexo() {
+  stateModal.anexo.forEach((file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        stateModal.previews.push(e.target.result.toString());
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removerAnexoPreview(index: number) {
+  stateModal.anexo.splice(index, 1);
+  stateModal.previews.splice(index, 1);
+}
+
+function selecionarAnexo() {
+  const file = document.getElementById("fileInputModal");
+  file.click();
+}
+
+function limparAnexos() {
+  stateModal.anexo = [];
+  stateModal.previews = [];
+}
+
+onMounted(async () => {
+  limparAnexos();
+});
 </script>
 
 <template>
@@ -223,17 +290,29 @@ async function enviarComentario() {
           <label class="ml-2">Imagens do chamado:</label>
 
           <div class="mt-2 containerImg">
-            <PhotoProvider
-              v-for="img in state.imagensChamado"
-              :default-backdrop-opacity="0.8"
+            <div
+              v-for="(img, index) in state.imagensChamado"
+              :key="index"
+              class="image-wrapper"
             >
-              <PhotoConsumer :src="imgChamadoFormatado(img)">
-                <img
-                  :src="imgChamadoFormatado(img)"
-                  class="view-box img-miniatura"
-                />
-              </PhotoConsumer>
-            </PhotoProvider>
+              <PhotoProvider :default-backdrop-opacity="0.8">
+                <PhotoConsumer :src="imgChamadoFormatado(img)">
+                  <img
+                    :src="imgChamadoFormatado(img)"
+                    class="img-miniatura"
+                  />
+                </PhotoConsumer>
+              </PhotoProvider>
+              <v-btn
+                icon
+                size="24"
+                color="outline"
+                class="remove-icon"
+                @click="removerAnexo(img)"
+              >
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </div>
           </div>
         </div>
       </v-col>
@@ -274,21 +353,61 @@ async function enviarComentario() {
       ></v-textarea>
 
       <v-row>
-        <v-col cols="9">
+        <v-col cols="10">
+          <label>Anexar imagem</label>
+          <v-btn
+            class="ml-2"
+            icon
+            size="30px"
+            color="primary"
+            @click="selecionarAnexo"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+
           <v-file-input
+            id="fileInputModal"
+            style="display: none"
             v-model="stateModal.anexo"
             label="Anexos"
             variant="outlined"
+            multiple
             accept=".pdf, .jpg, .jpeg"
             density="compact"
             class="mt-2"
+            @change="visualizarPreviaAnexo"
           ></v-file-input>
+
+          <PhotoProvider
+            v-for="(file, index) in stateModal.previews"
+            :key="index"
+            :default-backdrop-opacity="0.8"
+          >
+            <PhotoConsumer :src="file">
+              <div class="preview-wrapper">
+                <img
+                  :src="file"
+                  class="view-box img-miniatura"
+                />
+                <v-btn
+                  icon
+                  style="margin-left: -20px; margin-top: -20px"
+                  size="20px"
+                  color="outline"
+                  class="remove-icon-btn"
+                  @click="removerAnexoPreview(index)"
+                >
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </div>
+            </PhotoConsumer>
+          </PhotoProvider>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           <v-btn
             color="primary"
             class="mt-2"
-            width="200px"
+            width="100px"
             @click="enviarComentario"
             :disabled="!stateModal.novoComentario.trim() && stateModal.anexo.length == 0"
             >Enviar</v-btn
@@ -309,9 +428,9 @@ async function enviarComentario() {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  align-items: center;
+  align-items: flex-start;
   justify-content: start;
-  max-height: 150px;
+  max-height: 200px;
   overflow-y: auto;
   padding: 8px;
 }
@@ -326,8 +445,23 @@ async function enviarComentario() {
   transition: transform 0.2s ease;
 }
 
+.image-wrapper {
+  position: relative;
+  width: 90px;
+  height: 90px;
+}
+
 .img-miniatura:hover {
   transform: scale(1.1);
+}
+
+.remove-icon {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
 }
 
 .detalhes-responsavel {
@@ -371,5 +505,15 @@ async function enviarComentario() {
 
 .modalDetalhes {
   font-size: 12px;
+}
+
+.preview-wrapper img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-left: 20px;
+  margin-bottom: -30px;
 }
 </style>

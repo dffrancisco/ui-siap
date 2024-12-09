@@ -77,6 +77,15 @@ const enviarComentario = async (param) => {
     return data;
 }
 
+const removerImagemChamado = async (param) => {
+    let { data } = await axios.post('http://www.reallatas.com.br/chamados/getFilesChamados.php', {
+        call: 'removerImagemChamado',
+        nomeImagem: param.nomeImagem,
+        cnpj: param.cnpj
+    });
+    return data;
+}
+
 export default {
     getChamados,
     verDetalhesChamado,
@@ -85,4 +94,5 @@ export default {
     getImgChamado,
     uploadAnexos,
     enviarComentario,
+    removerImagemChamado
 }

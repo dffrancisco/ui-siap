@@ -99,6 +99,31 @@ class Files
 
         echo json_encode($result);
     }
+
+    function removerImagemChamado($params)
+    {
+        // Normalizar o CNPJ para evitar caracteres indesejados
+        $cnpj = preg_replace('/[^0-9]/', '', $params['cnpj']);
+        $nomeImagem = $params['nomeImagem'];
+
+        // Diretório base para imagens
+        $dirCNPJ = './' . $cnpj . '/';
+
+        // Verificar se o arquivo existe
+        $filePath = $dirCNPJ . $nomeImagem;
+
+        if (!file_exists($filePath)) {
+            echo json_encode(['success' => false, 'msg' => 'O arquivo não foi encontrado.']);
+            return;
+        }
+
+        // Tentar excluir o arquivo
+        if (unlink($filePath)) {
+            echo json_encode(['success' => true, 'msg' => 'Imagem removida com sucesso.']);
+        } else {
+            echo json_encode(['success' => false, 'msg' => 'Falha ao excluir o arquivo.']);
+        }
+    }
 }
 
 // Identificar a `call` corretamente
@@ -118,6 +143,9 @@ if (method_exists($class, $call)) {
     if ($call === 'uploadImg') {
         // `uploadImg` usa `$_FILES` e `$_POST`
         $class->$call($_POST);
+    } elseif ($call === 'removerImagemChamado') {
+        // `removerImagemChamado` usa o corpo JSON
+        $class->$call($data);
     } else {
         // Para chamadas como `getImgChamado`, usamos o corpo JSON
         $class->$call($data);
