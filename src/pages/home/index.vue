@@ -301,6 +301,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/relatorioCurvaAbc')"
+              >Relatório Curva ABC
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/Bancos')"
               >Bancos
             </v-btn>
