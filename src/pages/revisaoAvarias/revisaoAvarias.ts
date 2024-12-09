@@ -1,4 +1,4 @@
-import { computed, reactive } from "vue";
+import { computed, reactive, watch } from "vue";
 import { iFiltro, iAvariaDestino, iAvaria, iFuncionario, iDadosPreencherAvaria } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceRevisaoAvarias from "./services/serviceRevisaoAvarias.service";
@@ -20,7 +20,7 @@ export const headersDataTable = [
         title: "Nº Fabricante | Produto",
         key: "NUM_FABRICANTE_PRODUTO",
         width: '30%',
-        sortable: true,
+        sortable: false,
         value: (item: iAvaria) => `${item.NUM_FABRICANTE} - ${item.DESC_PRODUTO}`
     },
     {
@@ -35,13 +35,13 @@ export const headersDataTable = [
         key: "FINALIZADO",
         width: '10%',
         align: 'center',
-        sortable: true,
+        sortable: false,
         value: (item: iAvaria) => item.FINALIZADO == 'S' ? 'Sim' : 'Não'
     },
     {
         title: "Destino",
         key: "DESTINO",
-        sortable: true,
+        sortable: false,
     },
     {
         title: "Ações",
@@ -210,7 +210,7 @@ export const actions = {
     async updatePage(newPage: number) {
         state.page = newPage
         await actions.getAvarias()
-    }
+    },
 }
 
 export const computeds = {
@@ -218,3 +218,10 @@ export const computeds = {
         return state.dbAvarias.filter(avaria => avaria.FINALIZADO === 'N')
     })
 }
+
+watch(
+    () => state.itemsPerPage,
+    () => {
+        actions.getAvarias();
+    }
+);
