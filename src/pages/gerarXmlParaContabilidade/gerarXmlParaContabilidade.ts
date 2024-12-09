@@ -7,15 +7,15 @@ import serviceGerarXmlParaContabilidade from "./services/gerarXmlParaContabilida
 import { iParamGerarXml } from "./interfaces";
 
 const ano = moment().year();
-const mes = moment().month() + 1;
+const mes = moment().month();
 
 export const meses = mesesToSelect;
 
 export const state = reactive({
-    optionSelect: "0",
+    optionSelect: "1",
     loading: false,
-    dataInicio: moment().startOf("month").format("YYYY-MM-DD"),
-    dataFim: moment().format("YYYY-MM-DD"),
+    dataInicio: moment().subtract(1, "month").startOf("month").format("YYYY-MM-DD"),
+    dataFim: moment().subtract(1, "month").endOf("month").format("YYYY-MM-DD"),
     mes: mes,
     ano: ano,
 });

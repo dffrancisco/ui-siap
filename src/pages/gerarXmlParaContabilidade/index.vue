@@ -111,7 +111,7 @@ import { actions, state, meses } from "./gerarXmlParaContabilidade";
             :loading="state.loading"
             @click="actions.validarInputs()"
           >
-            Gerar XML Para Contabilidade
+            Gerar XML
             <v-icon class="ml-2">mdi-content-save-all</v-icon>
           </v-btn>
         </v-col>
@@ -131,10 +131,3 @@ import { actions, state, meses } from "./gerarXmlParaContabilidade";
     </v-overlay>
   </v-container>
 </template>
-
-<style scoped>
-.v-btn {
-  width: 100%;
-  max-width: 280px;
-}
-</style>
