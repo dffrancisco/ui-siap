@@ -2,6 +2,11 @@
 import printJS from "print-js";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
+import svgDescarte from "../assets/descarte.svg";
+import svgDesconto from "../assets/desconto.svg";
+import svgDevolucaoGarantia from "../assets/devolucaoGarantia.svg";
+import svgLataVelha from "../assets/latavelha.svg";
+import svgSaldao from "../assets/saldao.svg";
 
 const emits = defineEmits(["closeModal"]);
 
@@ -37,7 +42,7 @@ const actions = {
     printJS({
       printable: container,
       type: "html",
-      scanStyles: false, // Garante que o estilo inline seja usado
+      scanStyles: false,
     });
 
     document.body.removeChild(container);
@@ -46,48 +51,77 @@ const actions = {
   },
 
   gerarEtiquetaHTML(posicao: number): string {
-    const etiquetaWidth = 99;
-    const etiquetaHeight = 55.8;
-    const margemTop = 0;
-    const margemLeft = 0;
-    const gapVertical = 8;
-    const gapHorizontal = 18;
+    // Ajustes nos tamanhos das etiquetas
+    const etiquetaWidth = 90; // Reduzido de 110 para 100
+    const etiquetaHeight = 53; // Reduzido de 60 para 50
+    const gapVertical = 2; // Aumentado de -8 para 5mm
+    const gapHorizontal = 10; // Aumentado de 4 para 8mm
 
     const etiquetasPorLinha = 2;
+
+    let top: number;
+    let left: number;
+
+    // Lógica específica para as posições 9 e 10
+
+    // Cálculo padrão para outras posições
     const row = Math.floor((posicao - 1) / etiquetasPorLinha);
     const col = (posicao - 1) % etiquetasPorLinha;
 
-    // Calcular top e left para posicionamento
-    const top = margemTop + row * (etiquetaHeight + gapVertical);
-    const left = margemLeft + col * (etiquetaWidth + gapHorizontal);
+    top = row * (etiquetaHeight + gapVertical);
+    left = col * (etiquetaWidth + gapHorizontal);
+
+    const conteudo = actions.conteudoEtiqueta();
 
     return `
-    <div
+    <div style="display: flex; position: relative">
+      <div
       style="
-        position: relative;
-        width: 210mm;
-        height: 297mm;
+        position: absolute;
+        top: ${top}mm;
+        left: ${left}mm;
+        width: ${etiquetaWidth}mm;
+        height: ${etiquetaHeight}mm;
+        padding: 0;
         box-sizing: border-box;
+        
       "
     >
-      <div
-        style="
-          position: absolute;
-          top: ${top}mm;
-          left: ${left}mm;
-          width: ${etiquetaWidth}mm;
-          height: ${etiquetaHeight}mm;
-          border: 2px solid blue; /* Destaca a etiqueta */
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 14px;
-        "
-      >
-        Etiqueta na posição ${posicao}
-      </div>
+      ${conteudo}
+    </div>
     </div>
   `;
+  },
+  conteudoEtiqueta() {
+    return `
+      <div style="display: flex; justify-content: space-between; margin-top: -14px">
+        <div style="display: flex; flex-direction: column; justify-content: end;">
+          <div style="display: flex; justify-content: center; width: 100%;">
+            <h1>AVARIA</h1>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: start; justify-content: end; gap: 8px; margin-top: -8px">
+            <div>
+              <strong>Direcionamento: </strong>
+              <span>Descarte</span>
+            </div>
+            <div>
+              <strong>Cód de Fabricação: </strong>
+              <span>AU808</span>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: center; align-items: end; flex-grow: 1;">
+          <img style="width: 100px;" src="${svgDescarte}">
+        </div>
+      </div>
+      <div>
+        <div style="max-width: 360px; margin-top: -10px">
+          <p style="text-align: justify;">
+            <strong>Desc. Avaria: </strong>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type a
+          </p>
+        </div>
+      </div>
+    `;
   },
 };
 </script>

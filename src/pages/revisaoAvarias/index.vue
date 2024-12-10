@@ -108,6 +108,16 @@ onMounted(async () => {
                 @click="actions.openModalRevisao(item)"
               >
               </v-icon>
+
+              <v-icon
+                v-if="item.FINALIZADO == 'S'"
+                size="large"
+                color="primary"
+                icon="mdi-eye"
+                title="Vizualizar"
+                @click="state.modalConfigurarImpressao = true"
+              >
+              </v-icon>
             </div>
           </template>
         </v-data-table-server>
