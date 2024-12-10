@@ -2,7 +2,8 @@ export interface iCargo {
     ID_CARGO: number,
     DESCRICAO: string,
     SALARIO: number,
-    DELETADO: string
+    DELETADO: string,
+    TIPO: string,
 }
 
 export interface iParamGetCargo {
