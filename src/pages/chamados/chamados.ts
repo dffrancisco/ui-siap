@@ -45,6 +45,9 @@ export const state = reactive(({
     keyJira: "",
     loginUsuario: "",
     previews: [] as string[],
+    anexoModal: [],
+    novoComentario: "",
+    previewsModal: [] as string[],
 }))
 
 export const actions = {
@@ -143,7 +146,16 @@ export const actions = {
         }
     },
 
+    limparStates() {
+        state.anexoModal = [];
+        state.previewsModal = [];
+        state.novoComentario = "";
+        state.anexos = [];
+        state.previews = [];
+    },
+
     async verDetalhesChamado(keyJira: string, descricao: string, solicitante: string, dataFormatada: string) {
+        actions.limparStates()
 
         try {
             state.loading = true
@@ -187,27 +199,35 @@ export const actions = {
     },
 
     selecionarAnexos() {
-        const fileInputElement = document.getElementById('fileInput');
+        const fileInputElement = document.getElementById("fileInput") as HTMLInputElement;
         fileInputElement.click();
     },
 
-    visualizarPreviaAnexo() {
-        state.anexos.forEach((file) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (e.target?.result) {
-                    state.previews.push(e.target.result.toString());
-                }
-            };
-            reader.readAsDataURL(file);
-        });
-    },
+    adicionarAnexo(event: Event) {
+        const fileInputElement = event.target as HTMLInputElement;
+        const novosArquivos = Array.from(fileInputElement.files || []);
 
+        novosArquivos.forEach((file) => {
+            if (!state.anexos.some((anexo) => anexo.name === file.name && anexo.size === file.size)) {
+                state.anexos.push(file);
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    if (e.target?.result) {
+                        state.previews.push(e.target.result.toString());
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        fileInputElement.value = "";
+    },
 
     removerAnexo(index: number) {
         state.anexos.splice(index, 1);
         state.previews.splice(index, 1);
     },
+
 
     async uploadAnexos(chaveJira: string, cnpj: string) {
         const files = state.anexos;

@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import { actions, state } from "../chamados";
 import { dataBrasil } from "@/ts/utils";
-import { computed, onMounted, reactive } from "vue";
+import { computed } from "vue";
 import serviceChamados from "../services/chamados.service";
 import Swal from "sweetalert2";
-
-const stateModal = reactive({
-  anexo: [],
-  novoComentario: "",
-  previews: [] as string[],
-});
 
 const prioridadeMappings = {
   Lowest: { label: "Baixíssima", icon: "mdi-arrow-down-bold" },
@@ -69,7 +63,7 @@ function imgChamadoFormatado(img: string) {
 }
 
 async function enviarComentario() {
-  if (!stateModal.novoComentario.trim() && (!stateModal.anexo || stateModal.anexo.length === 0)) {
+  if (!state.novoComentario.trim() && (!state.anexoModal || state.anexoModal.length === 0)) {
     alert("Por favor, envie um comentário ou anexe um arquivo.");
     return;
   }
@@ -80,18 +74,18 @@ async function enviarComentario() {
     const promises = [];
 
     // Envio do comentário
-    if (stateModal.novoComentario.trim()) {
+    if (state.novoComentario.trim()) {
       const param = {
         chaveJira: state.keyJira,
-        comentario: stateModal.novoComentario.trim(),
+        comentario: state.novoComentario.trim(),
         autor: state.loginUsuario,
       };
       promises.push(serviceChamados.enviarComentario(param));
     }
 
     // Envio dos anexos
-    if (stateModal.anexo && stateModal.anexo.length > 0) {
-      const files = stateModal.anexo;
+    if (state.anexoModal && state.anexoModal.length > 0) {
+      const files = state.anexoModal;
 
       const formData = new FormData();
       formData.append("call", "uploadImg");
@@ -147,10 +141,7 @@ async function enviarComentario() {
     });
   } finally {
     state.loading = false;
-    stateModal.novoComentario = "";
-    stateModal.anexo = [];
     state.pnModalDetalhes.close();
-    limparAnexos();
   }
 }
 
@@ -188,36 +179,36 @@ function removerAnexo(img: string) {
   });
 }
 
-function visualizarPreviaAnexo() {
-  stateModal.anexo.forEach((file) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (e.target?.result) {
-        stateModal.previews.push(e.target.result.toString());
-      }
-    };
-    reader.readAsDataURL(file);
+function adicionarAnexoModal(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const novosArquivos = Array.from(input.files || []);
+
+  novosArquivos.forEach((file) => {
+    if (!state.anexoModal.some((anexo) => anexo.name === file.name && anexo.size === file.size)) {
+      state.anexoModal.push(file);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          state.previewsModal.push(e.target.result.toString());
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   });
+
+  input.value = "";
 }
 
 function removerAnexoPreview(index: number) {
-  stateModal.anexo.splice(index, 1);
-  stateModal.previews.splice(index, 1);
+  state.anexoModal.splice(index, 1);
+  state.previewsModal.splice(index, 1);
 }
 
 function selecionarAnexo() {
   const file = document.getElementById("fileInputModal");
   file.click();
 }
-
-function limparAnexos() {
-  stateModal.anexo = [];
-  stateModal.previews = [];
-}
-
-onMounted(async () => {
-  limparAnexos();
-});
 </script>
 
 <template>
@@ -346,7 +337,7 @@ onMounted(async () => {
 
     <div class="novo-comentario mt-4">
       <v-textarea
-        v-model="stateModal.novoComentario"
+        v-model="state.novoComentario"
         outlined
         label="Escreva seu comentário"
         rows="2"
@@ -368,18 +359,14 @@ onMounted(async () => {
           <v-file-input
             id="fileInputModal"
             style="display: none"
-            v-model="stateModal.anexo"
-            label="Anexos"
-            variant="outlined"
-            multiple
             accept=".pdf, .jpg, .jpeg"
             density="compact"
-            class="mt-2"
-            @change="visualizarPreviaAnexo"
+            multiple
+            @change="adicionarAnexoModal"
           ></v-file-input>
 
           <PhotoProvider
-            v-for="(file, index) in stateModal.previews"
+            v-for="(file, index) in state.previewsModal"
             :key="index"
             :default-backdrop-opacity="0.8"
           >
@@ -409,7 +396,7 @@ onMounted(async () => {
             class="mt-2"
             width="100px"
             @click="enviarComentario"
-            :disabled="!stateModal.novoComentario.trim() && stateModal.anexo.length == 0"
+            :disabled="!state.novoComentario.trim() && state.anexoModal.length == 0"
             >Enviar</v-btn
           >
         </v-col>

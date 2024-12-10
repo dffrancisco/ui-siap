@@ -65,12 +65,11 @@ onMounted(async () => {
 
                 <v-file-input
                   id="fileInput"
-                  v-model="state.anexos"
                   class="hidden-file-input"
                   accept=".pdf, .jpg, .jpeg"
                   density="compact"
                   multiple
-                  @change="actions.visualizarPreviaAnexo"
+                  @change="actions.adicionarAnexo"
                 ></v-file-input>
 
                 <div class="image-preview-container">
@@ -89,8 +88,8 @@ onMounted(async () => {
                           icon
                           size="20px"
                           color="outline"
-                          @click="actions.removerAnexo(index)"
                           class="remove-icon-btn"
+                          @click="actions.removerAnexo(index)"
                         >
                           <v-icon>mdi-delete</v-icon>
                         </v-btn>
