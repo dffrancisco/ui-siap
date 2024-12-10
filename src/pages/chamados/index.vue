@@ -31,17 +31,26 @@ actions.begin();
 <template>
   <v-container class="containerChamados">
     <title>Cadastro de Chamados</title>
-    <v-card class="pa-5 cardChamado">
+    <v-card
+      style="width: 800px; margin: 0 auto"
+      class="pa-4"
+    >
       <h1 class="tituloChamados">Abertura de Chamados - CPD</h1>
       <span class="subtitle">
-        Preencha o formulário com as informações solicitadas para abertura de um
-        chamado:
+        Preencha o formulário com as informações solicitadas para abertura de um chamado:
       </span>
 
-      <div id="pnCampos" class="pnCampos">
+      <div
+        id="pnCampos"
+        class="pnCampos"
+      >
         <v-form>
           <v-row>
-            <v-col cols="12" sm="6" md="4">
+            <v-col
+              cols="12"
+              sm="6"
+              md="4"
+            >
               <span>Assunto</span>
               <select
                 v-model="state.assunto"
@@ -88,8 +97,9 @@ actions.begin();
             :items="state.chamados"
             :loading="state.loading"
             :search="state.search"
-            :height="300"
-            class="elevation-1"
+            fixed-header
+            :height="200"
+            id="tableChamados"
             item-value="ID_CHAMADO"
             @update:options="actions.getChamados"
           >
@@ -101,24 +111,25 @@ actions.begin();
                 density="compact"
                 icon="mdi-eye"
                 @click="
-                  actions.verDetalhesChamado(
-                    item.KEY_JIRA,
-                    item.DESCRICAO,
-                    item.SOLICITANTE,
-                    item.dataFormatada
-                  )
+                  actions.verDetalhesChamado(item.KEY_JIRA, item.DESCRICAO, item.SOLICITANTE, item.dataFormatada)
                 "
               ></v-btn>
             </template>
             <template #no-data>
-              <v-alert :value="true" icon="mdi-information">
+              <v-alert
+                :value="true"
+                icon="mdi-information"
+              >
                 Não há chamados disponíveis.
               </v-alert>
             </template>
           </v-data-table-server>
 
           <v-row>
-            <v-col cols="12" class="d-flex justify-end mt-5">
+            <v-col
+              cols="12"
+              class="d-flex justify-end"
+            >
               <v-btn
                 @click="actions.resetForm"
                 color="primary"
@@ -129,7 +140,7 @@ actions.begin();
                 @click="actions.submitForm"
                 class="btnEnviar"
                 color="primary"
-                :loading="state.loadingSalvar"
+                :loading="state.loading"
                 >Salvar</v-btn
               >
             </v-col>
@@ -141,14 +152,15 @@ actions.begin();
     <v-overlay
       :model-value="state.loading"
       class="align-center justify-center"
+      persistent
     >
       <v-progress-circular
         color="primary"
         indeterminate
         size="64"
-        persistent
       ></v-progress-circular>
     </v-overlay>
+    <div id="pnCodigoTela">chamados</div>
   </v-container>
 
   <div
@@ -159,18 +171,22 @@ actions.begin();
   </div>
 </template>
 
+<style>
+#tableChamados .v-data-table-footer {
+  max-height: 2px;
+  padding-top: 20px;
+  margin-right: 220px;
+}
+</style>
+
 <style scoped>
 .btnEnviar {
   margin-right: 10px;
   margin-left: 10px;
 }
 
-.cardChamado {
-  width: 700px;
-  margin: 0 auto;
-}
 .pnCampos {
-  margin-top: 25px;
+  margin-top: 5px;
 }
 
 .tituloChamados {
