@@ -14,6 +14,7 @@ export interface iCaixasAbertos {
     HORA_ABERTURA: string;
     HORA_FECHAMENTO: string;
     ID_ABERTURA_CAIXA: string;
+    COD_FUNCIONARIO: number;
     LOGIN: string;
     STATUS: number
 }
@@ -21,11 +22,15 @@ export interface iCaixasAbertos {
 export interface iGetDadosCaixa {
     mdc: iMdc | null;
     funcionarios: iFuncionarios[];
-    caixasAbertos: iCaixasAbertos[];
+    caixasEmAberto: iCaixasAbertos[];
 }
 
 export interface iParamsAbrirCaixa {
     COD_FUNCIONARIO: number;
     LOGIN: string;
     VALOR_TROCO: number;
+}
+
+export interface iParamFecharCaixa {
+    ID_ABERTURA_CAIXA: number;
 }
