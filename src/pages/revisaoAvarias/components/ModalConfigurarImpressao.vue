@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import printJS from "print-js";
 import Swal from "sweetalert2";
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import { iDadosToEtiqueta } from "../interfaces";
 import svgLataVelha from "../assets/lataVelha.svg";
 import svgDescarte from "../assets/descarte.svg";
@@ -19,16 +19,39 @@ const props = defineProps({
 const emits = defineEmits(["closeModal"]);
 
 const state = reactive({
-  posicaoSelecionado: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  posicaoSelecionado: [],
 });
 
 const actions = {
+  init() {
+    let qtd = props.dadosToEtiqueta.QTD;
+
+    for (let i = 1; i <= qtd; i++) {
+      state.posicaoSelecionado.push(i);
+    }
+  },
+
   closeModal() {
     emits("closeModal");
   },
 
   selecionarPosicao(posicao: number) {
-    state.posicaoSelecionado = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    if (
+      state.posicaoSelecionado.length == props.dadosToEtiqueta.QTD &&
+      !state.posicaoSelecionado.includes(posicao)
+    ) {
+      Swal.fire({
+        title: "Limite de posições selecionadas atingido.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    if (state.posicaoSelecionado.includes(posicao)) {
+      state.posicaoSelecionado = state.posicaoSelecionado.filter((p) => p != posicao);
+    } else {
+      state.posicaoSelecionado.push(posicao);
+    }
   },
 
   imprimirEtiquetas() {
@@ -142,6 +165,10 @@ const actions = {
   `;
   },
 };
+
+onMounted(() => {
+  actions.init();
+});
 </script>
 
 <template>
@@ -165,8 +192,8 @@ const actions = {
           v-for="i in 10"
           class="posicaoCard"
           :key="i"
+          :class="state.posicaoSelecionado.includes(i) ? 'posicaoSelecionado' : ''"
           @click="actions.selecionarPosicao(i)"
-          @dblclick="actions.imprimirEtiquetas"
         >
         </div>
       </div>
