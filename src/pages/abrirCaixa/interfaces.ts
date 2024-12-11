@@ -18,18 +18,14 @@ export interface iCaixasAbertos {
     STATUS: number
 }
 
-export interface iDadosAbrirCaixa {
+export interface iGetDadosCaixa {
     mdc: iMdc | null;
     funcionarios: iFuncionarios[];
     caixasAbertos: iCaixasAbertos[];
 }
 
-// <input
-// id="inputMeta"
-// :clearable="false"
-// v-model.lazy="state.inputValor"
-// :model-modifiers="{ number: true }"
-// v-money3="{ ...configVMoney, max: 1000000 }"
-// autofocus
-// @keydown.enter="abrirCaixa()"
-// />
+export interface iParamsAbrirCaixa {
+    COD_FUNCIONARIO: number;
+    LOGIN: string;
+    VALOR_TROCO: number;
+}

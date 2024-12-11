@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceAbrirCaixa from "./services/abrirCaixa.service";
-import { iCaixasAbertos, iFuncionarios, iMdc } from "./interfaces";
+import { iCaixasAbertos, iFuncionarios, iMdc, iParamsAbrirCaixa } from "./interfaces";
 
 export const state = reactive({
     loading: false,
@@ -44,6 +44,36 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao abrir o MDC"
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async abrirCaixa(codFuncionario: number, valorTroco: string) {
+        try {
+            state.loading = true;
+
+            let param: iParamsAbrirCaixa = {
+                COD_FUNCIONARIO: codFuncionario,
+                VALOR_TROCO: parseFloat(valorTroco),
+                LOGIN: state.funcionarios.find(f => f.COD_FUNCIONARIO === codFuncionario)?.LOGIN || ""
+            }
+
+            let caixaAberto = await serviceAbrirCaixa.abrirCaixa(param)
+            state.caixasAbertos = caixaAberto;
+
+            Swal.fire({
+                icon: "success",
+                title: "Caixa aberto com sucesso.",
+                showConfirmButton: false,
+                timer: 1000,
+            });
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao abrir o caixa"
             });
         } finally {
             state.loading = false;

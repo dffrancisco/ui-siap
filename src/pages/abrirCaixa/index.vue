@@ -71,6 +71,7 @@ onMounted(async () => {
       :funcionarios="state.funcionarios"
       :modalOpened="state.modalAbrirCaixaOpened"
       @closeModalAbrirCaixa="state.modalAbrirCaixaOpened = false"
+      @dadosAbrirCaixa.sync="actions.abrirCaixa"
     />
   </v-dialog>
 </template>

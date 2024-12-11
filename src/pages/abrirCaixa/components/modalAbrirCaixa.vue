@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { iFuncionarios } from "../interfaces";
 import { configVMoney } from "../../../constants/constants";
 import Swal from "sweetalert2";
+
+const inputFuncionarios = ref();
+const inputTroco = ref();
 
 const props = defineProps<{
   funcionarios: iFuncionarios[];
@@ -25,8 +28,17 @@ const abrirCaixa = () => {
     });
     return;
   }
-  console.log("Abrindo caixa para:", state.funcionarioSelecionado);
-  // Lógica para abrir o caixa usando state.funcionarioSelecionado
+
+  if (!state.inputValor) {
+    Swal.fire({
+      icon: "warning",
+      text: "Informe o valor do troco!",
+    });
+    return;
+  }
+
+  emit("dadosAbrirCaixa", state.funcionarioSelecionado, state.inputValor);
+  cancelar();
 };
 
 const cancelar = () => {
@@ -34,6 +46,14 @@ const cancelar = () => {
   state.funcionarioSelecionado = null;
   state.inputValor = "";
 };
+
+const focarNoInputTroco = () => {
+  inputTroco.value.focus();
+};
+
+onMounted(async () => {
+  inputFuncionarios.value.focus();
+});
 </script>
 
 <template>
@@ -50,8 +70,10 @@ const cancelar = () => {
             :items="props.funcionarios"
             item-title="LOGIN"
             item-value="COD_FUNCIONARIO"
+            ref="inputFuncionarios"
             class="mt-4 obr rounded-lg"
             v-model="state.funcionarioSelecionado"
+            @keydown.enter="focarNoInputTroco"
           ></v-autocomplete>
         </v-col>
 
@@ -61,6 +83,7 @@ const cancelar = () => {
             <input
               id="inputMeta"
               class="obr rounded-lg"
+              ref="inputTroco"
               :clearable="false"
               v-model.lazy="state.inputValor"
               :model-modifiers="{ number: true }"
@@ -113,7 +136,6 @@ const cancelar = () => {
   border-radius: 4px;
   padding: 6px;
   font-size: 16px;
-  /* width: 250px; */
   transition: border-color 0.3s;
 }
 
@@ -133,11 +155,10 @@ const cancelar = () => {
 }
 
 .modal-container {
-  background-color: #f2f2f2;
+  display: flex;
   border-radius: 8px !important;
   margin-bottom: 150px;
   margin-left: 25%;
-  /* max-width: 520px; */
   height: 220px;
   border: 2px solid rgba(0, 0, 0, 0.261);
 }
