@@ -168,7 +168,10 @@ onMounted(async () => {
       persistent
       :retain-focus="false"
     >
-      <ModalConfigurarImpressao @closeModal="state.modalConfigurarImpressao = false" />
+      <ModalConfigurarImpressao
+        :dadosToEtiqueta="state.dadosToEtiqueta"
+        @closeModal="state.modalConfigurarImpressao = false"
+      />
     </v-dialog>
 
     <div id="pnCodigoTela">revisaoAvarias</div>

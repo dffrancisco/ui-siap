@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, reactive } from "vue";
-import { iAvaria, iAvariaDestino, iFuncionario } from "../interfaces";
+import { iAvaria, iAvariaDestino, iDadosToEtiqueta, iFuncionario } from "../interfaces";
 import serviceRevisaoAvarias from "../services/serviceRevisaoAvarias.service";
 import Swal from "sweetalert2";
 import moment from "moment";
@@ -43,6 +43,7 @@ const state = reactive({
   loading: false,
   imgs: <string[]>[],
   cnpjEmpresa: "",
+  dadosToEtiqueta: <iDadosToEtiqueta>null,
 });
 
 const actions = {
@@ -146,6 +147,7 @@ const actions = {
           DESCRICAO_AVARIA: state.dbAvaria.DESCRICAO_AVARIA,
           ORIGEM_AVARIA: state.dbAvaria.ORIGEM_AVARIA,
           QTD: state.dbAvaria.QTD,
+          NUM_FABRICANTE: state.dbAvaria.NUM_FABRICANTE,
         });
       }
     } catch (error) {

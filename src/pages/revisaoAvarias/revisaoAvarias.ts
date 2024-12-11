@@ -1,5 +1,5 @@
 import { computed, reactive, watch } from "vue";
-import { iFiltro, iAvariaDestino, iAvaria, iFuncionario, iDadosPreencherAvaria } from "./interfaces";
+import { iFiltro, iAvariaDestino, iAvaria, iFuncionario, iDadosPreencherAvaria, iDadosToEtiqueta } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceRevisaoAvarias from "./services/serviceRevisaoAvarias.service";
 import { msgConfirm } from "@/ts/message";
@@ -63,7 +63,8 @@ export const state = reactive({
     totalItems: 0,
     itemsPerPage: 30,
     page: 1,
-    modalConfigurarImpressao: false
+    modalConfigurarImpressao: false,
+    dadosToEtiqueta: <iDadosToEtiqueta>null
 })
 
 export const actions = {
@@ -140,7 +141,13 @@ export const actions = {
 
         state.modalRevisaoAvariasOpen = false
 
-        state.modalConfigurarImpressao = true
+        actions.openModalConfigurarImpressao({
+            DESCRICAO_AVARIA: dadosAvariaPreencher.DESCRICAO_AVARIA,
+            ID_AVARIA_DESTINO: dadosAvariaPreencher.ID_AVARIA_DESTINO,
+            NUM_FABRICANTE: dadosAvariaPreencher.NUM_FABRICANTE,
+            QTD: dadosAvariaPreencher.QTD,
+            DESTINO: destinoLocalizado.DESCRICAO
+        })
     },
 
     async btnDeletarAvaria(idAvaria: number) {
@@ -211,6 +218,11 @@ export const actions = {
         state.page = newPage
         await actions.getAvarias()
     },
+
+    openModalConfigurarImpressao(dadosToEtiqueta: iDadosToEtiqueta) {
+        state.dadosToEtiqueta = dadosToEtiqueta;
+        state.modalConfigurarImpressao = true;
+    }
 }
 
 export const computeds = {

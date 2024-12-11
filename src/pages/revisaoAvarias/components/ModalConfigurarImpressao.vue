@@ -2,16 +2,24 @@
 import printJS from "print-js";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
+import { iDadosToEtiqueta } from "../interfaces";
+import svgLataVelha from "../assets/lataVelha.svg";
 import svgDescarte from "../assets/descarte.svg";
-import svgDesconto from "../assets/desconto.svg";
 import svgDevolucaoGarantia from "../assets/devolucaoGarantia.svg";
-import svgLataVelha from "../assets/latavelha.svg";
 import svgSaldao from "../assets/saldao.svg";
+import svgDesconto from "../assets/desconto.svg";
+
+const props = defineProps({
+  dadosToEtiqueta: {
+    type: Object as () => iDadosToEtiqueta,
+    required: true,
+  },
+});
 
 const emits = defineEmits(["closeModal"]);
 
 const state = reactive({
-  posicaoSelecionado: 0,
+  posicaoSelecionado: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 });
 
 const actions = {
@@ -20,23 +28,24 @@ const actions = {
   },
 
   selecionarPosicao(posicao: number) {
-    state.posicaoSelecionado = posicao;
+    state.posicaoSelecionado = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   },
 
-  imprimirEtiqueta() {
-    if (!state.posicaoSelecionado) {
+  imprimirEtiquetas() {
+    if (!state.posicaoSelecionado || state.posicaoSelecionado.length === 0) {
       Swal.fire({
-        title: "Selecionar posição",
-        text: "Por favor, escolha a posição da etiqueta para impressão do comprovante.",
+        title: "Selecionar posições",
+        text: "Por favor, escolha as posições das etiquetas para impressão do comprovante.",
         icon: "warning",
       });
       return;
     }
 
-    const etiquetaHTML = actions.gerarEtiquetaHTML(state.posicaoSelecionado);
+    // Gerar o HTML consolidado com todas as etiquetas
+    const etiquetasHTML = state.posicaoSelecionado.map((posicao) => actions.gerarEtiquetaHTML(posicao)).join(""); // Junta todas as etiquetas em um único HTML
 
     const container = document.createElement("div");
-    container.innerHTML = etiquetaHTML;
+    container.innerHTML = etiquetasHTML;
     document.body.appendChild(container);
 
     printJS({
@@ -51,77 +60,86 @@ const actions = {
   },
 
   gerarEtiquetaHTML(posicao: number): string {
-    // Ajustes nos tamanhos das etiquetas
-    const etiquetaWidth = 90; // Reduzido de 110 para 100
-    const etiquetaHeight = 53; // Reduzido de 60 para 50
-    const gapVertical = 2; // Aumentado de -8 para 5mm
-    const gapHorizontal = 10; // Aumentado de 4 para 8mm
+    const etiquetaWidth = 90;
+    const etiquetaHeight = 53;
+    const gapVertical = 3;
+    const gapHorizontal = 13;
 
     const etiquetasPorLinha = 2;
 
-    let top: number;
-    let left: number;
-
-    // Lógica específica para as posições 9 e 10
-
-    // Cálculo padrão para outras posições
     const row = Math.floor((posicao - 1) / etiquetasPorLinha);
     const col = (posicao - 1) % etiquetasPorLinha;
 
-    top = row * (etiquetaHeight + gapVertical);
-    left = col * (etiquetaWidth + gapHorizontal);
+    const top = row * (etiquetaHeight + gapVertical);
+    const left = col * (etiquetaWidth + gapHorizontal);
 
-    const conteudo = actions.conteudoEtiqueta();
+    let imgSvg;
+
+    switch (props.dadosToEtiqueta.ID_AVARIA_DESTINO) {
+      case 1:
+        imgSvg = svgDesconto;
+        break;
+      case 2:
+        imgSvg = svgLataVelha;
+        break;
+      case 3:
+        imgSvg = svgDescarte;
+        break;
+      case 4:
+        imgSvg = svgDevolucaoGarantia;
+        break;
+      case 5:
+        imgSvg = svgSaldao;
+        break;
+    }
+
+    const conteudo = actions.conteudoEtiqueta(imgSvg);
 
     return `
     <div style="display: flex; position: relative">
       <div
-      style="
-        position: absolute;
-        top: ${top}mm;
-        left: ${left}mm;
-        width: ${etiquetaWidth}mm;
-        height: ${etiquetaHeight}mm;
-        padding: 0;
-        box-sizing: border-box;
-        
-      "
-    >
-      ${conteudo}
-    </div>
+        style="
+          position: absolute;
+          top: ${top}mm;
+          left: ${left}mm;
+          width: ${etiquetaWidth}mm;
+          height: ${etiquetaHeight}mm;
+          padding: 0;
+          box-sizing: border-box;
+        "
+      >
+        ${conteudo}
+      </div>
     </div>
   `;
   },
-  conteudoEtiqueta() {
+
+  conteudoEtiqueta(imgSvg: any) {
     return `
-      <div style="display: flex; justify-content: space-between; margin-top: -14px">
-        <div style="display: flex; flex-direction: column; justify-content: end;">
-          <div style="display: flex; justify-content: center; width: 100%;">
-            <h1>AVARIA</h1>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: start; justify-content: end; gap: 8px; margin-top: -8px">
-            <div>
-              <strong>Direcionamento: </strong>
-              <span>Descarte</span>
-            </div>
-            <div>
-              <strong>Cód de Fabricação: </strong>
-              <span>AU808</span>
-            </div>
+    <div style="display: flex; justify-content: space-between; margin-top: -14px">
+      <div style="display: flex; flex-direction: column; justify-content: end;">
+        <div style="display: flex; justify-content: center; width: 100%;">
+          <h3>${props.dadosToEtiqueta.DESTINO}</h3>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: end; gap: 8px; margin-top: -8px">
+          <div>
+            <strong>Cód Fab: </strong>
+            <span>${props.dadosToEtiqueta.NUM_FABRICANTE}</span>
           </div>
         </div>
-        <div style="display: flex; justify-content: center; align-items: end; flex-grow: 1;">
-          <img style="width: 100px;" src="${svgDescarte}">
-        </div>
       </div>
-      <div>
-        <div style="max-width: 360px; margin-top: -10px">
-          <p style="text-align: justify;">
-            <strong>Desc. Avaria: </strong>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type a
-          </p>
-        </div>
+      <div style="display: flex; justify-content: center; align-items: end; flex-grow: 1; margin-top: 16px">
+        <img style="width: 100px;" src="${imgSvg}">
       </div>
-    `;
+    </div>
+    <div>
+      <div style="max-width: 360px; margin-top: -10px">
+        <p style="text-align: justify;">
+          <strong>Desc. Avaria: </strong>${props.dadosToEtiqueta.DESCRICAO_AVARIA}
+        </p>
+      </div>
+    </div>
+  `;
   },
 };
 </script>
@@ -147,9 +165,8 @@ const actions = {
           v-for="i in 10"
           class="posicaoCard"
           :key="i"
-          :class="{ posicaoSelecionado: i == state.posicaoSelecionado }"
           @click="actions.selecionarPosicao(i)"
-          @dblclick="actions.imprimirEtiqueta"
+          @dblclick="actions.imprimirEtiquetas"
         >
         </div>
       </div>
@@ -163,7 +180,7 @@ const actions = {
         >
         <v-btn
           color="primary"
-          @click="actions.imprimirEtiqueta"
+          @click="actions.imprimirEtiquetas"
           >imprimir</v-btn
         >
       </div>
