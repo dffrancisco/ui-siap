@@ -25,11 +25,11 @@ onUnmounted(() => {
     <title>Cargos</title>
     <v-card
       class="pa-5"
-      style="width: 700px; margin: 0 auto"
+      style="max-width: 900px; margin: 0 auto"
     >
       <div id="camposGridCargos">
         <v-row>
-          <v-col cols="9">
+          <v-col cols="6">
             <span>Descrição</span>
             <input
               type="text"
@@ -39,6 +39,23 @@ onUnmounted(() => {
               id="DESCRICAO"
               maxlength="30"
             />
+          </v-col>
+          <v-col cols="4">
+            <span>Tipo de Cargo</span>
+            <select
+              v-model="state.dbCargo.TIPO"
+              name="TIPO"
+              id="TIPO"
+              class="obr ss"
+            >
+              <option
+                v-for="(label, value) in state.tiposCargos"
+                :key="value"
+                :value="value"
+              >
+                {{ label }}
+              </option>
+            </select>
           </v-col>
           <v-col>
             <span>Salário</span>

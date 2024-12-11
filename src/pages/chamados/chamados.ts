@@ -12,10 +12,9 @@ export const state = reactive(({
     descricao: (""),
     anexos: ([]),
     chamados: <iChamados[]>[],
-    loadingSalvar: false,
     loading: false,
     totalItems: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 15,
     search: (""),
     detalhes: <iVerDetalhesChamadoResponse>{},
     pnModalDetalhes: <iModalCreate>(<unknown>null),
@@ -59,7 +58,7 @@ export const actions = {
         };
 
         try {
-            state.loadingSalvar = true;
+            state.loading = true;
 
             await serviceChamados.insertChamado(param)
 
@@ -76,7 +75,7 @@ export const actions = {
                 text: 'Erro ao enviar os dados'
             })
         } finally {
-            state.loadingSalvar = false;
+            state.loading = false;
         }
     },
 
