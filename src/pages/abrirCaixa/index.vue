@@ -64,7 +64,8 @@ onMounted(async () => {
 
   <v-dialog
     v-model="state.modalAbrirCaixaOpened"
-    max-width="900"
+    max-width="800"
+    style="margin-right: 150px"
   >
     <ModalAbrirCaixa
       :funcionarios="state.funcionarios"
