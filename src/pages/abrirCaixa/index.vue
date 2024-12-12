@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { actions, state } from "./abrirCaixa";
+import { actions, state, funcionariosDisponiveis } from "./abrirCaixa";
 import ModalAbrirCaixa from "./components/modalAbrirCaixa.vue";
 import utils from "@/ts/utils";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
@@ -20,7 +20,6 @@ onMounted(async () => {
         class="abrirMdc"
         v-if="!state.mdc"
       >
-        <!-- Botão para abrir MDC quando não há dados -->
         <v-btn
           color="primary"
           @click="actions.abrirMDC"
@@ -30,7 +29,6 @@ onMounted(async () => {
       </div>
 
       <div v-else>
-        <!-- Informações de OPEN_CLOSE quando existem dados -->
         <v-row>
           <v-col>
             <p class="mdcAberto"
@@ -58,47 +56,56 @@ onMounted(async () => {
         <v-card
           v-for="funcionario in state.caixasAbertos"
           :key="funcionario.ID_ABERTURA_CAIXA"
+          :class="{ funcionario_caixa_fechado: funcionario.STATUS === 2 }"
           class="funcionarios_caixa_card"
         >
-          <div class="funcionarios_caixa_card_usuario">
-            <!-- Avatar com a foto do funcionário -->
-            <div class="funcionario_card_avatar">
-              <v-avatar
-                size="60px"
-                color="primary"
-                :title="funcionario.LOGIN"
-                class="funcionarios_caixa_avatar"
-              >
-                <v-img
-                  :src="actions.getFotoFuncionarioURL(funcionario.CPF)"
-                  aspect-ratio="1"
-                  cover
-                ></v-img>
-              </v-avatar>
-            </div>
-
-            <!-- Dados do funcionário -->
-            <div class="funcionarios_caixa_dados">
-              <p class="funcionarios_caixa_card_nome"> {{ funcionario.LOGIN }} </p>
-              <p class="funcionarios_caixa_card_hora">
-                Aberto: {{ utils.formatHoraSemOsSegundos(funcionario.HORA_ABERTURA) }}
-              </p>
-            </div>
-
-            <div>
-              <button>
-                <v-icon
-                  size="25px"
-                  class="ml-5"
-                  color="white"
-                  title="Fechar Caixa"
+          <v-row>
+            <v-col cols="2">
+              <div class="funcionario_card_avatar">
+                <v-avatar
+                  size="60px"
+                  color="primary"
+                  :title="funcionario.LOGIN"
+                  class="funcionarios_caixa_avatar"
+                >
+                  <v-img
+                    :src="actions.getFotoFuncionarioURL(funcionario.CPF)"
+                    aspect-ratio="1"
+                    cover
+                  ></v-img>
+                </v-avatar> </div
+            ></v-col>
+            <v-col cols="7"
+              ><div class="funcionarios_caixa_dados">
+                <p class="funcionarios_caixa_card_nome"> {{ funcionario.LOGIN }} </p>
+                <p class="funcionarios_caixa_card_hora">
+                  Caixa Aberto: {{ utils.formatHoraSemOsSegundos(funcionario.HORA_ABERTURA) }}
+                </p>
+                <p
+                  v-if="funcionario.STATUS == 2"
+                  class="funcionarios_caixa_card_status"
+                >
+                  Caixa Fechado: {{ utils.formatHoraSemOsSegundos(funcionario.HORA_FECHAMENTO) }}
+                </p>
+              </div></v-col
+            >
+            <v-col cols="3"
+              ><div v-if="funcionario.STATUS == 1">
+                <button
+                  class="circle-icon-button"
                   @click="actions.fecharCaixa(funcionario)"
                 >
-                  mdi-lock
-                </v-icon>
-              </button>
-            </div>
-          </div>
+                  <v-icon
+                    size="25px"
+                    color="white"
+                    title="Fechar Caixa"
+                  >
+                    mdi-lock
+                  </v-icon>
+                </button>
+              </div></v-col
+            >
+          </v-row>
         </v-card>
       </div>
 
@@ -107,7 +114,7 @@ onMounted(async () => {
         v-else
         class="funcionarios_caixa_vazia"
       >
-        <p>Nenhum caixa aberto no momento.</p>
+        <p v-if="state.mdc != null">Nenhum caixa aberto no momento.</p>
       </div>
     </v-card>
     <v-overlay
@@ -130,7 +137,7 @@ onMounted(async () => {
     style="margin-right: 150px"
   >
     <ModalAbrirCaixa
-      :funcionarios="state.funcionarios"
+      :funcionarios="funcionariosDisponiveis"
       :modalOpened="state.modalAbrirCaixaOpened"
       @closeModalAbrirCaixa="state.modalAbrirCaixaOpened = false"
       @dadosAbrirCaixa.sync="actions.abrirCaixa"
@@ -158,15 +165,19 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  width: 840px;
+  max-width: 840px;
   padding: 10px;
 }
 
+.funcionario_caixa_fechado {
+  border: 1px solid #434343 !important;
+  background: linear-gradient(-11deg, rgb(134, 143, 150), rgb(89, 97, 100)) !important;
+}
+
 .funcionarios_caixa_card {
-  width: 260px;
-  /* background-color: #d0eaffa7; */
+  width: 400px;
   border: 1px solid #2196f3;
-  background: linear-gradient(90deg, rgb(128, 208, 199), rgb(19, 84, 122));
+  background: linear-gradient(90deg, rgb(19, 84, 122), rgb(128, 208, 199));
   padding: 16px;
   display: flex;
   flex-direction: row;
@@ -181,22 +192,28 @@ onMounted(async () => {
   gap: 8px;
 }
 
+.funcionarios_caixa_card_status {
+  font-size: 14px;
+  color: #fffafa;
+  margin-top: 4px;
+}
+
 .funcionarios_caixa_dados {
   display: flex;
   flex-direction: column;
+  margin-left: 20px;
 }
 
 .funcionarios_caixa_card_nome {
   font-weight: bold;
   font-size: 14px;
   color: #fffafa;
-  margin: 0;
+  padding-bottom: 5px;
 }
 
 .funcionarios_caixa_card_hora {
   font-size: 14px;
   color: #fffafa;
-  margin: 0;
 }
 
 .funcionarios_caixa_vazia {
@@ -208,5 +225,25 @@ onMounted(async () => {
 
 .funcionarios_caixa_avatar {
   border: 1px solid #003d6f;
+}
+
+.circle-icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #3c8dbc;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.circle-icon-button:hover {
+  background-color: #1a5c82;
+}
+
+.circle-icon-button v-icon {
+  color: white;
 }
 </style>

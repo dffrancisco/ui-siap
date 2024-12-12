@@ -29,7 +29,7 @@ const abrirCaixa = () => {
     return;
   }
 
-  if (!state.inputValor) {
+  if (state.inputValor == "0,00") {
     Swal.fire({
       icon: "warning",
       text: "Informe o valor do troco!",

@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import serviceAbrirCaixa from "./services/abrirCaixa.service";
 import { iCaixasAbertos, iFuncionarios, iMdc, iParamFecharCaixa, iParamsAbrirCaixa } from "./interfaces";
 import xAuthManager from "@/plugins/xAuthManager";
@@ -12,19 +12,21 @@ export const state = reactive({
     modalAbrirCaixaOpened: false,
 });
 
+export const funcionariosDisponiveis = computed(() =>
+    state.funcionarios.filter(funcionario => {
+        const temCaixaAberto = state.caixasAbertos.some(
+            caixa => caixa.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO && caixa.STATUS === 1
+        );
+        return !temCaixaAberto;
+    })
+);
+
 export const actions = {
     async init() {
         actions.getDadosAbrirCaixa()
     },
 
     abrirModal() {
-        // Capturar os COD_FUNCIONARIOS de state.caixasAbertos
-        const funcionariosEmCaixa = state.caixasAbertos.map(caixa => caixa.COD_FUNCIONARIO);
-
-        // Filtrar os funcionários para remover os que já estão associados a uma caixa
-        state.funcionarios = state.funcionarios.filter(funcionario =>
-            !funcionariosEmCaixa.includes(funcionario.COD_FUNCIONARIO)
-        );
         state.modalAbrirCaixaOpened = true
     },
 
@@ -72,8 +74,9 @@ export const actions = {
                 LOGIN: state.funcionarios.find(f => f.COD_FUNCIONARIO === codFuncionario)?.LOGIN || ""
             }
 
-            let caixaAberto = await serviceAbrirCaixa.abrirCaixa(param);
-            state.caixasAbertos = caixaAberto;
+            let caixasAberto = await serviceAbrirCaixa.abrirCaixa(param);
+            state.caixasAbertos = caixasAberto;
+
             Swal.fire({
                 icon: "success",
                 title: "Caixa aberto com sucesso.",
@@ -110,8 +113,22 @@ export const actions = {
             try {
                 state.loading = true;
 
-                let fecharCaixa = await serviceAbrirCaixa.fecharCaixa(param);
-                state.caixasAbertos = fecharCaixa;
+                let caixasAbertoAtualizados = await serviceAbrirCaixa.fecharCaixa(param);
+                state.caixasAbertos = caixasAbertoAtualizados;
+
+                // Reintroduzir o funcionário na lista de funcionários disponíveis
+                const funcionarioFechado = state.funcionarios.find(
+                    f => f.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO
+                );
+                if (!funcionarioFechado) {
+                    const retornarFuncionarioParaState = {
+                        COD_FUNCIONARIO: funcionario.COD_FUNCIONARIO,
+                        LOGIN: funcionario.LOGIN
+                    };
+                    state.funcionarios.push(retornarFuncionarioParaState);
+                }
+
+
                 Swal.fire({
                     icon: "success",
                     title: "Caixa fechado com sucesso.",
