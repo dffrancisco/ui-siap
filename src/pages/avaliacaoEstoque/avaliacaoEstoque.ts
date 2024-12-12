@@ -40,24 +40,20 @@ export const actions = {
     },
 
     validarFiltros() {
-        const { ano, mes } = state;
-
-
-        if (!ano || ano > ano) {
+        if (state.ano === "" || state.ano > ano.toString()) {
             Swal.fire({
                 icon: "warning",
                 text: "Insira um ano válido para continuar"
             });
-            return;
+            return
         }
 
-
-        if (!mes || (ano === ano && mes > mes)) {
+        if (state.mes > mes) {
             Swal.fire({
                 icon: "warning",
                 text: "Insira um mês válido para continuar"
             });
-            return;
+            return
         }
 
 
@@ -71,13 +67,12 @@ export const actions = {
             const params: iParamsRelatorio = {
                 mes: state.mes,
                 ano: state.ano,
-                page: state.page,
-                itemsPerPage: state.itemsPerPage,
+
             };
 
             const response: iResponseRelatorio = await serviceAvaliacaoEstoque.getDadosParaRelatorio(params);
             state.dadosRelatorio = response.dadosRelatorio || [];
-            state.totalItems = response.totalDadosRelatorio?.[0]?.TOTAL || 0;
+
 
             if (!state.dadosRelatorio) {
                 Swal.fire({

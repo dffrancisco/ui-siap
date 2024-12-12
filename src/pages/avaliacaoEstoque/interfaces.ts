@@ -3,8 +3,7 @@ export interface iParamsRelatorio {
     ano: number | string;
     avaliadores?: number[];
     avaliados?: number[];
-    page: number;
-    itemsPerPage: number;
+
 }
 
 export interface iDadosAvaliacao {
@@ -17,12 +16,10 @@ export interface iDadosAvaliacao {
     ST_SITUACAO: string;
 }
 
-export interface iCount {
-    TOTAL: number;
-}
+
 
 
 export interface iResponseRelatorio {
     dadosRelatorio: iDadosAvaliacao[];
-    totalDadosRelatorio: iCount[];
+
 }

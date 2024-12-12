@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { state, actions, meses } from "./avaliacaoEstoque";
-import { mesesToSelect } from "@/constants/constants";
 
 onMounted(() => {
   actions.init();
@@ -57,7 +56,6 @@ onMounted(() => {
       <v-data-table
         id="tabela"
         class="mt-4 pt-5"
-        v-model:items-per-page="state.itemsPerPage"
         :items="state.dadosRelatorio"
         :headers="state.headers"
         :items-length="state.totalItems"
@@ -65,14 +63,6 @@ onMounted(() => {
         fixed-header
         :row-props="actions.getClassCorLinha"
       >
-        <template #no-data>
-          <v-alert
-            :value="true"
-            class="text-center"
-          >
-            Não há dados disponíveis.
-          </v-alert>
-        </template>
       </v-data-table>
 
       <div class="d-flex justify-end pt-5">
