@@ -10,6 +10,11 @@ import utils from "@/ts/utils";
 export const state = reactive({
     gridCargos: <ixGridCreate>{},
     dbCargo: <iCargo>{},
+    tiposCargos: {
+        M: "Montadores e Mecânicos",
+        V: "Vendedores",
+        O: "Outros"
+    },
 
     pnSearch: false,
     edtSearch: <HTMLInputElement>{},
@@ -30,14 +35,15 @@ export const actions = {
     criarGrids() {
         state.gridCargos = new xGridV2.create({
             el: '#gridCargos',
-            height: 350,
+            height: 300,
             count: true,
             enter: function () {
                 //@ts-ignore
                 document.querySelector('button[state="update"]').click();
             },
             columns: {
-                DESCRICAO: { dataField: 'DESCRICAO', width: "80%" },
+                DESCRICAO: { dataField: 'DESCRICAO', width: "40%" },
+                'TIPO DE CARGO': { dataField: 'TIPO', width: "30%", compare: "tipoCargo" },
                 SALARIO: { dataField: 'SALARIO', render: utils.formatValor },
             },
             query: {
@@ -107,6 +113,19 @@ export const actions = {
                         }
                     }
                 }
+            },
+            compare: {
+                tipoCargo: (r) => {
+                    if (r.TIPO == 'V') {
+                        return 'Vendedores';
+                    }
+                    if (r.TIPO == 'O') {
+                        return 'Outros';
+                    }
+                    if (r.TIPO == 'M') {
+                        return 'Montadores e Mecânicos';
+                    }
+                },
             }
 
         })
