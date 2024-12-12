@@ -70,7 +70,7 @@ export const actions = {
 
             let param: iParamsAbrirCaixa = {
                 COD_FUNCIONARIO: codFuncionario,
-                VALOR_TROCO: parseFloat(valorTroco),
+                VALOR_TROCO: parseFloat(valorTroco.replace(',', '.')),
                 LOGIN: state.funcionarios.find(f => f.COD_FUNCIONARIO === codFuncionario)?.LOGIN || ""
             }
 
