@@ -171,7 +171,11 @@ export const actions = {
             }
 
         } catch (error) {
-
+            Swal.fire({
+                icon: 'error',
+                title: 'Ocorreu um erro ao deletar a avaria.',
+                text: error.message
+            })
         } finally {
             state.loading = false
         }
