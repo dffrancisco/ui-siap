@@ -19,7 +19,7 @@ onMounted(async () => {
       <div class="d-flex flex-column ga-2">
         <div class="d-flex ga-4">
           <v-row>
-            <v-col cols="6">
+            <v-col cols="5">
               <v-text-field
                 v-model="state.filtros.NUM_FABRICANTE_PRODUTO"
                 label="Nº Fabricante / Produto"
@@ -27,7 +27,7 @@ onMounted(async () => {
               >
               </v-text-field>
             </v-col>
-            <v-col cols="2">
+            <v-col cols="3">
               <v-select
                 v-model="state.filtros.REVISADA"
                 label="Revisada"
