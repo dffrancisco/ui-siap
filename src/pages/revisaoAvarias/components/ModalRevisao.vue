@@ -216,6 +216,7 @@ onMounted(async () => {
               item-value="value"
               item-title="label"
               label="Origem*"
+              :readonly="state.dbAvaria.FINALIZADO == 'S'"
               :clearable="false"
             ></v-select>
           </v-col>
