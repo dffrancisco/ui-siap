@@ -28,7 +28,7 @@ export const headersDataTable = [
         key: "NOME_FUNCIONARIO_IDENTIFICOU",
         width: '20%',
         align: 'left',
-        sortable: true,
+        sortable: false,
     },
     {
         title: "Revisada",

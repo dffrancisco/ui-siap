@@ -74,6 +74,7 @@ onMounted(async () => {
           :headers="headersDataTable"
           :items-length="state.totalItems"
           height="330"
+          fixed-header
           :items="state.dbAvarias"
           @update:page="actions.updatePage"
         >
