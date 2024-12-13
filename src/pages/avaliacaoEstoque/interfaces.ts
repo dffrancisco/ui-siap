@@ -1,9 +1,8 @@
 export interface iParamsRelatorio {
     mes: number;
-    ano: number | string;
+    ano: number | null;
     avaliadores?: number[];
     avaliados?: number[];
-
 }
 
 export interface iDadosAvaliacao {
@@ -15,9 +14,6 @@ export interface iDadosAvaliacao {
     AVALIADOR: string;
     ST_SITUACAO: string;
 }
-
-
-
 
 export interface iResponseRelatorio {
     dadosRelatorio: iDadosAvaliacao[];

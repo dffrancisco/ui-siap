@@ -1,5 +1,5 @@
 import axios from "axios";
-import { iParamsRelatorio, iDadosAvaliacao, iResponseRelatorio } from "../interfaces";
+import { iParamsRelatorio, iResponseRelatorio } from "../interfaces";
 
 const caminho = 'siap/avaliacaoEstoque'
 
