@@ -14,11 +14,10 @@ const mes = moment().month() + 1;
 export const state = reactive({
     loading: false,
     mes: mes,
-    ano: ano || "",
+    ano: ano || null,
     dadosRelatorio: <iDadosAvaliacao[]>[],
-    totalItems: 0,
-    itemsPerPage: 10,
-    page: 1,
+
+
     headers: <any>[
         { title: "Nome do Avaliador", key: "AVALIADOR", sortable: true, align: "left" },
         { title: "Nome do Estoquista", key: "AVALIADO", sortable: true, align: "left" },
@@ -40,18 +39,12 @@ export const actions = {
     },
 
     validarFiltros() {
-        if (state.ano === "" || state.ano > ano.toString()) {
-            Swal.fire({
-                icon: "warning",
-                text: "Insira um ano válido para continuar"
-            });
-            return
-        }
+        let dataFormatada = moment({ year: state.ano, month: state.mes - 1, day: 1 })
 
-        if (state.mes > mes) {
+        if (dataFormatada.isAfter(moment())) {
             Swal.fire({
                 icon: "warning",
-                text: "Insira um mês válido para continuar"
+                text: "Insira uma data válida para continuar"
             });
             return
         }
@@ -104,10 +97,9 @@ export const actions = {
             const relatorioAjustado = actions.formatarDadosImpressao(state.dadosRelatorio);
 
             const columns: iColumnPrint[] = [
-                { key: 'ID_AVALIACAO', label: 'ID Avaliação', width: '10%', align: 'left' },
                 { key: 'DT_AVALIACAO', label: 'Data Avaliação', width: '15%', align: 'left' },
                 { key: 'COR_CORREDOR', label: 'Cor Corredor', width: '10%', align: 'left' },
-                { key: 'NT_PONTUACAO', label: 'Pontuação', width: '10%', align: 'left' },
+                { key: 'NT_PONTUACAO', label: 'Pontuação', width: '10%', align: 'center' },
                 { key: 'AVALIADO', label: 'Avaliado', width: '15%', align: 'left' },
                 { key: 'AVALIADOR', label: 'Avaliador', width: '15%', align: 'left' },
                 { key: 'ST_SITUACAO', label: 'Situação', width: '15%', align: 'left' },
@@ -135,8 +127,9 @@ export const actions = {
         }));
     },
 
-    getClassCorLinha(dados: iDadosAvaliacao) {
-        return { class: dados.ID_AVALIACAO % 2 === 0 ? 'cor-zebrada-1' : 'cor-zebrada-2' };
+    getClassCorLinha(dados: any) {
+        let classe = dados.index % 2 == 0 ? 'cor-zebrada-1' : 'cor-zebrada-2'
+        return { class: classe }
     },
 
 };

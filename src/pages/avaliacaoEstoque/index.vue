@@ -13,8 +13,14 @@ onMounted(() => {
       class="pa-5 ma-auto"
       style="max-width: 900px"
     >
-      <v-row>
-        <v-col cols="4">
+      <v-row
+        class="d-flex justify-end align-center"
+        no-gutters
+      >
+        <v-col
+          cols="3"
+          class="me-3"
+        >
           <v-select
             id="mes"
             label="Mês"
@@ -27,7 +33,7 @@ onMounted(() => {
           ></v-select>
         </v-col>
 
-        <v-col cols="4">
+        <v-col cols="2">
           <v-text-field
             id="ano"
             class="ano"
@@ -40,7 +46,7 @@ onMounted(() => {
 
         <v-col
           cols="1"
-          class="d-flex align-center"
+          class="d-flex justify-end"
         >
           <v-btn
             color="primary"
@@ -58,7 +64,6 @@ onMounted(() => {
         class="mt-4 pt-5"
         :items="state.dadosRelatorio"
         :headers="state.headers"
-        :items-length="state.totalItems"
         height="350px"
         fixed-header
         :row-props="actions.getClassCorLinha"
@@ -81,8 +86,9 @@ onMounted(() => {
     <div
       id="pnCodigoTela"
       class="mt-3"
-      >Avaliação_Estoque</div
     >
+      Avaliação_Estoque
+    </div>
 
     <v-overlay
       :model-value="state.loading"
@@ -109,11 +115,5 @@ onMounted(() => {
 
 .cor-zebrada-1 {
   background-color: #f0f0f0;
-}
-
-.btnPrint {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: -10px;
 }
 </style>
