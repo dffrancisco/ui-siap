@@ -1,3 +1,4 @@
+import utils, { formatValorUSA } from '@/ts/utils';
 import Swal from "sweetalert2";
 import { computed, reactive } from "vue";
 import serviceAbrirCaixa from "./services/abrirCaixa.service";
@@ -70,7 +71,7 @@ export const actions = {
 
             let param: iParamsAbrirCaixa = {
                 COD_FUNCIONARIO: codFuncionario,
-                VALOR_TROCO: parseFloat(valorTroco.replace(',', '.')),
+                VALOR_TROCO: utils.formatValorUSA(valorTroco),
                 LOGIN: state.funcionarios.find(f => f.COD_FUNCIONARIO === codFuncionario)?.LOGIN || ""
             }
 

@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from "vue";
 import { iFuncionarios } from "../interfaces";
 import { configVMoney } from "../../../constants/constants";
 import Swal from "sweetalert2";
+import utils from "@/ts/utils";
 
 const inputFuncionarios = ref();
 const inputTroco = ref();
@@ -20,35 +21,35 @@ const state = reactive({
   inputValor: "",
 });
 
-const abrirCaixa = () => {
-  if (!state.funcionarioSelecionado) {
-    Swal.fire({
-      icon: "warning",
-      text: "Selecione um funcionário antes de abrir o caixa!",
-    });
-    return;
-  }
+const actions = {
+  abrirCaixa() {
+    if (!state.funcionarioSelecionado) {
+      Swal.fire({
+        icon: "warning",
+        text: "Selecione um funcionário antes de abrir o caixa!",
+      });
+      return;
+    }
 
-  if (state.inputValor == "0,00") {
-    Swal.fire({
-      icon: "warning",
-      text: "Informe o valor do troco!",
-    });
-    return;
-  }
+    if (utils.formatValorUSA(state.inputValor) == 0.0) {
+      Swal.fire({
+        icon: "warning",
+        text: "Informe o valor do troco!",
+      });
+      return;
+    }
 
-  emit("dadosAbrirCaixa", state.funcionarioSelecionado, state.inputValor);
-  cancelar();
-};
-
-const cancelar = () => {
-  emit("closeModalAbrirCaixa");
-  state.funcionarioSelecionado = null;
-  state.inputValor = "";
-};
-
-const focarNoInputTroco = () => {
-  inputTroco.value.focus();
+    emit("dadosAbrirCaixa", state.funcionarioSelecionado, state.inputValor);
+    actions.cancelar();
+  },
+  cancelar() {
+    emit("closeModalAbrirCaixa");
+    state.funcionarioSelecionado = null;
+    state.inputValor = "";
+  },
+  focarNoInputTroco() {
+    inputTroco.value.focus();
+  },
 };
 
 onMounted(async () => {
@@ -73,7 +74,7 @@ onMounted(async () => {
             ref="inputFuncionarios"
             class="mt-4 obr rounded-lg"
             v-model="state.funcionarioSelecionado"
-            @keydown.enter="focarNoInputTroco"
+            @keydown.enter="actions.focarNoInputTroco"
           ></v-autocomplete>
         </v-col>
 
@@ -89,7 +90,7 @@ onMounted(async () => {
               :model-modifiers="{ number: true }"
               v-money3="{ ...configVMoney, max: 1000000 }"
               autofocus
-              @keydown.enter="abrirCaixa()"
+              @keydown.enter="actions.abrirCaixa()"
             />
           </div>
         </v-col>
@@ -101,7 +102,7 @@ onMounted(async () => {
             class="btnCancelar"
             size="large"
             color="outline"
-            @click="cancelar"
+            @click="actions.cancelar"
             >Cancelar</v-btn
           >
           <v-btn
@@ -109,7 +110,7 @@ onMounted(async () => {
             class="btnSalvar"
             color="primary"
             size="large"
-            @click="abrirCaixa"
+            @click="actions.abrirCaixa"
             >Salvar</v-btn
           >
         </v-row>

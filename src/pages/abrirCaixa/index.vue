@@ -13,7 +13,7 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      :max-width="1000"
+      :max-width="850"
       class="ma-auto pa-4"
     >
       <div
@@ -175,7 +175,7 @@ onMounted(async () => {
 }
 
 .funcionarios_caixa_card {
-  width: 400px;
+  width: 390px;
   border: 1px solid #2196f3;
   background: linear-gradient(90deg, rgb(19, 84, 122), rgb(128, 208, 199));
   padding: 16px;
