@@ -83,9 +83,9 @@ const actions = {
       return;
     }
 
-    if (state.dbAvaria.QTD > 9999) {
+    if (state.dbAvaria.QTD > 10) {
       Swal.fire({
-        title: "A quantidade de produtos não pode ser maior que 9999.",
+        title: "A quantidade de produtos não pode ser maior que 10.",
         icon: "warning",
       });
       return;
