@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados } from "./interfaces";
-import { dataBrasil } from "@/ts/utils";
+import utils, { dataBrasil } from "@/ts/utils";
 
 export const state = reactive(({
     solicitante: (""),
@@ -250,7 +250,7 @@ export const actions = {
             const redimensionados = await Promise.all(
                 files.map(async (file) => {
                     if (file.type.startsWith("image/")) {
-                        return await actions.redimensionarImagem(file, 500);
+                        return await utils.redimensionarImagem(file, 500);
                     }
                     return file;
                 })
@@ -279,51 +279,6 @@ export const actions = {
             console.error("Erro ao fazer update do chamado: " + error);
         }
     },
-
-    async redimensionarImagem(file: File, maxSizeKB: number): Promise<File> {
-        const maxSizeBytes = maxSizeKB * 1024;
-
-        if (file.size <= maxSizeBytes) {
-            return file;
-        }
-
-        const img = new Image();
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-        return new Promise<File>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                img.src = reader.result as string;
-            };
-            reader.onerror = reject;
-
-            img.onload = () => {
-                const ratio = Math.sqrt(maxSizeBytes / file.size);
-                canvas.width = img.width * ratio;
-                canvas.height = img.height * ratio;
-
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                canvas.toBlob(
-                    (blob) => {
-                        if (blob) {
-                            const newFile = new File([blob], file.name, {
-                                type: file.type,
-                            });
-                            resolve(newFile);
-                        } else {
-                            reject(new Error("Erro ao criar Blob da imagem redimensionada."));
-                        }
-                    },
-                    file.type,
-                    0.9
-                );
-            };
-            img.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
 }
 
 function showValidationError(message: string) {

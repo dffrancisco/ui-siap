@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { actions, state } from "../chamados";
-import { dataBrasil } from "@/ts/utils";
+import utils, { dataBrasil } from "@/ts/utils";
 import { computed } from "vue";
 import serviceChamados from "../services/chamados.service";
 import Swal from "sweetalert2";
@@ -96,7 +96,7 @@ async function enviarComentario() {
       const redimensionados = await Promise.all(
         files.map(async (file) => {
           if (file.type.startsWith("image/")) {
-            return await actions.redimensionarImagem(file, 500);
+            return await utils.redimensionarImagem(file, 500);
           }
           return file;
         })
