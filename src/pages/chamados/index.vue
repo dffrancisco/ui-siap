@@ -80,16 +80,26 @@ onMounted(async () => {
                   >
                     <PhotoConsumer :src="file">
                       <div class="preview-wrapper">
-                        <img
-                          :src="file"
-                          class="view-box img-miniatura"
-                        />
+                        <template v-if="state.anexos[index]?.type === 'application/pdf'">
+                          <img
+                            src="./assets/pdf-svgrepo-com.svg"
+                            class="view-box img-miniatura"
+                            alt="PDF"
+                          />
+                        </template>
+                        <template v-else>
+                          <img
+                            :src="file"
+                            class="view-box img-miniatura"
+                            alt="Preview"
+                          />
+                        </template>
                         <v-btn
                           icon
                           size="20px"
                           color="outline"
                           class="remove-icon-btn"
-                          @click="actions.removerAnexo(index)"
+                          @click.stop="actions.removerAnexo(index)"
                         >
                           <v-icon>mdi-delete</v-icon>
                         </v-btn>
@@ -254,6 +264,7 @@ onMounted(async () => {
 .preview-wrapper img {
   width: 70px;
   height: 60px;
+  cursor: pointer;
   object-fit: cover;
   border-radius: 4px;
   border: 1px solid #ccc;

@@ -288,10 +288,20 @@ function selecionarAnexo() {
             >
               <PhotoProvider :default-backdrop-opacity="0.8">
                 <PhotoConsumer :src="imgChamadoFormatado(img)">
-                  <img
-                    :src="imgChamadoFormatado(img)"
-                    class="img-miniatura"
-                  />
+                  <template v-if="img.endsWith('.pdf')">
+                    <img
+                      src="../assets/pdf-svgrepo-com.svg"
+                      class="img-miniatura"
+                      alt="PDF"
+                    />
+                  </template>
+                  <template v-else>
+                    <img
+                      :src="imgChamadoFormatado(img)"
+                      class="img-miniatura"
+                      alt="Preview"
+                    />
+                  </template>
                 </PhotoConsumer>
               </PhotoProvider>
               <v-btn
@@ -372,17 +382,27 @@ function selecionarAnexo() {
           >
             <PhotoConsumer :src="file">
               <div class="preview-wrapper">
-                <img
-                  :src="file"
-                  class="view-box img-miniatura"
-                />
+                <template v-if="state.anexoModal[index]?.type === 'application/pdf'">
+                  <img
+                    src="../assets/pdf-svgrepo-com.svg"
+                    class="view-box img-miniatura"
+                    alt="PDF"
+                  />
+                </template>
+                <template v-else>
+                  <img
+                    :src="file"
+                    class="view-box img-miniatura"
+                    alt="Preview"
+                  />
+                </template>
                 <v-btn
                   icon
                   style="margin-left: -20px; margin-top: -20px"
                   size="20px"
                   color="outline"
                   class="remove-icon-btn"
-                  @click="removerAnexoPreview(index)"
+                  @click.stop="removerAnexoPreview(index)"
                 >
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>

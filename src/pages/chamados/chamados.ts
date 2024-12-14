@@ -40,7 +40,7 @@ export const state = reactive(({
     ],
     detalhes: <iVerDetalhesChamadoResponse>{},
     pnModalDetalhes: <iModalCreate>(<unknown>null),
-    imagensChamado: [] as string[],
+    imagensChamado: [] as any[],
     cnpj: "",
     keyJira: "",
     loginUsuario: "",
