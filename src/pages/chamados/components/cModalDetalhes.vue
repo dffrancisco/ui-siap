@@ -286,33 +286,48 @@ function selecionarAnexo() {
               :key="index"
               class="image-wrapper"
             >
-              <PhotoProvider :default-backdrop-opacity="0.8">
-                <PhotoConsumer :src="imgChamadoFormatado(img)">
-                  <template v-if="img.endsWith('.pdf')">
-                    <img
-                      src="../assets/pdf-svgrepo-com.svg"
-                      class="img-miniatura"
-                      alt="PDF"
-                    />
-                  </template>
-                  <template v-else>
-                    <img
-                      :src="imgChamadoFormatado(img)"
-                      class="img-miniatura"
-                      alt="Preview"
-                    />
-                  </template>
-                </PhotoConsumer>
-              </PhotoProvider>
-              <v-btn
-                icon
-                size="24"
-                color="outline"
-                class="remove-icon"
-                @click="removerAnexo(img)"
-              >
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
+              <template v-if="img.endsWith('.pdf')">
+                <!-- Ícone de PDF sem funcionalidade de visualização -->
+                <div class="preview-wrapper">
+                  <img
+                    src="../assets/pdf-svgrepo-com.svg"
+                    class="img-miniatura"
+                    alt="PDF"
+                  />
+                  <v-btn
+                    icon
+                    size="24"
+                    color="outline"
+                    class="remove-icon"
+                    @click.stop="removerAnexo(img)"
+                  >
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </div>
+              </template>
+              <template v-else>
+                <!-- Para outros arquivos, utilizar PhotoConsumer -->
+                <PhotoProvider :default-backdrop-opacity="0.8">
+                  <PhotoConsumer :src="imgChamadoFormatado(img)">
+                    <div class="preview-wrapper">
+                      <img
+                        :src="imgChamadoFormatado(img)"
+                        class="img-miniatura"
+                        alt="Preview"
+                      />
+                      <v-btn
+                        icon
+                        size="24"
+                        color="outline"
+                        class="remove-icon"
+                        @click.stop="removerAnexo(img)"
+                      >
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
+                    </div>
+                  </PhotoConsumer>
+                </PhotoProvider>
+              </template>
             </div>
           </div>
         </div>
@@ -354,7 +369,10 @@ function selecionarAnexo() {
       ></v-textarea>
 
       <v-row>
-        <v-col cols="10">
+        <v-col
+          cols="10"
+          class="pa-2"
+        >
           <label>Anexar imagem</label>
           <v-btn
             class="ml-2"
@@ -375,14 +393,15 @@ function selecionarAnexo() {
             @change="adicionarAnexoModal"
           ></v-file-input>
 
-          <PhotoProvider
-            v-for="(file, index) in state.previewsModal"
-            :key="index"
-            :default-backdrop-opacity="0.8"
-          >
-            <PhotoConsumer :src="file">
+          <div style="display: flex">
+            <div
+              v-for="(file, index) in state.previewsModal"
+              :key="index"
+              class="ml-3 mt-2"
+            >
               <div class="preview-wrapper">
                 <template v-if="state.anexoModal[index]?.type === 'application/pdf'">
+                  <!-- Ícone de PDF, sem visualização -->
                   <img
                     src="../assets/pdf-svgrepo-com.svg"
                     class="view-box img-miniatura"
@@ -390,15 +409,20 @@ function selecionarAnexo() {
                   />
                 </template>
                 <template v-else>
-                  <img
-                    :src="file"
-                    class="view-box img-miniatura"
-                    alt="Preview"
-                  />
+                  <!-- Imagens com visualização -->
+                  <PhotoProvider :default-backdrop-opacity="0.8">
+                    <PhotoConsumer :src="file">
+                      <img
+                        :src="file"
+                        class="view-box img-miniatura"
+                        alt="Preview"
+                      />
+                    </PhotoConsumer>
+                  </PhotoProvider>
                 </template>
                 <v-btn
                   icon
-                  style="margin-left: -20px; margin-top: -20px"
+                  style="margin-left: -25px; margin-bottom: 80px"
                   size="20px"
                   color="outline"
                   class="remove-icon-btn"
@@ -407,8 +431,8 @@ function selecionarAnexo() {
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </div>
-            </PhotoConsumer>
-          </PhotoProvider>
+            </div>
+          </div>
         </v-col>
         <v-col cols="2">
           <v-btn
@@ -434,7 +458,7 @@ function selecionarAnexo() {
 .containerImg {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
   align-items: flex-start;
   justify-content: start;
   max-height: 200px;
@@ -515,12 +539,15 @@ function selecionarAnexo() {
 }
 
 .preview-wrapper img {
-  width: 60px;
-  height: 60px;
+  width: 90px;
+  height: 90px;
   object-fit: cover;
   border-radius: 4px;
   border: 1px solid #ccc;
-  margin-left: 20px;
   margin-bottom: -30px;
+}
+
+.preview-wrapper img:hover {
+  border-color: #ff4081;
 }
 </style>

@@ -78,22 +78,13 @@ onMounted(async () => {
                     :key="index"
                     :default-backdrop-opacity="0.8"
                   >
-                    <PhotoConsumer :src="file">
+                    <template v-if="state.anexos[index]?.type === 'application/pdf'">
                       <div class="preview-wrapper">
-                        <template v-if="state.anexos[index]?.type === 'application/pdf'">
-                          <img
-                            src="./assets/pdf-svgrepo-com.svg"
-                            class="view-box img-miniatura"
-                            alt="PDF"
-                          />
-                        </template>
-                        <template v-else>
-                          <img
-                            :src="file"
-                            class="view-box img-miniatura"
-                            alt="Preview"
-                          />
-                        </template>
+                        <img
+                          src="./assets/pdf-svgrepo-com.svg"
+                          class="view-box img-miniatura"
+                          alt="PDF"
+                        />
                         <v-btn
                           icon
                           size="20px"
@@ -104,7 +95,27 @@ onMounted(async () => {
                           <v-icon>mdi-delete</v-icon>
                         </v-btn>
                       </div>
-                    </PhotoConsumer>
+                    </template>
+                    <template v-else>
+                      <PhotoConsumer :src="file">
+                        <div class="preview-wrapper">
+                          <img
+                            :src="file"
+                            class="view-box img-miniatura"
+                            alt="Preview"
+                          />
+                          <v-btn
+                            icon
+                            size="20px"
+                            color="outline"
+                            class="remove-icon-btn"
+                            @click.stop="actions.removerAnexo(index)"
+                          >
+                            <v-icon>mdi-delete</v-icon>
+                          </v-btn>
+                        </div>
+                      </PhotoConsumer>
+                    </template>
                   </PhotoProvider>
                 </div>
               </div>
