@@ -175,7 +175,7 @@ onMounted(async () => {
 }
 
 .funcionarios_caixa_card {
-  width: 390px;
+  width: 388px;
   border: 1px solid #2196f3;
   background: linear-gradient(90deg, rgb(19, 84, 122), rgb(128, 208, 199));
   padding: 16px;
