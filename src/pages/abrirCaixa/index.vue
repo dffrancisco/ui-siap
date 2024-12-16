@@ -164,9 +164,12 @@ onMounted(async () => {
 .funcionarios_caixa {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   gap: 16px;
   max-width: 840px;
   padding: 10px;
+  overflow: auto;
+  max-height: 450px;
 }
 
 .funcionario_caixa_fechado {
@@ -175,7 +178,7 @@ onMounted(async () => {
 }
 
 .funcionarios_caixa_card {
-  width: 388px;
+  width: 382px;
   border: 1px solid #2196f3;
   background: linear-gradient(90deg, rgb(19, 84, 122), rgb(128, 208, 199));
   padding: 16px;
