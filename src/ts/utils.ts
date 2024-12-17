@@ -609,6 +609,14 @@ export const formatHora = (isoString: string): string => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
+export const formatHoraSemOsSegundos = (isoString: string): string => {
+  const date = new Date(isoString);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${hours}:${minutes}`;
+};
+
 export const base64_decode = (data) => {
   var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
   var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,
@@ -1073,5 +1081,6 @@ export default {
   getErrorMessage,
   formatHora,
   msgConfirmSemCodigo,
+  formatHoraSemOsSegundos,
   redimensionarImagem
 };
