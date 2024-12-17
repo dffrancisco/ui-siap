@@ -69,7 +69,7 @@ onMounted(async () => {
           <v-autocomplete
             label="Funcionário"
             :items="props.funcionarios"
-            item-title="LOGIN"
+            item-title="LOGIN_COM_CODIGO"
             item-value="COD_FUNCIONARIO"
             ref="inputFuncionarios"
             class="mt-4 obr rounded-lg"
