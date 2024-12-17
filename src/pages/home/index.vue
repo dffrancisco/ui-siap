@@ -320,8 +320,19 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/avaliacaoEstoque')"
-              >Avaliação Estoque</v-btn
-            >
+              >Avaliação Estoque</v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/consultaCliente')"
+              >Consulta Cliente</v-btn>
+
+      <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/gerarXmlParaContabilidade')"
+              >Gerar XML para Contabilidade
+            </v-btn>
+
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/consultaCliente')"
@@ -332,6 +343,12 @@ import login from "../login/login";
               class="mr-4 mb-4"
               @click="router.push('/cliente')"
               >Cliente</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/abrirCaixa')"
+              >Abrir Caixa</v-btn
             >
 
             <v-btn

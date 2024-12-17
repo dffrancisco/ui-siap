@@ -1,39 +1,19 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { actions, state } from "./chamados";
 import CModalDetalhes from "./components/cModalDetalhes.vue";
 
-const headers = [
-  {
-    title: "Assunto",
-    key: "ASSUNTO",
-    sortable: true,
-  },
-  {
-    title: "Solicitante",
-    key: "SOLICITANTE",
-    sortable: true,
-  },
-  {
-    title: "Data",
-    key: "dataFormatada",
-    sortable: true,
-  },
-  {
-    title: "Ação",
-    key: "ACAO",
-    sortable: false,
-  },
-];
-
-actions.begin();
+onMounted(async () => {
+  actions.init();
+});
 </script>
 
 <template>
   <v-container class="containerChamados">
     <title>Cadastro de Chamados</title>
     <v-card
-      style="width: 800px; margin: 0 auto"
-      class="pa-4"
+      :max-width="1000"
+      class="ma-auto pa-4"
     >
       <h1 class="tituloChamados">Abertura de Chamados - CPD</h1>
       <span class="subtitle">
@@ -46,29 +26,103 @@ actions.begin();
       >
         <v-form>
           <v-row>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-            >
-              <span>Assunto</span>
-              <select
+            <v-col cols="6">
+              <v-select
                 v-model="state.assunto"
-                id="assunto"
-                class="obr ss"
-                required
-              >
-                <option value="">Selecionar Assunto</option>
-                <option value="SISTEMA">Sistema</option>
-                <option value="EQUIPAMENTO">Equipamento</option>
-                <option value="REDE">Rede</option>
-                <option value="TELEFONIA">Telefonia</option>
-                <option value="ALARME">Alarme</option>
-                <option value="CAMERA">Câmera</option>
-                <option value="ELETRICA">Elétrica</option>
-                <option value="DESIGN MARKETING">Design / Marketing</option>
-              </select>
+                class="obr text-uppercase rounded"
+                :items="[
+                  { text: 'Sistema', value: 'SISTEMA' },
+                  { text: 'Equipamento', value: 'EQUIPAMENTO' },
+                  { text: 'Rede', value: 'REDE' },
+                  { text: 'Telefonia', value: 'TELEFONIA' },
+                  { text: 'Alarme', value: 'ALARME' },
+                  { text: 'Câmera', value: 'EQUICAMERAPAMENTO' },
+                  { text: 'Elétrica', value: 'ELETRICA' },
+                  { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
+                ]"
+                item-title="text"
+                item-value="value"
+                label="Assunto"
+                density="compact"
+                :clearable="false"
+              ></v-select>
             </v-col>
+            <v-col cols="6">
+              <div class="custom-file-input">
+                <label
+                  @click="actions.selecionarAnexos"
+                  class="file-label"
+                  >Anexar imagem</label
+                >
+                <v-btn
+                  icon
+                  size="30px"
+                  color="primary"
+                  @click="actions.selecionarAnexos"
+                >
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+
+                <v-file-input
+                  id="fileInput"
+                  class="hidden-file-input"
+                  accept=".pdf, .jpg, .jpeg"
+                  density="compact"
+                  multiple
+                  @change="actions.adicionarAnexo"
+                ></v-file-input>
+
+                <div class="image-preview-container">
+                  <PhotoProvider
+                    v-for="(file, index) in state.previews"
+                    :key="index"
+                    :default-backdrop-opacity="0.8"
+                  >
+                    <template v-if="state.anexos[index]?.type === 'application/pdf'">
+                      <div class="preview-wrapper">
+                        <img
+                          src="./assets/pdf-svgrepo-com.svg"
+                          class="view-box img-miniatura"
+                          alt="PDF"
+                        />
+                        <v-btn
+                          icon
+                          size="20px"
+                          color="outline"
+                          class="remove-icon-btn"
+                          @click.stop="actions.removerAnexo(index)"
+                        >
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                      </div>
+                    </template>
+                    <template v-else>
+                      <PhotoConsumer :src="file">
+                        <div class="preview-wrapper">
+                          <img
+                            :src="file"
+                            class="view-box img-miniatura"
+                            alt="Preview"
+                          />
+                          <v-btn
+                            icon
+                            size="20px"
+                            color="outline"
+                            class="remove-icon-btn"
+                            @click.stop="actions.removerAnexo(index)"
+                          >
+                            <v-icon>mdi-delete</v-icon>
+                          </v-btn>
+                        </div>
+                      </PhotoConsumer>
+                    </template>
+                  </PhotoProvider>
+                </div>
+              </div>
+            </v-col>
+          </v-row>
+
+          <v-row>
             <v-col cols="12">
               <v-textarea
                 v-model="state.descricao"
@@ -80,24 +134,17 @@ actions.begin();
                 maxlength="500"
               ></v-textarea>
             </v-col>
-            <v-col cols="12">
-              <v-file-input
-                v-if="false"
-                v-model="state.anexos"
-                label="Anexos"
-                multiple
-              ></v-file-input>
-            </v-col>
           </v-row>
 
           <v-data-table-server
             v-model:itemsPerPage="state.itemsPerPage"
-            :headers="headers"
+            :headers="state.headers"
             :items-length="state.totalItems"
             :items="state.chamados"
             :loading="state.loading"
             :search="state.search"
             fixed-header
+            class="mt-4"
             :height="200"
             id="tableChamados"
             item-value="ID_CHAMADO"
@@ -114,14 +161,6 @@ actions.begin();
                   actions.verDetalhesChamado(item.KEY_JIRA, item.DESCRICAO, item.SOLICITANTE, item.dataFormatada)
                 "
               ></v-btn>
-            </template>
-            <template #no-data>
-              <v-alert
-                :value="true"
-                icon="mdi-information"
-              >
-                Não há chamados disponíveis.
-              </v-alert>
             </template>
           </v-data-table-server>
 
@@ -198,6 +237,7 @@ actions.begin();
 
 .subtitle {
   font-size: 16px;
+  margin-bottom: 20px;
   text-align: center;
   align-items: center;
   display: flex;
@@ -209,5 +249,68 @@ actions.begin();
     margin: 0 auto;
     margin-top: 20px;
   }
+}
+.custom-file-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.image-preview-container {
+  display: flex;
+  gap: 10px;
+  margin-top: -15px;
+  padding-left: 5px;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  max-height: 100px;
+  justify-content: flex-start;
+}
+
+.preview-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.preview-wrapper img {
+  width: 70px;
+  height: 60px;
+  cursor: pointer;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.remove-icon-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 50%;
+  padding: 4px;
+  z-index: 10;
+}
+
+.v-btn.remove-icon-btn {
+  padding: 0;
+  min-width: 20px;
+  height: 20px;
+}
+
+.preview-wrapper img {
+  border: 2px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+.preview-wrapper img:hover {
+  border-color: #ff4081;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.file-label {
+  font-size: 14px;
 }
 </style>
