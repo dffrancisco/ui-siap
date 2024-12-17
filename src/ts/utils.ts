@@ -609,6 +609,14 @@ export const formatHora = (isoString: string): string => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
+export const formatHoraSemOsSegundos = (isoString: string): string => {
+  const date = new Date(isoString);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${hours}:${minutes}`;
+};
+
 export const base64_decode = (data) => {
   var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
   var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,
@@ -928,6 +936,119 @@ export const gerarPlanilhaComCabecalho = async (columns: iColumnPrint[], data: i
   saveAs(blob, `${fileName}.xlsx`);
 };
 
+export const redimensionarImagem = async (file: File, maxSizeKB: number): Promise<File> => {
+  const maxSizeBytes = maxSizeKB * 1024;
+
+  // Verifica se o tamanho já está abaixo do limite
+  if (file.size <= maxSizeBytes) {
+    return file;
+  }
+
+  const img = new Image();
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+
+  return new Promise<File>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.src = reader.result as string;
+    };
+    reader.onerror = reject;
+
+    img.onload = () => {
+      // Calcula novo tamanho baseado na proporção
+      const scaleFactor = Math.sqrt(maxSizeBytes / file.size);
+      canvas.width = Math.round(img.width * scaleFactor);
+      canvas.height = Math.round(img.height * scaleFactor);
+
+      // Redimensiona a imagem
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Gera o Blob com qualidade ajustável
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const newFile = new File([blob], file.name, {
+              type: 'image/jpeg', // Garante um tipo consistente
+            });
+
+            // Verifica se o tamanho foi reduzido com sucesso
+            if (newFile.size <= maxSizeBytes) {
+              resolve(newFile);
+            } else {
+              // Se ainda estiver maior, tenta diminuir a qualidade
+              resolve(
+                reduzirQualidade(blob, file.name, maxSizeBytes)
+              );
+            }
+          } else {
+            reject(new Error("Erro ao criar Blob da imagem redimensionada."));
+          }
+        },
+        'image/jpeg', // Tipo de saída
+        0.7 // Fator de compressão inicial
+      );
+    };
+
+    img.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
+// Função auxiliar para ajustar a qualidade caso o tamanho ainda seja maior
+const reduzirQualidade = (
+  blob: Blob,
+  fileName: string,
+  maxSizeBytes: number
+): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.src = reader.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        let quality = 0.7; // Inicia com qualidade padrão
+
+        const tryCompress = () => {
+          canvas.toBlob(
+            (compressedBlob) => {
+              if (compressedBlob && compressedBlob.size <= maxSizeBytes) {
+                const newFile = new File([compressedBlob], fileName, {
+                  type: 'image/jpeg',
+                });
+                resolve(newFile);
+              } else if (compressedBlob && quality > 0.1) {
+                // Reduz a qualidade e tenta novamente
+                quality -= 0.1;
+                tryCompress();
+              } else {
+                reject(new Error("Não foi possível reduzir o tamanho da imagem."));
+              }
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+
+        tryCompress();
+      };
+
+      img.onerror = reject;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
+
 export function getErrorMessage(error: any): string {
   if (error instanceof Error) {
     return error.message;
@@ -959,5 +1080,7 @@ export default {
   gerarPlanilhaComCabecalho,
   getErrorMessage,
   formatHora,
-  msgConfirmSemCodigo
+  msgConfirmSemCodigo,
+  formatHoraSemOsSegundos,
+  redimensionarImagem
 };
