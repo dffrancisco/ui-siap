@@ -63,8 +63,8 @@ onMounted(async () => {
           style="color: #b71c1c; font-size: 12px"
           class="d-flex ga-2"
         >
-          <v-icon>mdi-rhombus-outline</v-icon>
-          <span>{{ computeds.avariasSemRevisao.value.length }} Avaria sem revisão</span>
+          <v-icon>mdi-exclamation</v-icon>
+          <span>{{ computeds.avariasSemRevisao.value.length }} Avarias sem revisão</span>
         </div>
       </div>
 
