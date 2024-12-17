@@ -22,6 +22,7 @@ export interface iVerDetalhesChamadoResponse {
     descricao: string;
     solicitante: string;
     dataFormatada: string;
+    cnpj: string;
 }
 
 export interface iParamGetChamados {
@@ -34,6 +35,7 @@ export interface iParamGetChamados {
 export interface iGetChamadosResponse {
     chamados: iChamados[];
     total: number;
+    usuario: string;
 }
 
 export interface iInsertChamado {
@@ -41,7 +43,7 @@ export interface iInsertChamado {
     loja: string;
     assunto: string;
     descricao: string;
-    anexos: any[];
+    anexos: string[];
     dataAtual: string;
 }
 
@@ -50,6 +52,8 @@ export interface iInsertChamadoResponse {
     loja: string;
     assunto: string;
     descricao: string;
-    anexos: any[];
+    anexos: string[];
     dataAtual: string;
+    chaveJira: string;
+    cnpj: string;
 }

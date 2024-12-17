@@ -1,9 +1,9 @@
-import { nextTick, reactive } from "vue";
+import { reactive } from "vue";
 import Swal from "sweetalert2";
 import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados } from "./interfaces";
-import { dataBrasil } from "@/ts/utils";
+import utils, { dataBrasil } from "@/ts/utils";
 
 export const state = reactive(({
     solicitante: (""),
@@ -16,16 +16,44 @@ export const state = reactive(({
     totalItems: 0,
     itemsPerPage: 15,
     search: (""),
+    headers: [
+        {
+            title: "Assunto",
+            key: "ASSUNTO",
+            sortable: true,
+        },
+        {
+            title: "Solicitante",
+            key: "SOLICITANTE",
+            sortable: true,
+        },
+        {
+            title: "Data",
+            key: "dataFormatada",
+            sortable: true,
+        },
+        {
+            title: "Ação",
+            key: "ACAO",
+            sortable: false,
+        },
+    ],
     detalhes: <iVerDetalhesChamadoResponse>{},
     pnModalDetalhes: <iModalCreate>(<unknown>null),
+    imagensChamado: [] as any[],
+    cnpj: "",
+    keyJira: "",
+    loginUsuario: "",
+    previews: [] as string[],
+    anexoModal: [],
+    novoComentario: "",
+    previewsModal: [] as string[],
 }))
 
 export const actions = {
 
-    begin() {
-        nextTick(() => {
-            actions.modal();
-        });
+    async init() {
+        actions.criarModais();
     },
 
     resetForm() {
@@ -34,6 +62,7 @@ export const actions = {
         state.assunto = '';
         state.descricao = '';
         state.anexos = [];
+        state.previews = [];
     },
 
     async submitForm() {
@@ -60,15 +89,31 @@ export const actions = {
         try {
             state.loading = true;
 
-            await serviceChamados.insertChamado(param)
+            let dadosChamado = await serviceChamados.insertChamado(param)
+
+            const filePaths = await actions.uploadAnexos(dadosChamado.chaveJira, dadosChamado.cnpj);
+
+            if (filePaths) {
+                const paramUpdate = {
+                    chaveJira: dadosChamado.chaveJira,
+                    filePaths,
+                };
+                await actions.updateChamado(paramUpdate);
+            }
+
+            actions.getChamados({
+                page: 1,
+                itemsPerPage: state.itemsPerPage,
+                sortBy: null,
+                search: state.search,
+            });
 
             Swal.fire({
-                icon: 'success',
-                text: 'Chamado cadastrado com sucesso'
-            })
+                icon: "success",
+                text: "Chamado cadastrado com sucesso",
+            });
 
-            actions.resetForm()
-            actions.getChamados({ page: 1, itemsPerPage: state.itemsPerPage, sortBy: null, search: state.search });
+            actions.resetForm();
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -89,6 +134,7 @@ export const actions = {
                 ...chamado,
                 dataFormatada: dataBrasil(chamado.DATA_CRIACAO),
             }));
+            state.loginUsuario = data.usuario
             state.totalItems = data.total
         } catch (error) {
             Swal.fire({
@@ -100,7 +146,16 @@ export const actions = {
         }
     },
 
+    limparStates() {
+        state.anexoModal = [];
+        state.previewsModal = [];
+        state.novoComentario = "";
+        state.anexos = [];
+        state.previews = [];
+    },
+
     async verDetalhesChamado(keyJira: string, descricao: string, solicitante: string, dataFormatada: string) {
+        actions.limparStates()
 
         try {
             state.loading = true
@@ -115,32 +170,120 @@ export const actions = {
             state.detalhes.statusJira = data.statusJira;
             state.detalhes.comentarios = data.comentarios;
 
+            let paramGetImg = {
+                keyJira: keyJira,
+                cnpj: data.cnpj,
+            }
+
+            state.cnpj = data.cnpj.replaceAll(".", "").replaceAll("-", "");
+            state.keyJira = keyJira
+            state.imagensChamado = await serviceChamados.getImgChamado(paramGetImg);
+
             state.pnModalDetalhes.open();
         } catch (error) {
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao buscar os dados do chamado.'
+                icon: 'warning',
+                text: error?.response?.data?.msg || "Erro ao buscar os dados do chamado",
             })
         } finally {
             state.loading = false
         }
     },
 
-    modal() {
-
+    criarModais() {
         state.pnModalDetalhes = new xModal.create({
-            height: 500,
-            width: 600,
+            height: 530,
+            width: 650,
             el: '#pnModalDetalhes'
         })
-    }
+    },
+
+    selecionarAnexos() {
+        const fileInputElement = document.getElementById("fileInput") as HTMLInputElement;
+        fileInputElement.click();
+    },
+
+    adicionarAnexo(event: Event) {
+        const fileInputElement = event.target as HTMLInputElement;
+        const novosArquivos = Array.from(fileInputElement.files || []);
+
+        novosArquivos.forEach((file) => {
+            if (!state.anexos.some((anexo) => anexo.name === file.name && anexo.size === file.size)) {
+                state.anexos.push(file);
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    if (e.target?.result) {
+                        state.previews.push(e.target.result.toString());
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        fileInputElement.value = "";
+    },
+
+    removerAnexo(index: number) {
+        state.anexos.splice(index, 1);
+        state.previews.splice(index, 1);
+    },
 
 
+    async uploadAnexos(chaveJira: string, cnpj: string) {
+        const files = state.anexos;
+
+        if (!files.length) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("call", "uploadImg");
+        formData.append("cnpj", cnpj);
+        formData.append("idChamado", chaveJira);
+
+        files.forEach((file, index) => {
+            formData.append(`files[${index}]`, file);
+        });
+
+        try {
+
+            const redimensionados = await Promise.all(
+                files.map(async (file) => {
+                    if (file.type.startsWith("image/")) {
+                        return await utils.redimensionarImagem(file, 500);
+                    }
+                    return file;
+                })
+            );
+
+            redimensionados.forEach((file, index) => {
+                formData.append(`files[${index}]`, file);
+            });
+
+            let result = await serviceChamados.uploadAnexos(formData);
+
+            if (result.success) {
+                return result.files;
+            } else {
+                throw new Error(result.msg || "Falha no upload dos arquivos");
+            }
+        } catch (error) {
+            console.error("Erro ao enviar os arquivos:", error.message);
+        }
+    },
+
+    async updateChamado(paramUpdate) {
+        try {
+            await serviceChamados.updateChamado(paramUpdate)
+        } catch (error) {
+            console.error("Erro ao fazer update do chamado: " + error);
+        }
+    },
 }
 
 function showValidationError(message: string) {
     Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Preencha os campos obrigatórios',
         text: message,
     });
