@@ -448,6 +448,7 @@ export const actions = {
                 timer: 1500,
             });
         } catch (error) {
+            console.log(error);
             Swal.fire({
                 icon: "error",
                 text: "Ocorreu um erro ao copiar os dados do cliente.",
