@@ -1,113 +1,51 @@
-export interface iFornecedores {
-    idFornecedor: number;
-    id: number;
+
+
+export interface iFornecedor {
     CGC_FORNECEDOR: string;
     RAZAO_SOCIAL: string;
     NOME_FANTAZIA: string;
-    INSC_ESTADUAL?: string;
+    INSC_ESTADUAL: string;
     ENDERECO: string;
-    CONTADO: string;
-    MUNICIPIO: number;
+    COD_CIDADE: number;
     BAIRRO: string;
     TELEFONE1: string;
-    TELEFONE2?: string;
-    DELETADO?: string;
+    TELEFONE2: string;
+    ID_REPRESENTANTE: number;
+    CONTADO: string;
+    MUNICIPIO: number;
     FAX?: string;
     CEP?: string;
-    HOME_PAGE?: string;
-    EMAIL?: string;
+    HOME_PAGE: string;
+    EMAIL: string;
     OBS?: string;
     CADASTRO: Date;
-    ID_EMPRESA?: number;
-    ID_REPRESENTANTE: number;
+    DELETADO: string;
+    ID_EMPRESA: number;
+    //adicionais
+    ID_FORNECEDOR: number;
+    id: number;
     NOME: string;
+    DELELETADO: string;
     DESCRICAO: string;
+    COD_IBGE: string;
+    TELEFONE: number;
 }
+
 
 export interface iParamGetFornecedor {
     offset?: number;
-    limit?: number;
-    checkboxAtiva: boolean;
-    param: {
-        razaoSocial?: string;
+    param: object;
+    checkboxAtiva?: boolean;
 
-        deletado?: boolean;
-        cnpj?: string;
-        cidade?: string;
-    };
 }
 
 export interface iGetDuplicityResponse {
-    value: string;
-    field: string;
-}
-
-export interface iInsertResponse {
-    idFornecedor: number;
-    id: number;
-    CGC_FORNECEDOR: string;
-    RAZAO_SOCIAL: string;
-    NOME_FANTAZIA: string;
-    INSC_ESTADUAL?: string;
-    ENDERECO: string;
-    CONTADO: string;
-    MUNICIPIO: number;
-    BAIRRO: string;
-    TELEFONE1: string;
-    TELEFONE2?: string;
-    DELETADO?: string;
-    FAX?: string;
-    CEP?: string;
-    HOME_PAGE?: string;
-    EMAIL?: string;
-    OBS?: string;
-    CADASTRO: Date;
-    ID_EMPRESA?: number;
-    ID_REPRESENTANTE: number;
-    NOME: string;
-    DESCRICAO: string;
-}
-
-export interface iParamToUpdate {
-    idFornecedor: number;
-    id: number;
-    CGC_FORNECEDOR: string;
-    RAZAO_SOCIAL: string;
-    NOME_FANTAZIA: string;
-    INSC_ESTADUAL?: string;
-    ENDERECO: string;
-    CONTADO: string;
-    MUNICIPIO: number;
-    BAIRRO: string;
-    TELEFONE1: string;
-    TELEFONE2?: string;
-    DELETADO?: string;
-    FAX?: string;
-    CEP?: string;
-    HOME_PAGE?: string;
-    EMAIL?: string;
-    OBS?: string;
-    CADASTRO: Date;
-    ID_EMPRESA?: number;
-    ID_REPRESENTANTE: number;
-    NOME: string;
-    DESCRICAO: string;
-}
-
-export interface iToDeleteResponse {
-    idDeleted?: number;
+    CGC_FORNECEDORES?: string;
 }
 
 export interface iFieldDuplicity {
     field: string;
     value: string;
-}
-
-export interface iParamGetRepresentante {
-    ID_REPRESENTANTE: number;
-    NOME: string;
-    EMAIL: string;
-    TELEFONE: number;
 }
 
 export interface iRepresentantes {
@@ -117,6 +55,17 @@ export interface iRepresentantes {
     TELEFONE: number;
 }
 
-export interface iGetDadosParaInputs {
+export interface iCidades {
+    COD_CIDADE: number;
     DESCRICAO: string;
+    COD_IBGE: string
 }
+
+export interface iToInativarFunction {
+    DELELETADO: string;
+    ID_FORNECEDOR: number;
+}
+
+export interface iGetFornecedoresResponse extends iFornecedor { }
+export interface iParamToInsert extends iFornecedor { }
+export interface iParamToUpdate extends iFornecedor { }

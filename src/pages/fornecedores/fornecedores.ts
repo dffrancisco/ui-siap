@@ -6,11 +6,11 @@ import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
 import serviceFornecedores from './services/fornecedores.service';
 import {
-    iFornecedores,
+    iFornecedor,
     iParamGetFornecedor,
-    iInsertResponse,
-    iParamToUpdate,
-    iParamGetRepresentante,
+    iRepresentantes,
+    iCidades,
+    iGetFornecedoresResponse
 } from "./interfaces";
 
 const openModal = () => {
@@ -21,16 +21,17 @@ export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     pnSearch: false,
     edtSearch: "",
-    lista: <iFornecedores[]>[],
-    dbFornecedor: <iFornecedores>{},
-    dbRepresentante: <iParamGetRepresentante>{},
+    lista: <iFornecedor[]>[],
+    dbFornecedor: <iFornecedor>{},
+    dbRepresentante: <iRepresentantes>{},
     loading: false,
     modalFornecedorOpened: false,
-    selectedFornecedor: <iFornecedores | null>null,
+    selectedFornecedor: <iFornecedor | null>null,
     checkboxAtiva: false,
     isChecked: false,
-
-    descricoes: [],
+    listaCidades: <iCidades[]>[],
+    toggleDisabled: false,
+    cnpjDisabled: false,
 });
 
 export const eventListener = (event: KeyboardEvent) => {
@@ -44,6 +45,7 @@ export const eventListener = (event: KeyboardEvent) => {
 export const actions = {
     async init() {
         actions.grids();
+        await actions.getCidades();
         state.gridPrincipal.queryOpen({}, () => {
             state.gridPrincipal.focus();
         });
@@ -74,14 +76,14 @@ export const actions = {
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
-                    state.dbFornecedor = r as iFornecedores;
+                    state.dbFornecedor = r as iFornecedor;
                 },
                 frame: {
                     el: "#pnBotoes",
                     buttons: {
                         novo: { html: "Novo", state: "insert", click: actions.btnInsert },
                         alterar: { html: "Alterar", state: "update", click: actions.btnEdit },
-                        excluir: { html: "Excluir", state: "delete", click: actions.btnDelete },
+                        excluir: { html: "Inativar", state: "delete", click: actions.btnDelete },
                         salvar: { html: "Salvar", state: "save", click: actions.btnSave },
                         cancelar: { html: "Cancelar", state: "cancel", click: actions.btnCancel },
                     },
@@ -111,35 +113,15 @@ export const actions = {
         }
     },
 
-    async selecionarRepresentante(representante: iParamGetRepresentante) {
-        if (!representante) {
-            Swal.fire({
-                text: "Nenhum representante selecionado.",
-                icon: "error",
-            });
-            return;
-        }
-
-        state.dbFornecedor.NOME = representante.NOME;
-
-        actions.closeModal();
-
-    },
-
-    async getDadosParaInputs() {
+    async getCidades() {
         try {
-            state.loading = true;
-            const dadosParaInputs = await serviceFornecedores.getDadosParaInputs();
-            state.descricoes = dadosParaInputs.descricoes;
-            return dadosParaInputs;
+            const data = await serviceFornecedores.getCidades();
+            state.listaCidades = data;
         } catch (error) {
-            await Swal.fire({
-                text: "Erro ao carregar dados para inputs.",
-                icon: "error",
-            });
-            throw error;
-        } finally {
-            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao exibir as cidades'
+            })
         }
     },
 
@@ -153,37 +135,54 @@ export const actions = {
 
     async btnInsert() {
         state.pnSearch = true;
-        state.dbFornecedor = {} as iFornecedores;
-        await nextTick();
+        state.toggleDisabled = true
+        state.dbFornecedor = {} as iFornecedor;
+
         state.gridPrincipal.focusField();
         state.gridPrincipal.disable();
+        state.gridPrincipal.clearElementSideBySide();
     },
 
     btnEdit() {
-        const selectedFornecedor = state.gridPrincipal.dataSource() as iFornecedores;
-        if (!selectedFornecedor) {
+
+        if (state.gridPrincipal.dataSource() === false) {
             Swal.fire({
                 text: "Nenhum registro selecionado.",
                 icon: "info",
             });
             return false;
         }
+
+        state.pnSearch = true
+        state.toggleDisabled = true
+        state.cnpjDisabled = true
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
     },
 
     async btnDelete() {
-        const selectedFornecedor = state.gridPrincipal.dataSource() as iFornecedores;
-        if (!selectedFornecedor) {
+
+
+        if (state.gridPrincipal.dataSource() === false) {
             Swal.fire({
-                text: "Selecione um registro.",
-                icon: "info",
-            });
+                icon: 'info',
+                text: 'Nenhum registro selecionado para alteração, operação cancelada!'
+            })
             return false;
         }
-        if (await msgConfirm("Confirmação", "Confirma a exclusão?")) {
-            await actions.deleteFornecedor(selectedFornecedor.idFornecedor);
+        if (!state.isChecked) {
+            if (await msgConfirm("Confirmação", "Confirma a inativação deste registro?")) {
+                await actions.toInativar()
+                state.gridPrincipal.focus();
+            }
+        } else {
+            if (await msgConfirm("Confirmação", "Confirma a reativação deste registro?")) {
+                await actions.toInativar()
+                state.gridPrincipal.focus();
+            }
+
         }
+        state.gridPrincipal.clearElementSideBySide();
     },
 
     async btnSave() {
@@ -206,51 +205,117 @@ export const actions = {
         state.gridPrincipal.enable();
     },
 
-    async deleteFornecedor(idFornecedor: number) {
+    async toInativar() {
         try {
-            state.loading = true;
-            await serviceFornecedores.toDelete(idFornecedor);
+            let ID_FORNECEDOR = state.dbFornecedor.ID_FORNECEDOR
+            let DELETADO = state.dbFornecedor.DELETADO
+
+            state.loading = true
+            await serviceFornecedores.toInativar(ID_FORNECEDOR, DELETADO);
+            state.loading = false
+
             state.gridPrincipal.deleteLine();
-            Swal.fire({
-                text: "Fornecedor excluído com sucesso.",
-                icon: "success",
-            });
         } catch (error) {
-            Swal.fire({
-                text: "Erro ao excluir fornecedor.",
-                icon: "error",
-            });
-            throw error;
-        } finally {
             state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao inativar fornecedor'
+            })
         }
     },
 
     async insertFornecedor() {
         try {
+            let newFields = <any>(
+                state.gridPrincipal.getElementSideBySideJson(true, false)
+            );
+
+            console.log("Dados enviados para inserção:", newFields);
+
             state.loading = true;
-
-            const fornecedor: iInsertResponse = await serviceFornecedores.toInsert(state.dbFornecedor);
-
-            const fornecedorParaInserir = {
-                ...state.dbFornecedor,
-                id: fornecedor.id,
-            };
-
-            state.gridPrincipal.insertLine(fornecedorParaInserir);
-
-            Swal.fire({
-                text: "Fornecedor criado com sucesso.",
-                icon: "success",
-            });
-        } catch (warning) {
-            await Swal.fire({
-                text: "Preencha todos os campos para adicionar um novo fornecedor.",
-                icon: "warning",
-            });
-        } finally {
+            let data = await serviceFornecedores.toInsert(newFields);
             state.loading = false;
+
+            let cidade = null;
+
+            if (newFields.COD_CIDADE) {
+                cidade = actions.encontrarCidades(newFields.COD_CIDADE);
+            }
+
+            state.gridPrincipal.insertLine({
+                ...newFields,
+                CIDADE: cidade,
+                ID_FORNECEDOR: data.ID_FORNECEDOR,
+            });
+        } catch (error) {
+            state.loading = false;
+            console.error("Erro durante inserção:", error);
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao inserir fornecedor',
+            });
         }
+    },
+
+
+    encontrarCidades(COD_CIDADE: number) {
+        const cidadeEncontrada = state.listaCidades.find(cidade => {
+            if ((cidade.COD_CIDADE == COD_CIDADE)) {
+                return true;
+            }
+
+            return false;
+        })
+
+        if (cidadeEncontrada) {
+            let cidade = cidadeEncontrada.DESCRICAO
+            return cidade
+        } else {
+            let cidade = null
+            return cidade
+        }
+    },
+
+    encontrarCodCidade(COD_IBGE: string) {
+        const cidadeEncontrada = state.listaCidades.find(cidade => {
+            if ((cidade.COD_IBGE == COD_IBGE)) {
+                return true;
+            }
+
+            return false;
+
+        })
+
+        if (cidadeEncontrada) {
+            let cidade = cidadeEncontrada.COD_CIDADE
+            return cidade
+        } else {
+            let cidade = null
+            return cidade
+        }
+
+
+    },
+
+    encontrarCodCidade2(DESCRICAO: string) {
+        const cidadeEncontrada = state.listaCidades.find(cidade => {
+            if ((cidade.DESCRICAO == DESCRICAO)) {
+                return true;
+            }
+
+            return false;
+
+        })
+
+        if (cidadeEncontrada) {
+            let cidade = cidadeEncontrada.COD_CIDADE
+            return cidade
+        } else {
+            let cidade = null
+            return cidade
+        }
+
+
     },
 
     async updateFornecedor() {
@@ -258,7 +323,7 @@ export const actions = {
             const diff = state.gridPrincipal.getDiffTwoJson(false);
             if (!diff.diff) return;
 
-            const updatedFornecedor: iParamToUpdate = { ...state.dbFornecedor, ...diff.new };
+            const updatedFornecedor: iFornecedor = { ...state.dbFornecedor, ...diff.new };
             state.loading = true;
 
             await serviceFornecedores.toUpdate(updatedFornecedor);
@@ -294,7 +359,7 @@ export const actions = {
                 return;
             }
 
-            if (state.selectedFornecedor.idFornecedor) {
+            if (state.selectedFornecedor.ID_FORNECEDOR) {
                 await actions.updateFornecedor();
             } else {
                 await actions.insertFornecedor();
@@ -308,5 +373,19 @@ export const actions = {
             });
             console.error(error);
         }
+    },
+
+    async selecionarRepresentante(representante: iRepresentantes) {
+        if (!representante) {
+            Swal.fire({
+                text: "Nenhum representante selecionado.",
+                icon: "error",
+            });
+            return;
+        }
+
+        state.dbFornecedor.NOME = representante.NOME;
+
+        actions.closeModal();
     },
 };

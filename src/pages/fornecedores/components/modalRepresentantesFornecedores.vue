@@ -4,7 +4,7 @@ import moment from "moment";
 import { onMounted, reactive, watch } from "vue";
 import serviceFornecedores from "../services/fornecedores.service";
 import Swal from "sweetalert2";
-import { iRepresentantes, iParamGetRepresentante } from "../interfaces";
+import { iRepresentantes } from "../interfaces";
 
 const props = defineProps({
   dataLimite: {
@@ -40,7 +40,7 @@ const actions = {
       },
       query: {
         async execute(rs) {
-          const data = await actions.getRepresentantes(rs.param as iParamGetRepresentante, rs.offset);
+          const data = await actions.getRepresentantes(rs.param as iRepresentantes, rs.offset);
           state.gridRepresentante.querySourceAdd(data);
         },
       },
@@ -59,7 +59,7 @@ const actions = {
     emits("cancelar");
   },
 
-  async getRepresentantes(param: iParamGetRepresentante, offset: number) {
+  async getRepresentantes(param: iRepresentantes, offset: number) {
     try {
       state.loading = true;
 

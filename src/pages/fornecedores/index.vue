@@ -28,8 +28,8 @@ onUnmounted(() => {
             <input
               v-model="state.dbFornecedor.CGC_FORNECEDOR"
               type="text"
-              id="CNPJ"
-              name="CNPJ"
+              id="CGC_FORNECEDOR"
+              name="CGC_FORNECEDOR"
               class="obr ss"
               maxlength="18"
               v-mask="'##.###.###/####-##'"
@@ -41,8 +41,8 @@ onUnmounted(() => {
             <input
               v-model="state.dbFornecedor.INSC_ESTADUAL"
               type="text"
-              id="IE"
-              name="IE"
+              id="INSC_ESTADUAL"
+              name="INSC_ESTADUAL"
               class="ss"
               maxlength="15"
               autocomplete="off"
@@ -79,10 +79,10 @@ onUnmounted(() => {
             <span>Nome do Representante</span>
             <div class="d-flex ga-2 align-center"
               ><input
-                v-model="state.dbFornecedor.NOME"
+                v-model="state.dbFornecedor.ID_REPRESENTANTE"
                 type="text"
-                id="REPRESENTANTE"
-                name="REPRESENTANTE"
+                id="ID_REPRESENTANTE"
+                name="ID_REPRESENTANTE"
                 class="ss"
                 maxlength="60"
                 autocomplete="off"
@@ -101,8 +101,8 @@ onUnmounted(() => {
             <input
               v-model="state.dbFornecedor.HOME_PAGE"
               type="text"
-              id="SITE"
-              name="SITE"
+              id="HOME_PAGE"
+              name="HOME_PAGE"
               class="ss"
               maxlength="100"
               autocomplete="off"
@@ -128,8 +128,8 @@ onUnmounted(() => {
             <input
               v-model="state.dbFornecedor.CONTADO"
               type="text"
-              id="RESPONSAVEL"
-              name="RESPONSAVEL"
+              id="CONTADO"
+              name="CONTADO"
               class="ss"
               maxlength="60"
               autocomplete="off"
@@ -140,8 +140,8 @@ onUnmounted(() => {
             <input
               v-model="state.dbFornecedor.TELEFONE1"
               type="text"
-              id="TELEFONE"
-              name="TELEFONE"
+              id="TELEFONE1"
+              name="TELEFONE1"
               class="ss"
               maxlength="15"
               v-mask="'(##) #####-####'"
@@ -177,7 +177,7 @@ onUnmounted(() => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="6">
+          <v-col cols="4">
             <span>Endereço</span>
             <input
               v-model="state.dbFornecedor.ENDERECO"
@@ -186,6 +186,18 @@ onUnmounted(() => {
               name="ENDERECO"
               class="obr ss"
               maxlength="100"
+              autocomplete="off"
+            />
+          </v-col>
+          <v-col cols="2">
+            <span>Municipio</span>
+            <input
+              v-model="state.dbFornecedor.MUNICIPIO"
+              type="text"
+              id="MUNICIPIO"
+              name="MUNICIPIO"
+              class="ss"
+              maxlength="50"
               autocomplete="off"
             />
           </v-col>
@@ -204,14 +216,20 @@ onUnmounted(() => {
           <v-col cols="2">
             <span>Cidade</span>
             <select
-              v-model="state.dbFornecedor.MUNICIPIO"
-              type="text"
-              id="CIDADE"
-              name="CIDADE"
+              v-model="state.dbFornecedor.COD_CIDADE"
+              id="COD_CIDADE"
+              name="COD_CIDADE"
               class="ss"
               maxlength="50"
-              autocomplete="off"
-            />
+            >
+              <option
+                v-for="cidade in state.listaCidades"
+                :key="cidade.COD_CIDADE"
+                :value="cidade.COD_CIDADE"
+              >
+                {{ cidade.DESCRICAO }}
+              </option>
+            </select>
           </v-col>
         </v-row>
 
@@ -221,8 +239,8 @@ onUnmounted(() => {
             <input
               v-model="state.dbFornecedor.CADASTRO"
               type="date"
-              id="DATA_CADASTRO"
-              name="DATA_CADASTRO"
+              id="CADASTRO"
+              name="CADASTRO"
               class="ss"
             />
           </v-col>
@@ -230,7 +248,7 @@ onUnmounted(() => {
             <v-checkbox
               v-model="state.dbFornecedor.DELETADO"
               label="Fornecedores inativos"
-              id="fornecedores_inativos"
+              id="DELETADO"
               class="mt-n1"
             />
           </v-col>
@@ -238,8 +256,8 @@ onUnmounted(() => {
             <span>Observações</span>
             <textarea
               v-model="state.dbFornecedor.OBS"
-              id="OBSERVACOES"
-              name="OBSERVACOES"
+              id="OBS"
+              name="OBS"
               class="ss"
               rows="2"
             ></textarea>
