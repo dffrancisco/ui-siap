@@ -46,11 +46,12 @@ const getRepresentantes: iGetRepresentantesFunction = async (param, offset) => {
     return data;
 }
 
-const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {
+const getDuplicidade: iGetDuplicityFunction = async ({ field, value }) => {
     const { data } = await axios.post(caminho, {
         call: "getDuplicidade",
-        value,
         field,
+        value,
+
     });
     return data;
 }

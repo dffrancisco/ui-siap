@@ -12,7 +12,7 @@ export interface iFornecedor {
     TELEFONE2: string;
     ID_REPRESENTANTE: number;
     CONTADO: string;
-    MUNICIPIO: number;
+    MUNICIPIO: string;
     FAX?: string;
     CEP?: string;
     HOME_PAGE: string;
@@ -21,11 +21,8 @@ export interface iFornecedor {
     CADASTRO: Date;
     DELETADO: string;
     ID_EMPRESA: number;
-    //adicionais
     ID_FORNECEDOR: number;
-    id: number;
     NOME: string;
-    DELELETADO: string;
     DESCRICAO: string;
     COD_IBGE: string;
     TELEFONE: number;
