@@ -10,7 +10,10 @@ import {
     iParamGetFornecedor,
     iRepresentantes,
     iCidades,
-    iGetFornecedoresResponse
+    iGetFornecedoresResponse,
+    iFieldDuplicity,
+
+
 } from "./interfaces";
 
 const openModal = () => {
@@ -20,7 +23,7 @@ const openModal = () => {
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     pnSearch: false,
-    edtSearch: <HTMLInputElement>{},
+    edtSearch: "",
     lista: <iFornecedor[]>[],
     dbFornecedor: <iFornecedor>{},
     dbRepresentante: <iRepresentantes>{},
@@ -66,15 +69,14 @@ export const actions = {
             },
             query: {
                 async execute(rs) {
-                    const data = await actions.getFornecedores({
+                    let data = await actions.getFornecedores({
                         offset: rs.offset,
-                        param: {
-                            ...rs.param,
-                            checkboxAtiva: state.isChecked,
-                        },
+                        param: rs.param,
+                        checkboxAtiva: state.isChecked,
+
                     });
                     state.gridPrincipal.querySourceAdd(data);
-                },
+                }
             },
             sideBySide: {
                 el: "#pnCampos",
@@ -128,15 +130,17 @@ export const actions = {
         }
     },
 
-    search() {
+    async search() {
         if (state.isChecked) {
             document.querySelector('button[state="delete"]').textContent = 'Reativar';
         } else {
             document.querySelector('button[state="delete"]').textContent = 'Inativar';
         }
 
+        const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
-            RAZAO_SOCIAL: state.edtSearch.value.toUpperCase()
+            RAZAO_SOCIAL: searchValue,
+            checkboxAtiva: state.checkboxAtiva,
         });
     },
 
@@ -193,57 +197,23 @@ export const actions = {
     },
 
     async btnSave() {
+        if (utils.validaOBR()) return;
 
-
-        if (utils.validaOBR())
-            return false
-
-        if (await state.gridPrincipal.getDuplicityAll())
-            return false;
-
-        if (state.dbFornecedor.CGC_FORNECEDOR.length < 18) {
-            Swal.fire({
-                icon: 'error',
-                text: 'CNPJ inválido!'
-            })
-            return false;
+        const isNew = !state.gridPrincipal.dataSource();
+        if (isNew) {
+            await actions.insertFornecedor();
+        } else {
+            await actions.updateFornecedor();
         }
 
-
-        if (state.dbFornecedor.EMAIL) {
-            if (!actions.validarEmail()) {
-                Swal.fire({
-                    icon: 'error',
-                    text: 'E-mail inválido!'
-                })
-                return false;
-            }
-        }
-
-
-        if (state.gridPrincipal.dataSource() == false)
-            actions.insertFornecedor();
-        else {
-            actions.updateFornecedor();
-        }
-
+        state.pnSearch = false;
         state.gridPrincipal.enable();
-
-        state.toggleDisabled = false
-        state.cnpjDisabled = false
-        state.pnSearch = false
-        state.cepInserido = false
-
         state.gridPrincipal.focus();
     },
 
     async btnCancel() {
         state.pnSearch = false;
         state.gridPrincipal.enable();
-        state.gridPrincipal.focus();
-        state.toggleDisabled = false;
-        state.cnpjDisabled = false;
-        state.cepInserido = false
     },
 
     async toInativar() {
@@ -269,196 +239,40 @@ export const actions = {
         try {
             let newFields = <any>(
                 state.gridPrincipal.getElementSideBySideJson(true, false)
-            )
+            );
 
-            state.loading = true
-            let data = await serviceFornecedores.toInsert(newFields)
-            state.loading = false
+            state.loading = true;
+            let data = await serviceFornecedores.toInsert(newFields);
+            state.loading = false;
 
-            let cidade = null
+            let cidade = null;
 
             if (newFields.COD_CIDADE) {
-                cidade = actions.encontrarCidades(newFields.COD_CIDADE)
+                cidade = actions.encontrarCidades(newFields.COD_CIDADE);
             }
 
             state.gridPrincipal.insertLine({
                 ...newFields,
                 CIDADE: cidade,
-                ID_FORNECEDOR: data.ID_FORNECEDOR
+                ID_FORNECEDOR: data.ID_FORNECEDOR,
+            });
+
+
+            Swal.fire({
+                icon: "success",
+                text: "Fornecedor inserido com sucesso.",
+
             });
 
         } catch (error) {
             state.loading = false;
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao inserir transportadora'
-            })
-        }
-    },
-
-
-    async updateFornecedor() {
-        try {
-            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
-
-            if (dadosDiff.diff == false) {
-                return
-            }
-
-            let dadosAtualizados = {
-                ...state.dbFornecedor,
-                ...dadosDiff.new
-            }
-
-            state.loading = true
-            await serviceFornecedores.toUpdate(dadosAtualizados)
-            state.loading = false
-
-            state.dbFornecedor = dadosAtualizados as iFornecedor;
-
-            let cidade = actions.encontrarCidades(dadosAtualizados.COD_CIDADE)
-            state.gridPrincipal.dataSource({
-                ...dadosAtualizados,
-                CIDADE: cidade
-            })
-
-        } catch (error) {
-            state.loading = false;
-            Swal.fire({
-                icon: 'error',
-                text: 'Erro ao atualizar transportadora'
-            })
-        }
-    },
-
-    closeModal() {
-        state.modalFornecedorOpened = false;
-    },
-
-    async saveFornecedorModal() {
-        try {
-            if (!state.selectedFornecedor) {
-                Swal.fire({
-                    text: "Nenhum fornecedor selecionado.",
-                    icon: "error",
-                });
-                return;
-            }
-
-            if (state.selectedFornecedor.ID_FORNECEDOR) {
-                await actions.updateFornecedor();
-            } else {
-                await actions.insertFornecedor();
-            }
-
-            actions.closeModal();
-        } catch (error) {
-            Swal.fire({
-                text: "Erro ao salvar fornecedor.",
                 icon: "error",
+                text: "Erro ao inserir fornecedor",
             });
-            console.error(error);
         }
     },
 
-    async selecionarRepresentante(representante: iRepresentantes) {
-        if (!representante) {
-            Swal.fire({
-                text: "Nenhum representante selecionado.",
-                icon: "error",
-            });
-            return;
-        }
-        state.dbRepresentante.NOME = representante.NOME;
-        actions.closeModal();
-    },
-
-    validarEmail() {
-        let email = state.dbFornecedor.EMAIL;
-
-        let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        return regexEmail.test(email);
-
-    },
-
-    async buscaCEP() {
-        try {
-
-            if (state.cepInserido == true) {
-                return false
-            }
-
-            if (!state.dbFornecedor.CEP) {
-                return false
-            }
-
-            let cep = state.dbFornecedor.CEP
-
-            state.loading = true
-
-            let request = await serviceFornecedores.buscarCEP(cep)
-            let dataJSON = await request.data;
-
-            let cod_cidade = actions.encontrarCodCidade(dataJSON.ibge)
-            let bairro = dataJSON.bairro
-            let endereco = dataJSON.logradouro
-
-            state.dbFornecedor.ENDERECO = endereco
-            state.dbFornecedor.BAIRRO = bairro.substring(0, 20)
-            state.dbFornecedor.COD_CIDADE = cod_cidade
-
-            state.loading = false
-
-        } catch (error) {
-            state.loading = false;
-        }
-    },
-
-    async buscarCNPJ() {
-        try {
-
-            if (!state.dbFornecedor.CGC_FORNECEDOR) {
-                return false
-            }
-
-            if (state.cnpjDisabled == true) {
-                return false
-            }
-
-            let cnpj = state.dbFornecedor.CGC_FORNECEDOR.replace(/[^\d]/g, '')
-
-            state.loading = true
-
-            let data = await serviceFornecedores.getDadosCnpj(cnpj)
-
-            let razao_social = data.nome.substring(0, 50)
-            let email = data.email
-            let telefone = data.telefone.substring(0, 15)
-            let cep = data.cep
-            let endereco = data.logradouro.substring(0, 40)
-            let bairro = data.bairro.substring(0, 20)
-            let cod_cidade = actions.encontrarCodCidade2(data.municipio.toUpperCase())
-
-            state.dbFornecedor.RAZAO_SOCIAL = razao_social
-            state.dbFornecedor.EMAIL = email
-            state.dbFornecedor.TELEFONE1 = telefone
-            state.dbFornecedor.CEP = cep
-            state.dbFornecedor.ENDERECO = endereco
-            state.dbFornecedor.BAIRRO = bairro
-            state.dbFornecedor.COD_CIDADE = cod_cidade
-
-            if (state.dbFornecedor.ENDERECO) {
-                state.cepInserido = true
-            }
-
-
-            state.loading = false
-
-        } catch (error) {
-            state.loading = false;
-        }
-    },
 
     encontrarCidades(COD_CIDADE: number) {
         const cidadeEncontrada = state.listaCidades.find(cidade => {
@@ -520,4 +334,141 @@ export const actions = {
 
     },
 
-};
+    async updateFornecedor() {
+        try {
+            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
+
+            if (!dadosDiff.diff) {
+                return;
+            }
+
+            const dadosAtualizados = {
+                ...state.dbFornecedor,
+                ...dadosDiff.new,
+                CADASTRO: typeof state.dbFornecedor.CADASTRO === 'string'
+                    ? new Date(state.dbFornecedor.CADASTRO)
+                    : state.dbFornecedor.CADASTRO,
+            };
+
+            state.loading = true;
+            await serviceFornecedores.toUpdate(dadosAtualizados);
+            state.loading = false;
+
+            state.dbFornecedor = dadosAtualizados as iFornecedor;
+
+            const cidade = actions.encontrarCidades(dadosAtualizados.COD_CIDADE);
+            state.gridPrincipal.dataSource({
+                ...dadosAtualizados,
+                CIDADE: cidade,
+            });
+        } catch (error) {
+            state.loading = false;
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao atualizar fornecedor',
+            });
+        }
+    },
+
+
+
+    closeModal() {
+        state.modalFornecedorOpened = false;
+    },
+
+    async saveFornecedorModal() {
+        try {
+            if (!state.selectedFornecedor) {
+                Swal.fire({
+                    text: "Nenhum fornecedor selecionado.",
+                    icon: "error",
+                });
+                return;
+            }
+
+            if (state.selectedFornecedor.ID_FORNECEDOR) {
+                await actions.updateFornecedor();
+            } else {
+                await actions.insertFornecedor();
+            }
+
+            actions.closeModal();
+        } catch (error) {
+            Swal.fire({
+                text: "Erro ao salvar fornecedor.",
+                icon: "error",
+            });
+            console.error(error);
+        }
+    },
+
+    async selecionarRepresentante(representante: iRepresentantes) {
+        if (!representante) {
+            Swal.fire({
+                text: "Nenhum representante selecionado.",
+                icon: "error",
+            });
+            return;
+        }
+        state.dbRepresentante.NOME = representante.NOME;
+        actions.closeModal();
+    },
+
+    validarEmail() {
+        let email = state.dbFornecedor.EMAIL;
+
+        let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        return regexEmail.test(email);
+
+    },
+
+    async getDuplicidade({ value, field }: iFieldDuplicity) {
+        try {
+            const data = await serviceFornecedores.getDuplicidade({ value, field });
+
+            return data;
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Cidade já Cadastrada'
+            })
+        }
+    },
+    async buscaCEP() {
+        try {
+
+            if (state.cepInserido == true) {
+                return false
+            }
+
+            if (!state.dbFornecedor.CEP) {
+                return false
+            }
+
+            let cep = state.dbFornecedor.CEP
+
+            state.loading = true
+
+            let request = await serviceFornecedores.buscarCEP(cep)
+            let dataJSON = await request.data;
+
+            let cod_cidade = actions.encontrarCodCidade(dataJSON.ibge)
+            let bairro = dataJSON.bairro
+            let endereco = dataJSON.logradouro
+
+            state.dbFornecedor.ENDERECO = endereco
+            state.dbFornecedor.BAIRRO = bairro.substring(0, 20)
+            state.dbFornecedor.COD_CIDADE = cod_cidade
+
+            state.loading = false
+
+        } catch (error) {
+            state.loading = false;
+        }
+    },
+
+
+}
+
+export default { state, actions }

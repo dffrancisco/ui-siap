@@ -1,5 +1,3 @@
-
-
 export interface iFornecedor {
     CGC_FORNECEDOR: string;
     RAZAO_SOCIAL: string;
@@ -26,6 +24,7 @@ export interface iFornecedor {
     DESCRICAO: string;
     COD_IBGE: string;
     TELEFONE: number;
+
 }
 
 
@@ -56,6 +55,7 @@ export interface iCidades {
     COD_CIDADE: number;
     DESCRICAO: string;
     COD_IBGE: string
+    CEP?: string;
 }
 
 export interface iToInativarFunction {

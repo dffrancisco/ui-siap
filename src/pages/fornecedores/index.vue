@@ -175,6 +175,7 @@ onUnmounted(() => {
               maxlength="9"
               v-mask="'#####-###'"
               autocomplete="off"
+              v-on:focusout="actions.buscaCEP"
             />
           </v-col>
           <v-col cols="4">
@@ -235,36 +236,38 @@ onUnmounted(() => {
 
         <v-row class="mt-n1">
           <v-col cols="3">
-            <span>Data de Cadastro</span>
-            <input
-              v-model="state.dbFornecedor.CADASTRO"
-              type="date"
-              id="CADASTRO"
-              name="CADASTRO"
-              v-mask="'##/##/####'"
-              class="ss"
-            />
+            <div
+              ><span>Data de Cadastro</span>
+              <input
+                v-model="state.dbFornecedor.CADASTRO"
+                type="date"
+                id="CADASTRO"
+                name="CADASTRO"
+                v-mask="'##/##/####'"
+                class="ss"
+                :disabled="true"
+            /></div>
+            <div>
+              <v-checkbox
+                v-model="state.isChecked"
+                label="Exibir Inativos"
+                color="blue"
+                :disabled="state.toggleDisabled"
+                @change="state.isChecked != state.isChecked"
+                @update:model-value="actions.search"
+              >
+              </v-checkbox>
+            </div>
           </v-col>
-          <v-col cols="3">
-            <v-checkbox
-              v-model="state.isChecked"
-              label="Exibir Inativos"
-              color="blue"
-              :disabled="state.toggleDisabled"
-              @change="state.isChecked != state.isChecked"
-              @update:model-value="actions.search"
-              @click="state.edtSearch.value = null"
-            >
-            </v-checkbox>
-          </v-col>
-          <v-col cols="6">
+
+          <v-col>
             <span>Observações</span>
             <textarea
               v-model="state.dbFornecedor.OBS"
               id="OBS"
               name="OBS"
               class="ss"
-              rows="2"
+              rows="3"
             ></textarea>
           </v-col>
         </v-row>

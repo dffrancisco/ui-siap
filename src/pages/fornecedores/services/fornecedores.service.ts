@@ -27,7 +27,7 @@ const getCidades = async () => {
 
 
 const getFornecedores: iGetFornecedoresFunction = async ({ param, offset, checkboxAtiva }) => {
-    const { data } = await axios.post(caminho, {
+    let { data } = await axios.post(caminho, {
         call: "getFornecedores",
         offset,
         param,
@@ -38,7 +38,7 @@ const getFornecedores: iGetFornecedoresFunction = async ({ param, offset, checkb
 }
 
 const getRepresentantes: iGetRepresentantesFunction = async (param, offset) => {
-    const { data } = await axios.post(caminho, {
+    let { data } = await axios.post(caminho, {
         call: "getRepresentantes",
         offset,
         param,
@@ -47,7 +47,7 @@ const getRepresentantes: iGetRepresentantesFunction = async (param, offset) => {
 }
 
 const getDuplicidade: iGetDuplicityFunction = async ({ field, value }) => {
-    const { data } = await axios.post(caminho, {
+    let { data } = await axios.post(caminho, {
         call: "getDuplicidade",
         field,
         value,
@@ -58,7 +58,7 @@ const getDuplicidade: iGetDuplicityFunction = async ({ field, value }) => {
 
 const toInsert: iToInsertFunction = async (newFields) => {
 
-    const { data } = await axios.post(caminho, {
+    let { data } = await axios.post(caminho, {
         call: "insert",
         param: newFields,
     });
@@ -75,7 +75,7 @@ const toUpdate: iToUpdateFunction = async (param: object) => {
 }
 
 const toInativar = async (ID_FORNECEDOR: number, DELETADO: string | null) => {
-    await axios.post(caminho, {
+    return axios.post(caminho, {
         call: "inativar",
         ID_FORNECEDOR: ID_FORNECEDOR,
         DELETADO: DELETADO
@@ -83,7 +83,7 @@ const toInativar = async (ID_FORNECEDOR: number, DELETADO: string | null) => {
 }
 
 const buscarCEP = async (cep: string) => {
-    const { data } = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+    let { data } = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
     return data;
 }
 
