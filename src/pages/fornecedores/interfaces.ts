@@ -20,10 +20,10 @@ export interface iFornecedor {
     DELETADO: string;
     ID_EMPRESA: number;
     ID_FORNECEDOR: number;
-    NOME: string;
-    DESCRICAO: string;
-    COD_IBGE: string;
-    TELEFONE: number;
+    NOME?: string;
+    DESCRICAO?: string;
+    COD_IBGE?: string;
+    TELEFONE?: number;
 
 }
 

@@ -82,7 +82,7 @@ const actions = {
   },
 
   async btnSearch() {
-    const searchValue = state.edtSearch.trim();
+    const searchValue = state.edtSearch.toUpperCase();
 
     if (!searchValue) {
       Swal.fire({
@@ -100,22 +100,14 @@ const actions = {
   async search() {
     const searchValue = state.edtSearch?.toUpperCase();
     state.gridRepresentante.queryOpen({
-      RAZAO_SOCIAL: searchValue,
+      NOME: searchValue,
     });
   },
 
   selecionarRepresentante() {
-    const representanteSelecionado: iRepresentantes = state.gridRepresentante.dataSource();
-
-    if (!representanteSelecionado) {
-      Swal.fire({
-        text: "Nenhum representante foi selecionado",
-        icon: "warning",
-      });
-      return false;
-    }
-
+    const representanteSelecionado = state.gridRepresentante.dataSource();
     emits("selecionarRepresentante", representanteSelecionado);
+    actions.closeModal();
   },
 };
 

@@ -30,12 +30,12 @@ export const state = reactive({
     loading: false,
     modalFornecedorOpened: false,
     selectedFornecedor: <iFornecedor | null>null,
-    checkboxAtiva: false,
     isChecked: false,
     listaCidades: <iCidades[]>[],
     toggleDisabled: false,
     cnpjDisabled: false,
-    cepInserido: false
+    cepInserido: false,
+    representanteSelecionado: <iRepresentantes>{}
 
 
 });
@@ -60,7 +60,7 @@ export const actions = {
     grids() {
         state.gridPrincipal = new xGridV2.create({
             el: "#gridPrincipal",
-            height: 200,
+            height: 160,
             count: true,
             columns: {
                 CNPJ: { dataField: "CGC_FORNECEDOR" },
@@ -83,6 +83,24 @@ export const actions = {
                 vModel(r) {
                     state.dbFornecedor = r as iFornecedor;
                 },
+                duplicity: {
+                    dataField: ['CGC_TRANSPORTADORA'],
+                    async execute(rs) {
+                        let dup = await actions.getDuplicidade({
+                            value: rs.value.toUpperCase(),
+                            field: rs.field,
+                        });
+
+                        if (Object.keys(dup).length > 0) {
+                            state.gridPrincipal.showMessageDuplicity(
+                                rs.text + ' já está cadastrada'
+                            );
+                            return true;
+                        }
+
+                        return false
+                    }
+                },
                 frame: {
                     el: "#pnBotoes",
                     buttons: {
@@ -97,16 +115,17 @@ export const actions = {
         });
     },
 
-    async getFornecedores({ offset, param }: iParamGetFornecedor) {
+    async getFornecedores({ offset, param, checkboxAtiva }: iParamGetFornecedor) {
         try {
             state.loading = true;
 
-            const fornecedores = await serviceFornecedores.getFornecedores({
+            const data = await serviceFornecedores.getFornecedores({
                 offset,
                 param,
-                checkboxAtiva: state.checkboxAtiva,
+                checkboxAtiva
             });
-            return fornecedores;
+            state.loading = false;
+            return data;
         } catch (error) {
             await Swal.fire({
                 text: "Erro ao carregar fornecedores.",
@@ -140,7 +159,7 @@ export const actions = {
         const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
             RAZAO_SOCIAL: searchValue,
-            checkboxAtiva: state.checkboxAtiva,
+
         });
     },
 
@@ -225,6 +244,11 @@ export const actions = {
             await serviceFornecedores.toInativar(ID_FORNECEDOR, DELETADO);
             state.loading = false
 
+            Swal.fire({
+                icon: "success",
+                text: "Fornecedor inativado com sucesso.",
+
+            });
             state.gridPrincipal.deleteLine();
         } catch (error) {
             state.loading = false;
@@ -256,6 +280,7 @@ export const actions = {
                 CIDADE: cidade,
                 ID_FORNECEDOR: data.ID_FORNECEDOR,
             });
+
 
 
             Swal.fire({
@@ -335,41 +360,60 @@ export const actions = {
     },
 
     async updateFornecedor() {
+        state.loading = true;
+
+        const param = {
+            CGC_FORNECEDOR: state.dbFornecedor.CGC_FORNECEDOR,
+            RAZAO_SOCIAL: state.dbFornecedor.RAZAO_SOCIAL,
+            NOME_FANTAZIA: state.dbFornecedor.NOME_FANTAZIA,
+            INSC_ESTADUAL: state.dbFornecedor.INSC_ESTADUAL,
+            ENDERECO: state.dbFornecedor.ENDERECO,
+            COD_CIDADE: state.dbFornecedor.COD_CIDADE,
+            BAIRRO: state.dbFornecedor.BAIRRO,
+            TELEFONE1: state.dbFornecedor.TELEFONE1,
+            TELEFONE2: state.dbFornecedor.TELEFONE2,
+            ID_REPRESENTANTE: state.dbFornecedor.ID_REPRESENTANTE,
+            CONTADO: state.dbFornecedor.CONTADO,
+            MUNICIPIO: state.dbFornecedor.MUNICIPIO,
+            CEP: state.dbFornecedor.CEP,
+            HOME_PAGE: state.dbFornecedor.HOME_PAGE,
+            EMAIL: state.dbFornecedor.EMAIL,
+            OBS: state.dbFornecedor.OBS,
+            CADASTRO: state.dbFornecedor.CADASTRO,
+            DELETADO: state.dbFornecedor.DELETADO,
+            ID_FORNECEDOR: state.dbFornecedor.ID_FORNECEDOR,
+            ID_EMPRESA: state.dbFornecedor.ID_EMPRESA,
+        };
+
         try {
-            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
-            if (!dadosDiff.diff) {
-                return;
-            }
+            await serviceFornecedores.toUpdate(param);
 
-            const dadosAtualizados = {
-                ...state.dbFornecedor,
-                ...dadosDiff.new,
-                CADASTRO: typeof state.dbFornecedor.CADASTRO === 'string'
-                    ? new Date(state.dbFornecedor.CADASTRO)
-                    : state.dbFornecedor.CADASTRO,
-            };
 
-            state.loading = true;
-            await serviceFornecedores.toUpdate(dadosAtualizados);
-            state.loading = false;
+            Swal.fire({
+                icon: "success",
+                text: "Fornecedor atualizado com sucesso.",
 
-            state.dbFornecedor = dadosAtualizados as iFornecedor;
+            });
 
-            const cidade = actions.encontrarCidades(dadosAtualizados.COD_CIDADE);
+            state.dbFornecedor = { ...state.dbFornecedor, ...param };
+
+            const cidade = actions.encontrarCidades(param.COD_CIDADE);
             state.gridPrincipal.dataSource({
-                ...dadosAtualizados,
+                ...param,
                 CIDADE: cidade,
             });
+
+
         } catch (error) {
-            state.loading = false;
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao atualizar fornecedor',
+                icon: "error",
+                text: error?.response?.data?.msg || "Erro ao atualizar fornecedor!",
             });
+        } finally {
+            state.loading = false;
         }
     },
-
 
 
     closeModal() {
@@ -402,17 +446,12 @@ export const actions = {
         }
     },
 
-    async selecionarRepresentante(representante: iRepresentantes) {
-        if (!representante) {
-            Swal.fire({
-                text: "Nenhum representante selecionado.",
-                icon: "error",
-            });
-            return;
-        }
-        state.dbRepresentante.NOME = representante.NOME;
+    async selecionarRepresentante(representanteSelecionado: iRepresentantes) {
+        state.representanteSelecionado = representanteSelecionado;
         actions.closeModal();
     },
+
+
 
     validarEmail() {
         let email = state.dbFornecedor.EMAIL;
