@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { nextTick, onUnmounted } from "vue";
 import { onMounted } from "vue";
 import { state, actions } from "./usoConsumo";
-import { useEventListener } from "@vueuse/core";
 
 onMounted(() => {
   actions.init();
@@ -19,22 +17,20 @@ onMounted(() => {
         class="d-flex justify-end align-center"
         no-gutters
       >
-        <v-col
-          cols="3"
-          class="me-3"
-        >
-          <v-select
+        <v-col cols="3">
+          <v-text-field
+            label="Data de Inicio"
             id="dataInicio"
             class="dataInicio"
+            type="Date"
             v-model="state.dataInicio"
-            item-title="title"
-            item-value="value"
             :clearable="false"
-          ></v-select>
+          ></v-text-field>
         </v-col>
 
-        <v-col cols="2">
+        <v-col cols="3">
           <v-text-field
+            label="Data de Fim"
             id="dataFim"
             class="dataFim"
             type="Date"
@@ -51,7 +47,7 @@ onMounted(() => {
             color="primary"
             icon="mdi-magnify"
             size="36px"
-            @click="actions.validarFiltros"
+            @click="actions.validarInputs"
           >
             <v-icon left>mdi-magnify</v-icon>
           </v-btn>

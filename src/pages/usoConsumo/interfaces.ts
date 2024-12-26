@@ -3,6 +3,7 @@ export interface iParamsUsoConsumo {
     dataFim: string;
 }
 
+
 export interface iDadosUsoConsumo {
     ID_CONSUMO: number;
     DATA: string;
@@ -10,6 +11,7 @@ export interface iDadosUsoConsumo {
     DESCRICAO: string;
     CHAVE: string;
     VALOR: number;
+    page: number;
 }
 
 export interface iResponseUsoConsumo {
