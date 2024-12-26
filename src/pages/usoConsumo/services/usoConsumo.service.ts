@@ -1,11 +1,9 @@
 import axios from "axios";
-import { iDadosUsoConsumo, iParamsUsoConsumo } from "../interfaces";
+import { iParamsUsoConsumo, iResponseUsoConsumo } from "../interfaces";
 
-const caminho = 'siap/avaliacaoEstoque'
+const caminho = 'siap/usoConsumo';
 
-
-type iGetDadosParaRelatorio = (param: iDadosUsoConsumo) => Promise<iParamsUsoConsumo>;
-
+type iGetDadosParaRelatorio = (param: iParamsUsoConsumo) => Promise<iResponseUsoConsumo>;
 
 const getDadosParaRelatorio: iGetDadosParaRelatorio = async (param) => {
     let { data } = await axios.post(caminho, {
@@ -13,9 +11,8 @@ const getDadosParaRelatorio: iGetDadosParaRelatorio = async (param) => {
         param
     });
     return data;
-}
+};
 
 export default {
-
     getDadosParaRelatorio
-}
+};

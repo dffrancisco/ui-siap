@@ -23,17 +23,33 @@ export const state = reactive({
 
 export const actions = {
     async init() {
-
         this.getDadosParaRelatorio();
     },
 
-    async getDadosParaRelatorio() {
+    validarInputs() {
+        if (!state.dataInicio || !state.dataFim) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Os campos de data são obrigatórios.'
+            });
+            return false;
+        }
+
         if (isBefore(parseISO(state.dataFim), parseISO(state.dataInicio))) {
             Swal.fire({
                 icon: 'error',
                 title: 'Erro',
                 text: 'A data final não pode ser anterior à data inicial.'
             });
+            return false;
+        }
+
+        return true;
+    },
+
+    async getDadosParaRelatorio() {
+        if (!this.validarInputs()) {
             return;
         }
 
@@ -47,14 +63,18 @@ export const actions = {
             state.dadosRelatorio = response.dadosRelatorio;
 
             if (state.dadosRelatorio.length === 0) {
-                Swal.fire('Atenção', 'Nenhum dado foi retornado para os filtros aplicados.', 'warning');
+                Swal.fire({
+
+                    icon: 'warning',
+                    text: 'Não foi possível obter os dados do relatório.'
+                });
             }
         } catch (error) {
             console.error('Error fetching data:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Erro ao buscar dados',
-                text: 'Não foi possível obter os dados do relatório. Tente novamente mais tarde.'
+                text: 'Não foi possível obter os dados do relatório.'
             });
         } finally {
             state.loading = false;
@@ -62,11 +82,11 @@ export const actions = {
     },
 
     async onClickImprimir() {
-        if (!actions.validarInputs()) {
+        if (!this.validarInputs()) {
             return;
         }
 
-        if (!state.dadosRelatorio) {
+        if (!state.dadosRelatorio || state.dadosRelatorio.length === 0) {
             Swal.fire({
                 icon: 'warning',
                 text: 'Não há dados para realizar a impressão.',
@@ -76,16 +96,7 @@ export const actions = {
 
         try {
             state.loading = true;
-            let relatorio = state.dadosRelatorio;
-            const relatorioAjustado = actions.formatarDadosImpressao([...relatorio]);
-
-            if (!relatorioAjustado || !relatorioAjustado) {
-                Swal.fire({
-                    icon: 'warning',
-                    text: 'Não há dados ajustados para imprimir.',
-                });
-                return;
-            }
+            const relatorioAjustado = this.formatarDadosImpressao([...state.dadosRelatorio]);
 
             const columns: iColumnPrint[] = [
                 { key: 'DATA', label: 'Data', align: 'left' },
@@ -112,9 +123,6 @@ export const actions = {
         }
     },
 
-
-
-
     formatarDadosImpressao(data: any[]) {
         return data.map(item => ({
             ...item,
@@ -122,15 +130,8 @@ export const actions = {
         }));
     },
 
-
-
     getClassCorLinha(dados: any) {
         let classe = dados.index % 2 == 0 ? 'cor-zebrada-1' : 'cor-zebrada-2';
         return { class: classe };
     },
-
 };
-
-
-
-

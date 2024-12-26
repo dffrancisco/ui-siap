@@ -6,7 +6,7 @@ export interface iParamsUsoConsumo {
 
 export interface iDadosUsoConsumo {
     ID_CONSUMO: number;
-    DATA: string;
+    DATA: Date;
     NUM_NOTA: number;
     DESCRICAO: string;
     CHAVE: string;

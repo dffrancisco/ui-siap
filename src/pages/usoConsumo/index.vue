@@ -17,12 +17,15 @@ onMounted(() => {
         class="d-flex justify-end align-center"
         no-gutters
       >
-        <v-col cols="3">
+        <v-col
+          cols="3"
+          class="me-3"
+        >
           <v-text-field
-            label="Data de Inicio"
+            label="Data de Início"
             id="dataInicio"
             class="dataInicio"
-            type="Date"
+            type="date"
             v-model="state.dataInicio"
             :clearable="false"
           ></v-text-field>
@@ -33,7 +36,7 @@ onMounted(() => {
             label="Data de Fim"
             id="dataFim"
             class="dataFim"
-            type="Date"
+            type="date"
             v-model="state.dataFim"
             :clearable="false"
           ></v-text-field>
@@ -62,8 +65,7 @@ onMounted(() => {
         height="350px"
         fixed-header
         :row-props="actions.getClassCorLinha"
-      >
-      </v-data-table>
+      ></v-data-table>
 
       <div class="d-flex justify-end pt-5">
         <v-btn
@@ -110,5 +112,9 @@ onMounted(() => {
 
 .cor-zebrada-1 {
   background-color: #f0f0f0;
+}
+
+.me-3 {
+  margin-right: 16px;
 }
 </style>
