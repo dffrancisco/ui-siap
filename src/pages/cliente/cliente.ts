@@ -267,17 +267,6 @@ export const actions = {
             return false;
         }
 
-        const email = state.email ? utils.validMail(state.email) : true;
-        const emailParaBoletos = state.emailParaBoletos ? utils.validMail(state.emailParaBoletos) : true;
-
-        if (!email || !emailParaBoletos) {
-            Swal.fire({
-                icon: "warning",
-                text: "E-mail inválido!",
-            });
-            return false;
-        }
-
         actions.insertOuUpdateCliente();
         return true;
     },
@@ -439,22 +428,31 @@ export const actions = {
             substituirVazio(state.email) + "|";
 
         try {
-            await navigator.clipboard.writeText(dadosCliente);
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = dadosCliente;
 
-            Swal.fire({
-                icon: "success",
-                title: "Dados do cliente copiados para a área de transferência!",
-                showConfirmButton: false,
-                timer: 1500,
-            });
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            const sucesso = document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
+
+            if (sucesso) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Dados do cliente copiados para a área de transferência!",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             Swal.fire({
                 icon: "error",
                 text: "Ocorreu um erro ao copiar os dados do cliente.",
             });
         }
     },
+
 
     async buscarCNAE() {
         if (!state.cnpjMode) {
