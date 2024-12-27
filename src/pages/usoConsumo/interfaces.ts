@@ -1,19 +1,18 @@
-export interface iParamsUsoConsumo {
-    dataInicio: string;
-    dataFim: string;
-}
-
 
 export interface iDadosUsoConsumo {
-    ID_CONSUMO: number;
+    ID_USO_CONSUMO: number;
     DATA: Date;
-    NUM_NOTA: number;
     DESCRICAO: string;
     CHAVE: string;
     VALOR: number;
-    page: number;
 }
 
 export interface iResponseUsoConsumo {
     dadosRelatorio: iDadosUsoConsumo[];
+}
+
+
+export interface iParamsUsoConsumo {
+    dataInicio: string;
+    dataFim: string;
 }

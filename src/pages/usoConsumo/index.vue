@@ -50,7 +50,7 @@ onMounted(() => {
             color="primary"
             icon="mdi-magnify"
             size="36px"
-            @click="actions.validarInputs"
+            @click="actions.onClickBuscar"
           >
             <v-icon left>mdi-magnify</v-icon>
           </v-btn>
@@ -64,6 +64,7 @@ onMounted(() => {
         :headers="state.headers"
         height="350px"
         fixed-header
+        :loading="state.loading"
         :row-props="actions.getClassCorLinha"
       ></v-data-table>
 
