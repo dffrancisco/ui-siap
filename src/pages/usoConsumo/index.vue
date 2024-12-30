@@ -11,14 +11,15 @@ onMounted(() => {
   <v-container>
     <v-card
       class="pa-5 ma-auto"
-      style="max-width: 900px"
+      :max-width="900"
+      :max-height="600"
     >
       <v-row
         class="d-flex justify-end align-center"
         no-gutters
       >
         <v-col
-          cols="3"
+          cols="2"
           class="me-3"
         >
           <v-text-field
@@ -31,7 +32,7 @@ onMounted(() => {
           ></v-text-field>
         </v-col>
 
-        <v-col cols="3">
+        <v-col cols="2">
           <v-text-field
             label="Data de Fim"
             id="dataFim"
@@ -44,7 +45,7 @@ onMounted(() => {
 
         <v-col
           cols="1"
-          class="d-flex justify-end"
+          class="btnPesquisar"
         >
           <v-btn
             color="primary"
@@ -81,12 +82,7 @@ onMounted(() => {
       </div>
     </v-card>
 
-    <div
-      id="pnCodigoTela"
-      class="mt-3"
-    >
-      Uso_Consumo
-    </div>
+    <div id="pnCodigoTela"> Uso_Consumo </div>
 
     <v-overlay
       :model-value="state.loading"
@@ -117,5 +113,11 @@ onMounted(() => {
 
 .me-3 {
   margin-right: 16px;
+}
+
+.btnPesquisar {
+  display: flex;
+  align-items: left;
+  margin-left: 16px;
 }
 </style>
