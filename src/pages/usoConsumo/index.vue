@@ -85,7 +85,7 @@ onMounted(() => {
       id="pnCodigoTela"
       class="mt-3"
     >
-      Avaliação_Estoque
+      Uso_Consumo
     </div>
 
     <v-overlay
