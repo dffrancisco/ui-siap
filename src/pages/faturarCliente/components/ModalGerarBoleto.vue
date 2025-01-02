@@ -187,20 +187,20 @@ const actions = {
       const data = await serviceFaturarCliente.gerarBoletos(param);
 
       if (data.success) {
-        Swal.fire({
+        await Swal.fire({
           icon: "success",
           title: data.msg,
         });
 
         actions.closeModal(true);
       } else {
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           title: data.msg,
         });
       }
     } catch (error) {
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
         title: "Ocorreu um erro ao gerar os boletos.",
         text: error.message,
