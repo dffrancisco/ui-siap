@@ -144,7 +144,7 @@ const actions = {
     for (let i = 0; i < parcelas; i++) {
       boletos.push({
         DATA_VENCIMENTO: datasVencimento[i],
-        VALOR: valorBoletoParcelado,
+        VALOR: parseFloat(valorBoletoParcelado.toFixed(2)),
       });
     }
 
@@ -196,15 +196,16 @@ const actions = {
       } else {
         await Swal.fire({
           icon: "error",
-          title: data.msg,
+          title: "Ocorreu um erro ao gerar o(s) boleto(s).",
         });
+        console.error(data.msg);
       }
     } catch (error) {
       await Swal.fire({
         icon: "error",
-        title: "Ocorreu um erro ao gerar os boletos.",
-        text: error.message,
+        title: "Ocorreu um erro inesperado.",
       });
+      console.error(error);
     } finally {
       state.loading = false;
     }
