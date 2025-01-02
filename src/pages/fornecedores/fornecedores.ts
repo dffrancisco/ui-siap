@@ -63,9 +63,9 @@ export const actions = {
             height: 160,
             count: true,
             columns: {
-                CNPJ: { dataField: "CGC_FORNECEDOR" },
+                CNPJ: { dataField: "CGC_FORNECEDOR", width: "20%" },
                 "Razão Social": { dataField: "RAZAO_SOCIAL" },
-                Cidade: { dataField: "CIDADE", center: true },
+                Cidade: { dataField: "CIDADE", center: true, width: "22%" },
             },
             query: {
                 async execute(rs) {
@@ -159,6 +159,8 @@ export const actions = {
         const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
             RAZAO_SOCIAL: searchValue,
+            CGC_FORNECEDOR: searchValue,
+
 
         });
     },
@@ -259,45 +261,6 @@ export const actions = {
         }
     },
 
-    async insertFornecedor() {
-        try {
-            let newFields = <any>(
-                state.gridPrincipal.getElementSideBySideJson(true, false)
-            );
-
-            state.loading = true;
-            let data = await serviceFornecedores.toInsert(newFields);
-            state.loading = false;
-
-            let cidade = null;
-
-            if (newFields.COD_CIDADE) {
-                cidade = actions.encontrarCidades(newFields.COD_CIDADE);
-            }
-
-            state.gridPrincipal.insertLine({
-                ...newFields,
-                CIDADE: cidade,
-                ID_FORNECEDOR: data.ID_FORNECEDOR,
-            });
-
-
-
-            Swal.fire({
-                icon: "success",
-                text: "Fornecedor inserido com sucesso.",
-
-            });
-
-        } catch (error) {
-            state.loading = false;
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao inserir fornecedor",
-            });
-        }
-    },
-
 
     encontrarCidades(COD_CIDADE: number) {
         const cidadeEncontrada = state.listaCidades.find(cidade => {
@@ -356,7 +319,63 @@ export const actions = {
             return cidade
         }
 
+    },
 
+
+    async insertFornecedor() {
+        state.loading = true;
+
+        const param = {
+            CGC_FORNECEDOR: state.dbFornecedor.CGC_FORNECEDOR,
+            RAZAO_SOCIAL: state.dbFornecedor.RAZAO_SOCIAL,
+            NOME_FANTAZIA: state.dbFornecedor.NOME_FANTAZIA,
+            INSC_ESTADUAL: state.dbFornecedor.INSC_ESTADUAL,
+            ENDERECO: state.dbFornecedor.ENDERECO,
+            COD_CIDADE: state.dbFornecedor.COD_CIDADE,
+            BAIRRO: state.dbFornecedor.BAIRRO,
+            TELEFONE1: state.dbFornecedor.TELEFONE1,
+            TELEFONE2: state.dbFornecedor.TELEFONE2,
+            ID_REPRESENTANTE: state.dbFornecedor.ID_REPRESENTANTE,
+            CONTADO: state.dbFornecedor.CONTADO,
+            MUNICIPIO: state.dbFornecedor.MUNICIPIO,
+            CEP: state.dbFornecedor.CEP,
+            HOME_PAGE: state.dbFornecedor.HOME_PAGE,
+            EMAIL: state.dbFornecedor.EMAIL,
+            OBS: state.dbFornecedor.OBS,
+            CADASTRO: state.dbFornecedor.CADASTRO,
+            DELETADO: state.dbFornecedor.DELETADO,
+            ID_FORNECEDOR: state.dbFornecedor.ID_FORNECEDOR,
+            ID_EMPRESA: state.dbFornecedor.ID_EMPRESA,
+        };
+
+        try {
+
+            await serviceFornecedores.toInsert(param);
+
+
+            Swal.fire({
+                icon: "success",
+                text: "Fornecedor inserido com sucesso.",
+
+            });
+
+            state.dbFornecedor = { ...state.dbFornecedor, ...param };
+
+            const cidade = actions.encontrarCidades(param.COD_CIDADE);
+            state.gridPrincipal.dataSource({
+                ...param,
+                CIDADE: cidade,
+            });
+
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.msg || "Erro ao inserir fornecedor!",
+            });
+        } finally {
+            state.loading = false;
+        }
     },
 
     async updateFornecedor() {
@@ -414,7 +433,6 @@ export const actions = {
             state.loading = false;
         }
     },
-
 
     closeModal() {
         state.modalFornecedorOpened = false;

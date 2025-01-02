@@ -32,7 +32,7 @@ onUnmounted(() => {
               name="CGC_FORNECEDOR"
               class="obr ss"
               maxlength="18"
-              v-mask="'##.###.###/####-##'"
+              v-mask="'##.###.###.####-##'"
               autocomplete="off"
             />
           </v-col>
@@ -247,6 +247,7 @@ onUnmounted(() => {
                 class="ss"
                 :disabled="true"
             /></div>
+
             <div>
               <v-checkbox
                 v-model="state.isChecked"
