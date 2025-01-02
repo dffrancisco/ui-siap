@@ -2,6 +2,8 @@
 import { actions, state, eventListener } from "./fornecedores";
 import { onMounted, onUnmounted } from "vue";
 import ModalSelecionarFornecedor from "./components/modalRepresentantesFornecedores.vue";
+import { dataBrasil } from "@/ts/utils";
+import { computed } from "vue";
 
 onMounted(async () => {
   await actions.init();
@@ -220,7 +222,7 @@ onUnmounted(() => {
               v-model="state.dbFornecedor.COD_CIDADE"
               id="COD_CIDADE"
               name="COD_CIDADE"
-              class="ss"
+              class="obr ss"
               maxlength="50"
             >
               <option
@@ -239,11 +241,9 @@ onUnmounted(() => {
             <div
               ><span>Data de Cadastro</span>
               <input
-                v-model="state.dbFornecedor.CADASTRO"
-                type="date"
+                :value="actions.formatCadastroDate()"
                 id="CADASTRO"
                 name="CADASTRO"
-                v-mask="'##/##/####'"
                 class="ss"
                 :disabled="true"
             /></div>

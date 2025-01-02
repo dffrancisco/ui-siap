@@ -46,11 +46,11 @@ const getRepresentantes: iGetRepresentantesFunction = async (param, offset) => {
     return data;
 }
 
-const getDuplicidade: iGetDuplicityFunction = async ({ field, value }) => {
+const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {
     let { data } = await axios.post(caminho, {
         call: "getDuplicidade",
-        field,
         value,
+        field,
 
     });
     return data;
@@ -83,7 +83,7 @@ const toInativar = async (ID_FORNECEDOR: number, DELETADO: string | null) => {
 }
 
 const buscarCEP = async (cep: string) => {
-    let { data } = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+    let data = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
     return data;
 }
 

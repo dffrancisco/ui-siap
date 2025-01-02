@@ -1,19 +1,16 @@
 import { reactive, nextTick } from "vue";
-import { useEventListener } from "@vueuse/core";
 import Swal from "sweetalert2";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
 import serviceFornecedores from './services/fornecedores.service';
+import { dataBrasil } from "@/ts/utils";
 import {
     iFornecedor,
     iParamGetFornecedor,
     iRepresentantes,
     iCidades,
-    iGetFornecedoresResponse,
     iFieldDuplicity,
-
-
 } from "./interfaces";
 
 const openModal = () => {
@@ -35,10 +32,11 @@ export const state = reactive({
     toggleDisabled: false,
     cnpjDisabled: false,
     cepInserido: false,
-    representanteSelecionado: <iRepresentantes>{}
+    representanteSelecionado: <iRepresentantes>{},
 
 
 });
+
 
 export const eventListener = (event: KeyboardEvent) => {
     if (event.key === "F1") {
@@ -55,6 +53,14 @@ export const actions = {
         state.gridPrincipal.queryOpen({}, () => {
             state.gridPrincipal.focus();
         });
+
+    },
+
+    formatCadastroDate() {
+        if (state.dbFornecedor.CADASTRO) {
+            return dataBrasil(state.dbFornecedor.CADASTRO);
+        }
+        return "";
     },
 
     grids() {
@@ -84,7 +90,7 @@ export const actions = {
                     state.dbFornecedor = r as iFornecedor;
                 },
                 duplicity: {
-                    dataField: ['CGC_TRANSPORTADORA'],
+                    dataField: ['CGC_FORNECEDOR'],
                     async execute(rs) {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),
@@ -464,7 +470,7 @@ export const actions = {
         }
     },
 
-    async selecionarRepresentante(representanteSelecionado: iRepresentantes) {
+    selecionarRepresentante(representanteSelecionado: iRepresentantes) {
         state.representanteSelecionado = representanteSelecionado;
         actions.closeModal();
     },

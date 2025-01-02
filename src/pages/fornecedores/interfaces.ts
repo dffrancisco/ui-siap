@@ -16,7 +16,7 @@ export interface iFornecedor {
     HOME_PAGE: string;
     EMAIL: string;
     OBS?: string;
-    CADASTRO: Date;
+    CADASTRO: string;
     DELETADO: string;
     ID_EMPRESA: number;
     ID_FORNECEDOR: number;
@@ -24,6 +24,7 @@ export interface iFornecedor {
     DESCRICAO?: string;
     COD_IBGE?: string;
     TELEFONE?: number;
+
 
 }
 

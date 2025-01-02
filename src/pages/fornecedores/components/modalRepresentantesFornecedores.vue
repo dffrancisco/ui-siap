@@ -82,7 +82,7 @@ const actions = {
   },
 
   async btnSearch() {
-    const searchValue = state.edtSearch.toUpperCase();
+    const searchValue = state.edtSearch?.trim().toUpperCase();
 
     if (!searchValue) {
       Swal.fire({
