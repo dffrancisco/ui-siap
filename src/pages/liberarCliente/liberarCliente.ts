@@ -359,18 +359,6 @@ export const actions = {
             }
         }
 
-        //se nao divirBoleto, necessario dia vencimento 
-        if (state.tipoCompra == "Faturado" && state.dividirBoleto == 'Não') {
-            if (!state.diaVencimento) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Preencha o dia de vencimento",
-                });
-                actions.alterar()
-                return false
-            }
-        }
-
         //validar dia vencimento
         if (state.diaVencimento > 31) {
             Swal.fire({
@@ -412,7 +400,7 @@ export const actions = {
             tipoCompra: state.tipoCompra === "Faturado" ? 0 : 1,
             creditoLimiteAtual: state.creditoLimiteAtual,
             creditoLimiteNovo: parseFloat(state.creditoLimite.replace(/\./g, '').replace(',', '.')),
-            diaVencimento: state.diaVencimento,
+            diaVencimento: state.diaVencimento || null,
             tipoFaturamento: tipoFaturamento,
             divideBoleto: divideBoleto,
         }
