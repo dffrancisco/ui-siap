@@ -36,9 +36,10 @@ onMounted(async () => {
                   { text: 'Rede', value: 'REDE' },
                   { text: 'Telefonia', value: 'TELEFONIA' },
                   { text: 'Alarme', value: 'ALARME' },
-                  { text: 'Câmera', value: 'EQUICAMERAPAMENTO' },
+                  { text: 'Câmera', value: 'CAMERA' },
                   { text: 'Elétrica', value: 'ELETRICA' },
                   { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
+                  { text: 'RH / Financeiro / ADM', value: 'RH / FINANCEIRO / ADM' },
                 ]"
                 item-title="text"
                 item-value="value"
@@ -158,7 +159,13 @@ onMounted(async () => {
                 density="compact"
                 icon="mdi-eye"
                 @click="
-                  actions.verDetalhesChamado(item.KEY_JIRA, item.DESCRICAO, item.SOLICITANTE, item.dataFormatada)
+                  actions.verDetalhesChamado(
+                    item.KEY_JIRA,
+                    item.DESCRICAO,
+                    item.SOLICITANTE,
+                    item.dataFormatada,
+                    item.GRUPO_EMAIL
+                  )
                 "
               ></v-btn>
             </template>
