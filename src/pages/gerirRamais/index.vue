@@ -127,42 +127,10 @@ onUnmounted(() => {
         id="pnBotoes"
         class="mt-4 d-flex justify-center"
       >
-        <v-btn
-          size="30"
-          color="primary"
-          class="ma-2"
-          @click="actions.btnInsert"
-        >
-          Inserir
-        </v-btn>
-        <v-btn
-          size="30"
-          color="warning"
-          class="ma-2"
-          @click="actions.btnEdit"
-        >
-          Alterar
-        </v-btn>
-        <v-btn
-          size="30"
-          color="error"
-          class="ma-2"
-          @click="actions.btnDelete"
-        >
-          Excluir
-        </v-btn>
-        <v-btn
-          size="30"
-          color="secondary"
-          class="ma-2"
-          @click="actions.print"
-        >
-          Imprimir
-        </v-btn>
       </div>
     </v-card>
 
-    <div id="pnCodigoTela">Gerenciar Ramais</div>
+    <div id="pnCodigoTela">Gerir Ramais</div>
   </v-container>
 </template>
 
