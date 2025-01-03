@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import moment from "moment";
-import { onMounted, reactive, watch } from "vue";
+import { onMounted, reactive } from "vue";
 import serviceFornecedores from "../services/fornecedores.service";
 import Swal from "sweetalert2";
 import { iRepresentantes } from "../interfaces";
@@ -81,31 +81,24 @@ const actions = {
     }
   },
 
-  async btnSearch() {
-    const searchValue = state.edtSearch.toUpperCase();
-
-    if (!searchValue) {
-      Swal.fire({
-        text: "Por favor, digite um termo para buscar",
-        icon: "warning",
-      });
-      return;
-    }
-
-    state.gridRepresentante.queryOpen({
-      NOME: searchValue.toUpperCase(),
-    });
-  },
-
   async search() {
     const searchValue = state.edtSearch?.toUpperCase();
     state.gridRepresentante.queryOpen({
       NOME: searchValue,
+      EMAIL: searchValue,
     });
   },
 
   selecionarRepresentante() {
     const representanteSelecionado = state.gridRepresentante.dataSource();
+    if (!representanteSelecionado) {
+      Swal.fire({
+        text: "Nenhum representante selecionado",
+        icon: "warning",
+      });
+      return;
+    }
+
     emits("selecionarRepresentante", representanteSelecionado);
     actions.closeModal();
   },
@@ -114,6 +107,7 @@ const actions = {
 onMounted(async () => {
   await actions.init();
 
+  // Inicializa a grid com todos os representantes
   state.gridRepresentante.queryOpen({});
 });
 </script>
@@ -123,11 +117,11 @@ onMounted(async () => {
     <div id="representanteCampos">
       <div class="d-flex ga-4">
         <v-text-field
-          v-model="state.selectedName"
+          v-model="state.edtSearch"
           type="text"
-          placeholder="Digite o nome do representante"
+          placeholder="Digite o nome ou e-mail do representante"
           density="compact"
-          @keydown.enter.prevent="actions.btnSearch"
+          @keydown.enter.prevent="actions.search"
           @keydown.arrow.down.prevent="state.gridRepresentante.focus()"
         />
         <div class="d-flex align-center">
@@ -135,7 +129,7 @@ onMounted(async () => {
             icon="mdi-magnify"
             size="34"
             color="primary"
-            @click="actions.btnSearch"
+            @click="actions.search"
           />
         </div>
       </div>
