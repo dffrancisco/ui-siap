@@ -478,16 +478,6 @@ export const actions = {
     },
 
 
-
-    validarEmail() {
-        let email = state.dbFornecedor.EMAIL;
-
-        let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        return regexEmail.test(email);
-
-    },
-
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
             const data = await serviceFornecedores.getDuplicidade({ value, field });
@@ -496,7 +486,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                text: 'Cidade já Cadastrada'
+                text: 'Fornecedor já Cadastrada'
             })
         }
     },
