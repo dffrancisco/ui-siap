@@ -24,16 +24,12 @@ export interface iFornecedor {
     DESCRICAO?: string;
     COD_IBGE?: string;
     TELEFONE?: number;
-
-
 }
-
 
 export interface iParamGetFornecedor {
     offset?: number;
     param: object;
     checkboxAtiva?: boolean;
-
 }
 
 export interface iGetDuplicityResponse {
@@ -47,7 +43,7 @@ export interface iFieldDuplicity {
 
 export interface iRepresentantes {
     ID_REPRESENTANTE: number;
-    NOME: string;
+    NOME: any;
     EMAIL: string;
     TELEFONE: number;
 }

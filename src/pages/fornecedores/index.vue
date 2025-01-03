@@ -2,8 +2,6 @@
 import { actions, state, eventListener } from "./fornecedores";
 import { onMounted, onUnmounted } from "vue";
 import ModalSelecionarFornecedor from "./components/modalRepresentantesFornecedores.vue";
-import { dataBrasil } from "@/ts/utils";
-import { computed } from "vue";
 
 onMounted(async () => {
   await actions.init();
