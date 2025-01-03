@@ -472,6 +472,7 @@ export const actions = {
 
     selecionarRepresentante(representanteSelecionado: iRepresentantes) {
         state.dbFornecedor.NOME = representanteSelecionado.NOME
+        state.dbFornecedor.ID_REPRESENTANTE = representanteSelecionado.ID_REPRESENTANTE
         state.representanteSelecionado = representanteSelecionado;
         actions.closeModal();
     },
