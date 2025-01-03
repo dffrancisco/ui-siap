@@ -235,7 +235,8 @@ export const actions = {
 
     validarInsertOuUpdate() {
 
-        if (state.idCliente && state.produtorRural == 'N') {
+        //Se for cliente PF que não seja produtor rural, não pode ter inscrição estadual
+        if (!state.cnpjMode && state.produtorRural == 'N') {
             state.inscricaoEstadual = ""
         }
 
