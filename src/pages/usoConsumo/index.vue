@@ -19,7 +19,7 @@ onMounted(() => {
         no-gutters
       >
         <v-col
-          cols="2"
+          cols="3"
           class="me-3"
         >
           <v-text-field
@@ -29,10 +29,11 @@ onMounted(() => {
             type="date"
             v-model="state.dataInicio"
             :clearable="false"
+            @keydown.enter="state.inputDataFinal.focus()"
           ></v-text-field>
         </v-col>
 
-        <v-col cols="2">
+        <v-col cols="3">
           <v-text-field
             label="Data de Fim"
             id="dataFim"
@@ -40,6 +41,7 @@ onMounted(() => {
             type="date"
             v-model="state.dataFim"
             :clearable="false"
+            @keydown.enter.prevent="actions.onClickBuscar"
           ></v-text-field>
         </v-col>
 
@@ -59,7 +61,7 @@ onMounted(() => {
       </v-row>
 
       <v-data-table
-        id="tabela"
+        id="tabelaUsoConsumo"
         class="mt-4 pt-5"
         :items="state.dadosRelatorio"
         :headers="state.headers"
@@ -109,10 +111,6 @@ onMounted(() => {
 
 .cor-zebrada-1 {
   background-color: #f0f0f0;
-}
-
-.me-3 {
-  margin-right: 16px;
 }
 
 .btnPesquisar {

@@ -9,7 +9,7 @@ export const state = reactive({
     loading: false,
     dataInicio: moment().startOf("month").format("YYYY-MM-DD"),
     dataFim: moment().endOf("month").format("YYYY-MM-DD"),
-    dadosRelatorio: [] as iDadosUsoConsumo[],
+    dadosRelatorio: <iDadosUsoConsumo[]>[],
     dataInicioImpressao: null,
     dataFimImpressao: null,
     inputDataFinal: <HTMLInputElement>{},
@@ -24,7 +24,7 @@ export const state = reactive({
 
 export const actions = {
     async init() {
-        state.inputDataFinal = <any>document.getElementById("DATA_FIM");
+        state.inputDataFinal = <any>document.getElementById("dataFim");
         await this.onClickBuscar();
     },
 
@@ -32,7 +32,7 @@ export const actions = {
         if (!state.dataInicio || !state.dataFim) {
             Swal.fire({
                 icon: "warning",
-                text: "Nenhum dado encontrado para relatorio."
+                text: "Preencha data inicio e data fim."
             });
             return false;
         }
@@ -74,9 +74,9 @@ export const actions = {
                 dataFim: state.dataFim,
             });
 
-            if (data && data) {
+            if (data) {
 
-                state.dadosRelatorio = data.map((item) => ({
+                state.dadosRelatorio = data.map((item: iDadosUsoConsumo) => ({
                     ...item,
                     DATA: (item.DATA),
                     VALOR: (item.VALOR),
@@ -90,6 +90,9 @@ export const actions = {
                 });
                 state.dadosRelatorio = [];
             }
+
+
+
         } catch (error) {
             console.error("Erro ao buscar dados:", error);
             Swal.fire({
@@ -103,15 +106,8 @@ export const actions = {
 
     async onClickImprimir() {
         try {
-            if (!state.dadosRelatorio || state.dadosRelatorio.length === 0) {
-                Swal.fire({
-                    icon: "warning",
-                    text: "Não há dados para realizar a impressão.",
-                });
-                return;
-            }
-
-            state.loading = true;
+            let relatorio = state.dadosRelatorio
+            const relatorioFormatado = actions.formatarDadosImpressao([...relatorio])
 
             const columns: iColumnPrint[] = [
                 { key: "DATA", label: "Data", align: "left" },
@@ -129,7 +125,8 @@ export const actions = {
                 </div>
             `;
 
-            await utils.printComCabecalho(columns, state.dadosRelatorio, titulo);
+            await utils.printComCabecalho(columns, relatorioFormatado, titulo);
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -138,6 +135,14 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    formatarDadosImpressao(data) {
+        return data.map(item => ({
+            ...item,
+            DATA: item.DATA ? utils.dataBrasil(item.DATA) : '-----',
+            VALOR: item.VALOR ? utils.formatValor(item.VALOR) : '-----',
+        }));
     },
 
     getClassCorLinha(dados: any) {
