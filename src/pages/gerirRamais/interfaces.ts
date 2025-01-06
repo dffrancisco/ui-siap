@@ -1,77 +1,72 @@
 
 export interface iRamal {
-    ID_RAMAL: number;
-    ID_SOCIEDADE: number;
-    ID_SETOR: number;
-    RAMAL: string;
-    NOME: string;
-    ID_EMPRESA: number;
+    id_ramal: number;
+    id_sociedade: number;
+    id_setor: number;
+    ramal: string;
+    nome: string;
+
 }
 
-
 export interface iParamToInsertRamal {
-    ID_SOCIEDADE: number;
-    ID_SETOR: number;
-    RAMAL: string;
-    NOME: string;
+    id_sociedade: number;
+    id_setor: number;
+    ramal: string;
+    nome: string;
 }
 
 
 export interface iParamToUpdateRamal {
-    ID_RAMAL: number;
-    ID_SOCIEDADE: number;
-    ID_SETOR: number;
-    RAMAL: string;
-    NOME: string;
+    id_ramal: number;
+    id_sociedade: number;
+    id_setor: number;
+    ramal: string;
+    nome: string;
 }
 
 
 export interface iParamToGetRamal {
     offset: number;
     param: {
-        ID_RAMAL?: number;
-        ID_SOCIEDADE?: number;
-        ID_SETOR?: number;
-        RAMAL?: string;
-        NOME?: string;
+        id_ramal?: number;
+        id_sociedade?: number;
+        id_setor?: number;
+        ramal?: string;
+        nome?: string;
     };
 }
 
 export interface iGetDuplicityResponseRamal {
-    RAMAL?: string;
-    ID_SOCIEDADE?: number;
-    ID_SETOR?: number;
+    ramal?: string;
+    id_sociedade?: number;
+    id_setor?: number;
 }
 
 
 export interface iSetor {
-    ID_SETOR: number;
-    NOME: string;
-    ID_EMPRESA: number;
+    id_setor: number;
+    nome: string;
+
 }
 
-
 export interface iParamToInsertSetor {
-    NOME: string;
+    nome: string;
 }
 
 
 export interface iParamToUpdateSetor {
-    ID_SETOR: number;
-    NOME: string;
+    id_setor: number;
+    nome: string;
 }
-
 
 export interface iParamToGetSetor {
     offset: number;
     param: {
-        ID_SETOR?: number;
-        NOME?: string;
+        id_setor?: number;
+        nome?: string;
     };
 }
 
-
 export interface iToDeleteResponse {
-    delete: string;
-    ID_RAMAL?: number;
+    id_ramal?: number;
 }

@@ -25,34 +25,34 @@ onUnmounted(() => {
           <v-col cols="6">
             <span>Loja</span>
             <select
-              v-model="state.dbRamal.ID_SOCIEDADE"
-              id="lojaSelect"
-              name="lojaSelect"
+              v-model="state.dbRamal.id_sociedade"
+              id="loja"
+              name="loja"
               class="obr ss"
             >
               <option
                 v-for="loja in state.lojas"
-                :key="loja.ID_SOCIEDADE"
-                :value="loja.ID_SOCIEDADE"
+                :key="loja.id_sociedade"
+                :value="loja.id_sociedade"
               >
-                {{ loja.NOME }}
+                {{ loja.nome }}
               </option>
             </select>
           </v-col>
           <v-col cols="6">
             <span>Setor</span>
             <select
-              v-model="state.dbRamal.ID_SETOR"
-              id="setorSelect"
-              name="setorSelect"
+              v-model="state.dbRamal.id_setor"
+              id="setor"
+              name="setor"
               class="obr ss"
             >
               <option
                 v-for="setor in state.setores"
-                :key="setor.ID_SETOR"
-                :value="setor.ID_SETOR"
+                :key="setor.id_setor"
+                :value="setor.id_setor"
               >
-                {{ setor.NOME }}
+                {{ setor.nome }}
               </option>
             </select>
           </v-col>
@@ -61,7 +61,7 @@ onUnmounted(() => {
           <v-col cols="6">
             <span>Nome</span>
             <input
-              v-model="state.dbRamal.NOME"
+              v-model="state.dbRamal.nome"
               type="text"
               :maxlength="50"
               id="nome"
@@ -73,7 +73,7 @@ onUnmounted(() => {
           <v-col cols="6">
             <span>Ramal</span>
             <input
-              v-model="state.dbRamal.RAMAL"
+              v-model="state.dbRamal.ramal"
               type="text"
               id="ramal"
               name="ramal"

@@ -17,6 +17,7 @@ export const state = reactive({
     setores: <iSetor[]>[],
     lojas: <any[]>[],
     loading: false,
+    nomesetor: <iSetor>{}
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -31,7 +32,7 @@ export const actions = {
     async init() {
         actions.grids();
         await actions.getSetores();
-        state.gridPrincipal.queryOpen({ NOME: "" }, () => {
+        state.gridPrincipal.queryOpen({ nome: "" }, () => {
             state.gridPrincipal.focus();
         });
     },
@@ -42,10 +43,10 @@ export const actions = {
             height: 200,
             count: true,
             columns: {
-                Loja: { dataField: "LOJA" },
-                Setor: { dataField: "SETOR" },
-                Nome: { dataField: "NOME" },
-                Ramal: { dataField: "RAMAL", width: "10%", center: true },
+                Loja: { dataField: "loja" },
+                Setor: { dataField: "id_setor" }, // ajustar dps
+                Nome: { dataField: "nome" },
+                Ramal: { dataField: "ramal", width: "10%", center: true },
             },
             query: {
                 async execute(rs) {
@@ -168,7 +169,7 @@ export const actions = {
     async btnSave() {
         if (utils.validaOBR()) return false;
 
-        if (!state.dbRamal.NOME || !state.dbRamal.RAMAL) {
+        if (!state.dbRamal.nome || !state.dbRamal.ramal) {
             Swal.fire({
                 icon: "warning",
                 title: "Campos obrigatórios",
@@ -199,7 +200,7 @@ export const actions = {
 
     async toDelete() {
         try {
-            const id_ramal = state.dbRamal.ID_RAMAL;
+            const id_ramal = state.dbRamal.id_ramal;
             state.loading = true;
             await serviceGerirRamais.toDelete(id_ramal);
             state.gridPrincipal.deleteLine();
@@ -222,10 +223,10 @@ export const actions = {
         try {
             state.loading = true;
             const newFields: iParamToInsertRamal = {
-                ID_SOCIEDADE: state.dbRamal.ID_SOCIEDADE,
-                ID_SETOR: state.dbRamal.ID_SETOR,
-                RAMAL: state.dbRamal.RAMAL,
-                NOME: state.dbRamal.NOME,
+                id_sociedade: state.dbRamal.id_sociedade,
+                id_setor: state.dbRamal.id_setor,
+                ramal: state.dbRamal.ramal,
+                nome: state.dbRamal.nome,
             };
 
             await serviceGerirRamais.toInsert(newFields);
@@ -272,14 +273,13 @@ export const actions = {
     async search() {
         const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
-            NOME: searchValue,
-            ID_SETOR: searchValue,
-            RAMAL: searchValue,
+            loja: searchValue,
+
         });
     },
 
     async onClickImprimir() {
-        if (!state.dbRamal.NOME || !state.dbRamal.RAMAL) {
+        if (!state.dbRamal.nome || !state.dbRamal.ramal) {
             Swal.fire({
                 icon: 'warning',
                 text: 'Nome e Ramal são obrigatórios para impressão.',
@@ -310,9 +310,9 @@ export const actions = {
             }
 
             const columns: iColumnPrint[] = [
-                { key: 'NOME', label: 'Nome', align: 'left' },
-                { key: 'RAMAL', label: 'Ramal', align: 'left' },
-                { key: 'SETOR', label: 'Setor', align: 'left' },
+                { key: 'nome', label: 'Nome', align: 'left' },
+                { key: 'ramal', label: 'Ramal', align: 'left' },
+                { key: 'setor', label: 'Setor', align: 'left' },
             ];
 
             const titulo = `
