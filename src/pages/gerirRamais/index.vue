@@ -63,10 +63,10 @@ onUnmounted(() => {
             <input
               v-model="state.dbRamal.NOME"
               type="text"
+              :maxlength="50"
               id="nome"
               name="nome"
               class="obr ss"
-              maxlength="60"
               autocomplete="off"
             />
           </v-col>
@@ -127,6 +127,7 @@ onUnmounted(() => {
         id="pnBotoes"
         class="mt-4 d-flex justify-center"
       >
+        <div> </div>
       </div>
     </v-card>
 

@@ -2,8 +2,9 @@ import { nextTick, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
+import moment from 'moment';
 import { iRamal, iSetor, iParamToGetRamal, iParamToInsertRamal, iParamToUpdateRamal } from "./interfaces";
-import utils from "@/ts/utils";
+import utils, { iColumnPrint } from "@/ts/utils";
 import serviceGerirRamais from "./services/gerirRamais.service";
 import { useEventListener } from "@vueuse/core";
 
@@ -107,7 +108,6 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao exibir os ramais",
                 text: "Erro ao carregar ramais.",
             });
         } finally {
@@ -123,7 +123,6 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao carregar setores",
                 text: "Erro ao carregar setores.",
             });
         } finally {
@@ -268,6 +267,77 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    async search() {
+        const searchValue = state.edtSearch?.toUpperCase();
+        state.gridPrincipal.queryOpen({
+            NOME: searchValue,
+            ID_SETOR: searchValue,
+            RAMAL: searchValue,
+        });
+    },
+
+    async onClickImprimir() {
+        if (!state.dbRamal.NOME || !state.dbRamal.RAMAL) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Nome e Ramal são obrigatórios para impressão.',
+            });
+            return;
+        }
+
+        try {
+            state.loading = true;
+            let dadosRamais = state.gridPrincipal.dataSource();
+
+            if (!dadosRamais || dadosRamais.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Não há dados para realizar a impressão.',
+                });
+                return;
+            }
+
+            const dadosAjustados = actions.formatarDadosImpressao([...dadosRamais]);
+
+            if (!dadosAjustados || dadosAjustados.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Não há dados ajustados para imprimir.',
+                });
+                return;
+            }
+
+            const columns: iColumnPrint[] = [
+                { key: 'NOME', label: 'Nome', align: 'left' },
+                { key: 'RAMAL', label: 'Ramal', align: 'left' },
+                { key: 'SETOR', label: 'Setor', align: 'left' },
+            ];
+
+            const titulo = `
+                <div style="text-align: center;">
+                    <strong style="font-size: 16px;"> Relatório de Ramais </strong>
+                </div>
+            `;
+
+            await utils.printComCabecalho(columns, dadosAjustados, titulo);
+        } catch (error) {
+            console.error("Erro ao imprimir o relatório:", error);
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao imprimir relatório.',
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    formatarDadosImpressao(data: any[]) {
+        return data.map(item => ({
+            ...item,
+            ULTIMA_ATUALIZACAO: item.ULTIMA_ATUALIZACAO ? moment(item.ULTIMA_ATUALIZACAO).format('DD/MM/YYYY') : '----',
+        }));
     },
 };
 
