@@ -1,8 +1,8 @@
 
 export interface iDadosUsoConsumo {
-    ID_USO_CONSUMO: number;
+    NUM_NOTA: number;
     DATA: string;
-    map: any;
+
     DESCRICAO: string;
     CHAVE: string;
     VALOR: number;
