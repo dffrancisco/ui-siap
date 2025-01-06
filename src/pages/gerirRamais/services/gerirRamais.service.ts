@@ -30,7 +30,7 @@ const getDuplicidade = async ({ value, field }: { value: string; field: string }
     return data;
 };
 
-const toInsertRamal = async (newFields: iParamToInsertRamal): Promise<iRamal> => {
+const toInsert = async (newFields: iParamToInsertRamal): Promise<iRamal> => {
     const { data } = await axios.post(caminho, {
         call: "insertRamal",
         param: newFields,
@@ -38,7 +38,7 @@ const toInsertRamal = async (newFields: iParamToInsertRamal): Promise<iRamal> =>
     return data;
 };
 
-const toUpdateRamal = async (param: iParamToUpdateRamal): Promise<iRamal> => {
+const toUpdate = async (param: iParamToUpdateRamal): Promise<iRamal> => {
     const { data } = await axios.post(caminho, {
         call: "updateRamal",
         param,
@@ -46,7 +46,7 @@ const toUpdateRamal = async (param: iParamToUpdateRamal): Promise<iRamal> => {
     return data;
 };
 
-const toDeleteRamal = async (id_ramal: number): Promise<iToDeleteResponse> => {
+const toDelete = async (id_ramal: number): Promise<iToDeleteResponse> => {
     const { data } = await axios.post(caminho, {
         call: "deleteRamal",
         id_ramal,
@@ -67,8 +67,8 @@ const getSetores = async ({ param, offset }: iParamToGetSetor): Promise<iSetor[]
 export default {
     getRamais,
     getDuplicidade,
-    toInsertRamal,
-    toUpdateRamal,
-    toDeleteRamal,
+    toInsert,
+    toUpdate,
+    toDelete,
     getSetores,
 };
