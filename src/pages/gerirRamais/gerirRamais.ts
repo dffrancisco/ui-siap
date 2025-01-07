@@ -279,109 +279,85 @@ export const actions = {
     },
 
     async onClickImprimir() {
-        if (!state.dbRamal.nome || !state.dbRamal.ramal) {
-            Swal.fire({
-                icon: 'warning',
-                text: 'Nome e Ramal são obrigatórios para impressão.',
-            });
-            return;
-        }
-
         try {
             state.loading = true;
-            let dadosRamais = state.gridPrincipal.dataSource();
 
-            if (!dadosRamais || dadosRamais.length === 0) {
+            const dadosRamais = state.gridPrincipal.dataSource();
+            const dadosTratados = Array.isArray(dadosRamais) ? dadosRamais : [dadosRamais];
+
+            console.log("Dados tratados para impressão:", dadosTratados);
+
+            if (!dadosTratados.length) {
                 Swal.fire({
-                    icon: 'warning',
-                    text: 'Não há dados para realizar a impressão.',
+                    icon: "warning",
+                    text: "Não há dados para realizar a impressão.",
                 });
                 return;
             }
 
-            const dadosAjustados = this.formatarDadosImpressao([...dadosRamais]);
+            const dadosAjustados = actions.formatarDadosImpressao(dadosTratados);
 
-            if (!dadosAjustados || dadosAjustados.length === 0) {
+            if (!dadosAjustados || !dadosAjustados.length) {
                 Swal.fire({
-                    icon: 'warning',
-                    text: 'Não há dados ajustados para imprimir.',
+                    icon: "warning",
+                    text: "Não há dados ajustados para imprimir.",
                 });
                 return;
             }
 
             const titulo = `
                 <div style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px;">
-                    Relatório de Ramais
+                    Relatorio Gerir Ramais
                 </div>
             `;
 
-            const corpo = dadosAjustados
-                .reduce((html, loja) => {
-                    let setoresHtml = loja.setores
-                        .map(setor => `
-                            <tr>
-                                <td style="text-align: left; border: 1px solid #ccc; padding: 5px;">${setor.nome}</td>
-                                <td style="text-align: left; border: 1px solid #ccc; padding: 5px;">${setor.ramal}</td>
-                                <td style="text-align: left; border: 1px solid #ccc; padding: 5px;">${setor.setor}</td>
-                            </tr>
-                        `).join("");
+            const corpo = dadosAjustados.map((loja) => {
+                const setoresHtml = loja.setores
+                    .map(
+                        (setor) => `
+                            <div style="display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid #ccc;">
+                                <span>${setor.nome}</span>
+                                <span>${setor.ramal}</span>
+                                <span>${setor.setor}</span>
+                            </div>`
+                    )
+                    .join("");
 
-                    return html + `
-                        <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
-                            <thead>
-                                <tr>
-                                    <th colspan="3" style="background-color: #f2f2f2; text-align: left; padding: 5px;">
-                                        ${loja.nome}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${setoresHtml}
-                            </tbody>
-                        </table>
-                    `;
-                }, "");
+                return `
+                    <div style="flex: 1 1 calc(33.333% - 20px); padding: 10px; border: 1px solid #ccc; margin-bottom: 20px;">
+                        <div style="font-weight: bold; margin-bottom: 10px; text-align: center;">
+                            ${loja.nome}
+                        </div>
+                        ${setoresHtml}
+                    </div>
+                `;
+            });
 
             const layout = `
                 <html>
                     <head>
                         <style>
-                            body {
-                                font-family: Arial, sans-serif;
-                                font-size: 14px;
-                            }
-                            table {
-                                width: 100%;
-                                border-collapse: collapse;
-                            }
-                            th, td {
-                                border: 1px solid #ccc;
-                                padding: 8px;
-                                text-align: left;
-                            }
-                            th {
-                                background-color: #f2f2f2;
-                            }
+                            body { margin: 1; padding: 10px; font-family: Arial; }
+                            div { box-sizing: border-box; }
                         </style>
                     </head>
-                    <body>
-                        ${titulo}
-                        ${corpo}
-                    </body>
+                    <body>${titulo}<div>${corpo.join("")}</div></body>
                 </html>
             `;
 
-            const printWindow = window.open('', '_blank');
-            printWindow?.document.write(layout);
-            printWindow?.document.close();
-            printWindow?.focus();
-            printWindow?.print();
-            printWindow?.close();
+            const printWindow = window.open("", "_blank");
+            if (printWindow) {
+                printWindow.document.write(layout);
+                printWindow.document.close();
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            }
         } catch (error) {
             console.error("Erro ao imprimir o relatório:", error);
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao imprimir relatório.',
+                icon: "error",
+                text: "Erro ao imprimir relatório.",
             });
         } finally {
             state.loading = false;
@@ -389,9 +365,8 @@ export const actions = {
     },
 
     formatarDadosImpressao(data: any[]) {
-
-        const lojas = data.reduce((acc, item) => {
-            let loja = acc.find(l => l.nome === item.loja);
+        return data.reduce((acc, item) => {
+            let loja = acc.find((l) => l.nome === item.loja);
             if (!loja) {
                 loja = { nome: item.loja, setores: [] };
                 acc.push(loja);
@@ -403,9 +378,8 @@ export const actions = {
             });
             return acc;
         }, []);
-        return lojas;
     },
-
 };
+
 
 export default { state, actions, eventListener };
