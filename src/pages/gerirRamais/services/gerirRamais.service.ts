@@ -11,7 +11,6 @@ import {
 
 const caminho = "siap/gerirRamais";
 
-// Ramais
 const getRamais = async ({ param, offset }: iParamToGetRamal): Promise<iRamal[]> => {
     const { data } = await axios.post(caminho, {
         call: "getRamais",
@@ -32,7 +31,7 @@ const getDuplicidade = async ({ value, field }: { value: string; field: string }
 
 const toInsert = async (newFields: iParamToInsertRamal): Promise<iRamal> => {
     const { data } = await axios.post(caminho, {
-        call: "insertRamal",
+        call: "toInsert",
         param: newFields,
     });
     return data;
@@ -40,7 +39,7 @@ const toInsert = async (newFields: iParamToInsertRamal): Promise<iRamal> => {
 
 const toUpdate = async (param: iParamToUpdateRamal): Promise<iRamal> => {
     const { data } = await axios.post(caminho, {
-        call: "updateRamal",
+        call: "toUpdate",
         param,
     });
     return data;
@@ -48,7 +47,7 @@ const toUpdate = async (param: iParamToUpdateRamal): Promise<iRamal> => {
 
 const toDelete = async (id_ramal: number): Promise<iToDeleteResponse> => {
     const { data } = await axios.post(caminho, {
-        call: "deleteRamal",
+        call: "toDelete",
         id_ramal,
     });
     return data;

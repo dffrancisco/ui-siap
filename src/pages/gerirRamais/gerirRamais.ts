@@ -299,7 +299,7 @@ export const actions = {
                 return;
             }
 
-            const dadosAjustados = actions.formatarDadosImpressao([...dadosRamais]);
+            const dadosAjustados = this.formatarDadosImpressao([...dadosRamais]);
 
             if (!dadosAjustados || dadosAjustados.length === 0) {
                 Swal.fire({
@@ -309,19 +309,74 @@ export const actions = {
                 return;
             }
 
-            const columns: iColumnPrint[] = [
-                { key: 'nome', label: 'Nome', align: 'left' },
-                { key: 'ramal', label: 'Ramal', align: 'left' },
-                { key: 'setor', label: 'Setor', align: 'left' },
-            ];
-
             const titulo = `
-                <div style="text-align: center;">
-                    <strong style="font-size: 16px;"> Relatório de Ramais </strong>
+                <div style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px;">
+                    Relatório de Ramais
                 </div>
             `;
 
-            await utils.printComCabecalho(columns, dadosAjustados, titulo);
+            const corpo = dadosAjustados
+                .reduce((html, loja) => {
+                    let setoresHtml = loja.setores
+                        .map(setor => `
+                            <tr>
+                                <td style="text-align: left; border: 1px solid #ccc; padding: 5px;">${setor.nome}</td>
+                                <td style="text-align: left; border: 1px solid #ccc; padding: 5px;">${setor.ramal}</td>
+                                <td style="text-align: left; border: 1px solid #ccc; padding: 5px;">${setor.setor}</td>
+                            </tr>
+                        `).join("");
+
+                    return html + `
+                        <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th colspan="3" style="background-color: #f2f2f2; text-align: left; padding: 5px;">
+                                        ${loja.nome}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${setoresHtml}
+                            </tbody>
+                        </table>
+                    `;
+                }, "");
+
+            const layout = `
+                <html>
+                    <head>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                font-size: 14px;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                            }
+                            th, td {
+                                border: 1px solid #ccc;
+                                padding: 8px;
+                                text-align: left;
+                            }
+                            th {
+                                background-color: #f2f2f2;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${titulo}
+                        ${corpo}
+                    </body>
+                </html>
+            `;
+
+            const printWindow = window.open('', '_blank');
+            printWindow?.document.write(layout);
+            printWindow?.document.close();
+            printWindow?.focus();
+            printWindow?.print();
+            printWindow?.close();
         } catch (error) {
             console.error("Erro ao imprimir o relatório:", error);
             Swal.fire({
@@ -334,11 +389,23 @@ export const actions = {
     },
 
     formatarDadosImpressao(data: any[]) {
-        return data.map(item => ({
-            ...item,
-            ULTIMA_ATUALIZACAO: item.ULTIMA_ATUALIZACAO ? moment(item.ULTIMA_ATUALIZACAO).format('DD/MM/YYYY') : '----',
-        }));
+
+        const lojas = data.reduce((acc, item) => {
+            let loja = acc.find(l => l.nome === item.loja);
+            if (!loja) {
+                loja = { nome: item.loja, setores: [] };
+                acc.push(loja);
+            }
+            loja.setores.push({
+                nome: item.nome,
+                ramal: item.ramal,
+                setor: item.setor,
+            });
+            return acc;
+        }, []);
+        return lojas;
     },
+
 };
 
 export default { state, actions, eventListener };

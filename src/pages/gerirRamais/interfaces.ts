@@ -15,7 +15,6 @@ export interface iParamToInsertRamal {
     nome: string;
 }
 
-
 export interface iParamToUpdateRamal {
     id_ramal: number;
     id_sociedade: number;
@@ -23,7 +22,6 @@ export interface iParamToUpdateRamal {
     ramal: string;
     nome: string;
 }
-
 
 export interface iParamToGetRamal {
     offset: number;
@@ -52,7 +50,6 @@ export interface iSetor {
 export interface iParamToInsertSetor {
     nome: string;
 }
-
 
 export interface iParamToUpdateSetor {
     id_setor: number;

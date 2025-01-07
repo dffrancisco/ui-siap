@@ -28,7 +28,7 @@ onUnmounted(() => {
               v-model="state.dbRamal.id_sociedade"
               id="loja"
               name="loja"
-              class="obr ss"
+              class="ss"
             >
               <option
                 v-for="loja in state.lojas"
@@ -127,7 +127,18 @@ onUnmounted(() => {
         id="pnBotoes"
         class="mt-4 d-flex justify-center"
       >
-        <div> </div>
+      </div>
+      <div>
+        <v-btn
+          color="primary"
+          @click="actions.onClickImprimir"
+          :disabled="!state.dbRamal.nome || !state.dbRamal.ramal"
+          icon="mdi-printer"
+          size="36px"
+          title="Imprimir"
+        >
+          <v-icon left>mdi-printer</v-icon>
+        </v-btn>
       </div>
     </v-card>
 
@@ -143,5 +154,11 @@ onUnmounted(() => {
 
 .mt-4 {
   margin-top: 16px;
+}
+
+.btnPrint {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
