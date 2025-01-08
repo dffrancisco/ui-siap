@@ -288,7 +288,7 @@ export const actions = {
             state.loading = true;
 
 
-            const dadosRamais = state.gridPrincipal.data()
+            const dadosRamais = state.gridPrincipal.data();
             const dadosTratados = Array.isArray(dadosRamais) ? dadosRamais : [dadosRamais];
 
             console.log("Dados tratados para impressão:", dadosTratados);
@@ -326,29 +326,26 @@ export const actions = {
 
 
             const corpo = dadosAjustados.map((item) => `
-                <div style="width: calc(33% - 20px); display: inline-block; margin: 10px; vertical-align: top; border: 1px solid #ddd; padding: 10px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);">
-                    <div style="text-align: center; font-weight: bold; margin-bottom: 10px; font-size: 14px;">
-                        ${item.loja}
+                <div class="card">
+                    <div class="card-header">${item.loja}</div>
+                    <div class="card-body">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <th style="padding: 4px; border: 1px solid #ccc;">Nome</th>
+                                    <th style="padding: 4px; border: 1px solid #ccc;">Ramal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 4px; border: 1px solid #ccc;">${item.nome}</td>
+                                    <td style="padding: 4px; border: 1px solid #ccc;">${item.ramal}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                        <thead>
-                            <tr style="background-color: #f2f2f2;">
-                                <th style="padding: 4px; border: 1px solid #ccc;">Nome</th>
-                                <th style="padding: 4px; border: 1px solid #ccc;">Ramal</th>
-       
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="padding: 4px; border: 1px solid #ccc;">${item.nome}</td>
-                                <td style="padding: 4px; border: 1px solid #ccc;">${item.ramal}</td>
-                         
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             `);
-
 
             const layout = `
                 <html>
@@ -363,13 +360,26 @@ export const actions = {
                             .container {
                                 display: flex;
                                 flex-wrap: wrap;
+                                gap: 10px;
                                 justify-content: flex-start;
                             }
                             .card {
-                                margin: 10px;
-                                padding: 10px;
+                                flex: 0 0 calc(33.333% - 10px); /* Cada card ocupa 33% da largura */
                                 border: 1px solid #ddd;
                                 box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+                                padding: 10px;
+                                margin-bottom: 10px;
+                                background-color: #fff;
+                                box-sizing: border-box;
+                            }
+                            .card-header {
+                                font-weight: bold;
+                                text-align: center;
+                                margin-bottom: 10px;
+                                font-size: 14px;
+                                background-color: #f2f2f2;
+                                padding: 5px;
+                                border-bottom: 1px solid #ddd;
                             }
                         </style>
                     </head>
@@ -381,6 +391,7 @@ export const actions = {
                     </body>
                 </html>
             `;
+
 
             const printWindow = window.open("", "_blank");
             if (printWindow) {
@@ -400,6 +411,7 @@ export const actions = {
             state.loading = false;
         }
     }
+
 
 };
 
