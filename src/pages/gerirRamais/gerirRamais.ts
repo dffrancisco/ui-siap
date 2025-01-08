@@ -2,7 +2,6 @@ import { nextTick, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
-import moment from 'moment';
 import { iRamal, iSetor, iParamToGetRamal, iParamToInsertRamal, iParamToUpdateRamal } from "./interfaces";
 import utils, { iColumnPrint } from "@/ts/utils";
 import serviceGerirRamais from "./services/gerirRamais.service";
@@ -140,8 +139,6 @@ export const actions = {
         }
     },
 
-
-
     async btnInsert() {
         state.pnSearch = true;
         state.dbRamal = {} as iRamal;
@@ -183,7 +180,6 @@ export const actions = {
         if (!state.dbRamal.nome || !state.dbRamal.ramal) {
             Swal.fire({
                 icon: "warning",
-                title: "Campos obrigatórios",
                 text: "Nome e Ramal são obrigatórios.",
             });
             return false;
@@ -222,7 +218,6 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao excluir o ramal",
                 text: "Erro ao excluir ramal.",
             });
         } finally {
@@ -273,7 +268,6 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao atualizar ramal",
                 text: "Erro ao atualizar ramal.",
             });
         } finally {
@@ -293,7 +287,8 @@ export const actions = {
         try {
             state.loading = true;
 
-            const dadosRamais = state.gridPrincipal.dataSource();
+
+            const dadosRamais = state.gridPrincipal.data()
             const dadosTratados = Array.isArray(dadosRamais) ? dadosRamais : [dadosRamais];
 
             console.log("Dados tratados para impressão:", dadosTratados);
@@ -301,58 +296,89 @@ export const actions = {
             if (!dadosTratados.length) {
                 Swal.fire({
                     icon: "warning",
-                    text: "Não há dados para realizar a impressão.",
+                    text: "Não há dados para a impressão.",
                 });
                 return;
             }
 
-            const dadosAjustados = actions.formatarDadosImpressao(dadosTratados);
 
-            if (!dadosAjustados || !dadosAjustados.length) {
+            const dadosAjustados = dadosTratados.map((item) => ({
+                loja: item.loja || "---",
+                nome: item.nome || "---",
+                ramal: item.ramal || "---",
+                setor: item.setor || "---",
+            }));
+
+            if (!dadosAjustados || dadosAjustados.length === 0) {
                 Swal.fire({
                     icon: "warning",
-                    text: "Não há dados ajustados para imprimir.",
+                    text: "Os dados não estão ajustados para impressão.",
                 });
                 return;
             }
 
+
             const titulo = `
-                <div style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px;">
-                    Relatorio Gerir Ramais
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <strong style="font-size: 16px;">Relatório de Gerir Ramais</strong>
                 </div>
             `;
 
-            const corpo = dadosAjustados.map((loja) => {
-                const setoresHtml = loja.setores
-                    .map(
-                        (setor) => `
-                            <div style="display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid #ccc;">
-                                <span>${setor.nome}</span>
-                                <span>${setor.ramal}</span>
-                                <span>${setor.setor}</span>
-                            </div>`
-                    )
-                    .join("");
 
-                return `
-                    <div style="flex: 1 1 calc(33.333% - 20px); padding: 10px; border: 1px solid #ccc; margin-bottom: 20px;">
-                        <div style="font-weight: bold; margin-bottom: 10px; text-align: center;">
-                            ${loja.nome}
-                        </div>
-                        ${setoresHtml}
+            const corpo = dadosAjustados.map((item) => `
+                <div style="width: calc(33% - 20px); display: inline-block; margin: 10px; vertical-align: top; border: 1px solid #ddd; padding: 10px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);">
+                    <div style="text-align: center; font-weight: bold; margin-bottom: 10px; font-size: 14px;">
+                        ${item.loja}
                     </div>
-                `;
-            });
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 4px; border: 1px solid #ccc;">Nome</th>
+                                <th style="padding: 4px; border: 1px solid #ccc;">Ramal</th>
+       
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 4px; border: 1px solid #ccc;">${item.nome}</td>
+                                <td style="padding: 4px; border: 1px solid #ccc;">${item.ramal}</td>
+                         
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `);
+
 
             const layout = `
                 <html>
                     <head>
                         <style>
-                            body { margin: 1; padding: 10px; font-family: Arial; }
-                            div { box-sizing: border-box; }
+                            body {
+                                margin: 0;
+                                padding: 10px;
+                                font-family: Arial, sans-serif;
+                                font-size: 12px;
+                            }
+                            .container {
+                                display: flex;
+                                flex-wrap: wrap;
+                                justify-content: flex-start;
+                            }
+                            .card {
+                                margin: 10px;
+                                padding: 10px;
+                                border: 1px solid #ddd;
+                                box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+                            }
                         </style>
                     </head>
-                    <body>${titulo}<div>${corpo.join("")}</div></body>
+                    <body>
+                        ${titulo}
+                        <div class="container">
+                            ${corpo.join("")}
+                        </div>
+                    </body>
                 </html>
             `;
 
@@ -373,24 +399,8 @@ export const actions = {
         } finally {
             state.loading = false;
         }
-    },
+    }
 
-    formatarDadosImpressao(data: any[]) {
-        return data.reduce((acc, item) => {
-            let loja = acc.find((l) => l.nome === item.loja);
-            if (!loja) {
-                loja = { nome: item.loja, setores: [] };
-                acc.push(loja);
-            }
-            loja.setores.push({
-                nome: item.nome,
-                ramal: item.ramal,
-                setor: item.setor,
-            });
-            return acc;
-        }, []);
-    },
 };
-
 
 export default { state, actions, eventListener };
