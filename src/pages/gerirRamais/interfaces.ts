@@ -3,6 +3,7 @@ export interface iRamal {
     id_ramal: number;
     id_sociedade: number;
     id_setor: number;
+    loja: string;
     ramal: string;
     nome: string;
 

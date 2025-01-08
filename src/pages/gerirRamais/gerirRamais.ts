@@ -15,9 +15,10 @@ export const state = reactive({
     edtSearch: "",
     dbRamal: <iRamal>{},
     setores: <iSetor[]>[],
+    nome_lojas: <iRamal[]>[],
     lojas: <any[]>[],
     loading: false,
-    nomesetor: <iSetor>{}
+
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -30,6 +31,7 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 
 export const actions = {
     async init() {
+
         actions.grids();
         await actions.getSetores();
         state.gridPrincipal.queryOpen({ nome: "" }, () => {
@@ -273,7 +275,7 @@ export const actions = {
     async search() {
         const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
-            loja: searchValue,
+            nome: searchValue,
 
         });
     },

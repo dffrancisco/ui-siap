@@ -25,7 +25,7 @@ onUnmounted(() => {
           <v-col cols="6">
             <span>Loja</span>
             <select
-              v-model="state.dbRamal.id_sociedade"
+              v-model="state.dbRamal.loja"
               id="loja"
               name="loja"
               class="ss"
@@ -35,7 +35,7 @@ onUnmounted(() => {
                 :key="loja.id_sociedade"
                 :value="loja.id_sociedade"
               >
-                {{ loja.nome }}
+                {{ loja }}
               </option>
             </select>
           </v-col>
