@@ -31,9 +31,8 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 
 export const actions = {
     async init() {
-
         actions.grids();
-        await actions.getSetores();
+        await actions.dadosParaInput();
         state.gridPrincipal.queryOpen({ nome: "" }, () => {
             state.gridPrincipal.focus();
         });
@@ -46,7 +45,7 @@ export const actions = {
             count: true,
             columns: {
                 Loja: { dataField: "loja" },
-                Setor: { dataField: "id_setor" }, // ajustar dps
+                Setor: { dataField: "nome" },
                 Nome: { dataField: "nome" },
                 Ramal: { dataField: "ramal", width: "10%", center: true },
             },
@@ -103,6 +102,29 @@ export const actions = {
         });
     },
 
+    async dadosParaInput() {
+        try {
+            state.loading = true;
+
+
+            const [setores, ramais] = await Promise.all([
+                serviceGerirRamais.getSetores({ param: {}, offset: 0 }),
+                serviceGerirRamais.getRamais({ offset: 0, param: {} }),
+            ]);
+
+
+            state.setores = setores;
+            state.lojas = [...new Map(ramais.map(item => [item.loja, item.loja])).values()];
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao carregar dados para os inputs.",
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
     async getRamais({ offset, param }: iParamToGetRamal) {
         try {
             state.loading = true;
@@ -118,20 +140,7 @@ export const actions = {
         }
     },
 
-    async getSetores() {
-        try {
-            state.loading = true;
-            const data = await serviceGerirRamais.getSetores({ param: {}, offset: 0 });
-            state.setores = data;
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao carregar setores.",
-            });
-        } finally {
-            state.loading = false;
-        }
-    },
+
 
     async btnInsert() {
         state.pnSearch = true;

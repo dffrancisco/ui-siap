@@ -4,7 +4,7 @@ import { onMounted, onUnmounted } from "vue";
 
 onMounted(async () => {
   await actions.init();
-  await actions.getSetores();
+
   window.addEventListener("keydown", eventListener);
 });
 
@@ -32,8 +32,8 @@ onUnmounted(() => {
             >
               <option
                 v-for="loja in state.lojas"
-                :key="loja.id_sociedade"
-                :value="loja.id_sociedade"
+                :key="loja"
+                :value="loja"
               >
                 {{ loja }}
               </option>
