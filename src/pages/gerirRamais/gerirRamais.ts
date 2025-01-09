@@ -3,9 +3,10 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import { iRamal, iSetor, iParamToGetRamal, iParamToInsertRamal, iParamToUpdateRamal } from "./interfaces";
-import utils, { iColumnPrint } from "@/ts/utils";
+import utils from "@/ts/utils";
 import serviceGerirRamais from "./services/gerirRamais.service";
 import { useEventListener } from "@vueuse/core";
+
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
@@ -279,6 +280,7 @@ export const actions = {
         const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
             nome: searchValue,
+            loja: searchValue
 
         });
     },
@@ -287,11 +289,8 @@ export const actions = {
         try {
             state.loading = true;
 
-
             const dadosRamais = state.gridPrincipal.data();
             const dadosTratados = Array.isArray(dadosRamais) ? dadosRamais : [dadosRamais];
-
-            console.log("Dados tratados para impressão:", dadosTratados);
 
             if (!dadosTratados.length) {
                 Swal.fire({
@@ -301,56 +300,85 @@ export const actions = {
                 return;
             }
 
-
-            const dadosAjustados = dadosTratados.map((item) => ({
-                loja: item.loja || "---",
-                nome: item.nome || "---",
-                ramal: item.ramal || "---",
-                setor: item.setor || "---",
-            }));
-
-            if (!dadosAjustados || dadosAjustados.length === 0) {
-                Swal.fire({
-                    icon: "warning",
-                    text: "Os dados não estão ajustados para impressão.",
+            const dadosAgrupados = dadosTratados.reduce((acc, item) => {
+                let loja = acc.find((l) => l.loja === item.loja);
+                if (!loja) {
+                    loja = { loja: item.loja || "---", setores: [] };
+                    acc.push(loja);
+                }
+                loja.setores.push({
+                    nome: item.nome || "---",
+                    ramal: item.ramal || "---",
+                    setor: item.setor || "---",
                 });
-                return;
-            }
+                return acc;
+            }, []);
 
+            const generatePastelColor = () => {
+                const r = Math.floor((Math.random() * 127) + 127);
+                const g = Math.floor((Math.random() * 127) + 127);
+                const b = Math.floor((Math.random() * 127) + 127);
+                return `rgb(${r}, ${g}, ${b})`;
+            };
 
             const titulo = `
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <strong style="font-size: 16px;">Relatório de Gerir Ramais</strong>
+                    <strong style="font-size: 16px;">Relatório de Ramais</strong>
                 </div>
             `;
 
+            const corpo = dadosAgrupados.map((loja) => {
+                const corHeader = generatePastelColor();
 
-            const corpo = dadosAjustados.map((item) => `
-                <div class="card">
-                    <div class="card-header">${item.loja}</div>
-                    <div class="card-body">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                            <thead>
-                                <tr style="background-color: #f2f2f2;">
-                                    <th style="padding: 4px; border: 1px solid #ccc;">Nome</th>
-                                    <th style="padding: 4px; border: 1px solid #ccc;">Ramal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="padding: 4px; border: 1px solid #ccc;">${item.nome}</td>
-                                    <td style="padding: 4px; border: 1px solid #ccc;">${item.ramal}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                const setoresHtml = loja.setores
+                    .map(
+                        (setor) => `
+                            <tr>
+                                <td style="padding: 4px; border: 1px solid #ccc;">${setor.nome}</td>
+                                <td style="padding: 4px; border: 1px solid #ccc;">${setor.ramal}</td>
+                            </tr>`
+                    )
+                    .join("");
+
+                return `
+                    <div class="card">
+                        <div class="card-header" style="background-color: ${corHeader}; color: #000;">
+                            ${loja.loja}
+                        </div>
+                        <div class="card-body">
+                            <table style="width: 100%; font-size: 12px;">
+                                <thead>
+                                    <tr style="background-color: #f2f2f2;">
+                                        <th style="padding: 4px; border: 1px solid #ccc;">Nome</th>
+                                        <th style="padding: 4px; border: 1px solid #ccc;">Ramal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${setoresHtml}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            `);
+                `;
+            });
 
             const layout = `
                 <html>
                     <head>
+                        <title>Relatório de Ramais</title>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <style>
+                            @media print {
+                                body {
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                }
+                                .card-header {
+                                    color: #000;
+                                    -webkit-print-color-adjust: exact;
+                                }
+                            }
                             body {
                                 margin: 0;
                                 padding: 10px;
@@ -359,27 +387,52 @@ export const actions = {
                             }
                             .container {
                                 display: flex;
-                                flex-wrap: wrap;
-                                gap: 10px;
+                                flex-wrap: wrap; 
+                                gap: 20px;
                                 justify-content: flex-start;
                             }
                             .card {
-                                flex: 0 0 calc(33.333% - 10px); /* Cada card ocupa 33% da largura */
+                                flex: 0 0 calc(25% - 20px);
                                 border: 1px solid #ddd;
                                 box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
                                 padding: 10px;
-                                margin-bottom: 10px;
                                 background-color: #fff;
                                 box-sizing: border-box;
                             }
                             .card-header {
+                                display: flex;
                                 font-weight: bold;
                                 text-align: center;
                                 margin-bottom: 10px;
                                 font-size: 14px;
-                                background-color: #f2f2f2;
                                 padding: 5px;
                                 border-bottom: 1px solid #ddd;
+                            }
+                            .card-body {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 10px;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                            }
+                            th, td {
+                                padding: 4px;
+                                border: 1px solid #ccc;
+                                text-align: left;
+                            }
+                            thead tr {
+                                background-color: #f2f2f2;
+                            }
+                            .footer {
+                                margin-top: 20px;
+                                display: flex;
+                                justify-content: flex-end; /* Move o conteúdo para a direita */
+                                align-items: center;
+                            }
+                            .footer img {
+                                height: 50px;
                             }
                         </style>
                     </head>
@@ -388,10 +441,12 @@ export const actions = {
                         <div class="container">
                             ${corpo.join("")}
                         </div>
+                        <div class="footer">
+                            <img src="../assets/Logo-Real-Shop-Car-menor.png" alt="Logo da Empresa" width="135">
+                        </div>
                     </body>
                 </html>
             `;
-
 
             const printWindow = window.open("", "_blank");
             if (printWindow) {
@@ -411,6 +466,7 @@ export const actions = {
             state.loading = false;
         }
     }
+
 
 
 };
