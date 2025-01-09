@@ -71,7 +71,7 @@ onMounted(() => {
         :row-props="actions.getClassCorLinha"
       ></v-data-table>
 
-      <div class="d-flex justify-end pt-5">
+      <div class="d-flex justify-end">
         <v-btn
           color="primary"
           @click="actions.onClickImprimir"
@@ -100,12 +100,12 @@ onMounted(() => {
 </template>
 
 <style>
-#tabela .v-data-table-footer {
+#tabelaUsoConsumo .v-data-table-footer {
   max-height: 2px;
   padding-top: 20px;
 }
 
-#tabela .v-data-table-footer__pagination {
+#tabelaUsoConsumo .v-data-table-footer__pagination {
   padding-right: 50px;
 }
 

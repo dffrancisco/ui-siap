@@ -121,7 +121,7 @@ export const actions = {
                     <span>Período: ${moment(state.dataInicioImpressao).format(
                 "DD/MM/YYYY"
             )} até ${moment(state.dataFimImpressao).format("DD/MM/YYYY")}</span>
-                    <strong style="font-size: 16px;">Relatório Produtos Vendidos</strong>
+                    <strong style="font-size: 16px;">Relatório Uso Consumo</strong>
                 </div>
             `;
 
