@@ -49,14 +49,6 @@ export interface iSetor {
 
 }
 
-export interface iParamToInsertSetor {
-    nome: string;
-}
-
-export interface iParamToUpdateSetor {
-    id_setor: number;
-    nome: string;
-}
 
 export interface iFieldDuplicity {
     value: string;
