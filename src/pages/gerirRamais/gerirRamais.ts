@@ -265,23 +265,6 @@ export const actions = {
         try {
             state.loading = true;
 
-
-            if (!state.dbRamal.id_sociedade && state.dbRamal.loja) {
-                const ramais = await serviceGerirRamais.getRamais({ offset: 0, param: {} });
-
-                const sociedade = ramais.find((ramal: any) => ramal.loja === state.dbRamal.loja);
-
-                if (sociedade) {
-                    state.dbRamal.id_sociedade = sociedade.id_sociedade;
-                } else {
-                    Swal.fire({
-                        icon: "warning",
-                        text: "Loja inválida. Não foi possível determinar o id_sociedade.",
-                    });
-                    return;
-                }
-            }
-
             const newFields: iParamToInsertRamal = {
                 id_sociedade: state.dbRamal.id_sociedade,
                 id_setor: state.dbRamal.id_setor,
@@ -309,7 +292,6 @@ export const actions = {
             state.loading = false;
         }
     },
-
 
 
     async toUpdate() {
