@@ -14,6 +14,7 @@ export interface iParamToInsertRamal {
     id_setor: number;
     ramal: string;
     nome: string;
+    id_ramal: number;
 }
 
 export interface iParamToUpdateRamal {
@@ -55,6 +56,11 @@ export interface iParamToInsertSetor {
 export interface iParamToUpdateSetor {
     id_setor: number;
     nome: string;
+}
+
+export interface iFieldDuplicity {
+    value: string;
+    field: string;
 }
 
 export interface iParamToGetSetor {

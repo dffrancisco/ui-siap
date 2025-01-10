@@ -2,10 +2,12 @@ import { nextTick, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
-import { iRamal, iSetor, iParamToGetRamal, iParamToInsertRamal, iParamToUpdateRamal } from "./interfaces";
+import { iRamal, iSetor, iParamToGetRamal, iParamToInsertRamal, iFieldDuplicity, iParamToUpdateRamal } from "./interfaces";
 import utils from "@/ts/utils";
 import serviceGerirRamais from "./services/gerirRamais.service";
 import { useEventListener } from "@vueuse/core";
+import LogoRealShopCar from "@/assets/Logo-Real-Shop-Car-menor.png";
+
 
 
 export const state = reactive({
@@ -62,6 +64,22 @@ export const actions = {
                 el: "#pnCampos",
                 vModel(r) {
                     state.dbRamal = r;
+                },
+                duplicity: {
+                    dataField: ["nome"],
+                    async execute(rs) {
+                        let dup = await actions.getDuplicidade({
+                            value: rs.value.toUpperCase(),
+                            field: rs.field,
+                        });
+                        if (dup && Object.keys(dup).length > 0) {
+                            state.gridPrincipal.showMessageDuplicity(
+                                rs.text + " já cadastrado!"
+                            );
+                            return true;
+                        }
+                        return false;
+                    },
                 },
                 frame: {
                     el: "#pnBotoes",
@@ -137,6 +155,23 @@ export const actions = {
             });
         } finally {
             state.loading = false;
+        }
+    },
+
+    async getDuplicidade({ value, field }: iFieldDuplicity) {
+        try {
+
+            if (!value) {
+                return null;
+            }
+            const data = await serviceGerirRamais.getDuplicidade({ value, field });
+            return data;
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erro ao verificar duplicidade!",
+                text: "Erro ao executar verificação de duplicidade",
+            });
         }
     },
 
@@ -234,6 +269,7 @@ export const actions = {
                 id_setor: state.dbRamal.id_setor,
                 ramal: state.dbRamal.ramal,
                 nome: state.dbRamal.nome,
+                id_ramal: state.dbRamal.id_ramal,
             };
 
             await serviceGerirRamais.toInsert(newFields);
@@ -300,6 +336,7 @@ export const actions = {
                 return;
             }
 
+            //gepeto
             const dadosAgrupados = dadosTratados.reduce((acc, item) => {
                 let loja = acc.find((l) => l.loja === item.loja);
                 if (!loja) {
@@ -314,7 +351,7 @@ export const actions = {
                 return acc;
             }, []);
 
-            const generatePastelColor = () => {
+            const corPastelAleatoria = () => {
                 const r = Math.floor((Math.random() * 127) + 127);
                 const g = Math.floor((Math.random() * 127) + 127);
                 const b = Math.floor((Math.random() * 127) + 127);
@@ -328,7 +365,7 @@ export const actions = {
             `;
 
             const corpo = dadosAgrupados.map((loja) => {
-                const corHeader = generatePastelColor();
+                const corHeader = corPastelAleatoria();
 
                 const setoresHtml = loja.setores
                     .map(
@@ -348,10 +385,12 @@ export const actions = {
                         <div class="card-body">
                             <table style="width: 100%; font-size: 12px;">
                                 <thead>
+
                                     <tr style="background-color: #f2f2f2;">
                                         <th style="padding: 4px; border: 1px solid #ccc;">Nome</th>
                                         <th style="padding: 4px; border: 1px solid #ccc;">Ramal</th>
                                     </tr>
+                                    
                                 </thead>
                                 <tbody>
                                     ${setoresHtml}
@@ -365,7 +404,7 @@ export const actions = {
             const layout = `
                 <html>
                     <head>
-                        <title>Relatório de Ramais</title>
+                        <title>Definição do relatório de ramais.</title>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <style>
@@ -447,7 +486,7 @@ export const actions = {
                     </body>
                 </html>
             `;
-
+            //gepeto
             const printWindow = window.open("", "_blank");
             if (printWindow) {
                 printWindow.document.write(layout);
@@ -466,7 +505,6 @@ export const actions = {
             state.loading = false;
         }
     }
-
 
 
 };
