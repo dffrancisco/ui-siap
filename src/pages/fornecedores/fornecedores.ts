@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { reactive, nextTick } from "vue";
 import Swal from "sweetalert2";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import utils from "@/ts/utils";
@@ -177,12 +177,10 @@ export const actions = {
 
     async btnInsert() {
         state.pnSearch = true;
-        state.toggleDisabled = true
         state.dbFornecedor = {} as iFornecedor;
-
+        await nextTick();
         state.gridPrincipal.focusField();
         state.gridPrincipal.disable();
-        state.gridPrincipal.clearElementSideBySide();
     },
 
     btnEdit() {
@@ -194,10 +192,6 @@ export const actions = {
             });
             return false;
         }
-
-        state.pnSearch = true
-        state.toggleDisabled = true
-        state.cnpjDisabled = true
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
     },
@@ -228,23 +222,33 @@ export const actions = {
     },
 
     async btnSave() {
-        if (utils.validaOBR()) return;
+        if (utils.validaOBR()) {
+            return false;
+        }
 
-        const isNew = !state.gridPrincipal.dataSource();
-        if (isNew) {
-            await actions.insertFornecedor();
-        } else {
-            await actions.updateFornecedor();
+
+        if (!state.dbFornecedor.CGC_FORNECEDOR) {
+            await Swal.fire({
+                icon: "warning",
+                title: "Campo obrigatório!",
+                text: "CPF ou CNPJ deve ser preenchido.",
+            });
+            return false
         }
 
         state.pnSearch = false;
+        await nextTick();
         state.gridPrincipal.enable();
         state.gridPrincipal.focus();
     },
 
     async btnCancel() {
+
         state.pnSearch = false;
+        let linhaGrid = <any>state.gridPrincipal.getIndex();
+        await nextTick();
         state.gridPrincipal.enable();
+        state.gridPrincipal.focus(linhaGrid);
     },
 
     async toInativar() {

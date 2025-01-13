@@ -79,7 +79,7 @@ onUnmounted(() => {
             <span>Nome do Representante</span>
             <div class="d-flex ga-2 align-center"
               ><input
-                v-model="state.dbFornecedor.REPRESENTANTE"
+                v-model="state.dbFornecedor.NOME"
                 type="text"
                 id="ID_REPRESENTANTE"
                 name="ID_REPRESENTANTE"
