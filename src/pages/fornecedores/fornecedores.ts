@@ -1,4 +1,4 @@
-import { reactive, nextTick } from "vue";
+import { reactive } from "vue";
 import Swal from "sweetalert2";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import utils from "@/ts/utils";
@@ -13,9 +13,6 @@ import {
     iFieldDuplicity,
 } from "./interfaces";
 
-const openModal = () => {
-    state.modalFornecedorOpened = true;
-};
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
@@ -74,6 +71,7 @@ export const actions = {
                 Cidade: { dataField: "CIDADE", center: true, width: "22%" },
             },
             query: {
+
                 async execute(rs) {
                     let data = await actions.getFornecedores({
                         offset: rs.offset,
@@ -83,11 +81,15 @@ export const actions = {
                     });
                     state.gridPrincipal.querySourceAdd(data);
                 }
+
             },
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
                     state.dbFornecedor = r as iFornecedor;
+
+
+
                 },
                 duplicity: {
                     dataField: ['CGC_FORNECEDOR'],
@@ -154,6 +156,8 @@ export const actions = {
             })
         }
     },
+
+
 
     async search() {
         if (state.isChecked) {
@@ -307,26 +311,6 @@ export const actions = {
 
     },
 
-    encontrarCodCidade2(DESCRICAO: string) {
-        const cidadeEncontrada = state.listaCidades.find(cidade => {
-            if ((cidade.DESCRICAO == DESCRICAO)) {
-                return true;
-            }
-
-            return false;
-
-        })
-
-        if (cidadeEncontrada) {
-            let cidade = cidadeEncontrada.COD_CIDADE
-            return cidade
-        } else {
-            let cidade = null
-            return cidade
-        }
-
-    },
-
 
     async insertFornecedor() {
         state.loading = true;
@@ -352,6 +336,8 @@ export const actions = {
             DELETADO: state.dbFornecedor.DELETADO,
             ID_FORNECEDOR: state.dbFornecedor.ID_FORNECEDOR,
             ID_EMPRESA: state.dbFornecedor.ID_EMPRESA,
+            REPRESENTANTE: state.dbFornecedor.REPRESENTANTE,
+
         };
 
         try {
@@ -408,6 +394,7 @@ export const actions = {
             DELETADO: state.dbFornecedor.DELETADO,
             ID_FORNECEDOR: state.dbFornecedor.ID_FORNECEDOR,
             ID_EMPRESA: state.dbFornecedor.ID_EMPRESA,
+            REPRESENTANTE: state.dbFornecedor.REPRESENTANTE,
         };
 
         try {
@@ -486,7 +473,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                text: 'Fornecedor já Cadastrada'
+                text: 'Fornecedor já Cadastrado'
             })
         }
     },

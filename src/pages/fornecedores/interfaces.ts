@@ -16,6 +16,7 @@ export interface iFornecedor {
     HOME_PAGE: string;
     EMAIL: string;
     OBS?: string;
+    REPRESENTANTE: string;
     CADASTRO: string;
     DELETADO: string;
     ID_EMPRESA: number;
@@ -43,7 +44,7 @@ export interface iFieldDuplicity {
 
 export interface iRepresentantes {
     ID_REPRESENTANTE: number;
-    NOME: any;
+    NOME: string;
     EMAIL: string;
     TELEFONE: number;
 }

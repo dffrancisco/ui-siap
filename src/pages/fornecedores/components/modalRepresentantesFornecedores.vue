@@ -107,7 +107,6 @@ const actions = {
 onMounted(async () => {
   await actions.init();
 
-  // Inicializa a grid com todos os representantes
   state.gridRepresentante.queryOpen({});
 });
 </script>
