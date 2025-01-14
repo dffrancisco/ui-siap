@@ -32,7 +32,6 @@ const actions = {
       query: {
         async execute(rs) {
           const data = await actions.getRepresentantes(rs.param as iRepresentantes, rs.offset);
-
           state.gridRepresentante.querySourceAdd(data);
         },
       },
@@ -44,7 +43,7 @@ const actions = {
   async getRepresentantes(param: iRepresentantes, offset: number) {
     try {
       state.loading = true;
-
+      console.log("Iniciando busca de representantes com parâmetros:", param, "Offset:", offset);
       const data = await serviceFornecedores.getRepresentantes(param, offset);
 
       return (
@@ -66,7 +65,7 @@ const actions = {
     }
   },
   async btnSearch() {
-    const searchValue = inputSearch.value?.value.trim().toUpperCase();
+    const searchValue = inputSearch.value.value.toUpperCase();
     console.log("Valor de busca:", searchValue);
 
     if (!searchValue) {
@@ -89,11 +88,9 @@ const actions = {
           icon: "info",
         });
       }
-      state.gridRepresentante.querySourceAdd(data);
 
-      console.log("Grid atualizada com os dados da busca.");
+      state.gridRepresentante.querySourceAdd(data);
     } catch (error) {
-      console.error("Erro ao realizar a busca:", error);
       Swal.fire({
         text: "Erro ao realizar a busca.",
         icon: "error",
