@@ -1,10 +1,12 @@
 import axios from "axios";
 import {
     iParamToGetRamal,
+    iParamToGetSociedade,
     iParamToInsertRamal,
     iParamToUpdateRamal,
     iParamToGetSetor,
     iRamal,
+    iSociedade,
     iSetor,
     iToDeleteResponse
 } from "../interfaces";
@@ -63,8 +65,18 @@ const getSetores = async ({ param, offset }: iParamToGetSetor): Promise<iSetor[]
     return data;
 };
 
+const getSociedade = async ({ param, offset }: iParamToGetSociedade): Promise<iSociedade[]> => {
+    const { data } = await axios.post(caminho, {
+        call: "getSociedade",
+        offset,
+        param,
+    });
+    return data;
+};
+
 export default {
     getRamais,
+    getSociedade,
     getDuplicidade,
     toInsert,
     toUpdate,

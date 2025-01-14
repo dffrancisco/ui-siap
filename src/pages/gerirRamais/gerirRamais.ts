@@ -2,12 +2,11 @@ import { nextTick, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
-import { iRamal, iSetor, iParamToGetRamal, iParamToInsertRamal, iFieldDuplicity, iParamToUpdateRamal } from "./interfaces";
+import { iRamal, iSetor, iParamToGetRamal, iParamToInsertRamal, iFieldDuplicity, iParamToUpdateRamal, iSociedade } from "./interfaces";
 import utils from "@/ts/utils";
 import serviceGerirRamais from "./services/gerirRamais.service";
 import { useEventListener } from "@vueuse/core";
 import LogoRealShopCar from "@/assets/Logo-Real-Shop-Car-menor.png";
-
 
 
 export const state = reactive({
@@ -16,6 +15,7 @@ export const state = reactive({
     lista: <iRamal[]>[],
     edtSearch: "",
     dbRamal: <iRamal>{},
+    dbSociedade: <iSociedade[]>[],
     setores: <iSetor[]>[],
     nome_lojas: <iRamal[]>[],
     lojas: <any[]>[],
@@ -35,6 +35,7 @@ export const actions = {
     async init() {
         actions.grids();
         await actions.dadosParaInput();
+        await actions.getSociedade({ offset: 0, param: {} });
         state.gridPrincipal.queryOpen({ nome: "" }, () => {
             state.gridPrincipal.focus();
         });
@@ -125,14 +126,13 @@ export const actions = {
             state.loading = true;
 
 
-            const [setores, ramais] = await Promise.all([
+            const [setores] = await Promise.all([
                 serviceGerirRamais.getSetores({ param: {}, offset: 0 }),
-                serviceGerirRamais.getRamais({ offset: 0, param: {} }),
             ]);
 
 
             state.setores = setores;
-            state.lojas = [...new Map(ramais.map(item => [item.loja, item.loja])).values()];
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -152,6 +152,22 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao carregar ramais.",
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getSociedade({ offset, param }: iParamToGetRamal) {
+        try {
+            state.loading = true;
+            const data = await serviceGerirRamais.getSociedade({ offset, param });
+            state.lojas = data.map((sociedade: iSociedade) => sociedade.loja);
+            return data;
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao carregar sociedade.",
             });
         } finally {
             state.loading = false;

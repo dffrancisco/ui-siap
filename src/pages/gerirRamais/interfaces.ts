@@ -6,7 +6,6 @@ export interface iRamal {
     loja: string;
     ramal: string;
     nome: string;
-
 }
 
 export interface iParamToInsertRamal {
@@ -46,7 +45,11 @@ export interface iGetDuplicityResponseRamal {
 export interface iSetor {
     id_setor: number;
     nome: string;
+}
 
+export interface iSociedade {
+    id_sociedade?: number;
+    loja: string;
 }
 
 
@@ -66,3 +69,13 @@ export interface iParamToGetSetor {
 export interface iToDeleteResponse {
     id_ramal?: number;
 }
+
+export interface iParamToGetSociedade {
+    offset: number;
+    param: {
+        id_sociedade?: number;
+        loja?: string;
+    };
+}
+
+
