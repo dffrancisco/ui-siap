@@ -90,7 +90,7 @@ const totalPagamentos = computed(() => {
     soma += pagamento.valor;
   });
 
-  return soma;
+  return parseFloat(soma.toFixed(2));
 });
 
 const totalPagamentoDinheiro = computed(() => {
