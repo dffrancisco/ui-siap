@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, reactive, ref } from "vue";
-import { iRepresentantes } from "../interfaces";
+import { iFornecedor, iRepresentantes } from "../interfaces";
 import serviceFornecedores from "../services/fornecedores.service";
 import Swal from "sweetalert2";
 
@@ -11,7 +11,7 @@ const inputSearch = ref();
 const state = reactive({
   loading: false,
   gridRepresentante: <ixGridCreate>{},
-  dbRepresentante: <iRepresentantes>{},
+  dbRepresentante: <iFornecedor>{},
 });
 
 const actions = {
@@ -31,7 +31,7 @@ const actions = {
       },
       query: {
         async execute(rs) {
-          const data = await actions.getRepresentantes(rs.param as iRepresentantes, rs.offset);
+          let data = await actions.getRepresentantes(rs.param as iRepresentantes, rs.offset);
           state.gridRepresentante.querySourceAdd(data);
         },
       },
@@ -43,61 +43,22 @@ const actions = {
   async getRepresentantes(param: iRepresentantes, offset: number) {
     try {
       state.loading = true;
-      console.log("Iniciando busca de representantes com parâmetros:", param, "Offset:", offset);
-      const data = await serviceFornecedores.getRepresentantes(param, offset);
 
-      return (
-        data?.map((item: any) => ({
-          NOME: item.NOME,
-          EMAIL: item.EMAIL,
-          TELEFONE: item.TELEFONE,
-        })) || []
-      );
+      const data = await serviceFornecedores.getRepresentantes(param, offset);
+      return data;
     } catch (error) {
-      console.error("Erro ao buscar representantes:", error);
       Swal.fire({
-        text: "Erro ao buscar os representantes",
+        text: "Erro ao buscar os Representante:",
         icon: "error",
       });
-      return [];
     } finally {
       state.loading = false;
     }
   },
   async btnSearch() {
-    const searchValue = inputSearch.value.value.toUpperCase();
-    console.log("Valor de busca:", searchValue);
-
-    if (!searchValue) {
-      Swal.fire({
-        text: "Digite um nome, email ou telefone para realizar a busca.",
-        icon: "warning",
-      });
-      return;
-    }
-
-    try {
-      state.loading = true;
-
-      const data = await actions.getRepresentantes({ NOME: searchValue } as iRepresentantes, 0);
-      console.log("Resultado da busca:", data);
-
-      if (data.length === 0) {
-        Swal.fire({
-          text: "Nenhum representante encontrado.",
-          icon: "info",
-        });
-      }
-
-      state.gridRepresentante.querySourceAdd(data);
-    } catch (error) {
-      Swal.fire({
-        text: "Erro ao realizar a busca.",
-        icon: "error",
-      });
-    } finally {
-      state.loading = false;
-    }
+    state.gridRepresentante.queryOpen({
+      search: inputSearch.value.value,
+    });
   },
 
   validarInputs() {
@@ -129,10 +90,10 @@ onMounted(async () => {
 
   state.gridRepresentante.queryOpen(
     {
-      NOME: "",
+      search: "",
     },
     () => {
-      inputSearch.value?.focus();
+      inputSearch.value.focus();
     }
   );
 });

@@ -16,7 +16,7 @@ export interface iFornecedor {
     HOME_PAGE: string;
     EMAIL: string;
     OBS?: string;
-    REPRESENTANTE: string;
+    REPRESENTANTE?: string;
     CADASTRO: string;
     DELETADO: string;
     ID_EMPRESA: number;
@@ -25,6 +25,7 @@ export interface iFornecedor {
     DESCRICAO?: string;
     COD_IBGE?: string;
     TELEFONE?: number;
+
 }
 
 export interface iParamGetFornecedor {
@@ -43,10 +44,7 @@ export interface iFieldDuplicity {
 }
 
 export interface iRepresentantes {
-    ID_REPRESENTANTE: number;
-    NOME: string;
-    EMAIL: string;
-    TELEFONE: number;
+    search: string;
 }
 
 export interface iCidades {

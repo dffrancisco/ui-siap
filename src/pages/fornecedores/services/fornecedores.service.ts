@@ -11,7 +11,7 @@ import {
 const caminho = "siap/fornecedores";
 
 type iGetFornecedoresFunction = (param: iParamGetFornecedor) => Promise<iFornecedor[]>;
-type iGetRepresentantesFunction = (param: iRepresentantes, offset: number) => Promise<iFornecedor[]>;
+type iGetRepresentantesFunction = (param: iRepresentantes, offset: number) => Promise<iFornecedor>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
 type iToInsertFunction = (param: iFornecedor) => Promise<iFornecedor>;
 type iToUpdateFunction = (param: iFornecedor) => Promise<void>;
@@ -24,7 +24,6 @@ const getCidades = async () => {
 
     return data;
 }
-
 
 const getFornecedores: iGetFornecedoresFunction = async ({ param, offset, checkboxAtiva }) => {
     let { data } = await axios.post(caminho, {

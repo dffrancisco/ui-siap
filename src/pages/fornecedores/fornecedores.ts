@@ -29,7 +29,7 @@ export const state = reactive({
     toggleDisabled: false,
     cnpjDisabled: false,
     cepInserido: false,
-    representanteSelecionado: <iRepresentantes>{},
+    representanteSelecionado: <iFornecedor>{},
 
 
 });
@@ -222,11 +222,15 @@ export const actions = {
     },
 
     async btnSave() {
-        if (utils.validaOBR()) {
-            return false;
+        if (utils.validaOBR())
+            return
+
+        const isNew = !state.gridPrincipal.dataSource();
+        if (isNew) {
+            await actions.insertFornecedor();
+        } else {
+            await actions.updateFornecedor();
         }
-
-
         if (!state.dbFornecedor.CGC_FORNECEDOR) {
             await Swal.fire({
                 icon: "warning",
@@ -235,7 +239,6 @@ export const actions = {
             });
             return false
         }
-
         state.pnSearch = false;
         await nextTick();
         state.gridPrincipal.enable();
@@ -340,7 +343,7 @@ export const actions = {
             DELETADO: state.dbFornecedor.DELETADO,
             ID_FORNECEDOR: state.dbFornecedor.ID_FORNECEDOR,
             ID_EMPRESA: state.dbFornecedor.ID_EMPRESA,
-            REPRESENTANTE: state.dbFornecedor.REPRESENTANTE,
+
 
         };
 
@@ -398,7 +401,7 @@ export const actions = {
             DELETADO: state.dbFornecedor.DELETADO,
             ID_FORNECEDOR: state.dbFornecedor.ID_FORNECEDOR,
             ID_EMPRESA: state.dbFornecedor.ID_EMPRESA,
-            REPRESENTANTE: state.dbFornecedor.REPRESENTANTE,
+
         };
 
         try {
@@ -461,7 +464,7 @@ export const actions = {
         }
     },
 
-    selecionarRepresentante(representanteSelecionado: iRepresentantes) {
+    selecionarRepresentante(representanteSelecionado: iFornecedor) {
         state.dbFornecedor.NOME = representanteSelecionado.NOME
         state.dbFornecedor.ID_REPRESENTANTE = representanteSelecionado.ID_REPRESENTANTE
         state.representanteSelecionado = representanteSelecionado;
