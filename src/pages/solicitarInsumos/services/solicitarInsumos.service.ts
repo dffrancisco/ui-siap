@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iCategorias, iGetItens, iItens } from "../interfaces";
 type iGetCategoriasFunction = () => Promise<iCategorias[]>;
-type iGetItensFunction = (param: iGetItens, categoria: number) => Promise<iItens[]>;
+type iGetItensFunction = (param: iGetItens) => Promise<iItens[]>;
 
 const caminho = 'siap/solicitarInsumos'
 
@@ -12,11 +12,10 @@ const getCategorias: iGetCategoriasFunction = async () => {
     return data;
 }
 
-const getItens: iGetItensFunction = async (param, categoria) => {
+const getItens: iGetItensFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getItens",
         param,
-        categoria
     });
     return data;
 }

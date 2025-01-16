@@ -1,5 +1,6 @@
 export interface iGetItens {
     search: string;
+    categoria: number;
 }
 
 export interface iCategorias {

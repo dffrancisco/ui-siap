@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, reactive, ref } from "vue";
-import { iCategorias, iGetItens, iItens } from "../interfaces";
+import { iCategorias, iItens } from "../interfaces";
 import serviceSolicitarInsumos from "../services/solicitarInsumos.service";
+import Swal from "sweetalert2";
+import { useEventListener } from "@vueuse/core";
 const emits = defineEmits(["closeModalNovoPedidoInsumos"]);
 const inputSearch = ref();
 
@@ -21,6 +23,7 @@ const actions = {
   async init() {
     actions.getCategorias();
     actions.criarGrid();
+    actions.getItens();
   },
 
   criarGrid() {
@@ -30,13 +33,6 @@ const actions = {
       height: 300,
       columns: {
         Descrição: { dataField: "DESCRICAO", style: "text-align: center" },
-      },
-      query: {
-        async execute(rs) {
-          let data = await actions.getItens(rs.param as iGetItens);
-          state.dbItens = data as iItens[];
-          state.gridItens.querySourceAdd(state.dbItens);
-        },
       },
     });
     state.gridCarrinho = new xGridV2.create({
@@ -49,30 +45,34 @@ const actions = {
     });
   },
 
-  async getItens(param: iGetItens) {
+  async getItens() {
     try {
       state.loading = true;
-
-      console.log(state.categoriaAnterior);
-      console.log(state.categoriaSelecionada);
-      console.log(inputSearch.value);
-
-      if (state.categoriaSelecionada == state.categoriaAnterior && state.search == "") {
-        return false;
-      }
-
       state.gridItens.clear();
       state.dbItens = [];
 
-      const data = await serviceSolicitarInsumos.getItens(param, state.categoriaSelecionada);
+      if (state.search == null) {
+        state.search = "";
+      }
+
+      let param = {
+        search: state.search,
+        categoria: state.categoriaSelecionada,
+      };
+
+      const data = await serviceSolicitarInsumos.getItens(param);
       state.dbItens = data as iItens[];
-      state.gridItens.querySourceAdd(state.dbItens);
+      state.gridItens.source(state.dbItens);
 
       state.categoriaAnterior = state.categoriaSelecionada;
 
       return data;
     } catch (error) {
-      console.error("Erro ao carregar itens", error);
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao exibir os itens",
+      });
+      return;
     } finally {
       state.loading = false;
     }
@@ -84,7 +84,11 @@ const actions = {
       const data = await serviceSolicitarInsumos.getCategorias();
       state.dbCategorias = data;
     } catch (error) {
-      console.error("Erro ao carregar categorias", error);
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao carregar as categorias",
+      });
+      return;
     } finally {
       state.loading = false;
     }
@@ -95,24 +99,20 @@ const actions = {
   },
 
   async btnSearch() {
-    state.gridItens.queryOpen({
-      search: inputSearch.value.value,
-    });
+    await actions.getItens();
   },
 };
 
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F1") {
+    inputSearch.value.focus();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
+
 onMounted(async () => {
   await actions.init();
-  //   state.categoriaSelecionada = 1;
-
-  state.gridItens.queryOpen(
-    {
-      search: "",
-    },
-    () => {
-      inputSearch.value.focus();
-    }
-  );
 });
 </script>
 <template>
@@ -129,19 +129,19 @@ onMounted(async () => {
             lg="4"
           >
             <v-card
-              class="category-card"
+              class="categoria-card"
               :class="{ 'selected-card': state.categoriaSelecionada == categoria.ID_INSUMO_CATEGORIA }"
               @click="
                 () => {
                   if (state.categoriaSelecionada !== categoria.ID_INSUMO_CATEGORIA) {
                     state.categoriaAnterior = state.categoriaSelecionada;
                     state.categoriaSelecionada = categoria.ID_INSUMO_CATEGORIA;
-                    actions.getItens({ search: '' });
+                    actions.getItens();
                   }
                 }
               "
             >
-              <v-card-title class="category-title">{{ categoria.CATEGORIA }}</v-card-title>
+              <v-card-title class="categoria-title">{{ categoria.CATEGORIA }}</v-card-title>
             </v-card>
           </v-col>
         </v-row>
@@ -150,7 +150,7 @@ onMounted(async () => {
           <v-col>
             <div class="d-flex ga-2">
               <v-text-field
-                label="Pesquisar Itens"
+                label="Pesquisar Itens (F1)"
                 v-model="state.search"
                 :clearable="true"
                 autofocus
@@ -204,11 +204,11 @@ onMounted(async () => {
   background-color: #e3f2fd;
 }
 
-.category-card {
+/* .categoria-card {
   display: flex;
-}
+} */
 
-.category-title {
+.categoria-title {
   font-size: 14px;
   text-align: center;
   line-height: 1.4;
