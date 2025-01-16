@@ -9,6 +9,7 @@ export interface iCliente {
     DIA_VENCIMENTO_BOLETO: number;
     TIPO_FATURAMENTO: string;
     DIVIDIR_BOLETO: string;
+    DESCONTO_MONTAGEM: string;
 }
 
 export interface iParamGetCliente {

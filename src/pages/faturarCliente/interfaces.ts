@@ -4,6 +4,7 @@ export interface iClienteFaturado {
     CGC_CLIENTE: string,
     OBS_CLIENTE: string,
     DIVIDIR_BOLETO: "S" | 'N',
+    DESCONTO_MONTAGEM: "S" | 'N',
     DIA_VENCIMENTO_BOLETO: number,
     TIPO_FATURAMENTO: "Q" | 'M',
     ID_REGRA_FATURAMENTO: number
@@ -86,7 +87,7 @@ export interface iBoleto {
 
 export interface iGerarBoletosParam {
     BOLETOS: iBoleto[],
-    CLIENTE: iClienteFaturado,
+    ID_CLIENTE: number,
     DATA_LIMITE: string,
     REGRAS_FATURAMENTO: iRegrasFaturamentoGeral
 }

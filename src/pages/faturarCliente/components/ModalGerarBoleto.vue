@@ -187,7 +187,7 @@ const actions = {
 
       let param: iGerarBoletosParam = {
         BOLETOS: state.boletos,
-        CLIENTE: props.cliente,
+        ID_CLIENTE: props.cliente.ID_CLIENTE,
         DATA_LIMITE: props.dataLimite,
         REGRAS_FATURAMENTO: state.regrasFaturamento,
       };
@@ -273,7 +273,7 @@ const computeds = {
       total_orcamentos += item.VALOR;
       total_devolucao += item.DEVOLUCAO;
 
-      if (item.MONTAGEM > 0) {
+      if (item.MONTAGEM > 0 && props.cliente.DESCONTO_MONTAGEM == "S") {
         total_desc_montagem += item.MONTAGEM * 0.05; // DESCONTO DE 5% ;
       }
     });
