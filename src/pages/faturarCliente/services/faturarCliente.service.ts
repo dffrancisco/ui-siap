@@ -5,6 +5,8 @@ import {
     iGerRegrasFaturamentoExclusivoResponse,
     iGetClientesFaturadosParam,
     iGetClientesFaturadosResponse,
+    iGetCreditosClienteParam,
+    iGetCreditosClienteResponse,
     iGetOrcamentosClienteFaturadoParam,
     iGetOrcamentosClienteFaturadoResponse,
     iGetRegrasFaturamentoGeralResponse
@@ -12,10 +14,9 @@ import {
 
 const caminho = 'siap/faturarCliente'
 
-type iGetClientesFaturadosFuction = (param: iGetClientesFaturadosParam, offset: number) =>
-    Promise<iGetClientesFaturadosResponse>
-type iGetOrcamentosClienteFaturadoFunction = (param: iGetOrcamentosClienteFaturadoParam) =>
-    Promise<iGetOrcamentosClienteFaturadoResponse[]>
+type iGetClientesFaturadosFuction = (param: iGetClientesFaturadosParam, offset: number) => Promise<iGetClientesFaturadosResponse>
+type iGetOrcamentosClienteFaturadoFunction = (param: iGetOrcamentosClienteFaturadoParam) => Promise<iGetOrcamentosClienteFaturadoResponse[]>
+type iGetCreditosClienteFunction = (param: iGetCreditosClienteParam) => Promise<iGetCreditosClienteResponse[]>
 type iGetRegrasFaturamentoGeralFunction = () => Promise<iGetRegrasFaturamentoGeralResponse>
 type iGerarBoletosFunction = (param: iGerarBoletosParam) => Promise<iGerarBoletosResponse>
 type iGerRegrasFaturamentoExclusivoFunction = (idCliente: number) => Promise<iGerRegrasFaturamentoExclusivoResponse[]>
@@ -33,6 +34,15 @@ const getClientesFaturados: iGetClientesFaturadosFuction = async (param, offset)
 const getOrcamentosClienteFaturado: iGetOrcamentosClienteFaturadoFunction = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "getOrcamentosClienteFaturado",
+        param
+    });
+
+    return data;
+}
+
+const getCreditosCliente: iGetCreditosClienteFunction = async (param) => {
+    const { data } = await axios.post(caminho, {
+        call: "getCreditosCliente",
         param
     });
 
@@ -68,6 +78,7 @@ const getRegrasFaturamentoExclusivo: iGerRegrasFaturamentoExclusivoFunction = as
 export default {
     getClientesFaturados,
     getOrcamentosClienteFaturado,
+    getCreditosCliente,
     getRegrasFaturamentoGeral,
     gerarBoletos,
     getRegrasFaturamentoExclusivo

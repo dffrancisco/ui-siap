@@ -27,13 +27,33 @@ export interface iOrcamentosClienteFaturado {
     MONTAGEM: number,
 }
 
+export interface iCreditoCliente {
+    ID_CREDITO: number,
+    ID_DEVOLUCAO: number,
+    VALOR: number,
+    DATA_VENDA: string,
+    NUM_ORCAMENTO: number,
+}
+
+export interface iDevolucaoFiltered {
+    NUM_ORCAMENTO: number,
+    DATA: string,
+    VALOR: number,
+    CREDITO: 'N' | 'S',
+}
 export interface iOrcamentosLocalizados extends iOrcamentosClienteFaturado {
     ISDEVOLUCAO?: boolean
 }
 
 export interface iGetOrcamentosClienteFaturadoResponse extends iOrcamentosClienteFaturado { }
+export interface iGetCreditosClienteResponse extends iCreditoCliente { }
 
 export interface iGetOrcamentosClienteFaturadoParam {
+    dataLimite: string,
+    id_cliente: number
+}
+
+export interface iGetCreditosClienteParam {
     dataLimite: string,
     id_cliente: number
 }

@@ -193,6 +193,7 @@ onMounted(async () => {
       <ModalGerarBoleto
         @closeModal="actions.closeModalGerarBoleto"
         :orcamentos="state.dbOrcamentosClienteFaturado"
+        :creditos="state.creditos"
         :cliente="state.dbClienteFaturado"
         :dataLimite="state.dataLimite"
         :regrasFaturamentoGeral="state.regrasFaturamentoGeral"
