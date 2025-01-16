@@ -6,7 +6,8 @@ import { iRamal, iSetor, iParamToGetRamal, iParamToInsertRamal, iFieldDuplicity,
 import utils from "@/ts/utils";
 import serviceGerirRamais from "./services/gerirRamais.service";
 import { useEventListener } from "@vueuse/core";
-import LogoRealShopCar from "@/assets/Logo-Real-Shop-Car-menor.png";
+import printJS from "print-js";
+
 
 
 export const state = reactive({
@@ -322,7 +323,6 @@ export const actions = {
         }
     },
 
-
     async search() {
         const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
@@ -395,12 +395,10 @@ export const actions = {
                         <div class="card-body">
                             <table style="width: 100%; font-size: 12px;">
                                 <thead>
-
                                     <tr style="background-color: #f2f2f2;">
                                         <th style="padding: 4px; border: 1px solid #ccc;">Nome</th>
                                         <th style="padding: 4px; border: 1px solid #ccc;">Ramal</th>
                                     </tr>
-                                    
                                 </thead>
                                 <tbody>
                                     ${setoresHtml}
@@ -477,7 +475,7 @@ export const actions = {
                             .footer {
                                 margin-top: 20px;
                                 display: flex;
-                                justify-content: flex-end; /* Move o conteúdo para a direita */
+                                justify-content: flex-end;
                                 align-items: center;
                             }
                             .footer img {
@@ -491,20 +489,83 @@ export const actions = {
                             ${corpo.join("")}
                         </div>
                         <div class="footer">
-                            <img src="../assets/Logo-Real-Shop-Car-menor.png" alt="Logo da Empresa" width="135">
+                             <img src="./Logo-Real-Shop-Car-menor.png" alt="Logo" style="height: 90px; margin-right: 10px"/>
                         </div>
                     </body>
                 </html>
             `;
             //gepeto
-            const printWindow = window.open("", "_blank");
-            if (printWindow) {
-                printWindow.document.write(layout);
-                printWindow.document.close();
-                printWindow.focus();
-                printWindow.print();
-                printWindow.close();
-            }
+            printJS({
+                printable: layout,
+                type: 'raw-html',
+                style: `
+                    @media print {
+                        body {
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                        .card-header {
+                            color: #000;
+                            -webkit-print-color-adjust: exact;
+                        }
+                    }
+                    body {
+                        margin: 0;
+                        padding: 10px;
+                        font-family: Arial, sans-serif;
+                        font-size: 12px;
+                    }
+                    .container {
+                        display: flex;
+                        flex-wrap: wrap; 
+                        gap: 20px;
+                        justify-content: flex-start;
+                    }
+                    .card {
+                        flex: 0 0 calc(25% - 20px);
+                        border: 1px solid #ddd;
+                        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+                        padding: 10px;
+                        background-color: #fff;
+                        box-sizing: border-box;
+                    }
+                    .card-header {
+                        display: flex;
+                        font-weight: bold;
+                        text-align: center;
+                        margin-bottom: 10px;
+                        font-size: 14px;
+                        padding: 5px;
+                        border-bottom: 1px solid #ddd;
+                    }
+                    .card-body {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 10px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    th, td {
+                        padding: 4px;
+                        border: 1px solid #ccc;
+                        text-align: left;
+                    }
+                    thead tr {
+                        background-color: #f2f2f2;
+                    }
+                    .footer {
+                        margin-top: 20px;
+                        display: flex;
+                        justify-content: flex-end;
+                        align-items: center;
+                    }
+                    .footer img {
+                        height: 50px;
+                    }
+                `
+            });
         } catch (error) {
             console.error("Erro ao imprimir o relatório:", error);
             Swal.fire({
