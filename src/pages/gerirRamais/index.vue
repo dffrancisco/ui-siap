@@ -63,7 +63,7 @@ onUnmounted(() => {
             <input
               v-model="state.dbRamal.nome"
               type="text"
-              :maxlength="50"
+              :maxlength="30"
               id="nome"
               name="nome"
               class="obr ss"

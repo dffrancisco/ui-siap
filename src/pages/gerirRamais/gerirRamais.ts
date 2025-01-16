@@ -280,7 +280,8 @@ export const actions = {
 
             await serviceGerirRamais.toInsert(newFields);
             const loja = state.sociedade.find(s => s.id_sociedade === state.dbRamal.id_sociedade)?.loja || '';
-            state.gridPrincipal.insertLine({ ...newFields, loja });
+            const setor = state.setores.find(s => s.id_setor === state.dbRamal.id_setor)?.nome || '';
+            state.gridPrincipal.insertLine({ ...newFields, loja, setor });
 
 
             Swal.fire({
@@ -415,73 +416,7 @@ export const actions = {
                         <title>Definição do relatório de ramais.</title>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <style>
-                            @media print {
-                                body {
-                                    -webkit-print-color-adjust: exact;
-                                    print-color-adjust: exact;
-                                }
-                                .card-header {
-                                    color: #000;
-                                    -webkit-print-color-adjust: exact;
-                                }
-                            }
-                            body {
-                                margin: 0;
-                                padding: 10px;
-                                font-family: Arial, sans-serif;
-                                font-size: 12px;
-                            }
-                            .container {
-                                display: flex;
-                                flex-wrap: wrap; 
-                                gap: 20px;
-                                justify-content: flex-start;
-                            }
-                            .card {
-                                flex: 0 0 calc(25% - 20px);
-                                border: 1px solid #ddd;
-                                box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-                                padding: 10px;
-                                background-color: #fff;
-                                box-sizing: border-box;
-                            }
-                            .card-header {
-                                display: flex;
-                                font-weight: bold;
-                                text-align: center;
-                                margin-bottom: 10px;
-                                font-size: 14px;
-                                padding: 5px;
-                                border-bottom: 1px solid #ddd;
-                            }
-                            .card-body {
-                                display: flex;
-                                flex-direction: column;
-                                gap: 10px;
-                            }
-                            table {
-                                width: 100%;
-                                border-collapse: collapse;
-                            }
-                            th, td {
-                                padding: 4px;
-                                border: 1px solid #ccc;
-                                text-align: left;
-                            }
-                            thead tr {
-                                background-color: #f2f2f2;
-                            }
-                            .footer {
-                                margin-top: 20px;
-                                display: flex;
-                                justify-content: flex-end;
-                                align-items: center;
-                            }
-                            .footer img {
-                                height: 50px;
-                            }
-                        </style>
+
                     </head>
                     <body>
                         ${titulo}
@@ -523,25 +458,22 @@ export const actions = {
                     }
                     .card {
                         flex: 0 0 calc(25% - 20px);
-                        border: 1px solid #ddd;
-                        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
                         padding: 10px;
-                        background-color: #fff;
                         box-sizing: border-box;
+                        display: flex;
+                        flex-direction: column;
                     }
                     .card-header {
                         display: flex;
                         font-weight: bold;
                         text-align: center;
-                        margin-bottom: 10px;
                         font-size: 14px;
-                        padding: 5px;
-                        border-bottom: 1px solid #ddd;
+                        padding: 6px;
+                      
                     }
                     .card-body {
                         display: flex;
                         flex-direction: column;
-                        gap: 10px;
                     }
                     table {
                         width: 100%;
@@ -549,12 +481,10 @@ export const actions = {
                     }
                     th, td {
                         padding: 4px;
-                        border: 1px solid #ccc;
+                        border: 1px solid;
                         text-align: left;
                     }
-                    thead tr {
-                        background-color: #f2f2f2;
-                    }
+
                     .footer {
                         margin-top: 20px;
                         display: flex;
