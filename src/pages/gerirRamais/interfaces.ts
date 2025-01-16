@@ -48,7 +48,7 @@ export interface iSetor {
 }
 
 export interface iSociedade {
-    id_sociedade?: number;
+    id_sociedade: number;
     loja: string;
 }
 

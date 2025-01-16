@@ -15,10 +15,8 @@ export const state = reactive({
     lista: <iRamal[]>[],
     edtSearch: "",
     dbRamal: <iRamal>{},
-    dbSociedade: <iSociedade[]>[],
     setores: <iSetor[]>[],
-    nome_lojas: <iRamal[]>[],
-    lojas: <any[]>[],
+    sociedade: <iSociedade[]>[],
     loading: false,
 
 });
@@ -35,7 +33,6 @@ export const actions = {
     async init() {
         actions.grids();
         await actions.dadosParaInput();
-        await actions.getSociedade({ offset: 0, param: {} });
         state.gridPrincipal.queryOpen({ nome: "" }, () => {
             state.gridPrincipal.focus();
         });
@@ -48,7 +45,7 @@ export const actions = {
             count: true,
             columns: {
                 Loja: { dataField: "loja" },
-                Setor: { dataField: "nome" },
+                Setor: { dataField: "setor" },
                 Nome: { dataField: "nome" },
                 Ramal: { dataField: "ramal", width: "10%", center: true },
             },
@@ -57,6 +54,11 @@ export const actions = {
                     let data = await actions.getRamais({
                         offset: rs.offset,
                         param: rs.param,
+                    });
+
+                    data = data.map(ramal => {
+                        const setor = state.setores.find(s => s.id_setor === ramal.id_setor);
+                        return { ...ramal, setor: setor ? setor.nome : '' };
                     });
                     state.gridPrincipal.querySourceAdd(data);
                 },
@@ -120,18 +122,17 @@ export const actions = {
             },
         });
     },
-
     async dadosParaInput() {
         try {
             state.loading = true;
 
-
-            const [setores] = await Promise.all([
+            const [setores, sociedade] = await Promise.all([
                 serviceGerirRamais.getSetores({ param: {}, offset: 0 }),
+                serviceGerirRamais.getSociedade({ param: {}, offset: 0 }),
             ]);
 
-
             state.setores = setores;
+            state.sociedade = sociedade;
 
         } catch (error) {
             Swal.fire({
@@ -143,6 +144,8 @@ export const actions = {
         }
     },
 
+
+
     async getRamais({ offset, param }: iParamToGetRamal) {
         try {
             state.loading = true;
@@ -152,22 +155,6 @@ export const actions = {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao carregar ramais.",
-            });
-        } finally {
-            state.loading = false;
-        }
-    },
-
-    async getSociedade({ offset, param }: iParamToGetRamal) {
-        try {
-            state.loading = true;
-            const data = await serviceGerirRamais.getSociedade({ offset, param });
-            state.lojas = data.map((sociedade: iSociedade) => sociedade.loja);
-            return data;
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao carregar sociedade.",
             });
         } finally {
             state.loading = false;
@@ -291,7 +278,8 @@ export const actions = {
 
 
             await serviceGerirRamais.toInsert(newFields);
-            state.gridPrincipal.insertLine({ ...newFields });
+            const loja = state.sociedade.find(s => s.id_sociedade === state.dbRamal.id_sociedade)?.loja || '';
+            state.gridPrincipal.insertLine({ ...newFields, loja });
 
 
             Swal.fire({
@@ -334,11 +322,11 @@ export const actions = {
         }
     },
 
+
     async search() {
         const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
             nome: searchValue,
-            loja: searchValue
 
         });
     },
