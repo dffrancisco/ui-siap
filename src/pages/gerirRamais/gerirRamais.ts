@@ -362,6 +362,25 @@ export const actions = {
                 return acc;
             }, []);
 
+            dadosAgrupados.sort((a, b) => a.setores.length - b.setores.length);
+
+            const linhas = [];
+            let linhaAtual = [];
+            let itensNaLinhaAtual = 0;
+
+            dadosAgrupados.forEach((loja) => {
+                if (linhaAtual.length === 0 || loja.setores.length === itensNaLinhaAtual) {
+                    linhaAtual.push(loja);
+                    itensNaLinhaAtual = loja.setores.length;
+                } else {
+                    linhas.push(linhaAtual);
+                    linhaAtual = [loja];
+                    itensNaLinhaAtual = loja.setores.length;
+                }
+            });
+            if (linhaAtual.length) linhas.push(linhaAtual);
+
+
             const corPastelAleatoria = () => {
                 const r = Math.floor((Math.random() * 127) + 127);
                 const g = Math.floor((Math.random() * 127) + 127);
