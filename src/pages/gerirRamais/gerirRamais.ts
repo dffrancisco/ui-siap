@@ -487,10 +487,12 @@ export const actions = {
                         text-align: center;
                         font-size: 14px;
                         padding: 6px;
+                         border: 1px solid;
                     }
                     .card-body {
                         display: flex;
                         flex-direction: column;
+                         border: 1px solid;
                     }
                     table {
                         width: 100%;
