@@ -332,6 +332,8 @@ export const actions = {
         });
     },
 
+
+
     async onClickImprimir() {
         try {
             state.loading = true;
@@ -347,7 +349,6 @@ export const actions = {
                 return;
             }
 
-            //gepeto
             const dadosAgrupados = dadosTratados.reduce((acc, item) => {
                 let loja = acc.find((l) => l.loja === item.loja);
                 if (!loja) {
@@ -379,7 +380,6 @@ export const actions = {
                 }
             });
             if (linhaAtual.length) linhas.push(linhaAtual);
-
 
             const corPastelAleatoria = () => {
                 const r = Math.floor((Math.random() * 127) + 127);
@@ -435,7 +435,6 @@ export const actions = {
                         <title>Definição do relatório de ramais.</title>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
                     </head>
                     <body>
                         ${titulo}
@@ -448,7 +447,7 @@ export const actions = {
                     </body>
                 </html>
             `;
-            //gepeto
+
             printJS({
                 printable: layout,
                 type: 'raw-html',
@@ -472,11 +471,11 @@ export const actions = {
                     .container {
                         display: flex;
                         flex-wrap: wrap; 
-                        gap: 20px;
+                        gap: 10px; 
                         justify-content: flex-start;
                     }
                     .card {
-                        flex: 0 0 calc(25% - 20px);
+                        flex: 0 0 calc(25% - 10px); 
                         padding: 10px;
                         box-sizing: border-box;
                         display: flex;
@@ -488,7 +487,6 @@ export const actions = {
                         text-align: center;
                         font-size: 14px;
                         padding: 6px;
-                      
                     }
                     .card-body {
                         display: flex;
@@ -503,7 +501,6 @@ export const actions = {
                         border: 1px solid;
                         text-align: left;
                     }
-
                     .footer {
                         margin-top: 20px;
                         display: flex;
@@ -525,8 +522,6 @@ export const actions = {
             state.loading = false;
         }
     }
-
-
 };
 
 export default { state, actions, eventListener };
