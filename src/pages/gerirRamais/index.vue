@@ -28,7 +28,7 @@ onUnmounted(() => {
               v-model="state.dbRamal.id_sociedade"
               id="loja"
               name="loja"
-              class="ss"
+              class="obr ss"
             >
               <option
                 v-for="loja in state.sociedade"
@@ -80,6 +80,7 @@ onUnmounted(() => {
               class="obr ss"
               maxlength="4"
               autocomplete="off"
+              @input="state.dbRamal.ramal = state.dbRamal.ramal.replace(/\D/g, '')"
             />
           </v-col>
         </v-row>
@@ -88,7 +89,7 @@ onUnmounted(() => {
           <input
             v-model="state.edtSearch"
             type="text"
-            placeholder="F1 - Buscar"
+            placeholder="F1 - Buscar e Filtrar"
             :disabled="state.pnSearch"
             @keydown.enter.prevent="actions.search()"
             @keydown.arrow-down="state.gridPrincipal.focus(0)"

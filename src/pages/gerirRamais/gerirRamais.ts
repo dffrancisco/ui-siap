@@ -347,21 +347,23 @@ export const actions = {
                     text: "Não há dados para a impressão.",
                 });
                 return;
-            }
+            } ''
 
-            const dadosAgrupados = dadosTratados.reduce((acc, item) => {
-                let loja = acc.find((l) => l.loja === item.loja);
+            const dadosAgrupados = dadosTratados.reduce((item2, item) => {
+                let loja = item2.find((l) => l.loja === item.loja);//loja com mesmo nome
                 if (!loja) {
                     loja = { loja: item.loja || "---", setores: [] };
-                    acc.push(loja);
+                    item2.push(loja);
                 }
                 loja.setores.push({
-                    nome: item.nome || "---",
-                    ramal: item.ramal || "---",
-                    setor: item.setor || "---",
+                    nome: item.nome,
+                    ramal: item.ramal,
+                    setor: item.setor,
                 });
-                return acc;
+                return item2;
             }, []);
+
+
 
             dadosAgrupados.sort((a, b) => a.setores.length - b.setores.length);
 
@@ -372,14 +374,14 @@ export const actions = {
             dadosAgrupados.forEach((loja) => {
                 if (linhaAtual.length === 0 || loja.setores.length === itensNaLinhaAtual) {
                     linhaAtual.push(loja);
-                    itensNaLinhaAtual = loja.setores.length;
+                    itensNaLinhaAtual = loja.setores;
                 } else {
                     linhas.push(linhaAtual);
                     linhaAtual = [loja];
-                    itensNaLinhaAtual = loja.setores.length;
+                    itensNaLinhaAtual = loja.setores;
                 }
             });
-            if (linhaAtual.length) linhas.push(linhaAtual);
+            if (linhaAtual) linhas.push(linhaAtual);
 
             const corPastelAleatoria = () => {
                 const r = Math.floor((Math.random() * 127) + 127);
@@ -457,10 +459,6 @@ export const actions = {
                             -webkit-print-color-adjust: exact;
                             print-color-adjust: exact;
                         }
-                        .card-header {
-                            color: #000;
-                            -webkit-print-color-adjust: exact;
-                        }
                     }
                     body {
                         margin: 0;
@@ -487,12 +485,12 @@ export const actions = {
                         text-align: center;
                         font-size: 14px;
                         padding: 6px;
-                         border: 1px solid;
+                        border: 1px solid;
                     }
                     .card-body {
                         display: flex;
                         flex-direction: column;
-                         border: 1px solid;
+                        border: 1px solid;
                     }
                     table {
                         width: 100%;
