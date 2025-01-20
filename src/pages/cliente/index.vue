@@ -95,6 +95,7 @@ onMounted(async () => {
                 { text: 'Sim', value: 'S' },
                 { text: 'Não', value: 'N' },
               ]"
+              @update:model-value="actions.onChangeProdutorRural()"
               item-title="text"
               item-value="value"
               label="Produtor Rural"
@@ -110,7 +111,6 @@ onMounted(async () => {
               v-model="state.inscricaoEstadual"
               label="Inscrição Estadual *"
               maxLength="17"
-              v-mask="'##.###.###/###-##'"
               :clearable="false"
               :disabled="state.desativarInputs"
             ></v-text-field>
@@ -164,7 +164,7 @@ onMounted(async () => {
       </v-row>
 
       <v-row class="mt-2">
-        <v-col cols="5">
+        <v-col cols="4">
           <v-text-field
             v-model="state.email"
             label="E-mail"
@@ -174,7 +174,7 @@ onMounted(async () => {
           >
           </v-text-field
         ></v-col>
-        <v-col cols="5">
+        <v-col cols="4">
           <v-text-field
             v-model="state.emailParaBoletos"
             label="Email p/ Boletos"
@@ -199,6 +199,21 @@ onMounted(async () => {
           >
           </v-select>
         </v-col>
+        <v-col cols="2">
+          <v-select
+            v-model="state.contribuinteICMS"
+            :items="[
+              { text: 'Sim', value: 'S' },
+              { text: 'Não', value: 'N' },
+            ]"
+            item-title="text"
+            item-value="value"
+            label="Contribuinte ICMS"
+            :clearable="false"
+            :disabled="state.desativarInputs"
+          >
+          </v-select>
+        </v-col>
       </v-row>
 
       <v-divider class="mt-5 mb-5"></v-divider>
@@ -216,6 +231,47 @@ onMounted(async () => {
           >
           </v-text-field
         ></v-col>
+        <v-col cols="2"
+          ><v-select
+            v-model="state.selectUF"
+            :items="state.ufs"
+            item-title="SIGLA"
+            item-value="CODIGO"
+            label="UF *"
+            :clearable="false"
+            :disabled="state.desativarInputs"
+            >UF</v-select
+          ></v-col
+        >
+        <v-col cols="4"
+          ><v-select
+            v-model="state.selectCidade"
+            :items="state.cidades"
+            item-title="DESCRICAO"
+            item-value="COD_CIDADE"
+            label="Cidade *"
+            :clearable="false"
+            :disabled="state.desativarInputs"
+            @update:model-value="actions.atualizarTextoCidade"
+          >
+          </v-select>
+        </v-col>
+        <v-col cols="4">
+          <v-select
+            v-model="state.selectBairro"
+            :items="state.bairros"
+            item-title="DESCRICAO"
+            item-value="ID_BAIRRO"
+            label="Bairro *"
+            :clearable="false"
+            :disabled="state.desativarInputs"
+            @update:model-value="actions.atualizarTextoBairro"
+          >
+          </v-select>
+        </v-col>
+      </v-row>
+
+      <v-row>
         <v-col cols="6"
           ><v-text-field
             v-model="state.endereco"
@@ -226,109 +282,59 @@ onMounted(async () => {
           >
           </v-text-field
         ></v-col>
-        <v-col cols="4">
-          <v-select
-            v-model="state.selectBairro"
-            :items="state.bairros"
-            item-title="DESCRICAO"
-            item-value="ID_BAIRRO"
-            label="Bairro *"
-            :clearable="true"
-            :disabled="state.desativarInputs"
-            @update:model-value="actions.atualizarTextoBairro"
-          >
-          </v-select>
+        <v-col
+          cols="6"
+          class="containerCnae"
+        >
+          <label class="labelCnae">Cnae</label>
+          <div style="display: flex; align-items: center">
+            <div class="atividadeCNAE">
+              <v-chip-group>
+                <v-chip
+                  v-for="atividade in state.atividadeCNAE"
+                  :key="atividade.ID_ATIVIDADE_EMPRESA"
+                  @click="actions.visualizarCNAE(atividade)"
+                  size="xsmall"
+                >
+                  {{ atividade.CNAE }}
+                </v-chip>
+              </v-chip-group>
+            </div>
+            <v-icon
+              title="Buscar CNAE do cliente"
+              :disabled="!state.idCliente || !state.desativarInputs"
+              size="16px"
+              class="ml-2"
+              @click="actions.buscarCNAE"
+            >
+              mdi-refresh</v-icon
+            >
+          </div>
         </v-col>
       </v-row>
 
       <v-row>
-        <v-col cols="4"
-          ><v-select
-            v-model="state.selectCidade"
-            :items="state.cidades"
-            item-title="DESCRICAO"
-            item-value="COD_CIDADE"
-            label="Cidade *"
-            :clearable="true"
+        <v-col cols="6">
+          <v-textarea
+            v-model="state.obsAdministrativo"
+            label="Obs. Administrativo"
+            maxLength="300"
+            :clearable="false"
+            rows="2"
             :disabled="state.desativarInputs"
-            @update:model-value="actions.atualizarTextoCidade"
           >
-          </v-select>
+          </v-textarea>
         </v-col>
-        <v-col cols="2"
-          ><v-select
-            v-model="state.selectUF"
-            :items="state.ufs"
-            item-title="SIGLA"
-            item-value="CODIGO"
-            label="UF *"
-            :clearable="true"
-            :disabled="state.desativarInputs"
-            >UF</v-select
-          ></v-col
-        >
         <v-col cols="6">
           <v-textarea
             v-model="state.obsVendas"
             label="Obs. Vendas"
             maxLength="250"
             :clearable="false"
-            rows="1"
+            rows="2"
             :disabled="state.desativarInputs"
           >
           </v-textarea>
-        </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="12">
-          <v-textarea
-            v-model="state.obsAdministrativo"
-            label="Obs. Administrativo"
-            maxLength="300"
-            :clearable="false"
-            rows="1"
-            :disabled="state.desativarInputs"
-          >
-          </v-textarea>
-        </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="11">
-          <div
-            class="atividadeCNAE"
-            v-if="state.atividadeCNAE && state.atividadeCNAE.length"
-          >
-            <label class="ml-2">Atividade CNAE </label>
-
-            <v-chip-group>
-              <v-chip
-                v-for="atividade in state.atividadeCNAE"
-                :key="atividade.ID_ATIVIDADE_EMPRESA"
-                @click="actions.visualizarCNAE(atividade)"
-              >
-                {{ atividade.CNAE }}
-              </v-chip>
-            </v-chip-group>
-          </div>
-        </v-col>
-        <v-col cols="1">
-          <v-icon
-            title="Buscar CNAE do cliente"
-            :disabled="!state.idCliente || !state.desativarInputs"
-            size="20px"
-            @click="actions.buscarCNAE"
-          >
-            mdi-refresh</v-icon
-          >
-          <v-icon
-            style="padding: 20px"
-            title="Copiar dados do cliente"
-            :disabled="!state.cnpj_cpf || !state.desativarInputs"
-            @click="actions.copiarDadosCliente"
-            >mdi-content-copy
-          </v-icon>
         </v-col>
       </v-row>
 
@@ -350,6 +356,15 @@ onMounted(async () => {
             color="primary"
             :disabled="!state.idCliente || !state.desativarInputs"
             @click="actions.deletarCliente"
+          />
+          <v-btn
+            class="ml-2"
+            size="39"
+            color="primary"
+            title="Copiar dados do cliente"
+            :disabled="!state.cnpj_cpf || !state.desativarInputs"
+            @click="actions.copiarDadosCliente"
+            icon="mdi-content-copy"
           />
         </div>
         <div class="d-flex justify-end ga-2">
@@ -406,15 +421,29 @@ onMounted(async () => {
   padding: 10px;
 }
 
+.containerCnae {
+  position: relative;
+}
+
 .atividadeCNAE {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 2px;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  max-height: 100px !important;
-  overflow-y: auto;
+  height: 40px;
   overflow-x: auto;
+  position: relative;
+  z-index: 5;
+  width: 100%;
+}
+
+.labelCnae {
+  position: absolute;
+  top: 0px;
+  left: 20px;
+  background-color: #fff;
+  z-index: 10;
 }
 </style>
