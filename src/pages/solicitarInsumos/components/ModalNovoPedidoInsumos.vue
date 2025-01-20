@@ -1,12 +1,19 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, reactive, ref } from "vue";
-import { iCategorias, iItens } from "../interfaces";
+import { iCarrinhoInsumos, iCategorias, iItemAdcPedido, iItens, iPedidosInsumos } from "../interfaces";
 import serviceSolicitarInsumos from "../services/solicitarInsumos.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
+import ModalQtdInsumoPedido from "./ModalQtdInsumoPedido.vue";
 const emits = defineEmits(["closeModalNovoPedidoInsumos"]);
 const inputSearch = ref();
+
+const props = defineProps<{
+  modalOpened: boolean;
+  pedidoSelecionado: iPedidosInsumos | null;
+  novoPedido: boolean;
+}>();
 
 const state = reactive({
   loading: false,
@@ -14,35 +21,97 @@ const state = reactive({
   gridCarrinho: <ixGridCreate>{},
   dbItens: <iItens[]>[],
   dbCategorias: <iCategorias[]>[],
+  dbCarrinho: <iCarrinhoInsumos[]>[],
   categoriaSelecionada: 1 as number | null,
   categoriaAnterior: 0 as number | null,
   search: "",
+  itemSelecionado: null as iItens | null,
+  id_insumo_pedido: null as number | null,
+  modalQtdItemPedidoOpened: false,
+  idItemDeletar: null as number | null,
 });
 
 const actions = {
   async init() {
-    actions.getCategorias();
     actions.criarGrid();
+    actions.getCategorias();
+    await actions.verificarSeTemPedido();
     actions.getItens();
+  },
+
+  verificarSeTemPedido() {
+    if (props.novoPedido == true) {
+      actions.iniciarPedido();
+      return;
+    }
+
+    if (!props.pedidoSelecionado || !props.pedidoSelecionado.itens) {
+      console.warn("Nenhum pedido selecionado ou itens ausentes.");
+      return;
+    }
+
+    const pedidoItens = props.pedidoSelecionado.itens || [];
+    state.dbCarrinho = pedidoItens.map((item) => ({
+      ...item,
+      QTD: item.QTD || 1,
+      ID_INSUMO_PEDIDO: props.pedidoSelecionado.ID_INSUMO_PEDIDO,
+      ID_INSUMO_ITEM_PEDIDO: item.ID_INSUMO_ITEM,
+    }));
+    state.id_insumo_pedido = props.pedidoSelecionado.ID_INSUMO_PEDIDO;
+
+    state.gridCarrinho.source(state.dbCarrinho);
   },
 
   criarGrid() {
     state.gridItens = new xGridV2.create({
       el: "#gridItens",
       count: true,
-      height: 300,
+      height: 340,
       columns: {
         Descrição: { dataField: "DESCRICAO", style: "text-align: center" },
       },
+      enter: () => actions.adicionarItemAoCarrinho(),
+      dblClick: () => actions.adicionarItemAoCarrinho(),
     });
     state.gridCarrinho = new xGridV2.create({
       el: "#gridCarrinho",
       count: true,
-      height: 400,
+      height: 405,
+      width: 280,
       columns: {
-        Descrição: { dataField: "Descricao" },
+        Descrição: { dataField: "DESCRICAO", style: "text-align: left; margin-left: 10px;" },
+        Qtd: { dataField: "QTD", width: "20%", style: "text-align: center" },
+        Ações: { dataField: "Acoes", compare: "acao", width: "20%", style: "text-align: center" },
       },
+      compare: {
+        acao: (r) => {
+          return `<img
+                title="Excluir Item"
+                class="delete-icon"
+                data-id="${r.ID_INSUMO_ITEM}"
+                src="src/pages/solicitarInsumos/assets/icons8-lixo.svg"
+                style="cursor: pointer;">`;
+        },
+      },
+      dblClick: () => actions.deletarItem(),
     });
+  },
+
+  async iniciarPedido() {
+    try {
+      state.loading = true;
+
+      let data = await serviceSolicitarInsumos.iniciarPedido();
+      state.id_insumo_pedido = data.ID_INSUMO_PEDIDO;
+    } catch (e) {
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao iniciar o pedido",
+      });
+      return;
+    } finally {
+      state.loading = false;
+    }
   },
 
   async getItens() {
@@ -101,13 +170,118 @@ const actions = {
   async btnSearch() {
     await actions.getItens();
   },
+
+  adicionarItemAoCarrinho() {
+    let itemSelecionado = state.gridItens.dataSource() as iItens;
+
+    const itemJaNoCarrinho = state.dbCarrinho.some(
+      (item) => item.ID_INSUMO_ITEM === itemSelecionado.ID_INSUMO_ITEM
+    );
+
+    if (itemJaNoCarrinho) {
+      Swal.fire({
+        icon: "warning",
+        text: "Item já está no carrinho",
+      });
+      return;
+    }
+
+    state.itemSelecionado = itemSelecionado;
+    state.modalQtdItemPedidoOpened = true;
+  },
+
+  async salvarQuantidade(quantidade) {
+    if (!state.itemSelecionado) return;
+
+    const itemComQuantidade: iItemAdcPedido = {
+      ...state.itemSelecionado,
+      QTD: quantidade,
+      ID_INSUMO_PEDIDO: state.id_insumo_pedido,
+      ID_INSUMO_ITEM_PEDIDO: null,
+    };
+
+    let data = await serviceSolicitarInsumos.adicionarItemAoPedido(itemComQuantidade);
+
+    const itemAdicionarAoCarrinho: iItemAdcPedido = {
+      ...itemComQuantidade,
+      ID_INSUMO_ITEM_PEDIDO: data.ID_INSUMO_ITEM,
+    };
+
+    state.dbCarrinho.push(itemAdicionarAoCarrinho);
+    state.gridCarrinho.source(state.dbCarrinho);
+
+    state.modalQtdItemPedidoOpened = false;
+  },
+
+  async deletarItem() {
+    console.log(state.gridCarrinho.dataSource());
+    let idItem = state.gridCarrinho.dataSource().ID_INSUMO_ITEM_PEDIDO;
+    if (idItem == undefined) {
+      return;
+    }
+
+    Swal.fire({
+      title: "Deseja excluir esse item do pedido?",
+      showCancelButton: true,
+      confirmButtonText: "Excluir",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await serviceSolicitarInsumos.removerItemDoPedido(idItem);
+
+        state.dbCarrinho = state.dbCarrinho.filter((item) => item.ID_INSUMO_ITEM_PEDIDO !== parseInt(idItem));
+        state.gridCarrinho.source(state.dbCarrinho);
+
+        Swal.fire({
+          icon: "success",
+          text: "Item excluído do carrinho com sucesso!",
+          timer: 500,
+        });
+      }
+    });
+  },
+
+  async finalizarPedido() {
+    try {
+      Swal.fire({
+        icon: "question",
+        title: "Ao finalizar o pedido, será enviado para aprovação e não poderá ser reaberto, deseja continuar?",
+        showCancelButton: true,
+        confirmButtonText: "Sim",
+        cancelButtonText: "Não",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          state.loading = true;
+          await serviceSolicitarInsumos.finalizarPedido(state.id_insumo_pedido);
+
+          Swal.fire({
+            icon: "success",
+            text: "Pedido finalizado com sucesso!",
+            timer: 500,
+          });
+          actions.closeModalNovoPedidoInsumos();
+        }
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao finalizar o pedido",
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
 };
 
-const eventListener = useEventListener(document, "keydown", async (event) => {
+useEventListener(document, "keydown", async (event) => {
   if (event.key === "F1") {
     inputSearch.value.focus();
     event.preventDefault();
     event.stopPropagation();
+  }
+
+  if (event.key === "Delete") {
+    actions.deletarItem();
   }
 });
 
@@ -182,20 +356,51 @@ onMounted(async () => {
         :thickness="4"
       ></v-divider>
       <v-col
-        class="ml-7"
-        cols="4"
+        class="ml-2"
+        cols="4.5"
       >
-        <v-card>
-          <span>CARRINHO</span>
+        <v-card
+          class="d-flex align-center ml-3"
+          max-width="280px"
+        >
+          <span class="ml-2">CARRINHO</span>
           <v-chip>13</v-chip>
         </v-card>
         <div
           class="mt-4"
           id="gridCarrinho"
         ></div>
+        <div class="d-flex justify-end mt-2 btns">
+          <v-btn
+            variant="outlined"
+            color="primary"
+            @click="actions.closeModalNovoPedidoInsumos()"
+            >Cancelar</v-btn
+          >
+          <v-btn
+            color="primary"
+            class="ml-2"
+            @click="actions.finalizarPedido"
+          >
+            Finalizar Pedido
+          </v-btn>
+        </div>
       </v-col>
     </v-row>
   </v-card>
+  <v-dialog
+    style="left: 30%"
+    v-model="state.modalQtdItemPedidoOpened"
+    transition="dialog-transition"
+    variant="flat"
+    :persistent="false"
+    @click:outside="state.modalQtdItemPedidoOpened = false"
+    ><ModalQtdInsumoPedido
+      :item="state.itemSelecionado"
+      @confirmQtd="actions.salvarQuantidade"
+      @closeModalQtdInsumoPedido="state.modalQtdItemPedidoOpened = false"
+    ></ModalQtdInsumoPedido>
+  </v-dialog>
 </template>
 
 <style scoped>
@@ -203,10 +408,6 @@ onMounted(async () => {
   border: 2px solid #1976d2;
   background-color: #e3f2fd;
 }
-
-/* .categoria-card {
-  display: flex;
-} */
 
 .categoria-title {
   font-size: 14px;
