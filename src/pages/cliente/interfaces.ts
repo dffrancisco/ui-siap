@@ -55,6 +55,7 @@ export interface iClientes {
     ATIVIDADE_CNAE: iAtividadesCNAE[];
     DELETADO: string;
     PRODUTOR_RURAL: string;
+    CONTRIBUINTE_ICMS: string;
 }
 
 export interface iGetClientes {

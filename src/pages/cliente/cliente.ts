@@ -46,6 +46,7 @@ export const state = reactive({
     telefoneAdicional: "",
     ufs: <iUF[]>[],
     updateCliente: false,
+    contribuinteICMS: ""
 })
 
 export const actions = {
@@ -103,6 +104,7 @@ export const actions = {
         state.bloqueado = clienteSelecionado.BLOQUEADO;
         state.faturado = clienteSelecionado.FATURADO;
         state.idCliente = clienteSelecionado.ID_CLIENTE
+        state.contribuinteICMS = clienteSelecionado.CONTRIBUINTE_ICMS;
         state.updateCliente = true;
 
         const cnpjCpfLength = state.cnpj_cpf.replace(/\D/g, '').length;
@@ -117,15 +119,21 @@ export const actions = {
     },
 
     novoCliente() {
-        if (state.clienteSelecionado.ID_CLIENTE) {
-            actions.limparStates()
-        }
+        actions.limparStates()
 
         state.updateCliente = false
         state.desativarInputs = false;
         nextTick(() => {
             state.inputCNPJ.focus();
         });
+    },
+
+    onChangeProdutorRural() {
+        if (state.produtorRural == 'S') {
+            state.contribuinteICMS = 'S'
+        } else {
+            state.contribuinteICMS = 'N'
+        }
     },
 
     editarDadosCliente() {
@@ -178,6 +186,7 @@ export const actions = {
     },
 
     cancelar() {
+        state.cnpjMode = true;
         state.desativarInputs = true;
 
         if (state.idCliente) {
@@ -198,7 +207,7 @@ export const actions = {
         state.contatoFinanceiro = "";
         state.contatoCompras = "";
         state.obsAdministrativo = "";
-        state.boletoEmail = 0;
+        state.boletoEmail = 1;
         state.obsVendas = "";
         state.cep = "";
         state.apelido = "";
@@ -215,6 +224,11 @@ export const actions = {
         state.atividadeCNAE = <iAtividadesCNAE[]>[];
         state.clienteSelecionado = <iClientes>{};
         state.updateCliente = false;
+        state.contribuinteICMS = 'S'
+
+        if (!state.cnpjMode) {
+            state.contribuinteICMS = 'N';
+        }
     },
 
     visualizarCNAE(atividade) {
@@ -247,6 +261,7 @@ export const actions = {
             { field: state.selectCidade, name: "Cidade" },
             { field: state.selectBairro, name: "Bairro" },
             { field: state.cep, name: "CEP" },
+            { field: state.contribuinteICMS, name: "Contribuinte ICMS" },
         ];
 
         for (const item of camposObrigatorios) {
@@ -307,6 +322,7 @@ export const actions = {
             TELEFONE1: state.telefone,
             TELEFONE2: state.telefoneAdicional,
             UF: state.selectUF,
+            CONTRIBUINTE_ICMS: state.contribuinteICMS,
             updateCliente: state.updateCliente
         }
 
