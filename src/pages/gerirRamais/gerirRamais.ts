@@ -350,9 +350,9 @@ export const actions = {
             } ''
 
             const dadosAgrupados = dadosTratados.reduce((item2, item) => {
-                let loja = item2.find((l) => l.loja === item.loja);//loja com mesmo nome
+                let loja = item2.find((l: { loja: string }) => l.loja === item.loja);//loja com mesmo nome
                 if (!loja) {
-                    loja = { loja: item.loja || "---", setores: [] };
+                    loja = { loja: item.loja, setores: [] };
                     item2.push(loja);
                 }
                 loja.setores.push({
@@ -383,6 +383,7 @@ export const actions = {
             });
             if (linhaAtual) linhas.push(linhaAtual);
 
+            //gepeto
             const corPastelAleatoria = () => {
                 const r = Math.floor((Math.random() * 127) + 127);
                 const g = Math.floor((Math.random() * 127) + 127);
