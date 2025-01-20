@@ -125,10 +125,8 @@ onUnmounted(() => {
 
       <div
         id="pnBotoes"
-        class="mt-4 d-flex justify-center"
+        class="mt-4 d-flex align-center"
       >
-      </div>
-      <div>
         <v-btn
           color="primary"
           @click="actions.onClickImprimir"
@@ -136,9 +134,11 @@ onUnmounted(() => {
           icon="mdi-printer"
           size="36px"
           title="Imprimir"
+          class="btn-print"
         >
           <v-icon left>mdi-printer</v-icon>
         </v-btn>
+        <div class="d-flex justify-center"> </div>
       </div>
     </v-card>
 
@@ -147,6 +147,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.btn-print {
+  margin-right: 190px;
+}
+
 .ss {
   margin-right: 5px;
   margin-top: 1px;
@@ -154,11 +158,5 @@ onUnmounted(() => {
 
 .mt-4 {
   margin-top: 16px;
-}
-
-.btnPrint {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>
