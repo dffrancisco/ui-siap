@@ -364,6 +364,11 @@ import login from "../login/login";
               @click="router.push('/usoConsumo')"
               >Uso Consumo</v-btn
             >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/relatorioDeConhecimento')"
+              >Relatorio de Conhecimento</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
