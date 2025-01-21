@@ -109,7 +109,7 @@ onMounted(async () => {
           <v-col cols="3">
             <v-text-field
               v-model="state.inscricaoEstadual"
-              label="Inscrição Estadual *"
+              :label="state.contribuinteICMS == 'S' ? 'Inscrição Estadual *' : 'Inscrição Estadual'"
               maxLength="17"
               :clearable="false"
               :disabled="state.desativarInputs"

@@ -264,6 +264,10 @@ export const actions = {
             { field: state.contribuinteICMS, name: "Contribuinte ICMS" },
         ];
 
+        if (state.contribuinteICMS == 'S') {
+            camposObrigatorios.push({ field: state.inscricaoEstadual, name: 'Inscrição Estadual' })
+        }
+
         for (const item of camposObrigatorios) {
             if (!item.field) {
                 Swal.fire({
