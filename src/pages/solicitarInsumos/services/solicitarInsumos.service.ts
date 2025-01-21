@@ -1,9 +1,9 @@
 import axios from "axios";
-import { iCategorias, iGetItens, iItemAdcPedido, iItens, iPedidosInsumos } from "../interfaces";
+import { iCategorias, iGetItens, iItemAdcPedido, iItens, iPedidosInsumos, iResponseIdItem } from "../interfaces";
 type iGetCategoriasFunction = () => Promise<iCategorias[]>;
 type iGetItensFunction = (param: iGetItens) => Promise<iItens[]>;
 type iGetPedidosFunction = (ano: number | string) => Promise<iPedidosInsumos[]>;
-type iSetItemPedido = (item: iItemAdcPedido) => Promise<any>;
+type iSetItemPedido = (item: iItemAdcPedido) => Promise<iResponseIdItem>;
 type iDeleteItemPedido = (idItem: number) => Promise<string>;
 type iFinalizarPedido = (idPedido: number) => Promise<string>;;
 

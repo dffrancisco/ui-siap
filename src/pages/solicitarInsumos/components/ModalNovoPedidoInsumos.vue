@@ -127,6 +127,10 @@ const actions = {
   },
 
   async getItens() {
+    if (props.pedidoSelecionado && props.pedidoSelecionado?.FINALIZADO == "S") {
+      return;
+    }
+
     try {
       state.loading = true;
       state.gridItens.clear();
@@ -298,10 +302,10 @@ onMounted(async () => {
 
   const gridCarrinho = document.getElementById("gridCarrinho");
 
+  //evento clique para deletar item do carrinho
   gridCarrinho?.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
 
-    // Verifica se o clique foi em um ícone com a classe "delete-icon"
     if (target && target.classList.contains("delete-icon")) {
       const itemId = target.getAttribute("data-id");
 
@@ -385,9 +389,7 @@ onMounted(async () => {
         class="ml-2"
         cols="4.5"
       >
-        <v-card
-          class="d-flex ml-3 cardCarrinho"
-          max-width="290px"
+        <v-card class="d-flex cardCarrinho"
           ><span class="ml-1">Carrinho de Insumos</span>
           <v-icon
             class="iconCarrinho"
@@ -402,7 +404,7 @@ onMounted(async () => {
           class="mt-4"
           id="gridCarrinho"
         ></div>
-        <div class="d-flex justify-end mt-2 mr-3">
+        <div class="d-flex justify-center mt-2">
           <v-btn
             variant="outlined"
             color="primary"

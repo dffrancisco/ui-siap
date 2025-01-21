@@ -14,17 +14,13 @@ export interface iItens {
     DESCRICAO: string;
     QTD: number | null;
 }
-export interface iCarrinhoInsumos {
-    ID_INSUMO_PEDIDO: number;
-    ID_INSUMO_ITEM: number;
-    ID_INSUMO_CATEGORIA: number;
-    ID_INSUMO_PEDIDO_ITEM: number | null;
-    DESCRICAO: string;
-    QTD: number;
+export interface iCarrinhoInsumos extends iItens { }
+
+export interface iItemAdcPedido extends iItens { }
+
+export interface iResponseIdItem {
+    ID_INSUMO_PEDIDO_ITEM: number;
 }
-
-export interface iItemAdcPedido extends iCarrinhoInsumos { }
-
 export interface iPedidosInsumos {
     ID_INSUMO_PEDIDO: number;
     DATA_HORA_INICIO: string;
