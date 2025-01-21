@@ -12,8 +12,8 @@ onMounted(async () => {
   ><v-container
     ><v-card
       :max-width="800"
-      :max-height="600"
-      class="mx-auto pa-4"
+      :max-height="550"
+      class="mx-auto pa-4 overflow-y-auto"
     >
       <v-row class="align-center justify-space-between">
         <v-col

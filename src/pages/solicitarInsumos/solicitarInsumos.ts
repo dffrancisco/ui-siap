@@ -5,7 +5,6 @@ import { iCategorias, iPedidosInsumos } from "./interfaces";
 import serviceSolicitarInsumos from "./services/solicitarInsumos.service";
 import Swal from "sweetalert2";
 
-
 const ano = moment().year();
 
 export const state = reactive({
