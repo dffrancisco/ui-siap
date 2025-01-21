@@ -7,6 +7,8 @@ export interface iCategorias {
     CATEGORIA: string;
 }
 export interface iItens {
+    ID_INSUMO_PEDIDO_ITEM: number | null;
+    ID_INSUMO_PEDIDO: number;
     ID_INSUMO_ITEM: number;
     ID_INSUMO_CATEGORIA: number;
     DESCRICAO: string;
@@ -16,7 +18,7 @@ export interface iCarrinhoInsumos {
     ID_INSUMO_PEDIDO: number;
     ID_INSUMO_ITEM: number;
     ID_INSUMO_CATEGORIA: number;
-    ID_INSUMO_ITEM_PEDIDO: number | null;
+    ID_INSUMO_PEDIDO_ITEM: number | null;
     DESCRICAO: string;
     QTD: number;
 }

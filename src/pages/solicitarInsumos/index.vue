@@ -97,7 +97,9 @@ onMounted(async () => {
         :modalOpened="state.modalNovoPedidoInsumosOpened"
         :novoPedido="state.novoPedido"
         :pedidoSelecionado="state.pedidoSelecionado"
+        :categorias="state.categorias"
         @closeModalNovoPedidoInsumos="actions.closeModalNovoPedido"
+        @atualizarPedidoFinalizado="actions.atualizarPedidoFinalizado"
       />
     </v-dialog>
   </v-container>
@@ -116,5 +118,6 @@ onMounted(async () => {
 
 .vchipTotal {
   font-weight: bold;
+  border: 1px solid rgb(255, 255, 255);
 }
 </style>
