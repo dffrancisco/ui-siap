@@ -452,7 +452,6 @@ onMounted(async () => {
 }
 
 .cardCarrinho {
-  /* border: 2px solid #48a1ff9c; */
   justify-content: space-between;
   padding: 10px;
 }
