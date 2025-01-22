@@ -17,7 +17,7 @@ const getRelatorioConhecimento: iGetDadosParaRelatorio = async (param) => {
 
 const getTransportadora: iGetTransportadora = async () => {
     const { data } = await axios.post(caminho, {
-        call: "getTramsportadora",
+        call: "getTransportadoras",
     });
     return data;
 }

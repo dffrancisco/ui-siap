@@ -33,7 +33,6 @@ onMounted(() => {
             v-model="state.dataInicio"
             type="date"
             :clearable="false"
-            @keydown.enter="state.dataFim.focus()"
           ></v-text-field>
         </v-col>
 

@@ -7,8 +7,8 @@ export interface iParamsRelatorioConhecimento {
 }
 
 export interface iTransportadora {
-    idTransportadora: number;
-    razaoSocial: string;
+    ID_TRANSPORTADORA: number;
+    RAZAO_SOCIAL: string;
 }
 
 export interface iRelatorioConhecimento {

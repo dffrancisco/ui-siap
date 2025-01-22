@@ -74,11 +74,15 @@ export const actions = {
         await actions.getDadosParaRelatorio();
     },
 
+
     async getTransportadoras() {
         try {
             state.loading = true;
             const response = await serviceRelatorioConhecimento.getTransportadora();
-            state.transportadorasOptions = response;
+            state.transportadorasOptions = response.map((item: any) => ({
+                ID_TRANSPORTADORA: item.ID_TRANSPORTADORA,
+                RAZAO_SOCIAL: item.RAZAO_SOCIAL,
+            }));
         } catch (error) {
             console.error("Erro ao obter as transportadoras:", error);
             Swal.fire({
