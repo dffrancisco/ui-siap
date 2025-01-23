@@ -9,7 +9,7 @@ const ano = moment().year();
 
 export const state = reactive({
     loading: false,
-    modalNovoPedidoInsumosOpened: false,
+    modalPedidoInsumosOpened: false,
     ano: ano || null || "",
     pedidos: <iPedidosInsumos[]>[],
     categorias: <iCategorias[]>[],
@@ -25,7 +25,7 @@ export const actions = {
 
     novoPedido() {
         state.novoPedido = true;
-        state.modalNovoPedidoInsumosOpened = true;
+        state.modalPedidoInsumosOpened = true;
     },
 
     async getPedidos() {
@@ -69,10 +69,10 @@ export const actions = {
     visualizarPedido(pedido) {
         state.pedidoSelecionado = pedido;
         state.novoPedido = false;
-        state.modalNovoPedidoInsumosOpened = true;
+        state.modalPedidoInsumosOpened = true;
     },
 
-    closeModalNovoPedido(itensNoCarrinho) {
+    closeModalPedido(itensNoCarrinho) {
 
         if (state.pedidoSelecionado) {
             state.pedidoSelecionado.itens = itensNoCarrinho
@@ -81,7 +81,7 @@ export const actions = {
             actions.getPedidos();
         }
 
-        state.modalNovoPedidoInsumosOpened = false;
+        state.modalPedidoInsumosOpened = false;
         state.pedidoSelecionado = null;
     },
 
@@ -91,7 +91,7 @@ export const actions = {
             state.pedidoSelecionado.FINALIZADO = 'S';
         }
 
-        state.modalNovoPedidoInsumosOpened = false;
+        state.modalPedidoInsumosOpened = false;
         state.pedidoSelecionado = null;
     }
 }

@@ -6,7 +6,7 @@ import serviceSolicitarInsumos from "../services/solicitarInsumos.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
 import ModalQtdInsumoPedido from "./ModalQtdInsumoPedido.vue";
-const emits = defineEmits(["closeModalNovoPedidoInsumos", "atualizarPedidoFinalizado"]);
+const emits = defineEmits(["closeModalPedidoInsumos", "atualizarPedidoFinalizado"]);
 const inputSearch = ref();
 
 const props = defineProps<{
@@ -163,8 +163,8 @@ const actions = {
     }
   },
 
-  closeModalNovoPedidoInsumos() {
-    emits("closeModalNovoPedidoInsumos", state.dbCarrinho);
+  closeModalPedidoInsumos() {
+    emits("closeModalPedidoInsumos", state.dbCarrinho);
   },
 
   async btnSearch() {
@@ -409,7 +409,7 @@ onMounted(async () => {
             variant="outlined"
             color="primary"
             class="mr-1"
-            @click="actions.closeModalNovoPedidoInsumos()"
+            @click="actions.closeModalPedidoInsumos()"
             >Cancelar</v-btn
           >
           <v-btn

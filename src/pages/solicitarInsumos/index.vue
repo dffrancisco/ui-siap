@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { state, actions } from "./solicitarInsumos";
-import ModalNovoPedidoInsumos from "./components/ModalNovoPedidoInsumos.vue";
+import ModalPedidoInsumos from "./components/ModalPedidoInsumos.vue";
 import { onMounted } from "vue";
 import utils from "@/ts/utils";
 
@@ -24,7 +24,7 @@ onMounted(async () => {
             label="Ano"
             type="number"
             v-model="state.ano"
-            style="max-width: 200px"
+            style="max-width: 150px"
             :clearable="false"
           />
           <v-btn
@@ -52,7 +52,7 @@ onMounted(async () => {
           v-for="pedido in state.pedidos"
           :key="pedido.ID_INSUMO_PEDIDO"
           cols="12"
-          sm="6"
+          sm="4"
           md="4"
           lg="3"
         >
@@ -90,15 +90,15 @@ onMounted(async () => {
     <div id="pnCodigoTela">solicitarInsumos</div>
 
     <v-dialog
-      v-model="state.modalNovoPedidoInsumosOpened"
+      v-model="state.modalPedidoInsumosOpened"
       max-width="900"
     >
-      <ModalNovoPedidoInsumos
-        :modalOpened="state.modalNovoPedidoInsumosOpened"
+      <ModalPedidoInsumos
+        :modalOpened="state.modalPedidoInsumosOpened"
         :novoPedido="state.novoPedido"
         :pedidoSelecionado="state.pedidoSelecionado"
         :categorias="state.categorias"
-        @closeModalNovoPedidoInsumos="actions.closeModalNovoPedido"
+        @closeModalPedidoInsumos="actions.closeModalPedido"
         @atualizarPedidoFinalizado="actions.atualizarPedidoFinalizado"
       />
     </v-dialog>
