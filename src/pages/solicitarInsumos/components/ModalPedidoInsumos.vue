@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, reactive, ref } from "vue";
-import { iCarrinhoInsumos, iCategorias, iItemAdcPedido, iItens, iPedidosInsumos } from "../interfaces";
+import { iCarrinhoInsumos, iCategoria, iItemAdcPedido, iItens, iPedido } from "../interfaces";
 import serviceSolicitarInsumos from "../services/solicitarInsumos.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
@@ -11,9 +11,9 @@ const inputSearch = ref();
 
 const props = defineProps<{
   modalOpened: boolean;
-  pedidoSelecionado: iPedidosInsumos | null;
+  pedidoSelecionado: iPedido | null;
   novoPedido: boolean;
-  categorias: iCategorias[];
+  categorias: iCategoria[];
 }>();
 
 const state = reactive({
@@ -21,7 +21,7 @@ const state = reactive({
   gridItens: <ixGridCreate>{},
   gridCarrinho: <ixGridCreate>{},
   dbItens: <iItens[]>[],
-  dbCategorias: <iCategorias[]>[],
+  dbCategorias: <iCategoria[]>[],
   dbCarrinho: <iCarrinhoInsumos[]>[],
   categoriaSelecionada: 1 as number | null,
   categoriaAnterior: 0 as number | null,
@@ -71,19 +71,17 @@ const actions = {
   criarGrid() {
     state.gridItens = new xGridV2.create({
       el: "#gridItens",
-      count: true,
       height: 340,
       columns: {
-        Descrição: { dataField: "DESCRICAO", style: "text-align: center" },
+        Descrição: { dataField: "DESCRICAO", style: "text-align: left" },
       },
       enter: () => actions.adicionarItemAoCarrinho(),
       dblClick: () => actions.adicionarItemAoCarrinho(),
     });
     state.gridCarrinho = new xGridV2.create({
       el: "#gridCarrinho",
-      count: true,
       height: 405,
-      width: 280,
+      width: 300,
       columns: {
         Descrição: { dataField: "DESCRICAO", style: "text-align: left; margin-left: 10px;" },
         Qtd: { dataField: "QTD", width: "20%", style: "text-align: center" },
@@ -325,7 +323,7 @@ onMounted(async () => {
             style="margin-top: -10px"
             v-for="categoria in state.dbCategorias"
             :key="categoria.ID_INSUMO_CATEGORIA"
-            cols="6"
+            cols="4"
             md="6"
             lg="4"
           >

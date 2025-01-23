@@ -1,7 +1,7 @@
 import { useEventListener } from "@vueuse/core";
 import moment from "moment";
 import { nextTick, reactive } from "vue";
-import { iCategorias, iPedidosInsumos } from "./interfaces";
+import { iCategoria, iPedido } from "./interfaces";
 import serviceSolicitarInsumos from "./services/solicitarInsumos.service";
 import Swal from "sweetalert2";
 
@@ -11,9 +11,9 @@ export const state = reactive({
     loading: false,
     modalPedidoInsumosOpened: false,
     ano: ano || null || "",
-    pedidos: <iPedidosInsumos[]>[],
-    categorias: <iCategorias[]>[],
-    pedidoSelecionado: null as iPedidosInsumos | null,
+    pedidos: <iPedido[]>[],
+    categorias: <iCategoria[]>[],
+    pedidoSelecionado: null as iPedido | null,
     novoPedido: false
 })
 

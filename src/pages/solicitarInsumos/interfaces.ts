@@ -2,7 +2,7 @@ export interface iGetItens {
     search: string;
     categoria: number;
 }
-export interface iCategorias {
+export interface iCategoria {
     ID_INSUMO_CATEGORIA: number;
     CATEGORIA: string;
 }
@@ -21,7 +21,7 @@ export interface iItemAdcPedido extends iItens { }
 export interface iResponseIdItem {
     ID_INSUMO_PEDIDO_ITEM: number;
 }
-export interface iPedidosInsumos {
+export interface iPedido {
     ID_INSUMO_PEDIDO: number;
     DATA_HORA_INICIO: string;
     DATA_HORA_FIM: string | null;
