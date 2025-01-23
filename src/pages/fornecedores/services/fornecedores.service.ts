@@ -86,14 +86,6 @@ const buscarCEP = async (cep: string) => {
     return data;
 }
 
-const getDadosCnpj = async (cnpj: string) => {
-    let { data } = await axios.post(caminho, {
-        call: "getDadosCnpj",
-        cnpj
-    })
-
-    return data;
-}
 
 export default {
     getFornecedores,
@@ -103,6 +95,5 @@ export default {
     toUpdate,
     toInativar,
     buscarCEP,
-    getDadosCnpj,
     getCidades,
 }

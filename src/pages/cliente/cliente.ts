@@ -46,6 +46,7 @@ export const state = reactive({
     telefoneAdicional: "",
     ufs: <iUF[]>[],
     updateCliente: false,
+    contribuinteICMS: ""
 })
 
 export const actions = {
@@ -103,6 +104,7 @@ export const actions = {
         state.bloqueado = clienteSelecionado.BLOQUEADO;
         state.faturado = clienteSelecionado.FATURADO;
         state.idCliente = clienteSelecionado.ID_CLIENTE
+        state.contribuinteICMS = clienteSelecionado.CONTRIBUINTE_ICMS;
         state.updateCliente = true;
 
         const cnpjCpfLength = state.cnpj_cpf.replace(/\D/g, '').length;
@@ -117,15 +119,21 @@ export const actions = {
     },
 
     novoCliente() {
-        if (state.clienteSelecionado.ID_CLIENTE) {
-            actions.limparStates()
-        }
+        actions.limparStates()
 
         state.updateCliente = false
         state.desativarInputs = false;
         nextTick(() => {
             state.inputCNPJ.focus();
         });
+    },
+
+    onChangeProdutorRural() {
+        if (state.produtorRural == 'S') {
+            state.contribuinteICMS = 'S'
+        } else {
+            state.contribuinteICMS = 'N'
+        }
     },
 
     editarDadosCliente() {
@@ -178,6 +186,7 @@ export const actions = {
     },
 
     cancelar() {
+        state.cnpjMode = true;
         state.desativarInputs = true;
 
         if (state.idCliente) {
@@ -198,7 +207,7 @@ export const actions = {
         state.contatoFinanceiro = "";
         state.contatoCompras = "";
         state.obsAdministrativo = "";
-        state.boletoEmail = 0;
+        state.boletoEmail = 1;
         state.obsVendas = "";
         state.cep = "";
         state.apelido = "";
@@ -215,6 +224,11 @@ export const actions = {
         state.atividadeCNAE = <iAtividadesCNAE[]>[];
         state.clienteSelecionado = <iClientes>{};
         state.updateCliente = false;
+        state.contribuinteICMS = 'S'
+
+        if (!state.cnpjMode) {
+            state.contribuinteICMS = 'N';
+        }
     },
 
     visualizarCNAE(atividade) {
@@ -235,7 +249,8 @@ export const actions = {
 
     validarInsertOuUpdate() {
 
-        if (state.idCliente && state.produtorRural == 'N') {
+        //Se for cliente PF que não seja produtor rural, não pode ter inscrição estadual
+        if (!state.cnpjMode && state.produtorRural == 'N') {
             state.inscricaoEstadual = ""
         }
 
@@ -246,7 +261,12 @@ export const actions = {
             { field: state.selectCidade, name: "Cidade" },
             { field: state.selectBairro, name: "Bairro" },
             { field: state.cep, name: "CEP" },
+            { field: state.contribuinteICMS, name: "Contribuinte ICMS" },
         ];
+
+        if (state.contribuinteICMS == 'S') {
+            camposObrigatorios.push({ field: state.inscricaoEstadual, name: 'Inscrição Estadual' })
+        }
 
         for (const item of camposObrigatorios) {
             if (!item.field) {
@@ -263,17 +283,6 @@ export const actions = {
             Swal.fire({
                 icon: "warning",
                 text: state.cnpjMode ? "CNPJ inválido!" : "CPF inválido!",
-            });
-            return false;
-        }
-
-        const email = state.email ? utils.validMail(state.email) : true;
-        const emailParaBoletos = state.emailParaBoletos ? utils.validMail(state.emailParaBoletos) : true;
-
-        if (!email || !emailParaBoletos) {
-            Swal.fire({
-                icon: "warning",
-                text: "E-mail inválido!",
             });
             return false;
         }
@@ -317,6 +326,7 @@ export const actions = {
             TELEFONE1: state.telefone,
             TELEFONE2: state.telefoneAdicional,
             UF: state.selectUF,
+            CONTRIBUINTE_ICMS: state.contribuinteICMS,
             updateCliente: state.updateCliente
         }
 
@@ -439,21 +449,31 @@ export const actions = {
             substituirVazio(state.email) + "|";
 
         try {
-            await navigator.clipboard.writeText(dadosCliente);
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = dadosCliente;
 
-            Swal.fire({
-                icon: "success",
-                title: "Dados do cliente copiados para a área de transferência!",
-                showConfirmButton: false,
-                timer: 1500,
-            });
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            const sucesso = document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
+
+            if (sucesso) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Dados do cliente copiados para a área de transferência!",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
         } catch (error) {
+            console.error(error);
             Swal.fire({
                 icon: "error",
                 text: "Ocorreu um erro ao copiar os dados do cliente.",
             });
         }
     },
+
 
     async buscarCNAE() {
         if (!state.cnpjMode) {

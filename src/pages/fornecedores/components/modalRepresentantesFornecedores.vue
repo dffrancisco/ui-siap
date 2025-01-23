@@ -48,7 +48,7 @@ const actions = {
       return data;
     } catch (error) {
       Swal.fire({
-        text: "Erro ao buscar os Representante:",
+        text: "Erro ao buscar os Representantes.",
         icon: "error",
       });
     } finally {

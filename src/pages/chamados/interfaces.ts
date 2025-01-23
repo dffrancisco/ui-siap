@@ -6,6 +6,7 @@ export interface iChamados {
     DESCRICAO: string;
     DATA_CRIACAO: string;
     dataFormatada: string;
+    GRUPO_EMAIL: string;
 }
 
 export interface iDetalhesComentario {
@@ -56,4 +57,5 @@ export interface iInsertChamadoResponse {
     dataAtual: string;
     chaveJira: string;
     cnpj: string;
+    grupoEmail: string;
 }

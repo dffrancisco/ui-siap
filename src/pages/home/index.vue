@@ -362,7 +362,12 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/fornecedores')"
-              >Fornecedores</v-btn
+              >Fornecedores
+            >
+
+            </v-btn
+              @click="router.push('/usoConsumo')"
+              >Uso Consumo
             >
 
             <v-btn

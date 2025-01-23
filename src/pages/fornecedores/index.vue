@@ -7,10 +7,6 @@ onMounted(async () => {
   await actions.init();
   window.addEventListener("keydown", eventListener);
 });
-
-onUnmounted(() => {
-  window.removeEventListener("keydown", eventListener);
-});
 </script>
 
 <template>
@@ -86,7 +82,8 @@ onUnmounted(() => {
                 class="ss"
                 maxlength="60"
                 autocomplete="off"
-                placeholder="Digite o nome do representante" />
+                placeholder="Pesquisar o representante"
+                readonly />
               <v-btn
                 ga-2
                 color="primary"
@@ -123,7 +120,7 @@ onUnmounted(() => {
         </v-row>
 
         <v-row class="mt-n1">
-          <v-col cols="4">
+          <v-col cols="3">
             <span>Nome Responsável</span>
             <input
               v-model="state.dbFornecedor.CONTADO"
@@ -135,7 +132,7 @@ onUnmounted(() => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="4">
+          <v-col cols="3">
             <span>Telefone 1</span>
             <input
               v-model="state.dbFornecedor.TELEFONE1"
@@ -148,13 +145,26 @@ onUnmounted(() => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="4">
+          <v-col cols="3">
             <span>Telefone 2</span>
             <input
               v-model="state.dbFornecedor.TELEFONE2"
               type="text"
               id="TELEFONE2"
               name="TELEFONE2"
+              class="ss"
+              maxlength="15"
+              v-mask="'(##) #####-####'"
+              autocomplete="off"
+            />
+          </v-col>
+          <v-col cols="3">
+            <span>Fax</span>
+            <input
+              v-model="state.dbFornecedor.FAX"
+              type="text"
+              id="FAX"
+              name="FAX"
               class="ss"
               maxlength="15"
               v-mask="'(##) #####-####'"
@@ -296,6 +306,18 @@ onUnmounted(() => {
           class="mt-4"
         ></div>
 
+        <v-overlay
+          :model-value="state.loading"
+          class="align-center justify-center"
+          persistent
+        >
+          <v-progress-circular
+            color="primary"
+            indeterminate
+            size="50"
+          ></v-progress-circular>
+        </v-overlay>
+
         <div
           id="pnBotoes"
           class="mt-4"
@@ -316,3 +338,8 @@ onUnmounted(() => {
     </v-dialog>
   </v-container>
 </template>
+<style scoped>
+.v-col {
+  padding: 8px;
+}
+</style>

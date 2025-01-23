@@ -281,7 +281,7 @@ export const actions = {
 
     encontrarCidades(COD_CIDADE: number) {
         const cidadeEncontrada = state.listaCidades.find(cidade => {
-            if ((cidade.COD_CIDADE == COD_CIDADE)) {
+            if (cidade.COD_CIDADE == COD_CIDADE) {
                 return true;
             }
 
@@ -299,7 +299,7 @@ export const actions = {
 
     encontrarCodCidade(COD_IBGE: string) {
         const cidadeEncontrada = state.listaCidades.find(cidade => {
-            if ((cidade.COD_IBGE == COD_IBGE)) {
+            if (cidade.COD_IBGE == COD_IBGE) {
                 return true;
             }
 
@@ -332,6 +332,7 @@ export const actions = {
             BAIRRO: state.dbFornecedor.BAIRRO,
             TELEFONE1: state.dbFornecedor.TELEFONE1,
             TELEFONE2: state.dbFornecedor.TELEFONE2,
+            FAX: state.dbFornecedor.FAX,
             ID_REPRESENTANTE: state.dbFornecedor.ID_REPRESENTANTE,
             CONTADO: state.dbFornecedor.CONTADO,
             MUNICIPIO: state.dbFornecedor.MUNICIPIO,
@@ -390,6 +391,7 @@ export const actions = {
             BAIRRO: state.dbFornecedor.BAIRRO,
             TELEFONE1: state.dbFornecedor.TELEFONE1,
             TELEFONE2: state.dbFornecedor.TELEFONE2,
+            FAX: state.dbFornecedor.FAX,
             ID_REPRESENTANTE: state.dbFornecedor.ID_REPRESENTANTE,
             CONTADO: state.dbFornecedor.CONTADO,
             MUNICIPIO: state.dbFornecedor.MUNICIPIO,

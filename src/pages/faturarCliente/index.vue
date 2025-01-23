@@ -1,24 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { actions, computeds, state } from "./faturarCliente";
-import ModalSelecionarCliente from "./components/modalSelecionarCliente.vue";
-import globalActions from "@/store/globalActions";
+import ModalSelecionarCliente from "./components/ModalSelecionarCliente.vue";
 import utils from "@/ts/utils";
-import { useEventListener } from "@vueuse/core";
-
-useEventListener(document, "keydown", async (event) => {
-  if (event.key === "F2") {
-    state.modalSelecionarClienteOpened = true;
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  if (event.key === "F3") {
-    state.inputLocOrcElement.focus();
-    event.preventDefault();
-    event.stopPropagation();
-  }
-});
+import ModalGerarBoleto from "./components/ModalGerarBoleto.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -26,18 +11,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-btn
-    @click="
-      () => {
-        globalActions.toggleTheme();
-      }
-    "
-    variant="text"
-    class="position-absolute"
-    color="gray"
-    icon="mdi-theme-light-dark"
-  ></v-btn>
-
   <v-container>
     <v-card
       width="800"
@@ -51,20 +24,22 @@ onMounted(async () => {
               type="date"
               v-model="state.dataLimite"
               label="Data limite"
-              :hide-spin-buttons="true"
               :clearable="false"
               density="compact"
+              disabled
+              @keydown.enter.prevent="actions.dataLimiteEventEnter"
+              @blur="actions.dataLimiteEventFocusOut"
             />
           </v-col>
           <v-col class="d-flex ga-4">
             <v-text-field
               type="text"
-              label="Cliente"
+              label="Cliente (Pesquisar F2)"
               density="compact"
               readonly
-              :disabled="!state.dbClienteFaturado.ID_CLIENTE"
               :clearable="false"
               v-model="state.dbClienteFaturado.NOME"
+              @click="state.modalSelecionarClienteOpened = true"
             />
             <div class="d-flex align-center">
               <v-btn
@@ -91,39 +66,54 @@ onMounted(async () => {
             <div id="gridOrcamentosClienteFaturado"></div>
           </v-col>
           <v-col class="d-flex">
-            <div class="border rounded-lg d-flex flex-grow-1 flex-column justify-space-between pa-3">
+            <div class="border rounded-lg d-flex flex-grow-1 flex-column justify-space-between px-2 py-3">
               <div class="custom-scroll">
                 <div v-for="orcamento in state.orcamentosLocalizados">
-                  <div
-                    v-if="!orcamento.ISDEVOLUCAO"
-                    class="d-flex justify-space-between"
-                  >
-                    <span class="text-body-1">+{{ orcamento.NUM_ORCAMENTO }}</span>
-                    <span
-                      class="text-body-1 font-weight-bold"
-                      style="color: #60a5fa"
-                      >{{ utils.formatValor(orcamento.VALOR) }}</span
+                  <div class="d-flex ga-2">
+                    <div
+                      v-if="!orcamento.ISDEVOLUCAO"
+                      class="d-flex justify-space-between flex-grow-1"
                     >
-                  </div>
-                  <div
-                    v-else
-                    class="d-flex justify-space-between"
-                  >
-                    <span class="text-body-1">D{{ orcamento.NUM_DEVOLUCAO }}</span>
-                    <span
-                      class="text-body-1 font-weight-bold"
-                      style="color: #f87171"
+                      <span class="text-body-1">+{{ orcamento.NUM_ORCAMENTO }}</span>
+                      <span
+                        class="text-body-1 font-weight-bold"
+                        style="color: #60a5fa"
+                        >{{ utils.formatValor(orcamento.VALOR) }}</span
+                      >
+                    </div>
+                    <div
+                      v-else
+                      class="d-flex justify-space-between flex-grow-1"
                     >
-                      -{{ utils.formatValor(orcamento.DEVOLUCAO) }}
-                    </span>
+                      <span class="text-body-1">D{{ orcamento.NUM_DEVOLUCAO }}</span>
+                      <span
+                        class="text-body-1 font-weight-bold"
+                        style="color: #f87171"
+                      >
+                        -{{ utils.formatValor(orcamento.DEVOLUCAO) }}
+                      </span>
+                    </div>
+                    <v-icon
+                      @click="actions.excluirOrcLocalizado(orcamento)"
+                      title="Excluir orçamento"
+                      >mdi-delete</v-icon
+                    >
                   </div>
                 </div>
               </div>
               <div class="d-flex flex-column">
-                <span class="text-body-2"
-                  ><strong>Qtd. Orç: </strong
-                  >{{ computeds.calcularOrcamentosLocalizados.value.qtdOrcamentos }}</span
-                >
+                <div class="d-flex justify-space-between">
+                  <span class="text-body-2"
+                    ><strong>Qtd. Orç: </strong
+                    >{{ computeds.calcularOrcamentosLocalizados.value.qtdOrcamentos }}</span
+                  >
+                  <v-icon
+                    @click="actions.excluirOrcLocalizado"
+                    v-if="state.orcamentosLocalizados.length > 0"
+                    title="Excluir todos os orçamentos"
+                    >mdi-delete</v-icon
+                  >
+                </div>
                 <span class="text-body-2"
                   ><strong>Somatório: </strong
                   >{{ utils.formatValor(computeds.calcularOrcamentosLocalizados.value.total) }}</span
@@ -153,6 +143,7 @@ onMounted(async () => {
               </div>
               <div>
                 <v-btn
+                  @click="actions.openModalGeralBoleto"
                   :disabled="state.dbOrcamentosClienteFaturado.length == 0"
                   :color="
                     computeds.calcularOrcamentosLocalizados.value.total == computeds.totalValorOrcamentos.value &&
@@ -185,11 +176,27 @@ onMounted(async () => {
     <v-dialog
       v-model="state.modalSelecionarClienteOpened"
       width="600"
+      :retain-focus="false"
     >
       <ModalSelecionarCliente
         :dataLimite="state.dataLimite"
         @selecionarCliente="actions.selecionarCliente"
-        @closeModal="actions.closeModal"
+        @closeModal="actions.closeModalSelecionarCliente"
+      />
+    </v-dialog>
+
+    <v-dialog
+      v-model="state.modalGerarBoletoOpened"
+      width="1000"
+      :retain-focus="false"
+    >
+      <ModalGerarBoleto
+        @closeModal="actions.closeModalGerarBoleto"
+        :orcamentos="state.dbOrcamentosClienteFaturado"
+        :creditos="state.creditos"
+        :cliente="state.dbClienteFaturado"
+        :dataLimite="state.dataLimite"
+        :regrasFaturamentoGeral="state.regrasFaturamentoGeral"
       />
     </v-dialog>
 
@@ -209,7 +216,7 @@ onMounted(async () => {
 
 <style scoped>
 .custom-scroll {
-  padding-right: 10px;
+  padding-right: 4px;
   overflow: auto;
   height: 300px;
   scrollbar-width: thin;
