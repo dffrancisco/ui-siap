@@ -13,10 +13,10 @@ export interface iTransportadora {
 
 export interface iRelatorioConhecimento {
     numNota: number;
-    numConhecimento: string;
-    dataConhecimento: string;
-    totalFatura: number;
-    percentual: string;
-    pagamento: number;
-    nomeFantasia: string;
+    NUM_CONHECIMENTO: string;
+    DATA_CONHECIMENTO: string;
+    TOTAL_FATURA: number;
+    PERCENTUAL: string;
+    PAGAMENTO: number;
+    NOME_FANTASIA: string;
 }

@@ -50,7 +50,7 @@ onMounted(() => {
 
         <v-col cols="3">
           <v-select
-            label="Ordenar por"
+            label="Ordenar"
             id="slOrdenacao"
             v-model="state.ordenacao"
             :items="state.ordenacaoOptions"
@@ -104,7 +104,7 @@ onMounted(() => {
       </div>
     </v-card>
 
-    <div id="pnCodigoTela">REL_CONHECIMENTO</div>
+    <div id="pnCodigoTela">RELATORIO_CONHECIMENTO</div>
 
     <v-overlay
       :model-value="state.loading"

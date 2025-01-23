@@ -84,7 +84,7 @@ export const actions = {
                 RAZAO_SOCIAL: item.RAZAO_SOCIAL,
             }));
         } catch (error) {
-            console.error("Erro ao obter as transportadoras:", error);
+            console.error("Erro ao obter transportadoras:", error);
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao buscar transportadoras.',
@@ -127,7 +127,7 @@ export const actions = {
         if (!state.dadosRelatorio || state.dadosRelatorio.length === 0) {
             Swal.fire({
                 icon: 'warning',
-                text: 'Não há dados para realizar a impressão.',
+                text: 'Não a dados para atualizar a impressão',
             });
             return;
         }
@@ -167,7 +167,7 @@ export const actions = {
     formatarDadosImpressao(data: iRelatorioConhecimento[]) {
         return data.map(item => ({
             ...item,
-            dataConhecimento: item.dataConhecimento ? moment(item.dataConhecimento).format('DD/MM/YYYY') : '----',
+            DATA_CONHECIMENTO: item.DATA_CONHECIMENTO ? moment(item.DATA_CONHECIMENTO).format('DD/MM/YYYY') : '----',
         }));
     },
 
