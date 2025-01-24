@@ -1,15 +1,17 @@
 import axios from "axios";
 import {
     iParamToGetRamal,
-    iParamToGetSociedade,
+
     iParamToInsertRamal,
     iParamToUpdateRamal,
-    iParamToGetSetor,
+
     iRamal,
-    iSociedade,
-    iSetor,
+    iDadosInputs,
+    iGetDuplicityResponseRamal,
+    iFieldDuplicity,
     iToDeleteResponse
 } from "../interfaces";
+type iGetDadosParaInputs = () => Promise<iDadosInputs>
 
 const caminho = "siap/gerirRamais";
 
@@ -22,7 +24,7 @@ const getRamais = async ({ param, offset }: iParamToGetRamal): Promise<iRamal[]>
     return data;
 };
 
-const getDuplicidade = async ({ value, field }: { value: string; field: string }): Promise<boolean> => {
+const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponseRamal> => {
     const { data } = await axios.post(caminho, {
         call: "getDuplicidade",
         value,
@@ -56,30 +58,22 @@ const toDelete = async (id_ramal: number): Promise<iToDeleteResponse> => {
 };
 
 
-const getSetores = async ({ param, offset }: iParamToGetSetor): Promise<iSetor[]> => {
-    const { data } = await axios.post(caminho, {
-        call: "getSetores",
-        offset,
-        param,
-    });
-    return data;
-};
 
-const getSociedade = async ({ param, offset }: iParamToGetSociedade): Promise<iSociedade[]> => {
-    const { data } = await axios.post(caminho, {
-        call: "getSociedade",
-        offset,
-        param,
+
+const getDadosParaInputs: iGetDadosParaInputs = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getDadosParaInputs",
     });
     return data;
-};
+}
 
 export default {
     getRamais,
-    getSociedade,
+
     getDuplicidade,
+    getDadosParaInputs,
     toInsert,
     toUpdate,
     toDelete,
-    getSetores,
+
 };

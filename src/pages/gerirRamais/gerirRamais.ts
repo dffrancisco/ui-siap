@@ -33,7 +33,7 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 export const actions = {
     async init() {
         actions.grids();
-        await actions.dadosParaInput();
+        await actions.getDadosParaInputs()
         state.gridPrincipal.queryOpen({ nome: "" }, () => {
             state.gridPrincipal.focus();
         });
@@ -123,27 +123,25 @@ export const actions = {
             },
         });
     },
-    async dadosParaInput() {
+
+
+    async getDadosParaInputs() {
         try {
             state.loading = true;
-
-            const [setores, sociedade] = await Promise.all([
-                serviceGerirRamais.getSetores({ param: {}, offset: 0 }),
-                serviceGerirRamais.getSociedade({ param: {}, offset: 0 }),
-            ]);
-
-            state.setores = setores;
-            state.sociedade = sociedade;
+            const data = await serviceGerirRamais.getDadosParaInputs();
+            state.sociedade = data.sociedade
+            state.setores = data.setores
 
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao carregar dados para os inputs.",
+                text: "Erro ao trazer os dados iniciais!"
             });
         } finally {
             state.loading = false;
         }
     },
+
 
 
 
@@ -173,7 +171,6 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao verificar duplicidade!",
                 text: "Erro ao executar verificação de duplicidade",
             });
         }
@@ -350,7 +347,7 @@ export const actions = {
             } ''
 
             const dadosAgrupados = dadosTratados.reduce((item2, item) => {
-                let loja = item2.find((l: { loja: string }) => l.loja === item.loja);//loja com mesmo nome
+                let loja = item2.find((l: { loja: string }) => l.loja === item.loja);
                 if (!loja) {
                     loja = { loja: item.loja, setores: [] };
                     item2.push(loja);

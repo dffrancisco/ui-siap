@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import { actions, state, eventListener } from "./gerirRamais";
-import { onMounted, onUnmounted } from "vue";
+import { onMounted } from "vue";
 
 onMounted(async () => {
   await actions.init();
 
   window.addEventListener("keydown", eventListener);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("keydown", eventListener);
 });
 </script>
 
@@ -63,7 +59,7 @@ onUnmounted(() => {
             <input
               v-model="state.dbRamal.nome"
               type="text"
-              :maxlength="30"
+              :maxlength="15"
               id="nome"
               name="nome"
               class="obr ss"

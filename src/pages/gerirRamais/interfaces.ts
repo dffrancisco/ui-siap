@@ -58,6 +58,8 @@ export interface iFieldDuplicity {
     field: string;
 }
 
+
+
 export interface iParamToGetSetor {
     offset: number;
     param: {
@@ -76,6 +78,11 @@ export interface iParamToGetSociedade {
         id_sociedade?: number;
         loja?: string;
     };
+}
+
+export interface iDadosInputs {
+    setores: iSetor[];
+    sociedade: iSociedade[];
 }
 
 
