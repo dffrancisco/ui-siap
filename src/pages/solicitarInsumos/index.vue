@@ -11,9 +11,8 @@ onMounted(async () => {
 <template
   ><v-container
     ><v-card
-      :max-width="800"
-      :max-height="550"
-      class="mx-auto pa-4 overflow-y-auto"
+      :max-width="850"
+      class="mx-auto pa-4"
     >
       <v-row class="align-center justify-space-between">
         <v-col
@@ -47,33 +46,41 @@ onMounted(async () => {
         </v-btn>
       </v-row>
 
-      <v-row>
-        <v-col
-          v-for="pedido in state.pedidos"
-          :key="pedido.ID_INSUMO_PEDIDO"
-          cols="12"
-          sm="4"
-          md="4"
-          lg="3"
-        >
-          <v-card
-            class="pa-4 cardPedido"
-            height="65px"
-            :color="pedido.FINALIZADO === 'S' ? '#66BB6A' : 'primary'"
-            @click="actions.visualizarPedido(pedido)"
+      <div
+        class="scroll-container"
+        :style="{ maxHeight: '440px', overflowY: 'auto', overflowX: 'hidden' }"
+      >
+        <v-row>
+          <v-col
+            v-for="pedido in state.pedidos"
+            :key="pedido.ID_INSUMO_PEDIDO"
+            cols="12"
+            sm="4"
+            md="4"
+            lg="3"
           >
-            <v-row class="align-center justify-space-between cardPedidoDetalhes">
-              <v-chip
-                class="vchipTotal"
-                color="white"
-              >
-                {{ pedido.totalItens }} itens
-              </v-chip>
-              <span>{{ utils.dataBrasil(pedido.DATA_HORA_INICIO) }}</span>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
+            <v-card
+              class="pa-4 cardPedido"
+              height="65px"
+              :color="pedido.FINALIZADO === 'S' ? '#66BB6A' : 'primary'"
+              @click="actions.visualizarPedido(pedido)"
+              :class="{
+                'card-selecionado': state.pedidoSelecionado?.ID_INSUMO_PEDIDO === pedido.ID_INSUMO_PEDIDO,
+              }"
+            >
+              <v-row class="align-center justify-space-between cardPedidoDetalhes">
+                <v-chip
+                  class="vchipTotal"
+                  color="white"
+                >
+                  {{ pedido.totalItens }} itens
+                </v-chip>
+                <span>{{ utils.dataBrasil(pedido.DATA_HORA_INICIO) }}</span>
+              </v-row>
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
     </v-card>
 
     <v-overlay
@@ -97,7 +104,7 @@ onMounted(async () => {
         :modalOpened="state.modalPedidoInsumosOpened"
         :novoPedido="state.novoPedido"
         :pedidoSelecionado="state.pedidoSelecionado"
-        :categorias="state.categorias"
+        :categoriasComItens="state.categoriasComItens"
         @closeModalPedidoInsumos="actions.closeModalPedido"
         @atualizarPedidoFinalizado="actions.atualizarPedidoFinalizado"
       />
@@ -110,6 +117,11 @@ onMounted(async () => {
   font-weight: bold;
 }
 
+.card-selecionado {
+  border: 2px solid #003fb48c;
+  box-shadow: 0 0 5px rgba(6, 0, 130, 0.5);
+}
+
 .cardPedidoDetalhes {
   padding: 10px;
   font-size: 12px;
@@ -119,5 +131,10 @@ onMounted(async () => {
 .vchipTotal {
   font-weight: bold;
   border: 1px solid rgb(255, 255, 255);
+}
+
+.scroll-container {
+  padding-right: 8px;
+  margin-top: 20px;
 }
 </style>

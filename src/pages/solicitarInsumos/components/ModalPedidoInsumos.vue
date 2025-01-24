@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, reactive, ref } from "vue";
-import { iCarrinhoInsumos, iCategoria, iItemAdcPedido, iItens, iPedido } from "../interfaces";
+import { iCarrinhoInsumos, iCategoriaComItens, iItemAdcPedido, iItens, iPedido } from "../interfaces";
 import serviceSolicitarInsumos from "../services/solicitarInsumos.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
@@ -13,7 +13,7 @@ const props = defineProps<{
   modalOpened: boolean;
   pedidoSelecionado: iPedido | null;
   novoPedido: boolean;
-  categorias: iCategoria[];
+  categoriasComItens: iCategoriaComItens[];
 }>();
 
 const state = reactive({
@@ -21,10 +21,9 @@ const state = reactive({
   gridItens: <ixGridCreate>{},
   gridCarrinho: <ixGridCreate>{},
   dbItens: <iItens[]>[],
-  dbCategorias: <iCategoria[]>[],
+  dbCategorias: <iCategoriaComItens[]>[],
   dbCarrinho: <iCarrinhoInsumos[]>[],
   categoriaSelecionada: 1 as number | null,
-  categoriaAnterior: 0 as number | null,
   search: "",
   itemSelecionado: null as iItens | null,
   id_insumo_pedido: null as number | null,
@@ -35,34 +34,33 @@ const state = reactive({
 
 const actions = {
   async init() {
-    state.dbCategorias = props.categorias;
+    state.dbCategorias = props.categoriasComItens;
     actions.criarGrid();
-    await actions.verificarSeTemPedido();
-    actions.getItens();
+
+    const primeiraCategoria = props.categoriasComItens.find(
+      (categoria) => categoria.ID_INSUMO_CATEGORIA === state.categoriaSelecionada
+    );
+
+    state.dbItens = primeiraCategoria.itens;
+    state.gridItens.source(state.dbItens);
+
+    if (!props.novoPedido) {
+      await actions.carregarItensPedido();
+    }
   },
 
-  verificarSeTemPedido() {
-    if (props.novoPedido == true) {
-      actions.iniciarPedido();
-      return;
-    }
-
-    if (!props.pedidoSelecionado || !props.pedidoSelecionado.itens) {
-      console.warn("Nenhum pedido selecionado ou itens ausentes.");
-      return;
-    }
-
+  carregarItensPedido() {
     if (props.pedidoSelecionado.FINALIZADO == "S") {
       state.desativarBtns = true;
     }
 
-    const pedidoItens = props.pedidoSelecionado.itens || [];
-    state.dbCarrinho = pedidoItens.map((item) => ({
+    state.dbCarrinho = props.pedidoSelecionado.itens.map((item) => ({
       ...item,
       QTD: item.QTD || 1,
       ID_INSUMO_PEDIDO: props.pedidoSelecionado.ID_INSUMO_PEDIDO,
       ID_INSUMO_PEDIDO_ITEM: item.ID_INSUMO_ITEM,
     }));
+
     state.id_insumo_pedido = props.pedidoSelecionado.ID_INSUMO_PEDIDO;
 
     state.gridCarrinho.source(state.dbCarrinho);
@@ -75,8 +73,8 @@ const actions = {
       columns: {
         Descrição: { dataField: "DESCRICAO", style: "text-align: left" },
       },
-      enter: () => actions.adicionarItemAoCarrinho(),
-      dblClick: () => actions.adicionarItemAoCarrinho(),
+      enter: () => actions.validarItem(),
+      dblClick: () => actions.validarItem(),
     });
     state.gridCarrinho = new xGridV2.create({
       el: "#gridCarrinho",
@@ -107,24 +105,7 @@ const actions = {
     });
   },
 
-  async iniciarPedido() {
-    try {
-      state.loading = true;
-
-      let data = await serviceSolicitarInsumos.iniciarPedido();
-      state.id_insumo_pedido = data.ID_INSUMO_PEDIDO;
-    } catch (e) {
-      Swal.fire({
-        icon: "error",
-        text: "Erro ao iniciar o pedido",
-      });
-      return;
-    } finally {
-      state.loading = false;
-    }
-  },
-
-  async getItens() {
+  async popularCarrinho() {
     if (props.pedidoSelecionado && props.pedidoSelecionado?.FINALIZADO == "S") {
       return;
     }
@@ -132,30 +113,20 @@ const actions = {
     try {
       state.loading = true;
       state.gridItens.clear();
-      state.dbItens = [];
 
-      if (state.search == null) {
-        state.search = "";
+      const categoriaSelecionada = props.categoriasComItens.find(
+        (categoria) => categoria.ID_INSUMO_CATEGORIA === state.categoriaSelecionada
+      );
+
+      if (categoriaSelecionada && categoriaSelecionada.itens) {
+        state.dbItens = categoriaSelecionada.itens;
+        state.gridItens.source(state.dbItens);
       }
-
-      let param = {
-        search: state.search,
-        categoria: state.categoriaSelecionada,
-      };
-
-      const data = await serviceSolicitarInsumos.getItens(param);
-      state.dbItens = data as iItens[];
-      state.gridItens.source(state.dbItens);
-
-      state.categoriaAnterior = state.categoriaSelecionada;
-
-      return data;
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Erro ao exibir os itens",
       });
-      return;
     } finally {
       state.loading = false;
     }
@@ -166,10 +137,18 @@ const actions = {
   },
 
   async btnSearch() {
-    await actions.getItens();
+    if (!state.search) {
+      await actions.popularCarrinho();
+      return;
+    }
+
+    const termoPesquisa = state.search.toLowerCase();
+    const itensFiltrados = state.dbItens.filter((item) => item.DESCRICAO.toLowerCase().includes(termoPesquisa));
+
+    state.gridItens.source(itensFiltrados);
   },
 
-  adicionarItemAoCarrinho() {
+  async validarItem() {
     if (state.desativarBtns == true) {
       Swal.fire({
         icon: "info",
@@ -197,8 +176,24 @@ const actions = {
     state.modalQtdItemPedidoOpened = true;
   },
 
-  async salvarQuantidade(quantidade) {
-    if (!state.itemSelecionado) return;
+  async adicionarItemNoCarrinho(quantidade) {
+    //se nao tiver idPedido ele cria um novo
+    if (!state.id_insumo_pedido) {
+      try {
+        state.loading = true;
+
+        let data = await serviceSolicitarInsumos.iniciarPedido();
+        state.id_insumo_pedido = data.ID_INSUMO_PEDIDO;
+      } catch (e) {
+        Swal.fire({
+          icon: "error",
+          text: "Erro ao iniciar o pedido",
+        });
+        return;
+      } finally {
+        state.loading = false;
+      }
+    }
 
     const itemComQuantidade: iItemAdcPedido = {
       ...state.itemSelecionado,
@@ -207,17 +202,27 @@ const actions = {
       ID_INSUMO_PEDIDO_ITEM: null,
     };
 
-    let data = await serviceSolicitarInsumos.adicionarItemAoPedido(itemComQuantidade);
+    try {
+      state.loading = true;
+      let data = await serviceSolicitarInsumos.adicionarItemAoPedido(itemComQuantidade);
 
-    const itemAdicionarAoCarrinho: iItemAdcPedido = {
-      ...itemComQuantidade,
-      ID_INSUMO_PEDIDO_ITEM: data.ID_INSUMO_PEDIDO_ITEM,
-    };
+      const itemAdicionarAoCarrinho: iItemAdcPedido = {
+        ...itemComQuantidade,
+        ID_INSUMO_PEDIDO_ITEM: data.ID_INSUMO_PEDIDO_ITEM,
+      };
 
-    state.dbCarrinho.push(itemAdicionarAoCarrinho);
-    state.gridCarrinho.source(state.dbCarrinho);
+      state.dbCarrinho.push(itemAdicionarAoCarrinho);
+      state.gridCarrinho.source(state.dbCarrinho);
 
-    state.modalQtdItemPedidoOpened = false;
+      state.modalQtdItemPedidoOpened = false;
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao adicionar item ao pedido",
+      });
+    } finally {
+      state.loading = false;
+    }
   },
 
   async deletarItem() {
@@ -256,6 +261,15 @@ const actions = {
   },
 
   async finalizarPedido() {
+    if (state.dbCarrinho.length == 0) {
+      Swal.fire({
+        icon: "info",
+        text: "Carrinho está vazio, não é possível finalizar o pedido!",
+        timer: 1500,
+      });
+      return;
+    }
+
     try {
       Swal.fire({
         icon: "question",
@@ -333,11 +347,8 @@ onMounted(async () => {
               :disabled="state.desativarBtns"
               @click="
                 () => {
-                  if (state.categoriaSelecionada !== categoria.ID_INSUMO_CATEGORIA) {
-                    state.categoriaAnterior = state.categoriaSelecionada;
-                    state.categoriaSelecionada = categoria.ID_INSUMO_CATEGORIA;
-                    actions.getItens();
-                  }
+                  state.categoriaSelecionada = categoria.ID_INSUMO_CATEGORIA;
+                  actions.popularCarrinho();
                 }
               "
             >
@@ -431,7 +442,7 @@ onMounted(async () => {
     @click:outside="state.modalQtdItemPedidoOpened = false"
     ><ModalQtdInsumoPedido
       :item="state.itemSelecionado"
-      @confirmQtd="actions.salvarQuantidade"
+      @confirmQtd="actions.adicionarItemNoCarrinho"
       @closeModalQtdInsumoPedido="state.modalQtdItemPedidoOpened = false"
     ></ModalQtdInsumoPedido>
   </v-dialog>

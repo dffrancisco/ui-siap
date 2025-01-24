@@ -1,10 +1,7 @@
-export interface iGetItens {
-    search: string;
-    categoria: number;
-}
-export interface iCategoria {
+export interface iCategoriaComItens {
     ID_INSUMO_CATEGORIA: number;
     CATEGORIA: string;
+    itens: iItens[];
 }
 export interface iItens {
     ID_INSUMO_PEDIDO_ITEM: number | null;
@@ -29,4 +26,9 @@ export interface iPedido {
     COD_FUNCIONARIO_FINALIZOU: number | null;
     totalItens: number;
     itens: iItens[];
+}
+
+export interface iDadosIniciais {
+    categorias: iCategoriaComItens[]
+    pedidos: iPedido[];
 }

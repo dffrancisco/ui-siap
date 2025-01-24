@@ -1,7 +1,7 @@
 import { useEventListener } from "@vueuse/core";
 import moment from "moment";
 import { nextTick, reactive } from "vue";
-import { iCategoria, iPedido } from "./interfaces";
+import { iCategoriaComItens, iPedido } from "./interfaces";
 import serviceSolicitarInsumos from "./services/solicitarInsumos.service";
 import Swal from "sweetalert2";
 
@@ -12,20 +12,20 @@ export const state = reactive({
     modalPedidoInsumosOpened: false,
     ano: ano || null || "",
     pedidos: <iPedido[]>[],
-    categorias: <iCategoria[]>[],
+    categoriasComItens: <iCategoriaComItens[]>[],
     pedidoSelecionado: null as iPedido | null,
-    novoPedido: false
+    novoPedido: false,
 })
 
 export const actions = {
     async init() {
-        actions.getPedidos();
-        actions.getCategorias();
+        await actions.getDadosIniciais();
     },
 
     novoPedido() {
         state.novoPedido = true;
         state.modalPedidoInsumosOpened = true;
+        state.pedidoSelecionado = null;
     },
 
     async getPedidos() {
@@ -50,17 +50,18 @@ export const actions = {
         }
     },
 
-    async getCategorias() {
+    async getDadosIniciais() {
         try {
             state.loading = true;
-            const data = await serviceSolicitarInsumos.getCategorias();
-            state.categorias = data;
+            const data = await serviceSolicitarInsumos.getDadosIniciais();
+            state.pedidos = data.pedidos;
+            state.categoriasComItens = data.categorias;
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao carregar as categorias",
+                text: "Erro ao trazer os dados iniciais",
             });
-            return;
         } finally {
             state.loading = false;
         }
@@ -77,12 +78,13 @@ export const actions = {
         if (state.pedidoSelecionado) {
             state.pedidoSelecionado.itens = itensNoCarrinho
             state.pedidoSelecionado.totalItens = itensNoCarrinho.length;
-        } else {
-            actions.getPedidos();
+        }
+
+        if (state.novoPedido == true && itensNoCarrinho.length > 0) {
+            actions.getPedidos()
         }
 
         state.modalPedidoInsumosOpened = false;
-        state.pedidoSelecionado = null;
     },
 
     atualizarPedidoFinalizado() {

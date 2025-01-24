@@ -1,25 +1,16 @@
 import axios from "axios";
-import { iCategorias, iGetItens, iItemAdcPedido, iItens, iPedidosInsumos, iResponseIdItem } from "../interfaces";
-type iGetCategoriasFunction = () => Promise<iCategorias[]>;
-type iGetItensFunction = (param: iGetItens) => Promise<iItens[]>;
-type iGetPedidosFunction = (ano: number | string) => Promise<iPedidosInsumos[]>;
+import { iDadosIniciais, iItemAdcPedido, iPedido, iResponseIdItem } from "../interfaces";
+type iGetDadosIniciaisFunction = () => Promise<iDadosIniciais>
+type iGetPedidosFunction = (ano: number | string) => Promise<iPedido[]>;
 type iSetItemPedido = (item: iItemAdcPedido) => Promise<iResponseIdItem>;
 type iDeleteItemPedido = (idItem: number) => Promise<string>;
 type iFinalizarPedido = (idPedido: number) => Promise<string>;;
 
 const caminho = 'siap/solicitarInsumos'
 
-const getCategorias: iGetCategoriasFunction = async () => {
+const getDadosIniciais: iGetDadosIniciaisFunction = async () => {
     let { data } = await axios.post(caminho, {
-        call: "getCategorias"
-    });
-    return data;
-}
-
-const getItens: iGetItensFunction = async (param) => {
-    let { data } = await axios.post(caminho, {
-        call: "getItens",
-        param,
+        call: "getDadosIniciais"
     });
     return data;
 }
@@ -64,8 +55,7 @@ const finalizarPedido: iFinalizarPedido = async (idPedido) => {
 }
 
 export default {
-    getCategorias,
-    getItens,
+    getDadosIniciais,
     iniciarPedido,
     getPedidos,
     adicionarItemAoPedido,
