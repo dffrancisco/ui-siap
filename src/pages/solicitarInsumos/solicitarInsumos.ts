@@ -94,7 +94,6 @@ export const actions = {
         }
 
         state.modalPedidoInsumosOpened = false;
-        state.pedidoSelecionado = null;
     }
 }
 

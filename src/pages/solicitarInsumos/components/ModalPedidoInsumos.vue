@@ -6,6 +6,7 @@ import serviceSolicitarInsumos from "../services/solicitarInsumos.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
 import ModalQtdInsumoPedido from "./ModalQtdInsumoPedido.vue";
+import { msgConfirmSemCodigo } from "@/ts/utils";
 const emits = defineEmits(["closeModalPedidoInsumos", "atualizarPedidoFinalizado"]);
 const inputSearch = ref();
 
@@ -239,25 +240,18 @@ const actions = {
       return;
     }
 
-    Swal.fire({
-      title: "Deseja excluir esse item do pedido?",
-      showCancelButton: true,
-      confirmButtonText: "Excluir",
-      cancelButtonText: "Cancelar",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await serviceSolicitarInsumos.removerItemDoPedido(idItem);
+    if (await msgConfirmSemCodigo("Confirmação", "Deseja excluir esse item do pedido?")) {
+      await serviceSolicitarInsumos.removerItemDoPedido(idItem);
 
-        state.dbCarrinho = state.dbCarrinho.filter((item) => item.ID_INSUMO_PEDIDO_ITEM !== parseInt(idItem));
-        state.gridCarrinho.source(state.dbCarrinho);
+      state.dbCarrinho = state.dbCarrinho.filter((item) => item.ID_INSUMO_PEDIDO_ITEM !== parseInt(idItem));
+      state.gridCarrinho.source(state.dbCarrinho);
 
-        Swal.fire({
-          icon: "success",
-          text: "Item excluído do carrinho com sucesso!",
-          timer: 500,
-        });
-      }
-    });
+      Swal.fire({
+        icon: "success",
+        text: "Item excluído do carrinho com sucesso!",
+        timer: 500,
+      });
+    }
   },
 
   async finalizarPedido() {
@@ -270,33 +264,30 @@ const actions = {
       return;
     }
 
-    try {
-      Swal.fire({
-        icon: "question",
-        title: "Ao finalizar o pedido, será enviado para aprovação e não poderá ser reaberto, deseja continuar?",
-        showCancelButton: true,
-        confirmButtonText: "Sim",
-        cancelButtonText: "Não",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          state.loading = true;
-          await serviceSolicitarInsumos.finalizarPedido(state.id_insumo_pedido);
+    if (
+      await msgConfirmSemCodigo(
+        "Confirmação",
+        "Ao finalizar o pedido, será enviado para aprovação e não poderá ser reaberto, deseja continuar?"
+      )
+    ) {
+      try {
+        state.loading = true;
+        await serviceSolicitarInsumos.finalizarPedido(state.id_insumo_pedido);
 
-          Swal.fire({
-            icon: "success",
-            text: "Pedido finalizado com sucesso!",
-            timer: 1200,
-          });
-          emits("atualizarPedidoFinalizado");
-        }
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        text: "Erro ao finalizar o pedido",
-      });
-    } finally {
-      state.loading = false;
+        Swal.fire({
+          icon: "success",
+          text: "Pedido finalizado com sucesso!",
+          timer: 1200,
+        });
+        emits("atualizarPedidoFinalizado");
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          text: "Erro ao finalizar o pedido",
+        });
+      } finally {
+        state.loading = false;
+      }
     }
   },
 };
