@@ -83,7 +83,7 @@ onMounted(async () => {
                 maxlength="60"
                 autocomplete="off"
                 placeholder="Pesquisar o representante"
-                readonly />
+                :disabled="true" />
               <v-btn
                 ga-2
                 color="primary"
@@ -159,7 +159,7 @@ onMounted(async () => {
             />
           </v-col>
           <v-col cols="3">
-            <span>Fax</span>
+            <span>Telefone 3</span>
             <input
               v-model="state.dbFornecedor.FAX"
               type="text"
