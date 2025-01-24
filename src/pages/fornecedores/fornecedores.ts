@@ -12,6 +12,7 @@ import {
     iCidades,
     iFieldDuplicity,
 } from "./interfaces";
+import { useEventListener } from "@vueuse/core";
 
 
 export const state = reactive({
@@ -35,13 +36,14 @@ export const state = reactive({
 });
 
 
-export const eventListener = (event: KeyboardEvent) => {
+export const eventListener = useEventListener(document, "keydown", async (event) => {
     if (event.key === "F1") {
         document.getElementById("edtSearch")?.focus();
         event.preventDefault();
         event.stopPropagation();
     }
-};
+
+});
 
 export const actions = {
     async init() {
@@ -86,10 +88,7 @@ export const actions = {
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
-                    state.dbFornecedor = r as iFornecedor;
-
-
-
+                    state.dbFornecedor = r;
                 },
                 duplicity: {
                     dataField: ['CGC_FORNECEDOR'],
@@ -119,6 +118,9 @@ export const actions = {
                         cancelar: { html: "Cancelar", state: "cancel", click: actions.btnCancel },
                     },
                 },
+            },
+            enter: function () {
+                document.getElementById("btnUpdate")?.click();
             },
         });
     },
@@ -169,8 +171,6 @@ export const actions = {
         const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
             RAZAO_SOCIAL: searchValue,
-            CGC_FORNECEDOR: searchValue,
-
 
         });
     },
@@ -324,7 +324,7 @@ export const actions = {
 
         const param = {
             CGC_FORNECEDOR: state.dbFornecedor.CGC_FORNECEDOR,
-            RAZAO_SOCIAL: state.dbFornecedor.RAZAO_SOCIAL,
+            RAZAO_SOCIAL: state.dbFornecedor.RAZAO_SOCIAL.toUpperCase(),
             NOME_FANTAZIA: state.dbFornecedor.NOME_FANTAZIA,
             INSC_ESTADUAL: state.dbFornecedor.INSC_ESTADUAL,
             ENDERECO: state.dbFornecedor.ENDERECO,
@@ -383,7 +383,7 @@ export const actions = {
 
         const param = {
             CGC_FORNECEDOR: state.dbFornecedor.CGC_FORNECEDOR,
-            RAZAO_SOCIAL: state.dbFornecedor.RAZAO_SOCIAL,
+            RAZAO_SOCIAL: state.dbFornecedor.RAZAO_SOCIAL.toUpperCase(),
             NOME_FANTAZIA: state.dbFornecedor.NOME_FANTAZIA,
             INSC_ESTADUAL: state.dbFornecedor.INSC_ESTADUAL,
             ENDERECO: state.dbFornecedor.ENDERECO,
@@ -418,6 +418,7 @@ export const actions = {
             });
 
             state.dbFornecedor = { ...state.dbFornecedor, ...param };
+
 
             const cidade = actions.encontrarCidades(param.COD_CIDADE);
             state.gridPrincipal.dataSource({

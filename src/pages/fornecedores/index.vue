@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { actions, state, eventListener } from "./fornecedores";
-import { onMounted, onUnmounted } from "vue";
+import { onMounted } from "vue";
 import ModalSelecionarFornecedor from "./components/modalRepresentantesFornecedores.vue";
 
 onMounted(async () => {
