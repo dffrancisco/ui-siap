@@ -326,7 +326,7 @@ onMounted(async () => {
       </div>
     </v-card>
 
-    <div id="pnCodigoTela">Fornecedores</div>
+    <div id="pnCodigoTela">fornecedores</div>
     <v-dialog
       v-model="state.modalFornecedorOpened"
       width="600"
