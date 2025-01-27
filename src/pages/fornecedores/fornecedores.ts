@@ -14,7 +14,6 @@ import {
 } from "./interfaces";
 import { useEventListener } from "@vueuse/core";
 
-
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     pnSearch: false,
@@ -31,10 +30,7 @@ export const state = reactive({
     cnpjDisabled: false,
     cepInserido: false,
     representanteSelecionado: <iFornecedor>{},
-
-
 });
-
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
     if (event.key === "F1") {
@@ -42,7 +38,6 @@ export const eventListener = useEventListener(document, "keydown", async (event)
         event.preventDefault();
         event.stopPropagation();
     }
-
 });
 
 export const actions = {
@@ -52,7 +47,6 @@ export const actions = {
         state.gridPrincipal.queryOpen({}, () => {
             state.gridPrincipal.focus();
         });
-
     },
 
     formatCadastroDate() {
@@ -278,7 +272,6 @@ export const actions = {
         }
     },
 
-
     encontrarCidades(COD_CIDADE: number) {
         const cidadeEncontrada = state.listaCidades.find(cidade => {
             if (cidade.COD_CIDADE == COD_CIDADE) {
@@ -314,10 +307,7 @@ export const actions = {
             let cidade = null
             return cidade
         }
-
-
     },
-
 
     async insertFornecedor() {
         state.loading = true;
@@ -344,19 +334,14 @@ export const actions = {
             DELETADO: state.dbFornecedor.DELETADO,
             ID_FORNECEDOR: state.dbFornecedor.ID_FORNECEDOR,
             ID_EMPRESA: state.dbFornecedor.ID_EMPRESA,
-
-
         };
 
         try {
-
             await serviceFornecedores.toInsert(param);
-
 
             Swal.fire({
                 icon: "success",
                 text: "Fornecedor inserido com sucesso.",
-
             });
 
             state.dbFornecedor = { ...state.dbFornecedor, ...param };
@@ -366,7 +351,6 @@ export const actions = {
                 ...param,
                 CIDADE: cidade,
             });
-
 
         } catch (error) {
             Swal.fire({
@@ -403,13 +387,11 @@ export const actions = {
             DELETADO: state.dbFornecedor.DELETADO,
             ID_FORNECEDOR: state.dbFornecedor.ID_FORNECEDOR,
             ID_EMPRESA: state.dbFornecedor.ID_EMPRESA,
-
         };
 
         try {
 
             await serviceFornecedores.toUpdate(param);
-
 
             Swal.fire({
                 icon: "success",
@@ -418,7 +400,6 @@ export const actions = {
             });
 
             state.dbFornecedor = { ...state.dbFornecedor, ...param };
-
 
             const cidade = actions.encontrarCidades(param.COD_CIDADE);
             state.gridPrincipal.dataSource({
@@ -474,7 +455,6 @@ export const actions = {
         actions.closeModal();
     },
 
-
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
             const data = await serviceFornecedores.getDuplicidade({ value, field });
@@ -519,8 +499,6 @@ export const actions = {
             state.loading = false;
         }
     },
-
-
 }
 
 export default { state, actions }
