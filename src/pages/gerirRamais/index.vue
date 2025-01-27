@@ -139,7 +139,7 @@ onMounted(async () => {
       </div>
     </v-card>
 
-    <div id="pnCodigoTela">Gerir Ramais</div>
+    <div id="pnCodigoTela">gerirRamais</div>
   </v-container>
 </template>
 
