@@ -330,7 +330,6 @@ export const actions = {
     },
 
 
-
     async onClickImprimir() {
         try {
             state.loading = true;
@@ -344,10 +343,10 @@ export const actions = {
                     text: "Não há dados para a impressão.",
                 });
                 return;
-            } ''
+            }
 
             const dadosAgrupados = dadosTratados.reduce((item2, item) => {
-                let loja = item2.find((l: { loja: string }) => l.loja === item.loja);
+                let loja = item2.find((l) => l.loja === item.loja);
                 if (!loja) {
                     loja = { loja: item.loja, setores: [] };
                     item2.push(loja);
@@ -360,27 +359,8 @@ export const actions = {
                 return item2;
             }, []);
 
-
-
             dadosAgrupados.sort((a, b) => a.setores.length - b.setores.length);
 
-            const linhas = [];
-            let linhaAtual = [];
-            let itensNaLinhaAtual = 0;
-
-            dadosAgrupados.forEach((loja) => {
-                if (linhaAtual.length === 0 || loja.setores.length === itensNaLinhaAtual) {
-                    linhaAtual.push(loja);
-                    itensNaLinhaAtual = loja.setores;
-                } else {
-                    linhas.push(linhaAtual);
-                    linhaAtual = [loja];
-                    itensNaLinhaAtual = loja.setores;
-                }
-            });
-            if (linhaAtual) linhas.push(linhaAtual);
-
-            //gepeto
             const corPastelAleatoria = () => {
                 const r = Math.floor((Math.random() * 127) + 127);
                 const g = Math.floor((Math.random() * 127) + 127);
@@ -389,8 +369,8 @@ export const actions = {
             };
 
             const titulo = `
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <strong style="font-size: 16px;">Relatório de Ramais</strong>
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <strong style="font-size: 20px;">Relatório de Ramais</strong>
                 </div>
             `;
 
@@ -401,8 +381,8 @@ export const actions = {
                     .map(
                         (setor) => `
                             <tr>
-                                <td style="padding: 4px; border: 1px solid #ccc;">${setor.nome}</td>
-                                <td style="padding: 4px; border: 1px solid #ccc;">${setor.ramal}</td>
+                                <td style="padding: 3px; border: 1px solid #ccc;">${setor.nome}</td>
+                                <td style="padding: 3px; border: 1px solid #ccc;">${setor.ramal}</td>
                             </tr>`
                     )
                     .join("");
@@ -432,18 +412,85 @@ export const actions = {
             const layout = `
                 <html>
                     <head>
-                        <title>Definição do relatório de ramais.</title>
-                        <meta charset="UTF-8">
+       
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>
+                            @media print {
+                                body {
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                }
+                            }
+                            body {
+                                margin: 0;
+                                padding: 2px;
+                                font-family: Arial;
+                                font-size: 10px;
+                                position: relative; 
+                            }
+                            .container {
+                                display: grid;
+                                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                                transform: scale(0.9);
+                                display: flex;
+                                flex-wrap: wrap; 
+                          
+                                justify-content: flex-start;
+                                page-break-inside: auto;
+                               
+                            }
+                            .card {
+                                flex: 0 0 calc(25% - 10px); 
+                                padding: 10px;
+                                box-sizing: border-box;
+                                display: flex;
+                                page-break-inside: auto;
+                                flex-direction: column;
+                              
+                            }
+                            .card-header {
+                                display: flex;
+                                font-weight: bold;
+                                text-align: center;
+                                font-size: 13px;
+                                padding: 6px;
+                                page-break-inside: auto;
+                                border: 1px solid;
+                             
+                            }
+                            .card-body {
+                                display: flex;
+                                flex-direction: column;
+                                border: 1px solid;
+                                page-break-inside: auto;
+                          
+                            }
+                            table {
+                                width: 70%;
+                                border-collapse: collapse;
+                                page-break-inside: auto;
+                            }
+                            th, td {
+                                padding: 4px;
+                                border: 1px solid;
+                                text-align: left;
+                                page-break-inside: auto;
+                            }
+                            .logo-fixed {
+                                position: fixed;
+                                bottom: 10px;
+                                left: 10px;
+                                height: 90px;
+                                           
+                            }
+                        </style>
                     </head>
                     <body>
                         ${titulo}
                         <div class="container">
                             ${corpo.join("")}
                         </div>
-                        <div class="footer">
-                             <img src="./Logo-Real-Shop-Car-menor.png" alt="Logo" style="height: 90px; margin-right: 10px"/>
-                        </div>
+                        <img src="./Logo-Real-Shop-Car-menor.png" alt="Logo" class="logo-fixed" />
                     </body>
                 </html>
             `;
@@ -451,64 +498,7 @@ export const actions = {
             printJS({
                 printable: layout,
                 type: 'raw-html',
-                style: `
-                    @media print {
-                        body {
-                            -webkit-print-color-adjust: exact;
-                            print-color-adjust: exact;
-                        }
-                    }
-                    body {
-                        margin: 0;
-                        padding: 10px;
-                        font-family: Arial, sans-serif;
-                        font-size: 12px;
-                    }
-                    .container {
-                        display: flex;
-                        flex-wrap: wrap; 
-                        gap: 10px; 
-                        justify-content: flex-start;
-                    }
-                    .card {
-                        flex: 0 0 calc(25% - 10px); 
-                        padding: 10px;
-                        box-sizing: border-box;
-                        display: flex;
-                        flex-direction: column;
-                    }
-                    .card-header {
-                        display: flex;
-                        font-weight: bold;
-                        text-align: center;
-                        font-size: 14px;
-                        padding: 6px;
-                        border: 1px solid;
-                    }
-                    .card-body {
-                        display: flex;
-                        flex-direction: column;
-                        border: 1px solid;
-                    }
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
-                    th, td {
-                        padding: 4px;
-                        border: 1px solid;
-                        text-align: left;
-                    }
-                    .footer {
-                        margin-top: 20px;
-                        display: flex;
-                        justify-content: flex-end;
-                        align-items: center;
-                    }
-                    .footer img {
-                        height: 50px;
-                    }
-                `
+                documentTitle: '&nbsp;'
             });
         } catch (error) {
             console.error("Erro ao imprimir o relatório:", error);
