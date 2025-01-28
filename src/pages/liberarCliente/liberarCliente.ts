@@ -32,6 +32,7 @@ export const state = reactive({
     botaoAlterarHabilitado: true,
     botaoSalvarHabilitado: false,
     botaoCancelarHabilitado: false,
+    descontoMontagem: "",
 })
 
 export const actions = {
@@ -99,6 +100,7 @@ export const actions = {
         state.tipoCompra = cliente.FATURADO == "0" ? "Faturado" : "Não Faturado"
         state.tipoFaturamento = cliente.TIPO_FATURAMENTO ? cliente.TIPO_FATURAMENTO == "Q" ? "Quinzenal" : "Mensal" : "";
         state.dividirBoleto = cliente.DIVIDIR_BOLETO ? cliente.DIVIDIR_BOLETO == "S" ? "Sim" : "Não" : "";
+        state.descontoMontagem = cliente.DESCONTO_MONTAGEM ? cliente.DESCONTO_MONTAGEM == "S" ? "Sim" : "Não" : "";
         state.diaVencimento = cliente.DIA_VENCIMENTO_BOLETO
         state.status = cliente.BLOQUEADO == 0 ? "Liberado" : "Bloqueado"
         state.statusColor = cliente.BLOQUEADO == 0 ? "green" : "red";
@@ -349,7 +351,7 @@ export const actions = {
 
         //se for faturado, necessario preencher tipo Fat. e Dividir Bol. 
         if (state.tipoCompra == "Faturado") {
-            if (!state.tipoFaturamento || !state.dividirBoleto) {
+            if (!state.tipoFaturamento || !state.dividirBoleto || !state.descontoMontagem) {
                 Swal.fire({
                     icon: "warning",
                     title: "Preencha todos os dados de faturamento!",
@@ -378,6 +380,7 @@ export const actions = {
         state.tipoCompra = state.objInputsAtual.FATURADO == "0" ? "Não Faturado" : "Faturado";
         state.tipoFaturamento = state.objInputsAtual.TIPO_FATURAMENTO ? state.objInputsAtual.TIPO_FATURAMENTO == "Q" ? "Quinzenal" : "Mensal" : "";
         state.dividirBoleto = state.objInputsAtual.DIVIDIR_BOLETO ? state.objInputsAtual.DIVIDIR_BOLETO == "S" ? "Sim" : "Não" : "";
+        state.descontoMontagem = state.objInputsAtual.DESCONTO_MONTAGEM ? state.objInputsAtual.DESCONTO_MONTAGEM == "S" ? "Sim" : "Não" : "";
         state.diaVencimento = state.objInputsAtual.DIA_VENCIMENTO_BOLETO;
 
         state.botaoAlterarHabilitado = true;
@@ -388,6 +391,7 @@ export const actions = {
     async updateCliente() {
         let tipoFaturamento = state.tipoFaturamento === "Quinzenal" ? "Q" : "M"
         let divideBoleto = state.dividirBoleto === "Sim" ? "S" : "N"
+        let descontoMontagem = state.descontoMontagem === "Sim" ? "S" : "N"
 
         if (state.tipoCompra == 'Não Faturado') {
             state.diaVencimento = null;
@@ -403,6 +407,7 @@ export const actions = {
             diaVencimento: state.diaVencimento || null,
             tipoFaturamento: tipoFaturamento,
             divideBoleto: divideBoleto,
+            descontoMontagem: descontoMontagem,
         }
 
         if (await msgConfirmSemCodigo("Confirmação", "Deseja alterar os dados do cliente?")) {

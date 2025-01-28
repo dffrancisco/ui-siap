@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import utils from "@/ts/utils";
+import utils, { dataBrasil } from "@/ts/utils";
 import { reactive, computed, onMounted } from "vue";
 import {
   iClienteFaturado,
   iOrcamentosClienteFaturado,
   iGerarBoletosParam,
   iRegrasFaturamentoGeral,
+  iCreditoCliente,
+  iDevolucaoFiltered,
 } from "../interfaces";
 import serviceFaturarCliente from "../services/faturarCliente.service";
 import Swal from "sweetalert2";
@@ -16,6 +18,11 @@ import { msgConfirm } from "@/ts/message";
 const props = defineProps({
   orcamentos: {
     type: Array as () => iOrcamentosClienteFaturado[],
+    required: true,
+    default: [],
+  },
+  creditos: {
+    type: Array as () => iCreditoCliente[],
     required: true,
     default: [],
   },
@@ -48,6 +55,7 @@ const state = reactive({
 
   headersDevolucao: [
     { title: "ORÇ.", key: "NUM_ORCAMENTO" },
+    { title: "DATA", key: "DATA" },
     { title: "VALOR", key: "DEVOLUCAO" },
   ],
 
@@ -159,7 +167,7 @@ const actions = {
           : dataComecoContagemVencimento.month();
 
       const dataVencimento = moment({
-        year: dataComecoContagemVencimento.year(),
+        year: parseInt(moment().format("YYYY")),
         month: mes,
         day: props.cliente.DIA_VENCIMENTO_BOLETO,
       }).format("YYYY-MM-DD");
@@ -179,7 +187,7 @@ const actions = {
 
       let param: iGerarBoletosParam = {
         BOLETOS: state.boletos,
-        CLIENTE: props.cliente,
+        ID_CLIENTE: props.cliente.ID_CLIENTE,
         DATA_LIMITE: props.dataLimite,
         REGRAS_FATURAMENTO: state.regrasFaturamento,
       };
@@ -230,30 +238,57 @@ const actions = {
 
 const computeds = {
   filteredDevolucao: computed(() => {
-    return props.orcamentos.filter((item) => item.DEVOLUCAO > 0);
+    let devolucoes = <iDevolucaoFiltered[]>[];
+    props.orcamentos.forEach((item) => {
+      if (item.DEVOLUCAO > 0) {
+        devolucoes.push({
+          DATA: dataBrasil(item.DATA),
+          NUM_ORCAMENTO: item.NUM_ORCAMENTO,
+          VALOR: item.DEVOLUCAO,
+          CREDITO: "N",
+        });
+      }
+    });
+
+    props.creditos.forEach((credito) => {
+      devolucoes.push({
+        DATA: dataBrasil(credito.DATA_VENDA),
+        NUM_ORCAMENTO: credito.NUM_ORCAMENTO,
+        VALOR: credito.VALOR,
+        CREDITO: "S",
+      });
+    });
+
+    return devolucoes;
   }),
 
   totalizador: computed(() => {
     let total_orcamentos = 0;
     let total_devolucao = 0;
     let total_desc_montagem = 0;
+    let total_credito = 0;
     let total_geral = 0;
 
     props.orcamentos.forEach((item) => {
       total_orcamentos += item.VALOR;
       total_devolucao += item.DEVOLUCAO;
 
-      if (item.MONTAGEM > 0) {
+      if (item.MONTAGEM > 0 && props.cliente.DESCONTO_MONTAGEM == "S") {
         total_desc_montagem += item.MONTAGEM * 0.05; // DESCONTO DE 5% ;
       }
     });
 
-    total_geral = total_orcamentos - total_devolucao - total_desc_montagem;
+    props.creditos.forEach((credito) => {
+      total_credito += credito.VALOR;
+    });
+
+    total_geral = total_orcamentos - total_devolucao - total_desc_montagem - total_credito;
 
     return {
       total_orcamentos,
       total_devolucao,
       total_desc_montagem,
+      total_credito,
       total_geral,
     };
   }),
@@ -331,7 +366,8 @@ onMounted(() => {
                 hide-default-footer
               >
                 <template v-slot:item.DEVOLUCAO="{ item }">
-                  {{ utils.formatValor(item.DEVOLUCAO) }}
+                  {{ utils.formatValor(item.VALOR) }}
+                  {{ item.CREDITO == "S" ? " (C)" : "" }}
                 </template>
               </v-data-table>
             </div>
@@ -356,6 +392,13 @@ onMounted(() => {
                   <span class="text-body-1">Devoluções</span>
                   <span class="text-body-1 text-error"
                     >(-) {{ utils.formatValor(computeds.totalizador.value.total_devolucao) }}</span
+                  >
+                </div>
+
+                <div class="d-flex justify-space-between">
+                  <span class="text-body-1">Crédito</span>
+                  <span class="text-body-1 text-error"
+                    >(-) {{ utils.formatValor(computeds.totalizador.value.total_credito) }}</span
                   >
                 </div>
 

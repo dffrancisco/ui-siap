@@ -79,6 +79,7 @@ async function enviarComentario() {
         chaveJira: state.keyJira,
         comentario: state.novoComentario.trim(),
         autor: state.loginUsuario,
+        grupoEmail: state.grupoEmail,
       };
       promises.push(serviceChamados.enviarComentario(param));
     }

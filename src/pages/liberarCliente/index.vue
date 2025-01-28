@@ -164,11 +164,20 @@ onMounted(async () => {
             :rules="[actions.validarDiaVencimento]"
           ></v-text-field>
         </v-col>
-        <!-- Mostrar o v-chip para clientes Faturados -->
-        <v-col
-          cols="3"
-          style="margin-left: 240px"
-        >
+        <v-col cols="3">
+          <v-select
+            id="descontoMontagem"
+            :items="['Sim', 'Não']"
+            v-model="state.descontoMontagem"
+            :disabled="state.idCliente == null || state.botaoAlterarHabilitado || state.status == 'Bloqueado'"
+            label="Desconto Montagem"
+            autocomplete="off"
+            item-title="title"
+            item-value="value"
+            :clearable="false"
+          ></v-select>
+        </v-col>
+        <v-col cols="3">
           <v-chip
             :color="state.statusColor"
             style="min-width: 185px; justify-content: center; margin-left: 15px; margin-top: 5px"

@@ -1,7 +1,7 @@
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iClienteFaturado, iGetOrcamentosClienteFaturadoParam, iOrcamentosClienteFaturado, iOrcamentosLocalizados, iRegrasFaturamentoGeral } from "./interfaces";
+import { iClienteFaturado, iCreditoCliente, iGetCreditosClienteParam, iGetOrcamentosClienteFaturadoParam, iOrcamentosClienteFaturado, iOrcamentosLocalizados, iRegrasFaturamentoGeral } from "./interfaces";
 import serviceFaturarCliente from "./services/faturarCliente.service";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
@@ -45,7 +45,8 @@ export const state = reactive({
     inputLocOrcElement: <HTMLInputElement>null,
     modalGerarBoletoOpened: false,
     regrasFaturamentoGeral: <iRegrasFaturamentoGeral>{},
-    setDataLimite: null
+    setDataLimite: null,
+    creditos: <iCreditoCliente[]>[]
 })
 
 export const actions = ({
@@ -100,13 +101,46 @@ export const actions = ({
         state.dbClienteFaturado = {} as iClienteFaturado;
         state.dbOrcamentosClienteFaturado = [];
         state.orcamentosLocalizados = []
+        state.creditos = []
         state.gridPedido.clear();
     },
 
     async selecionarCliente(cliente: iClienteFaturado) {
+        actions.resetClienteFaturado();
+
         state.dbClienteFaturado = cliente
         state.orcamentosLocalizados = []
-        await actions.getOrcamentosClienteFaturado()
+
+        await actions.buscarDadosFaturamento();
+    },
+
+    async getCreditosCliente() {
+        try {
+
+            let param: iGetCreditosClienteParam = {
+                dataLimite: state.dataLimite,
+                id_cliente: state.dbClienteFaturado.ID_CLIENTE
+            }
+
+            state.creditos = await serviceFaturarCliente.getCreditosCliente(param)
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao carregar créditos do cliente!"
+            })
+        }
+    },
+
+    async buscarDadosFaturamento() {
+        let promiseOrcamentos = actions.getOrcamentosClienteFaturado();
+        let promiseCreditos = actions.getCreditosCliente();
+
+        state.loading = true;
+
+        await Promise.all([promiseOrcamentos, promiseCreditos])
+
+        state.loading = false;
     },
 
     async getOrcamentosClienteFaturado() {
@@ -361,7 +395,7 @@ export const actions = ({
             return
         }
 
-        actions.getOrcamentosClienteFaturado()
+        await actions.buscarDadosFaturamento();
     },
 })
 

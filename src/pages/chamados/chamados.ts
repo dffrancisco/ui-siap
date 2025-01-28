@@ -43,6 +43,7 @@ export const state = reactive(({
     imagensChamado: [] as any[],
     cnpj: "",
     keyJira: "",
+    grupoEmail: '',
     loginUsuario: "",
     previews: [] as string[],
     anexoModal: [],
@@ -97,6 +98,7 @@ export const actions = {
                 const paramUpdate = {
                     chaveJira: dadosChamado.chaveJira,
                     filePaths,
+                    grupoEmail: dadosChamado.grupoEmail
                 };
                 await actions.updateChamado(paramUpdate);
             }
@@ -154,13 +156,13 @@ export const actions = {
         state.previews = [];
     },
 
-    async verDetalhesChamado(keyJira: string, descricao: string, solicitante: string, dataFormatada: string) {
+    async verDetalhesChamado(keyJira: string, descricao: string, solicitante: string, dataFormatada: string, grupoEmail: string) {
         actions.limparStates()
 
         try {
             state.loading = true
 
-            const data = await serviceChamados.verDetalhesChamado(keyJira)
+            const data = await serviceChamados.verDetalhesChamado(keyJira, grupoEmail)
 
             state.detalhes.responsavel = data.responsavel;
             state.detalhes.descricao = descricao;
@@ -177,6 +179,7 @@ export const actions = {
 
             state.cnpj = data.cnpj.replaceAll(".", "").replaceAll("-", "");
             state.keyJira = keyJira
+            state.grupoEmail = grupoEmail
             state.imagensChamado = await serviceChamados.getImgChamado(paramGetImg);
 
             state.pnModalDetalhes.open();
