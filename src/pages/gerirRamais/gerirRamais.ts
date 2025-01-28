@@ -143,8 +143,6 @@ export const actions = {
     },
 
 
-
-
     async getRamais({ offset, param }: iParamToGetRamal) {
         try {
             state.loading = true;
@@ -325,6 +323,8 @@ export const actions = {
         const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
             nome: searchValue,
+            loja: searchValue,
+
 
         });
     },
