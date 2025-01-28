@@ -78,7 +78,7 @@ export const actions = {
     async getTransportadoras() {
         try {
             state.loading = true;
-            const response = await serviceRelatorioConhecimento.getTransportadora();
+            const response = await serviceRelatorioConhecimento.getTransportadoras();
             state.transportadorasOptions = response.map((item: any) => ({
                 ID_TRANSPORTADORA: item.ID_TRANSPORTADORA,
                 RAZAO_SOCIAL: item.RAZAO_SOCIAL,

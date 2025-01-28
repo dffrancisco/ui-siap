@@ -4,7 +4,7 @@ import { iTransportadora, iParamsRelatorioConhecimento, iRelatorioConhecimento }
 const caminho = 'siap/relatorioDeConhecimento';
 
 type iGetDadosParaRelatorio = (param: iParamsRelatorioConhecimento) => Promise<iRelatorioConhecimento[]>;
-type iGetTransportadora = () => Promise<iTransportadora[]>;
+type iGetTransportadoras = () => Promise<iTransportadora[]>;
 
 
 const getRelatorioConhecimento: iGetDadosParaRelatorio = async (param) => {
@@ -15,7 +15,7 @@ const getRelatorioConhecimento: iGetDadosParaRelatorio = async (param) => {
     return data;
 };
 
-const getTransportadora: iGetTransportadora = async () => {
+const getTransportadoras: iGetTransportadoras = async () => {
     const { data } = await axios.post(caminho, {
         call: "getTransportadoras",
     });
@@ -25,5 +25,5 @@ const getTransportadora: iGetTransportadora = async () => {
 
 export default {
     getRelatorioConhecimento,
-    getTransportadora,
+    getTransportadoras,
 };
