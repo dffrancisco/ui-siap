@@ -21,7 +21,7 @@ onMounted(() => {
             id="slTransportadora"
             class="transportadora"
             v-model="state.transportadora"
-            :items="state.transportadorasOptions"
+            :items="state.transportadoras"
           ></v-select>
         </v-col>
 

@@ -3,7 +3,7 @@ export interface iParamsRelatorioConhecimento {
     idTransportadora: number;
     dataInicio: string;
     dataFim: string;
-    ordenacao: string;
+
 }
 
 export interface iTransportadora {
@@ -12,11 +12,11 @@ export interface iTransportadora {
 }
 
 export interface iRelatorioConhecimento {
-    numNota: number;
+    NOME_FANTAZIA: string;
+    NUM_NOTA: string;
     NUM_CONHECIMENTO: string;
     DATA_CONHECIMENTO: string;
     TOTAL_FATURA: number;
     PERCENTUAL: string;
     PAGAMENTO: number;
-    NOME_FANTASIA: string;
 }

@@ -12,7 +12,7 @@ export const state = reactive({
     dataFim: moment().format('YYYY-MM-DD'),
     dadosRelatorio: [] as iRelatorioConhecimento[],
     totalItems: 0,
-    transportadorasOptions: <iTransportadora[]>[],
+    transportadoras: <iTransportadora[]>[],
     ordenacao: 'dataConhecimento',
     ordenacaoOptions:
         <any>[
@@ -24,13 +24,13 @@ export const state = reactive({
     itemsPerPage: 10,
     page: 1,
     headers: <any>[
-        { key: 'nomeFantasia', title: 'Nome', sortable: true, align: 'left' },
-        { key: 'numNota', title: 'Nº Nota', sortable: true, align: 'center' },
-        { key: 'numConhecimento', title: 'Nº Conhecimento', sortable: true, align: 'center' },
-        { key: 'dataConhecimento', title: 'Data Conhecimento', sortable: true, align: 'center' },
-        { key: 'totalFatura', title: 'Total Fatura', sortable: true, align: 'right' },
-        { key: 'percentual', title: '%', sortable: true, align: 'right' },
-        { key: 'pagamento', title: 'Pagar', sortable: true, align: 'right' },
+        { key: 'NOME_FANTASIA', title: 'Nome', sortable: true, align: 'left' },
+        { key: 'NUM_NOTA', title: 'Nº Nota', sortable: true, align: 'center' },
+        { key: 'NUM_CONHECIMENTO', title: 'Nº Conhecimento', sortable: true, align: 'center' },
+        { key: 'DATA_CONHECIMENTO', title: 'Data Conhecimento', sortable: true, align: 'center' },
+        { key: 'TOTAL_FATURA', title: 'Total Fatura', sortable: true, align: 'right' },
+        { key: 'PERCENTUAL', title: '%', sortable: true, align: 'right' },
+        { key: 'PAGAMENTO', title: 'Pagar', sortable: true, align: 'right' },
     ],
 });
 
@@ -46,6 +46,7 @@ export const actions = {
                 text: 'Selecione uma transportadora para realizar o filtro.',
             });
             return false;
+
         }
 
         if (!state.dataInicio || !state.dataFim) {
@@ -78,17 +79,27 @@ export const actions = {
     async getTransportadoras() {
         try {
             state.loading = true;
+
             const response = await serviceRelatorioConhecimento.getTransportadoras();
-            state.transportadorasOptions = response.map((item: any) => ({
-                ID_TRANSPORTADORA: item.ID_TRANSPORTADORA,
-                RAZAO_SOCIAL: item.RAZAO_SOCIAL,
-            }));
+
+
+            if (response && Array.isArray(response)) {
+                state.transportadora = response.map((item: iTransportadora) => ({
+                    value: item.ID_TRANSPORTADORA,
+                    label: item.RAZAO_SOCIAL,
+                }));
+            } else {
+                console.warn("Resposta inesperada ao buscar transportadoras:", response);
+                state.transportadoras = [];
+            }
+
         } catch (error) {
             console.error("Erro ao obter transportadoras:", error);
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao buscar transportadoras.',
             });
+            state.transportadoras = [];
         } finally {
             state.loading = false;
         }
@@ -99,25 +110,32 @@ export const actions = {
             state.loading = true;
 
             const params: iParamsRelatorioConhecimento = {
-                idTransportadora: state.transportadora,
+                idTransportadora: state.transportadora ?? 0,
                 dataInicio: state.dataInicio,
                 dataFim: state.dataFim,
-                ordenacao: state.ordenacao,
             };
 
             const response = await serviceRelatorioConhecimento.getRelatorioConhecimento(params);
-            state.dadosRelatorio = response;
+
+            if (response && Array.isArray(response)) {
+                state.dadosRelatorio = response;
+            } else {
+                console.warn("Resposta inesperada da API:", response);
+                state.dadosRelatorio = [];
+            }
 
         } catch (error) {
-            console.error("Erro ao obter os dados:", error);
+            console.error("Erro ao obter os dados do relatório:", error);
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao buscar dados para o relatório.',
             });
+            state.dadosRelatorio = [];
         } finally {
             state.loading = false;
         }
     },
+
 
     async onClickImprimir() {
         if (!actions.validarInputs()) {
@@ -135,15 +153,14 @@ export const actions = {
         try {
             state.loading = true;
             const relatorioAjustado = actions.formatarDadosImpressao([...state.dadosRelatorio]);
-
             const columns: iColumnPrint[] = [
-                { key: 'nomeFantasia', label: 'Nome', align: 'left' },
-                { key: 'numNota', label: 'Nº Nota', align: 'center' },
-                { key: 'numConhecimento', label: 'Nº Conhecimento', align: 'center' },
-                { key: 'dataConhecimento', label: 'Data Conhecimento', align: 'center' },
-                { key: 'totalFatura', label: 'Total Fatura', align: 'right' },
-                { key: 'percentual', label: '%', align: 'right' },
-                { key: 'pagamento', label: 'Pagar', align: 'right' },
+                { key: 'NOME_FANTASIA', label: 'Nome', align: 'left' },
+                { key: 'NUM_NOTA', label: 'Nº Nota', align: 'center' },
+                { key: 'NUM_CONHECIMENTO', label: 'Nº Conhecimento', align: 'center' },
+                { key: 'DATA_CONHECIMENTO', label: 'Data Conhecimento', align: 'center' },
+                { key: 'TOTAL_FATURA', label: 'Total Fatura', align: 'right' },
+                { key: 'PERCENTUAL', label: '%', align: 'right' },
+                { key: 'PAGAMENTO', label: 'Pagar', align: 'right' },
             ];
 
             const titulo = `
