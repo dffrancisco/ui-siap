@@ -163,23 +163,20 @@ export const actions = {
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
-
-            if (!value) {
-                return null;
-            }
             const data = await serviceFavorecidos.getDuplicidade({ value, field });
             return data;
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao verificar duplicidade!",
                 text: "Erro ao executar verificação de duplicidade",
             });
         }
     },
 
     async btnInsert() {
+
         state.pnSearch = true;
+        //@ts-ignore
         state.dbFavorecido = {} as iFavorecidos;
         await nextTick();
         state.gridPrincipal.focusField();
@@ -199,6 +196,7 @@ export const actions = {
     },
 
     async btnDelete() {
+        //@ts-ignore
         if (!state.gridPrincipal.dataSource()) {
             Swal.fire({
                 icon: "info",
@@ -227,11 +225,13 @@ export const actions = {
             return false
         }
 
-        if (await state.gridPrincipal.getDuplicityAll()) {
-            return false;
-        }
 
+
+        //@ts-ignore
         if (state.gridPrincipal.dataSource() == false) {
+            if (await state.gridPrincipal.getDuplicityAll()) {
+                return false;
+            }
             actions.toInsert();
         } else {
             actions.toUpdate();
@@ -308,10 +308,10 @@ export const actions = {
 
     async toUpdate() {
         try {
-            let dadosDiff = state.gridPrincipal.getDiffTwoJson(false);
+            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
-            if (!dadosDiff.diff) {
-                return;
+            if (dadosDiff.diff == false) {
+                return
             }
 
             let dadosAtualizados = {
@@ -325,8 +325,9 @@ export const actions = {
             state.loading = true;
 
             await serviceFavorecidos.toUpdate(dadosAtualizados);
-            state.dbFavorecido = dadosAtualizados as iFavorecidos;
             state.gridPrincipal.dataSource(dadosAtualizados);
+            state.dbFavorecido = dadosAtualizados
+            state.loading = false;
 
             await Swal.fire({
                 icon: "success",
@@ -335,11 +336,8 @@ export const actions = {
         } catch (error) {
             await Swal.fire({
                 icon: "error",
-                title: "Erro ao atualizar favorecido!",
-                text: error.response?.data || error.message,
+                text: "Erro ao atualizar registro!",
             });
-        } finally {
-            state.loading = false;
         }
     }
 };
