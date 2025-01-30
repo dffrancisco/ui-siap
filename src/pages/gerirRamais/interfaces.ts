@@ -16,13 +16,6 @@ export interface iParamToInsertRamal {
     id_ramal: number;
 }
 
-export interface iParamToInsertRamal {
-    id_sociedade: number;
-    id_setor: number;
-    ramal: string;
-    nome: string;
-}
-
 export interface iParamToUpdateRamal extends iParamToInsertRamal {
     id_ramal: number;
 }
@@ -62,24 +55,8 @@ export interface iFieldDuplicity {
     field: string;
 }
 
-
-
-export interface iParamToGetSetor {
-    param: {
-        id_setor?: number;
-        nome?: string;
-    };
-}
-
 export interface iToDeleteResponse {
     id_ramal?: number;
-}
-
-export interface iParamToGetSociedade {
-    param: {
-        id_sociedade?: number;
-        loja?: string;
-    };
 }
 
 export interface iDadosInputs {

@@ -19,7 +19,6 @@ export const state = reactive({
     setores: <iSetor[]>[],
     sociedade: <iSociedade[]>[],
     loading: false,
-
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -38,6 +37,7 @@ export const actions = {
             state.gridPrincipal.focus();
         });
     },
+
 
     grids() {
         state.gridPrincipal = new xGridV2.create({
