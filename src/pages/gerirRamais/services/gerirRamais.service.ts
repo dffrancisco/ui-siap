@@ -55,6 +55,7 @@ const toDelete = async (id_ramal: number): Promise<iToDeleteResponse> => {
     return data;
 };
 
+
 const getDadosParaInputs: iGetDadosParaInputs = async () => {
     let { data } = await axios.post(caminho, {
         call: "getDadosParaInputs",
@@ -64,6 +65,7 @@ const getDadosParaInputs: iGetDadosParaInputs = async () => {
 
 export default {
     getRamais,
+
     getDuplicidade,
     getDadosParaInputs,
     toInsert,

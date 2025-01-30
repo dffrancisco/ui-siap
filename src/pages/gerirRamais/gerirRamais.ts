@@ -9,7 +9,6 @@ import { useEventListener } from "@vueuse/core";
 import printJS from "print-js";
 
 
-
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     pnSearch: false,
@@ -32,12 +31,12 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 export const actions = {
     async init() {
         actions.grids();
-        await actions.getDadosParaInputs()
-        state.gridPrincipal.queryOpen({ nome: "" }, () => {
+        await actions.getDadosParaInputs();
+
+        state.gridPrincipal.queryOpen({}, () => {
             state.gridPrincipal.focus();
         });
     },
-
 
     grids() {
         state.gridPrincipal = new xGridV2.create({
@@ -57,6 +56,7 @@ export const actions = {
                         param: rs.param,
                     });
 
+
                     data = data.map(ramal => {
                         const setor = state.setores.find(s => s.id_setor === ramal.id_setor);
                         return { ...ramal, setor: setor ? setor.nome : '' };
@@ -69,6 +69,7 @@ export const actions = {
                 vModel(r) {
                     state.dbRamal = r;
                 },
+
                 duplicity: {
                     dataField: ["ramal"],
                     async execute(rs) {
@@ -124,7 +125,6 @@ export const actions = {
         });
     },
 
-
     async getDadosParaInputs() {
         try {
             state.loading = true;
@@ -142,16 +142,16 @@ export const actions = {
         }
     },
 
-
     async getRamais({ offset, param }: iParamToGetRamal) {
         try {
             state.loading = true;
             const data = await serviceGerirRamais.getRamais({ offset, param });
             return data;
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao carregar ramais.",
+                text: "Erro ao carregar ramais!",
             });
         } finally {
             state.loading = false;
@@ -169,7 +169,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao executar verificação de duplicidade",
+                text: "Erro ao realizar a verificação de duplicidade!",
             });
         }
     },
