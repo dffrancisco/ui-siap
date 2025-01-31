@@ -10,13 +10,13 @@ import {
     iToDeleteResponse
 } from "../interfaces";
 type iGetDadosParaInputs = () => Promise<iDadosInputs>
+type iGetRamaisFunction = (param: iParamToGetRamal) => Promise<iRamal[]>
 
 const caminho = "siap/gerirRamais";
 
-const getRamais = async ({ param, offset }: iParamToGetRamal): Promise<iRamal[]> => {
+const getRamais = async (param: iParamToGetRamal): Promise<iRamal[]> => {
     const { data } = await axios.post(caminho, {
         call: "getRamais",
-        offset,
         param,
     });
     return data;

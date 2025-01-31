@@ -33,10 +33,18 @@ export const actions = {
         actions.grids();
         await actions.getDadosParaInputs();
 
+        const rawData = await serviceGerirRamais.getRamais({ param: { nome: state.edtSearch?.toUpperCase() || "" } });
+        const processedData = rawData.map(ramal => {
+            const setor = state.setores.find(s => s.id_setor === ramal.id_setor);
+            return { ...ramal, setor: setor ? setor.nome : '' };
+        });
+        state.lista = processedData;
+
         state.gridPrincipal.queryOpen({}, () => {
             state.gridPrincipal.focus();
         });
     },
+
 
     grids() {
         state.gridPrincipal = new xGridV2.create({
@@ -50,13 +58,8 @@ export const actions = {
                 Ramal: { dataField: "ramal", width: "10%", center: true },
             },
             query: {
-                async execute(rs) {
-                    let data = await actions.getRamais({
-                        offset: rs.offset,
-                        param: rs.param,
-                    });
-
-
+                async execute() {
+                    let data = await actions.getRamais();
                     data = data.map(ramal => {
                         const setor = state.setores.find(s => s.id_setor === ramal.id_setor);
                         return { ...ramal, setor: setor ? setor.nome : '' };
@@ -134,29 +137,38 @@ export const actions = {
 
         } catch (error) {
             Swal.fire({
-                icon: "error",
+                icon: "warning",
                 text: "Erro ao trazer os dados iniciais!"
             });
         } finally {
             state.loading = false;
         }
     },
-
-    async getRamais({ offset, param }: iParamToGetRamal) {
+    async getRamais() {
         try {
             state.loading = true;
-            const data = await serviceGerirRamais.getRamais({ offset, param });
+            const param = { nome: state.edtSearch?.toUpperCase() || "" };
+            const data = await serviceGerirRamais.getRamais({ param });
             return data;
-
         } catch (error) {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao carregar ramais!",
             });
+            return [];
         } finally {
             state.loading = false;
         }
     },
+
+    async search() {
+        const searchValue = state.edtSearch?.toUpperCase();
+        state.gridPrincipal.queryOpen({
+
+        });
+    },
+
+
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
@@ -168,7 +180,7 @@ export const actions = {
             return data;
         } catch (error) {
             Swal.fire({
-                icon: "error",
+                icon: "warning",
                 text: "Erro ao realizar a verificação de duplicidade!",
             });
         }
@@ -252,7 +264,7 @@ export const actions = {
             });
         } catch (error) {
             Swal.fire({
-                icon: "error",
+                icon: "warning",
                 text: "Erro ao excluir ramal.",
             });
         } finally {
@@ -286,7 +298,7 @@ export const actions = {
         } catch (error) {
             console.error("Erro ao inserir ramal:", error);
             Swal.fire({
-                icon: "error",
+                icon: "warning",
                 text: "Erro ao inserir ramal.",
             });
         } finally {
@@ -311,24 +323,13 @@ export const actions = {
             });
         } catch (error) {
             Swal.fire({
-                icon: "error",
+                icon: "warning",
                 text: "Erro ao atualizar ramal.",
             });
         } finally {
             state.loading = false;
         }
     },
-
-    async search() {
-        const searchValue = state.edtSearch?.toUpperCase();
-        state.gridPrincipal.queryOpen({
-            nome: searchValue,
-            loja: searchValue,
-
-
-        });
-    },
-
 
     async onClickImprimir() {
         try {

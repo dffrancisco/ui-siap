@@ -22,7 +22,6 @@ export interface iParamToUpdateRamal extends iParamToInsertRamal {
 
 
 export interface iParamToGetRamal {
-    offset: number;
     param: {
         id_ramal?: number;
         id_sociedade?: number;
