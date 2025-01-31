@@ -33,18 +33,16 @@ export const actions = {
         actions.grids();
         await actions.getDadosParaInputs();
 
-        const rawData = await serviceGerirRamais.getRamais({ param: { nome: state.edtSearch?.toUpperCase() || "" } });
+        const rawData = await actions.getRamais();
         const processedData = rawData.map(ramal => {
             const setor = state.setores.find(s => s.id_setor === ramal.id_setor);
             return { ...ramal, setor: setor ? setor.nome : '' };
         });
         state.lista = processedData;
 
-        state.gridPrincipal.queryOpen({}, () => {
-            state.gridPrincipal.focus();
-        });
+        state.gridPrincipal.querySourceAdd(processedData);
+        state.gridPrincipal.focus();
     },
-
 
     grids() {
         state.gridPrincipal = new xGridV2.create({
@@ -57,22 +55,11 @@ export const actions = {
                 Nome: { dataField: "nome" },
                 Ramal: { dataField: "ramal", width: "10%", center: true },
             },
-            query: {
-                async execute() {
-                    let data = await actions.getRamais();
-                    data = data.map(ramal => {
-                        const setor = state.setores.find(s => s.id_setor === ramal.id_setor);
-                        return { ...ramal, setor: setor ? setor.nome : '' };
-                    });
-                    state.gridPrincipal.querySourceAdd(data);
-                },
-            },
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
                     state.dbRamal = r;
                 },
-
                 duplicity: {
                     dataField: ["ramal"],
                     async execute(rs) {
@@ -114,7 +101,7 @@ export const actions = {
                             click: actions.btnSave,
                             preLoad: "Salvando",
                         },
-                        cancela: {
+                        cancelar: {
                             html: "Cancelar",
                             state: "cancel",
                             click: actions.btnCancel,
@@ -147,9 +134,17 @@ export const actions = {
     async getRamais() {
         try {
             state.loading = true;
-            const param = { nome: state.edtSearch?.toUpperCase() || "" };
-            const data = await serviceGerirRamais.getRamais({ param });
-            return data;
+            const param = state.edtSearch?.toUpperCase() || "";
+
+
+            const rawData = await serviceGerirRamais.getRamais(param);
+            const processedData = rawData.map(ramal => {
+                const setor = state.setores.find(s => s.id_setor === ramal.id_setor);
+                return { ...ramal, setor: setor ? setor.nome : '' };
+            });
+            state.lista = processedData;
+            state.gridPrincipal.querySourceAdd(processedData);
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -161,14 +156,11 @@ export const actions = {
         }
     },
 
+
     async search() {
-        const searchValue = state.edtSearch?.toUpperCase();
-        state.gridPrincipal.queryOpen({
-
-        });
+        state.gridPrincipal.clear()
+        actions.getRamais()
     },
-
-
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
@@ -305,7 +297,6 @@ export const actions = {
             state.loading = false;
         }
     },
-
 
     async toUpdate() {
         try {
