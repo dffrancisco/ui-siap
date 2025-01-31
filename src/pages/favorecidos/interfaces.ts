@@ -80,10 +80,4 @@ export interface iParamToUpdate {
     NM_MATRIZ: string;
 }
 
-export interface iToDeleteResponse {
-    delete: string;
-    ID_FAVORECIDO?: number;
-    NR_CONTA?: string;
-}
-
 export interface iBancoResponse extends iBanco { }

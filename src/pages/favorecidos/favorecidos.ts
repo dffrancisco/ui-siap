@@ -21,6 +21,7 @@ export const state = reactive({
         OP: "Operacional",
         RH: "Pessoal",
     },
+    cnpjOuCpfJaExiste: false,
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -78,8 +79,10 @@ export const actions = {
                             state.gridPrincipal.showMessageDuplicity(
                                 rs.text + " já cadastrado!"
                             );
+                            state.cnpjOuCpfJaExiste = true;
                             return true;
                         }
+                        state.cnpjOuCpfJaExiste = false;
                         return false;
                     },
                 },
@@ -176,7 +179,6 @@ export const actions = {
     async btnInsert() {
 
         state.pnSearch = true;
-        //@ts-ignore
         state.dbFavorecido = {} as iFavorecidos;
         await nextTick();
         state.gridPrincipal.focusField();
@@ -196,7 +198,7 @@ export const actions = {
     },
 
     async btnDelete() {
-        //@ts-ignore
+
         if (!state.gridPrincipal.dataSource()) {
             Swal.fire({
                 icon: "info",
@@ -216,6 +218,14 @@ export const actions = {
             return false;
         }
 
+        if (state.cnpjOuCpfJaExiste) {
+            Swal.fire({
+                icon: "warning",
+                text: "CPF ou CNPJ já existe.",
+            });
+            return false;
+        }
+
         if (!state.dbFavorecido.NR_CPF && !state.dbFavorecido.NR_CNPJ) {
             await Swal.fire({
                 icon: "warning",
@@ -225,9 +235,6 @@ export const actions = {
             return false
         }
 
-
-
-        //@ts-ignore
         if (state.gridPrincipal.dataSource() == false) {
             if (await state.gridPrincipal.getDuplicityAll()) {
                 return false;
