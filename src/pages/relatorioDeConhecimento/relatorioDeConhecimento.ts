@@ -2,8 +2,8 @@ import { reactive } from 'vue';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceRelatorioConhecimento from './services/relatorioDeConhecimento.service';
-import { iParamsRelatorioConhecimento, iTransportadora, iRelatorioConhecimento } from './interfaces';
-import utils, { iColumnPrint } from '@/ts/utils';
+import { iTransportadora, iRelatorioConhecimento } from './interfaces';
+import utils, { iColumnPrint, dataBrasil } from '@/ts/utils';
 
 export const state = reactive({
     loading: false,
@@ -23,12 +23,11 @@ export const state = reactive({
             { value: 'numNota', label: 'Nº Nota Fiscal' },
         ],
     itemsPerPage: 10,
-
     headers: <any>[
         { key: 'NOME_FANTAZIA', title: 'Nome', sortable: true, align: 'left' },
         { key: 'NUM_NOTA', title: 'Nº Nota', sortable: true, align: 'center' },
         { key: 'NUM_CONHECIMENTO', title: 'Nº Conhecimento', sortable: true, align: 'center' },
-        { key: 'DATA_CONHECIMENTO', title: 'Data Conhecimento', sortable: true, align: 'center' },
+        { key: 'DATA_CONHECIMENTO', title: 'Data Conhecimento', sortable: true, align: 'center', value: (item: iRelatorioConhecimento) => dataBrasil(item.DATA_CONHECIMENTO) },
         { key: 'TOTAL_FATURA', title: 'Total Fatura', sortable: true, align: 'right' },
         { key: 'PERCENTUAL', title: '%', sortable: true, align: 'right' },
         { key: 'PAGAMENTO', title: 'Pagar', sortable: true, align: 'right' },
@@ -107,17 +106,13 @@ export const actions = {
                 dataFim: state.dataFim,
             };
 
-            const response: iRelatorioConhecimento = await serviceRelatorioConhecimento.getRelatorioConhecimento(params);
+            const response = await serviceRelatorioConhecimento.getRelatorioConhecimento(params);
 
-            console.log("Response:", response);
 
-            if (response && Array.isArray(response)) {
-                state.dadosRelatorio = response;
-                state.totalItems = response.length;
-            } else {
-                state.dadosRelatorio = [];
-                state.totalItems = 0;
-            }
+
+            state.dadosRelatorio = response.dadosRelatorio;
+            state.totalItems = response.dadosRelatorio.length;
+
 
         } catch (error) {
             console.error("Erro ao obter os dados do relatório:", error);
@@ -149,7 +144,7 @@ export const actions = {
             state.loading = true;
             const relatorioAjustado = actions.formatarDadosImpressao([...state.dadosRelatorio]);
             const columns: iColumnPrint[] = [
-                { key: 'NOME_FANTASIA', label: 'Nome', align: 'left' },
+                { key: 'NOME_FANTAZIA', label: 'Nome', align: 'left' },
                 { key: 'NUM_NOTA', label: 'Nº Nota', align: 'center' },
                 { key: 'NUM_CONHECIMENTO', label: 'Nº Conhecimento', align: 'center' },
                 { key: 'DATA_CONHECIMENTO', label: 'Data Conhecimento', align: 'center' },

@@ -20,3 +20,6 @@ export interface iRelatorioConhecimento {
     PAGAMENTO: number;
 }
 
+export interface iDadosParaRelatorio {
+    dadosRelatorio: iRelatorioConhecimento[]
+}
