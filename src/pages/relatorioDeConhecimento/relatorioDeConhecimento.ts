@@ -7,12 +7,13 @@ import utils, { iColumnPrint } from '@/ts/utils';
 
 export const state = reactive({
     loading: false,
-    transportadora: null,
+    transportadora: [] as any[],
     dataInicio: moment().subtract(1, 'month').format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
     dadosRelatorio: [] as iRelatorioConhecimento[],
     totalItems: 0,
-    transportadoras: <iTransportadora[]>[],
+    page: 1,
+    transportadoras: [] as any[],
     ordenacao: 'dataConhecimento',
     ordenacaoOptions:
         <any>[
@@ -22,9 +23,9 @@ export const state = reactive({
             { value: 'numNota', label: 'Nº Nota Fiscal' },
         ],
     itemsPerPage: 10,
-    page: 1,
+
     headers: <any>[
-        { key: 'NOME_FANTASIA', title: 'Nome', sortable: true, align: 'left' },
+        { key: 'NOME_FANTAZIA', title: 'Nome', sortable: true, align: 'left' },
         { key: 'NUM_NOTA', title: 'Nº Nota', sortable: true, align: 'center' },
         { key: 'NUM_CONHECIMENTO', title: 'Nº Conhecimento', sortable: true, align: 'center' },
         { key: 'DATA_CONHECIMENTO', title: 'Data Conhecimento', sortable: true, align: 'center' },
@@ -36,7 +37,7 @@ export const state = reactive({
 
 export const actions = {
     async init() {
-        await actions.getDadosParaRelatorio();
+        await actions.getTransportadoras();
     },
 
     validarInputs(): boolean {
@@ -75,31 +76,22 @@ export const actions = {
         await actions.getDadosParaRelatorio();
     },
 
-
     async getTransportadoras() {
         try {
             state.loading = true;
 
-            const response = await serviceRelatorioConhecimento.getTransportadoras();
-
-
-            if (response && Array.isArray(response)) {
-                state.transportadora = response.map((item: iTransportadora) => ({
-                    value: item.ID_TRANSPORTADORA,
-                    label: item.RAZAO_SOCIAL,
-                }));
-            } else {
-                console.warn("Resposta inesperada ao buscar transportadoras:", response);
-                state.transportadoras = [];
-            }
-
+            const data = await serviceRelatorioConhecimento.getTransportadoras();
+            state.transportadora = data.map((transportadora: iTransportadora) => ({
+                value: transportadora.ID_TRANSPORTADORA,
+                label: transportadora.RAZAO_SOCIAL,
+            }));
+            state.transportadoras = [];
         } catch (error) {
-            console.error("Erro ao obter transportadoras:", error);
+            console.error("Erro ao buscar transportadoras:", error);
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao buscar transportadoras.',
             });
-            state.transportadoras = [];
         } finally {
             state.loading = false;
         }
@@ -109,19 +101,22 @@ export const actions = {
         try {
             state.loading = true;
 
-            const params: iParamsRelatorioConhecimento = {
-                idTransportadora: state.transportadora ?? 0,
+            const params = {
+                idTransportadora: Array.isArray(state.transportadora) && state.transportadora.length > 0 ? state.transportadora[0].value : 0,
                 dataInicio: state.dataInicio,
                 dataFim: state.dataFim,
             };
 
-            const response = await serviceRelatorioConhecimento.getRelatorioConhecimento(params);
+            const response: iRelatorioConhecimento = await serviceRelatorioConhecimento.getRelatorioConhecimento(params);
+
+            console.log("Response:", response);
 
             if (response && Array.isArray(response)) {
                 state.dadosRelatorio = response;
+                state.totalItems = response.length;
             } else {
-                console.warn("Resposta inesperada da API:", response);
                 state.dadosRelatorio = [];
+                state.totalItems = 0;
             }
 
         } catch (error) {
@@ -131,11 +126,11 @@ export const actions = {
                 text: 'Erro ao buscar dados para o relatório.',
             });
             state.dadosRelatorio = [];
+            state.totalItems = 0;
         } finally {
             state.loading = false;
         }
     },
-
 
     async onClickImprimir() {
         if (!actions.validarInputs()) {

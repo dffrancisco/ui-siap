@@ -3,7 +3,6 @@ export interface iParamsRelatorioConhecimento {
     idTransportadora: number;
     dataInicio: string;
     dataFim: string;
-
 }
 
 export interface iTransportadora {
@@ -20,3 +19,4 @@ export interface iRelatorioConhecimento {
     PERCENTUAL: string;
     PAGAMENTO: number;
 }
+

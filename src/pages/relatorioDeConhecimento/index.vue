@@ -15,13 +15,16 @@ onMounted(() => {
       :max-height="600"
     >
       <v-row>
-        <v-col cols="2">
+        <v-col cols="3">
           <v-select
             label="Transportadora"
-            id="slTransportadora"
-            class="transportadora"
-            v-model="state.transportadora"
-            :items="state.transportadoras"
+            id="transportadoraSelect"
+            v-model="state.transportadoras"
+            :items="state.transportadora"
+            item-value="value"
+            item-title="label"
+            clearable
+            style="width: 100%"
           ></v-select>
         </v-col>
 
@@ -33,6 +36,7 @@ onMounted(() => {
             v-model="state.dataInicio"
             type="date"
             :clearable="false"
+            dense
           ></v-text-field>
         </v-col>
 
@@ -44,11 +48,12 @@ onMounted(() => {
             v-model="state.dataFim"
             type="date"
             :clearable="false"
+            dense
             @keydown.enter.prevent="actions.buscarDadosComValidacao"
           ></v-text-field>
         </v-col>
 
-        <v-col cols="3">
+        <v-col cols="2">
           <v-select
             label="Ordenar"
             id="slOrdenacao"
@@ -60,7 +65,7 @@ onMounted(() => {
           ></v-select>
         </v-col>
 
-        <v-col cols="1">
+        <v-col>
           <div class="btnPesquisar">
             <v-btn
               color="primary"
