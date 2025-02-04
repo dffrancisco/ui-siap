@@ -49,16 +49,15 @@ export const actions = {
         if (!state.transportadora) {
             Swal.fire({
                 icon: 'warning',
-                text: 'Selecione uma transportadora para realizar o filtro.',
+                text: 'Selecione uma transportadora para realizar o filtro',
             });
             return false;
-
         }
 
         if (!state.dataInicio || !state.dataFim) {
             Swal.fire({
                 icon: 'warning',
-                text: 'Selecione um intervalo entte as datas adequado.',
+                text: 'Selecione um intervalo de datas adequado.',
             });
             return false;
         }
@@ -66,11 +65,10 @@ export const actions = {
         if (moment(state.dataInicio).isAfter(moment(state.dataFim))) {
             Swal.fire({
                 icon: 'warning',
-                text: 'A data inicial não pode ser maior que a data final.',
+                text: 'Adata inicial não pode ser menor que a data final.',
             });
             return false;
         }
-
         return true;
     },
 
@@ -126,6 +124,7 @@ export const actions = {
                 PERCENTUAL: 'Totalizador:',
                 PAGAMENTO: totalPagamento,
             };
+
 
             // @ts-ignore
             state.dadosRelatorio = [...dados, linhaTotal];
