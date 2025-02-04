@@ -1,5 +1,5 @@
 import axios from "axios";
-import { iTransportadora, iParamsRelatorioConhecimento, iRelatorioConhecimento, iDadosParaRelatorio } from "../interfaces";
+import { iTransportadora, iParamsRelatorioConhecimento, iDadosParaRelatorio } from "../interfaces";
 
 const caminho = 'siap/relatorioDeConhecimento';
 

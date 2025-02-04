@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { reactive, computed } from 'vue';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceRelatorioConhecimento from './services/relatorioDeConhecimento.service';
@@ -8,7 +8,7 @@ import utils, { iColumnPrint, dataBrasil } from '@/ts/utils';
 export const state = reactive({
     loading: false,
     transportadora: [] as any[],
-    dataInicio: moment().subtract(1, 'month').format('YYYY-MM-DD'),
+    dataInicio: moment().startOf('month').format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
     dadosRelatorio: [] as iRelatorioConhecimento[],
     totalItems: 0,
@@ -22,6 +22,7 @@ export const state = reactive({
             { value: 'numConhecimento', label: 'Nº Conhecimento' },
             { value: 'numNota', label: 'Nº Nota Fiscal' },
         ],
+
     itemsPerPage: 10,
     headers: <any>[
         { key: 'NOME_FANTAZIA', title: 'Nome', sortable: true, align: 'left' },
@@ -30,12 +31,17 @@ export const state = reactive({
         { key: 'DATA_CONHECIMENTO', title: 'Data Conhecimento', sortable: true, align: 'center', value: (item: iRelatorioConhecimento) => dataBrasil(item.DATA_CONHECIMENTO) },
         { key: 'TOTAL_FATURA', title: 'Total Fatura', sortable: true, align: 'right' },
         { key: 'PERCENTUAL', title: '%', sortable: true, align: 'right' },
-        { key: 'PAGAMENTO', title: 'Pagar', sortable: true, align: 'right' },
+        { key: 'PAGAMENTO', title: 'Pagar', sortable: true, align: 'right', value: (item: iRelatorioConhecimento) => utils.formatValor(item.PAGAMENTO) },
     ],
+});
+
+export const totalPagamento = computed(() => {
+    return state.dadosRelatorio.reduce((acc, item) => acc + (item.PAGAMENTO || 0), 0);
 });
 
 export const actions = {
     async init() {
+
         await actions.getTransportadoras();
     },
 
@@ -52,7 +58,7 @@ export const actions = {
         if (!state.dataInicio || !state.dataFim) {
             Swal.fire({
                 icon: 'warning',
-                text: 'Selecione um intervalo de datas válido.',
+                text: 'Selecione um intervalo entte as datas adequado.',
             });
             return false;
         }
@@ -99,21 +105,31 @@ export const actions = {
     async getDadosParaRelatorio() {
         try {
             state.loading = true;
-
             const params = {
                 idTransportadora: Array.isArray(state.transportadora) && state.transportadora.length > 0 ? state.transportadora[0].value : 0,
                 dataInicio: state.dataInicio,
                 dataFim: state.dataFim,
+                ordem: state.ordenacao
             };
 
             const response = await serviceRelatorioConhecimento.getRelatorioConhecimento(params);
+            const dados = response.dadosRelatorio;
 
+            const totalPagamento = dados.reduce((acc, item) => acc + Number(item.PAGAMENTO || 0), 0);
 
+            const linhaTotal = {
+                NOME_FANTAZIA: '',
+                NUM_NOTA: '',
+                NUM_CONHECIMENTO: '',
+                DATA_CONHECIMENTO: '',
+                TOTAL_FATURA: '',
+                PERCENTUAL: 'Totalizador:',
+                PAGAMENTO: totalPagamento,
+            };
 
-            state.dadosRelatorio = response.dadosRelatorio;
-            state.totalItems = response.dadosRelatorio.length;
-
-
+            // @ts-ignore
+            state.dadosRelatorio = [...dados, linhaTotal];
+            state.totalItems = state.dadosRelatorio.length;
         } catch (error) {
             console.error("Erro ao obter os dados do relatório:", error);
             Swal.fire({
@@ -155,8 +171,7 @@ export const actions = {
 
             const titulo = `
                 <div style="text-align: center;">
-                    <strong style="font-size: 16px;"> Relatório de Conhecimento </strong>
-                </div>
+                    <strong style="font-size: 16px;"> Relatorio de Conhecimento. </strong>
             `;
 
             await utils.printComCabecalho(columns, relatorioAjustado, titulo);
@@ -164,7 +179,7 @@ export const actions = {
             console.error("Erro ao imprimir o relatório:", error);
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao imprimir relatório.',
+                text: 'Erro ao imprimir relatorio.',
             });
         } finally {
             state.loading = false;

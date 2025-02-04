@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { state, actions } from "./relatorioDeConhecimento";
+import { formatValor } from "@/ts/utils";
 
 onMounted(() => {
   actions.init();
@@ -24,6 +25,7 @@ onMounted(() => {
             item-value="value"
             item-title="label"
             clearable
+            @keydown.enter.prevent="actions.buscarDadosComValidacao"
             style="width: 100%"
           ></v-select>
         </v-col>
@@ -37,6 +39,7 @@ onMounted(() => {
             type="date"
             :clearable="false"
             dense
+            @keydown.enter.prevent="actions.buscarDadosComValidacao"
           ></v-text-field>
         </v-col>
 
@@ -61,6 +64,9 @@ onMounted(() => {
             :items="state.ordenacaoOptions"
             item-value="value"
             item-title="label"
+            dense
+            :clearable="false"
+            @keydown.enter.prevent="actions.buscarDadosComValidacao"
             style="width: 100%"
           ></v-select>
         </v-col>
@@ -79,7 +85,7 @@ onMounted(() => {
       </v-row>
 
       <div class="mt-4">
-        <v-data-table
+        <v-data-table-virtual
           id="tabela"
           class="tableRelatorio pt-5"
           v-model:items-per-page="state.itemsPerPage"
@@ -92,7 +98,15 @@ onMounted(() => {
           :row-props="actions.getClassCorLinha"
           @update:page="actions.updatePage"
         >
-        </v-data-table>
+          <template v-slot:item.PAGAMENTO="{ item }">
+            <span v-if="item.DATA_CONHECIMENTO === ''">
+              <strong>{{ formatValor(item.PAGAMENTO) }}</strong>
+            </span>
+            <span v-else>
+              {{ formatValor(item.PAGAMENTO) }}
+            </span>
+          </template>
+        </v-data-table-virtual>
       </div>
 
       <div class="pt-5 btnPrint">
