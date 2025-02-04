@@ -29,7 +29,7 @@ export interface iParamToInsert {
 export interface iParamGetFavorecido {
     offset: number;
     param: {
-        DS_BANCO?: string;
+        NM_FAVORECIDO?: string;
     };
 }
 
@@ -55,7 +55,6 @@ export interface iFieldDuplicity {
 export interface iBanco {
     CD_BANCO: string;
     DS_BANCO: string;
-
 }
 
 export interface iFavorecidoResponse extends iBanco {
