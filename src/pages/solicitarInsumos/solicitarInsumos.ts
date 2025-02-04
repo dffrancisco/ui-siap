@@ -88,11 +88,7 @@ export const actions = {
     },
 
     atualizarPedidoFinalizado() {
-
-        if (state.pedidoSelecionado) {
-            state.pedidoSelecionado.FINALIZADO = 'S';
-        }
-
+        actions.getPedidos();
         state.modalPedidoInsumosOpened = false;
     }
 }

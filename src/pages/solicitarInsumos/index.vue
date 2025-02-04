@@ -39,7 +39,7 @@ onMounted(async () => {
         <v-btn
           id="btnNovoCliente"
           color="primary"
-          class="mr-3"
+          class="mr-5"
           @click="actions.novoPedido"
         >
           Novo Pedido (F2)
@@ -48,7 +48,7 @@ onMounted(async () => {
 
       <div
         class="scroll-container"
-        :style="{ maxHeight: '440px', overflowY: 'auto', overflowX: 'hidden' }"
+        v-if="state.pedidos.length > 0"
       >
         <v-row>
           <v-col
@@ -81,6 +81,10 @@ onMounted(async () => {
           </v-col>
         </v-row>
       </div>
+      <div
+        :style="{ minHeight: '20px' }"
+        v-else
+      ></div>
     </v-card>
 
     <v-overlay
@@ -99,6 +103,7 @@ onMounted(async () => {
     <v-dialog
       v-model="state.modalPedidoInsumosOpened"
       max-width="900"
+      :persistent="true"
     >
       <ModalPedidoInsumos
         :modalOpened="state.modalPedidoInsumosOpened"
@@ -134,7 +139,10 @@ onMounted(async () => {
 }
 
 .scroll-container {
+  height: 450px;
   padding-right: 8px;
   margin-top: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 </style>
