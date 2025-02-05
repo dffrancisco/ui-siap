@@ -1,4 +1,3 @@
-
 export interface iRamal {
     id_ramal: number;
     id_sociedade: number;
@@ -6,7 +5,6 @@ export interface iRamal {
     loja: string;
     ramal: string;
     nome: string;
-
 }
 
 export interface iParamToInsertRamal {
@@ -17,27 +15,11 @@ export interface iParamToInsertRamal {
     id_ramal: number;
 }
 
-export interface iParamToUpdateRamal extends iParamToInsertRamal {
-    id_ramal: number;
-}
-
-
-export interface iParamToGetRamal {
-    param: {
-        id_ramal?: number;
-        id_sociedade?: number;
-        id_setor?: number;
-        ramal?: string;
-        nome?: string;
-    };
-}
+export interface iParamToUpdateRamal extends iParamToInsertRamal { }
 
 export interface iGetDuplicityResponseRamal {
     ramal?: string;
-    id_sociedade?: number;
-    id_setor?: number;
 }
-
 
 export interface iSetor {
     id_setor: number;
@@ -52,11 +34,6 @@ export interface iSociedade {
 export interface iFieldDuplicity {
     value: string;
     field: string;
-    id_sociedade: number;
-}
-
-export interface iToDeleteResponse {
-    id_ramal?: number;
 }
 
 export interface iDadosInputs {

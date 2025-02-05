@@ -8,18 +8,14 @@ import serviceGerirRamais from "./services/gerirRamais.service";
 import { useEventListener } from "@vueuse/core";
 import printJS from "print-js";
 
-
-
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     pnSearch: false,
-    lista: <iRamal[]>[],
     edtSearch: "",
     dbRamal: <iRamal>{},
     setores: <iSetor[]>[],
     sociedade: <iSociedade[]>[],
     loading: false,
-    duplicity: false
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -32,9 +28,10 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 
 export const actions = {
     async init() {
-        actions.grids();
+        await actions.grids();
+        await actions.getRamais()
+
         await actions.getDadosParaInputs();
-        await actions.getRamais();
         state.gridPrincipal.focus();
     },
 
@@ -49,7 +46,6 @@ export const actions = {
                 Nome: { dataField: "nome" },
                 Ramal: { dataField: "ramal", width: "10%", center: true },
             },
-
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
@@ -60,17 +56,14 @@ export const actions = {
                     async execute(rs) {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),
-                            field: rs.field,
-                            id_sociedade: state.dbRamal.id_sociedade,
+                            field: rs.field
                         });
                         if (dup && Object.keys(dup).length > 0) {
                             state.gridPrincipal.showMessageDuplicity(
                                 rs.text + " já cadastrado!"
                             );
-                            state.duplicity = true
                             return true;
                         }
-                        state.duplicity = false
                         return false;
                     },
                 },
@@ -131,12 +124,11 @@ export const actions = {
     async getRamais() {
         try {
             state.loading = true;
-            const param = state.edtSearch?.toUpperCase() || "";
+            const param = state.edtSearch?.toUpperCase();
 
             const data = await serviceGerirRamais.getRamais(param);
-            state.lista = data;
-            state.gridPrincipal.querySourceAdd(data);
-
+            state.gridPrincipal.source(data);
+            return data;
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -153,14 +145,12 @@ export const actions = {
         actions.getRamais()
     },
 
-    async getDuplicidade({ value, field, id_sociedade }: iFieldDuplicity) {
-        console.log(id_sociedade);
+    async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
-
             if (!value) {
                 return null;
             }
-            const data = await serviceGerirRamais.getDuplicidade({ value, field, id_sociedade });
+            const data = await serviceGerirRamais.getDuplicidade({ value, field });
             return data;
         } catch (error) {
             Swal.fire({
@@ -208,6 +198,10 @@ export const actions = {
     async btnSave() {
         if (utils.validaOBR()) return false;
 
+        if (await state.gridPrincipal.getDuplicityAll()) {
+            return false;
+        }
+
         if (!state.dbRamal.nome || !state.dbRamal.ramal) {
             Swal.fire({
                 icon: "warning",
@@ -216,18 +210,10 @@ export const actions = {
             return false;
         }
 
-        if (state.duplicity == true) {
-            Swal.fire({
-                icon: "warning",
-                text: "Ramal já cadastrado!",
-            });
-            return false;
-        }
-
-        if (state.gridPrincipal.dataSource() === false) {
-            actions.toInsert();
+        if (state.gridPrincipal.dataSource() == false) {
+            await actions.toInsert();
         } else {
-            actions.toUpdate();
+            await actions.toUpdate();
         }
 
         state.pnSearch = false;
@@ -281,13 +267,11 @@ export const actions = {
             const setor_nome = state.setores.find(s => s.id_setor === state.dbRamal.id_setor)?.nome || '';
             state.gridPrincipal.insertLine({ ...newFields, loja, setor_nome });
 
-
             Swal.fire({
                 icon: "success",
                 text: "Ramal inserido com sucesso!",
             });
         } catch (error) {
-            console.error("Erro ao inserir ramal:", error);
             Swal.fire({
                 icon: "warning",
                 text: "Erro ao inserir ramal.",
@@ -325,7 +309,7 @@ export const actions = {
         try {
             state.loading = true;
 
-            const dadosRamais = state.lista;
+            const dadosRamais = state.gridPrincipal.data();
             const dadosTratados = Array.isArray(dadosRamais) ? dadosRamais : [dadosRamais];
 
             if (!dadosTratados.length) {
@@ -380,7 +364,7 @@ export const actions = {
 
                 return `
                     <div class="card">
-                        <div class="card-header" style="background-color: ${corHeader}; color: #000;">
+                        <div class="card-header" style="background-color: ${corHeader}; color: #000; font-size: 12px;">
                             ${loja.loja}
                         </div>
                         <div class="card-body">
@@ -492,7 +476,6 @@ export const actions = {
                 documentTitle: '&nbsp;'
             });
         } catch (error) {
-            console.error("Erro ao imprimir o relatório:", error);
             Swal.fire({
                 icon: "error",
                 text: "Erro ao imprimir relatório.",

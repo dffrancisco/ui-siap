@@ -6,7 +6,6 @@ import {
     iDadosInputs,
     iGetDuplicityResponseRamal,
     iFieldDuplicity,
-    iToDeleteResponse
 } from "../interfaces";
 type iGetDadosParaInputs = () => Promise<iDadosInputs>
 
@@ -21,12 +20,11 @@ const getRamais = async (param: string): Promise<iRamal[]> => {
     return data;
 };
 
-const getDuplicidade = async ({ value, field, id_sociedade }: iFieldDuplicity): Promise<iGetDuplicityResponseRamal> => {
+const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponseRamal> => {
     const { data } = await axios.post(caminho, {
         call: "getDuplicidade",
         value,
-        field,
-        id_sociedade
+        field
     });
     return data;
 };
@@ -47,7 +45,7 @@ const toUpdate = async (param: iParamToUpdateRamal): Promise<iRamal> => {
     return data;
 };
 
-const toDelete = async (id_ramal: number): Promise<iToDeleteResponse> => {
+const toDelete = async (id_ramal: number): Promise<string> => {
     const { data } = await axios.post(caminho, {
         call: "toDelete",
         id_ramal,
@@ -65,11 +63,9 @@ const getDadosParaInputs: iGetDadosParaInputs = async () => {
 
 export default {
     getRamais,
-
     getDuplicidade,
     getDadosParaInputs,
     toInsert,
     toUpdate,
     toDelete,
-
 };

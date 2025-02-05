@@ -142,6 +142,12 @@ onMounted(async () => {
   </v-container>
 </template>
 
+<style>
+.v-overlay__scrim {
+  background-color: black;
+}
+</style>
+
 <style scoped>
 .btn-print {
   margin-right: 190px;
