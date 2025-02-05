@@ -278,8 +278,8 @@ export const actions = {
 
             await serviceGerirRamais.toInsert(newFields);
             const loja = state.sociedade.find(s => s.id_sociedade === state.dbRamal.id_sociedade)?.loja || '';
-            const setor = state.setores.find(s => s.id_setor === state.dbRamal.id_setor)?.nome || '';
-            state.gridPrincipal.insertLine({ ...newFields, loja, setor });
+            const setor_nome = state.setores.find(s => s.id_setor === state.dbRamal.id_setor)?.nome || '';
+            state.gridPrincipal.insertLine({ ...newFields, loja, setor_nome });
 
 
             Swal.fire({
