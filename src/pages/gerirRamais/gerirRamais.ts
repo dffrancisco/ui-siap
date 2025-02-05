@@ -2,11 +2,12 @@ import { nextTick, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
-import { iRamal, iSetor, iParamToGetRamal, iParamToInsertRamal, iFieldDuplicity, iParamToUpdateRamal, iSociedade } from "./interfaces";
+import { iRamal, iSetor, iParamToInsertRamal, iFieldDuplicity, iParamToUpdateRamal, iSociedade } from "./interfaces";
 import utils from "@/ts/utils";
 import serviceGerirRamais from "./services/gerirRamais.service";
 import { useEventListener } from "@vueuse/core";
 import printJS from "print-js";
+
 
 
 export const state = reactive({
@@ -18,6 +19,7 @@ export const state = reactive({
     setores: <iSetor[]>[],
     sociedade: <iSociedade[]>[],
     loading: false,
+    duplicity: false
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -32,15 +34,7 @@ export const actions = {
     async init() {
         actions.grids();
         await actions.getDadosParaInputs();
-
-        const rawData = await actions.getRamais();
-        const processedData = rawData.map(ramal => {
-            const setor = state.setores.find(s => s.id_setor === ramal.id_setor);
-            return { ...ramal, setor: setor ? setor.nome : '' };
-        });
-        state.lista = processedData;
-
-        state.gridPrincipal.querySourceAdd(processedData);
+        await actions.getRamais();
         state.gridPrincipal.focus();
     },
 
@@ -51,10 +45,11 @@ export const actions = {
             count: true,
             columns: {
                 Loja: { dataField: "loja" },
-                Setor: { dataField: "setor" },
+                Setor: { dataField: "setor_nome" },
                 Nome: { dataField: "nome" },
                 Ramal: { dataField: "ramal", width: "10%", center: true },
             },
+
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
@@ -66,13 +61,16 @@ export const actions = {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),
                             field: rs.field,
+                            id_sociedade: state.dbRamal.id_sociedade,
                         });
                         if (dup && Object.keys(dup).length > 0) {
                             state.gridPrincipal.showMessageDuplicity(
                                 rs.text + " já cadastrado!"
                             );
+                            state.duplicity = true
                             return true;
                         }
+                        state.duplicity = false
                         return false;
                     },
                 },
@@ -99,7 +97,6 @@ export const actions = {
                             html: "Salvar",
                             state: "save",
                             click: actions.btnSave,
-                            preLoad: "Salvando",
                         },
                         cancelar: {
                             html: "Cancelar",
@@ -136,14 +133,9 @@ export const actions = {
             state.loading = true;
             const param = state.edtSearch?.toUpperCase() || "";
 
-
-            const rawData = await serviceGerirRamais.getRamais(param);
-            const processedData = rawData.map(ramal => {
-                const setor = state.setores.find(s => s.id_setor === ramal.id_setor);
-                return { ...ramal, setor: setor ? setor.nome : '' };
-            });
-            state.lista = processedData;
-            state.gridPrincipal.querySourceAdd(processedData);
+            const data = await serviceGerirRamais.getRamais(param);
+            state.lista = data;
+            state.gridPrincipal.querySourceAdd(data);
 
         } catch (error) {
             Swal.fire({
@@ -156,23 +148,23 @@ export const actions = {
         }
     },
 
-
     async search() {
         state.gridPrincipal.clear()
         actions.getRamais()
     },
 
-    async getDuplicidade({ value, field }: iFieldDuplicity) {
+    async getDuplicidade({ value, field, id_sociedade }: iFieldDuplicity) {
+        console.log(id_sociedade);
         try {
 
             if (!value) {
                 return null;
             }
-            const data = await serviceGerirRamais.getDuplicidade({ value, field });
+            const data = await serviceGerirRamais.getDuplicidade({ value, field, id_sociedade });
             return data;
         } catch (error) {
             Swal.fire({
-                icon: "warning",
+                icon: "error",
                 text: "Erro ao realizar a verificação de duplicidade!",
             });
         }
@@ -220,6 +212,14 @@ export const actions = {
             Swal.fire({
                 icon: "warning",
                 text: "Nome e Ramal são obrigatórios.",
+            });
+            return false;
+        }
+
+        if (state.duplicity == true) {
+            Swal.fire({
+                icon: "warning",
+                text: "Ramal já cadastrado!",
             });
             return false;
         }
@@ -276,7 +276,6 @@ export const actions = {
                 id_ramal: state.dbRamal.id_ramal,
             };
 
-
             await serviceGerirRamais.toInsert(newFields);
             const loja = state.sociedade.find(s => s.id_sociedade === state.dbRamal.id_sociedade)?.loja || '';
             const setor = state.setores.find(s => s.id_setor === state.dbRamal.id_setor)?.nome || '';
@@ -326,7 +325,7 @@ export const actions = {
         try {
             state.loading = true;
 
-            const dadosRamais = state.gridPrincipal.data();
+            const dadosRamais = state.lista;
             const dadosTratados = Array.isArray(dadosRamais) ? dadosRamais : [dadosRamais];
 
             if (!dadosTratados.length) {
@@ -346,7 +345,7 @@ export const actions = {
                 loja.setores.push({
                     nome: item.nome,
                     ramal: item.ramal,
-                    setor: item.setor,
+                    nome_setor: item.id_setor,
                 });
                 return item2;
             }, []);

@@ -127,7 +127,6 @@ onMounted(async () => {
         <v-btn
           color="primary"
           @click="actions.onClickImprimir"
-          :disabled="!state.dbRamal.nome || !state.dbRamal.ramal"
           icon="mdi-printer"
           size="36px"
           title="Imprimir"

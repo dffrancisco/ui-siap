@@ -6,6 +6,7 @@ export interface iRamal {
     loja: string;
     ramal: string;
     nome: string;
+
 }
 
 export interface iParamToInsertRamal {
@@ -48,10 +49,10 @@ export interface iSociedade {
     loja: string;
 }
 
-
 export interface iFieldDuplicity {
     value: string;
     field: string;
+    id_sociedade: number;
 }
 
 export interface iToDeleteResponse {

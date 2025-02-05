@@ -1,6 +1,5 @@
 import axios from "axios";
 import {
-    iParamToGetRamal,
     iParamToInsertRamal,
     iParamToUpdateRamal,
     iRamal,
@@ -22,11 +21,12 @@ const getRamais = async (param: string): Promise<iRamal[]> => {
     return data;
 };
 
-const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponseRamal> => {
+const getDuplicidade = async ({ value, field, id_sociedade }: iFieldDuplicity): Promise<iGetDuplicityResponseRamal> => {
     const { data } = await axios.post(caminho, {
         call: "getDuplicidade",
         value,
         field,
+        id_sociedade
     });
     return data;
 };
