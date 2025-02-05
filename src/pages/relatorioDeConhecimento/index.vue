@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { state, actions } from "./relatorioDeConhecimento";
-import { formatValor } from "@/ts/utils";
 
 onMounted(() => {
   actions.init();
@@ -24,7 +23,7 @@ onMounted(() => {
             :items="state.transportadora"
             item-value="value"
             item-title="label"
-            clearable
+            :clearable="false"
             @keydown.enter.prevent="actions.buscarDadosComValidacao"
             style="width: 100%"
           ></v-select>
@@ -59,9 +58,9 @@ onMounted(() => {
         <v-col cols="2">
           <v-select
             label="Ordenar"
-            id="slOrdenacao"
-            v-model="state.ordenacao"
-            :items="state.ordenacaoOptions"
+            id="conteudo"
+            v-model="state.selectedConteudo"
+            :items="state.ordem"
             item-value="value"
             item-title="label"
             dense
@@ -96,16 +95,7 @@ onMounted(() => {
           style="border-radius: 5px"
           fixed-header
           :row-props="actions.getClassCorLinha"
-          @update:page="actions.updatePage"
         >
-          <template v-slot:item.PAGAMENTO="{ item }">
-            <span v-if="item.DATA_CONHECIMENTO === ''">
-              <strong>{{ formatValor(item.PAGAMENTO) }}</strong>
-            </span>
-            <span v-else>
-              {{ formatValor(item.PAGAMENTO) }}
-            </span>
-          </template>
         </v-data-table-virtual>
       </div>
 
@@ -140,15 +130,6 @@ onMounted(() => {
 </template>
 
 <style>
-#tabela .v-data-table-footer {
-  max-height: 2px;
-  padding-top: 20px;
-}
-
-#tabela .v-data-table-footer__pagination {
-  padding-right: 50px;
-}
-
 .cor-zebrada-1 {
   background-color: #f0f0f0;
 }

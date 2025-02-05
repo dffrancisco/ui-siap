@@ -1,4 +1,4 @@
-import { reactive, computed } from 'vue';
+import { reactive } from 'vue';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceRelatorioConhecimento from './services/relatorioDeConhecimento.service';
@@ -14,14 +14,9 @@ export const state = reactive({
     totalItems: 0,
     page: 1,
     transportadoras: [] as any[],
-    ordenacao: 'dataConhecimento',
-    ordenacaoOptions:
-        <any>[
-            { value: 'dataConhecimento', label: 'Data' },
-            { value: 'nomeFantasia', label: 'Nome' },
-            { value: 'numConhecimento', label: 'Nº Conhecimento' },
-            { value: 'numNota', label: 'Nº Nota Fiscal' },
-        ],
+
+    selectedConteudo: <string[]>[],
+    ordem: ['Data', 'nome', 'Nº Conhecimento', 'Nº Nota'],
 
     itemsPerPage: 10,
     headers: <any>[
@@ -35,9 +30,6 @@ export const state = reactive({
     ],
 });
 
-export const totalPagamento = computed(() => {
-    return state.dadosRelatorio.reduce((acc, item) => acc + (item.PAGAMENTO || 0), 0);
-});
 
 export const actions = {
     async init() {
@@ -65,10 +57,19 @@ export const actions = {
         if (moment(state.dataInicio).isAfter(moment(state.dataFim))) {
             Swal.fire({
                 icon: 'warning',
-                text: 'Adata inicial não pode ser menor que a data final.',
+                text: 'A data inicial não pode ser maior que a data final.',
             });
             return false;
         }
+
+        if (moment(state.dataInicio).isAfter(moment()) || moment(state.dataFim).isAfter(moment())) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'A data não pode ser maior que a data atual.',
+            });
+            return false;
+        }
+
         return true;
     },
 
@@ -90,7 +91,7 @@ export const actions = {
             }));
             state.transportadoras = [];
         } catch (error) {
-            console.error("Erro ao buscar transportadoras:", error);
+
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao buscar transportadoras.',
@@ -107,7 +108,7 @@ export const actions = {
                 idTransportadora: Array.isArray(state.transportadora) && state.transportadora.length > 0 ? state.transportadora[0].value : 0,
                 dataInicio: state.dataInicio,
                 dataFim: state.dataFim,
-                ordem: state.ordenacao
+                ordem: state.selectedConteudo
             };
 
             const response = await serviceRelatorioConhecimento.getRelatorioConhecimento(params);
@@ -130,7 +131,6 @@ export const actions = {
             state.dadosRelatorio = [...dados, linhaTotal];
             state.totalItems = state.dadosRelatorio.length;
         } catch (error) {
-            console.error("Erro ao obter os dados do relatório:", error);
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao buscar dados para o relatório.',
@@ -175,7 +175,7 @@ export const actions = {
 
             await utils.printComCabecalho(columns, relatorioAjustado, titulo);
         } catch (error) {
-            console.error("Erro ao imprimir o relatório:", error);
+
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao imprimir relatorio.',
@@ -189,12 +189,8 @@ export const actions = {
         return data.map(item => ({
             ...item,
             DATA_CONHECIMENTO: item.DATA_CONHECIMENTO ? moment(item.DATA_CONHECIMENTO).format('DD/MM/YYYY') : '----',
+            PAGAMENTO: utils.formatValor(item.PAGAMENTO),
         }));
-    },
-
-    updatePage(newPage: number) {
-        state.page = newPage;
-        actions.getDadosParaRelatorio();
     },
 
     getClassCorLinha(dados: any) {
