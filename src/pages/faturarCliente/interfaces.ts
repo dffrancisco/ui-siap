@@ -13,8 +13,9 @@ export interface iClienteFaturado {
 export interface iGetClientesFaturadosResponse extends iClienteFaturado { }
 
 export interface iGetClientesFaturadosParam {
-    search: string,
-    dataLimite: string
+    search?: string,
+    dataLimite?: string,
+    contorno?: boolean
 }
 
 export interface iOrcamentosClienteFaturado {
@@ -51,7 +52,8 @@ export interface iGetCreditosClienteResponse extends iCreditoCliente { }
 
 export interface iGetOrcamentosClienteFaturadoParam {
     dataLimite: string,
-    id_cliente: number
+    id_cliente: number,
+    cnpj: string
 }
 
 export interface iGetCreditosClienteParam {

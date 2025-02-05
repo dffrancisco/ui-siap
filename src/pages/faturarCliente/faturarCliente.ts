@@ -149,7 +149,8 @@ export const actions = ({
 
             let param: iGetOrcamentosClienteFaturadoParam = {
                 dataLimite: state.dataLimite,
-                id_cliente: state.dbClienteFaturado.ID_CLIENTE
+                id_cliente: state.dbClienteFaturado.ID_CLIENTE,
+                cnpj: state.dbClienteFaturado.CGC_CLIENTE
             }
 
             const data = await serviceFaturarCliente.getOrcamentosClienteFaturado(param)

@@ -13,7 +13,7 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      width="800"
+      max-width="800"
       height="550"
       class="ma-auto pa-4 d-flex flex-column"
     >
