@@ -219,7 +219,12 @@ export const actions = {
         if (utils.validaOBR())
             return
 
-        const isNew = !state.gridPrincipal.dataSource();
+
+        if (await state.gridPrincipal.getDuplicityAll()) {
+            return false;
+        }
+
+        const isNew = !state.gridPrincipal.dataSource() == false;
         if (isNew) {
             await actions.insertFornecedor();
         } else {
@@ -233,6 +238,9 @@ export const actions = {
             });
             return false
         }
+
+
+
         state.pnSearch = false;
         await nextTick();
         state.gridPrincipal.enable();
