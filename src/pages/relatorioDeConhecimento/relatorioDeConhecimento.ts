@@ -15,9 +15,8 @@ export const state = reactive({
     page: 1,
     transportadoras: [] as any[],
 
-
     selectedConteudo: <string[]>[],
-    ordem: ['Data', 'nome', 'Nº Conhecimento', 'Nº Nota'],
+    ordem: ['DATA', 'NOME', 'Nº CONHECIMENTO', 'Nº NOTA'],
 
 
     itemsPerPage: 10,
@@ -27,8 +26,9 @@ export const state = reactive({
         { key: 'NUM_CONHECIMENTO', title: 'Nº Conhecimento', sortable: true, align: 'center' },
         { key: 'DATA_CONHECIMENTO', title: 'Data Conhecimento', sortable: true, align: 'center', value: (item: iRelatorioConhecimento) => dataBrasil(item.DATA_CONHECIMENTO) },
         { key: 'TOTAL_FATURA', title: 'Total Fatura', sortable: true, align: 'right' },
+        { key: 'PAGAMENTO', title: 'Pagar', sortable: true, align: 'center', value: (item: iRelatorioConhecimento) => utils.formatValor(item.PAGAMENTO) },
         { key: 'PERCENTUAL', title: '%', sortable: true, align: 'right' },
-        { key: 'PAGAMENTO', title: 'Pagar', sortable: true, align: 'right', value: (item: iRelatorioConhecimento) => utils.formatValor(item.PAGAMENTO) },
+
     ],
 });
 
@@ -40,7 +40,7 @@ export const actions = {
     },
 
     validarInputs(): boolean {
-        if (!state.transportadora) {
+        if (!state.transportadoras || state.transportadoras.length === 0) {
             Swal.fire({
                 icon: 'warning',
                 text: 'Selecione uma transportadora para realizar o filtro',
@@ -122,6 +122,7 @@ export const actions = {
                 ordem: state.selectedConteudo
             };
 
+            // @ts-ignore
             const response = await serviceRelatorioConhecimento.getRelatorioConhecimento(params);
             const dados = response.dadosRelatorio;
 
@@ -132,9 +133,9 @@ export const actions = {
                 NUM_NOTA: '',
                 NUM_CONHECIMENTO: '',
                 DATA_CONHECIMENTO: '',
-                TOTAL_FATURA: '',
-                PERCENTUAL: 'Totalizador:',
+                PERCENTUAL: '',
                 PAGAMENTO: totalPagamento,
+                TOTAL_FATURA: 'Totalizador:',
             };
 
             // @ts-ignore

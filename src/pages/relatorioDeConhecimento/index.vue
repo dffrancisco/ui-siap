@@ -14,7 +14,7 @@ onMounted(() => {
       :max-width="900"
       :max-height="600"
     >
-      <v-row>
+      <v-row dense>
         <v-col cols="3">
           <v-select
             label="Transportadora"
@@ -37,6 +37,7 @@ onMounted(() => {
             v-model="state.dataInicio"
             type="date"
             :clearable="false"
+            style="width: 92%"
             dense
             @keydown.enter.prevent="actions.buscarDadosComValidacao"
           ></v-text-field>
@@ -51,6 +52,7 @@ onMounted(() => {
             type="date"
             :clearable="false"
             dense
+            style="width: 92%; margin-left: -15px"
             @keydown.enter.prevent="actions.buscarDadosComValidacao"
           ></v-text-field>
         </v-col>
@@ -66,18 +68,32 @@ onMounted(() => {
             dense
             :clearable="false"
             @keydown.enter.prevent="actions.buscarDadosComValidacao"
-            style="width: 100%"
+            style="width: 110%; margin-left: -30px"
           ></v-select>
         </v-col>
 
-        <v-col>
-          <div class="btnPesquisar">
+        <v-col cols="1">
+          <div
+            class="btnPesquisar"
+            style="justify-content: flex-start; margin-left: -15px"
+          >
             <v-btn
               color="primary"
               icon="mdi-magnify"
-              size="36px"
+              size="35px"
               @click="actions.buscarDadosComValidacao"
+              style="margin-right: 5px"
             >
+            </v-btn>
+            <v-btn
+              color="primary"
+              @click="actions.onClickImprimir"
+              :disabled="state.dadosRelatorio.length === 0"
+              icon="mdi-printer"
+              size="35px"
+              title="Imprimir"
+            >
+              <v-icon left>mdi-printer</v-icon>
             </v-btn>
           </div>
         </v-col>
@@ -86,12 +102,12 @@ onMounted(() => {
       <div class="mt-4">
         <v-data-table-virtual
           id="tabela"
-          class="tableRelatorio pt-5"
+          class="tableRelatorio pt-2"
           v-model:items-per-page="state.itemsPerPage"
           :items="state.dadosRelatorio"
           :headers="state.headers"
           :items-length="state.totalItems"
-          height="350px"
+          height="400px"
           style="border-radius: 5px"
           fixed-header
           :row-props="actions.getClassCorLinha"
@@ -99,18 +115,7 @@ onMounted(() => {
         </v-data-table-virtual>
       </div>
 
-      <div class="pt-5 btnPrint">
-        <v-btn
-          color="primary"
-          @click="actions.onClickImprimir"
-          :disabled="state.dadosRelatorio.length === 0"
-          icon="mdi-printer"
-          size="36px"
-          title="Imprimir"
-        >
-          <v-icon left>mdi-printer</v-icon>
-        </v-btn>
-      </div>
+      <div class="pt-5 btnPrint"> </div>
     </v-card>
 
     <div id="pnCodigoTela">RELATORIO_CONHECIMENTO</div>
@@ -146,5 +151,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   height: 100%;
+}
+
+.tableRelatorio {
+  overflow-x: hidden;
+  /* table-layout: fixed; */
 }
 </style>
