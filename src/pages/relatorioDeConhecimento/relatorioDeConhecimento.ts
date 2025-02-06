@@ -15,8 +15,10 @@ export const state = reactive({
     page: 1,
     transportadoras: [] as any[],
 
+
     selectedConteudo: <string[]>[],
     ordem: ['Data', 'nome', 'Nº Conhecimento', 'Nº Nota'],
+
 
     itemsPerPage: 10,
     headers: <any>[
@@ -70,6 +72,14 @@ export const actions = {
             return false;
         }
 
+        if (moment(state.dataInicio).year() < 2000 || moment(state.dataFim).year() < 2000) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Insira uma data valida.',
+            });
+            return false;
+        }
+
         return true;
     },
 
@@ -81,9 +91,10 @@ export const actions = {
     },
 
     async getTransportadoras() {
-        try {
-            state.loading = true;
 
+        try {
+
+            state.loading = true;
             const data = await serviceRelatorioConhecimento.getTransportadoras();
             state.transportadora = data.map((transportadora: iTransportadora) => ({
                 value: transportadora.ID_TRANSPORTADORA,
@@ -105,7 +116,7 @@ export const actions = {
         try {
             state.loading = true;
             const params = {
-                idTransportadora: Array.isArray(state.transportadora) && state.transportadora.length > 0 ? state.transportadora[0].value : 0,
+                idTransportadora: state.transportadoras,
                 dataInicio: state.dataInicio,
                 dataFim: state.dataFim,
                 ordem: state.selectedConteudo
@@ -125,7 +136,6 @@ export const actions = {
                 PERCENTUAL: 'Totalizador:',
                 PAGAMENTO: totalPagamento,
             };
-
 
             // @ts-ignore
             state.dadosRelatorio = [...dados, linhaTotal];
