@@ -364,7 +364,7 @@ export const actions = {
 
                 return `
                     <div class="card">
-                        <div class="card-header" style="background-color: ${corHeader}; color: #000; font-size: 12px;">
+                        <div class="card-header" style="background-color: ${corHeader}; color: #000; font-size: 11px;">
                             ${loja.loja}
                         </div>
                         <div class="card-body">
