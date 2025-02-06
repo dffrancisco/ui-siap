@@ -344,7 +344,7 @@ export const actions = {
             };
 
             const titulo = `
-                <div style="text-align: center; margin-bottom: 10px;">
+                <div style="text-align: center; margin-bottom: 5px;">
                     <strong style="font-size: 20px;">Relatório de Ramais</strong>
                 </div>
             `;
@@ -368,11 +368,11 @@ export const actions = {
                             ${loja.loja}
                         </div>
                         <div class="card-body">
-                            <table style="width: 100%; font-size: 12px;">
+                            <table style="width: 100%; font-size: 10px;">
                                 <thead>
                                     <tr style="background-color: #f2f2f2;">
-                                        <th style="padding: 4px; border: 1px solid #ccc;">Nome</th>
-                                        <th style="padding: 4px; border: 1px solid #ccc;">Ramal</th>
+                                        <th style="padding: 3px; border: 1px solid #ccc;">Nome</th>
+                                        <th style="padding: 3px; border: 1px solid #ccc;">Ramal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -387,7 +387,6 @@ export const actions = {
             const layout = `
                 <html>
                     <head>
-       
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <style>
                             @media print {
@@ -398,30 +397,25 @@ export const actions = {
                             }
                             body {
                                 margin: 0;
-                                padding: 2px;
+                                padding: 1px;
                                 font-family: Arial;
-                                font-size: 10px;
-                                position: relative; 
+                                font-size: 8px;
                             }
                             .container {
-                                display: grid;
-                                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                                transform: scale(0.9);
                                 display: flex;
-                                flex-wrap: wrap; 
-                          
-                                justify-content: flex-start;
-                                page-break-inside: auto;
-                               
+                                flex-wrap: wrap;
+                                gap: 2px;
+                                padding: 10px;
+                            
                             }
                             .card {
-                                flex: 0 0 calc(25% - 10px); 
+                                flex: 0 0 calc(25% - 20px); 
                                 padding: 10px;
                                 box-sizing: border-box;
                                 display: flex;
-                                page-break-inside: auto;
-                                flex-direction: column;
-                              
+                                page-break-inside: avoid;
+                                flex-direction: column; 
+                                break-inside: avoid;
                             }
                             .card-header {
                                 display: flex;
@@ -429,34 +423,34 @@ export const actions = {
                                 text-align: center;
                                 font-size: 13px;
                                 padding: 6px;
-                                page-break-inside: auto;
+                                page-break-inside: avoid;
                                 border: 1px solid;
-                             
+                                break-inside: avoid;
                             }
                             .card-body {
                                 display: flex;
                                 flex-direction: column;
                                 border: 1px solid;
-                                page-break-inside: auto;
-                          
+                                page-break-inside: avoid;
                             }
                             table {
-                                width: 70%;
+                                width: 100%;
                                 border-collapse: collapse;
-                                page-break-inside: auto;
+                                page-break-inside: avoid;
+                                
                             }
                             th, td {
                                 padding: 4px;
                                 border: 1px solid;
                                 text-align: left;
-                                page-break-inside: auto;
+                                page-break-inside: avoid;
+                             
                             }
                             .logo-fixed {
                                 position: fixed;
                                 bottom: 10px;
                                 left: 10px;
-                                height: 90px;
-                                           
+                                height: 60px;
                             }
                         </style>
                     </head>
