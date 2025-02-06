@@ -259,7 +259,7 @@ export const actions = {
 
             Swal.fire({
                 icon: "success",
-                text: "Fornecedor inativado com sucesso.",
+                text: "Fornecedor alterado com sucesso.",
 
             });
             state.gridPrincipal.deleteLine();
