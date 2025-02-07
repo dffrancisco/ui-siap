@@ -4,7 +4,7 @@ import moment from 'moment';
 import serviceRelatorioConhecimento from './services/relatorioDeConhecimento.service';
 import { iTransportadora, iRelatorioConhecimento, iParamsRelatorioConhecimento } from './interfaces';
 import utils, { iColumnPrint, dataBrasil } from '@/ts/utils';
-import { iParamsRelatorio } from '../avaliacaoEstoque/interfaces';
+
 
 export const state = reactive({
     loading: false,
@@ -15,7 +15,6 @@ export const state = reactive({
     selectTransportadora: <number[]>[],
     selectedOrdem: <string[]>[],
     ordem: ['DATA', 'NOME', 'Nº CONHECIMENTO', 'Nº NOTA'],
-    itemsPerPage: 10,
     inputDataFinal: <HTMLInputElement>{},
     inputDataInicio: <HTMLInputElement>{},
     headers: <any>[
@@ -44,35 +43,16 @@ export const actions = {
             });
             return false;
         }
+        if (!state.dataInicio || !state.dataFim ||
+            moment(state.dataInicio).isAfter(moment(state.dataFim)) ||
+            moment(state.dataInicio).isAfter(moment()) ||
+            moment(state.dataFim).isAfter(moment()) ||
+            moment(state.dataInicio).year() < 2000 ||
+            moment(state.dataFim).year() < 2000) {
 
-        if (!state.dataInicio || !state.dataFim) {
             Swal.fire({
                 icon: 'warning',
-                text: 'Selecione um intervalo de datas adequado.',
-            });
-            return false;
-        }
-
-        if (moment(state.dataInicio).isAfter(moment(state.dataFim))) {
-            Swal.fire({
-                icon: 'warning',
-                text: 'A data inicial não pode ser maior que a data final.',
-            });
-            return false;
-        }
-
-        if (moment(state.dataInicio).isAfter(moment()) || moment(state.dataFim).isAfter(moment())) {
-            Swal.fire({
-                icon: 'warning',
-                text: 'A data não pode ser maior que a data atual.',
-            });
-            return false;
-        }
-
-        if (moment(state.dataInicio).year() < 2000 || moment(state.dataFim).year() < 2000) {
-            Swal.fire({
-                icon: 'warning',
-                text: 'Insira uma data valida.',
+                text: 'Insira uma data válida.',
             });
             return false;
         }
@@ -149,7 +129,7 @@ export const actions = {
         if (!state.dadosRelatorio || state.dadosRelatorio.length === 0) {
             Swal.fire({
                 icon: 'warning',
-                text: 'Não a dados para atualizar a impressão',
+                text: 'Não há dados para atualizar a impressão',
             });
             return;
         }
@@ -169,7 +149,7 @@ export const actions = {
 
             const titulo = `
                 <div style="text-align: center;">
-                    <strong style="font-size: 16px;"> Relatorio de Conhecimento. </strong>
+                    <strong style="font-size: 16px;"> Relatorio de Conhecimento </strong>
             `;
 
             await utils.printComCabecalho(columns, relatorioAjustado, titulo);
