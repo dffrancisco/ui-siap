@@ -38,7 +38,6 @@ onMounted(() => {
             type="date"
             :clearable="false"
             style="width: 92%"
-            dense
             @keydown.enter.prevent="actions.buscarDadosComValidacao"
           ></v-text-field>
         </v-col>
@@ -51,7 +50,6 @@ onMounted(() => {
             v-model="state.dataFim"
             type="date"
             :clearable="false"
-            dense
             style="width: 92%; margin-left: -15px"
             @keydown.enter.prevent="actions.buscarDadosComValidacao"
           ></v-text-field>
@@ -65,7 +63,6 @@ onMounted(() => {
             :items="state.ordem"
             item-value="value"
             item-title="label"
-            dense
             :clearable="false"
             @keydown.enter.prevent="actions.buscarDadosComValidacao"
             style="width: 110%; margin-left: -30px"
@@ -151,10 +148,5 @@ onMounted(() => {
   display: flex;
   align-items: center;
   height: 100%;
-}
-
-.tableRelatorio {
-  overflow-x: hidden;
-  /* table-layout: fixed; */
 }
 </style>

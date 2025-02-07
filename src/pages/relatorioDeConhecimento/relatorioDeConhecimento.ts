@@ -14,11 +14,8 @@ export const state = reactive({
     totalItems: 0,
     page: 1,
     transportadoras: [] as any[],
-
     selectedConteudo: <string[]>[],
     ordem: ['DATA', 'NOME', 'Nº CONHECIMENTO', 'Nº NOTA'],
-
-
     itemsPerPage: 10,
     headers: <any>[
         { key: 'NOME_FANTAZIA', title: 'Nome', sortable: true, align: 'left' },
@@ -28,10 +25,8 @@ export const state = reactive({
         { key: 'TOTAL_FATURA', title: 'Total Fatura', sortable: true, align: 'right' },
         { key: 'PAGAMENTO', title: 'Pagar', sortable: true, align: 'center', value: (item: iRelatorioConhecimento) => utils.formatValor(item.PAGAMENTO) },
         { key: 'PERCENTUAL', title: '%', sortable: true, align: 'right' },
-
     ],
 });
-
 
 export const actions = {
     async init() {
@@ -79,7 +74,6 @@ export const actions = {
             });
             return false;
         }
-
         return true;
     },
 
@@ -93,7 +87,6 @@ export const actions = {
     async getTransportadoras() {
 
         try {
-
             state.loading = true;
             const data = await serviceRelatorioConhecimento.getTransportadoras();
             state.transportadora = data.map((transportadora: iTransportadora) => ({
@@ -175,8 +168,9 @@ export const actions = {
                 { key: 'NUM_CONHECIMENTO', label: 'Nº Conhecimento', align: 'center' },
                 { key: 'DATA_CONHECIMENTO', label: 'Data Conhecimento', align: 'center' },
                 { key: 'TOTAL_FATURA', label: 'Total Fatura', align: 'right' },
-                { key: 'PERCENTUAL', label: '%', align: 'right' },
                 { key: 'PAGAMENTO', label: 'Pagar', align: 'right' },
+                { key: 'PERCENTUAL', label: '%', align: 'right' },
+
             ];
 
             const titulo = `
@@ -192,7 +186,7 @@ export const actions = {
                 text: 'Erro ao imprimir relatorio.',
             });
         } finally {
-            state.loading = false;
+            state.loading = false
         }
     },
 
