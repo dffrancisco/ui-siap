@@ -16,7 +16,7 @@ export interface iRelatorioConhecimento {
     NUM_NOTA: string;
     NUM_CONHECIMENTO: string;
     DATA_CONHECIMENTO: string;
-    TOTAL_FATURA: number;
+    TOTAL_FATURA: number | string;
     PERCENTUAL: string;
     PAGAMENTO: number;
 }

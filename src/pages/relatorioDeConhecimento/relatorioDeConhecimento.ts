@@ -2,27 +2,28 @@ import { reactive } from 'vue';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceRelatorioConhecimento from './services/relatorioDeConhecimento.service';
-import { iTransportadora, iRelatorioConhecimento } from './interfaces';
+import { iTransportadora, iRelatorioConhecimento, iParamsRelatorioConhecimento } from './interfaces';
 import utils, { iColumnPrint, dataBrasil } from '@/ts/utils';
+import { iParamsRelatorio } from '../avaliacaoEstoque/interfaces';
 
 export const state = reactive({
     loading: false,
-    transportadora: [] as any[],
+    transportadoras: <iTransportadora[]>[],
     dataInicio: moment().startOf('month').format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
     dadosRelatorio: [] as iRelatorioConhecimento[],
-    totalItems: 0,
-    page: 1,
-    transportadoras: [] as any[],
-    selectedConteudo: <string[]>[],
+    selectTransportadora: <number[]>[],
+    selectedOrdem: <string[]>[],
     ordem: ['DATA', 'NOME', 'Nº CONHECIMENTO', 'Nº NOTA'],
     itemsPerPage: 10,
+    inputDataFinal: <HTMLInputElement>{},
+    inputDataInicio: <HTMLInputElement>{},
     headers: <any>[
         { key: 'NOME_FANTAZIA', title: 'Nome', sortable: true, align: 'left' },
         { key: 'NUM_NOTA', title: 'Nº Nota', sortable: true, align: 'center' },
         { key: 'NUM_CONHECIMENTO', title: 'Nº Conhecimento', sortable: true, align: 'center' },
         { key: 'DATA_CONHECIMENTO', title: 'Data Conhecimento', sortable: true, align: 'center', value: (item: iRelatorioConhecimento) => dataBrasil(item.DATA_CONHECIMENTO) },
-        { key: 'TOTAL_FATURA', title: 'Total Fatura', sortable: true, align: 'right' },
+        { key: 'TOTAL_FATURA', title: 'Total Fatura', sortable: true, align: 'right', value: (item: iRelatorioConhecimento) => typeof item.TOTAL_FATURA === 'number' ? utils.formatValor(item.TOTAL_FATURA) : item.TOTAL_FATURA },
         { key: 'PAGAMENTO', title: 'Pagar', sortable: true, align: 'center', value: (item: iRelatorioConhecimento) => utils.formatValor(item.PAGAMENTO) },
         { key: 'PERCENTUAL', title: '%', sortable: true, align: 'right' },
     ],
@@ -30,12 +31,13 @@ export const state = reactive({
 
 export const actions = {
     async init() {
-
+        state.inputDataInicio = <any>document.getElementById("dataInicio");
+        state.inputDataFinal = <any>document.getElementById("dataFim");
         await actions.getTransportadoras();
     },
 
     validarInputs(): boolean {
-        if (!state.transportadoras || state.transportadoras.length === 0) {
+        if (!state.selectTransportadora) {
             Swal.fire({
                 icon: 'warning',
                 text: 'Selecione uma transportadora para realizar o filtro',
@@ -89,11 +91,8 @@ export const actions = {
         try {
             state.loading = true;
             const data = await serviceRelatorioConhecimento.getTransportadoras();
-            state.transportadora = data.map((transportadora: iTransportadora) => ({
-                value: transportadora.ID_TRANSPORTADORA,
-                label: transportadora.RAZAO_SOCIAL,
-            }));
-            state.transportadoras = [];
+            state.transportadoras = data;
+
         } catch (error) {
 
             Swal.fire({
@@ -109,14 +108,13 @@ export const actions = {
         try {
             state.loading = true;
             const params = {
-                idTransportadora: state.transportadoras,
+                idTransportadora: state.selectTransportadora,
                 dataInicio: state.dataInicio,
                 dataFim: state.dataFim,
-                ordem: state.selectedConteudo
+                ordem: state.selectedOrdem
             };
 
-            // @ts-ignore
-            const response = await serviceRelatorioConhecimento.getRelatorioConhecimento(params);
+            const response = await serviceRelatorioConhecimento.getRelatorioConhecimento(params as unknown as iParamsRelatorioConhecimento);
             const dados = response.dadosRelatorio;
 
             const totalPagamento = dados.reduce((acc, item) => acc + Number(item.PAGAMENTO || 0), 0);
@@ -131,16 +129,13 @@ export const actions = {
                 TOTAL_FATURA: 'Totalizador:',
             };
 
-            // @ts-ignore
             state.dadosRelatorio = [...dados, linhaTotal];
-            state.totalItems = state.dadosRelatorio.length;
         } catch (error) {
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao buscar dados para o relatório.',
             });
             state.dadosRelatorio = [];
-            state.totalItems = 0;
         } finally {
             state.loading = false;
         }
@@ -170,7 +165,6 @@ export const actions = {
                 { key: 'TOTAL_FATURA', label: 'Total Fatura', align: 'right' },
                 { key: 'PAGAMENTO', label: 'Pagar', align: 'right' },
                 { key: 'PERCENTUAL', label: '%', align: 'right' },
-
             ];
 
             const titulo = `
@@ -194,6 +188,7 @@ export const actions = {
         return data.map(item => ({
             ...item,
             DATA_CONHECIMENTO: item.DATA_CONHECIMENTO ? moment(item.DATA_CONHECIMENTO).format('DD/MM/YYYY') : '----',
+            TOTAL_FATURA: typeof item.TOTAL_FATURA === 'number' ? utils.formatValor(item.TOTAL_FATURA) : item.TOTAL_FATURA,
             PAGAMENTO: utils.formatValor(item.PAGAMENTO),
         }));
     },

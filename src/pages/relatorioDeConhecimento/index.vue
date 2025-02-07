@@ -19,12 +19,12 @@ onMounted(() => {
           <v-select
             label="Transportadora"
             id="transportadoraSelect"
-            v-model="state.transportadoras"
-            :items="state.transportadora"
-            item-value="value"
-            item-title="label"
+            v-model="state.selectTransportadora"
+            :items="state.transportadoras"
+            item-value="ID_TRANSPORTADORA"
+            item-title="RAZAO_SOCIAL"
             :clearable="false"
-            @keydown.enter.prevent="actions.buscarDadosComValidacao"
+            @keydown.enter="state.inputDataInicio.focus()"
             style="width: 100%"
           ></v-select>
         </v-col>
@@ -38,7 +38,7 @@ onMounted(() => {
             type="date"
             :clearable="false"
             style="width: 92%"
-            @keydown.enter.prevent="actions.buscarDadosComValidacao"
+            @keydown.enter="state.inputDataFinal.focus()"
           ></v-text-field>
         </v-col>
 
@@ -59,7 +59,7 @@ onMounted(() => {
           <v-select
             label="Ordenar"
             id="conteudo"
-            v-model="state.selectedConteudo"
+            v-model="state.selectedOrdem"
             :items="state.ordem"
             item-value="value"
             item-title="label"
@@ -100,10 +100,8 @@ onMounted(() => {
         <v-data-table-virtual
           id="tabela"
           class="tableRelatorio pt-2"
-          v-model:items-per-page="state.itemsPerPage"
           :items="state.dadosRelatorio"
           :headers="state.headers"
-          :items-length="state.totalItems"
           height="400px"
           style="border-radius: 5px"
           fixed-header
