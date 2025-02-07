@@ -170,6 +170,7 @@ export const actions = {
             DATA_CONHECIMENTO: item.DATA_CONHECIMENTO ? moment(item.DATA_CONHECIMENTO).format('DD/MM/YYYY') : '----',
             TOTAL_FATURA: typeof item.TOTAL_FATURA === 'number' ? utils.formatValor(item.TOTAL_FATURA) : item.TOTAL_FATURA,
             PAGAMENTO: utils.formatValor(item.PAGAMENTO),
+            NUM_CONHECIMENTO: item.NUM_CONHECIMENTO || '----',
         }));
     },
 
