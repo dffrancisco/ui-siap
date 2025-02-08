@@ -3,7 +3,7 @@ import { iDadosRelatorioAvarias, iMarcas } from "../interfaces";
 
 const caminho = 'siap/relatorioAvarias'
 type iGetMarcas = () => Promise<iMarcas[]>
-type iGetDadosRelatorioAvarias = (param) => Promise<iDadosRelatorioAvarias>
+type iGetDadosRelatorioAvarias = (param) => Promise<iDadosRelatorioAvarias[]>
 
 const getMarcas: iGetMarcas = async () => {
     let { data } = await axios.post(caminho, {
