@@ -39,8 +39,8 @@ export const actions = {
             height: 200,
             count: true,
             columns: {
-                "Sociedade": { dataField: "ID_SOCIEDADE", width: '10%', center: true },
-                "CNPJ": { dataField: "CNPJ", width: '10%', center: true },
+                "Sociedade": { dataField: "ID_SOCIEDADE", center: true },
+                "CNPJ": { dataField: "CNPJ", center: true },
             },
             query: {
                 async execute(rs) {
@@ -120,8 +120,8 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao exibir os favorecidos",
-                text: "erro ao exibir registro de favorecidos",
+                title: "Erro ao exibir a sociedade",
+                text: "erro ao exibir registro a sociedade",
             });
         } finally {
             state.loading = false;

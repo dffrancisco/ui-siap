@@ -11,7 +11,6 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener("keydown", eventListener);
 });
-
 </script>
 
 <template>
@@ -20,10 +19,9 @@ onUnmounted(() => {
       width="700"
       class="pa-5 ma-auto"
     >
-    
       <div id="pnCampos">
         <v-row class="mt-n1">
-          <v-col cols="6">
+          <v-col cols="5">
             <span>Sociedade</span>
             <input
               v-model="state.dbSociedade.ID_SOCIEDADE"
@@ -35,7 +33,7 @@ onUnmounted(() => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="6">
+          <v-col cols="5">
             <span>CNPJ</span>
             <input
               v-model="state.dbSociedade.CNPJ"
@@ -48,9 +46,7 @@ onUnmounted(() => {
               autocomplete="off"
             />
           </v-col>
-        </v-row>
-        <v-row class="mt-n1">
-          <v-col cols="1">
+          <v-col cols="2">
             <span>ID Empresa</span>
             <input
               v-model="state.dbSociedade.ID_EMPRESA"
@@ -63,7 +59,9 @@ onUnmounted(() => {
               v-mask="0"
             />
           </v-col>
-          <v-col cols="3">
+        </v-row>
+        <v-row class="mt-n1">
+          <v-col cols="6">
             <span>Caminho Servidor</span>
             <input
               v-model="state.dbSociedade.CAMINHO_SERVIDOR"
@@ -75,8 +73,8 @@ onUnmounted(() => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="3">
-            <span>CPF</span>
+          <v-col cols="6">
+            <span>Endereço Host</span>
             <input
               v-model="state.dbSociedade.HOST"
               type="text"
@@ -118,8 +116,6 @@ onUnmounted(() => {
           <v-col cols="3">
             <span>Gera SPED</span>
             <v-select
-             
-              :items="['Sim', 'Não','--']"
               id="GERA_SPED"
               name="GERA_SPED"
               class="obr ss"
@@ -200,4 +196,3 @@ onUnmounted(() => {
   margin-top: 16px;
 }
 </style>
-<v-row class="mt-n1">
