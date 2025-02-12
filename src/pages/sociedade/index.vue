@@ -31,9 +31,22 @@ onUnmounted(() => {
               class="obr ss"
               maxlength="60"
               autocomplete="off"
+              :style="{ width: '105%' }"
             />
           </v-col>
-          <v-col cols="5">
+          <v-col
+            cols="1"
+            class="d-flex align-end"
+          >
+            <v-btn
+              :disabled="state.pnSearch"
+              size="30"
+              color="primary"
+              @click="actions.search()"
+              icon="mdi-magnify"
+            />
+          </v-col>
+          <v-col cols="">
             <span>CNPJ</span>
             <input
               v-model="state.dbSociedade.CNPJ"
@@ -41,9 +54,10 @@ onUnmounted(() => {
               id="CNPJ"
               name="CNPJ"
               class="obr ss"
-              maxlength="18"
+              maxlength="23"
               v-mask="'##.###.###/####-##'"
               autocomplete="off"
+              :style="{ width: '105%' }"
             />
           </v-col>
           <v-col cols="2">
@@ -54,7 +68,6 @@ onUnmounted(() => {
               id="ID_EMPRESA"
               name="ID_EMPRESA"
               class="obr ss"
-              maxlength="60"
               autocomplete="off"
               v-mask="0"
             />
@@ -69,7 +82,7 @@ onUnmounted(() => {
               id="CAMINHO_SERVIDOR"
               name="CAMINHO_SERVIDOR"
               class="ss"
-              maxlength="18"
+              maxlength="200"
               autocomplete="off"
             />
           </v-col>
@@ -81,7 +94,7 @@ onUnmounted(() => {
               id="HOST"
               name="HOST"
               class="ss"
-              maxlength="14"
+              maxlength="200"
               autocomplete="off"
             />
           </v-col>
@@ -94,8 +107,8 @@ onUnmounted(() => {
               type="text"
               id="BANCO"
               name="BANCO"
-              class="obr ss"
-              maxlength="10"
+              class="ss"
+              maxlength="200"
               autocomplete="off"
             />
           </v-col>
@@ -108,31 +121,43 @@ onUnmounted(() => {
               id="FANTASIA"
               name="FANTASIA"
               class="obr ss"
-              maxlength="10"
-              v-mask="'####-#'"
+              maxlength="15"
               autocomplete="off"
             />
           </v-col>
           <v-col cols="3">
             <span>Gera SPED</span>
-            <v-select
+            <select
+              v-model="state.dbSociedade.GERA_SPED"
               id="GERA_SPED"
               name="GERA_SPED"
               class="obr ss"
-              autocomplete="off"
-            />
+            >
+              <option
+                v-for="(value, key) in state.spedOptions"
+                :key="key"
+                :value="key"
+              >
+                {{ value }}
+              </option>
+            </select>
           </v-col>
           <v-col cols="3">
             <span>Regime</span>
-            <input
+            <select
               v-model="state.dbSociedade.REGIME"
-              type="text"
               id="REGIME"
               name="REGIME"
               class="obr ss"
-              maxlength="3"
-              autocomplete="off"
-            />
+            >
+              <option
+                v-for="(value, key) in state.regimeOptions"
+                :key="key"
+                :value="key"
+              >
+                {{ value }}
+              </option>
+            </select>
           </v-col>
         </v-row>
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import {
     iParamToInsert,
     iParamGetSociedade,
-    iSociedadeResponse,
+    iSociedade,
     iParamToUpdate,
     iFieldDuplicity,
     iGetDuplicityResponse,
@@ -13,7 +13,8 @@ import {
 
 const caminho = "siap/sociedade";
 
-const getSociedades = async ({ param, offset }: iParamGetSociedade): Promise<iSociedadeResponse> => {
+
+const getSociedades = async ({ param, offset }: iParamGetSociedade): Promise<iSociedade[]> => {
     const { data } = await axios.post(caminho, {
         call: "getSociedades",
         offset,

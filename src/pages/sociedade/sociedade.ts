@@ -1,20 +1,22 @@
-
 import { nextTick, reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
-import { iSociedade, iFieldDuplicity, iParamToUpdate } from "./interfaces";
+import { iSociedade, iFieldDuplicity, iParamToUpdate, iParamGetSociedade } from "./interfaces";
 import utils from "@/ts/utils";
 import serviceSociedade from "./services/sociedade.service";
 import { useEventListener } from "@vueuse/core";
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
+    gridSociedadeDetalhada: <ixGridCreate>{},
     pnSearch: false,
     lista: <iSociedade[]>[],
     edtSearch: "",
     dbSociedade: <iSociedade>{},
     loading: false,
+    regimeOptions: ["Simples N.", "Real", "Presumido"],
+    spedOptions: ["Sim", "Não"]
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -26,9 +28,10 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 });
 
 export const actions = {
+
     async init() {
         actions.grids();
-        state.gridPrincipal.queryOpen({ ID_SOCIEDADE: "" }, () => {
+        state.gridPrincipal.queryOpen({ FANTASIA: "" }, () => {
             state.gridPrincipal.focus();
         });
     },
@@ -39,7 +42,7 @@ export const actions = {
             height: 200,
             count: true,
             columns: {
-                "Sociedade": { dataField: "ID_SOCIEDADE", center: true },
+                "Sociedade": { dataField: "FANTASIA", center: true },
                 "CNPJ": { dataField: "CNPJ", center: true },
             },
             query: {
@@ -48,26 +51,25 @@ export const actions = {
                         offset: rs.offset,
                         param: rs.param,
                     });
+
                     state.gridPrincipal.querySourceAdd(data);
                 },
             },
-
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
                     state.dbSociedade = r;
                 },
+
                 duplicity: {
-                    dataField: ["ID_SOCIEDADE"],
+                    dataField: ["CNPJ"],
                     async execute(rs) {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),
                             field: rs.field,
                         });
                         if (dup && Object.keys(dup).length > 0) {
-                            state.gridPrincipal.showMessageDuplicity(
-                                rs.text + " já cadastrado!"
-                            );
+                            state.gridPrincipal.showMessageDuplicity(rs.text + " já cadastrado!");
                             return true;
                         }
                         return false;
@@ -112,7 +114,7 @@ export const actions = {
         });
     },
 
-    async getSociedade({ offset, param }: { offset: number, param: string }) {
+    async getSociedade({ offset, param }: iParamGetSociedade) {
         try {
             state.loading = true;
             const data = await serviceSociedade.getSociedades({ offset, param });
@@ -120,9 +122,9 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao exibir a sociedade",
-                text: "erro ao exibir registro a sociedade",
+                text: "Erro ao exibir registro de sociedade",
             });
+
         } finally {
             state.loading = false;
         }
@@ -131,7 +133,7 @@ export const actions = {
     async search() {
         const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
-            NM_FAVORECIDO: searchValue,
+            FANTASIA: searchValue,
         });
     },
 
@@ -145,7 +147,6 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao verificar duplicidade!",
                 text: "Erro ao executar verificação de duplicidade",
             });
         }
@@ -179,7 +180,6 @@ export const actions = {
             });
             return false;
         }
-
         if (await msgConfirm("Confirmação", "Confirma a exclusão?")) {
             await actions.toDelete();
             state.gridPrincipal.focus();
@@ -190,17 +190,14 @@ export const actions = {
         if (utils.validaOBR()) {
             return false;
         }
-
         if (await state.gridPrincipal.getDuplicityAll()) {
             return false;
         }
-
         if (state.gridPrincipal.dataSource() == false) {
             actions.toInsert();
         } else {
             actions.toUpdate();
         }
-
         state.pnSearch = false;
         await nextTick();
         state.gridPrincipal.enable();
@@ -217,20 +214,19 @@ export const actions = {
 
     async toDelete() {
         try {
-            let id_Favorecido = state.dbSociedade.ID_SOCIEDADE;
+            let id_sociedade = state.dbSociedade.ID_SOCIEDADE;
             state.loading = true;
-
-            await serviceSociedade.toDelete(id_Favorecido);
+            await serviceSociedade.toDelete(id_sociedade);
             state.gridPrincipal.deleteLine();
             await Swal.fire({
                 icon: "success",
-                text: "Favorecido excluído com sucesso!",
+                text: "Sociedade excluída com sucesso!",
             });
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao excluir o favorecido.",
-                text: "erro ao executar exclusão",
+                title: "Erro ao excluir a sociedade.",
+                text: "Erro ao executar exclusão",
             });
         } finally {
             state.loading = false;
@@ -240,7 +236,6 @@ export const actions = {
     async toInsert() {
         try {
             state.loading = true;
-
             let newFields = {
                 ID_CLIENTE: state.dbSociedade.ID_CLIENTE,
                 NOME: state.dbSociedade.NOME,
@@ -253,17 +248,16 @@ export const actions = {
                 REGIME: state.dbSociedade.REGIME,
                 FANTASIA: state.dbSociedade.FANTASIA,
             };
-
             await serviceSociedade.toInsert(newFields);
             state.gridPrincipal.insertLine({ ...newFields });
             await Swal.fire({
                 icon: "success",
-                text: "Favorecido adicionado com sucesso!",
+                text: "Sociedade adicionada com sucesso!",
             });
         } catch (error) {
             await Swal.fire({
                 icon: "error",
-                text: "Erro ao adicionar favorecido",
+                text: "Erro ao adicionar sociedade",
             });
         } finally {
             state.loading = false;
@@ -285,27 +279,21 @@ export const actions = {
                 REGIME: state.dbSociedade.REGIME,
                 FANTASIA: state.dbSociedade.FANTASIA,
             };
-
             state.loading = true;
-
             await serviceSociedade.toUpdate(param);
-
             state.gridPrincipal.dataSource(param);
-
             await Swal.fire({
                 icon: "success",
-                text: "Favorecido atualizado com sucesso!",
+                text: "Sociedade atualizada com sucesso!",
             });
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao atualizar favorecido!",
+                title: "Erro ao atualizar a sociedade!",
                 text: error.message,
             });
         } finally {
             state.loading = false;
         }
-    }
-};
-
-export default { state, actions, eventListener };
+    },
+}
