@@ -31,7 +31,7 @@ export const actions = {
 
     async init() {
         actions.grids();
-        state.gridPrincipal.queryOpen({ FANTASIA: "" }, () => {
+        state.gridPrincipal.queryOpen({ CNPJ: "" }, () => {
             state.gridPrincipal.focus();
         });
     },
@@ -55,6 +55,7 @@ export const actions = {
                     state.gridPrincipal.querySourceAdd(data);
                 },
             },
+
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
@@ -114,19 +115,17 @@ export const actions = {
         });
     },
 
-    async getSociedade({ offset, param }: iParamGetSociedade) {
+    async getSociedade({ param, offset }: iParamGetSociedade) {
         try {
             state.loading = true;
-            const data = await serviceSociedade.getSociedades({ offset, param });
+            const data = await serviceSociedade.getSociedades({ param, offset });
+            state.loading = false;
             return data;
         } catch (error) {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao exibir registro de sociedade",
             });
-
-        } finally {
-            state.loading = false;
         }
     },
 
@@ -163,7 +162,7 @@ export const actions = {
     btnEdit() {
         if (!state.gridPrincipal.dataSource()) {
             Swal.fire({
-                icon: "info",
+                icon: "warning",
                 text: "Operação cancelada, nenhum registro selecionado.",
             });
             return false;
@@ -172,10 +171,11 @@ export const actions = {
         state.gridPrincipal.focusField();
     },
 
+
     async btnDelete() {
         if (!state.gridPrincipal.dataSource()) {
             Swal.fire({
-                icon: "info",
+                icon: "warning",
                 text: "Operação cancelada, selecione um registro.",
             });
             return false;

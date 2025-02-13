@@ -13,8 +13,12 @@ import {
 
 const caminho = "siap/sociedade";
 
+type iGetSociedadeFunction = (param: iParamGetSociedade) => Promise<iSociedade[]>;
+type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
+type iToInsertFunction = (param: iParamToInsert) => Promise<iInsertResponse>;
+type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>;
 
-const getSociedades = async ({ param, offset }: iParamGetSociedade): Promise<iSociedade[]> => {
+const getSociedades: iGetSociedadeFunction = async ({ param, offset }) => {
     const { data } = await axios.post(caminho, {
         call: "getSociedades",
         offset,
@@ -23,7 +27,7 @@ const getSociedades = async ({ param, offset }: iParamGetSociedade): Promise<iSo
     return data;
 };
 
-const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
+const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {
     const { data } = await axios.post(caminho, {
         call: "getDuplicidade",
         value,
@@ -32,7 +36,7 @@ const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDu
     return data;
 };
 
-const toInsert = async (newFields: iParamToInsert): Promise<iInsertResponse> => {
+const toInsert: iToInsertFunction = async (newFields) => {
     const { data } = await axios.post(caminho, {
         call: "insert",
         param: newFields,
@@ -40,7 +44,7 @@ const toInsert = async (newFields: iParamToInsert): Promise<iInsertResponse> => 
     return data;
 };
 
-const toUpdate = async (param: iParamToUpdate) => {
+const toUpdate: iToUpdateFunction = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "update",
         param,
