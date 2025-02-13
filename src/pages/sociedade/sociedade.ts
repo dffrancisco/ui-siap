@@ -1,4 +1,4 @@
-import { nextTick, reactive } from "vue";
+import { nextTick, reactive, ref } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -6,6 +6,7 @@ import { iSociedade, iFieldDuplicity, iParamToUpdate, iParamGetSociedade } from 
 import utils from "@/ts/utils";
 import serviceSociedade from "./services/sociedade.service";
 import { useEventListener } from "@vueuse/core";
+const inputSearch = ref();
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
@@ -15,6 +16,8 @@ export const state = reactive({
     edtSearch: "",
     dbSociedade: <iSociedade>{},
     loading: false,
+    modalSociedadeOpened: false,
+    sociedadeSelecionada: <iSociedade>{},
     regimeOptions: ["Simples N.", "Real", "Presumido"],
     spedOptions: ["Sim", "Não"]
 });
@@ -31,9 +34,7 @@ export const actions = {
 
     async init() {
         actions.grids();
-        state.gridPrincipal.queryOpen({ CNPJ: "" }, () => {
-            state.gridPrincipal.focus();
-        });
+        actions.getSociedade()
     },
 
     grids() {
@@ -47,11 +48,7 @@ export const actions = {
             },
             query: {
                 async execute(rs) {
-                    let data = await actions.getSociedade({
-                        offset: rs.offset,
-                        param: rs.param,
-                    });
-
+                    let data = await actions.getSociedade();
                     state.gridPrincipal.querySourceAdd(data);
                 },
             },
@@ -115,24 +112,27 @@ export const actions = {
         });
     },
 
-    async getSociedade({ param, offset }: iParamGetSociedade) {
+    async getSociedade() {
         try {
             state.loading = true;
-            const data = await serviceSociedade.getSociedades({ param, offset });
-            state.loading = false;
+            const data = await serviceSociedade.getSociedade(state.edtSearch);
+            state.gridPrincipal.querySourceAdd(data);
             return data;
         } catch (error) {
+            state.loading = false;
             Swal.fire({
                 icon: "error",
                 text: "Erro ao exibir registro de sociedade",
             });
+        } finally {
+            state.loading = false;
         }
     },
 
+
     async search() {
-        const searchValue = state.edtSearch?.toUpperCase();
         state.gridPrincipal.queryOpen({
-            FANTASIA: searchValue,
+            search: inputSearch.value.value,
         });
     },
 
@@ -225,7 +225,6 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao excluir a sociedade.",
                 text: "Erro ao executar exclusão",
             });
         } finally {
@@ -238,9 +237,7 @@ export const actions = {
             state.loading = true;
             let newFields = {
                 ID_CLIENTE: state.dbSociedade.ID_CLIENTE,
-                NOME: state.dbSociedade.NOME,
                 CAMINHO_SERVIDOR: state.dbSociedade.CAMINHO_SERVIDOR,
-                ID_EMPRESA: state.dbSociedade.ID_EMPRESA,
                 CNPJ: state.dbSociedade.CNPJ,
                 HOST: state.dbSociedade.HOST,
                 BANCO: state.dbSociedade.BANCO,
@@ -267,11 +264,8 @@ export const actions = {
     async toUpdate() {
         try {
             let param: iParamToUpdate = {
-                ID_SOCIEDADE: state.dbSociedade.ID_SOCIEDADE,
                 ID_CLIENTE: state.dbSociedade.ID_CLIENTE,
-                NOME: state.dbSociedade.NOME,
                 CAMINHO_SERVIDOR: state.dbSociedade.CAMINHO_SERVIDOR,
-                ID_EMPRESA: state.dbSociedade.ID_EMPRESA,
                 CNPJ: state.dbSociedade.CNPJ,
                 HOST: state.dbSociedade.HOST,
                 BANCO: state.dbSociedade.BANCO,
@@ -295,5 +289,16 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    closeModal() {
+        state.modalSociedadeOpened = false;
+    },
+
+    selecionarRepresentante(sociedadeSelecionada: iSociedade) {
+        state.dbSociedade.NOME = sociedadeSelecionada.NOME
+        state.dbSociedade.CNPJ = sociedadeSelecionada.CNPJ
+        state.sociedadeSelecionada = sociedadeSelecionada;
+        actions.closeModal();
     },
 }

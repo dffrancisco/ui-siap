@@ -13,15 +13,14 @@ import {
 
 const caminho = "siap/sociedade";
 
-type iGetSociedadeFunction = (param: iParamGetSociedade) => Promise<iSociedade[]>;
+type iGetSociedadeFunction = (param: string) => Promise<iSociedade>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<iInsertResponse>;
 type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>;
 
-const getSociedades: iGetSociedadeFunction = async ({ param, offset }) => {
+const getSociedade: iGetSociedadeFunction = async (param) => {
     const { data } = await axios.post(caminho, {
-        call: "getSociedades",
-        offset,
+        call: "getSociedade",
         param,
     });
     return data;
@@ -61,7 +60,7 @@ const toDelete = async (id_sociedade: number): Promise<iToDeleteResponse> => {
 };
 
 export default {
-    getSociedades,
+    getSociedade,
     getDuplicidade,
     toInsert,
     toUpdate,

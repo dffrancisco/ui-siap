@@ -24,7 +24,7 @@ onUnmounted(() => {
           <v-col cols="5">
             <span>Sociedade</span>
             <input
-              v-model="state.dbSociedade.ID_SOCIEDADE"
+              v-model="state.dbSociedade.FANTASIA"
               type="text"
               id="ID_SOCIEDADE"
               name="ID_SOCIEDADE"
@@ -63,10 +63,10 @@ onUnmounted(() => {
           <v-col cols="2">
             <span>ID Empresa</span>
             <input
-              v-model="state.dbSociedade.ID_EMPRESA"
+              v-model="state.dbSociedade.ID_CLIENTE"
               type="text"
-              id="ID_EMPRESA"
-              name="ID_EMPRESA"
+              id="ID_CLIENTE"
+              name="ID_CLIENTE"
               class="obr ss"
               autocomplete="off"
               v-mask="0"
