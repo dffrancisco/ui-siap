@@ -60,8 +60,8 @@ export const actions = {
             height: 200,
             count: true,
             columns: {
-                "Sociedade": { dataField: "NOME", center: true, width: '60%' },
-                "CNPJ": { dataField: "CNPJ", center: true },
+                "Sociedade": { dataField: "NOME", left: true, width: '60%' },
+                "CNPJ": { dataField: "CNPJ", left: true },
             },
             query: {
                 async execute(rs) {
@@ -77,7 +77,7 @@ export const actions = {
                 },
 
                 duplicity: {
-                    dataField: ["ID_CLIENTE", 'CNPJ'],
+                    dataField: ["CNPJ"],
                     async execute(rs) {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),

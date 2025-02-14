@@ -14,7 +14,6 @@ const caminho = "siap/sociedade";
 
 type iGetClienteFunction = (param: string) => Promise<iCliente>;
 type iGetSociedadeFunction = (param: string) => Promise<iSociedade>;
-type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<any>;
 type iToUpdateFunction = (param: iUpdateSociedadeParam) => Promise<void>;
 
@@ -35,7 +34,7 @@ const getCliente: iGetClienteFunction = async (param) => {
 };
 
 
-const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {
+const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
     const { data } = await axios.post(caminho, {
         call: "getDuplicidade",
         value,

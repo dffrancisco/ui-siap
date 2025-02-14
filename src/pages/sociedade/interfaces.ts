@@ -35,7 +35,7 @@ export interface iParamToInsert {
 export interface iUpdateSociedadeParam extends iParamToInsert { }
 
 export interface iGetDuplicityResponse {
-    CNPJ: string;
+    CNPJ?: string;
 }
 
 export interface iFieldDuplicity {
