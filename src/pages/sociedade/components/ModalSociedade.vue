@@ -105,7 +105,7 @@ onMounted(async () => {
       <v-col>
         <div class="d-flex ga-2">
           <v-text-field
-            label="Nome"
+            label="Cliente/CNPJ"
             :clearable="true"
             width="300px"
             density="compact"

@@ -18,11 +18,25 @@ export const state = reactive({
     edtSearch: "",
     dbSociedade: <iSociedade>{},
     loading: false,
+
     idCliente: <number>null,
     modalClienteOpened: false,
     clienteSelecionado: <iCliente>{},
     regimeOptions: ["Simples N.", "Real", "Presumido"],
+    renomearRegime: {
+        dataField: [],
+        call: function (r) {
+            if (r.value.trim() === 'L') {
+                return 'PRESUMIDO';
+            } else if (r.value.trim() === 'S') {
+                return 'SIMPLES';
+            } else if (r.value.trim() === 'R') {
+                return 'REAL';
+            }
+        }
+    },
     spedOptions: ["Sim", "Não"]
+
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -46,7 +60,7 @@ export const actions = {
             height: 200,
             count: true,
             columns: {
-                "Sociedade": { dataField: "FANTASIA", center: true },
+                "Sociedade": { dataField: "NOME", center: true, width: '60%' },
                 "CNPJ": { dataField: "CNPJ", center: true },
             },
             query: {
@@ -63,7 +77,7 @@ export const actions = {
                 },
 
                 duplicity: {
-                    dataField: ["CNPJ"],
+                    dataField: ["ID_CLIENTE", 'CNPJ'],
                     async execute(rs) {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),
@@ -114,13 +128,16 @@ export const actions = {
             },
         });
     },
+
+
     salvarClienteSelecionadoNaState(clienteSelecionado: iCliente) {
         state.clienteSelecionado = clienteSelecionado;
         actions.popularStates(clienteSelecionado)
     },
 
     popularStates(clienteSelecionado: iCliente) {
-        state.dbSociedade.FANTASIA = clienteSelecionado.NOME
+        state.dbSociedade.NOME = clienteSelecionado.NOME
+
     },
 
     cancelar() {
@@ -135,6 +152,7 @@ export const actions = {
         try {
             state.loading = true;
             const data = await serviceSociedade.getSociedade(state.edtSearch);
+
             state.gridPrincipal.querySourceAdd(data);
             return data;
         } catch (error) {
@@ -150,7 +168,7 @@ export const actions = {
 
     async search() {
         state.gridPrincipal.queryOpen({
-            search: inputSearch.value.value,
+            search: inputSearch.value
         });
     },
 
@@ -254,7 +272,7 @@ export const actions = {
         try {
             state.loading = true;
             let newFields = {
-                ID_CLIENTE: state.dbSociedade.ID_CLIENTE,
+                ID_CLIENTE: state.clienteSelecionado.ID_CLIENTE,
                 CAMINHO_SERVIDOR: state.dbSociedade.CAMINHO_SERVIDOR,
                 CNPJ: state.dbSociedade.CNPJ,
                 HOST: state.dbSociedade.HOST,
@@ -262,7 +280,8 @@ export const actions = {
                 GERA_SPED: state.dbSociedade.GERA_SPED,
                 REGIME: state.dbSociedade.REGIME,
                 FANTASIA: state.dbSociedade.FANTASIA,
-
+                ID_EMPRESA: state.dbSociedade.ID_EMPRESA,
+                NOME: state.dbSociedade.NOME,
             };
             await serviceSociedade.toInsert(newFields);
             state.gridPrincipal.insertLine({ ...newFields });
@@ -270,6 +289,7 @@ export const actions = {
                 icon: "success",
                 text: "Sociedade adicionada com sucesso!",
             });
+            await actions.getSociedade();
         } catch (error) {
             await Swal.fire({
                 icon: "error",
@@ -286,10 +306,12 @@ export const actions = {
                 ID_CLIENTE: state.dbSociedade.ID_CLIENTE,
                 CAMINHO_SERVIDOR: state.dbSociedade.CAMINHO_SERVIDOR,
                 CNPJ: state.dbSociedade.CNPJ,
+                BANCO: state.dbSociedade.BANCO,
                 HOST: state.dbSociedade.HOST,
                 GERA_SPED: state.dbSociedade.GERA_SPED,
                 REGIME: state.dbSociedade.REGIME,
                 FANTASIA: state.dbSociedade.FANTASIA,
+                ID_EMPRESA: state.dbSociedade.ID_EMPRESA,
 
             };
             state.loading = true;

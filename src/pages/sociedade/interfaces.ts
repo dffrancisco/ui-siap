@@ -1,15 +1,16 @@
 
 export interface iSociedade {
-    ID_SOCIEDADE: number;
+    ID_SOCIEDADE?: number;
     ID_CLIENTE: number;
     NOME: string;
-    CAMINHO_SERVIDOR: string;
+    CAMINHO_SERVIDOR?: string;
     CNPJ: string;
-    HOST: string;
+    HOST?: string;
     BANCO: string;
     GERA_SPED: boolean;
     REGIME: string;
     FANTASIA?: string;
+    ID_EMPRESA?: number;
 }
 
 export interface iCliente {
@@ -20,12 +21,15 @@ export interface iCliente {
 
 export interface iParamToInsert {
     ID_CLIENTE: number;
-    CAMINHO_SERVIDOR: string;
+    ID_SOCIEDADE?: number;
+    CAMINHO_SERVIDOR?: string;
     CNPJ: string;
-    HOST: string;
+    HOST?: string;
+    BANCO: string;
     GERA_SPED: boolean;
     REGIME: string;
     FANTASIA?: string;
+    ID_EMPRESA?: number;
 }
 
 export interface iUpdateSociedadeParam extends iParamToInsert { }

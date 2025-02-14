@@ -19,10 +19,10 @@ onMounted(async () => {
           <v-col cols="5">
             <span>Sociedade</span>
             <input
-              v-model="state.dbSociedade.FANTASIA"
+              v-model="state.dbSociedade.NOME"
               type="text"
-              id="ID_SOCIEDADE"
-              name="ID_SOCIEDADE"
+              id="ID_CLIENTE"
+              name="ID_CLIENTE"
               class="obr ss"
               maxlength="60"
               autocomplete="off"
@@ -60,10 +60,10 @@ onMounted(async () => {
           <v-col cols="2">
             <span>ID Empresa</span>
             <input
-              v-model="state.dbSociedade.ID_CLIENTE"
+              v-model="state.dbSociedade.ID_EMPRESA"
               type="text"
-              id="ID_CLIENTE"
-              name="ID_CLIENTE"
+              id="ID_EMPRESA"
+              name="ID_EMPRESA"
               class="obr ss"
               autocomplete="off"
               v-mask="0"
