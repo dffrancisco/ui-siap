@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import { actions, state, eventListener } from "./sociedade";
-import { onMounted, onUnmounted } from "vue";
+import { actions, state } from "./sociedade";
+import ModalSociedade from "./components/ModalSociedade.vue";
+import { onMounted } from "vue";
 
 onMounted(async () => {
   await actions.init();
-
-  window.addEventListener("keydown", eventListener);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("keydown", eventListener);
 });
 </script>
 
@@ -39,10 +34,12 @@ onUnmounted(() => {
             class="d-flex align-end"
           >
             <v-btn
-              :disabled="state.pnSearch"
+              title="Pesquisar Clientes"
+              id="btnGetClientes"
               size="30"
               color="primary"
-              @click="actions.search()"
+              @click="state.modalClienteOpened = true"
+              :disabled="!state.desativarInputs"
               icon="mdi-magnify"
             />
           </v-col>
@@ -209,6 +206,16 @@ onUnmounted(() => {
 
     <div id="pnCodigoTela">Sociedade</div>
   </v-container>
+
+  <v-dialog
+    v-model="state.modalClienteOpened"
+    max-width="900"
+  >
+    <ModalSociedade
+      @selecionarCliente="actions.salvarClienteSelecionadoNaState"
+      @closeModalCliente="state.modalClienteOpened = false"
+    />
+  </v-dialog>
 </template>
 
 <style scoped>

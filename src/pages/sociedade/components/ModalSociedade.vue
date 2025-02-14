@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, reactive, ref } from "vue";
-import { iSociedade, iParamGetSociedade } from "../interfaces";
+import { iCliente } from "../interfaces";
 import serviceSociedade from "../services/sociedade.service";
 import Swal from "sweetalert2";
-
-const emits = defineEmits(["cancelar", "selecionaSociedade"]);
+const emits = defineEmits(["closeModalCliente", "selecionarCliente"]);
 const inputSearch = ref();
 
 const state = reactive({
   loading: false,
-  gridSociedade: <ixGridCreate>{},
-  dbSociedade: <iSociedade>{},
+  gridCliente: <ixGridCreate>{},
+  dbCliente: <iCliente>{},
+  edtSearch: "",
 });
 
 const actions = {
@@ -20,18 +20,18 @@ const actions = {
   },
 
   criarGrid() {
-    state.gridSociedade = new xGridV2.create({
-      el: "#gridSociedade",
+    state.gridCliente = new xGridV2.create({
+      el: "#gridCliente",
       count: true,
-      height: 300,
+      height: 200,
       columns: {
-        Cliente: { dataField: "CLIENTE" },
-        CNPJ: { dataField: "CNPJ" },
+        Cliente: { dataField: "NOME" },
+        CNPJ: { dataField: "CGC_CLIENTE" },
       },
       query: {
         async execute(rs) {
-          let data = await actions.getSociedade();
-          //state.gridSociedade.querySourceAdd(data);
+          let data = await actions.getCliente();
+          state.gridCliente.querySourceAdd(data);
         },
       },
       enter: () => actions.validarInputs(),
@@ -39,54 +39,56 @@ const actions = {
     });
   },
 
-  async getSociedade() {
+  closeModalCliente() {
+    emits("closeModalCliente");
+  },
+
+  async getCliente() {
     try {
       state.loading = true;
-      //const data = await serviceSociedade.getSociedade();
-      state.loading = false;
-      //return data;
+      const data = await serviceSociedade.getCliente(state.edtSearch);
+      state.gridCliente.querySourceAdd(data);
+      return data;
     } catch (error) {
+      state.loading = false;
       Swal.fire({
         icon: "error",
-        text: "Erro ao exibir registro de sociedade",
+        text: "Erro ao exibir registro de Cliente",
       });
+    } finally {
+      state.loading = false;
     }
   },
 
   async btnSearch() {
-    state.gridSociedade.queryOpen({
+    state.gridCliente.queryOpen({
       search: inputSearch.value.value,
     });
   },
 
   validarInputs() {
-    const sociedadeSelecionada = state.gridSociedade.dataSource();
-    if (!sociedadeSelecionada) {
+    if (!state.gridCliente.dataSource()) {
       Swal.fire({
-        text: "Nenhum representante foi selecionado.",
+        text: "Nenhum cliente foi selecionado",
         icon: "warning",
       });
       return false;
     }
 
-    actions.selecionaSociedade();
+    actions.selecionarCliente();
   },
 
-  selecionaSociedade() {
-    const sociedadeSelecionada = state.gridSociedade.dataSource();
-    emits("selecionaSociedade", sociedadeSelecionada);
-    actions.closeModal();
-  },
-
-  closeModal() {
-    emits("cancelar");
+  selecionarCliente() {
+    const clienteSelecionado = state.gridCliente.dataSource();
+    emits("selecionarCliente", clienteSelecionado);
+    actions.closeModalCliente();
   },
 };
 
 onMounted(async () => {
   await actions.init();
 
-  state.gridSociedade.queryOpen(
+  state.gridCliente.queryOpen(
     {
       search: "",
     },
@@ -110,7 +112,7 @@ onMounted(async () => {
             autofocus
             ref="inputSearch"
             @keydown.enter.prevent="actions.btnSearch"
-            @keydown.arrow.down.prevent="state.gridSociedade.focus()"
+            @keydown.arrow.down.prevent="state.gridCliente.focus()"
           ></v-text-field>
 
           <div class="d-flex align-center">
@@ -126,13 +128,13 @@ onMounted(async () => {
     </v-row>
     <div
       class="mt-4"
-      id="gridSociedade"
+      id="gridCliente"
     ></div>
     <div class="d-flex justify-end ga-4 mt-4">
       <v-btn
         color="primary"
         variant="outlined"
-        @click="actions.closeModal"
+        @click="actions.closeModalCliente"
         >Cancelar</v-btn
       >
       <v-btn

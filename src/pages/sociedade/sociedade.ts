@@ -2,22 +2,25 @@ import { nextTick, reactive, ref } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
-import { iSociedade, iFieldDuplicity, iParamToUpdate, iParamGetSociedade } from "./interfaces";
+import { iSociedade, iFieldDuplicity, iUpdateSociedadeParam, iCliente } from "./interfaces";
 import utils from "@/ts/utils";
 import serviceSociedade from "./services/sociedade.service";
 import { useEventListener } from "@vueuse/core";
 const inputSearch = ref();
+
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     gridSociedadeDetalhada: <ixGridCreate>{},
     pnSearch: false,
     lista: <iSociedade[]>[],
+    desativarInputs: true,
     edtSearch: "",
     dbSociedade: <iSociedade>{},
     loading: false,
-    modalSociedadeOpened: false,
-    sociedadeSelecionada: <iSociedade>{},
+    idCliente: <number>null,
+    modalClienteOpened: false,
+    clienteSelecionado: <iCliente>{},
     regimeOptions: ["Simples N.", "Real", "Presumido"],
     spedOptions: ["Sim", "Não"]
 });
@@ -111,6 +114,22 @@ export const actions = {
             },
         });
     },
+    salvarClienteSelecionadoNaState(clienteSelecionado: iCliente) {
+        state.clienteSelecionado = clienteSelecionado;
+        actions.popularStates(clienteSelecionado)
+    },
+
+    popularStates(clienteSelecionado: iCliente) {
+        state.dbSociedade.FANTASIA = clienteSelecionado.NOME
+    },
+
+    cancelar() {
+        state.desativarInputs = true;
+
+        if (state.idCliente) {
+            actions.popularStates(state.clienteSelecionado)
+        }
+    },
 
     async getSociedade() {
         try {
@@ -128,7 +147,6 @@ export const actions = {
             state.loading = false;
         }
     },
-
 
     async search() {
         state.gridPrincipal.queryOpen({
@@ -244,6 +262,7 @@ export const actions = {
                 GERA_SPED: state.dbSociedade.GERA_SPED,
                 REGIME: state.dbSociedade.REGIME,
                 FANTASIA: state.dbSociedade.FANTASIA,
+
             };
             await serviceSociedade.toInsert(newFields);
             state.gridPrincipal.insertLine({ ...newFields });
@@ -263,15 +282,15 @@ export const actions = {
 
     async toUpdate() {
         try {
-            let param: iParamToUpdate = {
+            let param: iUpdateSociedadeParam = {
                 ID_CLIENTE: state.dbSociedade.ID_CLIENTE,
                 CAMINHO_SERVIDOR: state.dbSociedade.CAMINHO_SERVIDOR,
                 CNPJ: state.dbSociedade.CNPJ,
                 HOST: state.dbSociedade.HOST,
-                BANCO: state.dbSociedade.BANCO,
                 GERA_SPED: state.dbSociedade.GERA_SPED,
                 REGIME: state.dbSociedade.REGIME,
                 FANTASIA: state.dbSociedade.FANTASIA,
+
             };
             state.loading = true;
             await serviceSociedade.toUpdate(param);
@@ -291,14 +310,5 @@ export const actions = {
         }
     },
 
-    closeModal() {
-        state.modalSociedadeOpened = false;
-    },
 
-    selecionarRepresentante(sociedadeSelecionada: iSociedade) {
-        state.dbSociedade.NOME = sociedadeSelecionada.NOME
-        state.dbSociedade.CNPJ = sociedadeSelecionada.CNPJ
-        state.sociedadeSelecionada = sociedadeSelecionada;
-        actions.closeModal();
-    },
 }

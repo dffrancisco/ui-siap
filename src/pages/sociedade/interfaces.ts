@@ -1,6 +1,3 @@
-export interface iParamGetSociedade {
-    search: string;
-}
 
 export interface iSociedade {
     ID_SOCIEDADE: number;
@@ -15,12 +12,17 @@ export interface iSociedade {
     FANTASIA?: string;
 }
 
+export interface iCliente {
+    ID_CLIENTE: number;
+    CGC_CLIENTE: string;
+    NOME: string;
+}
+
 export interface iParamToInsert {
     ID_CLIENTE: number;
     CAMINHO_SERVIDOR: string;
     CNPJ: string;
     HOST: string;
-    BANCO: string;
     GERA_SPED: boolean;
     REGIME: string;
     FANTASIA?: string;
@@ -37,40 +39,7 @@ export interface iFieldDuplicity {
     field: string;
 }
 
-
-export interface iSociedadeResponse {
-    ID_SOCIEDADE: number;
-    ID_CLIENTE: number;
-    NOME: string;
-    CAMINHO_SERVIDOR: string;
-    CNPJ: string;
-    HOST: string;
-    BANCO: string;
-    GERA_SPED: boolean;
-    REGIME: string;
-    FANTASIA?: string;
-}
-
-export interface iParamToUpdate {
-    ID_CLIENTE: number;
-    CAMINHO_SERVIDOR: string;
-    CNPJ: string;
-    HOST: string;
-    BANCO: string;
-    GERA_SPED: boolean;
-    REGIME: string;
-    FANTASIA?: string;
-}
-
-export interface iInsertResponse {
-    ID_SOCIEDADE: number;
-    CNPJ: string;
-}
-
 export interface iToDeleteResponse {
     ID_SOCIEDADE: number;
     CNPJ: string;
 }
-
-
-export interface iSociedadeResponse extends iSociedade { }

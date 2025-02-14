@@ -1,22 +1,22 @@
 import axios from "axios";
 import {
     iParamToInsert,
-    iParamGetSociedade,
     iSociedade,
-    iParamToUpdate,
+    iCliente,
+    iUpdateSociedadeParam,
     iFieldDuplicity,
     iGetDuplicityResponse,
     iToDeleteResponse,
-    iInsertResponse,
 
 } from '../interfaces';
 
 const caminho = "siap/sociedade";
 
+type iGetClienteFunction = (param: string) => Promise<iCliente>;
 type iGetSociedadeFunction = (param: string) => Promise<iSociedade>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
-type iToInsertFunction = (param: iParamToInsert) => Promise<iInsertResponse>;
-type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>;
+type iToInsertFunction = (param: iParamToInsert) => Promise<any>;
+type iToUpdateFunction = (param: iUpdateSociedadeParam) => Promise<void>;
 
 const getSociedade: iGetSociedadeFunction = async (param) => {
     const { data } = await axios.post(caminho, {
@@ -25,6 +25,15 @@ const getSociedade: iGetSociedadeFunction = async (param) => {
     });
     return data;
 };
+
+const getCliente: iGetClienteFunction = async (param) => {
+    const { data } = await axios.post(caminho, {
+        call: "getCliente",
+        param,
+    });
+    return data;
+};
+
 
 const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {
     const { data } = await axios.post(caminho, {
@@ -61,6 +70,7 @@ const toDelete = async (id_sociedade: number): Promise<iToDeleteResponse> => {
 
 export default {
     getSociedade,
+    getCliente,
     getDuplicidade,
     toInsert,
     toUpdate,
