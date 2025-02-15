@@ -8,7 +8,6 @@ import serviceSociedade from "./services/sociedade.service";
 import { useEventListener } from "@vueuse/core";
 const inputSearch = ref();
 
-
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     gridSociedadeDetalhada: <ixGridCreate>{},
@@ -36,7 +35,6 @@ export const state = reactive({
         }
     },
     spedOptions: ["Sim", "Não"]
-
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -128,7 +126,6 @@ export const actions = {
             },
         });
     },
-
 
     salvarClienteSelecionadoNaState(clienteSelecionado: iCliente) {
         state.clienteSelecionado = clienteSelecionado;

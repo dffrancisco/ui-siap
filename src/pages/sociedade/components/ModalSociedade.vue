@@ -111,7 +111,7 @@ onMounted(async () => {
             density="compact"
             autofocus
             ref="inputSearch"
-            @keydown.enter.prevent="actions.btnSearch()"
+            @keydown.enter.prevent="actions.btnSearch"
             @keydown.arrow.down.prevent="state.gridCliente.focus()"
           ></v-text-field>
 

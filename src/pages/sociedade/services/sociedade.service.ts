@@ -33,7 +33,6 @@ const getCliente: iGetClienteFunction = async (param) => {
     return data;
 };
 
-
 const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
     const { data } = await axios.post(caminho, {
         call: "getDuplicidade",

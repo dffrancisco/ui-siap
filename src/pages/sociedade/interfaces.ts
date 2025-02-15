@@ -1,4 +1,3 @@
-
 export interface iSociedade {
     ID_SOCIEDADE?: number;
     ID_CLIENTE: number;
