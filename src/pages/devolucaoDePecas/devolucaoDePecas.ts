@@ -42,8 +42,12 @@ export const state = reactive({
             align: 'center',
         },
         {
-            title: 'Tipo Pag.', key: 'DESCRICAO_PAGAMENTO',
+            title: 'Tipo Pag.',
+            key: 'TIPOS_PAGAMENTO',
             align: 'center',
+            value: (item) => {
+                return item.TIPOS_PAGAMENTOS.map(pagamento => pagamento.DESCRICAO_PAGAMENTO).join(', ');
+            }
         },
         {
             title: 'Funcionário', key: 'LOGIN',
@@ -90,6 +94,7 @@ export const actions = {
             COD_PRODUTO: produto.COD_PRODUTO,
             QUAL_TIPO_AVARIA: produto.QUAL_TIPO_AVARIA,
             MOTIVO_DEVOLUCAO: produto.MOTIVO_DEVOLUCAO,
+            DESCRICAO_PAGAMENTO: produto.DESCRICAO_PAGAMENTO,
             DESC_PRODUTO: produto.DESC_PRODUTO,
             CREDITO: item.CREDITO,
         }));
@@ -160,7 +165,6 @@ export const actions = {
                 DATA: utils.dataBrasil(item.DATA) ?? '',
                 VALOR: utils.formatValor(item.VALOR) ?? '',
                 NF_DEVOLUCAO: item.NF_DEVOLUCAO ?? '',
-                DESCRICAO_PAGAMENTO: item.DESCRICAO_PAGAMENTO ?? '',
                 LOGIN: item.LOGIN ?? '',
                 STATUS: item.STATUS ?? ''
             }
@@ -192,11 +196,6 @@ export const actions = {
                 label: "NF-e",
                 align: 'center',
                 width: "80%"
-            },
-            {
-                key: 'DESCRICAO_PAGAMENTO',
-                label: "Tipo Pag.",
-                align: 'center',
             },
             {
                 key: 'LOGIN',

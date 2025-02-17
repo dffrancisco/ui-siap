@@ -33,7 +33,7 @@ const actions = {
         Produto: {
           dataField: "DESC_PRODUTO",
           center: true,
-          width: "30%",
+          width: "25%",
         },
         Motivo: {
           dataField: "MOTIVO_DEVOLUCAO",
@@ -43,13 +43,18 @@ const actions = {
         Observação: {
           dataField: "QUAL_TIPO_AVARIA",
           center: true,
-          width: "28%",
+          width: "15%",
+        },
+        "Tipo Pag.": {
+          dataField: "DESCRICAO_PAGAMENTO",
+          center: true,
+          width: "15%",
         },
         "Crédito Restante": {
           dataField: "CREDITO",
           center: true,
           render: utils.formatValor,
-          width: "12%",
+          width: "15%",
         },
       },
     });

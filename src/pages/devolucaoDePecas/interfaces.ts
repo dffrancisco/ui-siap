@@ -11,7 +11,9 @@ export interface iDevolucao {
     VALOR: number,
     NF_DEVOLUCAO: string,
     CREDITO: number,
-    DESCRICAO_PAGAMENTO: string,
+    TIPOS_PAGAMENTOS: {
+        DESCRICAO_PAGAMENTO: string | null;
+    }[];
     LOGIN: string,
     STATUS: 'ABERTA' | 'FINALIZADA'
 }
@@ -21,6 +23,7 @@ export interface iDetalhesDevolucao {
     QUAL_TIPO_AVARIA: string;
     MOTIVO_DEVOLUCAO: string;
     DESC_PRODUTO: string;
+    DESCRICAO_PAGAMENTO: string | null;
 }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }
