@@ -24,6 +24,7 @@ export interface iDetalhesDevolucao {
     MOTIVO_DEVOLUCAO: string;
     DESC_PRODUTO: string;
     DESCRICAO_PAGAMENTO: string | null;
+    CREDITO: number | null | string;
 }
 
 export interface iGetDevolucoesResponse extends iDevolucao { }

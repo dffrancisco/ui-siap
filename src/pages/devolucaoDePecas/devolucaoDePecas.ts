@@ -78,7 +78,7 @@ export const actions = {
     createModal() {
         state.modalDetalhesItensDevolucao = new xModal.create({
             el: "#modalDetalhesItensDevolucao",
-            height: 420,
+            height: 450,
             width: 900,
             title: 'Detalhes itens devolução',
             theme: 'xModal-blue',
@@ -164,6 +164,7 @@ export const actions = {
                 NUM_ORCAMENTO: item.NUM_ORCAMENTO ?? '',
                 DATA: utils.dataBrasil(item.DATA) ?? '',
                 VALOR: utils.formatValor(item.VALOR) ?? '',
+                TIPOS_PAGAMENTOS: item.TIPOS_PAGAMENTOS.map(pagamento => pagamento.DESCRICAO_PAGAMENTO).join(', ') ?? '',
                 NF_DEVOLUCAO: item.NF_DEVOLUCAO ?? '',
                 LOGIN: item.LOGIN ?? '',
                 STATUS: item.STATUS ?? ''
@@ -189,6 +190,11 @@ export const actions = {
             {
                 key: 'VALOR',
                 label: "Valor",
+                align: 'right',
+            },
+            {
+                key: 'TIPOS_PAGAMENTOS',
+                label: "Tipos Pagto.",
                 align: 'right',
             },
             {

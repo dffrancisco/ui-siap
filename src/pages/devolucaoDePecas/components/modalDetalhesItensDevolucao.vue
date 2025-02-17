@@ -33,7 +33,7 @@ const actions = {
         Produto: {
           dataField: "DESC_PRODUTO",
           center: true,
-          width: "25%",
+          width: "30%",
         },
         Motivo: {
           dataField: "MOTIVO_DEVOLUCAO",
@@ -43,18 +43,12 @@ const actions = {
         Observação: {
           dataField: "QUAL_TIPO_AVARIA",
           center: true,
-          width: "15%",
+          width: "20%",
         },
         "Tipo Pag.": {
           dataField: "DESCRICAO_PAGAMENTO",
           center: true,
-          width: "15%",
-        },
-        "Crédito Restante": {
-          dataField: "CREDITO",
-          center: true,
-          render: utils.formatValor,
-          width: "15%",
+          width: "20%",
         },
       },
     });
@@ -71,8 +65,11 @@ nextTick(() => {
     <div>
       <div id="gridDetalhesItensDevolucao"></div>
     </div>
+    <br />
     <span class="text-subtitle-1">
-      Valor do Crédito igual a 0,00 (zero) significa que o cliente já usou o crédito
+      Crédito Restante: <strong>{{ utils.formatValor(props.devolucaoSelecionada[0]?.CREDITO) ?? "0,00" }}</strong>
+      <br />
+      Valor do Crédito igual a 0,00 (zero) significa que o cliente já usou o crédito ou nem foi gerado.
     </span>
   </v-container>
 </template>
