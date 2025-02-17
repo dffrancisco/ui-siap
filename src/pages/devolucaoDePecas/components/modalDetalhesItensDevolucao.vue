@@ -67,7 +67,8 @@ nextTick(() => {
     </div>
     <br />
     <span class="text-subtitle-1">
-      Crédito Restante: <strong>{{ utils.formatValor(props.devolucaoSelecionada[0]?.CREDITO) ?? "0,00" }}</strong>
+      Crédito Restante:
+      <strong style="color: red">{{ utils.formatValor(props.devolucaoSelecionada[0]?.CREDITO) ?? "0,00" }}</strong>
       <br />
       Valor do Crédito igual a 0,00 (zero) significa que o cliente já usou o crédito ou nem foi gerado.
     </span>
