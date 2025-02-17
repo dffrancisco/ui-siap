@@ -46,7 +46,7 @@ export const state = reactive({
             key: 'TIPOS_PAGAMENTO',
             align: 'center',
             value: (item) => {
-                return item.TIPOS_PAGAMENTOS.map(pagamento => pagamento.DESCRICAO_PAGAMENTO).join(', ');
+                return item.TIPOS_PAGAMENTOS[0]?.DESCRICAO_PAGAMENTO
             }
         },
         {
@@ -164,7 +164,7 @@ export const actions = {
                 NUM_ORCAMENTO: item.NUM_ORCAMENTO ?? '',
                 DATA: utils.dataBrasil(item.DATA) ?? '',
                 VALOR: utils.formatValor(item.VALOR) ?? '',
-                TIPOS_PAGAMENTOS: item.TIPOS_PAGAMENTOS.map(pagamento => pagamento.DESCRICAO_PAGAMENTO).join(', ') ?? '',
+                TIPOS_PAGAMENTOS: item.TIPOS_PAGAMENTOS[0]?.DESCRICAO_PAGAMENTO ?? '',
                 NF_DEVOLUCAO: item.NF_DEVOLUCAO ?? '',
                 LOGIN: item.LOGIN ?? '',
                 STATUS: item.STATUS ?? ''
