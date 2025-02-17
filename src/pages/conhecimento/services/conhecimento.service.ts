@@ -1,26 +1,29 @@
 import axios from "axios";
-import { iClientes, iDadosInputs, iGetClientes, iInsertOrUpdateCliente } from "../interfaces";
-type iGetDadosParaInputs = () => Promise<iDadosInputs>
-type iGetClientesFuction = (param: iGetClientes, offset: number) => Promise<iClientes>
-type iInsertUpdateCliente = (param: iInsertOrUpdateCliente) => Promise<any>
-type iDeleteCliente = (param: number) => Promise<string>
+import {
+    iConhecimento,
+    iInsertConhecimentoParam,
+    iUpdateConhecimento,
+    iToDeleteResponse,
+    iFieldDuplicity,
+    iGetDuplicityResponse
+} from "../interfaces";
 
-const caminho = 'siap/cliente'
 
+type iGetConhecimentoFunction = (param: string) => Promise<iConhecimento>;
+type iToInsertFunction = (param: iInsertConhecimentoParam) => Promise<any>;
+type iToUpdateFunction = (param: iUpdateConhecimento) => Promise<void>;
 
+const caminho = 'siap/conhecimento'
 
-const getClientes: iGetClientesFuction = async (param, offset) => {
+const getConhecimento: iGetConhecimentoFunction = async (param) => {
     const { data } = await axios.post(caminho, {
-        call: "getClientes",
-        offset,
+        call: "getConhecimento",
         param
     });
-
     return data;
 }
 
-
-const toInsert: iInsertUpdateCliente = async (param) => {
+const toInsert: iToInsertFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "insert",
         param
@@ -28,7 +31,7 @@ const toInsert: iInsertUpdateCliente = async (param) => {
     return data;
 }
 
-const toUpdate: iInsertUpdateCliente = async (param) => {
+const toUpdate: iToUpdateFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "update",
         param
@@ -44,14 +47,19 @@ const toDelete = async (id_conhecimento: number): Promise<iToDeleteResponse> => 
     return data
 };
 
+const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
+    const { data } = await axios.post(caminho, {
+        call: "getDuplicidade",
+        value,
+        field,
+    });
+    return data;
+};
 
 export default {
-    getDadosParaInputs,
-    getClientes,
-    buscarCEP,
-    insertOuUpdateCliente,
-    deletarCliente,
-    buscarCNAE,
-    verificarSeClienteExiste,
-    ativarCliente
+    getConhecimento,
+    getDuplicidade,
+    toDelete,
+    toUpdate,
+    toInsert
 }

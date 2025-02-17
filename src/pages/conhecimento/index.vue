@@ -28,7 +28,7 @@ onUnmounted(() => {
     >
       <div id="pnCampos">
         <v-row>
-          <v-col cols="7">
+          <v-col cols="2">
             <span>Código</span>
             <input
               v-model="state.dbConhecimento.ID_CONHECIMENTO"
@@ -40,21 +40,20 @@ onUnmounted(() => {
             />
           </v-col>
 
-          <v-col>
+          <v-col cols="8">
             <span>Descrição</span>
             <input
               v-model="state.dbConhecimento.DESCRICAO"
               type="text"
               id="DESCRICAO"
               name="DESCRICAO"
-              v-mask="'#####'"
               class="obr ss"
               maxlength="30"
               autocomplete="off"
             />
           </v-col>
 
-          <v-col>
+          <v-col cols="2">
             <span>Valor</span>
             <input
               v-model="state.dbConhecimento.VALOR"

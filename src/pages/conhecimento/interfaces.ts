@@ -21,3 +21,12 @@ export interface iUpdateConhecimento {
 export interface iToDeleteResponse {
     delete: string
 }
+
+export interface iFieldDuplicity {
+    value: string;
+    field: string;
+}
+
+export interface iGetDuplicityResponse {
+    ID_CONHECIMENTO: string;
+}

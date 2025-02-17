@@ -1,10 +1,12 @@
-import { nextTick, reactive } from "vue";
+import { nextTick, reactive, ref } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import { iConhecimento, iFieldDuplicity } from "./interfaces";
-import utils from "@/ts/utils";
-import serviceBancos from "./services/conhecimento.service";
+import utils, { formatValor } from "@/ts/utils";
+import { useEventListener } from "@vueuse/core";
+import serviceConhecimento from "./services/conhecimento.service";
+const inputSearch = ref();
 
 
 export const state = reactive({
@@ -15,13 +17,18 @@ export const state = reactive({
     loading: false,
 });
 
+export const eventListener = useEventListener(document, "keydown", async (event) => {
+    if (event.key === "F1") {
+        document.getElementById("edtSearch")?.focus();
+        event.preventDefault();
+        event.stopPropagation();
+    }
+});
 
 export const actions = {
     async init() {
         actions.grids();
-        state.gridPrincipal.queryOpen({ DS_BANCO: "" }, () => {
-            state.gridPrincipal.focus();
-        });
+        actions.getConhecimento();
     },
 
     grids() {
@@ -30,17 +37,13 @@ export const actions = {
             height: 200,
             count: true,
             columns: {
-                "Código": { dataField: "CODIGO" },
-                "Descrição": { dataField: "DESCRICAO" },
-                "Valor": { dataField: "VALOR" },
+                "Código": { dataField: "ID_CONHECIMENTO", right: true, width: '7%' },
+                "Descrição": { dataField: "DESCRICAO", left: true, width: '80%' },
+                "Valor": { dataField: "VALOR", right: true, render: utils.formatValor },
             },
             query: {
                 async execute(rs) {
-                    let data = await actions.getConhecimento({
-                        offset: rs.offset,
-                        param: rs.param,
-                    });
-
+                    let data = await actions.getConhecimento()
                     state.gridPrincipal.querySourceAdd(data);
                 },
             },
@@ -50,7 +53,7 @@ export const actions = {
                     state.dbConhecimento = r;
                 },
                 duplicity: {
-                    dataField: ["CD_BANCO"],
+                    dataField: ["ID_CONHECIMENTO"],
                     async execute(rs) {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),
@@ -66,6 +69,7 @@ export const actions = {
                         return false;
                     },
                 },
+
                 frame: {
                     el: "#pnBotoes",
                     buttons: {
@@ -105,36 +109,35 @@ export const actions = {
         });
     },
 
-    async getConhecimento({ offset, param }: iParamGetBanco) {
+
+
+    async getConhecimento() {
         try {
             state.loading = true;
-            const data = await serviceBancos.getBancos({ offset, param });
+            const data = await serviceConhecimento.getConhecimento(state.edtSearch);
 
+            state.gridPrincipal.querySourceAdd(data);
             return data;
         } catch (error) {
+            state.loading = false;
             Swal.fire({
                 icon: "error",
-                title: "Erro ao exibir os bancos.",
-                text: error.message,
+                text: "Erro ao exibir registro de Conhecimento",
             });
         } finally {
             state.loading = false;
         }
     },
 
-
     async search() {
-        const searchValue = state.edtSearch?.toUpperCase();
-
         state.gridPrincipal.queryOpen({
-            DS_BANCO: searchValue,
+            search: inputSearch.value
         });
-
     },
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
-            const data = await serviceBancos.getDuplicidade({ value, field });
+            const data = await serviceConhecimento.getDuplicidade({ value, field });
             return data;
         } catch (error) {
             Swal.fire({
@@ -184,7 +187,6 @@ export const actions = {
     },
 
     async btnSave() {
-
         if (utils.validaOBR()) {
             return false;
         }
@@ -210,7 +212,6 @@ export const actions = {
         state.pnSearch = false;
         let linhaGrid = <any>state.gridPrincipal.getIndex()
         await nextTick()
-
         state.gridPrincipal.enable();
         state.gridPrincipal.focus(linhaGrid);
     },
@@ -221,7 +222,7 @@ export const actions = {
 
             state.loading = true;
 
-            await serviceBancos.toDelete(id_conhecimento);
+            await serviceConhecimento.toDelete(id_conhecimento);
 
             state.gridPrincipal.deleteLine();
             await Swal.fire({
@@ -238,17 +239,18 @@ export const actions = {
             state.loading = false;
         }
     },
+
     async toInsert() {
         try {
             state.loading = true;
 
             let newFields = {
-                ID_CONHECIMENTO: state.dbConhecimento.ID_CONHECIMENTO?.toUpperCase(),
-                CD_BANCO: state.dbConhecimento.CD_BANCO,
-                SG_BANCO: state.dbConhecimento.SG_BANCO?.toUpperCase(),
+                ID_CONHECIMENTO: state.dbConhecimento.ID_CONHECIMENTO,
+                DESCRICAO: state.dbConhecimento.DESCRICAO.toUpperCase(),
+                VALOR: state.dbConhecimento.VALOR,
             };
 
-            await serviceBancos.toInsert(newFields);
+            await serviceConhecimento.toInsert(newFields);
             state.gridPrincipal.insertLine({ ...newFields });
 
             await Swal.fire({
@@ -270,14 +272,14 @@ export const actions = {
         try {
 
             let param = {
-                ID_CONHECIMENTO: state.dbConhecimento.ID_CONHECIMENTO?.toUpperCase(),
-                CD_BANCO: state.dbConhecimento.CD_BANCO,
-                SG_BANCO: state.dbConhecimento.SG_BANCO?.toUpperCase(),
+                ID_CONHECIMENTO: state.dbConhecimento.ID_CONHECIMENTO,
+                DESCRICAO: state.dbConhecimento.DESCRICAO.toUpperCase(),
+                VALOR: state.dbConhecimento.VALOR,
             }
 
             state.loading = true;
 
-            await serviceBancos.toUpdate(param);
+            await serviceConhecimento.toUpdate(param);
 
             state.gridPrincipal.dataSource(param);
 
