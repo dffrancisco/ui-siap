@@ -17,7 +17,7 @@ export const state = reactive({
     edtSearch: "",
     dbSociedade: <iSociedade>{},
     loading: false,
-
+    PausabuscaSociedade: false,
     idCliente: <number>null,
     modalClienteOpened: false,
     clienteSelecionado: <iCliente>{},
@@ -133,7 +133,6 @@ export const actions = {
 
     popularStates(clienteSelecionado: iCliente) {
         state.dbSociedade.NOME = clienteSelecionado.NOME
-
     },
 
     cancelar() {
@@ -145,14 +144,18 @@ export const actions = {
     },
 
     async getSociedade() {
+
+        if (state.PausabuscaSociedade) return;
+
         try {
             state.loading = true;
             const data = await serviceSociedade.getSociedade(state.edtSearch);
 
             state.gridPrincipal.querySourceAdd(data);
+
+            state.PausabuscaSociedade = true;
             return data;
         } catch (error) {
-            state.loading = false;
             Swal.fire({
                 icon: "error",
                 text: "Erro ao exibir registro de sociedade",
@@ -163,6 +166,9 @@ export const actions = {
     },
 
     async search() {
+
+        state.PausabuscaSociedade = false;
+        state.gridPrincipal.clear && state.gridPrincipal.clear();
         state.gridPrincipal.queryOpen({
             search: inputSearch.value,
         });
@@ -202,7 +208,6 @@ export const actions = {
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
     },
-
 
     async btnDelete() {
         if (!state.gridPrincipal.dataSource()) {
