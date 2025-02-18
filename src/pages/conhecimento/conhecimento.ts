@@ -3,7 +3,7 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import { iConhecimento, iFieldDuplicity } from "./interfaces";
-import utils, { formatValor } from "@/ts/utils";
+import utils from "@/ts/utils";
 import { useEventListener } from "@vueuse/core";
 import serviceConhecimento from "./services/conhecimento.service";
 const inputSearch = ref();
@@ -41,19 +41,14 @@ export const actions = {
                 "Descrição": { dataField: "DESCRICAO", left: true, width: '80%' },
                 "Valor": { dataField: "VALOR", right: true, render: utils.formatValor },
             },
-            query: {
-                async execute(rs) {
-                    let data = await actions.getConhecimento()
-                    state.gridPrincipal.querySourceAdd(data);
-                },
-            },
+
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
                     state.dbConhecimento = r;
                 },
                 duplicity: {
-                    dataField: ["ID_CONHECIMENTO"],
+                    dataField: ["ID_CONHECIMENTO", "DESCRICAO"],
                     async execute(rs) {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),
@@ -247,7 +242,7 @@ export const actions = {
             let newFields = {
                 ID_CONHECIMENTO: state.dbConhecimento.ID_CONHECIMENTO,
                 DESCRICAO: state.dbConhecimento.DESCRICAO.toUpperCase(),
-                VALOR: state.dbConhecimento.VALOR,
+                VALOR: utils.formatValorUSA(state.dbConhecimento.VALOR.toString()),
             };
 
             await serviceConhecimento.toInsert(newFields);
@@ -274,7 +269,7 @@ export const actions = {
             let param = {
                 ID_CONHECIMENTO: state.dbConhecimento.ID_CONHECIMENTO,
                 DESCRICAO: state.dbConhecimento.DESCRICAO.toUpperCase(),
-                VALOR: state.dbConhecimento.VALOR,
+                VALOR: utils.formatValorUSA(state.dbConhecimento.VALOR.toString()),
             }
 
             state.loading = true;

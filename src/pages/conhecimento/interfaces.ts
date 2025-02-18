@@ -29,4 +29,5 @@ export interface iFieldDuplicity {
 
 export interface iGetDuplicityResponse {
     ID_CONHECIMENTO: string;
+    DESCRICAO: string;
 }

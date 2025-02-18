@@ -1,22 +1,9 @@
 <script setup lang="ts">
 import { actions, state } from "./conhecimento";
-import { onMounted, onUnmounted } from "vue";
-import { useEventListener } from "@vueuse/core";
-
-const eventListener = useEventListener(document, "keydown", async (event) => {
-  if (event.key === "F1") {
-    document.getElementById("edtSearch").focus();
-    event.preventDefault();
-    event.stopPropagation();
-  }
-});
+import { onMounted } from "vue";
 
 onMounted(async () => {
   actions.init();
-});
-
-onUnmounted(() => {
-  removeEventListener("keydown", eventListener);
 });
 </script>
 
