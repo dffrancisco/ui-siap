@@ -148,11 +148,11 @@ onMounted(async () => {
               class="obr ss"
             >
               <option
-                v-for="(value, key) in state.regimeOptions"
-                :key="key"
-                :value="key"
+                v-for="(option, index) in state.regimeOptions"
+                :key="index"
+                :value="option.value"
               >
-                {{ value }}
+                {{ option.label }}
               </option>
             </select>
           </v-col>

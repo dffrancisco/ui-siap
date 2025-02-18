@@ -20,14 +20,11 @@ export const state = reactive({
     idCliente: <number>null,
     modalClienteOpened: false,
     clienteSelecionado: <iCliente>{},
-    regimeOptions: ["SIMPLES", "REAL", "PRESUMIDO"],
-    renomearRegime: {
-        call: function (r) {
-            if (r.value.trim() === 'L') return 'PRESUMIDO';
-            if (r.value.trim() === 'S') return 'SIMPLES';
-            if (r.value.trim() === 'R') return 'REAL';
-        }
-    },
+    regimeOptions: [
+        { label: 'SIMPLES', value: 'S' },
+        { label: 'REAL', value: 'R' },
+        { label: 'PRESUMIDO', value: 'L' }
+    ],
     spedOptions: ["Sim", "Não"]
 });
 
