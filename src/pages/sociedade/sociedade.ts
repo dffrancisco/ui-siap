@@ -61,11 +61,7 @@ export const actions = {
                 "Sociedade": { dataField: "NOME", left: true, width: '60%' },
                 "CNPJ": { dataField: "CNPJ", left: true },
             },
-            query: {
-                async execute(rs) {
-                    await actions.getSociedade();
-                },
-            },
+
 
             sideBySide: {
                 el: "#pnCampos",
@@ -146,13 +142,11 @@ export const actions = {
     async getSociedade() {
 
         if (state.PausabuscaSociedade) return;
-
         try {
             state.loading = true;
             const data = await serviceSociedade.getSociedade(state.edtSearch);
 
-            state.gridPrincipal.querySourceAdd(data);
-
+            state.gridPrincipal.source(data);
             state.PausabuscaSociedade = true;
             return data;
         } catch (error) {
@@ -164,14 +158,11 @@ export const actions = {
             state.loading = false;
         }
     },
-
     async search() {
 
         state.PausabuscaSociedade = false;
         state.gridPrincipal.clear && state.gridPrincipal.clear();
-        state.gridPrincipal.queryOpen({
-            search: inputSearch.value,
-        });
+        await actions.getSociedade();
     },
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
