@@ -63,8 +63,7 @@ export const actions = {
             },
             query: {
                 async execute(rs) {
-                    let data = await actions.getSociedade();
-                    state.gridPrincipal.querySourceAdd(data);
+                    await actions.getSociedade();
                 },
             },
 
@@ -165,7 +164,7 @@ export const actions = {
 
     async search() {
         state.gridPrincipal.queryOpen({
-            search: inputSearch.value
+            search: inputSearch.value,
         });
     },
 
