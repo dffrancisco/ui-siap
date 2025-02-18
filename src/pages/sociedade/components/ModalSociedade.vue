@@ -28,12 +28,14 @@ const actions = {
         Cliente: { dataField: "NOME" },
         CNPJ: { dataField: "CGC_CLIENTE" },
       },
+
       query: {
         async execute(rs) {
-          let data = await actions.getCliente();
+          let data = await actions.getCliente(state.edtSearch, rs.offset);
           state.gridCliente.querySourceAdd(data);
         },
       },
+
       enter: () => actions.validarInputs(),
       dblClick: () => actions.validarInputs(),
     });
@@ -42,11 +44,10 @@ const actions = {
   closeModalCliente() {
     emits("closeModalCliente");
   },
-
-  async getCliente() {
+  async getCliente(param: string, offset: number) {
     try {
       state.loading = true;
-      const data = await serviceSociedade.getCliente(state.edtSearch);
+      const data = await serviceSociedade.getCliente(param, offset);
       state.gridCliente.querySourceAdd(data);
       return data;
     } catch (error) {
@@ -62,7 +63,7 @@ const actions = {
 
   async btnSearch() {
     state.gridCliente.queryOpen({
-      search: inputSearch.value.value,
+      search: state.edtSearch,
     });
   },
 
@@ -111,6 +112,7 @@ onMounted(async () => {
             density="compact"
             autofocus
             ref="inputSearch"
+            v-model="state.edtSearch"
             @keydown.enter.prevent="actions.btnSearch"
             @keydown.arrow.down.prevent="state.gridCliente.focus()"
           ></v-text-field>

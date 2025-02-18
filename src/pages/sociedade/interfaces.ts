@@ -1,5 +1,5 @@
 export interface iSociedade {
-    ID_SOCIEDADE?: number;
+    ID_SOCIEDADE: number;
     ID_CLIENTE: number;
     NOME: string;
     CAMINHO_SERVIDOR?: string;
@@ -16,6 +16,10 @@ export interface iCliente {
     ID_CLIENTE: number;
     CGC_CLIENTE: string;
     NOME: string;
+}
+
+export interface iGetClientes {
+    search: string;
 }
 
 export interface iParamToInsert {

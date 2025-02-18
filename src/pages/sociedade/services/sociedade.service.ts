@@ -12,9 +12,9 @@ import {
 
 const caminho = "siap/sociedade";
 
-type iGetClienteFunction = (param: string) => Promise<iCliente>;
+type iGetClienteFunction = (param: string, offset: number) => Promise<iCliente>;
 type iGetSociedadeFunction = (param: string) => Promise<iSociedade>;
-type iToInsertFunction = (param: iParamToInsert) => Promise<any>;
+type iToInsertFunction = (param: iParamToInsert) => Promise<iSociedade>;
 type iToUpdateFunction = (param: iUpdateSociedadeParam) => Promise<void>;
 
 const getSociedade: iGetSociedadeFunction = async (param) => {
@@ -25,9 +25,10 @@ const getSociedade: iGetSociedadeFunction = async (param) => {
     return data;
 };
 
-const getCliente: iGetClienteFunction = async (param) => {
+const getCliente: iGetClienteFunction = async (param, offset) => {
     const { data } = await axios.post(caminho, {
         call: "getCliente",
+        offset,
         param,
     });
     return data;

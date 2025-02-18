@@ -6,7 +6,6 @@ import { iSociedade, iFieldDuplicity, iUpdateSociedadeParam, iCliente } from "./
 import utils from "@/ts/utils";
 import serviceSociedade from "./services/sociedade.service";
 import { useEventListener } from "@vueuse/core";
-const inputSearch = ref();
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
@@ -21,17 +20,12 @@ export const state = reactive({
     idCliente: <number>null,
     modalClienteOpened: false,
     clienteSelecionado: <iCliente>{},
-    regimeOptions: ["Simples N.", "Real", "Presumido"],
+    regimeOptions: ["SIMPLES", "REAL", "PRESUMIDO"],
     renomearRegime: {
-        dataField: [],
         call: function (r) {
-            if (r.value.trim() === 'L') {
-                return 'PRESUMIDO';
-            } else if (r.value.trim() === 'S') {
-                return 'SIMPLES';
-            } else if (r.value.trim() === 'R') {
-                return 'REAL';
-            }
+            if (r.value.trim() === 'L') return 'PRESUMIDO';
+            if (r.value.trim() === 'S') return 'SIMPLES';
+            if (r.value.trim() === 'R') return 'REAL';
         }
     },
     spedOptions: ["Sim", "Não"]
@@ -129,6 +123,7 @@ export const actions = {
 
     popularStates(clienteSelecionado: iCliente) {
         state.dbSociedade.NOME = clienteSelecionado.NOME
+        state.dbSociedade.CNPJ = clienteSelecionado.CGC_CLIENTE
     },
 
     cancelar() {
@@ -274,6 +269,7 @@ export const actions = {
                 FANTASIA: state.dbSociedade.FANTASIA,
                 ID_EMPRESA: state.dbSociedade.ID_EMPRESA,
                 NOME: state.dbSociedade.NOME,
+                ID_SOCIEDADE: state.dbSociedade.ID_SOCIEDADE
             };
             await serviceSociedade.toInsert(newFields);
             state.gridPrincipal.insertLine({ ...newFields });
