@@ -786,7 +786,7 @@ export const printComCabecalho = async (columns: iColumnPrint[], data: iDataPrin
         <img src="./Logo-Real-Shop-Car-menor.png" alt="Logo" style="height: 90px; margin-right: 10px"/>
         <div style="display: flex; flex-direction: column; gap: 4px; align-items: start; width: 100%">
             <div style="display: flex; justify-content: space-between; width: 100%">
-              <strong>${empresa.APELIDO} - ${empresa.RAZAO_SOCIAL}</strong>
+              <strong>${empresa.RAZAO_SOCIAL} - (${empresa.APELIDO})</strong>
               <span>${moment().format('DD/MM/YYYY HH:mm:ss')}</span>
             </div>
             <div style="display: flex; justify-content: space-between; width: 100%">
