@@ -24,7 +24,7 @@ export interface iGetClientes {
 
 export interface iParamToInsert {
     ID_CLIENTE: number;
-    ID_SOCIEDADE?: number;
+    ID_SOCIEDADE: number;
     CAMINHO_SERVIDOR?: string;
     CNPJ: string;
     HOST?: string;
@@ -32,7 +32,7 @@ export interface iParamToInsert {
     GERA_SPED: boolean;
     REGIME: string;
     FANTASIA?: string;
-    ID_EMPRESA?: number;
+    ID_EMPRESA: number;
 }
 
 export interface iUpdateSociedadeParam extends iParamToInsert { }

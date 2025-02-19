@@ -48,7 +48,6 @@ const actions = {
     try {
       state.loading = true;
       const data = await serviceSociedade.getCliente(param, offset);
-      state.gridCliente.querySourceAdd(data);
       return data;
     } catch (error) {
       state.loading = false;
@@ -56,6 +55,7 @@ const actions = {
         icon: "error",
         text: "Erro ao exibir registro de Cliente",
       });
+      return [];
     } finally {
       state.loading = false;
     }

@@ -286,6 +286,7 @@ export const actions = {
     },
 
     async toUpdate() {
+
         try {
             let param: iUpdateSociedadeParam = {
                 ID_CLIENTE: state.dbSociedade.ID_CLIENTE,
@@ -297,7 +298,7 @@ export const actions = {
                 REGIME: state.dbSociedade.REGIME,
                 FANTASIA: state.dbSociedade.FANTASIA,
                 ID_EMPRESA: state.dbSociedade.ID_EMPRESA,
-
+                ID_SOCIEDADE: state.dbSociedade.ID_SOCIEDADE
             };
             state.loading = true;
             await serviceSociedade.toUpdate(param);
