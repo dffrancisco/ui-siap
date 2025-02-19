@@ -55,7 +55,6 @@ const actions = {
         icon: "error",
         text: "Erro ao exibir registro de Cliente",
       });
-      return [];
     } finally {
       state.loading = false;
     }
