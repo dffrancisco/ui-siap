@@ -62,7 +62,9 @@ export const state = reactive(({
     isAlteracao: false,
     menuConfigOpened: false,
     verTodosOsItens: false,
-    verVendasEComprasEntreLojas: false
+    verVendasEComprasEntreLojas: false,
+    searchDescricaoGridItem: '',
+    searchNumFabGridItem: ''
 }))
 
 setInterval(async () => {
@@ -221,6 +223,10 @@ export const actions = {
     },
 
     buscarProdutos: async (param: iParamEmitBuscarProdutos) => {
+        if (state.abaItens == 'adicionados') {
+            state.searchDescricaoGridItem = param.DESC_PRODUTO;
+            state.searchNumFabGridItem = param.NUM_FABRICANTE
+        }
 
         if (state.loading || state.loadingHistoricoCompras || state.loadingHistoricoVendas) {
             comprasItensService.cancelarRequisicao();
@@ -235,7 +241,6 @@ export const actions = {
 
         state.loading = true;
         state.indexProdutoSelecionado = 0;
-        state.abaItens = 'nao_adicionados';
 
         try {
             actions.buscarHistorico(param);

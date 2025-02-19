@@ -270,6 +270,8 @@ actions.init();
               :media="computeds.mediaQtdItemSelecionado.value"
               :corMediaVenda="computeds.corMediaVenda.value"
               :qtdJaAdicionada="computeds.qtdJaAdicionadaItem.value"
+              :searchDescricaoGridItem="state.searchDescricaoGridItem"
+              :searchNumFabGridItem="state.searchNumFabGridItem"
               @changeIndexProdutoSelecionado="actions.changeIndexProdutoSelecionado"
               @adicionarItem="actions.adicionarItem"
               @deletarItem="actions.deletarItem"
