@@ -115,7 +115,8 @@ export const actions = {
 
     salvarClienteSelecionadoNaState(clienteSelecionado: iCliente) {
         state.clienteSelecionado = clienteSelecionado;
-        actions.popularStates(clienteSelecionado)
+        state.dbSociedade = {} as iSociedade;
+        actions.popularStates(clienteSelecionado);
     },
 
     popularStates(clienteSelecionado: iCliente) {
