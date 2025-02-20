@@ -6,7 +6,7 @@ import { iConhecimento, iFieldDuplicity } from "./interfaces";
 import utils from "@/ts/utils";
 import { useEventListener } from "@vueuse/core";
 import serviceConhecimento from "./services/conhecimento.service";
-const inputSearch = ref();
+
 
 
 export const state = reactive({
@@ -104,31 +104,32 @@ export const actions = {
         });
     },
 
-
-
     async getConhecimento() {
         try {
             state.loading = true;
-            const data = await serviceConhecimento.getConhecimento(state.edtSearch);
+            const param = state.edtSearch?.toUpperCase();
 
-            state.gridPrincipal.querySourceAdd(data);
+            const data = await serviceConhecimento.getConhecimento(param);
+            state.gridPrincipal.source(data);
             return data;
         } catch (error) {
-            state.loading = false;
             Swal.fire({
                 icon: "error",
                 text: "Erro ao exibir registro de Conhecimento",
             });
+            return [];
         } finally {
             state.loading = false;
         }
     },
 
     async search() {
-        state.gridPrincipal.queryOpen({
-            search: inputSearch.value
-        });
+        state.gridPrincipal.clear();
+        const data = await actions.getConhecimento();
+        state.gridPrincipal.source(data);
     },
+
+
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
