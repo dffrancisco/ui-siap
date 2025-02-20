@@ -507,6 +507,10 @@ export const actions = {
         const bairroSelecionado = state.bairros.find(
             (bairro) => bairro.ID_BAIRRO === state.selectBairro
         );
+        if (bairroSelecionado == undefined) {
+            state.selectBairro = null
+        }
+
         state.nomeBairro = bairroSelecionado ? bairroSelecionado.DESCRICAO : "";
     },
 
@@ -514,6 +518,10 @@ export const actions = {
         const cidadeSelecionada = state.cidades.find(
             (cidade) => cidade.COD_CIDADE === state.selectCidade
         );
+
+        if (cidadeSelecionada == undefined) {
+            state.selectCidade = null
+        }
         state.nomeCidade = cidadeSelecionada ? cidadeSelecionada.DESCRICAO : "";
     },
 
