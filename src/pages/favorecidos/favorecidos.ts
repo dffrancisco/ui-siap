@@ -21,6 +21,7 @@ export const state = reactive({
         OP: "Operacional",
         RH: "Pessoal",
     },
+    cnpjOuCpfJaExiste: false,
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -78,8 +79,10 @@ export const actions = {
                             state.gridPrincipal.showMessageDuplicity(
                                 rs.text + " já cadastrado!"
                             );
+                            state.cnpjOuCpfJaExiste = true;
                             return true;
                         }
+                        state.cnpjOuCpfJaExiste = false;
                         return false;
                     },
                 },
@@ -163,22 +166,18 @@ export const actions = {
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
-
-            if (!value) {
-                return null;
-            }
             const data = await serviceFavorecidos.getDuplicidade({ value, field });
             return data;
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao verificar duplicidade!",
                 text: "Erro ao executar verificação de duplicidade",
             });
         }
     },
 
     async btnInsert() {
+
         state.pnSearch = true;
         state.dbFavorecido = {} as iFavorecidos;
         await nextTick();
@@ -199,6 +198,7 @@ export const actions = {
     },
 
     async btnDelete() {
+
         if (!state.gridPrincipal.dataSource()) {
             Swal.fire({
                 icon: "info",
@@ -218,6 +218,14 @@ export const actions = {
             return false;
         }
 
+        if (state.cnpjOuCpfJaExiste) {
+            Swal.fire({
+                icon: "warning",
+                text: "CPF ou CNPJ já existe.",
+            });
+            return false;
+        }
+
         if (!state.dbFavorecido.NR_CPF && !state.dbFavorecido.NR_CNPJ) {
             await Swal.fire({
                 icon: "warning",
@@ -227,11 +235,10 @@ export const actions = {
             return false
         }
 
-        if (await state.gridPrincipal.getDuplicityAll()) {
-            return false;
-        }
-
         if (state.gridPrincipal.dataSource() == false) {
+            if (await state.gridPrincipal.getDuplicityAll()) {
+                return false;
+            }
             actions.toInsert();
         } else {
             actions.toUpdate();
@@ -308,10 +315,10 @@ export const actions = {
 
     async toUpdate() {
         try {
-            let dadosDiff = state.gridPrincipal.getDiffTwoJson(false);
+            let dadosDiff = state.gridPrincipal.getDiffTwoJson(true, false);
 
-            if (!dadosDiff.diff) {
-                return;
+            if (dadosDiff.diff == false) {
+                return
             }
 
             let dadosAtualizados = {
@@ -325,8 +332,9 @@ export const actions = {
             state.loading = true;
 
             await serviceFavorecidos.toUpdate(dadosAtualizados);
-            state.dbFavorecido = dadosAtualizados as iFavorecidos;
             state.gridPrincipal.dataSource(dadosAtualizados);
+            state.dbFavorecido = dadosAtualizados
+            state.loading = false;
 
             await Swal.fire({
                 icon: "success",
@@ -335,11 +343,8 @@ export const actions = {
         } catch (error) {
             await Swal.fire({
                 icon: "error",
-                title: "Erro ao atualizar favorecido!",
-                text: error.response?.data || error.message,
+                text: "Erro ao atualizar registro!",
             });
-        } finally {
-            state.loading = false;
         }
     }
 };

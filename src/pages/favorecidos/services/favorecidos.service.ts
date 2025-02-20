@@ -6,7 +6,6 @@ import {
     iParamToUpdate,
     iFieldDuplicity,
     iGetDuplicityResponse,
-    iToDeleteResponse,
     iInsertResponse,
     iBancoResponse,
 } from '../interfaces';
@@ -55,7 +54,7 @@ const toUpdate = async (param: iParamToUpdate) => {
 };
 
 
-const toDelete = async (id_favorecido: number): Promise<iToDeleteResponse> => {
+const toDelete = async (id_favorecido: number): Promise<string> => {
     const { data } = await axios.post(caminho, {
         call: "delete",
         id_favorecido,
