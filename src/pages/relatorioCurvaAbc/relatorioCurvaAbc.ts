@@ -194,6 +194,7 @@ export const actions = {
             ULTIMA_ENTRADA: item.ULTIMA_ENTRADA ? moment(item.ULTIMA_ENTRADA).format('DD/MM/YYYY') : '----',
         }));
     },
+
     updatePage(newPage: number) {
         state.page = newPage;
         actions.getDadosParaRelatorio();

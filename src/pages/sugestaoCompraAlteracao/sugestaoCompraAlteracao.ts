@@ -39,7 +39,7 @@ export const filtrarSugestoes = computed(() => {
 export const state = reactive({
     loading: false,
     mes: mes,
-    ano: ano || "",
+    ano: ano || null,
     opcoes: "Todos",
     status: "Todos",
     sugestaoCompraAlteracao: <iSugestaoCompraAlteracao[]>[],
@@ -97,21 +97,17 @@ export const actions = {
     },
 
     validarInputs() {
-        if (state.ano === "" || state.ano > ano.toString()) {
+
+        let dataFormatada = moment({ year: state.ano, month: state.mes - 1, day: 1 })
+
+        if (dataFormatada.isAfter(moment())) {
             Swal.fire({
-                icon: "error",
-                text: "Insira um ano válido para continuar"
+                icon: "warning",
+                text: "Insira uma data válida para continuar"
             });
             return
         }
 
-        if (state.mes > mes) {
-            Swal.fire({
-                icon: "error",
-                text: "Insira um mês válido para continuar"
-            });
-            return
-        }
         actions.getSugestaoCompraAlteracao();
     },
 
