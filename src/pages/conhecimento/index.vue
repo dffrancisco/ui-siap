@@ -54,7 +54,7 @@ onMounted(async () => {
           </v-col>
         </v-row>
 
-        <div class="mt-2 d-flex ga-2">
+        <div class="mt-2 d-flex ga-2 pt-2 pb-2">
           <input
             v-model="state.edtSearch"
             type="text"
