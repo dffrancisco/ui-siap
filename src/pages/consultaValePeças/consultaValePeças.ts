@@ -6,7 +6,6 @@ import { iParamsValePeca } from './interfaces';
 import utils, { iColumnPrint } from "@/ts/utils";
 import { mesesToSelect } from "@/constants/constants";
 
-
 export const meses = mesesToSelect;
 const ano = moment().year();
 const mes = moment().month() + 1;
@@ -22,7 +21,13 @@ export const state = reactive({
     totalItems: 0,
     itemsPerPage: 30,
     page: 1,
-    headers: <any>[
+    dbSelectItem: null,
+    dataInicio: '',
+    dataFim: '',
+    mesSelecionado: null,
+    numeroOrcamento: null,
+    funcionario: [],
+    headers: [
         { key: 'V_NOME_FUNCIONARIO', title: 'Nome do Funcionário', sortable: true, align: 'center' },
         { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left' },
         { key: 'DATA_ORCAMENTO', title: 'Data Vencimento', sortable: true, align: 'left' },
@@ -31,45 +36,46 @@ export const state = reactive({
         { key: 'ANO', title: 'Ano', sortable: true, align: 'left' },
         { key: 'DIV', title: 'Parcela.', sortable: true, align: 'left' },
     ],
-    filtroOptions: [
-
-
-    ]
+    filtroOptions: mesesToSelect.map(mes => ({ value: mes.value, text: mes.title }))
 });
 
 export const actions = {
     async init() {
-        await actions.getMarcas();
+        await actions.getFuncionarios();
     },
 
     validarInputs(): boolean {
 
-
+        if (!state.dataInicio || !state.dataFim) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Selecione o período para consulta'
+            });
+            return false;
+        }
         return true;
     },
 
     async buscarDadosComValidacao() {
-        if (!actions.validarInputs()) {
-            return;
-        }
-        await actions.getDadosParaRelatorio();
+        if (!actions.validarInputs()) return;
+        await actions.getConsultarValePeca();
     },
 
-    async getDadosParaRelatorio() {
+    async getConsultarValePeca() {
         try {
             state.loading = true;
 
-            const params = {
-                filtro: state.filtro || undefined,
-                page: state.page,
-                itemsPerPage: state.itemsPerPage,
+            const params: iParamsValePeca = {
+                DATA_ORCAMENTO: state.dataInicio,
+                DATA: state.dataFim,
+                COD_FUNCIONARIO: state.funcionario.length ? state.funcionario[0].value : null,
+                NUM_ORCAMENTO: state.numeroOrcamento || null
             };
 
-            const { dadosRelatorio, totalDadosRelatorio }: iParamsValePeca =
-                await serviceConsultaValePeças.getDadosParaRelatorio(params);
+            const response = await serviceConsultaValePeças.consultarValePeca(params);
 
-            state.dadosRelatorio = dadosRelatorio;
-            state.totalItems = totalDadosRelatorio[0]?.TOTAL || 0;
+            state.dadosRelatorio = response;
+            state.totalItems = response.length;
         } catch (error) {
             console.error("Erro ao obter os dados:", error);
             Swal.fire({
@@ -81,21 +87,19 @@ export const actions = {
         }
     },
 
-
-    async getMarcas() {
+    async getFuncionarios() {
         try {
             state.loading = true;
-            const data = await serviceConsultaValePeças.getMarcas();
-            state.marcas = data.map((marca: iMarcas) => ({
-                value: marca.ID_MARCA,
-                label: marca.MARCA,
+            const response = await serviceConsultaValePeças.getFuncionarios();
+            state.funcionario = response.map((func: { COD_FUNCIONARIO: number; NOME_FUNCIONARIO: string }) => ({
+                value: func.COD_FUNCIONARIO,
+                text: func.NOME_FUNCIONARIO
             }));
-            state.dbSelectMarca = [];
         } catch (error) {
-            console.error("Erro ao buscar marca:", error);
+            console.error("Erro ao buscar funcionários:", error);
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao buscar marcas',
+                text: 'Erro ao carregar lista de funcionários',
             });
         } finally {
             state.loading = false;
@@ -103,11 +107,7 @@ export const actions = {
     },
 
     async onClickImprimir() {
-        if (!actions.validarInputs()) {
-            return;
-        }
-
-        if (!state.dadosRelatorio) {
+        if (!actions.validarInputs() || !state.dadosRelatorio?.length) {
             Swal.fire({
                 icon: 'warning',
                 text: 'Não há dados para realizar a impressão.',
@@ -117,46 +117,37 @@ export const actions = {
 
         try {
             state.loading = true;
-            let relatorio = state.dadosRelatorio;
-            const relatorioAjustado = actions.formatarDadosImpressao([...relatorio]);
-
-            if (!relatorioAjustado || !relatorioAjustado) {
-                Swal.fire({
-                    icon: 'warning',
-                    text: 'Não há dados ajustados para imprimir.',
-                });
-                return;
-            }
 
             const columns: iColumnPrint[] = [
-                { key: 'V_NOME_FUNCIONARIO', label: 'Nome do Funcionário', align: 'center' },
-                { key: 'NUM_ORCAMENTO', label: 'Nº Orçamento', align: 'left' },
-                { key: 'DATA_ORCAMENTO', label: 'Data Vencimento', align: 'left' },
-                { key: 'VALOR', label: 'Valor', align: 'left' },
-                { key: 'MES', label: 'Mês', align: 'left' },
-                { key: 'ANO', label: 'Ano', align: 'left' },
-                { key: 'DIV', label: 'Parcela.', align: 'left' },
+                { key: 'V_NOME_FUNCIONARIO', label: 'Funcionário', align: 'center' },
+                { key: 'NUM_ORCAMENTO', label: 'Orçamento', align: 'left' },
+                { key: 'DATA_ORCAMENTO', label: 'Data Venc.', align: 'left' },
+                { key: 'VALOR', label: 'Valor', align: 'right' },
+                { key: 'MES', label: 'Mês', align: 'center' },
+                { key: 'ANO', label: 'Ano', align: 'center' },
+                { key: 'DIV', label: 'Parcela', align: 'center' },
             ];
 
             const titulo = `
                 <div style="text-align: center;">
-                    <strong style="font-size: 16px;"> Consulta Vale Peças </strong>
+                    <strong style="font-size: 16px;">Relatório de Vale Peças</strong>
+                    <div style="font-size: 14px;">Período: ${state.dataInicio} à ${state.dataFim}</div>
                 </div>
             `;
 
-            await utils.printComCabecalho(columns, relatorioAjustado, titulo);
+            await utils.printComCabecalho(columns, state.dadosRelatorio, titulo);
         } catch (error) {
-            console.error("Erro ao imprimir o relatório:", error);
+            console.error("Erro ao imprimir:", error);
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao imprimir relatório.',
+                text: 'Erro ao gerar relatório impresso.',
             });
         } finally {
             state.loading = false;
         }
     },
 
-
+    // Métodos auxiliares
     formatarDadosImpressao(data: any[]) {
         return data.map(item => ({
             ...item,
@@ -165,7 +156,7 @@ export const actions = {
     },
     updatePage(newPage: number) {
         state.page = newPage;
-        actions.getDadosParaRelatorio();
+        actions.getConsultarValePeca();
     },
 
 

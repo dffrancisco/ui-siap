@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { state, actions } from "consultaValePeças";
+import { actions, state } from "./consultaValePeças";
+import { onUnmounted } from "vue";
 
 onMounted(() => {
   actions.init();
