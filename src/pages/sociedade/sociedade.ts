@@ -25,7 +25,8 @@ export const state = reactive({
         { label: 'REAL', value: 'R' },
         { label: 'PRESUMIDO', value: 'L' }
     ],
-    spedOptions: ["Sim", "Não"]
+    spedOptions: ["Sim", "Não"],
+    btnSearchClienteDisabled: true,
 });
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
@@ -113,13 +114,13 @@ export const actions = {
         });
     },
 
-    salvarClienteSelecionadoNaState(clienteSelecionado: iCliente) {
+    async salvarClienteSelecionadoNaState(clienteSelecionado: iCliente) {
         state.clienteSelecionado = clienteSelecionado;
         state.dbSociedade = {} as iSociedade;
         actions.popularStates(clienteSelecionado);
     },
 
-    popularStates(clienteSelecionado: iCliente) {
+    async popularStates(clienteSelecionado: iCliente) {
         state.dbSociedade.NOME = clienteSelecionado.NOME
         state.dbSociedade.CNPJ = clienteSelecionado.CGC_CLIENTE
     },
@@ -175,6 +176,7 @@ export const actions = {
 
     async btnInsert() {
         state.pnSearch = true;
+        state.btnSearchClienteDisabled = false
         state.dbSociedade = {} as iSociedade;
         await nextTick();
         state.gridPrincipal.focusField();
@@ -189,6 +191,8 @@ export const actions = {
             });
             return false;
         }
+
+        state.btnSearchClienteDisabled = false
         state.gridPrincipal.disable();
         state.gridPrincipal.focusField();
     },
@@ -219,7 +223,9 @@ export const actions = {
         } else {
             actions.toUpdate();
         }
+
         state.pnSearch = false;
+        state.btnSearchClienteDisabled = true
         await nextTick();
         state.gridPrincipal.enable();
         state.gridPrincipal.focus();
@@ -227,6 +233,7 @@ export const actions = {
 
     async btnCancel() {
         state.pnSearch = false;
+        state.btnSearchClienteDisabled = true
         let linhaGrid = <any>state.gridPrincipal.getIndex();
         await nextTick();
         state.gridPrincipal.enable();

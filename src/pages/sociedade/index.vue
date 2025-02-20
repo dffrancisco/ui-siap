@@ -24,6 +24,7 @@ onMounted(async () => {
               id="ID_CLIENTE"
               name="ID_CLIENTE"
               class="obr ss"
+              :disabled="true"
               maxlength="60"
               autocomplete="off"
               :style="{ width: '105%' }"
@@ -39,7 +40,7 @@ onMounted(async () => {
               size="30"
               color="primary"
               @click="state.modalClienteOpened = true"
-              :disabled="!state.desativarInputs"
+              :disabled="state.btnSearchClienteDisabled"
               icon="mdi-magnify"
             />
           </v-col>
@@ -50,6 +51,7 @@ onMounted(async () => {
               type="text"
               id="CNPJ"
               name="CNPJ"
+              :disabled="true"
               class="obr ss"
               maxlength="23"
               v-mask="'##.###.###/####-##'"
@@ -217,14 +219,3 @@ onMounted(async () => {
     />
   </v-dialog>
 </template>
-
-<style scoped>
-.ss {
-  margin-right: 5px;
-  margin-top: 1px;
-}
-
-.mt-4 {
-  margin-top: 16px;
-}
-</style>
