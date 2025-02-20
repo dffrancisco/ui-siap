@@ -1,0 +1,43 @@
+export interface iResponseVale {
+    COD_FUNCIONARIO: number;
+    V_NOME_FUNCIONARIO: string;
+    DATA: string;
+    VALOR: number;
+    MES: number;
+    ANO: number;
+}
+
+export interface iParamsValePeca {
+    ID_VALE_PECA: number;
+    COD_FUNCIONARIO: number;
+    V_NOME_FUNCIONARIO: string;
+    NUM_ORCAMENTO: number;
+    VALOR: number;
+    DIV: number;
+    DATA_ORCAMENTO: string;
+    DATA: string;
+    MES: number;
+    ANO: number;
+}
+
+export interface iResponseOrcamento {
+    NUM_ORCAMENTO: number;
+    NOME_CLIENTE: string;
+    VENDEDOR: string;
+    CAIXA: string;
+    DATA: string;
+    HORA: string;
+    DESCONTO: number;
+    VALOR_DESCONTO: number;
+    VALOR: number;
+}
+
+export interface iParamsItemOrcamento {
+    NUM_FABRICANTE: string;
+    DESC_PRODUTO: string;
+    UNIDADE: string;
+    DESCRICAO: string;
+    QTO: number;
+    VALOR: number;
+    VALOR_REAL: number;
+}
