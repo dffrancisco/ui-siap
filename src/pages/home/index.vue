@@ -369,10 +369,28 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/gerirRamais')"
+              >Gerir Ramais</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/usoConsumo')"
             >
               Uso Consumo
             </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/relatorioDeConhecimento')"
+              >Relatorio de Conhecimento</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/relatorioAvarias')"
+              >Relatório Avarias</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
