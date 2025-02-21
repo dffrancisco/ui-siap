@@ -36,6 +36,7 @@ actions.init();
         :marcas="state.marcas"
         :carros="state.carros"
         :disablePrint="computeds.disablePrint.value"
+        :abaItens="state.abaItens"
         @abrirModalImpressao="actions.abrirModalImpressao"
         @buscarProdutos="actions.buscarProdutos"
         @focarNosItensNaoAdicionados="actions.focarContainerItem"

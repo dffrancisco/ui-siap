@@ -19,6 +19,10 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  abaItens: {
+    type: String,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["buscarProdutos", "abrirModalImpressao", "focarNosItensNaoAdicionados", "ordenar"]);
@@ -101,6 +105,16 @@ watch(
   () => {
     if (props.idMarcaInicial) {
       state.edtMarca = props.idMarcaInicial;
+    }
+  }
+);
+
+watch(
+  () => props.abaItens,
+  ([newAbaItens], [oldAbaItens]) => {
+    if (newAbaItens != oldAbaItens) {
+      state.edtNumFabricante = "";
+      state.edtDescricao = "";
     }
   }
 );

@@ -226,6 +226,7 @@ export const actions = {
         if (state.abaItens == 'adicionados') {
             state.searchDescricaoGridItem = param.DESC_PRODUTO;
             state.searchNumFabGridItem = param.NUM_FABRICANTE
+            return;
         }
 
         if (state.loading || state.loadingHistoricoCompras || state.loadingHistoricoVendas) {
