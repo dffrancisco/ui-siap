@@ -33,7 +33,7 @@ export const actions = {
         state.gridPrincipal = new xGridV2.create({
             el: "#gridPrincipal",
             height: 200,
-            count: true,
+            count: false,
             columns: {
                 "Código": { dataField: "ID_CONHECIMENTO", right: true, width: '7%' },
                 "Descrição": { dataField: "DESCRICAO", left: true, width: '80%' },
