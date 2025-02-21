@@ -9,21 +9,25 @@ import { mesesToSelect } from "@/constants/constants";
 export const meses = mesesToSelect;
 const ano = moment().year();
 const mes = moment().month() + 1;
-
 export const state = reactive({
     loading: false,
+    meses: meses,
     mes: mes,
     ano: ano || null,
     filtro: '',
     numFabricante: '',
     marcas: [] as any[],
     dadosRelatorio: [] as iParamsValePeca[],
+    dadosRelatorioVales: [] as iParamsValePeca[],
+    itensOrcamento: [] as any[],
     totalItems: 0,
     itemsPerPage: 30,
     page: 1,
+    edtsearch: '',
     dbSelectItem: null,
     dataInicio: '',
     dataFim: '',
+    inputDataFinal: '',
     mesSelecionado: null,
     numeroOrcamento: null,
     funcionario: [],
@@ -36,12 +40,12 @@ export const state = reactive({
         { key: 'ANO', title: 'Ano', sortable: true, align: 'left' },
         { key: 'DIV', title: 'Parcela.', sortable: true, align: 'left' },
     ],
-    filtroOptions: mesesToSelect.map(mes => ({ value: mes.value, text: mes.title }))
+    filtroOptions: mesesToSelect.map(mes => ({ value: mes.value, text: mes.title })),
+    orcamento: null
 });
-
 export const actions = {
     async init() {
-        await actions.getFuncionarios();
+        await actions.getConsultarValePeca();
     },
 
     validarInputs(): boolean {
@@ -66,13 +70,19 @@ export const actions = {
             state.loading = true;
 
             const params: iParamsValePeca = {
+                ID_VALE_PECA: null,
+                V_NOME_FUNCIONARIO: '',
+                VALOR: 0,
+                DIV: '',
+                MES: state.mes,
+                ANO: state.ano,
                 DATA_ORCAMENTO: state.dataInicio,
                 DATA: state.dataFim,
                 COD_FUNCIONARIO: state.funcionario.length ? state.funcionario[0].value : null,
                 NUM_ORCAMENTO: state.numeroOrcamento || null
             };
 
-            const response = await serviceConsultaValePeças.consultarValePeca(params);
+            const response = await serviceConsultaValePeças.getconsultarValePeca(params);
 
             state.dadosRelatorio = response;
             state.totalItems = response.length;
@@ -87,22 +97,85 @@ export const actions = {
         }
     },
 
-    async getFuncionarios() {
+    async getConsultarVales() {
         try {
             state.loading = true;
-            const response = await serviceConsultaValePeças.getFuncionarios();
-            state.funcionario = response.map((func: { COD_FUNCIONARIO: number; NOME_FUNCIONARIO: string }) => ({
-                value: func.COD_FUNCIONARIO,
-                text: func.NOME_FUNCIONARIO
+
+            const params: iParamsValePeca = {
+                ID_VALE_PECA: null,
+                V_NOME_FUNCIONARIO: '',
+                VALOR: 0,
+                DIV: '',
+                MES: state.mes,
+                ANO: state.ano,
+                DATA_ORCAMENTO: state.dataInicio,
+                DATA: state.dataFim,
+                COD_FUNCIONARIO: state.funcionario.length ? state.funcionario[0].value : null,
+                NUM_ORCAMENTO: state.numeroOrcamento || null
+            };
+
+            const response = await serviceConsultaValePeças.consultarVales(params);
+            state.dadosRelatorioVales = response.map(item => ({
+                ID_VALE_PECA: item.ID_VALE_PECA,
+                COD_FUNCIONARIO: item.COD_FUNCIONARIO,
+                V_NOME_FUNCIONARIO: item.V_NOME_FUNCIONARIO,
+                NUM_ORCAMENTO: item.NUM_ORCAMENTO,
+                VALOR: item.VALOR,
+                DIV: item.DIV,
+                DATA_ORCAMENTO: item.DATA_ORCAMENTO,
+                DATA: item.DATA,
+                MES: item.MES,
+                ANO: item.ANO
             }));
+            state.totalItems = response.length;
         } catch (error) {
-            console.error("Erro ao buscar funcionários:", error);
+            console.error("Erro ao obter os dados dos vales:", error);
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao carregar lista de funcionários',
+                text: 'Erro ao buscar dados dos vales',
             });
         } finally {
             state.loading = false;
+        }
+    },
+
+    async getOrcamento() {
+        try {
+            state.loading = true;
+            const response = await serviceConsultaValePeças.getOrcamento(state.edtsearch);
+            state.orcamento = response;
+            return response;
+        } catch (error) {
+            console.error("Erro ao obter o orçamento:", error);
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao buscar dados do orçamento',
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getItensOrcamento(params: string) {
+        try {
+            state.loading = true;
+            const response = await serviceConsultaValePeças.getItensOrcamento(state.edtsearch);
+            state.itensOrcamento = response;
+            return response;
+        } catch (error) {
+            console.error("Erro ao obter os itens do orçamento:", error);
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao buscar items do orçamento.',
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async onClickBuscar() {
+        if (actions.validarInputs()) {
+            await actions.getConsultarValePeca();
         }
     },
 
@@ -147,7 +220,6 @@ export const actions = {
         }
     },
 
-    // Métodos auxiliares
     formatarDadosImpressao(data: any[]) {
         return data.map(item => ({
             ...item,
@@ -158,7 +230,6 @@ export const actions = {
         state.page = newPage;
         actions.getConsultarValePeca();
     },
-
 
     getClassCorLinha(dados: any) {
         let classe = dados.index % 2 == 0 ? 'cor-zebrada-1' : 'cor-zebrada-2';
