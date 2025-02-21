@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { state, actions, faturado, naoFaturado } from "./liberarCliente";
+import {
+  state,
+  actions,
+  faturado,
+  naoFaturado,
+  tipoFaturamento,
+  divisaoBoletoDisabled,
+  diaVencimento,
+} from "./liberarCliente";
 import ModalLiberarCliente from "./components/modalLiberarCliente.vue";
 import { onMounted } from "vue";
 
@@ -103,11 +111,11 @@ onMounted(async () => {
             id="tipoFaturamento"
             :disabled="state.idCliente == null || state.botaoAlterarHabilitado || state.status == 'Bloqueado'"
             label="Tipo Faturamento"
-            :items="['Quinzenal', 'Mensal']"
+            :items="tipoFaturamento"
             class="tipoFaturamento"
             v-model="state.tipoFaturamento"
             autocomplete="off"
-            item-title="title"
+            item-title="label"
             item-value="value"
             :clearable="false"
           ></v-select>
@@ -133,7 +141,7 @@ onMounted(async () => {
             id="divisaoBoleto"
             :items="['Sim', 'Não']"
             v-model="state.dividirBoleto"
-            :disabled="state.idCliente == null || state.botaoAlterarHabilitado || state.status == 'Bloqueado'"
+            :disabled="divisaoBoletoDisabled"
             label="Divisão Boleto"
             class="divisaoBoleto"
             autocomplete="off"
@@ -148,12 +156,7 @@ onMounted(async () => {
             v-model="state.diaVencimento"
             label="Dia Vencimento Fixo"
             class="diaVencimento"
-            :disabled="
-              state.dividirBoleto == 'Sim' ||
-              state.idCliente == null ||
-              state.botaoAlterarHabilitado ||
-              state.status == 'Bloqueado'
-            "
+            :disabled="diaVencimento"
             autocomplete="off"
             maxlength="2"
             v-mask="'##'"

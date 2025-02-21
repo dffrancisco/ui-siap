@@ -7,6 +7,21 @@ import serviceLiberarCliente from "./services/liberarCliente.service"
 import utils, { msgConfirmSemCodigo } from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
 
+export const tipoFaturamento = [
+    {
+        value: "M",
+        label: "Mensal",
+    },
+    {
+        value: "Q",
+        label: "Quinzenal",
+    },
+    {
+        value: "D",
+        label: "Diário",
+    },
+]
+
 export const state = reactive({
     loading: false,
     modalLiberarCliente: <iModalCreate>{},
@@ -18,7 +33,7 @@ export const state = reactive({
     creditoLimite: "",
     creditoLimiteAtual: "",
     tipoCompra: "",
-    tipoFaturamento: "",
+    tipoFaturamento: <'Q' | 'M' | 'D' | "">"",
     dividirBoleto: "",
     objInputsAtual: <iResetStates>{},
     diaVencimento: 0 || null,
@@ -98,7 +113,7 @@ export const actions = {
         state.creditoLimite = utils.formatValor(cliente.LIMITE_CREDITO)
         state.creditoLimiteAtual = cliente.LIMITE_CREDITO
         state.tipoCompra = cliente.FATURADO == "0" ? "Faturado" : "Não Faturado"
-        state.tipoFaturamento = cliente.TIPO_FATURAMENTO ? cliente.TIPO_FATURAMENTO == "Q" ? "Quinzenal" : "Mensal" : "";
+        state.tipoFaturamento = cliente.TIPO_FATURAMENTO
         state.dividirBoleto = cliente.DIVIDIR_BOLETO ? cliente.DIVIDIR_BOLETO == "S" ? "Sim" : "Não" : "";
         state.descontoMontagem = cliente.DESCONTO_MONTAGEM ? cliente.DESCONTO_MONTAGEM == "S" ? "Sim" : "Não" : "";
         state.diaVencimento = cliente.DIA_VENCIMENTO_BOLETO
@@ -377,8 +392,8 @@ export const actions = {
     cancelar() {
         // Restaura os valores dos inputs para o estado inicial salvo em state.objInputsAtual
         state.creditoLimite = utils.formatValor(state.objInputsAtual.LIMITE_CREDITO);
-        state.tipoCompra = state.objInputsAtual.FATURADO == "0" ? "Não Faturado" : "Faturado";
-        state.tipoFaturamento = state.objInputsAtual.TIPO_FATURAMENTO ? state.objInputsAtual.TIPO_FATURAMENTO == "Q" ? "Quinzenal" : "Mensal" : "";
+        state.tipoCompra = state.objInputsAtual.FATURADO == "0" ? "Faturado" : "Não Faturado";
+        state.tipoFaturamento = state.objInputsAtual.TIPO_FATURAMENTO
         state.dividirBoleto = state.objInputsAtual.DIVIDIR_BOLETO ? state.objInputsAtual.DIVIDIR_BOLETO == "S" ? "Sim" : "Não" : "";
         state.descontoMontagem = state.objInputsAtual.DESCONTO_MONTAGEM ? state.objInputsAtual.DESCONTO_MONTAGEM == "S" ? "Sim" : "Não" : "";
         state.diaVencimento = state.objInputsAtual.DIA_VENCIMENTO_BOLETO;
@@ -389,13 +404,12 @@ export const actions = {
     },
 
     async updateCliente() {
-        let tipoFaturamento = state.tipoFaturamento === "Quinzenal" ? "Q" : "M"
         let divideBoleto = state.dividirBoleto === "Sim" ? "S" : "N"
         let descontoMontagem = state.descontoMontagem === "Sim" ? "S" : "N"
 
         if (state.tipoCompra == 'Não Faturado') {
             state.diaVencimento = null;
-            tipoFaturamento = ""
+            state.tipoFaturamento = ""
             divideBoleto = ""
         }
 
@@ -405,7 +419,7 @@ export const actions = {
             creditoLimiteAtual: state.creditoLimiteAtual,
             creditoLimiteNovo: parseFloat(state.creditoLimite.replace(/\./g, '').replace(',', '.')),
             diaVencimento: state.diaVencimento || null,
-            tipoFaturamento: tipoFaturamento,
+            tipoFaturamento: state.tipoFaturamento,
             divideBoleto: divideBoleto,
             descontoMontagem: descontoMontagem,
         }
@@ -468,3 +482,30 @@ export const actions = {
 
 export const naoFaturado = computed(() => state.tipoCompra === "Não Faturado");
 export const faturado = computed(() => state.tipoCompra === "Faturado");
+
+export const divisaoBoletoDisabled = computed(() => {
+    if (state.idCliente == null || state.botaoAlterarHabilitado || state.tipoFaturamento == 'D' || state.status == 'Bloqueado') {
+        if (state.tipoFaturamento == 'D') {
+            state.dividirBoleto = "Não";
+        }
+
+        return true;
+    }
+
+    return false;
+});
+
+export const diaVencimento = computed(() => {
+    if (state.dividirBoleto == 'Sim' ||
+        state.idCliente == null ||
+        state.botaoAlterarHabilitado ||
+        state.tipoFaturamento == 'D' ||
+        state.status == 'Bloqueado') {
+        if (state.tipoFaturamento == 'D') {
+            state.diaVencimento = null;
+        }
+        return true;
+    }
+
+    return false;
+})
