@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { actions, state } from "./conhecimento";
+import { configVMoney } from "../../constants/constants";
 import { onMounted } from "vue";
 
 onMounted(async () => {
@@ -43,8 +44,9 @@ onMounted(async () => {
           <v-col cols="2">
             <span>Valor</span>
             <input
-              v-model="state.dbConhecimento.VALOR"
-              type="text"
+              v-model.lazy="state.dbConhecimento.VALOR"
+              :model-modifiers="{ number: true }"
+              v-money3="configVMoney"
               id="VALOR"
               name="VALOR"
               class="obr ss"

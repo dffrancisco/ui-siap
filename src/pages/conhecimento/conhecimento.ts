@@ -7,8 +7,6 @@ import utils from "@/ts/utils";
 import { useEventListener } from "@vueuse/core";
 import serviceConhecimento from "./services/conhecimento.service";
 
-
-
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
     pnSearch: false,
@@ -45,7 +43,10 @@ export const actions = {
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
-                    state.dbConhecimento = r;
+                    state.dbConhecimento = {
+                        ...r,
+                        VALOR: utils.formatValor(r.VALOR),
+                    };
                 },
                 duplicity: {
                     dataField: ["ID_CONHECIMENTO", "DESCRICAO"],
@@ -128,8 +129,6 @@ export const actions = {
         const data = await actions.getConhecimento();
         state.gridPrincipal.source(data);
     },
-
-
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
@@ -243,7 +242,7 @@ export const actions = {
             let newFields = {
                 ID_CONHECIMENTO: state.dbConhecimento.ID_CONHECIMENTO,
                 DESCRICAO: state.dbConhecimento.DESCRICAO.toUpperCase(),
-                VALOR: utils.formatValorUSA(state.dbConhecimento.VALOR.toString()),
+                VALOR: utils.formatValorUSA(state.dbConhecimento.VALOR.toString())
             };
 
             await serviceConhecimento.toInsert(newFields);
@@ -270,7 +269,7 @@ export const actions = {
             let param = {
                 ID_CONHECIMENTO: state.dbConhecimento.ID_CONHECIMENTO,
                 DESCRICAO: state.dbConhecimento.DESCRICAO.toUpperCase(),
-                VALOR: utils.formatValorUSA(state.dbConhecimento.VALOR.toString()),
+                VALOR: utils.formatValorUSA(state.dbConhecimento.VALOR.toString())
             }
 
             state.loading = true;
