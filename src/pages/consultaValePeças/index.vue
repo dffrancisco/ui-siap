@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { actions, state } from "./consultaValePeças";
-import { onUnmounted } from "vue";
+import { onMounted, ref } from "vue";
 
 onMounted(() => {
   actions.init();
@@ -42,7 +42,7 @@ onMounted(() => {
             type="date"
             v-model="state.dataInicio"
             :clearable="false"
-            @keydown.enter="state.inputDataFinal.focus()"
+            @keydown.enter="state.inputDataFinal"
           ></v-text-field>
         </v-col>
 
@@ -70,7 +70,7 @@ onMounted(() => {
             :items="state.meses"
             v-model="state.mesSelecionado"
             :clearable="false"
-            @change="state.inputDataFinal.focus()"
+            @change="state.inputDataFinal"
           ></v-select>
 
           <v-col cols="3">

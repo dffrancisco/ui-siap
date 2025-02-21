@@ -21,7 +21,7 @@ const consultarVales: iConsultarVales = async (param) => {
     return data;
 };
 
-const consultarValePeca: iConsultarValePeca = async (param) => {
+const getconsultarValePeca: iConsultarValePeca = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "getConsultarValePeca",
         param
@@ -47,7 +47,7 @@ const getItensOrcamento: iGetItensOrcamento = async (param) => {
 
 export default {
     consultarVales,
-    consultarValePeca,
+    getconsultarValePeca,
     getOrcamento,
     getItensOrcamento
 };

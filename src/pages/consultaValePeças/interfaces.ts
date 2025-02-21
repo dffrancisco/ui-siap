@@ -1,8 +1,12 @@
 export interface iResponseVale {
+    ID_VALE_PECA: number;
     COD_FUNCIONARIO: number;
     V_NOME_FUNCIONARIO: string;
-    DATA: string;
+    NUM_ORCAMENTO: number;
     VALOR: number;
+    DIV: string;
+    DATA_ORCAMENTO: string;
+    DATA: string;
     MES: number;
     ANO: number;
 }
@@ -13,7 +17,7 @@ export interface iParamsValePeca {
     V_NOME_FUNCIONARIO: string;
     NUM_ORCAMENTO: number;
     VALOR: number;
-    DIV: number;
+    DIV: string;
     DATA_ORCAMENTO: string;
     DATA: string;
     MES: number;
