@@ -132,7 +132,7 @@ export const actions = {
     gridLiberacoes() {
         state.gridLiberacoes = new xGridV2.create({
             el: "#gridLiberacoes",
-            height: 245,
+            height: 230,
             count: true,
             columns: {
                 Data: { dataField: "DATA", width: "15%", render: utils.dataBrasil, center: true },
@@ -159,7 +159,7 @@ export const actions = {
     gridBloqueiosDesbloqueios() {
         state.gridBloqueiosDesbloqueios = new xGridV2.create({
             el: "#gridBloqueiosDesbloqueios",
-            height: 245,
+            height: 230,
             count: true,
             columns: {
                 'Data Bloqueio': { dataField: "DATA_BLOQUEIO", width: "15%", render: utils.dataBrasil, center: true },
@@ -199,7 +199,7 @@ export const actions = {
     gridCompras() {
         state.gridCompras = new xGridV2.create({
             el: "#gridCompras",
-            height: 245,
+            height: 230,
             count: true,
             columns: {
                 'Nº Orç': { dataField: "NUM_ORCAMENTO", width: "7%" },
@@ -245,7 +245,7 @@ export const actions = {
     gridBoletos() {
         state.gridBoletos = new xGridV2.create({
             el: "#gridBoletos",
-            height: 245,
+            height: 230,
             count: true,
             columns: {
                 'Nº Boleto': { dataField: "NUM_BOLETO", center: true },

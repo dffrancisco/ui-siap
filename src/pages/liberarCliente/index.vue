@@ -11,8 +11,8 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      class="pa-5"
-      style="width: 980px; margin: 0 auto"
+      class="pa-4 ma-auto"
+      max-width="1000"
     >
       <v-row>
         <v-col cols="6">
@@ -53,7 +53,7 @@ onMounted(async () => {
         </v-col>
       </v-row>
 
-      <v-row style="margin-top: 3px">
+      <v-row class="mt-n2">
         <v-col cols="3">
           <v-text-field
             id="creditoUsado"
@@ -127,10 +127,7 @@ onMounted(async () => {
         </v-col>
       </v-row>
 
-      <v-row
-        v-if="faturado"
-        style="margin-top: 10px"
-      >
+      <v-row v-if="faturado">
         <v-col cols="3">
           <v-select
             id="divisaoBoleto"
@@ -188,7 +185,7 @@ onMounted(async () => {
       </v-row>
 
       <!-- Tabs para os grids -->
-      <div style="padding-top: 20px">
+      <div>
         <v-tabs v-model="state.tab">
           <v-tab value="liberacoes">Liberações</v-tab>
           <v-tab value="bloqueiosDesbloqueios">Bloqueios/Desbloqueios</v-tab>
