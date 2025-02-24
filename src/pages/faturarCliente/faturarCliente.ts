@@ -312,7 +312,7 @@ export const actions = ({
 
 
     async openModalGeralBoleto() {
-        if (computeds.totalValorOrcamentos.value < 40) {
+        if (computeds.totalValorOrcamentos.value < 20) {
             Swal.fire({
                 icon: "warning",
                 text: "O valor dos orçamentos é menor que R$ 40,00. Faturar não é possível!"
@@ -402,23 +402,26 @@ export const actions = ({
 
 export const computeds = ({
     totalValorOrcamentos: computed(() => {
-        return state.dbOrcamentosClienteFaturado.reduce((total, orcamento) => total + (orcamento.VALOR - orcamento.DEVOLUCAO), 0)
+        const total = state.dbOrcamentosClienteFaturado.reduce(
+            (total, orcamento) => total + (orcamento.VALOR - orcamento.DEVOLUCAO),
+            0
+        );
+        return Number(total.toFixed(2));
     }),
 
     calcularOrcamentosLocalizados: computed(() => {
-
         let total = 0;
-        let qtdOrcamentos = 0
+        let qtdOrcamentos = 0;
 
         if (state.orcamentosLocalizados.length == 0) {
-            return { total, qtdOrcamentos }
+            return { total, qtdOrcamentos };
         }
 
         state.orcamentosLocalizados.forEach(orcamento => {
             if (orcamento.ISDEVOLUCAO) {
-                total = total - orcamento.DEVOLUCAO;
+                total = Number((total - orcamento.DEVOLUCAO).toFixed(2));
             } else {
-                total += orcamento.VALOR
+                total = Number((total + orcamento.VALOR).toFixed(2));
                 qtdOrcamentos++;
             }
         });
