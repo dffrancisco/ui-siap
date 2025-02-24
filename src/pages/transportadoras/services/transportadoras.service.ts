@@ -58,7 +58,7 @@ const toUpdate: iToUpdateFuntion = async (param: object) => {
     return data;
 }
 
-const toInativar = async (ID_TRANSPORTADORA:number, DELETADO: string | null) => {
+const toInativar = async (ID_TRANSPORTADORA: number, DELETADO: string | null) => {
     return axios.post(caminho, {
         call: "inativar",
         ID_TRANSPORTADORA: ID_TRANSPORTADORA,
@@ -73,7 +73,7 @@ const buscarCEP = async (cep: string) => {
 }
 
 const getDadosCnpj = async (cnpj: string) => {
-    let {data} = await axios.post(caminho, {
+    let { data } = await axios.post(caminho, {
         call: "getDadosCnpj",
         cnpj
     })
