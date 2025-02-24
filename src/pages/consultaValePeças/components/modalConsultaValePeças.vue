@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, reactive, ref } from "vue";
 import serviceConsultaValePeças from "./services/consultaValePeças.service";
 import { iParamsValePeca } from "./interfaces";
@@ -9,39 +8,32 @@ const inputSearch = ref();
 
 const state = reactive({
   loading: false,
-  gridConsultaValePeças: <ixGridCreate>{},
   dbDetalheOrçamento: <iParamsValePeca>{},
+  dbSelectItem: null,
+  funcionario: [],
+  dataInicio: "",
+  dataFim: "",
+  meses: [],
+  mesSelecionado: null,
+  ano: new Date().getFullYear(),
+  numeroOrcamento: null,
+  dadosRelatorio: [],
+  headers: [
+    { text: "Nº Fabricante", value: "CGC_CLIENTE", width: "18%" },
+    { text: "Descrição", value: "NOME", width: "45%" },
+    { text: "UN", value: "UNIDADE" },
+    { text: "Carro", value: "CARRO" },
+    { text: "QT", value: "QUANTIDADE" },
+    { text: "Valor", value: "VALOR" },
+    { text: "Total", value: "SUB_TOTAL" },
+  ],
+  totalmes: "",
+  total: "",
+  gridConsultaValePeças: null,
 });
 
 const actions = {
-  async init() {
-    actions.criarGrid();
-  },
-
-  criarGrid() {
-    state.gridConsultaValePeças = new xGridV2.create({
-      el: "#gridConsultaValePeças",
-      count: true,
-      height: 300,
-      columns: {
-        NºFabricante: { dataField: "CGC_CLIENTE", width: "18%" },
-        Descrição: { dataField: "NOME", width: "45%" },
-        UN: { dataField: "UNIDADE" },
-        Carro: { dataField: "CARRO" },
-        QT: { dataField: "QUANTIDADE" },
-        Valor: { dataField: "VALOR" },
-        Total: { dataField: "SUB_TOTAL" },
-      },
-      query: {
-        async execute(rs) {
-          let data = await actions.getConsultaValePeça(rs.param as iParamsValePeca, rs.offset);
-          state.gridConsultaValePeças.querySourceAdd(data);
-        },
-      },
-      enter: () => actions.validarInputs(),
-      dblClick: () => actions.validarInputs(),
-    });
-  },
+  async init() {},
 
   closeModalConsultaValePeças() {
     emits("closeModalConsultaValePeças");
@@ -101,49 +93,162 @@ onMounted(async () => {
   );
 });
 </script>
-<template
-  ><v-card class="pa-4">
-    <v-row>
-      <v-col>
-        <div class="d-flex ga-2">
-          <v-text-field
-            label="Razão social / CNPJ"
-            :clearable="true"
-            width="300px"
-            density="compact"
-            autofocus
-            ref="inputSearch"
-            @keydown.enter.prevent="actions.Search"
-            @keydown.arrow.down.prevent="state.gridConsultaValePeças.focus()"
-          ></v-text-field>
+<template>
+  <v-container>
+    <v-card
+      class="pa-5 ma-auto"
+      :max-width="900"
+      :max-height="600"
+    >
+      <v-row>
+        <v-col cols="6">
+          <v-autocomplete
+            id="slFuncionario"
+            v-model="state.dbSelectItem"
+            :items="state.funcionario"
+            item-value="value"
+            item-title="label"
+            clearable
+            style="width: 100%"
+            label="Funcionário"
+          ></v-autocomplete>
+        </v-col>
 
-          <div class="d-flex align-center">
-            <v-btn
-              icon="mdi-magnify"
-              size="39"
-              color="primary"
-              @click="actions.Search"
-            />
-          </div>
-        </div>
-      </v-col>
-    </v-row>
-    <div
-      class="mt-4"
-      id="gridConsultaValePeças"
-    ></div>
-    <div class="d-flex justify-end ga-4 mt-4">
-      <v-btn
+        <v-col cols="3">
+          <v-text-field
+            label="Data de Início"
+            id="dataInicio"
+            type="date"
+            v-model="state.dataInicio"
+            :clearable="false"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="3">
+          <v-text-field
+            label="Data de Fim"
+            id="dataFim"
+            type="date"
+            v-model="state.dataFim"
+            :clearable="false"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+
+      <v-row class="d-flex align-center">
+        <v-col cols="4">
+          <v-select
+            label="Mês"
+            id="Mes"
+            :items="state.meses"
+            v-model="state.mesSelecionado"
+            :clearable="false"
+          ></v-select>
+        </v-col>
+
+        <v-col cols="3">
+          <v-text-field
+            label="Ano"
+            id="ano"
+            type="number"
+            v-model="state.ano"
+            :clearable="false"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="4">
+          <v-text-field
+            label="Nº Orçamento"
+            id="numeroOrcamento"
+            type="number"
+            v-model="state.numeroOrcamento"
+            :clearable="false"
+          ></v-text-field>
+        </v-col>
+
+        <v-col
+          cols="1"
+          class="d-flex justify-center"
+        >
+          <v-btn
+            color="primary"
+            icon="mdi-magnify"
+            size="36px"
+            title="Pesquisar"
+            @click="actions.validarInputs"
+          >
+            <v-icon left>mdi-magnify</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+
+      <v-data-table-virtual
+        id="tabelaValePeças"
+        class="pt-5"
+        :items="state.dadosRelatorio"
+        :headers="state.headers"
+        height="310px"
+        fixed-header
+        :loading="state.loading"
+      ></v-data-table-virtual>
+
+      <v-row class="mt-4">
+        <v-col cols="6">
+          <v-text-field
+            label="Total mês"
+            v-model="state.totalmes"
+            :clearable="false"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="5">
+          <v-text-field
+            label="Total"
+            v-model="state.total"
+            :clearable="false"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="1">
+          <v-btn
+            color="primary"
+            @click="actions.onClickImprimir"
+            :disabled="state.dadosRelatorio.length === 0"
+            icon
+            size="36px"
+            style="min-width: 36px"
+          >
+            <v-icon>mdi-printer</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-card>
+
+    <div id="pnCodigoTela">consultaValePeças</div>
+
+    <v-overlay
+      :model-value="state.loading"
+      class="d-flex align-center justify-center"
+    >
+      <v-progress-circular
         color="primary"
-        variant="outlined"
-        @click="actions.closeModalConsultaValePeças;"
-        >cancelar</v-btn
-      >
-      <v-btn
-        @click="actions.validarInputs"
-        color="primary"
-        >ConsultaValePeças</v-btn
-      >
-    </div>
-  </v-card>
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
+  </v-container>
 </template>
+
+<style>
+#tabelaValePeças .v-data-table-footer {
+  max-height: 2px;
+  padding-top: 20px;
+}
+#tabelaValePeças .v-data-table-footer__pagination {
+  padding-right: 50px;
+}
+
+.cor-zebrada-1 {
+  background-color: #f0f0f0;
+}
+</style>

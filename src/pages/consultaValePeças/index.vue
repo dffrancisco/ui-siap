@@ -114,7 +114,7 @@ onMounted(() => {
       <v-row class="mt-4">
         <v-col cols="6">
           <v-text-field
-            label="Total mês"
+            label="Total mês:"
             v-model="state.totalmes"
             :clearable="false"
           ></v-text-field>
@@ -122,7 +122,7 @@ onMounted(() => {
 
         <v-col cols="5">
           <v-text-field
-            label="Total"
+            label="Total:"
             v-model="state.total"
             :clearable="false"
           ></v-text-field>
