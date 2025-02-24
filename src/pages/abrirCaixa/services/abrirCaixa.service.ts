@@ -1,8 +1,7 @@
 import axios from "axios";
-import { iCaixasAbertos, iGetDadosCaixa, iParamFecharCaixa, iParamsAbrirCaixa } from "../interfaces";
+import { iCaixasAbertos, iGetDadosCaixa, iParamsAbrirCaixa } from "../interfaces";
 type iGetDadosAbrirCaixa = () => Promise<iGetDadosCaixa>
 type iAbrirCaixa = (param: iParamsAbrirCaixa) => Promise<iCaixasAbertos[]>
-type iFecharCaixa = (param: iParamFecharCaixa) => Promise<iCaixasAbertos[]>
 
 const caminho = 'siap/abrirCaixa'
 
@@ -28,17 +27,13 @@ const abrirCaixa: iAbrirCaixa = async (param) => {
     return data;
 }
 
-const fecharCaixa: iFecharCaixa = async (param) => {
-    let { data } = await axios.post(caminho, {
-        call: "fecharCaixa",
-        param
-    })
-    return data;
+const redirectConferencia = async () => {
+    window.location.href = 'http://192.168.100.60/siap+/?p=conferencia_caixa/conferencia_caixa';
 }
 
 export default {
     getDadosAbrirCaixa,
     abrirMDC,
     abrirCaixa,
-    fecharCaixa,
+    redirectConferencia,
 }

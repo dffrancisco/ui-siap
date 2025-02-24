@@ -104,47 +104,19 @@ export const actions = {
         return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
     },
 
-    async fecharCaixa(funcionario) {
+    async redirecionarParaConferencia() {
+        try {
+            state.loading = true;
+            await serviceAbrirCaixa.redirectConferencia();
 
-        let param: iParamFecharCaixa = {
-            ID_ABERTURA_CAIXA: funcionario.ID_ABERTURA_CAIXA
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao redirecionar para conferência de caixa"
+            });
+        } finally {
+            state.loading = false
         }
 
-        xAuthManager("Autorizar fechamento de caixa?", async () => {
-            try {
-                state.loading = true;
-
-                let caixasAbertoAtualizados = await serviceAbrirCaixa.fecharCaixa(param);
-                state.caixasAbertos = caixasAbertoAtualizados;
-
-                // Reintroduzir o funcionário na lista de funcionários disponíveis
-                const funcionarioFechado = state.funcionarios.find(
-                    f => f.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO
-                );
-                if (!funcionarioFechado) {
-                    const retornarFuncionarioParaState = {
-                        COD_FUNCIONARIO: funcionario.COD_FUNCIONARIO,
-                        LOGIN: funcionario.LOGIN
-                    };
-                    state.funcionarios.push(retornarFuncionarioParaState);
-                }
-
-
-                Swal.fire({
-                    icon: "success",
-                    title: "Caixa fechado com sucesso.",
-                    showConfirmButton: false,
-                    timer: 1000,
-                });
-
-            } catch (error) {
-                Swal.fire({
-                    icon: "error",
-                    text: "Erro ao fechar o caixa"
-                });
-            } finally {
-                state.loading = false
-            }
-        });
     }
 }

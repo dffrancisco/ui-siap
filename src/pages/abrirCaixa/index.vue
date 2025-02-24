@@ -93,12 +93,12 @@ onMounted(async () => {
               ><div v-if="funcionario.STATUS == 1">
                 <button
                   class="circle-icon-button"
-                  @click="actions.fecharCaixa(funcionario)"
+                  @click="actions.redirecionarParaConferencia()"
                 >
                   <v-icon
                     size="25px"
                     color="white"
-                    title="Fechar Caixa"
+                    title="Redirecionar para Conferência de Caixa"
                   >
                     mdi-lock
                   </v-icon>
