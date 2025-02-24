@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { actions, state } from "./consultaValePeças";
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 
 onMounted(() => {
   actions.init();
@@ -14,31 +14,24 @@ onMounted(() => {
       :max-width="900"
       :max-height="600"
     >
-      <v-col cols="4">
-        <span>Funcionario</span>
-        <v-autocomplete
-          id="slFuncionario"
-          v-model="state.dbSelectItem"
-          :items="state.funcionario"
-          item-value="value"
-          item-title="label"
-          clearable
-          style="width: 100%"
-        ></v-autocomplete>
-      </v-col>
-      <v-row
-        class="d-flex justify-end align-center"
-        no-gutters
-      >
-        <span>Data Orçamento</span>
-        <v-col
-          cols="3"
-          class="me-3"
-        >
+      <v-row>
+        <v-col cols="6">
+          <v-autocomplete
+            id="slFuncionario"
+            v-model="state.dbSelectItem"
+            :items="state.funcionario"
+            item-value="value"
+            item-title="label"
+            clearable
+            style="width: 100%"
+            label="Funcionário"
+          ></v-autocomplete>
+        </v-col>
+
+        <v-col cols="3">
           <v-text-field
             label="Data de Início"
             id="dataInicio"
-            class="dataInicio"
             type="date"
             v-model="state.dataInicio"
             :clearable="false"
@@ -50,51 +43,40 @@ onMounted(() => {
           <v-text-field
             label="Data de Fim"
             id="dataFim"
-            class="dataFim"
             type="date"
             v-model="state.dataFim"
             :clearable="false"
             @keydown.enter.prevent="actions.onClickBuscar"
           ></v-text-field>
         </v-col>
+      </v-row>
 
-        <v-col
-          cols="3"
-          class="me-3"
-        >
-          <span>Mês/Ano Vencimento</span>
+      <v-row class="d-flex align-center">
+        <v-col cols="4">
           <v-select
             label="Mês"
             id="Mes"
-            class="Mes"
             :items="state.meses"
             v-model="state.mesSelecionado"
             :clearable="false"
-            @change="state.inputDataFinal"
           ></v-select>
-
-          <v-col cols="3">
-            <v-text-field
-              label="Ano"
-              id="ano"
-              class="ano"
-              type="number"
-              v-model="state.ano"
-              :clearable="false"
-              @keydown.enter.prevent="actions.onClickBuscar"
-            ></v-text-field>
-          </v-col>
         </v-col>
 
-        <v-col
-          cols="3"
-          class="me-3"
-        >
-          <span>Nº Orçamento</span>
+        <v-col cols="3">
+          <v-text-field
+            label="Ano"
+            id="ano"
+            type="number"
+            v-model="state.ano"
+            :clearable="false"
+            @keydown.enter.prevent="actions.onClickBuscar"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="4">
           <v-text-field
             label="Nº Orçamento"
             id="numeroOrcamento"
-            class="numeroOrcamento"
             type="number"
             v-model="state.numeroOrcamento"
             :clearable="false"
@@ -104,41 +86,61 @@ onMounted(() => {
 
         <v-col
           cols="1"
-          class="btnPesquisar"
+          class="d-flex justify-center"
         >
           <v-btn
             color="primary"
             icon="mdi-magnify"
             size="36px"
-            @click="actions.onClickBuscar"
+            title="Pesquisar"
+            @click="actions.validarInputs"
           >
             <v-icon left>mdi-magnify</v-icon>
           </v-btn>
         </v-col>
       </v-row>
 
-      <v-data-table
+      <v-data-table-virtual
         id="tabelaValePeças"
-        class="mt-4 pt-5"
+        class="pt-5"
         :items="state.dadosRelatorio"
         :headers="state.headers"
-        height="350px"
+        height="310px"
         fixed-header
         :loading="state.loading"
         :row-props="actions.getClassCorLinha"
-      ></v-data-table>
+      ></v-data-table-virtual>
 
-      <div class="d-flex justify-end">
-        <v-btn
-          color="primary"
-          @click="actions.onClickImprimir"
-          :disabled="state.dadosRelatorio.length === 0"
-          icon="mdi-printer"
-          size="36px"
-        >
-          <v-icon left>mdi-printer</v-icon>
-        </v-btn>
-      </div>
+      <v-row class="mt-4">
+        <v-col cols="6">
+          <v-text-field
+            label="Total mês"
+            v-model="state.totalmes"
+            :clearable="false"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="5">
+          <v-text-field
+            label="Total"
+            v-model="state.total"
+            :clearable="false"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="1">
+          <v-btn
+            color="primary"
+            @click="actions.onClickImprimir"
+            :disabled="state.dadosRelatorio.length === 0"
+            icon
+            size="36px"
+            style="min-width: 36px"
+          >
+            <v-icon>mdi-printer</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
     </v-card>
 
     <div id="pnCodigoTela">consultaValePeças</div>
@@ -161,18 +163,11 @@ onMounted(() => {
   max-height: 2px;
   padding-top: 20px;
 }
-
 #tabelaValePeças .v-data-table-footer__pagination {
   padding-right: 50px;
 }
 
 .cor-zebrada-1 {
   background-color: #f0f0f0;
-}
-
-.btnPesquisar {
-  display: flex;
-  align-items: left;
-  margin-left: 16px;
 }
 </style>

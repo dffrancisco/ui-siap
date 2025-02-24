@@ -31,6 +31,8 @@ export const state = reactive({
     mesSelecionado: null,
     numeroOrcamento: null,
     funcionario: [],
+    totalmes: '',
+    total: '',
     headers: [
         { key: 'V_NOME_FUNCIONARIO', title: 'Nome do Funcionário', sortable: true, align: 'center' },
         { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left' },
@@ -69,28 +71,12 @@ export const actions = {
         try {
             state.loading = true;
 
-            const params: iParamsValePeca = {
-                ID_VALE_PECA: null,
-                V_NOME_FUNCIONARIO: '',
-                VALOR: 0,
-                DIV: '',
-                MES: state.mes,
-                ANO: state.ano,
-                DATA_ORCAMENTO: state.dataInicio,
-                DATA: state.dataFim,
-                COD_FUNCIONARIO: state.funcionario.length ? state.funcionario[0].value : null,
-                NUM_ORCAMENTO: state.numeroOrcamento || null
-            };
-
-            const response = await serviceConsultaValePeças.getconsultarValePeca(params);
-
-            state.dadosRelatorio = response;
-            state.totalItems = response.length;
+            const data = await serviceConsultaValePeças.getconsultarValePeca(state.edtsearch);
+            return data;
         } catch (error) {
-            console.error("Erro ao obter os dados:", error);
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao buscar dados para o relatório.',
+                text: "Erro ao buscar o Vale peça",
+                icon: "error",
             });
         } finally {
             state.loading = false;
@@ -101,38 +87,12 @@ export const actions = {
         try {
             state.loading = true;
 
-            const params: iParamsValePeca = {
-                ID_VALE_PECA: null,
-                V_NOME_FUNCIONARIO: '',
-                VALOR: 0,
-                DIV: '',
-                MES: state.mes,
-                ANO: state.ano,
-                DATA_ORCAMENTO: state.dataInicio,
-                DATA: state.dataFim,
-                COD_FUNCIONARIO: state.funcionario.length ? state.funcionario[0].value : null,
-                NUM_ORCAMENTO: state.numeroOrcamento || null
-            };
-
-            const response = await serviceConsultaValePeças.consultarVales(params);
-            state.dadosRelatorioVales = response.map(item => ({
-                ID_VALE_PECA: item.ID_VALE_PECA,
-                COD_FUNCIONARIO: item.COD_FUNCIONARIO,
-                V_NOME_FUNCIONARIO: item.V_NOME_FUNCIONARIO,
-                NUM_ORCAMENTO: item.NUM_ORCAMENTO,
-                VALOR: item.VALOR,
-                DIV: item.DIV,
-                DATA_ORCAMENTO: item.DATA_ORCAMENTO,
-                DATA: item.DATA,
-                MES: item.MES,
-                ANO: item.ANO
-            }));
-            state.totalItems = response.length;
+            const data = await serviceConsultaValePeças.consultarVales(state.edtsearch);
+            return data;
         } catch (error) {
-            console.error("Erro ao obter os dados dos vales:", error);
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao buscar dados dos vales',
+                text: "Erro ao buscar os Vales",
+                icon: "error",
             });
         } finally {
             state.loading = false;
@@ -142,31 +102,29 @@ export const actions = {
     async getOrcamento() {
         try {
             state.loading = true;
-            const response = await serviceConsultaValePeças.getOrcamento(state.edtsearch);
-            state.orcamento = response;
-            return response;
+
+            const data = await serviceConsultaValePeças.getOrcamento(state.edtsearch);
+            return data;
         } catch (error) {
-            console.error("Erro ao obter o orçamento:", error);
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao buscar dados do orçamento',
+                text: "Erro ao buscar os Orcamentos",
+                icon: "error",
             });
         } finally {
             state.loading = false;
         }
     },
 
-    async getItensOrcamento(params: string) {
+    async getItensOrcamento() {
         try {
             state.loading = true;
-            const response = await serviceConsultaValePeças.getItensOrcamento(state.edtsearch);
-            state.itensOrcamento = response;
-            return response;
+
+            const data = await serviceConsultaValePeças.getItensOrcamento(state.edtsearch);
+            return data;
         } catch (error) {
-            console.error("Erro ao obter os itens do orçamento:", error);
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao buscar items do orçamento.',
+                text: "Erro ao buscar os Orcamentos",
+                icon: "error",
             });
         } finally {
             state.loading = false;

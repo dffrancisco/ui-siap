@@ -6,8 +6,8 @@ import {
     iParamsItemOrcamento
 } from "../interfaces";
 
-type iConsultarVales = (param: iParamsValePeca) => Promise<iResponseVale[]>;
-type iConsultarValePeca = (param: iParamsValePeca) => Promise<iParamsValePeca[]>;
+type iConsultarVales = (param: string) => Promise<iResponseVale[]>;
+type iConsultarValePeca = (param: string) => Promise<iParamsValePeca[]>;
 type iGetOrcamento = (param: string) => Promise<iResponseOrcamento[]>;
 type iGetItensOrcamento = (param: string) => Promise<iParamsItemOrcamento[]>;
 
