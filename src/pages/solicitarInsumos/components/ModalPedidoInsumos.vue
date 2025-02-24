@@ -9,6 +9,7 @@ import ModalQtdInsumoPedido from "./ModalQtdInsumoPedido.vue";
 import { msgConfirmSemCodigo } from "@/ts/utils";
 const emits = defineEmits(["closeModalPedidoInsumos", "atualizarPedidoFinalizado"]);
 const inputSearch = ref();
+import iconeLixeira from "../assets/icons8-lixo.svg";
 
 const props = defineProps<{
   modalOpened: boolean;
@@ -88,7 +89,7 @@ const actions = {
       },
       compare: {
         acao: (r) => {
-          let iconLixeira = "src/pages/solicitarInsumos/assets/icons8-lixo.svg";
+          let iconLixeira = iconeLixeira;
 
           return `<img
                 title="Excluir Item"
