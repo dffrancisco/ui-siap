@@ -1,9 +1,8 @@
-import utils, { formatValorUSA } from '@/ts/utils';
+import utils from '@/ts/utils';
 import Swal from "sweetalert2";
 import { computed, reactive } from "vue";
 import serviceAbrirCaixa from "./services/abrirCaixa.service";
-import { iCaixasAbertos, iFuncionarios, iMdc, iParamFecharCaixa, iParamsAbrirCaixa } from "./interfaces";
-import xAuthManager from "@/plugins/xAuthManager";
+import { iCaixasAbertos, iFuncionarios, iMdc, iParamsAbrirCaixa } from "./interfaces";
 
 export const state = reactive({
     loading: false,
