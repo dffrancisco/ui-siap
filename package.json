@@ -1,6 +1,10 @@
 {
   "name": "siap",
+<<<<<<< HEAD
   "version": "0.1.323",
+=======
+  "version": "0.1.318",
+>>>>>>> parent of 59271c4... 0.1.319
   "description": "Siap Real Acessórios",
   "author": "Francisco Alves  <dffrancisco@gmail.com> (https://github.com/dffrancisco)",
   "scripts": {
