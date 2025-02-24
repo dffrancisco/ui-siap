@@ -8,11 +8,10 @@ import { mesesToSelect } from "@/constants/constants";
 
 export const meses = mesesToSelect;
 const ano = moment().year();
-const mes = moment().month() + 1;
+
 export const state = reactive({
     loading: false,
     meses: meses,
-    mes: mes,
     ano: ano || null,
     filtro: '',
     numFabricante: '',
@@ -33,7 +32,7 @@ export const state = reactive({
     funcionario: [],
     totalmes: '',
     total: '',
-    headers: [
+    headers: <any>[
         { key: 'V_NOME_FUNCIONARIO', title: 'Nome do Funcionário', sortable: true, align: 'center' },
         { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left' },
         { key: 'DATA_ORCAMENTO', title: 'Data Vencimento', sortable: true, align: 'left' },
@@ -71,7 +70,11 @@ export const actions = {
         try {
             state.loading = true;
 
-            const data = await serviceConsultaValePeças.getconsultarValePeca(state.edtsearch);
+            const params: iParamsValePeca = {
+
+            };
+            const data = await serviceConsultaValePeças.getconsultarValePeca(params);
+            state.dadosRelatorio = data;
             return data;
         } catch (error) {
             Swal.fire({
@@ -87,7 +90,10 @@ export const actions = {
         try {
             state.loading = true;
 
-            const data = await serviceConsultaValePeças.consultarVales(state.edtsearch);
+            const params: iResponseVale = {
+
+            };
+            const data = await serviceConsultaValePeças.consultarVales(params);
             return data;
         } catch (error) {
             Swal.fire({
@@ -103,7 +109,10 @@ export const actions = {
         try {
             state.loading = true;
 
-            const data = await serviceConsultaValePeças.getOrcamento(state.edtsearch);
+            const params: iResponseOrcamento = {
+
+            };
+            const data = await serviceConsultaValePeças.getOrcamento(params);
             return data;
         } catch (error) {
             Swal.fire({
@@ -119,7 +128,7 @@ export const actions = {
         try {
             state.loading = true;
 
-            const data = await serviceConsultaValePeças.getItensOrcamento(state.edtsearch);
+            const data = await serviceConsultaValePeças.getItensOrcamento();
             return data;
         } catch (error) {
             Swal.fire({

@@ -27,58 +27,12 @@ onMounted(() => {
             label="Funcionário"
           ></v-autocomplete>
         </v-col>
-
-        <v-col cols="3">
-          <v-text-field
-            label="Data de Início"
-            id="dataInicio"
-            type="date"
-            v-model="state.dataInicio"
-            :clearable="false"
-            @keydown.enter="state.inputDataFinal"
-          ></v-text-field>
-        </v-col>
-
-        <v-col cols="3">
-          <v-text-field
-            label="Data de Fim"
-            id="dataFim"
-            type="date"
-            v-model="state.dataFim"
-            :clearable="false"
-            @keydown.enter.prevent="actions.onClickBuscar"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-
-      <v-row class="d-flex align-center">
-        <v-col cols="4">
-          <v-select
-            label="Mês"
-            id="Mes"
-            :items="state.meses"
-            v-model="state.mesSelecionado"
-            :clearable="false"
-          ></v-select>
-        </v-col>
-
         <v-col cols="3">
           <v-text-field
             label="Ano"
             id="ano"
             type="number"
             v-model="state.ano"
-            :clearable="false"
-            @keydown.enter.prevent="actions.onClickBuscar"
-          ></v-text-field>
-        </v-col>
-
-        <v-col cols="4">
-          <v-text-field
-            label="Nº Orçamento"
-            id="numeroOrcamento"
-            type="number"
-            v-model="state.numeroOrcamento"
             :clearable="false"
             @keydown.enter.prevent="actions.onClickBuscar"
           ></v-text-field>

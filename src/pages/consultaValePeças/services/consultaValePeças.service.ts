@@ -3,20 +3,21 @@ import {
     iParamsValePeca,
     iResponseVale,
     iResponseOrcamento,
-    iParamsItemOrcamento
+    iParamsItemOrcamento,
 } from "../interfaces";
 
-type iConsultarVales = (param: string) => Promise<iResponseVale[]>;
-type iConsultarValePeca = (param: string) => Promise<iParamsValePeca[]>;
-type iGetOrcamento = (param: string) => Promise<iResponseOrcamento[]>;
-type iGetItensOrcamento = (param: string) => Promise<iParamsItemOrcamento[]>;
 
-const caminho = 'siap/vale-peca';
+type iConsultarVales = (param: iResponseVale) => Promise<iResponseVale[]>;
+type iConsultarValePeca = (param: iParamsValePeca) => Promise<iParamsValePeca[]>;
+type iGetOrcamento = (param: iResponseOrcamento) => Promise<iResponseOrcamento[]>;
+type iGetItensOrcamento = (param: iParamsItemOrcamento) => Promise<iParamsItemOrcamento[]>;
+
+const caminho = "siap/vale-peca";
 
 const consultarVales: iConsultarVales = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "getConsultarVales",
-        param
+        param,
     });
     return data;
 };
@@ -24,7 +25,7 @@ const consultarVales: iConsultarVales = async (param) => {
 const getconsultarValePeca: iConsultarValePeca = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "getConsultarValePeca",
-        param
+        param,
     });
     return data;
 };
@@ -32,7 +33,7 @@ const getconsultarValePeca: iConsultarValePeca = async (param) => {
 const getOrcamento: iGetOrcamento = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "getOrcamento",
-        param
+        param,
     });
     return data;
 };
@@ -40,7 +41,7 @@ const getOrcamento: iGetOrcamento = async (param) => {
 const getItensOrcamento: iGetItensOrcamento = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "getItensOrcamento",
-        param
+        param,
     });
     return data;
 };
@@ -49,5 +50,5 @@ export default {
     consultarVales,
     getconsultarValePeca,
     getOrcamento,
-    getItensOrcamento
+    getItensOrcamento,
 };
