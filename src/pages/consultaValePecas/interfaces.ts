@@ -1,27 +1,14 @@
-export interface iResponseVale {
-    ID_VALE_PECA: number;
+export interface iFuncionario {
     COD_FUNCIONARIO: number;
-    V_NOME_FUNCIONARIO: string;
-    NUM_ORCAMENTO: number;
-    VALOR: number;
-    DIV: string;
-    DATA_ORCAMENTO: string;
-    DATA: string;
-    MES: number;
-    ANO: number;
+    CPF: string;
+    CARGO: string;
+    LOGIN: string;
+    NOME_COMP: string;
 }
 
 export interface iParamsValePeca {
-    ID_VALE_PECA: number;
-    COD_FUNCIONARIO: number;
-    V_NOME_FUNCIONARIO: string;
-    NUM_ORCAMENTO: number;
-    VALOR: number;
-    DIV: string;
-    DATA_ORCAMENTO: string;
-    DATA: string;
-    MES: number;
-    ANO: number;
+    cod_funcionarios: number[];
+    ano: number;
 }
 
 export interface iResponseOrcamento {
@@ -44,4 +31,17 @@ export interface iParamsItemOrcamento {
     QTO: number;
     VALOR: number;
     VALOR_REAL: number;
+}
+
+export interface iResponseVale {
+    ID_VALE_PECA: number;
+    COD_FUNCIONARIO: number;
+    V_NOME_FUNCIONARIO: string;
+    NUM_ORCAMENTO: number;
+    VALOR: number;
+    DIV: string;
+    DATA_ORCAMENTO: string;
+    DATA: string;
+    MES: number;
+    ANO: number;
 }

@@ -373,7 +373,7 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/consultaValePeças')"
+              @click="router.push('/consultaValePecas')"
               >Consulta Vale Peças</v-btn
             >
 

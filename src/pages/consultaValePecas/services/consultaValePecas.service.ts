@@ -1,18 +1,27 @@
 import axios from "axios";
 import {
     iParamsValePeca,
-    iResponseVale,
     iResponseOrcamento,
     iParamsItemOrcamento,
+    iFuncionario,
 } from "../interfaces";
 
-
-type iConsultarVales = (param: iResponseVale) => Promise<iResponseVale[]>;
+type iGetFuncionarios = () => Promise<iFuncionario[]>
+type iConsultarVales = (param: iParamsValePeca) => Promise<any[]>;
 type iConsultarValePeca = (param: iParamsValePeca) => Promise<iParamsValePeca[]>;
 type iGetOrcamento = (param: iResponseOrcamento) => Promise<iResponseOrcamento[]>;
 type iGetItensOrcamento = (param: iParamsItemOrcamento) => Promise<iParamsItemOrcamento[]>;
 
-const caminho = "siap/vale-peca";
+
+const caminho = "siap/consultaValePecas";
+
+const getFuncionarios: iGetFuncionarios = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getFuncionarios",
+    });
+
+    return data;
+}
 
 const consultarVales: iConsultarVales = async (param) => {
     const { data } = await axios.post(caminho, {
@@ -46,9 +55,12 @@ const getItensOrcamento: iGetItensOrcamento = async (param) => {
     return data;
 };
 
+
+
 export default {
     consultarVales,
     getconsultarValePeca,
     getOrcamento,
     getItensOrcamento,
+    getFuncionarios
 };

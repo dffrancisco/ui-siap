@@ -18,7 +18,7 @@ const state = reactive({
   ano: new Date().getFullYear(),
   numeroOrcamento: null,
   dadosRelatorio: [],
-  headers: [
+  headers: <any>[
     { text: "Nº Fabricante", value: "CGC_CLIENTE", width: "18%" },
     { text: "Descrição", value: "NOME", width: "45%" },
     { text: "UN", value: "UNIDADE" },
@@ -212,7 +212,7 @@ onMounted(async () => {
         <v-col cols="1">
           <v-btn
             color="primary"
-            @click="actions.onClickImprimir"
+            @click=""
             :disabled="state.dadosRelatorio.length === 0"
             icon
             size="36px"

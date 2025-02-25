@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { actions, state } from "./consultaValePeças";
+import { actions, state } from "./consultaValePecas";
 import { onMounted } from "vue";
 
 onMounted(() => {
@@ -17,14 +17,13 @@ onMounted(() => {
       <v-row>
         <v-col cols="6">
           <v-autocomplete
-            id="slFuncionario"
-            v-model="state.dbSelectItem"
-            :items="state.funcionario"
-            item-value="value"
-            item-title="label"
-            clearable
-            style="width: 100%"
+            :clearable="true"
             label="Funcionário"
+            multiple
+            v-model="state.selectedFuncionario"
+            :items="state.funcionarios"
+            item-title="NOME_COMP"
+            item-value="COD_FUNCIONARIO"
           ></v-autocomplete>
         </v-col>
         <v-col cols="3">
@@ -34,7 +33,7 @@ onMounted(() => {
             type="number"
             v-model="state.ano"
             :clearable="false"
-            @keydown.enter.prevent="actions.onClickBuscar"
+            @keydown.enter.prevent="actions.validarInputs"
           ></v-text-field>
         </v-col>
 
@@ -85,7 +84,7 @@ onMounted(() => {
         <v-col cols="1">
           <v-btn
             color="primary"
-            @click="actions.onClickImprimir"
+            @click=""
             :disabled="state.dadosRelatorio.length === 0"
             icon
             size="36px"
