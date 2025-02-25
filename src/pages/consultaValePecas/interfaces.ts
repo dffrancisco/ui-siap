@@ -9,6 +9,7 @@ export interface iFuncionario {
 export interface iParamsValePeca {
     cod_funcionarios: number[];
     ano: number;
+    DATA_ORCAMENTO?: string;
 }
 
 export interface iResponseOrcamento {

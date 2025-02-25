@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { actions, state } from "./consultaValePecas";
+import ModalVale from "./components/ModalConsultaValePecas.vue";
 import { onMounted } from "vue";
 
 onMounted(() => {
@@ -62,29 +63,34 @@ onMounted(() => {
         fixed-header
         :loading="state.loading"
         :row-props="actions.getClassCorLinha"
-      ></v-data-table-virtual>
+      >
+        <template v-slot:item.acao="{ item }">
+          <v-btn
+            icon
+            color="primary"
+            size="34px"
+            @click="actions.abrirModal(item)"
+            style="min-width: 36px"
+          >
+            <v-icon>mdi-eye</v-icon>
+          </v-btn>
+        </template>
+      </v-data-table-virtual>
 
       <v-row class="mt-4">
-        <v-col cols="6">
-          <v-text-field
-            label="Total mês:"
-            v-model="state.totalmes"
-            :clearable="false"
-          ></v-text-field>
-        </v-col>
-
-        <v-col cols="5">
+        <v-col cols="11">
           <v-text-field
             label="Total:"
             v-model="state.total"
             :clearable="false"
+            readonly
           ></v-text-field>
         </v-col>
 
         <v-col cols="1">
           <v-btn
             color="primary"
-            @click=""
+            @click="actions.onClickImprimir"
             :disabled="state.dadosRelatorio.length === 0"
             icon
             size="36px"
@@ -109,6 +115,13 @@ onMounted(() => {
       ></v-progress-circular>
     </v-overlay>
   </v-container>
+
+  <v-dialog
+    v-model="state.modalValeOpened"
+    max-width="900px"
+  >
+    <ModalVale @closeModalVale="state.modalValeOpened = false" /><ModalConsultaValePecas />
+  </v-dialog>
 </template>
 
 <style>
