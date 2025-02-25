@@ -1,5 +1,11 @@
 import { reactive } from "vue";
 
-export const state = reactive({})
+export const state = reactive({
+    modalClienteFaturadoOpened: false,
+})
 
-export const actions = {}
+export const actions = {
+    async buscarOrcamentosEBoletos() {
+        console.log('aqui');
+    },
+}
