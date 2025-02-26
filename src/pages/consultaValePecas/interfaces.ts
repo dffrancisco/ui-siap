@@ -15,25 +15,29 @@ export interface iParamsValePeca {
 }
 
 export interface iResponseOrcamento {
-    NUM_ORCAMENTO: number;
-    NOME_CLIENTE: string;
-    VENDEDOR: string;
-    CAIXA: string;
-    DATA: string;
-    HORA: string;
-    DESCONTO: number;
-    VALOR_DESCONTO: number;
-    VALOR: number;
+    numOrcamento: number;
+    data: number
+    NUM_ORCAMENTO?: number;
+    NOME_CLIENTE?: string;
+    VENDEDOR?: string;
+    CAIXA?: string;
+    DATA?: string;
+    HORA?: string;
+    DESCONTO?: number;
+    VALOR_DESCONTO?: number;
+    VALOR?: number;
 }
 
 export interface iParamsItemOrcamento {
-    NUM_FABRICANTE: string;
-    DESC_PRODUTO: string;
-    UNIDADE: string;
-    DESCRICAO: string;
-    QTO: number;
-    VALOR: number;
-    VALOR_REAL: number;
+    numOrcamento: number;
+    data: number
+    NUM_FABRICANTE?: string;
+    DESC_PRODUTO?: string;
+    UNIDADE?: string;
+    DESCRICAO?: string;
+    QTO?: number;
+    VALOR?: number;
+    VALOR_REAL?: number;
 }
 
 export interface iResponseVale {

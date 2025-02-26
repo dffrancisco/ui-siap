@@ -108,37 +108,7 @@ export const actions = {
         }
     },
 
-    async getOrcamento() {
-        try {
-            state.loading = true;
 
-            const data = await serviceConsultaValePeças.getOrcamento();
-            return data;
-        } catch (error) {
-            Swal.fire({
-                text: "Erro ao buscar os Orcamentos",
-                icon: "error",
-            });
-        } finally {
-            state.loading = false;
-        }
-    },
-
-    async getItensOrcamento() {
-        try {
-            state.loading = true;
-
-            const data = await serviceConsultaValePeças.getItensOrcamento();
-            return data;
-        } catch (error) {
-            Swal.fire({
-                text: "Erro ao buscar os Orcamentos",
-                icon: "error",
-            });
-        } finally {
-            state.loading = false;
-        }
-    },
 
 
     async onClickImprimir() {
