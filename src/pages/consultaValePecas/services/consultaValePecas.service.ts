@@ -9,8 +9,8 @@ import {
 type iGetFuncionarios = () => Promise<iFuncionario[]>
 type iConsultarVales = (param: iParamsValePeca) => Promise<any[]>;
 type iConsultarValePeca = (param: iParamsValePeca) => Promise<iParamsValePeca[]>;
-type iGetOrcamento = () => Promise<iResponseOrcamento[]>;
-type iGetItensOrcamento = () => Promise<iParamsItemOrcamento[]>;
+type iGetOrcamento = (numOrcamento: string, data: string) => Promise<iResponseOrcamento[]>;
+type iGetItensOrcamento = (numOrcamento: string, data: string) => Promise<iParamsItemOrcamento[]>;
 
 
 const caminho = "siap/consultaValePecas";
@@ -39,20 +39,20 @@ const getconsultarValePeca: iConsultarValePeca = async (param) => {
     return data;
 };
 
-const getOrcamento: iGetOrcamento = async () => {
-    const { data } = await axios.post(caminho, {
+const getOrcamento: iGetOrcamento = async (numOrcamento, data) => {
+    const { data: response } = await axios.post(caminho, {
         call: "getOrcamento",
-
+        params: { numOrcamento, data }
     });
-    return data;
+    return response;
 };
 
-const getItensOrcamento: iGetItensOrcamento = async () => {
-    const { data } = await axios.post(caminho, {
+const getItensOrcamento: iGetItensOrcamento = async (numOrcamento, data) => {
+    const { data: response } = await axios.post(caminho, {
         call: "getItensOrcamento",
-
+        params: { numOrcamento, data }
     });
-    return data;
+    return response;
 };
 
 

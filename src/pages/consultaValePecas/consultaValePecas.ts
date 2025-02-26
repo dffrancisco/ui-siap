@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 import Swal from 'sweetalert2';
 import moment from 'moment';
-import serviceConsultaValePeças from './services/consultaValePecas.service';
+import serviceConsultaValePecas from './services/consultaValePecas.service';
 import { iParamsValePeca, iFuncionario } from './interfaces';
 import utils, { iColumnPrint, dataBrasil } from "@/ts/utils";
 import { mesesToSelect } from "@/constants/constants";
@@ -9,8 +9,6 @@ import { mesesToSelect } from "@/constants/constants";
 
 export const meses = mesesToSelect;
 const ano = moment().year();
-
-
 
 export const state = reactive({
     loading: false,
@@ -54,6 +52,8 @@ export const actions = {
         await actions.getFuncionarios();
     },
 
+
+
     validarInputs() {
         if (!state.ano) {
             Swal.fire({
@@ -70,7 +70,7 @@ export const actions = {
         state.loading = true;
 
         try {
-            state.funcionarios = await serviceConsultaValePeças.getFuncionarios();
+            state.funcionarios = await serviceConsultaValePecas.getFuncionarios();
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -95,7 +95,7 @@ export const actions = {
                 cod_funcionarios: state.selectedFuncionario,
             }
 
-            const data = await serviceConsultaValePeças.consultarVales(param);
+            const data = await serviceConsultaValePecas.consultarVales(param);
             state.dadosRelatorio = data;
             return data;
         } catch (error) {

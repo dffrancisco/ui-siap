@@ -12,6 +12,8 @@ export interface iParamsValePeca {
     DATA_ORCAMENTO?: string;
     MES?: number;
     VALOR?: number;
+    numOrcamento?: string;
+    data?: string;
 }
 
 export interface iResponseOrcamento {

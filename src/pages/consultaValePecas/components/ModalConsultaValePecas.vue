@@ -1,9 +1,16 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, computed } from "vue";
+import moment from "moment";
 import serviceConsultaValePecas from "../services/consultaValePecas.service";
-import { iParamsItemOrcamento, iResponseOrcamento } from "../interfaces";
+import { iParamsItemOrcamento, iResponseOrcamento, iParamsValePeca } from "../interfaces";
 import Swal from "sweetalert2";
 const emits = defineEmits(["closeModalVale", "selecionarVale"]);
+const numeroOrcamento = ref("");
+const dataOrcamento = ref("");
+
+const dataFormatada = computed(() => {
+  return dataOrcamento.value ? moment(dataOrcamento.value).format("YYYY-MM-DD") : "";
+});
 
 const state = reactive({
   loading: false,
@@ -11,7 +18,9 @@ const state = reactive({
   dadosRelatorio: [] as iParamsItemOrcamento[],
   dbSelectItem: null,
   funcionario: [],
+  selectedFuncionario: <number[]>[],
   meses: [],
+
   mesSelecionado: null,
   headers: <any>[
     { key: "CGC_CLIENTE", title: "Nº Fabricante", sortable: true, align: "left" },
@@ -22,7 +31,6 @@ const state = reactive({
     { key: "VALOR", title: "Valor", sortable: true, align: "left" },
     { key: "SUB_TOTAL", title: "Total", sortable: true, align: "left" },
   ],
-
   totalmes: "",
   total: "",
   gridConsultaValePeças: null,
@@ -35,31 +43,51 @@ const actions = {
     emits("closeModalVale");
   },
 
-  async getOrcamento() {
+
+  const getBuscarOrcamento = async () => {
     try {
       state.loading = true;
 
-      const data = await serviceConsultaValePecas.getOrcamento();
-      return data;
+
+      const orcamento = await serviceConsultaValePecas.getOrcamento(
+        numeroOrcamento.value,
+        dataFormatada.value
+      );
+
+
+      const itens = await serviceConsultaValePecas.getItensOrcamento(
+        numeroOrcamento.value,
+        dataFormatada.value
+      );
+
+
+      state.dbDetalheOrçamento = orcamento;
+      state.dadosRelatorio = itens;
+
     } catch (error) {
-      Swal.fire({
-        text: "Erro ao buscar os Orcamentos",
-        icon: "error",
-      });
+      Swal.fire('Erro', 'Não foi possível carregar o orçamento', 'error');
     } finally {
       state.loading = false;
     }
   },
 
-  async getItensOrcamento() {
+
+
+  async getConsultarVales() {
     try {
       state.loading = true;
 
-      const data = await serviceConsultaValePecas.getItensOrcamento();
+      let param: iParamsValePeca = {
+        ano: state.ano,
+        cod_funcionarios: state.selectedFuncionario,
+      };
+
+      const data = await serviceConsultaValePecas.consultarVales(param);
+      state.dadosRelatorio = data;
       return data;
     } catch (error) {
       Swal.fire({
-        text: "Erro ao buscar os Orcamentos",
+        text: "Erro ao buscar os Vales",
         icon: "error",
       });
     } finally {
@@ -88,8 +116,8 @@ const actions = {
 
 onMounted(async () => {
   await actions.init();
-  await actions.getOrcamento();
-  await actions.getItensOrcamento();
+  await actions.getBuscarOrcamento();
+
 });
 </script>
 <template>

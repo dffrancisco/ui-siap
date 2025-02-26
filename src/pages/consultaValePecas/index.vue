@@ -83,7 +83,7 @@ const totalGeral = computed(() => {
 
       <v-row class="mt-4">
         <v-col cols="11">
-          <span class="text">Total geral R$:</span>
+          <span class="text">Total Anual R$:</span>
           <v-text-field
             label=""
             :value="totalGeral"
