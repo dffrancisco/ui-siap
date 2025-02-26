@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { actions, state } from "./consultaValePecas";
 import ModalVale from "./components/ModalConsultaValePecas.vue";
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 
 onMounted(() => {
   actions.init();
+});
+
+const totalGeral = computed(() => {
+  return state.dadosRelatorio.reduce((acc, item) => acc + Number(item.VALOR || 0), 0);
 });
 </script>
 
@@ -79,11 +83,13 @@ onMounted(() => {
 
       <v-row class="mt-4">
         <v-col cols="11">
+          <span class="text">Total geral R$:</span>
           <v-text-field
-            label="Total:"
-            v-model="state.total"
+            label=""
+            :value="totalGeral"
             :clearable="false"
             readonly
+            width="30%"
           ></v-text-field>
         </v-col>
 

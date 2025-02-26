@@ -10,6 +10,8 @@ import { mesesToSelect } from "@/constants/constants";
 export const meses = mesesToSelect;
 const ano = moment().year();
 
+
+
 export const state = reactive({
     loading: false,
     meses: meses,
@@ -19,7 +21,6 @@ export const state = reactive({
     itensOrcamento: [] as any[],
     selectedFuncionario: <number[]>[],
     funcionarios: <iFuncionario[]>[],
-    totalmes: '',
     modalValeOpened: false,
     total: '',
     dbSelectItem: {} as iParamsValePeca,
@@ -30,7 +31,20 @@ export const state = reactive({
         { key: 'VALOR', title: 'Valor', sortable: true, align: 'left' },
         { key: 'MES', title: 'Mês', sortable: true, align: 'left' },
         { key: 'ANO', title: 'Ano', sortable: true, align: 'left' },
-        { key: 'DIV', title: 'Parcela.', sortable: true, align: 'left' },
+        { key: 'DIV', title: 'Parcela', sortable: true, align: 'left' },
+        {
+            key: 'total',
+            title: 'Total mẽs.',
+            sortable: true,
+            align: 'left',
+            value: (item: iParamsValePeca) => {
+
+                const totalMes = state.dadosRelatorio
+                    .filter(i => i.MES === item.MES)
+                    .reduce((somatoria, armazena) => somatoria + Number(armazena.VALOR || 0), 0);
+                return totalMes;
+            }
+        },
         { key: 'acao', title: 'Detalhes', sortable: true, align: 'left' },
     ],
 });
@@ -67,7 +81,7 @@ export const actions = {
         }
     },
 
-    abrirModal(item: iParamsValePeca) {
+    abrirModal(item) {
         state.dbSelectItem = item;
         state.modalValeOpened = true;
     },
@@ -93,7 +107,6 @@ export const actions = {
             state.loading = false;
         }
     },
-
 
     async getOrcamento() {
         try {
@@ -129,19 +142,12 @@ export const actions = {
 
 
     async onClickImprimir() {
-        if (!actions.validarInputs() || !state.dadosRelatorio?.length) {
-            Swal.fire({
-                icon: 'warning',
-                text: 'Não há dados para realizar a impressão.',
-            });
-            return;
-        }
-
         try {
-            state.loading = true;
+            let relatorio = state.dadosRelatorio
+            const relatorioFormatado = actions.formatarDadosImpressao([...relatorio])
 
             const columns: iColumnPrint[] = [
-                { key: 'V_NOME_FUNCIONARIO', label: 'Funcionário', align: 'center' },
+                { key: 'V_NOME_FUNCIONARIO', label: 'Funcionário', align: 'left' },
                 { key: 'NUM_ORCAMENTO', label: 'Orçamento', align: 'left' },
                 { key: 'DATA_ORCAMENTO', label: 'Data Venc.', align: 'left' },
                 { key: 'VALOR', label: 'Valor', align: 'right' },
@@ -151,23 +157,26 @@ export const actions = {
             ];
 
             const titulo = `
-                <div style="text-align: center;">
-                    <strong style="font-size: 16px;">Relatório de Vale Peças</strong>
-                    <div style="font-size: 14px;">Período: ${state.ano}</div>
-                </div>
-            `;
+                    <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                        <span>Período: ${moment(state.dataInicioImpressao).format(
+                "DD/MM/YYYY"
+            )} até ${moment(state.dataFimImpressao).format("DD/MM/YYYY")}</span>
+                        <strong style="font-size: 16px;">Relatório Uso Consumo</strong>
+                    </div>
+                `;
 
-            await utils.printComCabecalho(columns, state.dadosRelatorio, titulo);
+            await utils.printComCabecalho(columns, relatorioFormatado, titulo);
+
         } catch (error) {
-            console.error("Erro ao imprimir:", error);
             Swal.fire({
-                icon: 'error',
-                text: 'Erro ao gerar relatório impresso.',
+                icon: "error",
+                text: "Erro ao imprimir o relatório.",
             });
         } finally {
             state.loading = false;
         }
     },
+
     formatarDadosImpressao(data) {
         return data.map(item => ({
             ...item,
@@ -175,6 +184,7 @@ export const actions = {
             VALOR: item.VALOR ? utils.formatValor(item.VALOR) : '-----',
         }));
     },
+
     getClassCorLinha(dados: any) {
         let classe = dados.index % 2 == 0 ? 'cor-zebrada-1' : 'cor-zebrada-2';
         return { class: classe };
