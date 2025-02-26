@@ -24,8 +24,8 @@ const actions = {
       count: true,
       height: 300,
       columns: {
-        CNPJ: { dataField: "CNPJ", width: "20%" },
         Nome: { dataField: "CLIENTE" },
+        CNPJ: { dataField: "CNPJ", width: "25%", center: true },
       },
       query: {
         async execute(rs) {
