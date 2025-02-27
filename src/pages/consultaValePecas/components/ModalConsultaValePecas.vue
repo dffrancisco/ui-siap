@@ -4,36 +4,29 @@ import moment from "moment";
 import serviceConsultaValePecas from "../services/consultaValePecas.service";
 import { iParamsItemOrcamento, iResponseOrcamento, iParamsValePeca } from "../interfaces";
 import Swal from "sweetalert2";
+import utils, { iColumnPrint, dataBrasil } from "@/ts/utils";
 
 const props = defineProps<{ selectedItem: iParamsValePeca }>();
 const emits = defineEmits(["closeModalVale", "selecionarVale"]);
-const ano = moment().year();
 
 const state = reactive({
   loading: false,
   dbDetalheOrçamento: <iResponseOrcamento>{},
   dbDetalheOrcaçamentoGet: [] as iResponseOrcamento[],
   dadosRelatorio: [] as iParamsItemOrcamento[],
-  dbSelectItem: null,
-  dadosRelatorio: [] as iParamsValePeca[],
   itensOrcamento: [] as iParamsItemOrcamento[],
-  funcionario: [],
   dbSelectItem: {} as iParamsValePeca,
-  meses: [],
-  ano: ano,
-  mesSelecionado: null,
+  dataInicioImpressao: null,
+  dataFimImpressao: null,
   headers: <any>[
-    { key: "CGC_CLIENTE", title: "Nº Fabricante", sortable: true, align: "left" },
-    { key: "NOME", title: "Descrição", sortable: true, align: "left" },
+    { key: "NUM_FABRICANTE", title: "Nº Fabricante", sortable: true, align: "left" },
+    { key: "DESC_PRODUTO", title: "Descrição", sortable: true, align: "left" },
     { key: "UNIDADE", title: "UN", sortable: true, align: "left" },
-    { key: "CARRO", title: "Carro", sortable: true, align: "left" },
-    { key: "QUANTIDADE", title: "QT", sortable: true, align: "left" },
+    { key: "DESCRICAO", title: "Carro", sortable: true, align: "left" },
+    { key: "QTO", title: "QT", sortable: true, align: "left" },
     { key: "VALOR", title: "Valor", sortable: true, align: "left" },
-    { key: "SUB_TOTAL", title: "Total", sortable: true, align: "left" },
+    { key: "VALOR_REAL", title: "Total", sortable: true, align: "left" },
   ],
-  totalmes: "",
-  total: "",
-  gridConsultaValePeças: null,
 });
 
 const computedParamsOrcamento = computed(() => {
@@ -57,11 +50,12 @@ const actions = {
     try {
       state.loading = true;
       const param = computedParamsOrcamento.value;
-      if (!param) {
-        throw new Error("Parâmetros inválidos para a consulta.");
-      }
+
       const data = await serviceConsultaValePecas.getOrcamento(param);
       state.dbDetalheOrcaçamentoGet = data;
+      if (data.length > 0) {
+        state.dbDetalheOrçamento = data[0];
+      }
       return data;
     } catch (error) {
       Swal.fire({
@@ -77,11 +71,12 @@ const actions = {
     try {
       state.loading = true;
       const param = computedParamsOrcamento.value;
-      if (!param) {
-        throw new Error("Parâmetros inválidos para a consulta.");
-      }
+
       const data = await serviceConsultaValePecas.getItensOrcamento(param);
       state.itensOrcamento = data;
+      if (data.length > 0) {
+        state.dadosRelatorio = data;
+      }
       return data;
     } catch (error) {
       Swal.fire({
@@ -93,22 +88,53 @@ const actions = {
     }
   },
 
-  validarInputs() {
-    if (!state.gridConsultaValePeças.dataSource()) {
-      Swal.fire({
-        text: "Nenhum cliente foi selecionado",
-        icon: "warning",
-      });
-      return false;
-    }
-
-    actions.SelecionarVale();
-  },
-
   SelecionarVale() {
     const selecionarValePeca = state.dbSelectItem;
     emits("selecionarVale", selecionarValePeca);
     actions.closeModalConsultaVale();
+  },
+
+  async onClickImprimirModal() {
+    try {
+      let relatorio = state.dadosRelatorio;
+      const relatorioFormatado = actions.formatarDadosImpressao([...relatorio]);
+
+      const columns: iColumnPrint[] = [
+        { key: "NUM_FABRICANTE", label: "Fabricante", align: "left" },
+        { key: "DESC_PRODUTO", label: "Descrição", align: "left" },
+        { key: "UNIDADE", label: "UN.", align: "left" },
+        { key: "DESCRICAO", label: "Carro", align: "right" },
+        { key: "QTO", label: "QT", align: "center" },
+        { key: "VALOR", label: "Valor", align: "center" },
+        { key: "VALOR_REAL", label: "Total", align: "center" },
+      ];
+
+      const titulo = `
+                    <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                        <span>Período: ${moment(state.dataInicioImpressao).format("DD/MM/YYYY")} até ${moment(
+        state.dataFimImpressao
+      ).format("DD/MM/YYYY")}</span>
+                        <strong style="font-size: 16px;">Relatório Uso Consumo</strong>
+                    </div>
+                `;
+
+      await utils.printComCabecalho(columns, relatorioFormatado, titulo);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao imprimir o relatório.",
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  formatarDadosImpressao(data) {
+    return data.map((item) => ({
+      ...item,
+      DATA_ORCAMENTO: item.DATA_ORCAMENTO ? utils.dataBrasil(item.DATA_ORCAMENTO) : "-----",
+      VALOR: item.VALOR ? utils.formatValor(item.VALOR) : "-----",
+    }));
   },
 };
 
@@ -133,14 +159,16 @@ onMounted(async () => {
             type="text"
             v-model="state.dbDetalheOrçamento.NUM_ORCAMENTO"
             :clearable="false"
+            readonly
           ></v-text-field>
         </v-col>
 
-        <v-col cols="3">
+        <v-col cols="2">
           <v-text-field
             label="Nome Cliente"
             id="NOME_CLIENTE"
             type="text"
+            readonly
             v-model="state.dbDetalheOrçamento.NOME_CLIENTE"
             :clearable="false"
           ></v-text-field>
@@ -151,6 +179,7 @@ onMounted(async () => {
             label="Vendedor"
             id="VENDEDOR"
             type="text"
+            readonly
             v-model="state.dbDetalheOrçamento.VENDEDOR"
             :clearable="false"
           ></v-text-field>
@@ -159,19 +188,22 @@ onMounted(async () => {
           <v-text-field
             label="Mês"
             id="MES"
+            readonly
             type="text"
             v-model="state.dbDetalheOrçamento.MES"
             :clearable="false"
           ></v-text-field>
         </v-col>
 
-        <v-col cols="2">
+        <v-col cols="3">
           <v-text-field
             label="DATA"
             id="DATA"
+            readonly
             type="datetime"
             v-model="state.dbDetalheOrçamento.DATA"
             :clearable="false"
+            :value="dataBrasil(state.dbDetalheOrçamento.DATA)"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -181,9 +213,11 @@ onMounted(async () => {
           <v-text-field
             label="Hora"
             id="HORA"
-            type="time"
+            readonly
+            type="text"
             v-model="state.dbDetalheOrçamento.HORA"
             :clearable="false"
+            :value="utils.formatHoraSemOsSegundos(state.dbDetalheOrçamento.HORA)"
           ></v-text-field>
         </v-col>
 
@@ -191,6 +225,7 @@ onMounted(async () => {
           <v-text-field
             label="Desconto"
             id="DESCONTO"
+            readonly
             type="number"
             v-model="state.dbDetalheOrçamento.DESCONTO"
             :clearable="false"
@@ -201,6 +236,7 @@ onMounted(async () => {
           <v-text-field
             label="Desc. Vendedor"
             id="VALOR_DESCONTO"
+            readonly
             type="number"
             v-model="state.dbDetalheOrçamento.VALOR_DESCONTO"
             :clearable="false"
@@ -210,6 +246,7 @@ onMounted(async () => {
         <v-col cols="3">
           <v-text-field
             label="Valor"
+            readonly
             id="VALOR"
             type="number"
             v-model="state.dbDetalheOrçamento.VALOR"
@@ -231,7 +268,7 @@ onMounted(async () => {
         <v-col cols="1">
           <v-btn
             color="primary"
-            @click=""
+            @click="actions.onClickImprimirModal"
             :disabled="state.dadosRelatorio.length === 0"
             icon
             size="36px"

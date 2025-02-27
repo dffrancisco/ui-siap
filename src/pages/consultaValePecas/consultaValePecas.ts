@@ -21,27 +21,26 @@ export const state = reactive({
     total: '',
     dbSelectItem: {} as iParamsValePeca,
     headers: <any>[
-        { key: 'V_NOME_FUNCIONARIO', title: 'Nome do Funcionário', sortable: true, align: 'left' },
-        { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left' },
+        { key: 'V_NOME_FUNCIONARIO', title: 'Nome do Funcionário', sortable: true, align: 'left', width: '80px' },
+        { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '70px' },
         { key: 'DATA_ORCAMENTO', title: 'Data Vencimento', sortable: true, align: 'left', value: (item: iParamsValePeca) => dataBrasil(item.DATA_ORCAMENTO) },
-        { key: 'VALOR', title: 'Valor', sortable: true, align: 'left' },
-        { key: 'MES', title: 'Mês', sortable: true, align: 'left' },
-        { key: 'ANO', title: 'Ano', sortable: true, align: 'left' },
-        { key: 'DIV', title: 'Parcela', sortable: true, align: 'left' },
+        { key: 'VALOR', title: 'Valor', sortable: true, align: 'left', width: '60px' },
+        { key: 'MES', title: 'Mês', sortable: true, align: 'left', width: '40px' },
+        { key: 'ANO', title: 'Ano', sortable: true, align: 'left', width: '40%' },
+        { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '70px' },
         {
             key: 'total',
-            title: 'Total mẽs.',
+            title: 'Total mês.',
             sortable: true,
             align: 'left',
             value: (item: iParamsValePeca) => {
-
                 const totalMes = state.dadosRelatorio
                     .filter(i => i.MES === item.MES)
                     .reduce((somatoria, armazena) => somatoria + Number(armazena.VALOR || 0), 0);
-                return totalMes;
+                return totalMes.toFixed(2);
             }
         },
-        { key: 'acao', title: 'Detalhes', sortable: true, align: 'left' },
+        { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '20px' },
     ],
 });
 
@@ -105,8 +104,6 @@ export const actions = {
             state.loading = false;
         }
     },
-
-
 
 
     async onClickImprimir() {

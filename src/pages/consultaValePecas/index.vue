@@ -8,7 +8,7 @@ onMounted(() => {
 });
 
 const totalGeral = computed(() => {
-  return state.dadosRelatorio.reduce((acc, item) => acc + Number(item.VALOR || 0), 0);
+  return state.dadosRelatorio.reduce((acc, item) => acc + Number(item.VALOR || 0), 0).toFixed(2);
 });
 </script>
 
@@ -63,7 +63,7 @@ const totalGeral = computed(() => {
         class="pt-5"
         :items="state.dadosRelatorio"
         :headers="state.headers"
-        height="310px"
+        height="360px"
         fixed-header
         :loading="state.loading"
         :row-props="actions.getClassCorLinha"
@@ -137,9 +137,6 @@ const totalGeral = computed(() => {
 #tabelaValePeças .v-data-table-footer {
   max-height: 2px;
   padding-top: 20px;
-}
-#tabelaValePeças .v-data-table-footer__pagination {
-  padding-right: 50px;
 }
 
 .cor-zebrada-1 {
