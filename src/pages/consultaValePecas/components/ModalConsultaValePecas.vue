@@ -156,7 +156,7 @@ onMounted(async () => {
           ></v-text-field>
         </v-col>
 
-        <v-col cols="2">
+        <v-col cols="3">
           <v-text-field
             label="Nome Cliente"
             id="NOME_CLIENTE"
@@ -167,7 +167,7 @@ onMounted(async () => {
           ></v-text-field>
         </v-col>
 
-        <v-col cols="2">
+        <v-col cols="3">
           <v-text-field
             label="Vendedor"
             id="VENDEDOR"
@@ -177,17 +177,19 @@ onMounted(async () => {
             :clearable="false"
           ></v-text-field>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="3">
           <v-text-field
-            label="Mês"
-            id="MES"
+            label="Caixa"
+            id="CAIXA"
             readonly
             type="text"
-            v-model="state.dbDetalheOrçamento.MES"
+            v-model="state.dbDetalheOrçamento.CAIXA"
             :clearable="false"
           ></v-text-field>
         </v-col>
+      </v-row>
 
+      <v-row class="d-flex align-center">
         <v-col cols="3">
           <v-text-field
             label="DATA"
@@ -199,9 +201,7 @@ onMounted(async () => {
             :value="dataBrasil(state.dbDetalheOrçamento.DATA)"
           ></v-text-field>
         </v-col>
-      </v-row>
 
-      <v-row class="d-flex align-center">
         <v-col cols="3">
           <v-text-field
             label="Hora"
@@ -214,7 +214,7 @@ onMounted(async () => {
           ></v-text-field>
         </v-col>
 
-        <v-col cols="3">
+        <v-col cols="2">
           <v-text-field
             label="Desconto"
             id="DESCONTO"
@@ -225,7 +225,7 @@ onMounted(async () => {
           ></v-text-field>
         </v-col>
 
-        <v-col cols="3">
+        <v-col cols="2">
           <v-text-field
             label="Desc. Vendedor"
             id="VALOR_DESCONTO"
@@ -236,7 +236,7 @@ onMounted(async () => {
           ></v-text-field>
         </v-col>
 
-        <v-col cols="3">
+        <v-col cols="2">
           <v-text-field
             label="Valor"
             readonly
