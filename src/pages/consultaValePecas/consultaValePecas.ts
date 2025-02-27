@@ -6,7 +6,6 @@ import { iParamsValePeca, iFuncionario } from './interfaces';
 import utils, { iColumnPrint, dataBrasil } from "@/ts/utils";
 import { mesesToSelect } from "@/constants/constants";
 
-
 export const meses = mesesToSelect;
 const ano = moment().year();
 
@@ -48,8 +47,6 @@ export const actions = {
     async init() {
         await actions.getFuncionarios();
     },
-
-
 
     validarInputs() {
         if (!state.ano) {
@@ -104,7 +101,6 @@ export const actions = {
             state.loading = false;
         }
     },
-
 
     async onClickImprimir() {
         try {
