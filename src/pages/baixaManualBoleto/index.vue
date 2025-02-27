@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { state, actions, computeds } from "./baixaManualBoleto";
+import { state, actions } from "./baixaManualBoleto";
+import utils from "@/ts/utils";
 import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
 </script>
 <template>
   <v-container>
     <v-card
-      :max-width="900"
+      :max-width="950"
       class="mx-auto pa-4"
     >
       <v-row>
@@ -31,13 +32,54 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
 
       <div class="card-container">
         <v-card class="left-card pa-2">
-          <span class="spanExtratoBancario"><u>E</u>xtrato Bancário</span>
-          <v-btn
-            class="iconUpload"
-            icon="mdi-upload"
-            size="large"
-            @click="state.modalClienteFaturadoOpened = true"
-          />
+          <div class="btnUpload"
+            ><span class="spanExtratoBancario"><u>E</u>xtrato Bancário</span></div
+          >
+          <template v-if="state.extratoBancario.length === 0">
+            <input
+              type="file"
+              accept=".ofx"
+              style="display: none; margin-top: 100px !important"
+              ref="fileInput"
+              @change="actions.processarArquivoBancario"
+            />
+            <v-btn
+              class="iconUpload"
+              icon="mdi-upload"
+              size="large"
+              color="primary"
+              title="Enviar Arquivo OFX do Banco"
+              @click="actions.abrirSeletorDeArquivo"
+            />
+          </template>
+
+          <template v-else>
+            <v-data-table-virtual
+              fixed-header
+              no-data-text="Nenhuma transação encontrada"
+              :items="state.extratoBancario"
+              :headers="state.headersExtrato"
+              height="440"
+              max-width="200"
+            >
+              <template v-slot:item.checked="{ item }">
+                <v-checkbox
+                  v-model="item.checked"
+                  hide-details
+                  density="compact"
+                />
+              </template>
+            </v-data-table-virtual>
+
+            <v-row class="pt-3">
+              <v-col
+                class="ml-3"
+                style="font-size: 15px"
+              >
+                <strong>Total: {{ utils.formatValor(state.totalSelecionadoExtrato) }}</strong>
+              </v-col>
+            </v-row>
+          </template>
         </v-card>
 
         <v-divider
@@ -54,6 +96,7 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
               <v-text-field
                 density="compact"
                 label="Orçamento"
+                :disabled="state.dadosOrcamento.length === 0"
                 class="custom-text-field"
                 v-model="state.filtroOrcamento"
                 @keypress.enter="actions.filtrarOrcamentos"
@@ -62,6 +105,7 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
               <div class="d-flex align-center pt-1">
                 <v-btn
                   icon="mdi-magnify"
+                  :disabled="!state.filtroOrcamento || state.dadosOrcamento.length === 0"
                   size="30"
                   color="primary"
                   @click="actions.filtrarOrcamentos"
@@ -96,6 +140,7 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
                 label="Boleto"
                 v-model="state.filtroBoleto"
                 @keypress.enter="actions.filtrarBoletos"
+                :disabled="state.dadosBoletos.length === 0"
               ></v-text-field> </v-col
             ><v-col cols="3">
               <div class="d-flex align-center pt-1">
@@ -104,6 +149,7 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
                   size="30"
                   color="primary"
                   @click="actions.filtrarBoletos"
+                  :disabled="!state.filtroBoleto || state.dadosBoletos.length === 0"
                 />
               </div>
             </v-col>
@@ -129,23 +175,38 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
           </v-data-table-virtual>
           <v-row>
             <v-col
-              cols="7"
+              cols="6"
               class="pt-6 ml-3"
               style="font-size: 15px"
             >
               <span
-                ><strong>Total: {{ computeds.totalOrcamentosEBoletos }}</strong></span
+                ><strong>Total: {{ state.totalOrcamentosEBoletos }}</strong></span
               >
             </v-col>
+
             <v-col
-              cols="4"
+              cols="5"
               class="pt-5 ml-6"
             >
+              <input
+                type="file"
+                accept=".ofx"
+                style="display: none; margin-top: 100px !important"
+              />
+              <v-btn
+                icon="mdi-upload"
+                style="margin-right: 15px !important"
+                size="28px"
+                color="primary"
+                title="Enviar Comprovante de Pagamento"
+              />
+
               <v-btn
                 title="Consultar"
                 height="30px"
                 max-width="220px"
                 color="#3680AB"
+                @click="actions.baixarBoletosEOrcamentos"
               >
                 Baixar Manual
               </v-btn>
@@ -193,19 +254,17 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
 <style scoped>
 .card-container {
   display: flex;
-  /* align-items: stretch; */
   margin-top: 10px;
 }
 
 .left-card {
-  flex: 0 0 35%;
+  flex: 0 0 38%;
 }
 
 .divider {
   width: 2px;
-  margin: 0 10px;
   background-color: #e0e0e0;
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 .right-card {
@@ -216,12 +275,11 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
 .spanExtratoBancario {
   font-size: 15px;
   margin-left: 5px;
-  display: inline-block;
 }
 
 .iconUpload {
   cursor: pointer;
   margin-top: 170px;
-  margin-left: 110px;
+  margin-left: 115px;
 }
 </style>
