@@ -33,10 +33,10 @@ export const state = reactive({
             sortable: true,
             align: 'left',
             value: (item: iParamsValePeca) => {
-                const totalMes = state.dadosRelatorio
-                    .filter(i => i.MES === item.MES)
-                    .reduce((somatoria, armazena) => somatoria + Number(armazena.VALOR || 0), 0);
-                return totalMes.toFixed(2);
+                const totalFuncionarioMes = state.dadosRelatorio
+                    .filter(i => i.MES === item.MES && i.V_NOME_FUNCIONARIO === item.V_NOME_FUNCIONARIO)
+                    .reduce((acc, cur) => acc + Number(cur.VALOR || 0), 0);
+                return utils.formatValor(totalFuncionarioMes);
             }
         },
         { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '20px' },

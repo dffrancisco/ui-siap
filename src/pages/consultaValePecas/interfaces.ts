@@ -9,6 +9,7 @@ export interface iFuncionario {
 export interface iParamsValePeca {
     cod_funcionarios: number[];
     ano: number;
+    V_NOME_FUNCIONARIO?: string;
     DATA_ORCAMENTO?: string;
     MES?: number;
     VALOR?: number;

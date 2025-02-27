@@ -2,6 +2,8 @@
 import { actions, state } from "./consultaValePecas";
 import ModalVale from "./components/ModalConsultaValePecas.vue";
 import { onMounted, computed } from "vue";
+import utils, { formatValor } from "@/ts/utils";
+import { mesesToSelect } from "../../constants/constants";
 
 onMounted(() => {
   actions.init();
@@ -10,6 +12,16 @@ onMounted(() => {
 const totalGeral = computed(() => {
   return state.dadosRelatorio.reduce((acc, item) => acc + Number(item.VALOR || 0), 0).toFixed(2);
 });
+const getMonths = (items) => {
+  return [...new Set(items.map((i) => i.MES))].sort();
+};
+const meses = mesesToSelect;
+const getMonthName = (monthNumber) => {
+  return meses.find((m) => m.value === monthNumber)?.title || "";
+};
+const calculateMonthTotal = (items, month) => {
+  return items.filter((i) => i.MES === month).reduce((acc, cur) => acc + Number(cur.VALOR || 0), 0);
+};
 </script>
 
 <template>
@@ -65,10 +77,37 @@ const totalGeral = computed(() => {
         :items="state.dadosRelatorio"
         :headers="state.headers"
         height="360px"
+        :group-by="[{ key: 'V_NOME_FUNCIONARIO' }, { key: 'MES' }]"
         fixed-header
         :loading="state.loading"
         :row-props="actions.getClassCorLinha"
       >
+        <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
+          <tr class="group-header">
+            <td :colspan="columns.length">
+              <v-btn
+                variant="text"
+                size="small"
+                :icon="isGroupOpen ? 'mdi-minus' : 'mdi-plus'"
+                @click="toggleGroup(item)"
+              ></v-btn>
+              <strong class="mr-9">
+                {{ typeof item.value === "number" ? getMonthName(Number(item.value)) : item.value }}
+              </strong>
+              <span class="mr-2">Orçamentos: {{ item.items.length }}</span>
+
+              <template
+                v-for="month in getMonths(item.items)"
+                :key="month"
+              >
+                <span class="mr-4">
+                  {{ getMonthName(month) }}:
+                  {{ utils.formatValor(calculateMonthTotal(item.items, month)) }}
+                </span>
+              </template>
+            </td>
+          </tr>
+        </template>
         <template v-slot:item.acao="{ item }">
           <v-btn
             icon
@@ -80,21 +119,24 @@ const totalGeral = computed(() => {
             <v-icon>mdi-eye</v-icon>
           </v-btn>
         </template>
+
+        <template v-slot:body.append>
+          <tr class="total-footer">
+            <td
+              :colspan="state.headers.length - 1"
+              class="text-end"
+            >
+              <strong>Total Geral:</strong>
+            </td>
+            <td class="text-right">
+              <strong>{{ utils.formatValor(totalGeral) }}</strong>
+            </td>
+          </tr>
+        </template>
       </v-data-table-virtual>
 
       <v-row class="mt-4">
-        <v-col cols="11">
-          <span class="text">Total Anual R$:</span>
-          <v-text-field
-            label=""
-            :value="totalGeral"
-            :clearable="false"
-            readonly
-            width="30%"
-          ></v-text-field>
-        </v-col>
-
-        <v-col cols="1">
+        <v-col cols="2">
           <v-btn
             color="primary"
             @click="actions.onClickImprimir"
