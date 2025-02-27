@@ -1,8 +1,21 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
 import serviceBaixaManualBoleto from "../services/baixaManualBoleto.service";
+import { iClientesFaturados } from "../interfaces";
+import { reactive } from "vue";
 
 const emit = defineEmits(["closeModalUploadComprovante", "baixaManualBoleto"]);
+
+const props = defineProps<{
+  clienteSelecionado: {
+    type: iClientesFaturados[];
+    required: false;
+  };
+}>();
+
+const state = reactive({
+  loading: false,
+});
 
 const actions = {
   cancelar() {
@@ -27,25 +40,32 @@ const actions = {
     }
 
     try {
-      let arquivoProcessado = file;
+      state.loading = true;
+      let arquivoAjustado = file;
 
       if (file.type.startsWith("image/")) {
-        arquivoProcessado = await actions.resizeImage(file, 5);
+        arquivoAjustado = await actions.resizeImage(file, 5);
       }
 
-      const timestamp = new Date().getTime();
-      const newFileName = `comprovante_${timestamp}.${extensaoDoArquivo}`;
+      //   @ts-ignore
+      const nomeDoArquivo = props.clienteSelecionado.CNPJ;
 
       const formData = new FormData();
-      formData.append("file", arquivoProcessado, newFileName);
+      formData.append("file", arquivoAjustado);
+      formData.append("nomeDoArquivo", nomeDoArquivo);
+      formData.append("extensaoDoArquivo", extensaoDoArquivo);
+      formData.append("class", "BaixaBoleto");
+      formData.append("call", "uploadDoc");
+
       await serviceBaixaManualBoleto.uploadComprovante(formData);
 
-      Swal.fire({ icon: "success", text: "Comprovante enviado com sucesso!" });
+      Swal.fire({ icon: "success", text: "Comprovante enviado com sucesso, baixa efetuada!" });
       emit("baixaManualBoleto");
     } catch (error) {
       Swal.fire({ icon: "error", text: "Erro ao processar o comprovante." });
     } finally {
       target.value = "";
+      state.loading = false;
     }
   },
 
@@ -125,6 +145,17 @@ const actions = {
       >Cancelar</v-btn
     >
   </v-card>
+  <v-overlay
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
 
 <style scoped>

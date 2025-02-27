@@ -24,16 +24,21 @@ const getOrcamentosEBoletosEmAberto: iGetOrcamentosEBoletosEmAbertoFunction = as
 }
 
 const uploadComprovante = async (formData) => {
-    const rs = await $.ajax({
-        url: "http://www.reallatas.com.br/baixa_manual_boleto/upload_comprovante_boleto_manual.php",
-        type: "POST",
-        data: formData,
-        processData: false,
-        contentType: false,
-    });
-    return rs;
-};
+    try {
+        const response = await $.ajax({
+            url: "http://www.reallatas.com.br/baixa_manual_boleto/upload_comprovante_boleto_manual.php",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+        });
 
+        return response;
+    } catch (error) {
+        console.error("Erro no upload:", error);
+        throw error;
+    }
+};
 
 export default {
     getClientesFaturados,

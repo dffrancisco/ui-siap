@@ -232,6 +232,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
   <!-- ModalUploadComprovante -->
   <v-dialog v-model="state.modalUploadComprovanteOpened">
     <ModalUploadComprovante
+      :clienteSelecionado="state.clienteFaturadoSelecionado"
       @baixaManualBoleto="actions.baixarBoletosEOrcamentos"
       @closeModalUploadComprovante="state.modalUploadComprovanteOpened = false"
     />
@@ -265,7 +266,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
 }
 
 .right-card {
-  margin-left: 15px;
+  margin-left: 10px;
   flex: 0 0 60%;
 }
 
