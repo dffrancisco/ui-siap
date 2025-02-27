@@ -5,7 +5,7 @@ import serviceBaixaManualBoleto from "./services/baixaManualBoleto.service";
 import utils from "@/ts/utils";
 
 export const computeds = {
-    totalMarcado: computed(() => {
+    totalOrcamentosEBoletos: computed(() => {
         const totalOrcamentos = state.dadosOrcamento
             .filter(item => item.checked)
             .reduce((sum, item) => sum + item.VALOR, 0);
@@ -14,7 +14,9 @@ export const computeds = {
             .filter(item => item.checked)
             .reduce((sum, item) => sum + item.VALOR, 0);
 
-        return totalOrcamentos + totalBoletos;
+        let total = totalOrcamentos + totalBoletos
+        // return utils.formatValor(total);
+        return total;
     })
 };
 
@@ -26,6 +28,10 @@ export const state = reactive({
     loading: false,
     dadosOrcamento: [] as iOrcamento[],
     dadosBoletos: [] as iBoleto[],
+    filtroOrcamento: '',
+    filtroBoleto: '',
+    dadosOrcamentoFiltrados: [] as iOrcamento[],
+    dadosBoletosFiltrados: [] as iBoleto[],
     headersOrcamento: [
         { key: "NUM_ORCAMENTO", title: "N° Orç.", width: "100px", sortable: true },
         { key: "DATA", title: "Data", width: "100px", sortable: true, value: (item: any) => utils.dataBrasil(item.DATA) },
@@ -59,17 +65,18 @@ export const actions = {
 
             let response = await serviceBaixaManualBoleto.getOrcamentosEBoletosEmAberto(param);
 
-            console.log(response);
-
-
             state.dadosOrcamento = response.orcamentos.map((item: iOrcamento) => ({
                 ...item,
                 checked: false
             }));
+            state.dadosOrcamentoFiltrados = state.dadosOrcamento;
+
             state.dadosBoletos = response.boletos.map((item: iBoleto) => ({
                 ...item,
                 checked: false
             }));
+            state.dadosBoletosFiltrados = state.dadosBoletos;
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -86,14 +93,24 @@ export const actions = {
         return { class: classe };
     },
 
-    toggleOrcamento(item: any) {
-        console.log(item.checked);
-        item.checked = !item.checked;
+    filtrarOrcamentos() {
+        if (state.filtroOrcamento) {
+            state.dadosOrcamentoFiltrados = state.dadosOrcamento.filter(item =>
+                item.NUM_ORCAMENTO.toString().includes(state.filtroOrcamento)
+            );
+        } else {
+            state.dadosOrcamentoFiltrados = state.dadosOrcamento;
+        }
     },
 
-    toggleBoleto(item: any) {
-        console.log(item.checked);
-        item.checked = !item.checked;
-    }
+    filtrarBoletos() {
+        if (state.filtroBoleto) {
+            state.dadosBoletosFiltrados = state.dadosBoletos.filter(item =>
+                item.NUM_BOLETO.toString().includes(state.filtroBoleto)
+            );
+        } else {
+            state.dadosBoletosFiltrados = state.dadosBoletos;
+        }
+    },
 
 }

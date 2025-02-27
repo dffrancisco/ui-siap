@@ -49,14 +49,22 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
           class="right-card"
           height="520"
         >
-          <v-row class="pt-2 ml-1">
-            <v-col cols="6"> <v-text-field label="Orçamento"></v-text-field> </v-col
+          <v-row class="pa-1">
+            <v-col cols="6">
+              <v-text-field
+                density="compact"
+                label="Orçamento"
+                class="custom-text-field"
+                v-model="state.filtroOrcamento"
+                @keypress.enter="actions.filtrarOrcamentos"
+              ></v-text-field> </v-col
             ><v-col cols="3">
-              <div class="d-flex align-center">
+              <div class="d-flex align-center pt-1">
                 <v-btn
                   icon="mdi-magnify"
-                  size="39"
+                  size="30"
                   color="primary"
+                  @click="actions.filtrarOrcamentos"
                 />
               </div>
             </v-col>
@@ -64,17 +72,16 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
           <v-data-table-virtual
             fixed-header
             no-data-text="Não há dados disponíveis"
-            :items="state.dadosOrcamento"
+            :items="state.dadosOrcamentoFiltrados"
             :headers="state.headersOrcamento"
             :loading="state.loading"
             :row-props="actions.getClassCorLinha"
-            height="200"
+            height="180"
           >
             <template v-slot:item.checked="{ item }">
               <div style="margin-left: 20px">
                 <v-checkbox
                   v-model="item.checked"
-                  @change="actions.toggleOrcamento(item)"
                   hide-details
                   density="compact"
                 />
@@ -82,14 +89,21 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
             </template>
           </v-data-table-virtual>
 
-          <v-row class="pt-2 ml-1">
-            <v-col cols="6"> <v-text-field label="Boleto"></v-text-field> </v-col
+          <v-row class="pa-1 pt-5">
+            <v-col cols="6">
+              <v-text-field
+                density="compact"
+                label="Boleto"
+                v-model="state.filtroBoleto"
+                @keypress.enter="actions.filtrarBoletos"
+              ></v-text-field> </v-col
             ><v-col cols="3">
-              <div class="d-flex align-center">
+              <div class="d-flex align-center pt-1">
                 <v-btn
                   icon="mdi-magnify"
-                  size="39"
+                  size="30"
                   color="primary"
+                  @click="actions.filtrarBoletos"
                 />
               </div>
             </v-col>
@@ -97,17 +111,16 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
           <v-data-table-virtual
             fixed-header
             no-data-text="Não há dados disponíveis"
-            :items="state.dadosBoletos"
+            :items="state.dadosBoletosFiltrados"
             :headers="state.headersBoletos"
             :loading="state.loading"
             :row-props="actions.getClassCorLinha"
-            height="190"
+            height="180"
           >
             <template v-slot:item.checked="{ item }">
               <div style="margin-left: 20px">
                 <v-checkbox
                   v-model="item.checked"
-                  @change="actions.toggleBoleto(item)"
                   hide-details
                   density="compact"
                 />
@@ -116,10 +129,26 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
           </v-data-table-virtual>
           <v-row>
             <v-col
-              cols="12"
-              class="text-center pt-5"
+              cols="7"
+              class="pt-6 ml-3"
+              style="font-size: 15px"
             >
-              <span><strong>Total: </strong>{{ computeds.totalMarcado }}</span>
+              <span
+                ><strong>Total: {{ computeds.totalOrcamentosEBoletos }}</strong></span
+              >
+            </v-col>
+            <v-col
+              cols="4"
+              class="pt-5 ml-6"
+            >
+              <v-btn
+                title="Consultar"
+                height="30px"
+                max-width="220px"
+                color="#3680AB"
+              >
+                Baixar Manual
+              </v-btn>
             </v-col>
           </v-row>
         </v-card>
@@ -164,8 +193,8 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
 <style scoped>
 .card-container {
   display: flex;
-  align-items: stretch;
-  margin-top: 20px;
+  /* align-items: stretch; */
+  margin-top: 10px;
 }
 
 .left-card {
