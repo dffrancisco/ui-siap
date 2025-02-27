@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref, computed } from "vue";
+import { onMounted, reactive, computed } from "vue";
 import moment from "moment";
 import serviceConsultaValePecas from "../services/consultaValePecas.service";
 import { iParamsItemOrcamento, iResponseOrcamento, iParamsValePeca } from "../interfaces";
@@ -15,7 +15,6 @@ const state = reactive({
   dbDetalheOrcaçamentoGet: [] as iResponseOrcamento[],
   dadosRelatorio: [] as iParamsItemOrcamento[],
   itensOrcamento: [] as iParamsItemOrcamento[],
-  dbSelectItem: {} as iParamsValePeca,
   dataInicioImpressao: null,
   dataFimImpressao: null,
   headers: <any>[
@@ -88,19 +87,13 @@ const actions = {
     }
   },
 
-  SelecionarVale() {
-    const selecionarValePeca = state.dbSelectItem;
-    emits("selecionarVale", selecionarValePeca);
-    actions.closeModalConsultaVale();
-  },
-
   async onClickImprimirModal() {
     try {
       let relatorio = state.dadosRelatorio;
       const relatorioFormatado = actions.formatarDadosImpressao([...relatorio]);
 
       const columns: iColumnPrint[] = [
-        { key: "NUM_FABRICANTE", label: "Fabricante", align: "left" },
+        { key: "NUM_FABRICANTE", label: "Fabricante", align: "left", width: "80px" },
         { key: "DESC_PRODUTO", label: "Descrição", align: "left" },
         { key: "UNIDADE", label: "UN.", align: "left" },
         { key: "DESCRICAO", label: "Carro", align: "right" },

@@ -30,7 +30,6 @@ export interface iResponseOrcamento {
     VALOR_DESCONTO?: number;
     VALOR?: number;
     MES?: number;
-
 }
 
 export interface iParamsItemOrcamento {
@@ -43,17 +42,4 @@ export interface iParamsItemOrcamento {
     QTO?: number;
     VALOR?: number;
     VALOR_REAL?: number;
-}
-
-export interface iResponseVale {
-    ID_VALE_PECA: number;
-    COD_FUNCIONARIO: number;
-    V_NOME_FUNCIONARIO: string;
-    NUM_ORCAMENTO: number;
-    VALOR: number;
-    DIV: string;
-    DATA_ORCAMENTO: string;
-    DATA: string;
-    MES: number;
-    ANO: number;
 }

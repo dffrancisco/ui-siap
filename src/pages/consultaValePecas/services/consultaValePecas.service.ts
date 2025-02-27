@@ -12,7 +12,6 @@ type iConsultarValePeca = (param: iParamsValePeca) => Promise<iParamsValePeca[]>
 type iGetOrcamento = (param: { num_Orcamento: number, data: Date }) => Promise<iResponseOrcamento[]>;
 type iGetItensOrcamento = (param: { num_Orcamento: number, data: Date }) => Promise<iParamsItemOrcamento[]>;
 
-
 const caminho = "siap/consultaValePecas";
 
 const getFuncionarios: iGetFuncionarios = async () => {
@@ -54,8 +53,6 @@ const getItensOrcamento: iGetItensOrcamento = async (param) => {
     });
     return response;
 };
-
-
 
 export default {
     consultarVales,

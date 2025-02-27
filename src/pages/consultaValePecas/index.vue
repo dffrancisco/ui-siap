@@ -36,6 +36,7 @@ const totalGeral = computed(() => {
             label="Ano"
             id="ano"
             type="number"
+            v-mask="'####'"
             v-model="state.ano"
             :clearable="false"
             @keydown.enter.prevent="actions.validarInputs"
