@@ -12,10 +12,8 @@ const ano = moment().year();
 
 export const state = reactive({
     loading: false,
-    meses: meses,
     ano: ano,
     dadosRelatorio: [] as iParamsValePeca[],
-    dadosRelatorioVales: [] as iParamsValePeca[],
     itensOrcamento: [] as any[],
     selectedFuncionario: <number[]>[],
     funcionarios: <iFuncionario[]>[],

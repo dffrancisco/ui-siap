@@ -12,13 +12,14 @@ export interface iParamsValePeca {
     DATA_ORCAMENTO?: string;
     MES?: number;
     VALOR?: number;
+    NUM_ORCAMENTO?: number;
     numOrcamento?: string;
-    data?: string;
+    data?: Date;
 }
 
 export interface iResponseOrcamento {
-    numOrcamento: number;
-    data: number
+    num_Orcamento: number[];
+    data: Date;
     NUM_ORCAMENTO?: number;
     NOME_CLIENTE?: string;
     VENDEDOR?: string;
@@ -28,11 +29,13 @@ export interface iResponseOrcamento {
     DESCONTO?: number;
     VALOR_DESCONTO?: number;
     VALOR?: number;
+    MES?: number;
+
 }
 
 export interface iParamsItemOrcamento {
-    numOrcamento: number;
-    data: number
+    num_Orcamento: number[];
+    data: Date;
     NUM_FABRICANTE?: string;
     DESC_PRODUTO?: string;
     UNIDADE?: string;

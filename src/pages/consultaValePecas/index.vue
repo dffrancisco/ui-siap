@@ -126,7 +126,10 @@ const totalGeral = computed(() => {
     v-model="state.modalValeOpened"
     max-width="900px"
   >
-    <ModalVale @closeModalVale="state.modalValeOpened = false" /><ModalConsultaValePecas />
+    <ModalVale
+      :selectedItem="state.dbSelectItem"
+      @closeModalVale="state.modalValeOpened = false"
+    /><ModalConsultaValePecas />
   </v-dialog>
 </template>
 

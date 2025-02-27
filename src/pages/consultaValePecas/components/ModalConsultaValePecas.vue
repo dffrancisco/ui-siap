@@ -4,23 +4,23 @@ import moment from "moment";
 import serviceConsultaValePecas from "../services/consultaValePecas.service";
 import { iParamsItemOrcamento, iResponseOrcamento, iParamsValePeca } from "../interfaces";
 import Swal from "sweetalert2";
-const emits = defineEmits(["closeModalVale", "selecionarVale"]);
-const numeroOrcamento = ref("");
-const dataOrcamento = ref("");
 
-const dataFormatada = computed(() => {
-  return dataOrcamento.value ? moment(dataOrcamento.value).format("YYYY-MM-DD") : "";
-});
+const props = defineProps<{ selectedItem: iParamsValePeca }>();
+const emits = defineEmits(["closeModalVale", "selecionarVale"]);
+const ano = moment().year();
 
 const state = reactive({
   loading: false,
-  dbDetalheOrçamento: [] as iResponseOrcamento[],
+  dbDetalheOrçamento: <iResponseOrcamento>{},
+  dbDetalheOrcaçamentoGet: [] as iResponseOrcamento[],
   dadosRelatorio: [] as iParamsItemOrcamento[],
   dbSelectItem: null,
+  dadosRelatorio: [] as iParamsValePeca[],
+  itensOrcamento: [] as iParamsItemOrcamento[],
   funcionario: [],
-  selectedFuncionario: <number[]>[],
+  dbSelectItem: {} as iParamsValePeca,
   meses: [],
-
+  ano: ano,
   mesSelecionado: null,
   headers: <any>[
     { key: "CGC_CLIENTE", title: "Nº Fabricante", sortable: true, align: "left" },
@@ -36,6 +36,16 @@ const state = reactive({
   gridConsultaValePeças: null,
 });
 
+const computedParamsOrcamento = computed(() => {
+  if (props.selectedItem && props.selectedItem.NUM_ORCAMENTO && props.selectedItem.DATA_ORCAMENTO) {
+    return {
+      num_Orcamento: props.selectedItem.NUM_ORCAMENTO,
+      data: moment(props.selectedItem.DATA_ORCAMENTO).toDate(),
+    };
+  }
+  return null;
+});
+
 const actions = {
   async init() {},
 
@@ -43,51 +53,39 @@ const actions = {
     emits("closeModalVale");
   },
 
-
-  const getBuscarOrcamento = async () => {
+  async getOrcamento() {
     try {
       state.loading = true;
-
-
-      const orcamento = await serviceConsultaValePecas.getOrcamento(
-        numeroOrcamento.value,
-        dataFormatada.value
-      );
-
-
-      const itens = await serviceConsultaValePecas.getItensOrcamento(
-        numeroOrcamento.value,
-        dataFormatada.value
-      );
-
-
-      state.dbDetalheOrçamento = orcamento;
-      state.dadosRelatorio = itens;
-
+      const param = computedParamsOrcamento.value;
+      if (!param) {
+        throw new Error("Parâmetros inválidos para a consulta.");
+      }
+      const data = await serviceConsultaValePecas.getOrcamento(param);
+      state.dbDetalheOrcaçamentoGet = data;
+      return data;
     } catch (error) {
-      Swal.fire('Erro', 'Não foi possível carregar o orçamento', 'error');
+      Swal.fire({
+        text: "Erro ao buscar os Orçamentos",
+        icon: "error",
+      });
     } finally {
       state.loading = false;
     }
   },
 
-
-
-  async getConsultarVales() {
+  async getItensOrcamento() {
     try {
       state.loading = true;
-
-      let param: iParamsValePeca = {
-        ano: state.ano,
-        cod_funcionarios: state.selectedFuncionario,
-      };
-
-      const data = await serviceConsultaValePecas.consultarVales(param);
-      state.dadosRelatorio = data;
+      const param = computedParamsOrcamento.value;
+      if (!param) {
+        throw new Error("Parâmetros inválidos para a consulta.");
+      }
+      const data = await serviceConsultaValePecas.getItensOrcamento(param);
+      state.itensOrcamento = data;
       return data;
     } catch (error) {
       Swal.fire({
-        text: "Erro ao buscar os Vales",
+        text: "Erro ao buscar os itens do Orçamento",
         icon: "error",
       });
     } finally {
@@ -116,8 +114,8 @@ const actions = {
 
 onMounted(async () => {
   await actions.init();
-  await actions.getBuscarOrcamento();
-
+  await actions.getOrcamento();
+  await actions.getItensOrcamento();
 });
 </script>
 <template>
@@ -133,7 +131,7 @@ onMounted(async () => {
             label="Nº Orçamento: "
             id="NUM_ORCAMENTO"
             type="text"
-            v-model="state.dbDetalheOrçamento"
+            v-model="state.dbDetalheOrçamento.NUM_ORCAMENTO"
             :clearable="false"
           ></v-text-field>
         </v-col>
@@ -143,7 +141,7 @@ onMounted(async () => {
             label="Nome Cliente"
             id="NOME_CLIENTE"
             type="text"
-            v-model="state.dbDetalheOrçamento"
+            v-model="state.dbDetalheOrçamento.NOME_CLIENTE"
             :clearable="false"
           ></v-text-field>
         </v-col>
@@ -153,7 +151,7 @@ onMounted(async () => {
             label="Vendedor"
             id="VENDEDOR"
             type="text"
-            v-model="state.dbDetalheOrçamento"
+            v-model="state.dbDetalheOrçamento.VENDEDOR"
             :clearable="false"
           ></v-text-field>
         </v-col>
@@ -162,7 +160,7 @@ onMounted(async () => {
             label="Mês"
             id="MES"
             type="text"
-            v-model="state.dbDetalheOrçamento"
+            v-model="state.dbDetalheOrçamento.MES"
             :clearable="false"
           ></v-text-field>
         </v-col>
@@ -172,7 +170,7 @@ onMounted(async () => {
             label="DATA"
             id="DATA"
             type="datetime"
-            v-model="state.dbDetalheOrçamento"
+            v-model="state.dbDetalheOrçamento.DATA"
             :clearable="false"
           ></v-text-field>
         </v-col>
@@ -184,7 +182,7 @@ onMounted(async () => {
             label="Hora"
             id="HORA"
             type="time"
-            v-model="state.dbDetalheOrçamento"
+            v-model="state.dbDetalheOrçamento.HORA"
             :clearable="false"
           ></v-text-field>
         </v-col>
@@ -194,7 +192,7 @@ onMounted(async () => {
             label="Desconto"
             id="DESCONTO"
             type="number"
-            v-model="state.dbDetalheOrçamento"
+            v-model="state.dbDetalheOrçamento.DESCONTO"
             :clearable="false"
           ></v-text-field>
         </v-col>
@@ -204,7 +202,7 @@ onMounted(async () => {
             label="Desc. Vendedor"
             id="VALOR_DESCONTO"
             type="number"
-            v-model="state.dbDetalheOrçamento"
+            v-model="state.dbDetalheOrçamento.VALOR_DESCONTO"
             :clearable="false"
           ></v-text-field>
         </v-col>
@@ -214,7 +212,7 @@ onMounted(async () => {
             label="Valor"
             id="VALOR"
             type="number"
-            v-model="state.dbDetalheOrçamento"
+            v-model="state.dbDetalheOrçamento.VALOR"
             :clearable="false"
           ></v-text-field>
         </v-col>
