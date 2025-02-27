@@ -6,6 +6,7 @@ import utils from "@/ts/utils";
 
 export const state = reactive({
     modalClienteFaturadoOpened: false,
+    modalUploadComprovanteOpened: false,
     clienteFaturadoSelecionado: <iClientesFaturados>{},
     nomeClienteFaturadoSelecionado: '',
     loading: false,
@@ -131,8 +132,8 @@ export const actions = {
     },
 
     abrirSeletorDeArquivo() {
-        const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-        if (input) input.click();
+        const input = document.getElementById('fileInput') as HTMLInputElement;
+        if (input) input.click()
     },
 
     async processarArquivoBancario(event: Event) {
@@ -208,5 +209,5 @@ export const actions = {
         } finally {
             state.loading = false;
         }
-    }
+    },
 }

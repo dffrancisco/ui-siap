@@ -2,6 +2,7 @@
 import { state, actions } from "./baixaManualBoleto";
 import utils from "@/ts/utils";
 import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
+import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
 </script>
 <template>
   <v-container>
@@ -40,7 +41,7 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
               type="file"
               accept=".ofx"
               style="display: none; margin-top: 100px !important"
-              ref="fileInput"
+              id="fileInput"
               @change="actions.processarArquivoBancario"
             />
             <v-btn
@@ -59,6 +60,7 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
               no-data-text="Nenhuma transação encontrada"
               :items="state.extratoBancario"
               :headers="state.headersExtrato"
+              :row-props="actions.getClassCorLinha"
               height="440"
               max-width="200"
             >
@@ -105,7 +107,7 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
               <div class="d-flex align-center pt-1">
                 <v-btn
                   icon="mdi-magnify"
-                  :disabled="!state.filtroOrcamento || state.dadosOrcamento.length === 0"
+                  :disabled="state.dadosOrcamento.length === 0"
                   size="30"
                   color="primary"
                   @click="actions.filtrarOrcamentos"
@@ -149,7 +151,7 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
                   size="30"
                   color="primary"
                   @click="actions.filtrarBoletos"
-                  :disabled="!state.filtroBoleto || state.dadosBoletos.length === 0"
+                  :disabled="state.dadosBoletos.length === 0"
                 />
               </div>
             </v-col>
@@ -175,7 +177,7 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
           </v-data-table-virtual>
           <v-row>
             <v-col
-              cols="6"
+              cols="7"
               class="pt-6 ml-3"
               style="font-size: 15px"
             >
@@ -185,28 +187,15 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
             </v-col>
 
             <v-col
-              cols="5"
+              cols="4"
               class="pt-5 ml-6"
             >
-              <input
-                type="file"
-                accept=".ofx"
-                style="display: none; margin-top: 100px !important"
-              />
-              <v-btn
-                icon="mdi-upload"
-                style="margin-right: 15px !important"
-                size="28px"
-                color="primary"
-                title="Enviar Comprovante de Pagamento"
-              />
-
               <v-btn
                 title="Consultar"
                 height="30px"
                 max-width="220px"
                 color="#3680AB"
-                @click="actions.baixarBoletosEOrcamentos"
+                @click="state.modalUploadComprovanteOpened = true"
               >
                 Baixar Manual
               </v-btn>
@@ -237,6 +226,14 @@ import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
     <ModalClienteFaturado
       @selecionarClienteFaturado="actions.salvarClienteFaturadoSelecionado"
       @closeModalClienteFaturado="state.modalClienteFaturadoOpened = false"
+    />
+  </v-dialog>
+
+  <!-- ModalUploadComprovante -->
+  <v-dialog v-model="state.modalUploadComprovanteOpened">
+    <ModalUploadComprovante
+      @baixaManualBoleto="actions.baixarBoletosEOrcamentos"
+      @closeModalUploadComprovante="state.modalUploadComprovanteOpened = false"
     />
   </v-dialog>
 </template>
