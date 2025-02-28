@@ -35,9 +35,11 @@ export const state = reactive({
         { key: "checked", title: "Conferido", width: "50px", align: "center" },
     ],
     totalSelecionadoExtrato: computed(() => {
-        return state.extratoBancario
+        const totalExtrato = state.extratoBancario
             .filter(item => item.checked)
             .reduce((sum, item) => sum + item.VALOR, 0);
+
+        return parseFloat(totalExtrato.toFixed(2));
     }),
     totalOrcamentosEBoletos: computed(() => {
         const totalOrcamentos = state.dadosOrcamento
@@ -48,8 +50,15 @@ export const state = reactive({
             .filter(item => item.checked)
             .reduce((sum, item) => sum + item.VALOR, 0);
 
-        let total = totalOrcamentos + totalBoletos
-        return utils.formatValor(total);
+        let total = totalOrcamentos + totalBoletos;
+        return parseFloat(total.toFixed(2));
+    }),
+    podeBaixarManual: computed(() => {
+        return (
+            state.totalOrcamentosEBoletos === state.totalSelecionadoExtrato &&
+            state.nomeClienteFaturadoSelecionado !== '' &&
+            state.totalOrcamentosEBoletos !== 0
+        );
     })
 })
 

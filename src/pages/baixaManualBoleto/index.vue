@@ -182,7 +182,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
               style="font-size: 15px"
             >
               <span
-                ><strong>Total: {{ state.totalOrcamentosEBoletos }}</strong></span
+                ><strong>Total: {{ utils.formatValor(state.totalOrcamentosEBoletos) }}</strong></span
               >
             </v-col>
 
@@ -196,6 +196,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
                 max-width="220px"
                 color="#3680AB"
                 @click="state.modalUploadComprovanteOpened = true"
+                :disabled="!state.podeBaixarManual"
               >
                 Baixar Manual
               </v-btn>

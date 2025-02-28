@@ -7,10 +7,7 @@ import { reactive } from "vue";
 const emit = defineEmits(["closeModalUploadComprovante", "baixaManualBoleto"]);
 
 const props = defineProps<{
-  clienteSelecionado: {
-    type: iClientesFaturados[];
-    required: false;
-  };
+  clienteSelecionado?: iClientesFaturados;
 }>();
 
 const state = reactive({
@@ -47,7 +44,6 @@ const actions = {
         arquivoAjustado = await actions.resizeImage(file, 5);
       }
 
-      //   @ts-ignore
       const nomeDoArquivo = props.clienteSelecionado.CNPJ;
 
       const formData = new FormData();
@@ -57,10 +53,11 @@ const actions = {
       formData.append("class", "BaixaBoleto");
       formData.append("call", "uploadDoc");
 
-      await serviceBaixaManualBoleto.uploadComprovante(formData);
+      // await serviceBaixaManualBoleto.uploadComprovante(formData);
 
-      Swal.fire({ icon: "success", text: "Comprovante enviado com sucesso, baixa efetuada!" });
+      // Swal.fire({ icon: "success", text: "Comprovante enviado com sucesso, baixa efetuada!" });
       emit("baixaManualBoleto");
+      emit("closeModalUploadComprovante");
     } catch (error) {
       Swal.fire({ icon: "error", text: "Erro ao processar o comprovante." });
     } finally {
