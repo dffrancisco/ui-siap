@@ -200,11 +200,11 @@ export const actions = {
             }
         }
 
-        // const datasUnicas = new Set(transacoes.map(t => t.DATA));
-        // if (datasUnicas.size > 1) {
-        //     Swal.fire({ icon: "error", text: "O extrato deve conter transações de apenas um dia." });
-        //     return;
-        // }
+        const datasUnicas = new Set(transacoes.map(t => t.DATA));
+        if (datasUnicas.size > 1) {
+            Swal.fire({ icon: "error", text: "O extrato deve conter transações de apenas um dia." });
+            return;
+        }
 
         state.extratoBancario = transacoes;
     },
