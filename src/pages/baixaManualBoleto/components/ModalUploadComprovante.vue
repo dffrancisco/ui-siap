@@ -55,7 +55,6 @@ const actions = {
 
       await serviceBaixaManualBoleto.uploadComprovante(formData);
 
-      Swal.fire({ icon: "success", text: "Comprovante enviado com sucesso, baixa efetuada!" });
       emit("baixaManualBoleto");
       emit("closeModalUploadComprovante");
     } catch (error) {
