@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { reactive, computed } from 'vue';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceConsultaValePecas from './services/consultaValePecas.service';
@@ -19,6 +19,12 @@ export const state = reactive({
     modalValeOpened: false,
     total: '',
     dbSelectItem: {} as iParamsValePeca,
+    dataInicioImpressao: null,
+    dataFimImpressao: null,
+    currentMes: null as number | null,
+    currentFuncionario: '',
+
+    totalMes: '0,00' as string,
     headers: <any>[
         { key: 'V_NOME_FUNCIONARIO', title: 'Nome', sortable: true, align: 'left', width: '80px' },
         { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '60px' },
@@ -29,7 +35,7 @@ export const state = reactive({
         { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '60px' },
         {
             key: 'total',
-            title: 'Total',
+            title: 'Total Mês',
             sortable: true,
             align: 'left',
             value: (item: iParamsValePeca) => {
@@ -42,6 +48,16 @@ export const state = reactive({
         { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '20px' },
     ],
 });
+
+export const totalGeral = computed(() => {
+    return state.dadosRelatorio.reduce((acc, item) => acc + Number(item.VALOR || 0), 0).toFixed(2);
+});
+
+export const getMonthName = (monthNumber: number): string => {
+    return meses.find((m) => m.value === monthNumber)?.title || "";
+};
+
+
 
 export const actions = {
     async init() {
@@ -91,6 +107,8 @@ export const actions = {
 
             const data = await serviceConsultaValePecas.consultarVales(param);
             state.dadosRelatorio = data;
+
+
             return data;
         } catch (error) {
             Swal.fire({
@@ -101,6 +119,8 @@ export const actions = {
             state.loading = false;
         }
     },
+
+
 
     async onClickImprimir() {
         try {
