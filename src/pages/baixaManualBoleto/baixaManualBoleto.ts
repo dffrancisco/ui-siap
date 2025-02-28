@@ -166,7 +166,7 @@ export const actions = {
     extrairTransacoes(ofxText) {
         const transacoes = [];
         const linhas = ofxText.split("\n");
-        let dataTransacao = "", valor = 0, tipo = "";
+        let dataTransacao = "", valor = 0, tipo = "", idTransacao = "";
 
         for (let i = 0; i < linhas.length; i++) {
             const linha = linhas[i].trim();
@@ -174,15 +174,22 @@ export const actions = {
                 dataTransacao = linha.replace("<DTPOSTED>", "").substring(0, 8);
                 dataTransacao = `${dataTransacao.substring(6, 8)}/${dataTransacao.substring(4, 6)}/${dataTransacao.substring(0, 4)}`;
             }
+
             if (linha.startsWith("<TRNAMT>")) {
                 valor = parseFloat(linha.replace("<TRNAMT>", "").replace(",", "."));
             }
+
             if (linha.startsWith("<TRNTYPE>")) {
                 tipo = linha.replace("<TRNTYPE>", "");
             }
+
+            if (linha.startsWith("<FITID>")) {
+                idTransacao = linha.replace("<FITID>", "");
+            }
+
             if (linha.startsWith("</STMTTRN>")) {
                 if (valor > 0) {
-                    transacoes.push({ DATA: dataTransacao, VALOR: valor, TIPO: tipo, checked: false });
+                    transacoes.push({ DATA: dataTransacao, VALOR: valor, TIPO: tipo, ID: idTransacao, checked: false });
                 }
             }
         }
@@ -197,26 +204,48 @@ export const actions = {
     },
 
     async baixarBoletosEOrcamentos() {
-        console.log(state.totalOrcamentosEBoletos);
-        console.log(state.totalSelecionadoExtrato);
-
-        return
         const boletosSelecionados = state.dadosBoletosFiltrados.filter(boleto => boleto.checked);
         const orcamentosSelecionados = state.dadosOrcamentoFiltrados.filter(orcamento => orcamento.checked);
         const extratoSelecionado = state.extratoBancario.filter(transacao => transacao.checked);
 
-        const boletosSelecionadosIds = boletosSelecionados.map(boleto => boleto.NUM_BOLETO);
-        const orcamentosSelecionadosIds = orcamentosSelecionados.map(orcamento => orcamento.NUM_ORCAMENTO);
-        const extratoSelecionadoIds = extratoSelecionado.map(transacao => transacao.DATA);
+        const orcamentosSelecionadosBaixa = orcamentosSelecionados.map(orcamento => ({
+            numOrcamento: orcamento.NUM_ORCAMENTO,
+            dataOrcamento: orcamento.DATA,
+            valorOrcamento: orcamento.VALOR
+        }));
+
+        const boletosSelecionadosBaixa = boletosSelecionados.map(boleto => ({
+            numBoleto: boleto.NUM_BOLETO,
+            dataBoleto: boleto.DATA,
+            valorBoleto: boleto.VALOR
+        }));
+
+        const dataExtrato = extratoSelecionado.length > 0 ? extratoSelecionado[0].DATA : null;
+        const extratoSelecionadoIds = extratoSelecionado.map(transacao => transacao.ID);
+
+        const dadosParaLog = {
+            dataExtrato,
+            idsExtrato: extratoSelecionadoIds,
+            numOrcamentos: orcamentosSelecionados.map(orcamento => orcamento.NUM_ORCAMENTO),
+            numBoletos: boletosSelecionados.map(boleto => boleto.NUM_BOLETO),
+            totalBaixa: Number(state.totalOrcamentosEBoletos)
+        };
+
+        let param = {
+            orcamentosSelecionadosBaixa,
+            boletosSelecionadosBaixa,
+            dadosParaLog
+        };
 
         try {
             state.loading = true;
-            //const response = await serviceBaixaManualBoleto.baixarBoletosEOrcamentos(boletosSelecionadosIds, orcamentosSelecionadosIds, extratoSelecionadoIds);
-            Swal.fire({ icon: "success", text: "Boletos e orçamentos baixados com sucesso." });
+            await serviceBaixaManualBoleto.baixarBoletosEOrcamentos(param);
+            Swal.fire({ icon: "success", text: "Baixa manual realizada com sucesso!" });
         } catch (err) {
             Swal.fire({ icon: "error", text: "Erro ao dar baixa nos boletos e orçamentos." });
         } finally {
             state.loading = false;
         }
-    },
+    }
+
 }

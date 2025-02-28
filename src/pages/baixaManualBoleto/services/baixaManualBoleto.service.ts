@@ -1,7 +1,8 @@
 import axios from "axios";
-import { iClientesFaturados, iGetClientesFaturados, iParamGetOrcamentos } from "../interfaces";
+import { iBaixarBoletosEOrcamentosParams, iClientesFaturados, iDadosOrcamentosEBoletos, iGetClientesFaturados, iParamGetOrcamentos } from "../interfaces";
 type iGetClientesFaturadosFuction = (param: iGetClientesFaturados, offset: number) => Promise<iClientesFaturados>
-type iGetOrcamentosEBoletosEmAbertoFunction = (param: iParamGetOrcamentos) => Promise<any>
+type iGetOrcamentosEBoletosEmAbertoFunction = (param: iParamGetOrcamentos) => Promise<iDadosOrcamentosEBoletos>
+type iBaixarBoletosEOrcamentosFunction = (param: iBaixarBoletosEOrcamentosParams) => Promise<any>
 
 const caminho = 'siap/baixaManualBoleto'
 
@@ -40,8 +41,17 @@ const uploadComprovante = async (formData) => {
     }
 };
 
+const baixarBoletosEOrcamentos: iBaixarBoletosEOrcamentosFunction = async (param: iBaixarBoletosEOrcamentosParams) => {
+    const { data } = await axios.post(caminho, {
+        call: "baixarBoletosEOrcamentos",
+        param
+    });
+    return data;
+}
+
 export default {
     getClientesFaturados,
     getOrcamentosEBoletosEmAberto,
-    uploadComprovante
+    uploadComprovante,
+    baixarBoletosEOrcamentos
 }

@@ -33,3 +33,20 @@ export interface iBoleto {
     DIVISAO: string;
     checked?: boolean;
 }
+
+export interface iDadosOrcamentosEBoletos {
+    orcamentos: iOrcamento[];
+    boletos: iBoleto[];
+}
+
+export interface iBaixarBoletosEOrcamentosParams {
+    orcamentosSelecionadosBaixa: { numOrcamento: number; dataOrcamento: string; valorOrcamento: number }[];
+    boletosSelecionadosBaixa: { numBoleto: number; valorBoleto: number }[];
+    dadosParaLog: {
+        dataExtrato: string;
+        idsExtrato: string[];
+        numOrcamentos: number[];
+        numBoletos: number[];
+        totalBaixa: number;
+    };
+}
