@@ -53,9 +53,9 @@ const actions = {
       formData.append("class", "BaixaBoleto");
       formData.append("call", "uploadDoc");
 
-      // await serviceBaixaManualBoleto.uploadComprovante(formData);
+      await serviceBaixaManualBoleto.uploadComprovante(formData);
 
-      // Swal.fire({ icon: "success", text: "Comprovante enviado com sucesso, baixa efetuada!" });
+      Swal.fire({ icon: "success", text: "Comprovante enviado com sucesso, baixa efetuada!" });
       emit("baixaManualBoleto");
       emit("closeModalUploadComprovante");
     } catch (error) {

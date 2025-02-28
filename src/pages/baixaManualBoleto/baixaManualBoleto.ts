@@ -18,21 +18,21 @@ export const state = reactive({
     dadosBoletosFiltrados: [] as iBoleto[],
     extratoBancario: [],
     headersExtrato: [
+        { key: "checked", title: "Conf.", width: "50px", align: "center" },
         { key: "DATA", title: "Data", width: "100px", sortable: true },
         { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item) => utils.formatValor(item.VALOR) },
-        { key: "checked", title: "Conf.", width: "50px", align: "center" }
     ],
     headersOrcamento: [
+        { key: "checked", title: "Conferido", width: "50px", align: "center" },
         { key: "NUM_ORCAMENTO", title: "N° Orç.", width: "100px", sortable: true },
         { key: "DATA", title: "Data", width: "100px", sortable: true, value: (item: any) => utils.dataBrasil(item.DATA) },
         { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: any) => utils.formatValor(item.VALOR) },
-        { key: "checked", title: "Conferido", width: "50px", align: "center" },
     ],
     headersBoletos: [
+        { key: "checked", title: "Conferido", width: "50px", align: "center" },
         { key: "NUM_BOLETO", title: "N° Boleto", width: "100px", sortable: true },
         { key: "DATA_VENCIMENTO", title: "Data Vencimento", width: "100px", sortable: true, value: (item: any) => utils.dataBrasil(item.DATA_VENCIMENTO) },
         { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: any) => utils.formatValor(item.VALOR) },
-        { key: "checked", title: "Conferido", width: "50px", align: "center" },
     ],
     totalSelecionadoExtrato: computed(() => {
         const totalExtrato = state.extratoBancario
@@ -80,6 +80,12 @@ export const actions = {
         state.filtroBoleto = '';
         state.dadosOrcamentoFiltrados = [];
         state.dadosBoletosFiltrados = [];
+    },
+
+    limparExtratoBancarioECliente() {
+        state.extratoBancario = [];
+        state.clienteFaturadoSelecionado = [];
+        state.nomeClienteFaturadoSelecionado = '';
     },
 
     async getOrcamentosEBoletosEmAberto() {
@@ -240,6 +246,10 @@ export const actions = {
         try {
             state.loading = true;
             await serviceBaixaManualBoleto.baixarBoletosEOrcamentos(param);
+
+            actions.limparStatesAnteriores()
+            actions.limparExtratoBancarioECliente();
+
             Swal.fire({ icon: "success", text: "Baixa manual realizada com sucesso!" });
         } catch (err) {
             Swal.fire({ icon: "error", text: "Erro ao dar baixa nos boletos e orçamentos." });
