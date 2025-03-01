@@ -89,8 +89,7 @@ onMounted(() => {
                   >Nº Orçamento: {{ item.items.length }}</span
                 >
                 <span style="font-size: 13px">
-                  Total Mês:
-                  {{ totaisMes[`${item.items[0].MES}-${item.items[0].V_NOME_FUNCIONARIO}`] || "0,00" }}
+                  Total Mês: {{ utils.formatValor(item.items[0]?.raw?.TOTAL_MES || 0) }}
                 </span>
               </template>
             </td>
@@ -160,7 +159,6 @@ onMounted(() => {
       :selectedItem="state.dbSelectItem"
       @closeModalVale="state.modalValeOpened = false"
     />
-    <ModalConsultaValePecas />
   </v-dialog>
 </template>
 

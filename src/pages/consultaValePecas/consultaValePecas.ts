@@ -17,14 +17,10 @@ export const state = reactive({
     selectedFuncionario: <number[]>[],
     funcionarios: <iFuncionario[]>[],
     modalValeOpened: false,
-    total: '',
     dbSelectItem: {} as iParamsValePeca,
     dataInicioImpressao: null,
     dataFimImpressao: null,
     currentMes: null as number | null,
-    currentFuncionario: '',
-
-    totalMes: '0,00' as string,
     headers: <any>[
         { key: 'V_NOME_FUNCIONARIO', title: 'Nome', sortable: true, align: 'left', width: '80px' },
         { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '60px' },
@@ -33,19 +29,9 @@ export const state = reactive({
         { key: 'MES', title: 'Mês', sortable: true, align: 'left', width: '30px' },
         { key: 'ANO', title: 'Ano', sortable: true, align: 'left', width: '30px' },
         { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '60px' },
-        {
-            key: 'total',
-            title: 'Total Mês',
-            sortable: true,
-            align: 'left',
-            value: (item: iParamsValePeca) => {
-                const totalFuncionarioMes = state.dadosRelatorio
-                    .filter(i => i.MES === item.MES && i.V_NOME_FUNCIONARIO === item.V_NOME_FUNCIONARIO)
-                    .reduce((acc, cur) => acc + Number(cur.VALOR || 0), 0);
-                return utils.formatValor(totalFuncionarioMes);
-            }
-        },
         { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '20px' },
+        { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '60px' },
+
     ],
 });
 
@@ -119,7 +105,6 @@ export const actions = {
             state.loading = false;
         }
     },
-
 
 
     async onClickImprimir() {

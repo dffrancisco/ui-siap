@@ -16,7 +16,11 @@ export interface iParamsValePeca {
     NUM_ORCAMENTO?: number;
     numOrcamento?: string;
     data?: Date;
+    TOTAL_MES?: number;
+
+
 }
+
 
 export interface iResponseOrcamento {
     num_Orcamento: number[];
