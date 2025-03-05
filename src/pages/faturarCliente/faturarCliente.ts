@@ -315,7 +315,7 @@ export const actions = ({
         if (computeds.totalValorOrcamentos.value < 20) {
             Swal.fire({
                 icon: "warning",
-                text: "O valor dos orçamentos é menor que R$ 40,00. Faturar não é possível!"
+                text: "O valor dos orçamentos é menor que R$ 20,00. Faturar não é possível!"
             })
             return
         }
