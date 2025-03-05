@@ -202,7 +202,7 @@ export const actions = {
 
         const datasUnicas = new Set(transacoes.map(t => t.DATA));
         if (datasUnicas.size > 1) {
-            Swal.fire({ icon: "error", text: "O extrato deve conter transações de apenas um dia." });
+            Swal.fire({ icon: "warning", text: "O extrato deve conter transações de apenas um dia." });
             return;
         }
 
