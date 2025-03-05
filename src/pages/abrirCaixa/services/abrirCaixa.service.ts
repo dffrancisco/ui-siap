@@ -27,13 +27,8 @@ const abrirCaixa: iAbrirCaixa = async (param) => {
     return data;
 }
 
-const redirectConferencia = async () => {
-    window.location.href = 'http://192.168.100.60/siap+/?p=conferencia_caixa/conferencia_caixa';
-}
-
 export default {
     getDadosAbrirCaixa,
     abrirMDC,
-    abrirCaixa,
-    redirectConferencia,
+    abrirCaixa
 }

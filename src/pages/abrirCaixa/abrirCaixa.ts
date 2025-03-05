@@ -108,7 +108,6 @@ export const actions = {
             state.loading = true;
 
             window.parent.location = 'http://192.168.100.60/siap+/?p=conferencia_caixa/conferencia_caixa';
-            //await serviceAbrirCaixa.redirectConferencia();
         } catch (error) {
             Swal.fire({
                 icon: "error",
