@@ -224,8 +224,7 @@ export const actions = {
             return false;
         }
 
-        const isNew = !state.gridPrincipal.dataSource() == false;
-        if (isNew) {
+        if (state.gridPrincipal.dataSource() == false) {
             await actions.insertFornecedor();
         } else {
             await actions.updateFornecedor();
