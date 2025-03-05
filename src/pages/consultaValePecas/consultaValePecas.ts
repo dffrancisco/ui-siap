@@ -12,6 +12,7 @@ const ano = moment().year();
 export const state = reactive({
     loading: false,
     ano: ano,
+
     dadosRelatorio: [] as iParamsValePeca[],
     itensOrcamento: [] as any[],
     selectedFuncionario: <number[]>[],
@@ -129,11 +130,9 @@ export const actions = {
 
             const titulo = `
                     <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
-                        <span>Período: ${moment(state.dataInicioImpressao).format(
+                        <span>Ano do filtro: ${moment(state.ano).format(
                 "DD/MM/YYYY"
-            )} até ${moment(state.dataFimImpressao).format("DD/MM/YYYY")}</span>
-                        <strong style="font-size: 16px;">Relatório Uso Consumo</strong>
-                    </div>
+            )} 
                 `;
 
             await utils.printComCabecalho(columns, relatorioFormatado, titulo);

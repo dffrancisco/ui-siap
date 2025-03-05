@@ -104,11 +104,7 @@ const actions = {
 
       const titulo = `
                     <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
-                        <span>Período: ${moment(state.dataInicioImpressao).format("DD/MM/YYYY")} até ${moment(
-        state.dataFimImpressao
-      ).format("DD/MM/YYYY")}</span>
-                        <strong style="font-size: 16px;">Relatório Uso Consumo</strong>
-                    </div>
+                        <span>Dados detalhados do Orçamento:
                 `;
 
       await utils.printComCabecalho(columns, relatorioFormatado, titulo);
