@@ -179,7 +179,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
           <v-row>
             <v-col
               cols="7"
-              class="pt-6 ml-3"
+              class="pt-6 ml-3 d-flex align-end"
               style="font-size: 15px"
             >
               <span
