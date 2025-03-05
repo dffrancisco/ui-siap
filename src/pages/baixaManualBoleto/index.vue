@@ -32,7 +32,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
       </v-row>
 
       <div class="card-container">
-        <v-card class="left-card pa-2">
+        <v-card class="left-card pa-2 d-flex flex-column">
           <div class="btnUpload"
             ><span class="spanExtratoBancario"><u>E</u>xtrato Bancário</span></div
           >
