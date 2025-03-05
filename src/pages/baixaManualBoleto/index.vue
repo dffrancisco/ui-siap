@@ -55,32 +55,33 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
           </template>
 
           <template v-else>
-            <v-data-table-virtual
-              fixed-header
-              no-data-text="Nenhuma transação encontrada"
-              :items="state.extratoBancario"
-              :headers="state.headersExtrato"
-              :row-props="actions.getClassCorLinha"
-              height="440"
-              max-width="200"
-            >
-              <template v-slot:item.checked="{ item }">
-                <v-checkbox
-                  v-model="item.checked"
-                  hide-details
-                  density="compact"
-                />
-              </template>
-            </v-data-table-virtual>
+            <div class="d-flex flex-column justify-space-between flex-grow-1">
+              <div>
+                <v-data-table-virtual
+                  fixed-header
+                  no-data-text="Nenhuma transação encontrada"
+                  :items="state.extratoBancario"
+                  :headers="state.headersExtrato"
+                  :row-props="actions.getClassCorLinha"
+                  height="390"
+                  max-width="200"
+                >
+                  <template v-slot:item.checked="{ item }">
+                    <v-checkbox
+                      v-model="item.checked"
+                      hide-details
+                      density="compact"
+                    />
+                  </template>
+                </v-data-table-virtual>
+              </div>
 
-            <v-row class="pt-3">
-              <v-col
-                class="ml-3"
-                style="font-size: 15px"
-              >
-                <strong>Total: {{ utils.formatValor(state.totalSelecionadoExtrato) }}</strong>
-              </v-col>
-            </v-row>
+              <div>
+                <strong style="font-size: 15px"
+                  >Total: {{ utils.formatValor(state.totalSelecionadoExtrato) }}</strong
+                >
+              </div>
+            </div>
           </template>
         </v-card>
 
@@ -91,7 +92,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
 
         <v-card
           class="right-card"
-          height="520"
+          height="470"
         >
           <v-row class="pa-1">
             <v-col cols="6">
@@ -122,7 +123,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
             :headers="state.headersOrcamento"
             :loading="state.loading"
             :row-props="actions.getClassCorLinha"
-            height="180"
+            height="155"
           >
             <template v-slot:item.checked="{ item }">
               <div style="margin-left: 20px">
@@ -163,7 +164,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
             :headers="state.headersBoletos"
             :loading="state.loading"
             :row-props="actions.getClassCorLinha"
-            height="180"
+            height="155"
           >
             <template v-slot:item.checked="{ item }">
               <div style="margin-left: 20px">
