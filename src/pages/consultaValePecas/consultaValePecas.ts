@@ -56,6 +56,13 @@ export const actions = {
             });
             return false;
         }
+        if (state.ano > moment().year()) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'O ano não pode ser maior que o ano atual.',
+            });
+            return false;
+        }
         actions.getConsultarVales();
         return true;
     },
