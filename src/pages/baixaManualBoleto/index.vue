@@ -205,6 +205,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
         </v-card>
       </div>
     </v-card>
+    <div id="pnCodigoTela">baixaManualBoleto</div>
 
     <v-overlay
       :model-value="state.loading"
