@@ -23,15 +23,13 @@ export const state = reactive({
     currentMes: null as number | null,
     headers: <any>[
         { key: 'V_NOME_FUNCIONARIO', title: 'Nome', sortable: true, align: 'left', width: '80px' },
-        { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '60px' },
+        { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '9px' },
         { key: 'DATA_ORCAMENTO', title: 'Vencimento', sortable: true, align: 'left', value: (item: iParamsValePeca) => dataBrasil(item.DATA_ORCAMENTO) },
         { key: 'VALOR', title: 'Valor', sortable: true, align: 'left', width: '50px' },
-        { key: 'MES', title: 'Mês', sortable: true, align: 'left', width: '30px' },
-        { key: 'ANO', title: 'Ano', sortable: true, align: 'left', width: '30px' },
-        { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '60px' },
-        { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '20px' },
-        { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '60px' },
-
+        { key: 'MES', title: 'Mês', sortable: true, align: 'left', width: '5px' },
+        { key: 'ANO', title: 'Ano', sortable: true, align: 'left', width: '5px' },
+        { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '5px' },
+        { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '5px' },
     ],
 });
 
