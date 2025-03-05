@@ -12,7 +12,6 @@ const ano = moment().year();
 export const state = reactive({
     loading: false,
     ano: ano,
-
     dadosRelatorio: [] as iParamsValePeca[],
     itensOrcamento: [] as any[],
     selectedFuncionario: <number[]>[],
@@ -21,11 +20,11 @@ export const state = reactive({
     dbSelectItem: {} as iParamsValePeca,
     currentMes: null as number | null,
     headers: <any>[
-        { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '90px' },
+        { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '100px' },
         { key: 'DATA_ORCAMENTO', title: 'Vencimento', sortable: true, align: 'left', value: (item: iParamsValePeca) => dataBrasil(item.DATA_ORCAMENTO), width: '90px' },
-        { key: 'VALOR', title: 'Valor', sortable: true, align: 'left', width: '90px' },
+        { key: 'VALOR', title: 'Valor', sortable: true, align: 'left', width: '100px' },
         { key: 'MES', title: 'Mês', sortable: true, align: 'left', width: '100px' },
-        { key: 'ANO', title: 'Ano', sortable: true, align: 'left', width: '100px' },
+        { key: 'ANO', title: 'Ano', sortable: true, align: 'left', width: '90px' },
         { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '100px' },
         { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '100px' },
     ],
