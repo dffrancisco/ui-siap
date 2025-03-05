@@ -19,18 +19,15 @@ export const state = reactive({
     funcionarios: <iFuncionario[]>[],
     modalValeOpened: false,
     dbSelectItem: {} as iParamsValePeca,
-    dataInicioImpressao: null,
-    dataFimImpressao: null,
     currentMes: null as number | null,
     headers: <any>[
-        { key: 'V_NOME_FUNCIONARIO', title: 'Nome', sortable: true, align: 'left', width: '80px' },
-        { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '9px' },
-        { key: 'DATA_ORCAMENTO', title: 'Vencimento', sortable: true, align: 'left', value: (item: iParamsValePeca) => dataBrasil(item.DATA_ORCAMENTO) },
-        { key: 'VALOR', title: 'Valor', sortable: true, align: 'left', width: '50px' },
-        { key: 'MES', title: 'Mês', sortable: true, align: 'left', width: '5px' },
-        { key: 'ANO', title: 'Ano', sortable: true, align: 'left', width: '5px' },
-        { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '5px' },
-        { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '5px' },
+        { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '90px' },
+        { key: 'DATA_ORCAMENTO', title: 'Vencimento', sortable: true, align: 'left', value: (item: iParamsValePeca) => dataBrasil(item.DATA_ORCAMENTO), width: '90px' },
+        { key: 'VALOR', title: 'Valor', sortable: true, align: 'left', width: '90px' },
+        { key: 'MES', title: 'Mês', sortable: true, align: 'left', width: '100px' },
+        { key: 'ANO', title: 'Ano', sortable: true, align: 'left', width: '100px' },
+        { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '100px' },
+        { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '100px' },
     ],
 });
 
@@ -119,13 +116,13 @@ export const actions = {
             const relatorioFormatado = actions.formatarDadosImpressao([...relatorio])
 
             const columns: iColumnPrint[] = [
-                { key: 'V_NOME_FUNCIONARIO', label: 'Funcionário', align: 'left' },
-                { key: 'NUM_ORCAMENTO', label: 'Orçamento', align: 'left' },
+                { key: 'V_NOME_FUNCIONARIO', label: 'Funcionário', align: 'left', width: '90px' },
+                { key: 'NUM_ORCAMENTO', label: 'Orçamento', align: 'left', width: '60px' },
                 { key: 'DATA_ORCAMENTO', label: 'Data Venc.', align: 'left' },
                 { key: 'VALOR', label: 'Valor', align: 'right' },
-                { key: 'MES', label: 'Mês', align: 'center' },
-                { key: 'ANO', label: 'Ano', align: 'center' },
-                { key: 'DIV', label: 'Parcela', align: 'center' },
+                { key: 'MES', label: 'Mês', align: 'center', width: '10px' },
+                { key: 'ANO', label: 'Ano', align: 'center', width: '10px' },
+                { key: 'DIV', label: 'Parcela', align: 'center', width: '10px' },
             ];
 
             const titulo = `
