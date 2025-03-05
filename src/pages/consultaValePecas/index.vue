@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { actions, state, totalGeral, getMonthName } from "./consultaValePecas";
 import ModalVale from "./components/ModalConsultaValePecas.vue";
-import { onMounted, computed, reactive } from "vue";
+import { onMounted, computed } from "vue";
 import utils, { formatValor } from "@/ts/utils";
-
-const totaisMes = reactive({});
 
 onMounted(() => {
   actions.init();

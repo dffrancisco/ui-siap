@@ -115,13 +115,13 @@ export const actions = {
             const relatorioFormatado = actions.formatarDadosImpressao([...relatorio])
 
             const columns: iColumnPrint[] = [
-                { key: 'V_NOME_FUNCIONARIO', label: 'Funcionário', align: 'left', width: '90px' },
-                { key: 'NUM_ORCAMENTO', label: 'Orçamento', align: 'left', width: '60px' },
-                { key: 'DATA_ORCAMENTO', label: 'Data Venc.', align: 'left' },
-                { key: 'VALOR', label: 'Valor', align: 'right' },
-                { key: 'MES', label: 'Mês', align: 'center', width: '10px' },
-                { key: 'ANO', label: 'Ano', align: 'center', width: '10px' },
-                { key: 'DIV', label: 'Parcela', align: 'center', width: '10px' },
+                { key: 'V_NOME_FUNCIONARIO', label: 'Funcionário', align: 'left', width: '150px' },
+                { key: 'NUM_ORCAMENTO', label: 'Orçamento', align: 'left', width: '100px' },
+                { key: 'DATA_ORCAMENTO', label: 'Data Venc.', align: 'left', width: '100px' },
+                { key: 'VALOR', label: 'Valor', align: 'right', width: '100px' },
+                { key: 'MES', label: 'Mês', align: 'center', width: '50px' },
+                { key: 'ANO', label: 'Ano', align: 'center', width: '50px' },
+                { key: 'DIV', label: 'Parcela', align: 'center', width: '100px' },
             ];
 
             const titulo = `
