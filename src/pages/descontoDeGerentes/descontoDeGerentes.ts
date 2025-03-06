@@ -3,7 +3,7 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import Swal from "sweetalert2";
 import serviceDescontoDeGerentes from "./services/descontoDeGerentes.service";
-import { iUsuario } from "./interfaces";
+import { iUsuario, iParamDarPermissao, iParamAlterarSenha, iParamRemoverPermissao } from "./interfaces";
 
 export const state = reactive({
     gridUsuariosSemPermissao: <ixGridCreate>{},
@@ -13,6 +13,8 @@ export const state = reactive({
     modalUsuariosComPermissao: <iModalCreate>{},
 
     dbUsuarioSelecionado: <iUsuario>{},
+    senhaTemp: "",
+    senhaConfirmacao: "",
     loading: false,
 });
 
@@ -87,6 +89,107 @@ export const actions = {
             });
         }
     },
+
+    async abrirModalDarPermissao(usuario: iUsuario) {
+        state.dbUsuarioSelecionado = usuario;
+        state.modalUsuarios.open();
+    },
+
+    async abrirModalAlterarSenha(usuario: iUsuario) {
+        state.dbUsuarioSelecionado = usuario;
+        state.modalUsuariosComPermissao.open();
+    },
+
+    async darPermissao() {
+        try {
+            if (state.senhaTemp.length < 6) {
+                Swal.fire("Aviso", "Senha deve ter no mínimo 6 caracteres!", "warning");
+                return;
+            }
+
+            if (state.senhaTemp !== state.senhaConfirmacao) {
+                Swal.fire("Aviso", "As senhas não coincidem!", "warning");
+                return;
+            }
+
+            state.loading = true;
+            const params: iParamDarPermissao = {
+                COD_FUNCIONARIO: state.dbUsuarioSelecionado.COD_FUNCIONARIO,
+                SENHA: Buffer.from(state.senhaTemp).toString('base64')
+            };
+
+            await serviceDescontoDeGerentes.darPermissao(params);
+
+            state.gridUsuariosComPermissao.insertLine(state.dbUsuarioSelecionado);
+            state.gridUsuariosSemPermissao.deleteLine();
+            state.modalUsuarios.close();
+
+        } catch (error: any) {
+            Swal.fire("Erro", error.response?.data?.message || "Falha ao conceder permissão", "error");
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async alterarSenha() {
+        try {
+            if (state.senhaTemp !== state.senhaConfirmacao) {
+                Swal.fire("Aviso", "As senhas não coincidem!", "warning");
+                return;
+            }
+
+            state.loading = true;
+            const params: iParamAlterarSenha = {
+                COD_FUNCIONARIO: state.dbUsuarioSelecionado.COD_FUNCIONARIO,
+                SENHA_ATUAL: Buffer.from(state.senhaTemp).toString('base64'),
+                SENHA: Buffer.from(state.senhaConfirmacao).toString('base64')
+            };
+
+            await serviceDescontoDeGerentes.alterarSenha(params);
+
+            Swal.fire("Sucesso", "Senha alterada com sucesso!", "success");
+            state.modalUsuariosComPermissao.close();
+
+        } catch (error: any) {
+            Swal.fire("Erro", error.response?.data?.message || "Falha ao alterar senha", "error");
+        } finally {
+            state.loading = false;
+
+        }
+    },
+
+    async removerPermissao() {
+        const usuario = state.gridUsuariosComPermissao.dataSource();
+        if (!usuario) return;
+
+        if (await Swal.fire({
+            title: "Confirmação",
+            text: "Deseja remover a permissão deste usuário?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sim",
+            cancelButtonText: "Não"
+        }).then(result => result.isConfirmed)) {
+            try {
+                state.loading = true;
+                const params: iParamRemoverPermissao = {
+                    COD_FUNCIONARIO: usuario.COD_FUNCIONARIO
+                };
+
+                await serviceDescontoDeGerentes.removerPermissao(params);
+
+                state.gridUsuariosSemPermissao.insertLine(usuario);
+                state.gridUsuariosComPermissao.deleteLine();
+
+            } catch (error: any) {
+                Swal.fire("Erro", error.response?.data?.message || "Falha ao remover permissão", "error");
+            } finally {
+                state.loading = false;
+            }
+        }
+    },
+
+
 };
 
 export default { state, actions };

@@ -13,8 +13,8 @@ export interface iHistoricoSenha {
 }
 
 export interface iUsuarioDesconto {
-    COD_FUNCIONARIO: number;
-    SENHA: string;
+    COD_FUNCIONARIO?: number;
+    SENHA?: string;
     HISTORICO?: string;
     SENHA_ATUAL?: string;
 }
