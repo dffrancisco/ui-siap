@@ -11,11 +11,11 @@ export const state = reactive({
     funcionario: <iUsuario>{},
     modalUsuarios: <iModalCreate>{},
     modalUsuariosComPermissao: <iModalCreate>{},
-
     dbUsuarioSelecionado: <iUsuario>{},
     senhaTemp: "",
     senhaConfirmacao: "",
     loading: false,
+    confirmationInProgress: false,
 });
 
 export const actions = {
@@ -34,6 +34,10 @@ export const actions = {
             columns: {
                 "Nome": { dataField: "NOME_COMP", width: "100%" },
             },
+
+            click: (rowData: iUsuario) => {
+                actions.confirmRemoverPermissao(rowData);
+            },
         });
 
         await actions.loadData();
@@ -42,7 +46,6 @@ export const actions = {
     async loadData() {
         try {
             state.loading = true;
-
             const [usuarios, usuariosComPermissao] = await Promise.all([
                 actions.getUsuariosSempermissao(),
                 actions.getUsuariosComPermissao(),
@@ -106,24 +109,19 @@ export const actions = {
                 Swal.fire("Aviso", "Senha deve ter no mínimo 6 caracteres!", "warning");
                 return;
             }
-
             if (state.senhaTemp !== state.senhaConfirmacao) {
                 Swal.fire("Aviso", "As senhas não coincidem!", "warning");
                 return;
             }
-
             state.loading = true;
             const params: iParamDarPermissao = {
                 COD_FUNCIONARIO: state.dbUsuarioSelecionado.COD_FUNCIONARIO,
                 SENHA: Buffer.from(state.senhaTemp).toString('base64')
             };
-
             await serviceDescontoDeGerentes.darPermissao(params);
-
             state.gridUsuariosComPermissao.insertLine(state.dbUsuarioSelecionado);
             state.gridUsuariosSemPermissao.deleteLine();
             state.modalUsuarios.close();
-
         } catch (error: any) {
             Swal.fire("Erro", error.response?.data?.message || "Falha ao conceder permissão", "error");
         } finally {
@@ -137,50 +135,32 @@ export const actions = {
                 Swal.fire("Aviso", "As senhas não coincidem!", "warning");
                 return;
             }
-
             state.loading = true;
             const params: iParamAlterarSenha = {
                 COD_FUNCIONARIO: state.dbUsuarioSelecionado.COD_FUNCIONARIO,
                 SENHA_ATUAL: Buffer.from(state.senhaTemp).toString('base64'),
                 SENHA: Buffer.from(state.senhaConfirmacao).toString('base64')
             };
-
             await serviceDescontoDeGerentes.alterarSenha(params);
-
             Swal.fire("Sucesso", "Senha alterada com sucesso!", "success");
             state.modalUsuariosComPermissao.close();
-
         } catch (error: any) {
             Swal.fire("Erro", error.response?.data?.message || "Falha ao alterar senha", "error");
         } finally {
             state.loading = false;
-
         }
     },
 
     async removerPermissao() {
-        const usuario = state.gridUsuariosComPermissao.dataSource();
+        const usuario = state.dbUsuarioSelecionado || state.gridUsuariosComPermissao.dataSource();
         if (!usuario) return;
-
-        if (await Swal.fire({
-            title: "Confirmação",
-            text: "Deseja remover a permissão deste usuário?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Sim",
-            cancelButtonText: "Não"
-        }).then(result => result.isConfirmed)) {
+        {
             try {
                 state.loading = true;
-                const params: iParamRemoverPermissao = {
-                    COD_FUNCIONARIO: usuario.COD_FUNCIONARIO
-                };
-
+                const params: iParamRemoverPermissao = { COD_FUNCIONARIO: usuario.COD_FUNCIONARIO };
                 await serviceDescontoDeGerentes.removerPermissao(params);
-
                 state.gridUsuariosSemPermissao.insertLine(usuario);
                 state.gridUsuariosComPermissao.deleteLine();
-
             } catch (error: any) {
                 Swal.fire("Erro", error.response?.data?.message || "Falha ao remover permissão", "error");
             } finally {
@@ -189,7 +169,13 @@ export const actions = {
         }
     },
 
+    async confirmRemoverPermissao(usuario: iUsuario) {
 
+        if (await Swal.fire({ title: "Confirmação", text: "Deseja remover a permissão deste usuário?", icon: "warning", showCancelButton: true, confirmButtonText: "Sim", cancelButtonText: "Não" }).then(result => result.isConfirmed)) {
+            state.dbUsuarioSelecionado = usuario;
+            await actions.removerPermissao();
+        }
+    },
 };
 
 export default { state, actions };

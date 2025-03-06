@@ -1,107 +1,119 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import Swal from "sweetalert2";
-import serviceDescontoDeGerentes from "../services/descontoDeGerentes.service";
-import { iUsuario, iParamAlterarSenha } from "../interfaces";
+import descontoDeGerentesService from "../services/descontoDeGerentes.service";
+import { iParamDarPermissao, iUsuario } from "../interfaces";
 
-const props = defineProps<{ usuarioSelecionado: iUsuario }>();
-const emit = defineEmits(["cancelar", "senhaalterada"]);
+const props = defineProps<{
+  usuario: iUsuario;
+}>();
+
+const emit = defineEmits<{
+  (e: "cancelar"): void;
+  (e: "permissaoConcedida"): void;
+}>();
 
 const state = reactive({
-  senhaAtual: "",
-  novaSenha: "",
+  senha: "",
   confirmarSenha: "",
-  loading: false,
 });
 
-async function validarCampos() {
-  if (!state.senhaAtual || !state.novaSenha || !state.confirmarSenha) {
-    Swal.fire("Atenção", "Preencha todos os campos!", "warning");
-    return false;
-  }
-
-  if (state.novaSenha !== state.confirmarSenha) {
-    Swal.fire("Atenção", "As senhas não coincidem!", "warning");
-    return false;
-  }
-
-  return true;
+function onClickCancelar() {
+  emit("cancelar");
 }
 
-async function confirmarAlteracao() {
-  if (!(await validarCampos())) return;
+async function permitirUsuario() {
+  if (state.senha.length < 6) {
+    Swal.fire("Aviso", "Senha deve ter no mínimo 6 caracteres!", "warning");
+    return;
+  }
+  if (state.senha !== state.confirmarSenha) {
+    Swal.fire("Aviso", "As senhas não coincidem!", "warning");
+    return;
+  }
 
   try {
-    state.loading = true;
-
-    const params: iParamAlterarSenha = {
-      COD_FUNCIONARIO: props.usuarioSelecionado.COD_FUNCIONARIO,
-      SENHA_ATUAL: state.senhaAtual,
-      SENHA: state.novaSenha,
+    const params: iParamDarPermissao = {
+      COD_FUNCIONARIO: props.usuario.COD_FUNCIONARIO,
+      SENHA: btoa(state.senha),
     };
 
-    await serviceDescontoDeGerentes.alterarSenha(params);
-
-    Swal.fire("Sucesso", "Senha alterada com sucesso!", "success");
-    emit("senhaalterada");
-    fecharModal();
+    await descontoDeGerentesService.darPermissao(params);
+    Swal.fire("Sucesso", "Permissão concedida com sucesso!", "success");
+    emit("permissaoConcedida");
   } catch (error: any) {
-    const mensagem = error.response?.data?.message || "Falha na alteração da senha";
-    Swal.fire("Erro", mensagem, "error");
-  } finally {
-    state.loading = false;
+    Swal.fire("Erro", error.response?.data?.message || "Falha ao conceder permissão", "error");
   }
-}
-
-function fecharModal() {
-  state.senhaAtual = "";
-  state.novaSenha = "";
-  state.confirmarSenha = "";
-  emit("cancelar");
 }
 </script>
 
 <template>
-  <v-card class="pa-4">
-    <v-card-title class="text-h5 mb-4"> Informe uma Senha </v-card-title>
-
-    <v-text-field
-      v-model="state.senhaAtual"
-      label="Senha:"
-      type="password"
-      outlined
-      class="mb-4"
-      :disabled="state.loading"
-    />
-
-    <v-text-field
-      v-model="state.novaSenha"
-      label="Confirme a Senha: *"
-      type="password"
-      outlined
-      class="mb-4"
-      :disabled="state.loading"
-    />
-
-    <v-divider class="my-4" />
-
-    <v-card-actions class="d-flex justify-end">
-      <v-btn
-        variant="outlined"
-        color="error"
-        @click="fecharModal"
-        :disabled="state.loading"
-      >
-        Cancelar
-      </v-btn>
-
-      <v-btn
-        color="primary"
-        @click="confirmarAlteracao"
-        :loading="state.loading"
-      >
-        Ok
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+  <v-container class="pa-1">
+    <title>Permitir Usuário</title>
+    <div>
+      <v-row>
+        <v-col cols="12">
+          <span>Usuário</span>
+          <input
+            type="text"
+            :value="props.usuario.NOME_COMP"
+            class="ss"
+            disabled
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <span>Senha</span>
+          <input
+            type="password"
+            v-model="state.senha"
+            class="ss"
+            placeholder="Digite a senha"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <span>Confirmar Senha</span>
+          <input
+            type="password"
+            btoa
+            v-model="state.confirmarSenha"
+            class="ss"
+            placeholder="Confirme a senha"
+          />
+        </v-col>
+      </v-row>
+      <div class="btnContainer">
+        <v-btn
+          class="mt-2"
+          style="text-transform: none; font-size: small"
+          color="#3680AB"
+          size="small"
+          @click="onClickCancelar"
+        >
+          Cancelar
+        </v-btn>
+        <v-btn
+          class="mt-2"
+          style="font-size: small"
+          color="#3680AB"
+          size="small"
+          @click="permitirUsuario"
+        >
+          Salvar
+        </v-btn>
+      </div>
+    </div>
+  </v-container>
 </template>
+
+<style scoped>
+.btnContainer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid gray;
+  padding-top: 10px;
+}
+</style>
