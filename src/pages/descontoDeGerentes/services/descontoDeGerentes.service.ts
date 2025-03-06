@@ -11,7 +11,7 @@ import {
     iRemoverPermissaoResponse
 } from "../interfaces";
 
-const caminho = 'siap/descontoGerentes';
+const caminho = 'siap/descontoDeGerentes';
 
 const getUsuarios = async (): Promise<iGetUsuariosResponse> => {
     let { data } = await axios.post(caminho, {

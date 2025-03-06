@@ -1,13 +1,12 @@
 import { reactive } from "vue";
-import $ from "jquery";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import Swal from "sweetalert2";
-import serviceDescontoGerentes from "./services/descontoDeGerentes.service";
-import { iUsuario, iUsuarioComPermissao } from "./interfaces";
+import serviceDescontoDeGerentes from "./services/descontoDeGerentes.service";
+import { iUsuario } from "./interfaces";
 
 export const state = reactive({
-    gridUsuarios: <ixGridCreate>{},
+    gridUsuariosSemPermissao: <ixGridCreate>{},
     gridUsuariosComPermissao: <ixGridCreate>{},
 
     modalUsuarios: <iModalCreate>{},
@@ -15,23 +14,15 @@ export const state = reactive({
 
     dbUsuarioSelecionado: <iUsuario>{},
     loading: false,
-    pnSearch: true,
-})
+});
 
 export const actions = {
-    grids() {
-        state.gridUsuarios = new xGridV2.create({
-            el: "#pnUsuarios",
+    async grids() {
+        state.gridUsuariosSemPermissao = new xGridV2.create({
+            el: "#pnUsuariosSemPermissao",
             height: 400,
             columns: {
-                "Código": { dataField: "COD_FUNCIONARIO", width: "20%" },
-                "Nome": { dataField: "NOME_COMP", width: "80%" },
-            },
-            query: {
-                async execute(rs) {
-                    let data = await actions.getUsuarios();
-                    state.gridUsuarios.querySourceAdd(data);
-                }
+                "Nome": { dataField: "NOME_COMP", width: "100%" },
             },
         });
 
@@ -39,69 +30,63 @@ export const actions = {
             el: "#pnUsuariosComPermissao",
             height: 400,
             columns: {
-                "Código": { dataField: "COD_FUNCIONARIO", width: "20%" },
-                "Nome": { dataField: "NOME_COMP", width: "80%" },
-            },
-            query: {
-                async execute(rs) {
-                    let data = await actions.getUsuariosComPermissao();
-                    state.gridUsuariosComPermissao.querySourceAdd(data);
-                }
+                "Nome": { dataField: "NOME_COMP", width: "100%" },
             },
         });
+
+        await actions.loadData();
     },
 
-    criarModais() {
-        state.modalUsuarios = new xModal.create({
-            height: 400,
-            width: 600,
-            theme: "xModal-blue",
-            el: "#modalUsuarios",
-        });
+    async loadData() {
+        try {
+            state.loading = true;
 
-        state.modalUsuariosComPermissao = new xModal.create({
-            height: 400,
-            width: 600,
-            theme: "xModal-blue",
-            el: "#modalUsuariosComPermissao",
-        });
+            const [usuarios, usuariosComPermissao] = await Promise.all([
+                actions.getUsuarios(),
+                actions.getUsuariosComPermissao(),
+            ]);
+
+            if (usuarios) {
+                state.gridUsuariosSemPermissao.querySourceAdd(usuarios);
+            }
+
+            if (usuariosComPermissao) {
+                state.gridUsuariosComPermissao.querySourceAdd(usuariosComPermissao);
+            }
+        } catch (error) {
+            console.error("Erro ao carregar dados:", error);
+        } finally {
+            state.loading = false;
+        }
     },
 
-    init() {
-        $(".ss").attr("autocomplete", "off");
-        actions.grids();
-        actions.criarModais();
+    async init() {
+        await actions.grids();
     },
 
     async getUsuarios() {
         try {
-            state.loading = true;
-            const data = await serviceDescontoGerentes.getUsuarios();
-            state.loading = false;
+            const data = await serviceDescontoDeGerentes.getUsuarios();
             return data;
         } catch (error) {
-            state.loading = false;
             Swal.fire({
                 icon: "error",
-                text: "Erro ao carregar os usuários!"
+                text: "Erro ao carregar os usuários!",
             });
         }
     },
 
     async getUsuariosComPermissao() {
         try {
-            state.loading = true;
-            const data = await serviceDescontoGerentes.getUsuariosComPermissao();
-            state.loading = false;
+            const data = await serviceDescontoDeGerentes.getUsuariosComPermissao();
             return data;
         } catch (error) {
-            state.loading = false;
             Swal.fire({
                 icon: "error",
-                text: "Erro ao carregar os usuários com permissão!"
+                text: "Erro ao carregar os usuários com permissão!",
             });
         }
-    }
+    },
 };
 
 export default { state, actions };
