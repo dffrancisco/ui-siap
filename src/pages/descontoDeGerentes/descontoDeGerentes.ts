@@ -8,7 +8,7 @@ import { iUsuario } from "./interfaces";
 export const state = reactive({
     gridUsuariosSemPermissao: <ixGridCreate>{},
     gridUsuariosComPermissao: <ixGridCreate>{},
-
+    funcionario: <iUsuario>{},
     modalUsuarios: <iModalCreate>{},
     modalUsuariosComPermissao: <iModalCreate>{},
 
@@ -42,7 +42,7 @@ export const actions = {
             state.loading = true;
 
             const [usuarios, usuariosComPermissao] = await Promise.all([
-                actions.getUsuarios(),
+                actions.getUsuariosSempermissao(),
                 actions.getUsuariosComPermissao(),
             ]);
 
@@ -64,14 +64,14 @@ export const actions = {
         await actions.grids();
     },
 
-    async getUsuarios() {
+    async getUsuariosSempermissao() {
         try {
             const data = await serviceDescontoDeGerentes.getUsuarios();
             return data;
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao carregar os usuários!",
+                text: "Erro ao carregar os usuários sem permissão!",
             });
         }
     },

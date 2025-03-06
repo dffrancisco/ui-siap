@@ -42,6 +42,14 @@ onUnmounted(() => {
             style="height: 400px"
           ></div>
         </v-col>
+        <v-col cols="12">
+          <v-btn
+            color="primary"
+            class="mt-3"
+          >
+            Alterar Senha
+          </v-btn>
+        </v-col>
       </v-row>
 
       <v-overlay

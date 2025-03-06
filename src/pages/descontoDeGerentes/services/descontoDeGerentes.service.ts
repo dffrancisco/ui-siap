@@ -40,6 +40,7 @@ const alterarSenha = async (param: iParamAlterarSenha): Promise<iAlterarSenhaRes
         call: "alterarSenha",
         param
     });
+
     return data;
 };
 
@@ -50,6 +51,7 @@ const removerPermissao = async (param: iParamRemoverPermissao): Promise<iRemover
     });
     return data;
 };
+
 
 export default {
     getUsuarios,
