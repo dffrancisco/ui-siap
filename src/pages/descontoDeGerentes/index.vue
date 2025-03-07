@@ -21,7 +21,7 @@ onUnmounted(() => {
 
 function onDarPermissao() {
   if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
-    Swal.fire("Aviso", "Selecione um usuário sem permissão!", "warning");
+    Swal.fire("", "Selecione um usuário sem permissão!", "warning");
     return;
   }
   actions.abrirModalDarPermissao(state.dbUsuarioSelecionado);
@@ -29,7 +29,7 @@ function onDarPermissao() {
 
 function onRemoverPermissao() {
   if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
-    Swal.fire("Aviso", "Selecione um usuário com permissão!", "warning");
+    Swal.fire("", "Selecione um usuário com permissão!", "warning");
     return;
   }
   actions.confirmRemoverPermissao(state.dbUsuarioSelecionado);
@@ -109,10 +109,8 @@ function onRemoverPermissao() {
     </v-card>
 
     <ModalPermitirUsuario
-      v-if="state.modalUsuarios.isOpen"
       :usuario="state.dbUsuarioSelecionado"
       @cancelar="state.modalUsuarios.close()"
-      @permissaoConcedida="actions.loadData"
     />
   </v-container>
 </template>

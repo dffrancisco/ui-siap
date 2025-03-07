@@ -136,7 +136,7 @@ export const actions = {
     async alterarSenha() {
         try {
             if (state.senhaTemp !== state.senhaConfirmacao) {
-                Swal.fire("Aviso", "As senhas não coincidem!", "warning");
+                Swal.fire("As senhas não coincidem!", "warning");
                 return;
             }
             state.loading = true;
@@ -146,7 +146,7 @@ export const actions = {
                 SENHA: Buffer.from(state.senhaConfirmacao).toString('base64')
             };
             await serviceDescontoDeGerentes.alterarSenha(params);
-            Swal.fire("Sucesso", "Senha alterada com sucesso!", "success");
+            Swal.fire("Senha alterada com sucesso!", "success");
             state.modalUsuariosComPermissao.close();
         } catch (error: any) {
             Swal.fire("Erro", error.response?.data?.message || "Falha ao alterar senha", "error");
@@ -166,7 +166,7 @@ export const actions = {
                 state.gridUsuariosSemPermissao.insertLine(usuario);
                 state.gridUsuariosComPermissao.deleteLine();
             } catch (error: any) {
-                Swal.fire("Erro", error.response?.data?.message || "Falha ao remover permissão", "error");
+                Swal.fire(error.response?.data?.message || "Falha ao remover permissão", "error");
             } finally {
                 state.loading = false;
             }
