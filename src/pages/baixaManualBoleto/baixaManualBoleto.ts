@@ -245,12 +245,25 @@ export const actions = {
 
         try {
             state.loading = true;
-            await serviceBaixaManualBoleto.baixarBoletosEOrcamentos(param);
+            let data = await serviceBaixaManualBoleto.baixarBoletosEOrcamentos(param);
 
             actions.limparStatesAnteriores()
             actions.limparExtratoBancarioECliente();
 
-            Swal.fire({ icon: "success", text: "Baixa manual realizada com sucesso!" });
+            if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: data.msg,
+                    text: "Baixa manual realizada com sucesso!"
+                });
+
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: data.msg,
+                    text: "Erro ao dar baixa nos boletos e orçamentos."
+                });
+            }
         } catch (err) {
             Swal.fire({ icon: "error", text: "Erro ao dar baixa nos boletos e orçamentos." });
         } finally {
