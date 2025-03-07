@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { onMounted, reactive, computed } from "vue";
-import moment from "moment";
 import serviceConsultaValePecas from "../services/consultaValePecas.service";
 import { iParamsItemOrcamento, iResponseOrcamento, iParamsValePeca } from "../interfaces";
 import Swal from "sweetalert2";
@@ -41,10 +40,10 @@ const state = reactive({
 });
 
 const computedParamsOrcamento = computed(() => {
-  if (props.selectedItem && props.selectedItem.NUM_ORCAMENTO && props.selectedItem.DATA_ORCAMENTO) {
+  if (props.selectedItem?.NUM_ORCAMENTO && props.selectedItem.DATA_ORCAMENTO) {
     return {
-      num_Orcamento: props.selectedItem.NUM_ORCAMENTO,
-      data: moment(props.selectedItem.DATA_ORCAMENTO).toDate(),
+      num_Orcamento: Number(props.selectedItem.NUM_ORCAMENTO),
+      data: new Date(props.selectedItem.DATA_ORCAMENTO),
     };
   }
   return null;
@@ -57,41 +56,21 @@ const actions = {
     emits("closeModalVale");
   },
 
-  async getOrcamento() {
+  async carregarDadosCompletos() {
     try {
       state.loading = true;
       const param = computedParamsOrcamento.value;
 
-      const data = await serviceConsultaValePecas.getOrcamento(param);
-      state.dbDetalheOrcaçamentoGet = data;
-      if (data.length > 0) {
-        state.dbDetalheOrçamento = data[0];
-      }
-      return data;
+      if (!param) return;
+
+      const { cabecalho, itens } = await serviceConsultaValePecas.getOrcamentoCompleto(param);
+
+      state.dbDetalheOrçamento = cabecalho;
+      state.dadosRelatorio = itens;
+      state.itensOrcamento = itens;
     } catch (error) {
       Swal.fire({
-        text: "Erro ao buscar os Orçamentos",
-        icon: "error",
-      });
-    } finally {
-      state.loading = false;
-    }
-  },
-
-  async getItensOrcamento() {
-    try {
-      state.loading = true;
-      const param = computedParamsOrcamento.value;
-
-      const data = await serviceConsultaValePecas.getItensOrcamento(param);
-      state.itensOrcamento = data;
-      if (data.length > 0) {
-        state.dadosRelatorio = data;
-      }
-      return data;
-    } catch (error) {
-      Swal.fire({
-        text: "Erro ao buscar os itens do Orçamento",
+        text: "Erro ao carregar dados do orçamento",
         icon: "error",
       });
     } finally {
@@ -141,8 +120,7 @@ const actions = {
 
 onMounted(async () => {
   await actions.init();
-  await actions.getOrcamento();
-  await actions.getItensOrcamento();
+  await actions.carregarDadosCompletos();
 });
 </script>
 <template>

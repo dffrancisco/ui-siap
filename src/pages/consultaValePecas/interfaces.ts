@@ -45,3 +45,8 @@ export interface iParamsItemOrcamento {
     VALOR?: number;
     VALOR_REAL?: number;
 }
+
+export interface iOrcamentoCompleto {
+    cabecalho: iResponseOrcamento;
+    itens: iParamsItemOrcamento[];
+}
