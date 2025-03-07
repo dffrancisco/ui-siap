@@ -25,7 +25,7 @@ const state = reactive({
 
   dbCliente: <iCliente>{},
 
-  search : null,
+  search: null,
 
   edtClienteSearch: <HTMLInputElement>{},
 
@@ -113,7 +113,7 @@ function onClickCancelar() {
     NOME: "",
   });
 
-  state.search = null
+  state.search = null;
 }
 
 async function getClientes({ offset, param }: iParamGetClientes) {

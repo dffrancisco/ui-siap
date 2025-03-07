@@ -27,11 +27,11 @@ async function permitirUsuario() {
     Swal.fire("Aviso", "Senha deve ter no mínimo 6 caracteres!", "warning");
     return;
   }
+
   if (state.senha !== state.confirmarSenha) {
     Swal.fire("Aviso", "As senhas não coincidem!", "warning");
     return;
   }
-
   try {
     const params: iParamDarPermissao = {
       COD_FUNCIONARIO: props.usuario.COD_FUNCIONARIO,
@@ -78,7 +78,6 @@ async function permitirUsuario() {
           <span>Confirmar Senha</span>
           <input
             type="password"
-            btoa
             v-model="state.confirmarSenha"
             class="ss"
             placeholder="Confirme a senha"

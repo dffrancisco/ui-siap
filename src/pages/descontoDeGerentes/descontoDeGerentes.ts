@@ -2,6 +2,7 @@ import { reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import Swal from "sweetalert2";
+import utils from "@/ts/utils";
 import serviceDescontoDeGerentes from "./services/descontoDeGerentes.service";
 import { iUsuario, iParamDarPermissao, iParamAlterarSenha, iParamRemoverPermissao } from "./interfaces";
 
@@ -40,10 +41,10 @@ export const actions = {
             },
         });
 
-        await actions.loadData();
+        await actions.carregaegarDados();
     },
 
-    async loadData() {
+    async carregaegarDados() {
         try {
             state.loading = true;
             const [usuarios, usuariosComPermissao] = await Promise.all([
@@ -109,15 +110,18 @@ export const actions = {
                 Swal.fire("Aviso", "Senha deve ter no mínimo 6 caracteres!", "warning");
                 return;
             }
+
             if (state.senhaTemp !== state.senhaConfirmacao) {
                 Swal.fire("Aviso", "As senhas não coincidem!", "warning");
                 return;
             }
+
             state.loading = true;
             const params: iParamDarPermissao = {
                 COD_FUNCIONARIO: state.dbUsuarioSelecionado.COD_FUNCIONARIO,
-                SENHA: Buffer.from(state.senhaTemp).toString('base64')
+                SENHA: utils.base64_encode(state.senhaTemp)
             };
+
             await serviceDescontoDeGerentes.darPermissao(params);
             state.gridUsuariosComPermissao.insertLine(state.dbUsuarioSelecionado);
             state.gridUsuariosSemPermissao.deleteLine();
@@ -171,7 +175,7 @@ export const actions = {
 
     async confirmRemoverPermissao(usuario: iUsuario) {
 
-        if (await Swal.fire({ title: "Confirmação", text: "Deseja remover a permissão deste usuário?", icon: "warning", showCancelButton: true, confirmButtonText: "Sim", cancelButtonText: "Não" }).then(result => result.isConfirmed)) {
+        if (await Swal.fire({ text: "Deseja remover a permissão deste usuário?", icon: "warning", showCancelButton: true, confirmButtonText: "Sim", cancelButtonText: "Não" }).then(result => result.isConfirmed)) {
             state.dbUsuarioSelecionado = usuario;
             await actions.removerPermissao();
         }
