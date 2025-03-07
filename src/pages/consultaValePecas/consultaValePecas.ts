@@ -8,10 +8,12 @@ import { mesesToSelect } from "@/constants/constants";
 
 export const meses = mesesToSelect;
 const ano = moment().year();
+const mes = moment().month() + 1;
 
 export const state = reactive({
     loading: false,
     ano: ano,
+    mes: mes,
     dadosRelatorio: [] as iParamsValePeca[],
     itensOrcamento: [] as any[],
     selectedFuncionario: <number[]>[],
@@ -134,13 +136,12 @@ export const actions = {
                 ANO: '',
                 DIV: ''
             });
-
             const titulo = `
-                    <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
-                        <span>Ano do filtro: ${moment(state.ano).format(
-                "DD/MM/YYYY"
-            )} 
-                `;
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 10px">
+                            <span>Data: ${moment().format('DD/MM/YYYY')}</span>
+                            <strong style="font-size: 20px;">Relatório de Avarias</strong>
+                        </div>
+                    `;
 
             await utils.printComCabecalho(columns, relatorioFormatado, titulo);
 
