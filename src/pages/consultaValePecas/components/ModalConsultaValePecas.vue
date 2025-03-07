@@ -4,7 +4,7 @@ import moment from "moment";
 import serviceConsultaValePecas from "../services/consultaValePecas.service";
 import { iParamsItemOrcamento, iResponseOrcamento, iParamsValePeca } from "../interfaces";
 import Swal from "sweetalert2";
-import utils, { iColumnPrint, dataBrasil } from "@/ts/utils";
+import utils, { iColumnPrint, dataBrasil, formatValor } from "@/ts/utils";
 
 const props = defineProps<{ selectedItem: iParamsValePeca }>();
 const emits = defineEmits(["closeModalVale", "selecionarVale"]);
@@ -23,8 +23,20 @@ const state = reactive({
     { key: "UNIDADE", title: "UN", sortable: true, align: "left" },
     { key: "DESCRICAO", title: "Carro", sortable: true, align: "left" },
     { key: "QTO", title: "QT", sortable: true, align: "left" },
-    { key: "VALOR", title: "Valor", sortable: true, align: "left" },
-    { key: "VALOR_REAL", title: "Total", sortable: true, align: "left" },
+    {
+      key: "VALOR",
+      title: "Valor",
+      sortable: true,
+      align: "left",
+      value: (item: iParamsValePeca) => formatValor(item.VALOR),
+    },
+    {
+      key: "VALOR_REAL",
+      title: "Total",
+      sortable: true,
+      align: "left",
+      value: (item: iParamsValePeca) => formatValor(item.VALOR),
+    },
   ],
 });
 
@@ -253,8 +265,8 @@ onMounted(async () => {
         fixed-header
       ></v-data-table-virtual>
 
-      <v-row class="mt-4">
-        <v-col cols="1">
+      <v-row class="mt-4 justify-end">
+        <v-col cols="auto">
           <v-btn
             color="primary"
             @click="actions.onClickImprimirModal"
@@ -266,10 +278,7 @@ onMounted(async () => {
             <v-icon>mdi-printer</v-icon>
           </v-btn>
         </v-col>
-        <v-col
-          cols="1"
-          class="d-flex justify-end"
-        >
+        <v-col cols="auto">
           <v-btn
             color="primary"
             @click="actions.closeModalConsultaVale"
@@ -306,5 +315,8 @@ onMounted(async () => {
 
 .cor-zebrada-1 {
   background-color: #f0f0f0;
+}
+.v-col {
+  padding: 8px;
 }
 </style>

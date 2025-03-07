@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceConsultaValePecas from './services/consultaValePecas.service';
 import { iParamsValePeca, iFuncionario } from './interfaces';
-import utils, { iColumnPrint, dataBrasil } from "@/ts/utils";
+import utils, { iColumnPrint, dataBrasil, formatValor } from "@/ts/utils";
 import { mesesToSelect } from "@/constants/constants";
 
 export const meses = mesesToSelect;
@@ -22,7 +22,7 @@ export const state = reactive({
     headers: <any>[
         { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '100px' },
         { key: 'DATA_ORCAMENTO', title: 'Vencimento', sortable: true, align: 'left', value: (item: iParamsValePeca) => dataBrasil(item.DATA_ORCAMENTO), width: '90px' },
-        { key: 'VALOR', title: 'Valor', sortable: true, align: 'left', width: '100px' },
+        { key: 'VALOR', title: 'Valor', sortable: true, align: 'left', width: '100px', value: (item: iParamsValePeca) => formatValor(item.VALOR) },
         { key: 'MES', title: 'Mês', sortable: true, align: 'left', width: '100px' },
         { key: 'ANO', title: 'Ano', sortable: true, align: 'left', width: '90px' },
         { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '100px' },
@@ -123,6 +123,17 @@ export const actions = {
                 { key: 'ANO', label: 'Ano', align: 'center', width: '50px' },
                 { key: 'DIV', label: 'Parcela', align: 'center', width: '100px' },
             ];
+
+            const total = totalGeral.value;
+            relatorioFormatado.push({
+                V_NOME_FUNCIONARIO: '',
+                NUM_ORCAMENTO: '',
+                DATA_ORCAMENTO: 'Total Geral:',
+                VALOR: total,
+                MES: '',
+                ANO: '',
+                DIV: ''
+            });
 
             const titulo = `
                     <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">

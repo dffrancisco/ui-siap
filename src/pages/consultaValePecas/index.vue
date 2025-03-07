@@ -84,7 +84,7 @@ onMounted(() => {
                 <span
                   class="mr-3"
                   style="font-size: 13px"
-                  >Nº Orçamento: {{ item.items.length }}</span
+                  >Qtd Orçamentos: {{ item.items.length }}</span
                 >
                 <span style="font-size: 13px">
                   Total Mês: {{ utils.formatValor(item.items[0]?.raw?.TOTAL_MES || 0) }}
