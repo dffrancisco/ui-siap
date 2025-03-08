@@ -1,10 +1,11 @@
 import utils from './../../ts/utils';
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iFuncionarios, iOptions, iParamsAbrirCaixa } from "./interfaces";
+import { iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa } from "./interfaces";
 import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
+import xAuthManager from "@/plugins/xAuthManager";
 
 export const state = reactive({
     data: moment().format("YYYY-MM-DD"),
@@ -136,5 +137,49 @@ export const actions = {
         }
         const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
         return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
+    },
+
+    async fecharCaixa(funcionario) {
+
+        let param: iParamFecharCaixa = {
+            ID_ABERTURA_CAIXA: funcionario.ID_ABERTURA_CAIXA
+        }
+
+        xAuthManager("Autorizar fechamento de caixa?", async () => {
+            try {
+                state.loading = true;
+
+                let caixasAbertoAtualizados = await serviceConferenciaDeCaixa.fecharCaixa(param);
+                state.caixas = caixasAbertoAtualizados;
+
+                // Reintroduzir o funcionário na lista de funcionários disponíveis
+                const funcionarioFechado = state.funcionarios.find(
+                    f => f.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO
+                );
+                if (!funcionarioFechado) {
+                    const retornarFuncionarioParaState = {
+                        COD_FUNCIONARIO: funcionario.COD_FUNCIONARIO,
+                        LOGIN: funcionario.LOGIN
+                    };
+                    state.funcionarios.push(retornarFuncionarioParaState);
+                }
+
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Caixa fechado com sucesso.",
+                    showConfirmButton: false,
+                    timer: 1000,
+                });
+
+            } catch (error) {
+                Swal.fire({
+                    icon: "error",
+                    text: "Erro ao fechar o caixa"
+                });
+            } finally {
+                state.loading = false
+            }
+        });
     }
 }

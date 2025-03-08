@@ -3,6 +3,7 @@ import { state, options, actions, funcionariosDisponiveis } from "./conferenciaD
 import { onMounted } from "vue";
 import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
 import utils from "./../../ts/utils";
+import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 
 onMounted(() => {
   actions.init();
@@ -163,12 +164,16 @@ onMounted(() => {
                 class="mt-2"
               >
                 <v-btn
+                  v-if="caixa.STATUS !== 2"
                   icon="mdi-lock"
                   size="40"
                   color="primary"
                   class="mx-1 btn-bordered"
+                  title="Fechar Caixa"
+                  @click="actions.fecharCaixa(caixa)"
                 />
                 <v-btn
+                  v-if="caixa.STATUS !== 2"
                   icon="mdi-cash-multiple"
                   size="40"
                   color="primary"
@@ -236,6 +241,8 @@ onMounted(() => {
       @dadosAbrirCaixa.sync="actions.abrirCaixa"
     />
   </v-dialog>
+
+  <modalXAuthManager />
 </template>
 
 <style scoped>
