@@ -31,10 +31,31 @@ export interface iCaixas {
     TROCO: number;
 }
 
+export interface iTodasAsCompras {
+    AUTORIZACAO: string | null;
+    BANDEIRA: string | null;
+    DATA: string | null;
+    DESCONTO: number | null;
+    DESCRICAO_PAGAMENTO: string | null;
+    HORA: string;
+    NOSSO_NUM: number | null;
+    NUM_ORCAMENTO: number | null;
+    TIPO_PAGAMENTO: string | null;
+    VALOR: number | null;
+}
+
+export interface iValoresRecebidos {
+    DESCRICAO_PAGAMENTO: string;
+    VALOR: number;
+    TIPO_PAGAMENTO: string;
+}
+
 export interface iResponseDadosIniciais {
     mdc: iMDC[];
     funcionarios: iFuncionarios[];
-    caixas: any[];
+    caixas: iCaixas[];
+    confCaixaAll: iTodasAsCompras[];
+    valoresRecebidosAll: iValoresRecebidos[];
 }
 
 export interface iParamsAbrirCaixa {

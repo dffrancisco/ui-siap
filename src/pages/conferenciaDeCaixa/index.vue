@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { state, options, actions, funcionariosDisponiveis } from "./conferenciaDeCaixa";
+import { state, options, actions, funcionariosDisponiveis, comprasFiltradas } from "./conferenciaDeCaixa";
 import { onMounted } from "vue";
 import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
 import utils from "./../../ts/utils";
@@ -13,10 +13,9 @@ onMounted(() => {
   <v-container>
     <v-card
       max-width="950px"
-      max-height="750px"
-      style="overflow-y: scroll"
       class="ma-auto pa-4"
     >
+      <!-- cabecalho input data -->
       <v-row class="pt-4 ml-2">
         <v-col cols="3">
           <v-text-field
@@ -40,6 +39,7 @@ onMounted(() => {
         </v-col>
       </v-row>
 
+      <!-- div mdc fechado -->
       <div
         v-if="!state.mdcAberto"
         class="text-center pa-4"
@@ -61,12 +61,11 @@ onMounted(() => {
         </v-btn>
       </div>
 
+      <!-- opcoes dos v-chips -->
       <div
-        v-else
         style="padding-top: 10px"
-        ><div class="pa-2 ml-4"
-          ><span style="font-size: 14px">{{ state.msgAberturaMDC }}</span></div
-        >
+        v-if="state.mdcAberto"
+      >
         <v-chip-group
           v-model="state.selectedOption"
           color="primary"
@@ -84,9 +83,12 @@ onMounted(() => {
         </v-chip-group>
       </div>
 
-      <div
-        v-if="state.selectedOption === 'caixas'"
+      <!-- div para mostrar os caixas-->
+      <v-card
+        v-if="state.selectedOption === 'caixas' && state.mdcAberto"
         class="pa-4"
+        style="overflow-y: scroll"
+        max-height="620px"
       >
         <v-row>
           <v-col
@@ -105,7 +107,6 @@ onMounted(() => {
                 'caixa-fechado': caixa.STATUS == 2,
               }"
             >
-              <!-- Cabeçalho do Card -->
               <v-row align="center">
                 <v-col cols="3">
                   <v-avatar
@@ -215,12 +216,83 @@ onMounted(() => {
                 icon="mdi-plus"
                 size="48"
                 color="primary"
-                @click="actions.abrirModalAbrirCaixa()"
+                @click="actions.openModalAbrirCaixa()"
               />
             </v-card>
           </v-col>
         </v-row>
-      </div>
+      </v-card>
+
+      <!-- div para mostrar os lançamentos -->
+      <v-card
+        v-if="state.selectedOption === 'lancamentos' && state.mdcAberto"
+        class="pa-4"
+      >
+        <v-row>
+          <!-- Card Esquerdo (Totalizadores) -->
+          <v-col cols="4">
+            <v-card
+              class="pa-2 mt-2"
+              outlined
+            >
+              <v-list>
+                <v-list-item
+                  v-for="(item, index) in state.valoresRecebidos"
+                  :key="index"
+                  @click="actions.selecionarPagamento(item.TIPO_PAGAMENTO)"
+                >
+                  <v-list-item>
+                    <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
+                    <v-list-item-subtitle>
+                      <b>{{ utils.formatValor(item.VALOR) }}</b>
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </v-col>
+
+          <!-- Card Direito (Compras do Tipo Selecionado) -->
+          <v-col cols="8">
+            <v-data-table-virtual
+              :items="comprasFiltradas"
+              :headers="state.headers"
+              height="420"
+              item-value="NUM_ORCAMENTO"
+              show-expand
+              fixed-header
+              class="elevation-1 mt-2"
+            >
+              <template v-slot:expanded-row="{ item }">
+                <tr>
+                  <td colspan="5">
+                    <v-card class="pa-2">
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item>
+                            <v-list-item-title> Número: {{ item.NUM_ORCAMENTO }} </v-list-item-title>
+                            <v-list-item-subtitle> Hora: {{ utils.formatHora(item.HORA) }} </v-list-item-subtitle>
+                            <v-list-item-subtitle>
+                              Desconto: {{ utils.formatValor(item.DESCONTO) }}
+                            </v-list-item-subtitle>
+                            <v-list-item-subtitle v-if="item.BANDEIRA">
+                              Bandeira: {{ item.BANDEIRA }}
+                            </v-list-item-subtitle>
+                          </v-list-item>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table-virtual>
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <div class="pa-2"
+        ><span style="font-size: 14px">{{ state.msgAberturaMDC }}</span></div
+      >
     </v-card>
 
     <v-overlay

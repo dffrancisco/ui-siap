@@ -1,7 +1,7 @@
 import utils from './../../ts/utils';
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa } from "./interfaces";
+import { iCaixas, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iTodasAsCompras, iValoresRecebidos } from "./interfaces";
 import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -13,9 +13,17 @@ export const state = reactive({
     loading: false,
     mdcAberto: true,
     msgAberturaMDC: '',
-    caixas: [],
+    caixas: <iCaixas[]>[],
     funcionarios: <iFuncionarios[]>[],
+    todasAsCompras: <iTodasAsCompras[]>[],
+    valoresRecebidos: <iValoresRecebidos[]>[],
     modalAbrirCaixaOpened: false,
+    pagamentoSelecionado: null,
+    headers: [
+        { title: "N° Orçamento", key: "NUM_ORCAMENTO" },
+        { title: "Valor", key: "VALOR", value: (item: any) => utils.formatValor(item.VALOR) },
+        { title: "Hora", key: "HORA", value: (item: any) => utils.formatHora(item.HORA) },
+    ],
 });
 
 export const options: iOptions[] = [
@@ -34,6 +42,12 @@ export const funcionariosDisponiveis = computed(() =>
     })
 );
 
+export const comprasFiltradas = computed(() => {
+    return state.pagamentoSelecionado
+        ? state.todasAsCompras.filter(c => String(c.TIPO_PAGAMENTO).trim() === String(state.pagamentoSelecionado).trim())
+        : [];
+});
+
 export const actions = {
     async init() {
         await actions.getDadosIniciaisConfCaixa();
@@ -47,11 +61,19 @@ export const actions = {
 
             if (data.mdc.length == 0) {
                 state.mdcAberto = false;
+                state.msgAberturaMDC = "";
+                state.funcionarios = [];
+                state.caixas = [];
+                state.todasAsCompras = [];
+                state.valoresRecebidos = [];
+                return;
             } else {
                 state.mdcAberto = true;
                 state.msgAberturaMDC = data.mdc[0].OPEN_CLOSE;
                 state.funcionarios = data.funcionarios;
                 state.caixas = data.caixas;
+                state.todasAsCompras = data.confCaixaAll;
+                state.valoresRecebidos = data.valoresRecebidosAll;
             }
 
 
@@ -65,8 +87,28 @@ export const actions = {
         }
     },
 
+    async validarDataAtual(caixaData) {
+        const hoje = moment().format("YYYY-MM-DD");
+
+        if (!moment(caixaData, "YYYY-MM-DD", true).isValid() || caixaData !== hoje) {
+            await Swal.fire({
+                title: "Atenção",
+                text: "Só é possível abrir o caixa ou MDC na data atual!",
+                icon: "warning",
+                confirmButtonText: "OK",
+            });
+            return false;
+        }
+        return true;
+    },
 
     async abrirMDC() {
+        const caixaData = state.data;
+
+        if (!(await actions.validarDataAtual(caixaData))) {
+            return;
+        }
+
         if (await msgConfirm("Confirmação", "Gostaria de Abrir o MDC do dia " + utils.dataBrasil(state.data) + "?")) {
             try {
                 state.loading = true;
@@ -84,20 +126,12 @@ export const actions = {
         }
     },
 
-    async abrirModalAbrirCaixa() {
-        const hoje = moment().format("YYYY-MM-DD");
+    async openModalAbrirCaixa() {
         const caixaData = state.data;
 
-        if (!moment(caixaData, "YYYY-MM-DD", true).isValid() || caixaData !== hoje) {
-            await Swal.fire({
-                title: "Atenção",
-                text: "Só é possível abrir o caixa na data atual!",
-                icon: "warning",
-                confirmButtonText: "OK",
-            });
+        if (!(await actions.validarDataAtual(caixaData))) {
             return;
         }
-
         state.modalAbrirCaixaOpened = true;
     },
 
@@ -181,5 +215,16 @@ export const actions = {
                 state.loading = false
             }
         });
+    },
+
+    selecionarPagamento(tipoPagamento: string) {
+        console.log("Selecionado:", tipoPagamento);
+        state.pagamentoSelecionado = tipoPagamento;
+        console.log("Compras filtradas:", comprasFiltradas.value);
+    },
+
+    obterDescricaoPagamento(tipoPagamento: string) {
+        const pagamento = state.valoresRecebidos.find(p => p.TIPO_PAGAMENTO === tipoPagamento);
+        return pagamento ? pagamento.DESCRICAO_PAGAMENTO : "Desconhecido";
     }
 }
