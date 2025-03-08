@@ -10,5 +10,6 @@ export interface iMDC {
 }
 
 export interface iResponseDadosIniciais {
-    MDC: string | iMDC[];
+    mdc: iMDC[];
+    caixas: any[];
 }
