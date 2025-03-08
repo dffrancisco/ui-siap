@@ -14,6 +14,22 @@ export interface iFuncionarios {
     LOGIN: string;
 }
 
+export interface iCaixas {
+    COD_FUNCIONARIO: number;
+    CONFERIDO: string;
+    CPF: string;
+    DATA_ABERTURA: string;
+    DEVOLUCAO: number;
+    DINHEIRO: number;
+    HORA_ABERTURA: string;
+    HORA_FECHAMENTO: string;
+    ID_ABERTURA_CAIXA: string;
+    LOGIN: string;
+    OBS: string;
+    SANGRIA: number;
+    STATUS: number;
+    TROCO: number;
+}
 
 export interface iResponseDadosIniciais {
     mdc: iMDC[];

@@ -1,10 +1,10 @@
 import axios from "axios";
-import { iParamFecharCaixa, iParamsAbrirCaixa, iResponseDadosIniciais } from "../interfaces";
+import { iCaixas, iParamFecharCaixa, iParamsAbrirCaixa, iResponseDadosIniciais } from "../interfaces";
 
 type iGetDadosIniciaisConfCaixa = (param: string) => Promise<iResponseDadosIniciais>
-type iAbrirMDC = (param: string) => Promise<any>
-type iAbrirCaixa = (param: iParamsAbrirCaixa) => Promise<any[]>
-type iFecharCaixa = (param: iParamFecharCaixa) => Promise<any[]>
+type iAbrirMDC = (param: string) => Promise<string>
+type iAbrirCaixa = (param: iParamsAbrirCaixa) => Promise<iCaixas[]>
+type iFecharCaixa = (param: iParamFecharCaixa) => Promise<iCaixas[]>
 
 const caminho = "siap/conferenciaCaixa";
 
