@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { state, options, actions } from "./conferenciaDeCaixa";
+import { state, options, actions, funcionariosDisponiveis } from "./conferenciaDeCaixa";
 import { onMounted } from "vue";
+import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
 import utils from "./../../ts/utils";
 
 onMounted(() => {
@@ -11,7 +12,7 @@ onMounted(() => {
   <v-container>
     <v-card
       max-width="950px"
-      max-height="780px"
+      max-height="750px"
       style="overflow-y: scroll"
       class="ma-auto pa-4"
     >
@@ -96,8 +97,8 @@ onMounted(() => {
             lg="4"
           >
             <v-card
-              class="d-flex flex-column justify-space-between pa-1 pt-2"
-              min-height="270px"
+              class="d-flex flex-column justify-space-between pt-2"
+              min-height="280px"
               :class="{
                 'caixa-aberto': caixa.STATUS == 1,
                 'caixa-fechado': caixa.STATUS == 2,
@@ -195,13 +196,13 @@ onMounted(() => {
           >
             <v-card
               class="pa-4 d-flex align-center justify-center"
-              min-height="270px"
+              min-height="280px"
             >
               <v-btn
                 icon="mdi-plus"
                 size="48"
                 color="primary"
-                @click="actions.abrirNovoCaixa"
+                @click="actions.abrirModalAbrirCaixa()"
               />
             </v-card>
           </v-col>
@@ -222,11 +223,24 @@ onMounted(() => {
     </v-overlay>
     <div id="pnCodigoTela">conferenciaDeCaixa</div>
   </v-container>
+
+  <v-dialog
+    v-model="state.modalAbrirCaixaOpened"
+    max-width="800"
+    style="margin-right: 150px"
+  >
+    <ModalAbrirCaixa
+      :funcionarios="funcionariosDisponiveis"
+      :modalOpened="state.modalAbrirCaixaOpened"
+      @closeModalAbrirCaixa="state.modalAbrirCaixaOpened = false"
+      @dadosAbrirCaixa.sync="actions.abrirCaixa"
+    />
+  </v-dialog>
 </template>
 
 <style scoped>
 .selected-chip {
-  background-color: rgb(var(--v-theme-primary)) !important;
+  background-color: #017bc2 !important;
   color: white !important;
 }
 
