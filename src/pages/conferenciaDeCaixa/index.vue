@@ -171,7 +171,10 @@ onMounted(() => {
                   class="mx-1 btn-bordered"
                   title="Fechar Caixa"
                   @click="actions.fecharCaixa(caixa)"
-                />
+                >
+                  <v-icon :style="{ fontSize: '25px' }" />
+                </v-btn>
+
                 <v-btn
                   v-if="caixa.STATUS !== 2"
                   icon="mdi-cash-multiple"
@@ -179,14 +182,19 @@ onMounted(() => {
                   color="primary"
                   class="mx-1 btn-bordered"
                   title="Sangria"
-                />
+                >
+                  <v-icon :style="{ fontSize: '25px' }" />
+                </v-btn>
+
                 <v-btn
                   icon="mdi-checkbox-marked-outline"
                   size="40"
                   color="primary"
                   title="Conferir Caixa"
                   class="mx-1 btn-bordered"
-                />
+                >
+                  <v-icon :style="{ fontSize: '25px' }" />
+                </v-btn>
               </v-row>
             </v-card>
           </v-col>
