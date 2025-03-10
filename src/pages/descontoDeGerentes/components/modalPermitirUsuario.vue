@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, defineProps } from "vue";
 import Swal from "sweetalert2";
+import utils from "@/ts/utils";
 import descontoDeGerentesService from "../services/descontoDeGerentes.service";
-import { iParamDarPermissao, iUsuarioDesconto } from "../interfaces";
+import { iParamDarPermissao, iUsuario } from "../interfaces";
+
+const props = defineProps<{
+  usuarioSelecionado: iUsuario;
+}>();
 
 const emit = defineEmits(["fecharModalPermitir", "senhaalterada"]);
 
 const state = reactive({
   senha: "",
   confirmarSenha: "",
-  NOME_COMP: "Nome do Usuário",
 });
 
 const actions = {
@@ -24,11 +28,10 @@ const actions = {
     }
     try {
       const params: iParamDarPermissao = {
-        COD_FUNCIONARIO: 0,
-        SENHA: btoa(state.senha),
+        COD_FUNCIONARIO: props.usuarioSelecionado.COD_FUNCIONARIO,
+        SENHA: utils.base64_encode(state.senha),
       };
       await descontoDeGerentesService.darPermissao(params);
-      Swal.fire("Sucesso", "Permissão concedida com sucesso!", "success");
       emit("senhaalterada");
       actions.fecharModalPermitir();
     } catch (error: any) {
@@ -48,7 +51,7 @@ const actions = {
     <v-card-text>
       <v-text-field
         label="Usuário"
-        :value="state.NOME_COMP"
+        :value="props.usuarioSelecionado.NOME_COMP"
         disabled
         outlined
         dense

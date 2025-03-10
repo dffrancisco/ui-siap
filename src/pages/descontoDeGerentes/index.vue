@@ -32,6 +32,12 @@ function onAlterarSenha() {
   }
   actions.abrirModalAlterarSenha(state.dbUsuarioSelecionado);
 }
+
+function onPermissaoConcedida() {
+  state.gridUsuariosComPermissao.insertLine(state.dbUsuarioSelecionado);
+  state.gridUsuariosSemPermissao.deleteLine();
+  state.modalPermitirUsuario = false;
+}
 </script>
 
 <template>
@@ -79,7 +85,6 @@ function onAlterarSenha() {
             id="pnUsuariosComPermissao"
             style="height: 400px"
           ></div>
-
           <v-btn
             color="primary"
             class="mt-3"
@@ -114,6 +119,7 @@ function onAlterarSenha() {
       max-width="300"
     >
       <modalAlterarSenha
+        :usuario-selecionado="state.dbUsuarioSelecionado"
         @fecharModalAlterar="state.modalAlterarSenha = false"
         @senhaalterada="state.modalAlterarSenha = false"
       />
@@ -123,7 +129,11 @@ function onAlterarSenha() {
       v-model="state.modalPermitirUsuario"
       max-width="300"
     >
-      <modalPermitirUsuario @fecharModalPermitir="state.modalPermitirUsuario = false" />
+      <modalPermitirUsuario
+        :usuario-selecionado="state.dbUsuarioSelecionado"
+        @fecharModalPermitir="state.modalPermitirUsuario = false"
+        @senhaalterada="onPermissaoConcedida"
+      />
     </v-dialog>
   </v-container>
 </template>

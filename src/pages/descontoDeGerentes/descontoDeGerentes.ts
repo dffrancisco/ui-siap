@@ -105,7 +105,6 @@ export const actions = {
         }
     },
 
-
     async darPermissao() {
         try {
             if (state.senhaTemp.length < 6) {
@@ -144,8 +143,8 @@ export const actions = {
             state.loading = true;
             const params: iParamAlterarSenha = {
                 COD_FUNCIONARIO: state.dbUsuarioSelecionado.COD_FUNCIONARIO,
-                SENHA_ATUAL: Buffer.from(state.senhaTemp).toString('base64'),
-                SENHA: Buffer.from(state.senhaConfirmacao).toString('base64')
+                SENHA_ATUAL: utils.base64_encode(state.senhaTemp),
+                SENHA: utils.base64_encode(state.senhaConfirmacao)
             };
             await serviceDescontoDeGerentes.alterarSenha(params);
             Swal.fire("Senha alterada com sucesso!", "success");
@@ -177,7 +176,12 @@ export const actions = {
 
     async confirmRemoverPermissao(usuario: iUsuario) {
 
-        if (await Swal.fire({ text: "Deseja remover a permissão deste usuário?", icon: "warning", showCancelButton: true, confirmButtonText: "Sim", cancelButtonText: "Não" }).then(result => result.isConfirmed)) {
+        if (await Swal.fire({
+            text: "Deseja remover a permissão deste usuário?",
+            icon: "warning", showCancelButton: true,
+            confirmButtonText: "Sim",
+            cancelButtonText: "Não"
+        }).then(result => result.isConfirmed)) {
             state.dbUsuarioSelecionado = usuario;
             await actions.removerPermissao();
         }

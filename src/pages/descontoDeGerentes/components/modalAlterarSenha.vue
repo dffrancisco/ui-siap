@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, defineProps } from "vue";
 import Swal from "sweetalert2";
+import utils from "@/ts/utils";
 import serviceDescontoDeGerentes from "../services/descontoDeGerentes.service";
-import { iParamAlterarSenha } from "../interfaces";
+import { iParamAlterarSenha, iUsuario } from "../interfaces";
+
+const props = defineProps<{ usuarioSelecionado: iUsuario }>();
 
 const emit = defineEmits(["fecharModalAlterar", "senhaalterada"]);
 
@@ -34,9 +37,10 @@ const actions = {
     if (!(await actions.validarCampos())) return;
     try {
       state.loading = true;
+
       const params: iParamAlterarSenha = {
-        SENHA_ATUAL: state.senhaAtual,
-        SENHA: state.novaSenha,
+        SENHA_ATUAL: utils.base64_encode(state.senhaAtual),
+        SENHA: utils.base64_encode(state.novaSenha),
       };
       await serviceDescontoDeGerentes.alterarSenha(params);
       Swal.fire("Sucesso", "Senha alterada com sucesso!", "success");
