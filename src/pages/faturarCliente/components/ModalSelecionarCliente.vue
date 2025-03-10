@@ -45,7 +45,7 @@ const actions = {
       },
       compare: {
         tipoFaturamento: (rs) => {
-          return rs.TIPO_FATURAMENTO == "M" ? "Mensal" : "Quinzenal";
+          return rs.TIPO_FATURAMENTO == "M" ? "Mensal" : rs.TIPO_FATURAMENTO == "D" ? "Diário" : "Quinzenal";
         },
       },
       query: {
