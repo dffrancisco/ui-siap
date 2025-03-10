@@ -1,6 +1,5 @@
 import { reactive } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 import serviceDescontoDeGerentes from "./services/descontoDeGerentes.service";
@@ -12,7 +11,8 @@ export const state = reactive({
     funcionario: <iUsuario>{},
     dbUsuarioSelecionado: <iUsuario>{},
     senhaTemp: "",
-    modalSenhaOpened: false,
+    modalAlterarSenha: false,
+    modalPermitirUsuario: false,
     senhaConfirmacao: "",
     loading: false,
     confirmationInProgress: false,
@@ -41,6 +41,16 @@ export const actions = {
         });
 
         await actions.carregaegarDados();
+    },
+
+    async abrirModalDarPermissao(usuario: iUsuario) {
+        state.dbUsuarioSelecionado = usuario;
+        state.modalPermitirUsuario = true;
+    },
+
+    async abrirModalAlterarSenha(usuario: iUsuario) {
+        state.dbUsuarioSelecionado = usuario;
+        state.modalAlterarSenha = true;
     },
 
     async carregaegarDados() {
@@ -93,15 +103,6 @@ export const actions = {
         }
     },
 
-    async abrirModalDarPermissao(usuario: iUsuario) {
-        state.dbUsuarioSelecionado = usuario;
-
-    },
-
-    async abrirModalAlterarSenha(usuario: iUsuario) {
-        state.dbUsuarioSelecionado = usuario;
-
-    },
 
     async darPermissao() {
         try {

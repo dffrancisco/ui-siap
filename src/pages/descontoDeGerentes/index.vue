@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { actions, state } from "../descontoDeGerentes/descontoDeGerentes";
-import { onMounted, onUnmounted } from "vue";
-import { useEventListener } from "@vueuse/core";
+import { onMounted } from "vue";
+import modalAlterarSenha from "./components/modalAlterarSenha.vue";
+import modalPermitirUsuario from "./components/modalPermitirUsuario.vue";
 import Swal from "sweetalert2";
 
 onMounted(() => {
@@ -22,6 +23,14 @@ function onRemoverPermissao() {
     return;
   }
   actions.confirmRemoverPermissao(state.dbUsuarioSelecionado);
+}
+
+function onAlterarSenha() {
+  if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
+    Swal.fire("", "Selecione um usuário com permissão!", "warning");
+    return;
+  }
+  actions.abrirModalAlterarSenha(state.dbUsuarioSelecionado);
 }
 </script>
 
@@ -70,11 +79,14 @@ function onRemoverPermissao() {
             id="pnUsuariosComPermissao"
             style="height: 400px"
           ></div>
+
           <v-btn
             color="primary"
             class="mt-3"
-            >Alterar Senha</v-btn
+            @click="onAlterarSenha"
           >
+            Alterar Senha
+          </v-btn>
         </v-col>
       </v-row>
 
@@ -97,10 +109,22 @@ function onRemoverPermissao() {
       >
     </v-card>
 
-    <ModalPermitirUsuario
-      :usuario="state.dbUsuarioSelecionado"
-      @cancelar="state.modalUsuarios.close()"
-    />
+    <v-dialog
+      v-model="state.modalAlterarSenha"
+      max-width="300"
+    >
+      <modalAlterarSenha
+        @fecharModalAlterar="state.modalAlterarSenha = false"
+        @senhaalterada="state.modalAlterarSenha = false"
+      />
+    </v-dialog>
+
+    <v-dialog
+      v-model="state.modalPermitirUsuario"
+      max-width="300"
+    >
+      <modalPermitirUsuario @fecharModalPermitir="state.modalPermitirUsuario = false" />
+    </v-dialog>
   </v-container>
 </template>
 
