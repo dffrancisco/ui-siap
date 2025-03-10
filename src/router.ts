@@ -5,6 +5,7 @@ import storeLogin from "./pages/login/login";
 //@ts-ignore
 import routes from "virtual:generated-pages";
 import axios from "axios";
+import mixpanel from "@/plugins/mixpanel";
 
 
 const router = createRouter({
@@ -35,6 +36,10 @@ router.beforeEach((to, from, next) => {
             next({ path: "home" });
         else next();
     }
+});
+
+router.afterEach((to) => {
+    mixpanel.track("Página Visitada", { page: to.fullPath });
 });
 
 export default router;
