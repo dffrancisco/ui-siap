@@ -26,6 +26,9 @@ export const actions = {
             columns: {
                 "Nome": { dataField: "NOME_COMP", width: "100%" },
             },
+            click: (rowData: iUsuario) => {
+                state.dbUsuarioSelecionado = rowData;
+            },
         });
 
         state.gridUsuariosComPermissao = new xGridV2.create({
@@ -34,9 +37,8 @@ export const actions = {
             columns: {
                 "Nome": { dataField: "NOME_COMP", width: "100%" },
             },
-
             click: (rowData: iUsuario) => {
-                actions.confirmRemoverPermissao(rowData);
+                state.dbUsuarioSelecionado = rowData;
             },
         });
 
