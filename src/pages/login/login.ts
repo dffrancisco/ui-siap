@@ -6,6 +6,17 @@ import { iLogin } from "../../models/interfaces";
 import { block } from "../../ts/utils";
 import stateGlobal from '@/store/globalState'
 import swal from 'sweetalert2'
+import mixpanel from "@/plugins/mixpanel";
+import storeLogin from "@/pages/login/login";
+
+type IUserMixpanel = {
+    COD_FUNCIONARIO: number,
+    CPF: string,
+    LOGIN: string,
+    NOME_COMP: string,
+    CNPJ_EMPRESA: string,
+    RAZAO_SOCIAL_EMPRESA: string,
+}
 
 export const state = reactive({
     nameStorage: "isAuth-" + stateGlobal.nomeSistema,
@@ -28,6 +39,19 @@ export const actions = {
 
     setAuth(auth: boolean) {
         state.auth = auth;
+    },
+
+    setUserMixpanel(user: IUserMixpanel) {
+        mixpanel.identify(user.CPF); // Identifica o usuário no Mixpanel
+
+        mixpanel.people.set({
+            $nome: user.NOME_COMP,
+            $cpf: user.CPF,
+            $login: user.LOGIN,
+            $cod_funcionario: user.COD_FUNCIONARIO,
+            $cnpj: user.CNPJ_EMPRESA,
+            $razao_social: user.RAZAO_SOCIAL_EMPRESA,
+        });
     },
 
     getCPF() {
@@ -75,6 +99,15 @@ export const actions = {
 
             actionsGlobal.getEmpresa();
 
+            storeLogin.actions.setUserMixpanel({
+                CPF: rs.data.CPF,
+                LOGIN: rs.data.LOGIN,
+                NOME_COMP: rs.data.NOME_COMP,
+                COD_FUNCIONARIO: rs.data.COD_FUNCIONARIO,
+                CNPJ_EMPRESA: stateGlobal?.empresa?.CGC_EMPRESA,
+                RAZAO_SOCIAL_EMPRESA: stateGlobal?.empresa?.RAZAO_SOCIAL,
+            })
+
             router.push("/home");
 
             return rs;
@@ -97,6 +130,8 @@ export const actions = {
         axios.defaults.headers.common["Authorization"] = null;
 
         this.setAuth(false);
+
+        mixpanel.reset();
 
         // socketClient.disconnect();
 

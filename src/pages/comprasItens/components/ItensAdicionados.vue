@@ -43,6 +43,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  searchDescricaoGridItem: {
+    type: String,
+    required: false,
+  },
+  searchNumFabGridItem: {
+    type: String,
+    required: false,
+  },
 });
 
 const emit = defineEmits(["changeIndexProdutoSelecionado", "adicionarItem", "deletarItem"]);
@@ -57,6 +65,34 @@ const state = reactive({
 const produtos = computed(() => {
   return Object.values(props.objProdutosAdicionados);
 });
+
+const filtrarItens = (itens, searchDescricao, searchNumFab) => {
+  return itens.filter((item) => {
+    const descricaoMatch = searchDescricao
+      ? item[MAP_COL_PRODUTO.DESC_PRODUTO].toLowerCase().includes(searchDescricao.toLowerCase())
+      : true;
+    const numFabMatch = searchNumFab
+      ? item[MAP_COL_PRODUTO.NUM_FABRICANTE].toLowerCase().includes(searchNumFab.toLowerCase())
+      : true;
+    return descricaoMatch && numFabMatch;
+  });
+};
+
+watch(
+  () => props.searchDescricaoGridItem,
+  async (newSearchDescricao) => {
+    const itensFiltrados = filtrarItens(produtos.value, newSearchDescricao, props.searchNumFabGridItem);
+    state.gridItensAdicionados.source(itensFiltrados);
+  }
+);
+
+watch(
+  () => props.searchNumFabGridItem,
+  async (newSearchNumFab) => {
+    const itensFiltrados = filtrarItens(produtos.value, props.searchDescricaoGridItem, newSearchNumFab);
+    state.gridItensAdicionados.source(itensFiltrados);
+  }
+);
 
 watch(
   () => props.objProdutosAdicionados,

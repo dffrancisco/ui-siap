@@ -749,6 +749,7 @@ interface iEmpresaPrint {
   CEP: string;
   CIDADE: string;
   UF: string;
+  APELIDO: string;
 }
 
 const getEmpresaPrint = async (): Promise<iEmpresaPrint> => {
@@ -785,7 +786,7 @@ export const printComCabecalho = async (columns: iColumnPrint[], data: iDataPrin
         <img src="./Logo-Real-Shop-Car-menor.png" alt="Logo" style="height: 90px; margin-right: 10px"/>
         <div style="display: flex; flex-direction: column; gap: 4px; align-items: start; width: 100%">
             <div style="display: flex; justify-content: space-between; width: 100%">
-              <strong>${empresa.RAZAO_SOCIAL}</strong>
+              <strong>${empresa.RAZAO_SOCIAL} - (${empresa.APELIDO})</strong>
               <span>${moment().format('DD/MM/YYYY HH:mm:ss')}</span>
             </div>
             <div style="display: flex; justify-content: space-between; width: 100%">
@@ -927,8 +928,7 @@ export const gerarPlanilhaComCabecalho = async (columns: iColumnPrint[], data: i
   // Save the workbook as a .xlsx file
   const buffer = await workbook.xlsx.writeBuffer();
 
-  let nomeEmpresaSplit = empresa.RAZAO_SOCIAL.split(' ');
-  let nomeEmpresaCurto = nomeEmpresaSplit[0] + ' ' + nomeEmpresaSplit[1];
+  let nomeEmpresaCurto = empresa.APELIDO
 
   fileName = fileName + ' - ' + nomeEmpresaCurto;
 

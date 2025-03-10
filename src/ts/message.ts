@@ -70,6 +70,13 @@ export const msgConfirm = async (title: string, text: string): Promise<boolean> 
       if (result != codigo) return "O código não confere";
       else return;
     },
+    didOpen: () => {
+      const input = Swal.getInput();
+      if (input) {
+        input.setAttribute("autocomplete", "off");
+      }
+    },
+
   });
 
   return codigoConfirm != codigo ? false : true

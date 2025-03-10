@@ -42,8 +42,12 @@ export const state = reactive({
             align: 'center',
         },
         {
-            title: 'Tipo Pag.', key: 'DESCRICAO_PAGAMENTO',
+            title: 'Tipo Pag.',
+            key: 'TIPOS_PAGAMENTO',
             align: 'center',
+            value: (item) => {
+                return item.TIPOS_PAGAMENTOS[0]?.DESCRICAO_PAGAMENTO
+            }
         },
         {
             title: 'Funcionário', key: 'LOGIN',
@@ -74,7 +78,7 @@ export const actions = {
     createModal() {
         state.modalDetalhesItensDevolucao = new xModal.create({
             el: "#modalDetalhesItensDevolucao",
-            height: 420,
+            height: 450,
             width: 900,
             title: 'Detalhes itens devolução',
             theme: 'xModal-blue',
@@ -90,6 +94,7 @@ export const actions = {
             COD_PRODUTO: produto.COD_PRODUTO,
             QUAL_TIPO_AVARIA: produto.QUAL_TIPO_AVARIA,
             MOTIVO_DEVOLUCAO: produto.MOTIVO_DEVOLUCAO,
+            DESCRICAO_PAGAMENTO: produto.DESCRICAO_PAGAMENTO,
             DESC_PRODUTO: produto.DESC_PRODUTO,
             CREDITO: item.CREDITO,
         }));
@@ -159,8 +164,8 @@ export const actions = {
                 NUM_ORCAMENTO: item.NUM_ORCAMENTO ?? '',
                 DATA: utils.dataBrasil(item.DATA) ?? '',
                 VALOR: utils.formatValor(item.VALOR) ?? '',
+                TIPOS_PAGAMENTOS: item.TIPOS_PAGAMENTOS[0]?.DESCRICAO_PAGAMENTO ?? '',
                 NF_DEVOLUCAO: item.NF_DEVOLUCAO ?? '',
-                DESCRICAO_PAGAMENTO: item.DESCRICAO_PAGAMENTO ?? '',
                 LOGIN: item.LOGIN ?? '',
                 STATUS: item.STATUS ?? ''
             }
@@ -188,15 +193,15 @@ export const actions = {
                 align: 'right',
             },
             {
+                key: 'TIPOS_PAGAMENTOS',
+                label: "Tipos Pagto.",
+                align: 'right',
+            },
+            {
                 key: 'NF_DEVOLUCAO',
                 label: "NF-e",
                 align: 'center',
                 width: "80%"
-            },
-            {
-                key: 'DESCRICAO_PAGAMENTO',
-                label: "Tipo Pag.",
-                align: 'center',
             },
             {
                 key: 'LOGIN',
