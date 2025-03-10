@@ -8,17 +8,6 @@ onMounted(() => {
   actions.init();
 });
 
-const eventListener = useEventListener(document, "keydown", async (event) => {
-  if (event.key === "F1") {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-});
-
-onUnmounted(() => {
-  removeEventListener("keydown", eventListener);
-});
-
 function onDarPermissao() {
   if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
     Swal.fire("", "Selecione um usuário sem permissão!", "warning");

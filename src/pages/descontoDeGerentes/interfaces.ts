@@ -16,7 +16,9 @@ export interface iUsuarioDesconto {
     COD_FUNCIONARIO?: number;
     SENHA?: string;
     HISTORICO?: string;
+    NOME_COMP?: string;
     SENHA_ATUAL?: string;
+
 }
 
 export interface iParamGetUsuarios { }

@@ -10,10 +10,9 @@ export const state = reactive({
     gridUsuariosSemPermissao: <ixGridCreate>{},
     gridUsuariosComPermissao: <ixGridCreate>{},
     funcionario: <iUsuario>{},
-    modalUsuarios: <iModalCreate>{},
-    modalUsuariosComPermissao: <iModalCreate>{},
     dbUsuarioSelecionado: <iUsuario>{},
     senhaTemp: "",
+    modalSenhaOpened: false,
     senhaConfirmacao: "",
     loading: false,
     confirmationInProgress: false,
@@ -96,12 +95,12 @@ export const actions = {
 
     async abrirModalDarPermissao(usuario: iUsuario) {
         state.dbUsuarioSelecionado = usuario;
-        state.modalUsuarios.open();
+
     },
 
     async abrirModalAlterarSenha(usuario: iUsuario) {
         state.dbUsuarioSelecionado = usuario;
-        state.modalUsuariosComPermissao.open();
+
     },
 
     async darPermissao() {
@@ -125,7 +124,7 @@ export const actions = {
             await serviceDescontoDeGerentes.darPermissao(params);
             state.gridUsuariosComPermissao.insertLine(state.dbUsuarioSelecionado);
             state.gridUsuariosSemPermissao.deleteLine();
-            state.modalUsuarios.close();
+
         } catch (error: any) {
             Swal.fire("Erro", error.response?.data?.message || "Falha ao conceder permissão", "error");
         } finally {
@@ -147,7 +146,7 @@ export const actions = {
             };
             await serviceDescontoDeGerentes.alterarSenha(params);
             Swal.fire("Senha alterada com sucesso!", "success");
-            state.modalUsuariosComPermissao.close();
+
         } catch (error: any) {
             Swal.fire("Erro", error.response?.data?.message || "Falha ao alterar senha", "error");
         } finally {

@@ -2,49 +2,43 @@
 import { reactive } from "vue";
 import Swal from "sweetalert2";
 import descontoDeGerentesService from "../services/descontoDeGerentes.service";
-import { iParamDarPermissao, iUsuario } from "../interfaces";
-
-const props = defineProps<{
-  usuario: iUsuario;
-}>();
-
-const emit = defineEmits<{
-  (e: "cancelar"): void;
-  (e: "permissaoConcedida"): void;
-}>();
+import { iParamDarPermissao, iUsuarioDesconto } from "../interfaces";
+const emit = defineEmits(["fecharModal", "senhaalterada"]);
 
 const state = reactive({
   senha: "",
   confirmarSenha: "",
+  funcionario: <iUsuarioDesconto[]>[],
 });
 
-function onClickCancelar() {
-  emit("cancelar");
-}
+const actions = {
+  async permitirUsuario() {
+    if (state.senha.length < 6) {
+      Swal.fire("Aviso", "Senha deve ter no mínimo 6 caracteres!", "warning");
+      return;
+    }
 
-async function permitirUsuario() {
-  if (state.senha.length < 6) {
-    Swal.fire("Aviso", "Senha deve ter no mínimo 6 caracteres!", "warning");
-    return;
-  }
+    if (state.senha !== state.confirmarSenha) {
+      Swal.fire("Aviso", "As senhas não coincidem!", "warning");
+      return;
+    }
+    try {
+      const params: iParamDarPermissao = {
+        COD_FUNCIONARIO: actions.COD_FUNCIONARIO,
+        SENHA: btoa(state.senha),
+      };
 
-  if (state.senha !== state.confirmarSenha) {
-    Swal.fire("Aviso", "As senhas não coincidem!", "warning");
-    return;
-  }
-  try {
-    const params: iParamDarPermissao = {
-      COD_FUNCIONARIO: props.usuario.COD_FUNCIONARIO,
-      SENHA: btoa(state.senha),
-    };
+      await descontoDeGerentesService.darPermissao(params);
+      Swal.fire("Sucesso", "Permissão concedida com sucesso!", "success");
+    } catch (error: any) {
+      Swal.fire("Erro", error.response?.data?.message || "Falha ao conceder permissão", "error");
+    }
+  },
 
-    await descontoDeGerentesService.darPermissao(params);
-    Swal.fire("Sucesso", "Permissão concedida com sucesso!", "success");
-    emit("permissaoConcedida");
-  } catch (error: any) {
-    Swal.fire("Erro", error.response?.data?.message || "Falha ao conceder permissão", "error");
-  }
-}
+  fecharModal() {
+    emit("fecharModal");
+  },
+};
 </script>
 
 <template>
@@ -56,7 +50,7 @@ async function permitirUsuario() {
           <span>Usuário</span>
           <input
             type="text"
-            :value="props.usuario.NOME_COMP"
+            :value="state.NOME_COMP"
             class="ss"
             disabled
           />
