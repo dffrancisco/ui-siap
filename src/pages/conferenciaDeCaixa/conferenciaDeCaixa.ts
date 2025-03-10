@@ -20,9 +20,20 @@ export const state = reactive({
     modalAbrirCaixaOpened: false,
     pagamentoSelecionado: null,
     headers: [
-        { title: "N° Orçamento", key: "NUM_ORCAMENTO" },
-        { title: "Valor", key: "VALOR", value: (item: any) => utils.formatValor(item.VALOR) },
+        { title: "#", key: "INDEX", }, // Numeração da linha
+        {
+            title: "N° Orçamento",
+            key: "NUM_ORCAMENTO",
+            value: (item: any) => {
+                if (item.DADOS_ORCAMENTO?.length) {
+                    return item.DADOS_ORCAMENTO.map(d => d.NUM).join(", ");
+                }
+                return item.NUM_ORCAMENTO;
+            }
+        },
         { title: "Hora", key: "HORA", value: (item: any) => utils.formatHora(item.HORA) },
+        { title: "Pagamentos", key: "PAGAMENTOS" }, // Tipos de pagamento
+        { title: "Total", key: "VALOR", value: (item: any) => utils.formatValor(item.VALOR) },
     ],
 });
 
@@ -43,10 +54,20 @@ export const funcionariosDisponiveis = computed(() =>
 );
 
 export const comprasFiltradas = computed(() => {
-    return state.pagamentoSelecionado
-        ? state.todasAsCompras.filter(c => String(c.TIPO_PAGAMENTO).trim() === String(state.pagamentoSelecionado).trim())
-        : [];
+    let compras = state.pagamentoSelecionado
+        ? state.todasAsCompras.filter(c =>
+            c.TIPO_PAGAMENTO.split(",").map(tp => tp.trim()).includes(String(state.pagamentoSelecionado).trim())
+        )
+        : state.todasAsCompras;
+
+    return compras
+        .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime()) // Ordena por horário
+        .map((compra, index) => ({
+            ...compra,
+            INDEX: index + 1, // Adiciona numeração
+        }));
 });
+
 
 export const actions = {
     async init() {
@@ -72,7 +93,7 @@ export const actions = {
                 state.msgAberturaMDC = data.mdc[0].OPEN_CLOSE;
                 state.funcionarios = data.funcionarios;
                 state.caixas = data.caixas;
-                state.todasAsCompras = data.confCaixaAll;
+                state.todasAsCompras = data.comprasAgrupadas;
                 state.valoresRecebidos = data.valoresRecebidosAll;
             }
 
@@ -218,9 +239,7 @@ export const actions = {
     },
 
     selecionarPagamento(tipoPagamento: string) {
-        console.log("Selecionado:", tipoPagamento);
         state.pagamentoSelecionado = tipoPagamento;
-        console.log("Compras filtradas:", comprasFiltradas.value);
     },
 
     obterDescricaoPagamento(tipoPagamento: string) {

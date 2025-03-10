@@ -61,26 +61,26 @@ onMounted(() => {
         </v-btn>
       </div>
 
-      <!-- opcoes dos v-chips -->
+      <!-- opcoes dos v-tabs -->
       <div
-        style="padding-top: 10px"
+        style="padding-top: 10px; margin-right: 30px"
         v-if="state.mdcAberto"
       >
-        <v-chip-group
+        <v-tabs
           v-model="state.selectedOption"
           color="primary"
+          align-tabs="center"
+          show-arrows
         >
-          <v-chip
+          <v-tab
             v-for="option in options"
             :key="option.value"
-            class="vchip ml-4"
-            style="margin-left: 5px; font-size: 16px; width: 150px"
             :value="option.value"
-            :class="{ 'selected-chip': state.selectedOption === option.value }"
+            class="vtab"
           >
             {{ option.label }}
-          </v-chip>
-        </v-chip-group>
+          </v-tab>
+        </v-tabs>
       </div>
 
       <!-- div para mostrar os caixas-->
@@ -88,7 +88,7 @@ onMounted(() => {
         v-if="state.selectedOption === 'caixas' && state.mdcAberto"
         class="pa-4"
         style="overflow-y: scroll"
-        max-height="620px"
+        max-height="360px"
       >
         <v-row>
           <v-col
@@ -161,8 +161,8 @@ onMounted(() => {
 
               <v-divider></v-divider>
               <v-row
-                justify="center"
-                class="mt-2"
+                justify="space-between"
+                class="mt-2 mr-0 ml-0"
               >
                 <v-btn
                   v-if="caixa.STATUS !== 2"
@@ -216,6 +216,7 @@ onMounted(() => {
                 icon="mdi-plus"
                 size="48"
                 color="primary"
+                title="Abrir novo caixa"
                 @click="actions.openModalAbrirCaixa()"
               />
             </v-card>
@@ -233,6 +234,8 @@ onMounted(() => {
           <v-col cols="4">
             <v-card
               class="pa-2 mt-2"
+              max-height="350px"
+              style="overflow-y: scroll"
               outlined
             >
               <v-list>
@@ -240,6 +243,7 @@ onMounted(() => {
                   v-for="(item, index) in state.valoresRecebidos"
                   :key="index"
                   @click="actions.selecionarPagamento(item.TIPO_PAGAMENTO)"
+                  :class="{ tipo_pag_selected: item.TIPO_PAGAMENTO === state.pagamentoSelecionado }"
                 >
                   <v-list-item>
                     <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
@@ -257,39 +261,68 @@ onMounted(() => {
             <v-data-table-virtual
               :items="comprasFiltradas"
               :headers="state.headers"
-              height="420"
+              height="350"
               item-value="NUM_ORCAMENTO"
-              show-expand
+              :loading="state.loading"
               fixed-header
               class="elevation-1 mt-2"
+              style="overflow-y: none"
             >
-              <template v-slot:expanded-row="{ item }">
-                <tr>
-                  <td colspan="5">
-                    <v-card class="pa-2">
-                      <v-list>
-                        <v-list-item>
-                          <v-list-item>
-                            <v-list-item-title> Número: {{ item.NUM_ORCAMENTO }} </v-list-item-title>
-                            <v-list-item-subtitle> Hora: {{ utils.formatHora(item.HORA) }} </v-list-item-subtitle>
-                            <v-list-item-subtitle>
-                              Desconto: {{ utils.formatValor(item.DESCONTO) }}
-                            </v-list-item-subtitle>
-                            <v-list-item-subtitle v-if="item.BANDEIRA">
-                              Bandeira: {{ item.BANDEIRA }}
-                            </v-list-item-subtitle>
-                          </v-list-item>
-                        </v-list-item>
-                      </v-list>
-                    </v-card>
-                  </td>
-                </tr>
+              <template v-slot:item.INDEX="{ index }">
+                <span>#{{ index + 1 }}</span>
+              </template>
+              <template v-slot:item.NUM_ORCAMENTO="{ item }">
+                <div class="d-flex flex-wrap">
+                  <v-chip
+                    v-for="orc in item.DADOS_ORCAMENTO?.length
+                      ? item.DADOS_ORCAMENTO
+                      : [{ NUM: item.NUM_ORCAMENTO, VL: item.VALOR }]"
+                    :key="orc.NUM"
+                    class="mr-1"
+                    color="primary"
+                  >
+                    {{ orc.NUM }} - {{ utils.formatValor(orc.VL) }}
+                  </v-chip>
+                </div>
+              </template>
+
+              <template v-slot:item.PAGAMENTOS="{ item }">
+                <div class="d-flex flex-wrap">
+                  <v-chip
+                    v-for="pagamento in item.TP || [
+                      { DESCRICAO_PAGAMENTO: item.DESCRICAO_PAGAMENTO, VALOR: item.VALOR },
+                    ]"
+                    :key="pagamento.TIPO_PAGAMENTO"
+                    class="mr-1"
+                    color="secondary"
+                  >
+                    {{ pagamento.DESCRICAO_PAGAMENTO }} - {{ utils.formatValor(pagamento.VALOR) }}
+                  </v-chip>
+                </div>
+              </template>
+
+              <template v-slot:item.OBS="{ item }">
+                <v-tooltip
+                  v-if="item.OBS"
+                  top
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      v-bind="attrs"
+                      v-on="on"
+                      color="grey darken-1"
+                      >mdi-comment-text</v-icon
+                    >
+                  </template>
+                  <span>{{ item.OBS }}</span>
+                </v-tooltip>
               </template>
             </v-data-table-virtual>
           </v-col>
         </v-row>
       </v-card>
 
+      <!-- msg de quem abriu o mdc -->
       <div class="pa-2"
         ><span style="font-size: 14px">{{ state.msgAberturaMDC }}</span></div
       >
@@ -326,17 +359,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.selected-chip {
-  background-color: #017bc2 !important;
-  color: white !important;
-}
-
-.vchip {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  border-radius: 8px !important;
+.vtab {
+  font-size: 16px !important;
+  min-width: 150px !important;
+  /* padding-left: 50px !important; */
+  text-transform: none !important;
 }
 
 .v-col {
@@ -375,5 +402,11 @@ onMounted(() => {
 
 .btn-bordered {
   border: 1px solid rgba(255, 255, 255, 0.554) !important;
+}
+
+.tipo_pag_selected {
+  background-color: #017bc2c7 !important;
+  color: white !important;
+  border-radius: 8px;
 }
 </style>

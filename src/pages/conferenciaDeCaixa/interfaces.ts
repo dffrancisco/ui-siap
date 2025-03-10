@@ -42,6 +42,8 @@ export interface iTodasAsCompras {
     NUM_ORCAMENTO: number | null;
     TIPO_PAGAMENTO: string | null;
     VALOR: number | null;
+    DADOS_ORCAMENTO: { NUM: number, VL: number }[];
+    TP: { DESCRICAO_PAGAMENTO: string, VALOR: number, TIPO_PAGAMENTO: string }[];
 }
 
 export interface iValoresRecebidos {
@@ -54,7 +56,7 @@ export interface iResponseDadosIniciais {
     mdc: iMDC[];
     funcionarios: iFuncionarios[];
     caixas: iCaixas[];
-    confCaixaAll: iTodasAsCompras[];
+    comprasAgrupadas: iTodasAsCompras[];
     valoresRecebidosAll: iValoresRecebidos[];
 }
 
