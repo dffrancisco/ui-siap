@@ -19,23 +19,32 @@ const state = reactive({
 const actions = {
   async permitirUsuario() {
     if (state.senha.length < 6) {
-      Swal.fire("Aviso", "Senha deve ter no mínimo 6 caracteres!", "warning");
+      Swal.fire({
+        icon: "warning",
+        text: "Senha deve ter no mínimo 6 caracteres!",
+      });
       return;
     }
     if (state.senha !== state.confirmarSenha) {
-      Swal.fire("Aviso", "As senhas não coincidem!", "warning");
+      Swal.fire({
+        icon: "warning",
+        text: "As senhas não coincidem!",
+      });
       return;
     }
     try {
       const params: iParamDarPermissao = {
-        COD_FUNCIONARIO: 0,
+        COD_FUNCIONARIO: props.usuarioSelecionado.COD_FUNCIONARIO,
         SENHA: utils.base64_encode(state.senha),
       };
       await descontoDeGerentesService.darPermissao(params);
       emit("senhaalterada");
       actions.fecharModalPermitir();
-    } catch (error: any) {
-      Swal.fire("Erro", error.response?.data?.message || "Falha ao conceder permissão", "error");
+    } catch (error) {
+      Swal.fire({
+        icon: "warning",
+        text: "Senha atual errada, informe a senha atual correta!",
+      });
     }
   },
 
@@ -58,11 +67,13 @@ const actions = {
         label="Senha:"
         type="password"
         class="mb-2"
+        @keydown.enter="state.confirmarSenha"
       />
       <v-text-field
         v-model="state.confirmarSenha"
         label="Confirmar senha:"
         type="password"
+        ref="confirmarSenhaInput"
       />
     </v-card-text>
     <v-card-actions class="d-flex justify-end">

@@ -19,11 +19,17 @@ const state = reactive({
 const actions = {
   async validarCampos() {
     if (!state.senhaAtual || !state.novaSenha || !state.confirmarSenha) {
-      Swal.fire("Atenção", "Preencha todos os campos!", "warning");
+      Swal.fire({
+        icon: "warning",
+        text: "Preencha todos os campos!",
+      });
       return false;
     }
     if (state.novaSenha !== state.confirmarSenha) {
-      Swal.fire("Atenção", "As senhas não coincidem!", "warning");
+      Swal.fire({
+        icon: "warning",
+        text: "As senhas não coincidem!",
+      });
       return false;
     }
     return true;
@@ -44,12 +50,18 @@ const actions = {
         SENHA: utils.base64_encode(state.novaSenha),
       };
       await serviceDescontoDeGerentes.alterarSenha(params);
-      Swal.fire("Sucesso", "Senha alterada com sucesso!", "success");
+      Swal.fire({
+        icon: "success",
+        text: "Senha alterada com sucesso!",
+      });
       emit("senhaalterada");
       actions.fecharModalAlterar();
     } catch (error: any) {
       const mensagem = error.response?.data?.message || "Falha na alteração da senha";
-      Swal.fire("Erro", mensagem, "error");
+      Swal.fire({
+        icon: "error",
+        text: mensagem,
+      });
     } finally {
       state.loading = false;
     }
@@ -70,6 +82,7 @@ const actions = {
         type="password"
         class="mb-2"
         :disabled="state.loading"
+        @keydown.enter="state.novaSenha"
       />
       <v-text-field
         v-model="state.novaSenha"
@@ -77,6 +90,7 @@ const actions = {
         type="password"
         class="mb-2"
         :disabled="state.loading"
+        @keydown.enter="state.confirmarSenha"
       />
       <v-text-field
         v-model="state.confirmarSenha"

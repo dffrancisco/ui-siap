@@ -79,6 +79,7 @@ export const actions = {
 
     async init() {
         await actions.grids();
+
     },
 
     async getUsuariosSempermissao() {
@@ -127,8 +128,11 @@ export const actions = {
             state.gridUsuariosComPermissao.insertLine(state.dbUsuarioSelecionado);
             state.gridUsuariosSemPermissao.deleteLine();
 
-        } catch (error: any) {
-            Swal.fire("Erro", error.response?.data?.message || "Falha ao conceder permissão", "error");
+        } catch (error) {
+            Swal.fire({
+                icon: "warning",
+                text: "Senha atual errada, informe a senha atual correta!",
+            });
         } finally {
             state.loading = false;
         }
@@ -149,8 +153,11 @@ export const actions = {
             await serviceDescontoDeGerentes.alterarSenha(params);
             Swal.fire("Senha alterada com sucesso!", "success");
 
-        } catch (error: any) {
-            Swal.fire("Erro", error.response?.data?.message || "Falha ao alterar senha", "error");
+        } catch (error) {
+            Swal.fire({
+                icon: "warning",
+                text: "Senha atual errada, informe a senha atual correta!",
+            });
         } finally {
             state.loading = false;
         }
@@ -166,8 +173,11 @@ export const actions = {
                 await serviceDescontoDeGerentes.removerPermissao(params);
                 state.gridUsuariosSemPermissao.insertLine(usuario);
                 state.gridUsuariosComPermissao.deleteLine();
-            } catch (error: any) {
-                Swal.fire(error.response?.data?.message || "Falha ao remover permissão", "error");
+            } catch (error) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "Senha atual errada, informe a senha atual correta!",
+                });
             } finally {
                 state.loading = false;
             }

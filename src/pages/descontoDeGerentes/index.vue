@@ -11,7 +11,10 @@ onMounted(() => {
 
 function onDarPermissao() {
   if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
-    Swal.fire("", "Selecione um usuário sem permissão!", "warning");
+    Swal.fire({
+      icon: "warning",
+      text: "Selecione um usuário sem permissão!",
+    });
     return;
   }
   actions.abrirModalDarPermissao(state.dbUsuarioSelecionado);
@@ -19,7 +22,10 @@ function onDarPermissao() {
 
 function onRemoverPermissao() {
   if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
-    Swal.fire("", "Selecione um usuário com permissão!", "warning");
+    Swal.fire({
+      icon: "warning",
+      text: "Selecione um usuário com permissão!",
+    });
     return;
   }
   actions.confirmRemoverPermissao(state.dbUsuarioSelecionado);
@@ -27,7 +33,10 @@ function onRemoverPermissao() {
 
 function onAlterarSenha() {
   if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
-    Swal.fire("", "Selecione um usuário com permissão!", "warning");
+    Swal.fire({
+      icon: "warning",
+      text: "Selecione um usuário com permissão!",
+    });
     return;
   }
   actions.abrirModalAlterarSenha(state.dbUsuarioSelecionado);
@@ -109,11 +118,7 @@ function onPermissaoConcedida() {
         ></v-progress-circular>
       </v-overlay>
 
-      <div
-        id="pnCodigoTela"
-        class="mt-3 text-center"
-        >descontoDeGerentes</div
-      >
+      <div id="pnCodigoTela">descontoDeGerentes</div>
     </v-card>
 
     <v-dialog
