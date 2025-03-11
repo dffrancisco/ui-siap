@@ -61,26 +61,26 @@ onMounted(() => {
         </v-btn>
       </div>
 
-      <!-- opcoes dos v-tabs -->
+      <!-- opcoes dos v-chips -->
       <div
-        style="padding-top: 10px; margin-right: 30px"
+        style="padding-top: 10px"
         v-if="state.mdcAberto"
       >
-        <v-tabs
+        <v-chip-group
           v-model="state.selectedOption"
           color="primary"
-          align-tabs="center"
-          show-arrows
         >
-          <v-tab
+          <v-chip
             v-for="option in options"
             :key="option.value"
+            class="vchip ml-4"
+            style="margin-left: 5px; font-size: 16px; width: 150px"
             :value="option.value"
-            class="vtab"
+            :class="{ 'selected-chip': state.selectedOption === option.value }"
           >
             {{ option.label }}
-          </v-tab>
-        </v-tabs>
+          </v-chip>
+        </v-chip-group>
       </div>
 
       <!-- div para mostrar os caixas-->
@@ -231,7 +231,7 @@ onMounted(() => {
       >
         <v-row>
           <!-- Card Esquerdo (Totalizadores) -->
-          <v-col cols="4">
+          <v-col cols="3">
             <v-card
               class="pa-2 mt-2"
               max-height="350px"
@@ -257,7 +257,7 @@ onMounted(() => {
           </v-col>
 
           <!-- Card Direito (Compras do Tipo Selecionado) -->
-          <v-col cols="8">
+          <v-col cols="9">
             <v-data-table-virtual
               :items="comprasFiltradas"
               :headers="state.headers"
@@ -266,23 +266,30 @@ onMounted(() => {
               :loading="state.loading"
               fixed-header
               class="elevation-1 mt-2"
-              style="overflow-y: none"
             >
-              <template v-slot:item.INDEX="{ index }">
-                <span>#{{ index + 1 }}</span>
-              </template>
               <template v-slot:item.NUM_ORCAMENTO="{ item }">
-                <div class="d-flex flex-wrap">
-                  <v-chip
+                <div class="d-flex flex-wrap align-center">
+                  <div
                     v-for="orc in item.DADOS_ORCAMENTO?.length
                       ? item.DADOS_ORCAMENTO
                       : [{ NUM: item.NUM_ORCAMENTO, VL: item.VALOR }]"
                     :key="orc.NUM"
-                    class="mr-1"
-                    color="primary"
+                    class="d-flex align-center mr-2"
                   >
-                    {{ orc.NUM }} - {{ utils.formatValor(orc.VL) }}
-                  </v-chip>
+                    <v-chip
+                      class="mr-1"
+                      color="primary"
+                      style="border-radius: 8px !important"
+                    >
+                      {{ orc.NUM }}
+                    </v-chip>
+                    <v-chip
+                      class="mr-1"
+                      style="border-radius: 8px !important"
+                    >
+                      {{ utils.formatValor(orc.VL) }}
+                    </v-chip>
+                  </div>
                 </div>
               </template>
 
@@ -294,7 +301,7 @@ onMounted(() => {
                     ]"
                     :key="pagamento.TIPO_PAGAMENTO"
                     class="mr-1"
-                    color="secondary"
+                    color="primary"
                   >
                     {{ pagamento.DESCRICAO_PAGAMENTO }} - {{ utils.formatValor(pagamento.VALOR) }}
                   </v-chip>
@@ -359,11 +366,17 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.vtab {
-  font-size: 16px !important;
-  min-width: 150px !important;
-  /* padding-left: 50px !important; */
-  text-transform: none !important;
+.selected-chip {
+  background-color: #017bc2 !important;
+  color: white !important;
+}
+
+.vchip {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 8px !important;
 }
 
 .v-col {

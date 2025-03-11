@@ -20,9 +20,9 @@ export const state = reactive({
     modalAbrirCaixaOpened: false,
     pagamentoSelecionado: null,
     headers: [
-        { title: "#", key: "INDEX", }, // Numeração da linha
+        { title: "#", key: "id", value: (item: any) => `#` + item.id },
         {
-            title: "N° Orçamento",
+            title: "N° Orçamento / Valor",
             key: "NUM_ORCAMENTO",
             value: (item: any) => {
                 if (item.DADOS_ORCAMENTO?.length) {
