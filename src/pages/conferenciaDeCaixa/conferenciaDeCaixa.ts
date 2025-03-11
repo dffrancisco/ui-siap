@@ -32,7 +32,7 @@ export const state = reactive({
             }
         },
         { title: "Hora", key: "HORA", value: (item: any) => utils.formatHora(item.HORA) },
-        { title: "Pagamentos", key: "PAGAMENTOS" }, // Tipos de pagamento
+        { title: "Pagamentos", key: "DESCRICAO_PAGAMENTO" },
         { title: "Total", key: "VALOR", value: (item: any) => utils.formatValor(item.VALOR) },
     ],
 });
@@ -64,7 +64,7 @@ export const comprasFiltradas = computed(() => {
         .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime()) // Ordena por horário
         .map((compra, index) => ({
             ...compra,
-            INDEX: index + 1, // Adiciona numeração
+            INDEX: index + 1,
         }));
 });
 
@@ -106,6 +106,10 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    alterarOpcao(novaOpcao: string) {
+        state.selectedOption = novaOpcao;
     },
 
     async validarDataAtual(caixaData) {
