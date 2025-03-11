@@ -12,7 +12,7 @@ export const state = reactive({
     dataInicio: moment().startOf('month').format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
     dadosRelatorio: [] as iRelatorioConhecimento[],
-    selectTransportadora: <number[]>[],
+    selectTransportadora: null as number | null,
     selectedOrdem: <string[]>[],
     ordem: ['DATA', 'NOME', 'Nº CONHECIMENTO', 'Nº NOTA'],
     inputDataFinal: <HTMLInputElement>{},

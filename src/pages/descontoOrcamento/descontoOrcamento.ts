@@ -10,6 +10,7 @@ import { useEventListener } from "@vueuse/core";
 import Swal from "sweetalert2";
 import xAuthManager from "@/plugins/xAuthManager";
 import login from "../login/login";
+import mixpanel from "mixpanel-browser";
 // import xAuthManager from "@/plugins/xAuthManager/xAuthManager";
 
 const caminho = "siap/descontoOrcamento"
@@ -74,6 +75,17 @@ export const actions = {
 
         actions.calcPercent();
 
+        mixpanel.track('Desconto Orçamento - UI Visualizada -  abrir modal desconto', {
+          tela: 'DESC_ORCAMENTO',
+          element: 'modal',
+          name: 'modal desconto',
+          produtoNumFabricante: state.produtoSelected.NUM_FABRICANTE,
+          produtoSubTotal: state.produtoSelected.SUB_TOTAL,
+          produtoQtd: state.produtoSelected.QTO,
+          produtoDescontoMarca: state.produtoSelected.DESCONTO_MARCA,
+          produtoDescontoVendedor: state.produtoSelected.DESCONTO_VENDEDOR,
+        })
+
         setTimeout(function () {
           state.edtDescontoItemValor.focus()
         }, 200);
@@ -81,6 +93,12 @@ export const actions = {
       },
       onClose() {
         state.gdItensOrcamento.focus()
+
+        mixpanel.track('Desconto Orçamento - UI interagida - fechar modal', {
+          tela: 'DESC_ORCAMENTO',
+          element: 'button',
+          name: 'close',
+        })
       },
     })
 
@@ -315,6 +333,13 @@ export const actions = {
     state.fotoVendedor = globalActions.getFuncionarioThumb(state.dataOrcamento.CPF, 55)
     state.fotoMontador = globalActions.getFuncionarioThumb(state.dataOrcamento.CPF_MONTADOR, 55)
 
+    mixpanel.track('Desconto Orçamento - UI interagida - buscar orçamento', {
+      tela: 'DESC_ORCAMENTO',
+      element: 'button',
+      name: 'buscar',
+      numOrcamento: state.edtNumOrcamento,
+    })
+
     // state.descontoValor = '0.00'
     // state.edtDesconto.focus();
 
@@ -353,7 +378,7 @@ export const actions = {
       call: "getObs",
       numOrcamento: state.edtNumOrcamento
     });
-    state.obs = data[0].OBS;
+    state.obs = data[0]?.OBS;
   },
 
   async getDescontoMarca(idCliente: number) {
@@ -438,6 +463,14 @@ export const actions = {
         obs: state.obs,
         codProduto: state.produtoSelected.COD_PRODUTO
 
+      })
+
+      mixpanel.track('Desconto Orçamento - UI Interagida -  salvar desconto', {
+        tela: 'DESC_ORCAMENTO',
+        element: 'button',
+        name: 'salvar',
+        produtoNumFabricante: state.produtoSelected.NUM_FABRICANTE,
+        valorDesconto: formatValorUSA(state.descontoValor)
       })
 
       if (data.error) {

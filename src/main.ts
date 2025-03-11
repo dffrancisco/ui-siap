@@ -13,6 +13,7 @@ import VuePhotoPreview, { PhotoProvider, PhotoConsumer } from 'vue3-photo-previe
 import config from "./ts/config";
 import { setupInterceptorsTo } from "./pages/login/interceptor";
 import disableAutocomplete from "./plugins/disableAutocomplete/disableAutocomplete";
+import mixpanel from "@/plugins/mixpanel/";
 
 const app = createApp(App)
 
@@ -39,8 +40,8 @@ app.use(disableAutocomplete)
 
 app.directive('money3', Money3Directive)
 
-
-
 app.config.globalProperties.axios = axios;
+app.config.globalProperties.$mixpanel = mixpanel;
+
 app.mount('#app')
 
