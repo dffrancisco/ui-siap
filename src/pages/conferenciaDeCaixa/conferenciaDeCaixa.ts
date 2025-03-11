@@ -32,7 +32,7 @@ export const state = reactive({
             }
         },
         { title: "Hora", key: "HORA", value: (item: any) => utils.formatHora(item.HORA) },
-        { title: "Pagamentos", key: "DESCRICAO_PAGAMENTO" },
+        { title: "Pagamentos", key: "PAGAMENTOS" }, // Ajustado para usar o slot personalizado
         { title: "Total", key: "VALOR", value: (item: any) => utils.formatValor(item.VALOR) },
     ],
 });
@@ -56,7 +56,7 @@ export const funcionariosDisponiveis = computed(() =>
 export const comprasFiltradas = computed(() => {
     let compras = state.pagamentoSelecionado
         ? state.todasAsCompras.filter(c =>
-            c.TIPO_PAGAMENTO.split(",").map(tp => tp.trim()).includes(String(state.pagamentoSelecionado).trim())
+            c.TP.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
         )
         : state.todasAsCompras;
 

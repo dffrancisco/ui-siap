@@ -4,12 +4,11 @@ import utils from "@/ts/utils";
 </script>
 
 <template>
-  <v-card class="pa-4">
+  <v-card class="pa-3">
     <v-row>
       <!-- Card Esquerdo (Totalizadores) -->
-      <v-col cols="3">
+      <v-col cols="4">
         <v-card
-          class="pa-2 mt-2"
           max-height="350px"
           style="overflow-y: scroll"
           outlined
@@ -21,19 +20,17 @@ import utils from "@/ts/utils";
               @click="actions.selecionarPagamento(item.TIPO_PAGAMENTO)"
               :class="{ tipo_pag_selected: item.TIPO_PAGAMENTO === state.pagamentoSelecionado }"
             >
-              <v-list-item>
-                <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
-                <v-list-item-subtitle>
-                  <b>{{ utils.formatValor(item.VALOR) }}</b>
-                </v-list-item-subtitle>
-              </v-list-item>
+              <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
+              <v-list-item-subtitle>
+                <b>{{ utils.formatValor(item.VALOR) }}</b>
+              </v-list-item-subtitle>
             </v-list-item>
           </v-list>
         </v-card>
       </v-col>
 
       <!-- Card Direito (Compras do Tipo Selecionado) -->
-      <v-col cols="9">
+      <v-col cols="8">
         <v-data-table-virtual
           :items="comprasFiltradas"
           :headers="state.headers"
@@ -41,7 +38,7 @@ import utils from "@/ts/utils";
           item-value="id"
           :loading="state.loading"
           fixed-header
-          class="elevation-1 mt-2"
+          class="elevation-1"
         >
           <template v-slot:item.NUM_ORCAMENTO="{ item }">
             <div class="d-flex flex-wrap align-center">
@@ -72,14 +69,12 @@ import utils from "@/ts/utils";
           <template v-slot:item.PAGAMENTOS="{ item }">
             <div class="d-flex flex-wrap">
               <v-chip
-                v-for="pagamento in item.TP || [
-                  { DESCRICAO_PAGAMENTO: item.DESCRICAO_PAGAMENTO, VALOR: item.VALOR },
-                ]"
+                v-for="pagamento in item.TP"
                 :key="pagamento.TIPO_PAGAMENTO"
                 class="mr-1"
                 color="primary"
               >
-                {{ pagamento.DESCRICAO_PAGAMENTO }} - {{ utils.formatValor(pagamento.VALOR) }}
+                {{ pagamento.DESCRICAO_PAGAMENTO }}: {{ utils.formatValor(pagamento.VALOR) }}
               </v-chip>
             </div>
           </template>
