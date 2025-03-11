@@ -3,7 +3,7 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceRelatorioConferenciaAlteracoes from './services/consultaValeDinheiro.service';
-import { iFuncionarios } from "./interfaces";
+import { iFuncionarios, iLojas } from "./interfaces";
 import utils, { iColumnPrint } from "@/ts/utils";
 
 
@@ -17,6 +17,7 @@ export const state = reactive({
     ano: ano || "",
     funcionarios: <iFuncionarios[]>[],
     selectedFuncionario: <number[]>[],
+    lojas: <iLojas[]>[],
 
 })
 
@@ -35,6 +36,7 @@ export const actions = {
             state.loading = true;
             const data = await serviceRelatorioConferenciaAlteracoes.getDadosParaInputs();
             state.funcionarios = data.funcionarios
+            state.lojas = data.lojas
 
         } catch (error) {
             Swal.fire({
