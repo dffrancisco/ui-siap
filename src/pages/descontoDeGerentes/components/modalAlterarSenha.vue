@@ -39,6 +39,7 @@ const actions = {
       state.loading = true;
 
       const params: iParamAlterarSenha = {
+        COD_FUNCIONARIO: props.usuarioSelecionado.COD_FUNCIONARIO,
         SENHA_ATUAL: utils.base64_encode(state.senhaAtual),
         SENHA: utils.base64_encode(state.novaSenha),
       };
