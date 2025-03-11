@@ -47,53 +47,55 @@ function onPermissaoConcedida() {
       class="pa-5 mx-auto"
       max-width="1000px"
     >
-      <v-row>
-        <v-col cols="5">
+      <div class="d-flex">
+        <div class="flex-grow-1">
           <h4 class="mb-3">Usuários sem permissão</h4>
           <div
             id="pnUsuariosSemPermissao"
             style="height: 400px"
           ></div>
-        </v-col>
+        </div>
 
-        <v-col
-          cols="1"
-          class="d-flex flex-column align-center justify-center"
+        <div
+          class="d-flex flex-column align-items-center"
+          style="margin-left: 10px; margin-right: 10px"
         >
           <v-btn
-            icon
+            style="margin-top: 200px"
+            icon="mdi-chevron-right mdi-24px"
             color="primary"
-            size="39"
+            size="x-small"
             @click="onDarPermissao"
           >
-            <v-icon>mdi-arrow-right-bold</v-icon>
           </v-btn>
           <v-btn
-            icon
+            style="margin-top: 10px"
+            icon="mdi-chevron-left mdi-24px"
             color="primary"
-            size="39"
-            class="mt-3"
+            size="x-small"
             @click="onRemoverPermissao"
           >
-            <v-icon>mdi-arrow-left-bold</v-icon>
           </v-btn>
-        </v-col>
+        </div>
 
-        <v-col cols="6">
+        <div class="flex-grow-1">
           <h4 class="mb-3">Usuários com permissão</h4>
           <div
             id="pnUsuariosComPermissao"
             style="height: 400px"
           ></div>
-          <v-btn
-            color="primary"
-            class="mt-3"
-            @click="onAlterarSenha"
-          >
-            Alterar Senha
-          </v-btn>
-        </v-col>
-      </v-row>
+          <div class="d-flex justify-end">
+            <v-btn
+              size="small"
+              class="mt-3"
+              @click="onAlterarSenha"
+              variant="text"
+            >
+              Alterar Senha
+            </v-btn>
+          </div>
+        </div>
+      </div>
 
       <v-overlay
         :model-value="state.loading"

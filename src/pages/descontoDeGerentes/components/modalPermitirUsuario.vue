@@ -28,7 +28,7 @@ const actions = {
     }
     try {
       const params: iParamDarPermissao = {
-        COD_FUNCIONARIO: props.usuarioSelecionado.COD_FUNCIONARIO,
+        COD_FUNCIONARIO: 0,
         SENHA: utils.base64_encode(state.senha),
       };
       await descontoDeGerentesService.darPermissao(params);
@@ -47,36 +47,27 @@ const actions = {
 
 <template>
   <v-card class="pa-4">
-    <v-card-title class="text-h5 mb-4">Permitir Usuário</v-card-title>
+    <v-card-title class="text-h5">Permitir Usuário</v-card-title>
     <v-card-text>
       <v-text-field
-        label="Usuário"
         :value="props.usuarioSelecionado.NOME_COMP"
-        disabled
-        outlined
-        dense
-        class="mb-4"
+        class="mb-2"
       />
       <v-text-field
         v-model="state.senha"
-        label="Senha *"
+        label="Senha:"
         type="password"
-        outlined
-        dense
-        class="mb-4"
+        class="mb-2"
       />
       <v-text-field
         v-model="state.confirmarSenha"
-        label="Confirmar Senha *"
+        label="Confirmar senha:"
         type="password"
-        outlined
-        dense
-        class="mb-4"
       />
     </v-card-text>
     <v-card-actions class="d-flex justify-end">
       <v-btn
-        color="primary"
+        color="red"
         @click="actions.fecharModalPermitir"
       >
         Cancelar

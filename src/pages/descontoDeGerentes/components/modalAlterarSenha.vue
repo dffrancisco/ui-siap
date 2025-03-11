@@ -58,42 +58,39 @@ const actions = {
 </script>
 
 <template>
-  <v-card class="pa-4">
-    <v-card-title class="text-h5 mb-4">Alterar Senha</v-card-title>
+  <v-card
+    class="pa-2"
+    max-width="400px"
+  >
+    <v-card-title class="text-h5">Alterar Senha</v-card-title>
     <v-card-text>
       <v-text-field
         v-model="state.senhaAtual"
-        label="Senha Atual *"
+        label="Senha atual:"
         type="password"
-        outlined
-        dense
-        class="mb-4"
+        class="mb-2"
         :disabled="state.loading"
       />
       <v-text-field
         v-model="state.novaSenha"
-        label="Nova Senha *"
+        label="Nova senha:"
         type="password"
-        outlined
-        dense
-        class="mb-4"
+        class="mb-2"
         :disabled="state.loading"
       />
       <v-text-field
         v-model="state.confirmarSenha"
-        label="Confirmar Nova Senha *"
+        label="Confirmar nova senha:"
         type="password"
-        outlined
-        dense
-        class="mb-4"
         :disabled="state.loading"
       />
     </v-card-text>
     <v-card-actions class="d-flex justify-end">
       <v-btn
-        color="primary"
+        color="red"
         @click="actions.fecharModalAlterar"
         :disabled="state.loading"
+        small
       >
         Cancelar
       </v-btn>
@@ -101,6 +98,7 @@ const actions = {
         color="primary"
         @click="actions.confirmarAlteracao"
         :loading="state.loading"
+        small
       >
         Confirmar
       </v-btn>

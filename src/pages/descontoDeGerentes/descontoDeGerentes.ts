@@ -24,7 +24,7 @@ export const actions = {
             el: "#pnUsuariosSemPermissao",
             height: 400,
             columns: {
-                "Nome": { dataField: "NOME_COMP", width: "100%" },
+                "Nome do Usuario": { dataField: "NOME_COMP", width: "100%" },
             },
             click: (rowData: iUsuario) => {
                 state.dbUsuarioSelecionado = rowData;
@@ -35,7 +35,7 @@ export const actions = {
             el: "#pnUsuariosComPermissao",
             height: 400,
             columns: {
-                "Nome": { dataField: "NOME_COMP", width: "100%" },
+                "Nome do Usuario": { dataField: "NOME_COMP", width: "100%" },
             },
             click: (rowData: iUsuario) => {
                 state.dbUsuarioSelecionado = rowData;
