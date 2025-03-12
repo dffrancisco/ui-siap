@@ -20,7 +20,7 @@ onMounted(() => {
             :clearable="true"
             label="Funcionário"
             multiple
-            v-model="state.selectedFuncionario"
+            v-model="state.codFuncionario"
             :items="state.funcionarios"
             item-title="NOME_COMP"
             item-value="COD_FUNCIONARIO"
@@ -32,24 +32,12 @@ onMounted(() => {
           class="me-3"
         >
           <v-text-field
-            label="Data de Início"
-            id="dataInicio"
-            class="dataInicio"
-            type="date"
-            v-model="state.dataInicio"
-            :clearable="false"
-            @keydown.enter="state.inputDataFinal.focus()"
-          ></v-text-field>
-        </v-col>
-
-        <v-col cols="3">
-          <v-text-field
-            label="Data de Fim"
-            id="dataFim"
-            class="dataFim"
-            type="date"
-            v-model="state.dataFim"
-            :clearable="false"
+            label="Ano"
+            type="number"
+            v-model="state.ano"
+            min="2000"
+            max="2099"
+            step="1"
             @keydown.enter.prevent="actions.onClickBuscar"
           ></v-text-field>
         </v-col>
@@ -57,6 +45,7 @@ onMounted(() => {
         <v-col
           cols="1"
           class="btnPesquisar"
+          style="margin-left: -16px"
         >
           <v-btn
             color="primary"
@@ -69,16 +58,15 @@ onMounted(() => {
         </v-col>
       </v-row>
 
-      <v-data-table-virtual
+      <v-data-table
         id="tabelaUsoConsumo"
         class="mt-4 pt-5"
         :items="state.dadosRelatorio"
         :headers="state.headers"
         height="360px"
         fixed-header
-        :loading="state.loading"
         :row-props="actions.getClassCorLinha"
-      ></v-data-table-virtual>
+      ></v-data-table>
 
       <div class="d-flex justify-end">
         <v-btn
@@ -124,7 +112,7 @@ onMounted(() => {
 
 .btnPesquisar {
   display: flex;
-  align-items: left;
+  align-items: center;
   margin-left: 16px;
 }
 </style>

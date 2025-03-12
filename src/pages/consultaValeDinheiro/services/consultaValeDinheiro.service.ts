@@ -3,8 +3,10 @@ import { iResponseDadosInput, iResponseVales } from "../interfaces";
 
 const caminho = 'siap/consultaValeDinheiro'
 
+
 type iGetDadosParaInputs = () => Promise<iResponseDadosInput>;
-type iGetConsultarVales = (codFuncionario: string, dataInicio: string, dataFim: string) => Promise<iResponseVales>;
+
+type iGetConsultarVales = (codFuncionario: number[] | null, ano: number) => Promise<iResponseVales[]>;
 
 const getDadosParaInputs: iGetDadosParaInputs = async () => {
     let { data } = await axios.post(caminho, {
@@ -13,12 +15,11 @@ const getDadosParaInputs: iGetDadosParaInputs = async () => {
     return data;
 }
 
-const getDadosParaRelatorio: iGetConsultarVales = async (codFuncionario, dataInicio, dataFim) => {
+const getDadosParaRelatorio: iGetConsultarVales = async (codFuncionario, ano) => {
     let { data } = await axios.post(caminho, {
         call: "getConsultarVales",
         codFuncionario,
-        dataInicio,
-        dataFim,
+        ano,
     });
     return data;
 }
@@ -26,5 +27,4 @@ const getDadosParaRelatorio: iGetConsultarVales = async (codFuncionario, dataIni
 export default {
     getDadosParaInputs,
     getDadosParaRelatorio
-
 }

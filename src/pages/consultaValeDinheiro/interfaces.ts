@@ -31,3 +31,8 @@ export interface iResponseVales {
     NOME_COMP: string;
     PAGADOR: string;
 }
+
+export interface iConsultaValeParams {
+    codFuncionario: number[];
+    ano: string;
+}
