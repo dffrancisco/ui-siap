@@ -253,11 +253,13 @@ const computeds = {
     let devolucoes = <iDevolucaoFiltered[]>[];
     props.orcamentos.forEach((item) => {
       if (item.DEVOLUCAO > 0) {
-        devolucoes.push({
-          DATA: dataBrasil(item.DATA),
-          NUM_ORCAMENTO: item.NUM_ORCAMENTO,
-          VALOR: item.DEVOLUCAO,
-          CREDITO: "N",
+        item.DEVOLUCAO_DETALHADA.forEach((dev) => {
+          devolucoes.push({
+            DATA: dataBrasil(item.DATA),
+            NUM_ORCAMENTO: item.NUM_ORCAMENTO,
+            VALOR: dev.VALOR,
+            CREDITO: "N",
+          });
         });
       }
     });
