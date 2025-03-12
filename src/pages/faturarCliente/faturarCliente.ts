@@ -226,6 +226,7 @@ export const actions = ({
                         icon: "warning",
                         text: "Devolução já adicionada!"
                     });
+                    state.locValor = null;
                     return;
                 }
 
