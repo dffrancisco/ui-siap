@@ -1,4 +1,4 @@
-import  { reactive } from 'vue';
+import { reactive } from 'vue';
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import Swal from 'sweetalert2';
 import { iCorredor, iFieldDuplicity, iLocalidade, iParamGetCorredores } from './interfaces';
@@ -22,13 +22,13 @@ export const state = reactive({
 
 export const actions = {
     grids() {
-            state.gridPrincipal = new xGridV2.create({
-                el: '#gridPrincipal',
-                height: 200,
-                count: true,
-                columns: {
-                    'Descrição': { dataField: 'DESCRICAO'},
-                    'Localidade': {dataField: 'LOCALIDADE'}
+        state.gridPrincipal = new xGridV2.create({
+            el: '#gridPrincipal',
+            height: 200,
+            count: true,
+            columns: {
+                'Descrição': { dataField: 'DESCRICAO' },
+                'Localidade': { dataField: 'LOCALIDADE' }
             },
             query: {
                 async execute(rs) {
@@ -38,7 +38,7 @@ export const actions = {
             },
             sideBySide: {
                 el: '#pnCampos',
-                vModel(r){ state.dbCorredor = r },
+                vModel(r) { state.dbCorredor = r },
                 //evitar duplicidade
                 duplicity: {
                     dataField: ['DESCRICAO'],
@@ -48,7 +48,7 @@ export const actions = {
                             field: rs.field,
                         });
 
-                        if(Object.keys(dup).length > 0){
+                        if (Object.keys(dup).length > 0) {
                             state.gridPrincipal.showMessageDuplicity(
                                 rs.text + ' já está cadastrada'
                             );
@@ -61,10 +61,10 @@ export const actions = {
                 frame: {
                     el: '#pnBotoes',
                     buttons: {
-                        novo:{
+                        novo: {
                             html: 'Novo',
                             state: 'insert',
-                            click: actions.btnInsert 
+                            click: actions.btnInsert
                         },
                         update: {
                             html: 'Alterar',
@@ -98,7 +98,7 @@ export const actions = {
         actions.grids();
 
         state.gridPrincipal.queryOpen({ DESCRICAO: "" }, () => {
-          state.gridPrincipal.focus();
+            state.gridPrincipal.focus();
         });
     },
 
@@ -124,19 +124,19 @@ export const actions = {
     },
 
     async btnDelete() {
-         //@ts-ignore
-         if (state.gridPrincipal.dataSource() === false) {
-          Swal.fire({
-              icon: "info",
-              text: "Nenhum registro selecionado para alteração, operação cancelada!",
-          });
-          return false;
-      }
-  
-      if (await msgConfirm("Confirmação", "Confirma exclusão deste registro?")) {
-          await actions.toDelete();
-          state.gridPrincipal.focus();
-      }
+        //@ts-ignore
+        if (state.gridPrincipal.dataSource() === false) {
+            Swal.fire({
+                icon: "info",
+                text: "Nenhum registro selecionado para alteração, operação cancelada!",
+            });
+            return false;
+        }
+
+        if (await msgConfirm("Confirmação", "Confirma exclusão deste registro?")) {
+            await actions.toDelete();
+            state.gridPrincipal.focus();
+        }
     },
 
     async btnSave() {
@@ -149,7 +149,7 @@ export const actions = {
             actions.toInsert();
         }
         else {
-            actions.toUpdate();            
+            actions.toUpdate();
         }
 
         state.gridPrincipal.enable();
@@ -157,7 +157,7 @@ export const actions = {
         state.gridPrincipal.focus();
     },
 
-    btnCancel(){ 
+    btnCancel() {
         state.disableSearch = false;
         state.gridPrincipal.enable();
         state.gridPrincipal.focus();
@@ -171,7 +171,7 @@ export const actions = {
             state.loading = false
 
             return data
-        }catch(error) {
+        } catch (error) {
             state.loading = false
             Swal.fire({
                 icon: 'error',
@@ -198,20 +198,20 @@ export const actions = {
             });
         }
     },
-    
+
     async toInsert() {
-        
+
         try {
             let newFields: any = (
                 state.gridPrincipal.getElementSideBySideJson(true, false)
             )
-            
+
             state.loading = true
             let data: any = await serviceCorredores.toInsert(newFields);
 
             state.loading = false
-            
-            state.gridPrincipal.insertLine({...newFields, ...data})
+
+            state.gridPrincipal.insertLine({ ...newFields, ...data })
         } catch (error) {
             state.loading = false
             Swal.fire({
@@ -223,7 +223,7 @@ export const actions = {
 
     async toUpdate() {
 
-        try{
+        try {
             let diff = state.gridPrincipal.getDiffTwoJson(true, false)
             let dadosAlterados = {
                 ...state.dbCorredor,
@@ -232,16 +232,16 @@ export const actions = {
 
             await serviceCorredores.toUpdate(dadosAlterados)
 
-            state.dbCorredor = { ...state.dbCorredor, ...diff} as iCorredor;
+            state.dbCorredor = { ...state.dbCorredor, ...diff } as iCorredor;
             state.gridPrincipal.dataSource(dadosAlterados)
 
-        }catch(error){
+        } catch (error) {
             state.loading = false
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao atualizar corredor!'
             })
-            
+
         }
     },
 

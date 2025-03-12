@@ -13,7 +13,7 @@ const getDadosParaInputs: iGetDadosParaInputs = async () => {
     return data;
 }
 
-const getConsultarVales: iGetConsultarVales = async (codFuncionario, dataInicio, dataFim) => {
+const getDadosParaRelatorio: iGetConsultarVales = async (codFuncionario, dataInicio, dataFim) => {
     let { data } = await axios.post(caminho, {
         call: "getConsultarVales",
         codFuncionario,
@@ -25,6 +25,6 @@ const getConsultarVales: iGetConsultarVales = async (codFuncionario, dataInicio,
 
 export default {
     getDadosParaInputs,
-    getConsultarVales
+    getDadosParaRelatorio
 
 }
