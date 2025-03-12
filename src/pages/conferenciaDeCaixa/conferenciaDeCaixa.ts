@@ -1,7 +1,7 @@
 import utils from './../../ts/utils';
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iCaixas, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iTodasAsCompras, iValoresRecebidos } from "./interfaces";
+import { iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iSangrias, iTodasAsCompras, iValoresRecebidos } from "./interfaces";
 import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -17,14 +17,16 @@ export const state = reactive({
     funcionarios: <iFuncionarios[]>[],
     todasAsCompras: <iTodasAsCompras[]>[],
     valoresRecebidos: <iValoresRecebidos[]>[],
+    sangrias: <iSangrias[]>[],
+    devolucoes: <iDevolucoes[]>[],
     modalAbrirCaixaOpened: false,
     pagamentoSelecionado: null,
-    headers: [
+    headersLancamentos: [
         { title: "#", key: "id", width: "30px", value: (item: any) => `#` + item.id },
         {
             title: "N° Orçamento / Valor",
             key: "NUM_ORCAMENTO",
-            width: "200px",
+            width: "220px",
             value: (item: any) => {
                 if (item.DADOS_ORCAMENTO?.length) {
                     return item.DADOS_ORCAMENTO.map(d => d.NUM).join(", ");
@@ -45,31 +47,6 @@ export const options: iOptions[] = [
     { value: "devolucao", label: "Devolução" },
 ];
 
-export const funcionariosDisponiveis = computed(() =>
-    state.funcionarios.filter(funcionario => {
-        const temCaixaAberto = state.caixas.some(
-            caixa => caixa.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO && caixa.STATUS === 1
-        );
-        return !temCaixaAberto;
-    })
-);
-
-export const comprasFiltradas = computed(() => {
-    let compras = state.pagamentoSelecionado
-        ? state.todasAsCompras.filter(c =>
-            c.TP.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
-        )
-        : state.todasAsCompras;
-
-    return compras
-        .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime()) // Ordena por horário
-        .map((compra, index) => ({
-            ...compra,
-            INDEX: index + 1,
-        }));
-});
-
-
 export const actions = {
     async init() {
         await actions.getDadosIniciaisConfCaixa();
@@ -88,6 +65,8 @@ export const actions = {
                 state.caixas = [];
                 state.todasAsCompras = [];
                 state.valoresRecebidos = [];
+                state.sangrias = [];
+                state.devolucoes = [];
                 return;
             } else {
                 state.mdcAberto = true;
@@ -96,9 +75,9 @@ export const actions = {
                 state.caixas = data.caixas;
                 state.todasAsCompras = data.comprasAgrupadas;
                 state.valoresRecebidos = data.valoresRecebidosAll;
+                state.sangrias = data.sangriasAll;
+                state.devolucoes = data.devolucoesAll;
             }
-
-
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -252,3 +231,56 @@ export const actions = {
         return pagamento ? pagamento.DESCRICAO_PAGAMENTO : "Desconhecido";
     }
 }
+
+export const funcionariosDisponiveis = computed(() =>
+    state.funcionarios.filter(funcionario => {
+        const temCaixaAberto = state.caixas.some(
+            caixa => caixa.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO && caixa.STATUS === 1
+        );
+        return !temCaixaAberto;
+    })
+);
+
+export const totalDevolucoes = computed(() => {
+    const totaisPorCaixa = state.devolucoes.reduce((acc, devolucao) => {
+        if (!acc[devolucao.CAIXA]) {
+            acc[devolucao.CAIXA] = 0;
+        }
+        acc[devolucao.CAIXA] += devolucao.VALOR;
+        return acc;
+    }, {} as Record<string, number>);
+
+    const totalGeral = Object.values(totaisPorCaixa).reduce((acc, val) => acc + val, 0);
+
+    return { totaisPorCaixa, totalGeral };
+});
+
+export const totalSangrias = computed(() => {
+    const totaisPorPessoa = state.sangrias.reduce((acc, sangria) => {
+        if (!acc[sangria.ENTREGUE_PARA]) {
+            acc[sangria.ENTREGUE_PARA] = 0;
+        }
+        acc[sangria.ENTREGUE_PARA] += sangria.VALOR;
+        return acc;
+    }, {} as Record<string, number>);
+
+    const totalGeral = Object.values(totaisPorPessoa).reduce((acc, val) => acc + val, 0);
+
+    return { totaisPorPessoa, totalGeral };
+});
+
+export const comprasFiltradas = computed(() => {
+    let compras = state.pagamentoSelecionado
+        ? state.todasAsCompras.filter(c =>
+            c.TP.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
+        )
+        : state.todasAsCompras;
+
+    return compras
+        .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
+        .map((compra, index) => ({
+            ...compra,
+            INDEX: index + 1,
+        }));
+});
+

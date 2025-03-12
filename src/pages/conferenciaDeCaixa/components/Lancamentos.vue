@@ -2,8 +2,9 @@
 import { state, actions, comprasFiltradas } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 import IconPagamento from "./IconPagamento.vue";
+import { iTiposPagamento } from "../interfaces";
 
-const exibirDetalhesPagamento = (pagamento: any) => {
+const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
   console.log("Detalhes do pagamento:", pagamento);
 };
 </script>
@@ -11,25 +12,31 @@ const exibirDetalhesPagamento = (pagamento: any) => {
 <template>
   <v-card class="pa-3">
     <v-row>
-      <!-- Card Esquerdo (Totalizadores) -->
+      <!-- Totalizadores Valores Recebidos -->
       <v-col cols="3">
         <v-card
-          max-height="355px"
+          max-height="325px"
           style="overflow-y: scroll"
           outlined
         >
           <v-list>
-            <v-list-item
-              v-for="(item, index) in state.valoresRecebidos"
-              :key="index"
-              @click="actions.selecionarPagamento(item.TIPO_PAGAMENTO)"
-              :class="{ tipo_pag_selected: item.TIPO_PAGAMENTO === state.pagamentoSelecionado }"
-            >
-              <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
-              <v-list-item-subtitle>
-                <b>{{ utils.formatValor(item.VALOR) }}</b>
-              </v-list-item-subtitle>
-            </v-list-item>
+            <template v-if="state.valoresRecebidos.length > 0">
+              <v-list-item
+                v-for="(item, index) in state.valoresRecebidos"
+                :key="index"
+                @click="actions.selecionarPagamento(item.TIPO_PAGAMENTO)"
+                :class="{ tipo_pag_selected: item.TIPO_PAGAMENTO === state.pagamentoSelecionado }"
+              >
+                <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  <b>{{ utils.formatValor(item.VALOR) }}</b>
+                </v-list-item-subtitle>
+              </v-list-item>
+            </template>
+
+            <template v-else>
+              <span class="text-center d-block mt-3 text-grey">Ainda não teve lançamentos nesta data</span>
+            </template>
           </v-list>
         </v-card>
       </v-col>
@@ -38,8 +45,8 @@ const exibirDetalhesPagamento = (pagamento: any) => {
       <v-col cols="9">
         <v-data-table-virtual
           :items="comprasFiltradas"
-          :headers="state.headers"
-          height="352"
+          :headers="state.headersLancamentos"
+          height="325"
           item-value="id"
           :loading="state.loading"
           fixed-header
@@ -70,27 +77,24 @@ const exibirDetalhesPagamento = (pagamento: any) => {
                 style="border-radius: 8px !important; margin: 3px"
               >
                 <div class="chip-content">
-                  <!-- Descrição do pagamento acima -->
                   <div class="descricao-pagamento">
                     {{ pagamento.DESCRICAO_PAGAMENTO }}
                     <span v-if="pagamento.DIVIDE !== null"> {{ pagamento.DIVIDE }}x </span>
                   </div>
 
                   <div class="d-flex align-center">
-                    <!-- Ícone do tipo de pagamento -->
                     <IconPagamento
                       :tipoPagamento="pagamento.DESCRICAO_PAGAMENTO"
                       :bandeira="pagamento.BANDEIRA"
                       :descricaoBandeira="pagamento.DESCRICAO_BANDEIRA"
                     />
 
-                    <!-- Valor do pagamento -->
                     {{ utils.formatValor(pagamento.VALOR) }}
 
-                    <!-- Ícone de informação -->
                     <v-icon
-                      class="ml-1"
+                      class="ml-3"
                       @click.stop="exibirDetalhesPagamento(pagamento)"
+                      title="ver detalhes"
                     >
                       mdi-information
                     </v-icon>
@@ -123,6 +127,8 @@ const exibirDetalhesPagamento = (pagamento: any) => {
 }
 
 .chip-custom {
+  width: 120px;
+  height: 45px;
   display: flex;
   flex-direction: column;
   align-items: center;

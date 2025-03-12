@@ -39,7 +39,6 @@ const bandeiraIcons = {
   7: iconHipercard,
 };
 
-// Ícones padrão para tipos de pagamento
 const defaultIcons = {
   CARTÃO: iconCartao,
   PIX: iconPix,
@@ -51,20 +50,16 @@ const defaultIcons = {
 };
 
 const iconPath = computed(() => {
-  // Se for um cartão e houver bandeira, retorna o ícone da bandeira
   if (props.tipoPagamento === "CARTÃO" && props.bandeira && bandeiraIcons[props.bandeira]) {
     return bandeiraIcons[props.bandeira];
   }
-  // Caso contrário, retorna o ícone padrão para o tipo de pagamento
   return defaultIcons[props.tipoPagamento] || null;
 });
 
 const iconTitle = computed(() => {
-  // Se for um cartão e houver descrição da bandeira, retorna a descrição
   if (props.tipoPagamento === "CARTÃO" && props.descricaoBandeira) {
     return props.descricaoBandeira;
   }
-  // Caso contrário, retorna o tipo de pagamento
   return props.tipoPagamento;
 });
 </script>

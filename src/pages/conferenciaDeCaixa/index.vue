@@ -5,6 +5,8 @@ import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import CaixaCard from "./components/CaixaCard.vue";
 import Lancamentos from "./components/Lancamentos.vue";
+import Sangrias from "./components/Sangrias.vue";
+import Devolucoes from "./components/Devolucoes.vue";
 
 const abaSelecionada = computed(() => state.selectedOption);
 
@@ -19,8 +21,8 @@ onMounted(() => {
       max-width="950px"
       class="ma-auto pa-4"
     >
-      <!-- Cabeçalho: Input de Data -->
-      <v-row class="pt-4 ml-2">
+      <!-- Input de Data -->
+      <v-row class="pt-4 pl-2">
         <v-col cols="3">
           <v-text-field
             v-model="state.data"
@@ -63,7 +65,7 @@ onMounted(() => {
         >
       </div>
 
-      <!-- Opções (v-chip-group) -->
+      <!--Lista de Opções -->
       <div
         v-if="state.mdcAberto"
         class="pt-3 mb-5"
@@ -87,7 +89,7 @@ onMounted(() => {
 
       <!-- Renderiza a aba de caixas -->
       <template v-if="abaSelecionada === 'caixas'">
-        <v-row style="overflow-y: scroll; max-height: 400px">
+        <v-row style="overflow-y: scroll; max-height: 370px">
           <v-col
             v-for="caixa in state.caixas"
             :key="caixa.COD_FUNCIONARIO"
@@ -112,7 +114,7 @@ onMounted(() => {
           >
             <v-card
               class="pa-4 d-flex align-center justify-center"
-              min-height="280px"
+              min-height="270px"
             >
               <v-btn
                 icon="mdi-plus"
@@ -128,6 +130,12 @@ onMounted(() => {
 
       <!-- Renderiza a aba de Lançamentos -->
       <Lancamentos v-if="abaSelecionada === 'lancamentos'" />
+
+      <!-- Renderiza a aba de Sangrias -->
+      <Sangrias v-if="abaSelecionada === 'sangria'" />
+
+      <!-- Renderiza a aba de Devolucoes -->
+      <Devolucoes v-if="abaSelecionada === 'devolucao'" />
 
       <!-- Mensagem de quem abriu o MDC -->
       <div class="pa-2 mt-3">
@@ -152,16 +160,16 @@ onMounted(() => {
   </v-container>
 
   <v-overlay
-      :model-value="state.loading"
-      class="align-center justify-center"
-      persistent
-    >
-      <v-progress-circular
-        color="primary"
-        indeterminate
-        size="64"
-      ></v-progress-circular>
-    </v-overlay>
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>
 </template>
 
 <style scoped>

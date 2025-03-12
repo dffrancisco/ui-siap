@@ -81,6 +81,13 @@ export interface iDevolucoes {
     VALOR: number;
 }
 
+export interface iSangrias {
+    ENTREGUE_PARA: string;
+    HORA: string;
+    LOGIN: string;
+    VALOR: number;
+}
+
 export interface iResponseDadosIniciais {
     mdc: iMDC[];
     funcionarios: iFuncionarios[];
@@ -88,6 +95,7 @@ export interface iResponseDadosIniciais {
     comprasAgrupadas: iTodasAsCompras[];
     valoresRecebidosAll: iValoresRecebidos[];
     devolucoesAll: iDevolucoes[];
+    sangriasAll: iSangrias[];
 }
 
 export interface iParamsAbrirCaixa {

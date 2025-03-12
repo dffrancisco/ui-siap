@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
+import { defineProps, defineEmits, computed } from "vue";
 import utils from "@/ts/utils";
 
 const props = defineProps<{
@@ -27,12 +27,16 @@ const getFotoFuncionarioURL = (cpf: string) => {
   const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
   return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
 };
+
+const botoesVisiveis = computed(() => {
+  return [props.caixa.STATUS !== 2, props.caixa.STATUS !== 2, true].filter(Boolean).length;
+});
 </script>
 
 <template>
   <v-card
     class="d-flex flex-column justify-space-between pt-2"
-    min-height="280px"
+    min-height="270px"
     :class="{
       'caixa-aberto': caixa.STATUS == 1,
       'caixa-fechado': caixa.STATUS == 2,
@@ -92,15 +96,15 @@ const getFotoFuncionarioURL = (cpf: string) => {
 
     <v-divider></v-divider>
     <v-row
-      justify="space-between"
-      class="mt-2 mr-0 ml-0"
+      :justify="botoesVisiveis === 1 ? 'center' : 'space-between'"
+      class="mt-2 px-3"
     >
       <v-btn
         v-if="caixa.STATUS !== 2"
         icon="mdi-lock"
         size="40"
         color="primary"
-        class="mx-1 btn-bordered"
+        class="ml-5 mx-1 btn-bordered"
         title="Fechar Caixa"
         @click="emits('fechar-caixa', caixa)"
       >
@@ -123,7 +127,7 @@ const getFotoFuncionarioURL = (cpf: string) => {
         size="40"
         color="primary"
         title="Conferir Caixa"
-        class="mx-1 btn-bordered"
+        class="mr-5 mx-1 btn-bordered"
       >
         <v-icon :style="{ fontSize: '25px' }" />
       </v-btn>
