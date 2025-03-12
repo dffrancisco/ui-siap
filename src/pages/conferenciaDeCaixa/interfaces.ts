@@ -31,19 +31,39 @@ export interface iCaixas {
     TROCO: number;
 }
 
+export interface iTiposPagamento {
+    AUTORIZACAO: string | null;
+    BANDEIRA: string | null;
+    DESCRICAO_BANDEIRA: string | null;
+    DESCRICAO_PAGAMENTO: string | null;
+    DIVIDE: number | null;
+    PIX_CONTROLE: string | null;
+    TIPO: string | null;
+    TIPO_PAGAMENTO: string;
+    VALOR: number;
+    OBS: string | null;
+}
+
 export interface iTodasAsCompras {
+    id: number;
     AUTORIZACAO: string | null;
     BANDEIRA: string | null;
     DATA: string | null;
     DESCONTO: number | null;
     DESCRICAO_PAGAMENTO: string | null;
+    DESCRICAO_BANDEIRA: string | null;
+    DIVIDE: number | null;
     HORA: string;
     NOSSO_NUM: number | null;
-    NUM_ORCAMENTO: number | null;
+    NUM_ORCAMENTO: number | null | string;
+    PIX_CONTROLE: string | null;
+    PIX_VALOR: number | null;
     TIPO_PAGAMENTO: string | null;
+    TIPO: string | null;
     VALOR: number | null;
+    VALOR_CARTAO: number | null;
     DADOS_ORCAMENTO: { NUM: number, VL: number }[];
-    TP: { DESCRICAO_PAGAMENTO: string, VALOR: number, TIPO_PAGAMENTO: string }[];
+    TP: iTiposPagamento[];
 }
 
 export interface iValoresRecebidos {
@@ -52,12 +72,22 @@ export interface iValoresRecebidos {
     TIPO_PAGAMENTO: string;
 }
 
+export interface iDevolucoes {
+    CAIXA: string;
+    CODIGO: string;
+    DESCRICAO_PAGAMENTO: string;
+    LOGIN: string;
+    NUM_ORCAMENTO: number;
+    VALOR: number;
+}
+
 export interface iResponseDadosIniciais {
     mdc: iMDC[];
     funcionarios: iFuncionarios[];
     caixas: iCaixas[];
     comprasAgrupadas: iTodasAsCompras[];
     valoresRecebidosAll: iValoresRecebidos[];
+    devolucoesAll: iDevolucoes[];
 }
 
 export interface iParamsAbrirCaixa {

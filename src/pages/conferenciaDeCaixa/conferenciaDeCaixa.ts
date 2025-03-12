@@ -20,10 +20,11 @@ export const state = reactive({
     modalAbrirCaixaOpened: false,
     pagamentoSelecionado: null,
     headers: [
-        { title: "#", key: "id", value: (item: any) => `#` + item.id },
+        { title: "#", key: "id", width: "30px", value: (item: any) => `#` + item.id },
         {
             title: "N° Orçamento / Valor",
             key: "NUM_ORCAMENTO",
+            width: "200px",
             value: (item: any) => {
                 if (item.DADOS_ORCAMENTO?.length) {
                     return item.DADOS_ORCAMENTO.map(d => d.NUM).join(", ");
@@ -31,9 +32,9 @@ export const state = reactive({
                 return item.NUM_ORCAMENTO;
             }
         },
-        { title: "Hora", key: "HORA", value: (item: any) => utils.formatHora(item.HORA) },
-        { title: "Pagamentos", key: "PAGAMENTOS" }, // Ajustado para usar o slot personalizado
-        { title: "Total", key: "VALOR", value: (item: any) => utils.formatValor(item.VALOR) },
+        { title: "Hora", key: "HORA", width: "60px", value: (item: any) => utils.formatHora(item.HORA) },
+        { title: "Pagamentos", key: "PAGAMENTOS", width: "300px" },
+        { title: "Total", key: "VALOR", width: "120px", value: (item: any) => utils.formatValor(item.VALOR) },
     ],
 });
 
