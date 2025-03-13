@@ -25,6 +25,7 @@ onMounted(() => {
             item-title="NOME_COMP"
             item-value="COD_FUNCIONARIO"
             :rules="[(v) => (v && v.length <= 3) || 'Você só pode selecionar até 3 registros']"
+            class="autocomplete-limit"
           ></v-autocomplete>
         </v-col>
 
@@ -105,5 +106,9 @@ onMounted(() => {
 .btnPesquisar {
   display: flex;
   align-items: center;
+}
+
+.autocomplete-limit .v-select__selection {
+  max-height: 10px;
 }
 </style>

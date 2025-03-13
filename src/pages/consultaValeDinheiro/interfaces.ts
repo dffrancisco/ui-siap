@@ -16,14 +16,11 @@ export interface iLojas {
 }
 
 export interface iResponseVales {
-    codFuncionario: number;
-    dataInicio: string;
-    dataFim: string;
     COD_FUNCIONARIO: number;
     DATA: string;
     VALOR: number;
-    DATA_PG: string | null;
-    COD_FUNCIONARIO_PAGADOR: number | null;
+    DATA_PG: string;
+    COD_FUNCIONARIO_PAGADOR: number;
     MES: number;
     ANO: number;
     TIPO: string;
@@ -31,9 +28,4 @@ export interface iResponseVales {
     V_NOME_FUNCIONARIO: string;
     NOME_COMP: string;
     PAGADOR: string;
-}
-
-export interface iConsultaValeParams {
-    codFuncionario: number[];
-    ano: string;
 }

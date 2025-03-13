@@ -8,19 +8,17 @@ import utils, { dataBrasil, formatValor, iColumnPrint } from '@/ts/utils';
 export const state = reactive({
     loading: false,
     ano: new Date().getFullYear(),
-    idempresa: <iResponseVales[]>[],
     dadosRelatorio: <iResponseVales[]>[],
     funcionarios: <iFuncionarios[]>[],
     codFuncionario: <number[]>[],
     lojas: <iLojas[]>[],
     headers: <any>[
         { title: "Nome do Funcionario", key: "NOME_COMP", sortable: true, align: "left", width: "30%" },
-        { title: "Valor", key: "VALOR", sortable: true, align: "right", value: (item: iResponseVales) => formatValor(item.VALOR), width: "20%" },
+        { title: "Valor", key: "VALOR", sortable: true, align: "left", value: (item: iResponseVales) => formatValor(item.VALOR), width: "20%" },
         { title: "Data", key: "DATA", sortable: true, align: "left", value: (item: iResponseVales) => dataBrasil(item.DATA), width: "20%" },
-        { title: "Ano", key: "ANO", sortable: true, align: "center", width: "20%" },
-        { title: "Mês", key: "MES", sortable: true, align: "center", width: "20%" },
-        { title: "Forma de Pagamento", key: "FORMA_PAGAMENTO", sortable: true, align: "center", width: "20%" },
-
+        { title: "Ano", key: "ANO", sortable: true, align: "left", width: "15%" },
+        { title: "Mês", key: "MES", sortable: true, align: "left", width: "15%" },
+        { title: "Forma de Pagamento", key: "FORMA_PAGAMENTO", sortable: true, align: "left", width: "20%" },
     ],
 });
 
@@ -53,8 +51,6 @@ export const actions = {
                 codFuncionario: state.codFuncionario.length > 0 ? state.codFuncionario : null,
                 ano: state.ano
             };
-
-
             state.dadosRelatorio = await serviceConsultaValeDinheiro.getDadosParaRelatorio(
                 params.codFuncionario,
                 params.ano
@@ -64,12 +60,11 @@ export const actions = {
                 icon: 'error',
                 text: 'Erro ao buscar dados do relatório.',
             });
-            state.dadosRelatorio = [];
+            state.dadosRelatorio;
         } finally {
             state.loading = false;
         }
     },
-
 
     async getDadosParaInputs() {
         try {
@@ -89,36 +84,33 @@ export const actions = {
 
     async onClickImprimir() {
         try {
-            const relatorio = state.dadosRelatorio;
-            if (!relatorio || relatorio.length === 0) {
-                Swal.fire({
-                    icon: "warning",
-                    text: "Não há dados para imprimir.",
-                });
+            if (!state.dadosRelatorio || state.dadosRelatorio.length === 0) {
+                Swal.fire({ icon: "warning", text: "Nenhum dado disponível para impressão." });
                 return;
             }
-            const relatorioFormatado = actions.formatarDadosImpressao([...relatorio]);
+
+            state.loading = true;
+            const relatorioAjustado = actions.formatarDadosImpressao(state.dadosRelatorio);
 
             const columns: iColumnPrint[] = [
                 { key: "NOME_COMP", label: "Nome do Funcionario", align: "left" },
-                { key: "VALOR", label: "Valor", align: "right" },
+                { key: "VALOR", label: "Valor", align: "left" },
                 { key: "DATA", label: "Data", align: "left" },
-                { key: "ANO", label: "Ano", align: "center" },
-                { key: "MES", label: "Mês", align: "center" },
+                { key: "ANO", label: "Ano", align: "left" },
+                { key: "MES", label: "Mês", align: "left" },
+                { key: "FORMA_PAGAMENTO", label: "Forma de Pgt", align: "left" },
             ];
 
             const titulo = `
-            <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
-              <span>Ano: ${state.ano}</span>
-              <strong style="font-size: 16px;">Relatório Uso Consumo</strong>
-            </div>
-          `;
-            await utils.printComCabecalho(columns, relatorioFormatado, titulo);
+                    <div style="text-align: center; margin-top: 10px;">
+                        <strong style="font-size: 16px;">Consulta Vale Dinheiro</strong>
+                    </div>
+                `;
+
+            await utils.printComCabecalho(columns, relatorioAjustado, titulo);
         } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao imprimir o relatório.",
-            });
+            console.error("Erro ao imprimir o relatório:", error);
+            Swal.fire({ icon: "error", text: "Erro ao imprimir o relatório." });
         } finally {
             state.loading = false;
         }
@@ -127,6 +119,7 @@ export const actions = {
     formatarDadosImpressao(data) {
         return data.map(item => ({
             ...item,
+            DATA: item.DATA ? utils.dataBrasil(item.DATA) : '-----',
             VALOR: item.VALOR ? utils.formatValor(item.VALOR) : '-----',
         }));
     },
