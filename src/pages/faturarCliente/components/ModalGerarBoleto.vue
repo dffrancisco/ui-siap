@@ -41,6 +41,16 @@ const props = defineProps({
     required: true,
     default: null,
   },
+  boletoConferido: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  valorConferido: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 });
 
 const emits = defineEmits(["closeModal"]);
@@ -202,6 +212,8 @@ const actions = {
         ID_CLIENTE: props.cliente.ID_CLIENTE,
         DATA_LIMITE: props.dataLimite,
         REGRAS_FATURAMENTO: state.regrasFaturamento,
+        BOLETO_CONFERIDO: props.boletoConferido,
+        VALOR_CONFERIDO: props.valorConferido,
       };
 
       const data = await serviceFaturarCliente.gerarBoletos(param);

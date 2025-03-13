@@ -46,7 +46,9 @@ export const state = reactive({
     modalGerarBoletoOpened: false,
     regrasFaturamentoGeral: <iRegrasFaturamentoGeral>{},
     setDataLimite: null,
-    creditos: <iCreditoCliente[]>[]
+    creditos: <iCreditoCliente[]>[],
+    boletoConferido: false,
+    valorConferido: 0
 })
 
 export const actions = ({
@@ -322,6 +324,8 @@ export const actions = ({
 
         if (computeds.calcularOrcamentosLocalizados.value.total != computeds.totalValorOrcamentos.value) {
             if (await msgConfirm('Confirmação', 'Os valores dos orçamentos não batem. Deseja continuar mesmo assim?')) {
+                state.boletoConferido = false;
+                state.valorConferido = computeds.calcularOrcamentosLocalizados.value.total
                 state.modalGerarBoletoOpened = true
                 return
             }
@@ -329,6 +333,7 @@ export const actions = ({
             return
         }
 
+        state.boletoConferido = true
         state.modalGerarBoletoOpened = true
     },
 
