@@ -1,4 +1,4 @@
-import moment from "moment";
+
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceConsultaValeDinheiro from './services/consultaValeDinheiro.service';
@@ -19,6 +19,7 @@ export const state = reactive({
         { title: "Data", key: "DATA", sortable: true, align: "left", value: (item: iResponseVales) => dataBrasil(item.DATA), width: "20%" },
         { title: "Ano", key: "ANO", sortable: true, align: "center", width: "20%" },
         { title: "Mês", key: "MES", sortable: true, align: "center", width: "20%" },
+        { title: "Forma de Pagamento", key: "FORMA_PAGAMENTO", sortable: true, align: "center", width: "20%" },
 
     ],
 });
@@ -53,7 +54,11 @@ export const actions = {
                 ano: state.ano
             };
 
-            state.dadosRelatorio = await serviceConsultaValeDinheiro.getDadosParaRelatorio(params);
+
+            state.dadosRelatorio = await serviceConsultaValeDinheiro.getDadosParaRelatorio(
+                params.codFuncionario,
+                params.ano
+            );
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -64,6 +69,7 @@ export const actions = {
             state.loading = false;
         }
     },
+
 
     async getDadosParaInputs() {
         try {
@@ -84,6 +90,13 @@ export const actions = {
     async onClickImprimir() {
         try {
             const relatorio = state.dadosRelatorio;
+            if (!relatorio || relatorio.length === 0) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "Não há dados para imprimir.",
+                });
+                return;
+            }
             const relatorioFormatado = actions.formatarDadosImpressao([...relatorio]);
 
             const columns: iColumnPrint[] = [
@@ -95,12 +108,11 @@ export const actions = {
             ];
 
             const titulo = `
-                <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
-                    <span>Ano: ${state.ano}</span>
-                    <strong style="font-size: 16px;">Relatório Uso Consumo</strong>
-                </div>
-            `;
-
+            <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+              <span>Ano: ${state.ano}</span>
+              <strong style="font-size: 16px;">Relatório Uso Consumo</strong>
+            </div>
+          `;
             await utils.printComCabecalho(columns, relatorioFormatado, titulo);
         } catch (error) {
             Swal.fire({

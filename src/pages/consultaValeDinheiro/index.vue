@@ -17,20 +17,18 @@ onMounted(() => {
       <v-row>
         <v-col cols="4">
           <v-autocomplete
-            :clearable="true"
+            clearable
             label="Funcionário"
             multiple
             v-model="state.codFuncionario"
             :items="state.funcionarios"
             item-title="NOME_COMP"
             item-value="COD_FUNCIONARIO"
+            :rules="[(v) => (v && v.length <= 3) || 'Você só pode selecionar até 3 registros']"
           ></v-autocomplete>
         </v-col>
 
-        <v-col
-          cols="3"
-          class="me-3"
-        >
+        <v-col cols="3">
           <v-text-field
             label="Ano"
             type="number"
@@ -41,11 +39,9 @@ onMounted(() => {
             @keydown.enter.prevent="actions.onClickBuscar"
           ></v-text-field>
         </v-col>
-
         <v-col
           cols="1"
           class="btnPesquisar"
-          style="margin-left: -16px"
         >
           <v-btn
             color="primary"
@@ -60,7 +56,7 @@ onMounted(() => {
 
       <v-data-table
         id="tabelaUsoConsumo"
-        class="mt-4 pt-5"
+        class="mt-4"
         :items="state.dadosRelatorio"
         :headers="state.headers"
         height="360px"
@@ -98,12 +94,8 @@ onMounted(() => {
 
 <style>
 #tabelaUsoConsumo .v-data-table-footer {
-  max-height: 2px;
+  max-height: 10px;
   padding-top: 20px;
-}
-
-#tabelaUsoConsumo .v-data-table-footer__pagination {
-  padding-right: 50px;
 }
 
 .cor-zebrada-1 {
@@ -113,6 +105,5 @@ onMounted(() => {
 .btnPesquisar {
   display: flex;
   align-items: center;
-  margin-left: 16px;
 }
 </style>

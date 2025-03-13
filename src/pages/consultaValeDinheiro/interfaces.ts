@@ -27,6 +27,7 @@ export interface iResponseVales {
     MES: number;
     ANO: number;
     TIPO: string;
+    FORMA_PAGAMENTO: string;
     V_NOME_FUNCIONARIO: string;
     NOME_COMP: string;
     PAGADOR: string;
