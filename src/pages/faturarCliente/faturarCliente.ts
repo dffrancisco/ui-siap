@@ -231,7 +231,7 @@ export const actions = ({
                 }
 
                 orcamento = {
-                    ISDEVOLUCAO: true,
+                    IS_DEVOLUCAO: true,
                     NUM_DEVOLUCAO: devolucaoDetalhada?.ID_DEVOLUCAO,
                     VALOR: devolucaoDetalhada?.VALOR,
                 };
@@ -313,7 +313,7 @@ export const actions = ({
 
                         selectedOrcamento = {
                             ...selectedOrcamento,
-                            ISDEVOLUCAO: false
+                            IS_DEVOLUCAO: false
                         };
 
                         state.orcamentosLocalizados.push(selectedOrcamento);
@@ -355,9 +355,9 @@ export const actions = ({
             return;
         }
 
-        const { NUM_ORCAMENTO, DATA, ISDEVOLUCAO, NUM_DEVOLUCAO } = orcamento;
+        const { NUM_ORCAMENTO, DATA, IS_DEVOLUCAO, NUM_DEVOLUCAO } = orcamento;
 
-        if (ISDEVOLUCAO) {
+        if (IS_DEVOLUCAO) {
             state.orcamentosLocalizados = state.orcamentosLocalizados.filter(
                 orc => !(orc.NUM_DEVOLUCAO === NUM_DEVOLUCAO)
             );
@@ -441,7 +441,7 @@ export const computeds = ({
         }
 
         state.orcamentosLocalizados.forEach(orcamento => {
-            if (orcamento.ISDEVOLUCAO) {
+            if (orcamento.IS_DEVOLUCAO) {
                 total = Number((total - orcamento.VALOR).toFixed(2));
             } else {
                 total = Number((total + orcamento.VALOR).toFixed(2));

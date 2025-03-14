@@ -54,7 +54,7 @@ export interface iOrcamentosLocalizados {
     VALOR: number,
     NUM_DEVOLUCAO?: number,
     DEVOLUCAO_DETALHADA?: iDevolucaoDetalhada[],
-    ISDEVOLUCAO?: boolean
+    IS_DEVOLUCAO?: boolean
 }
 
 export interface iGetOrcamentosClienteFaturadoResponse extends iOrcamentosClienteFaturado { }
