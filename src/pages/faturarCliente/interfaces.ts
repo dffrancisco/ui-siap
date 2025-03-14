@@ -44,7 +44,7 @@ export interface iDevolucaoFiltered {
     CREDITO: 'N' | 'S',
 }
 export interface iOrcamentosLocalizados extends iOrcamentosClienteFaturado {
-    ISDEVOLUCAO?: boolean
+    IS_DEVOLUCAO?: boolean
 }
 
 export interface iGetOrcamentosClienteFaturadoResponse extends iOrcamentosClienteFaturado { }

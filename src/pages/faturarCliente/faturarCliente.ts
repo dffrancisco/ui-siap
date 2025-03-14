@@ -219,7 +219,7 @@ export const actions = ({
             if (orcamento) {
                 orcamento = {
                     ...orcamento,
-                    ISDEVOLUCAO: true
+                    IS_DEVOLUCAO: true
                 };
                 state.orcamentosLocalizados.push(orcamento);
             } else {
@@ -298,7 +298,7 @@ export const actions = ({
 
                         selectedOrcamento = {
                             ...selectedOrcamento,
-                            ISDEVOLUCAO: false
+                            IS_DEVOLUCAO: false
                         };
 
                         state.orcamentosLocalizados.push(selectedOrcamento);
@@ -418,7 +418,7 @@ export const computeds = ({
         }
 
         state.orcamentosLocalizados.forEach(orcamento => {
-            if (orcamento.ISDEVOLUCAO) {
+            if (orcamento.IS_DEVOLUCAO) {
                 total = Number((total - orcamento.DEVOLUCAO).toFixed(2));
             } else {
                 total = Number((total + orcamento.VALOR).toFixed(2));
