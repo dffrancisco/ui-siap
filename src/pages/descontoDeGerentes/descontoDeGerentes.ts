@@ -58,17 +58,14 @@ export const actions = {
     async carregaegarDados() {
         try {
             state.loading = true;
-            const [usuarios, usuariosComPermissao] = await Promise.all([
-                actions.getUsuariosSempermissao(),
-                actions.getUsuariosComPermissao(),
-            ]);
+            const data = await actions.getUsuarios();
 
-            if (usuarios) {
-                state.gridUsuariosSemPermissao.querySourceAdd(usuarios);
+            if (data?.usuarios) {
+                state.gridUsuariosSemPermissao.querySourceAdd(data.usuarios);
             }
 
-            if (usuariosComPermissao) {
-                state.gridUsuariosComPermissao.querySourceAdd(usuariosComPermissao);
+            if (data?.usuariosComPermissao) {
+                state.gridUsuariosComPermissao.querySourceAdd(data.usuariosComPermissao);
             }
         } catch (error) {
             console.error("Erro ao carregar dados:", error);
@@ -77,14 +74,15 @@ export const actions = {
         }
     },
 
+
     async init() {
         await actions.grids();
 
     },
 
-    async getUsuariosSempermissao() {
+    async getUsuarios() {
         try {
-            const data = await serviceDescontoDeGerentes.getUsuarios();
+            const data = await serviceDescontoDeGerentes.getInicial();
             return data;
         } catch (error) {
             Swal.fire({
@@ -94,17 +92,7 @@ export const actions = {
         }
     },
 
-    async getUsuariosComPermissao() {
-        try {
-            const data = await serviceDescontoDeGerentes.getUsuariosComPermissao();
-            return data;
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao carregar os usuários com permissão!",
-            });
-        }
-    },
+
 
     async darPermissao() {
         try {

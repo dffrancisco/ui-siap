@@ -13,19 +13,13 @@ import {
 
 const caminho = 'siap/descontoDeGerentes';
 
-const getUsuarios = async (): Promise<iGetUsuariosResponse> => {
+const getInicial = async (): Promise<iGetUsuariosResponse> => {
     let { data } = await axios.post(caminho, {
-        call: "getUsuarios"
+        call: "getInicial"
     });
     return data;
 };
 
-const getUsuariosComPermissao = async (): Promise<iGetUsuariosComPermissaoResponse> => {
-    let { data } = await axios.post(caminho, {
-        call: "getUsuariosComPermissao"
-    });
-    return data;
-};
 
 const darPermissao = async (param: iParamDarPermissao): Promise<iDarPermissaoResponse> => {
     let { data } = await axios.post(caminho, {
@@ -54,8 +48,7 @@ const removerPermissao = async (param: iParamRemoverPermissao): Promise<iRemover
 
 
 export default {
-    getUsuarios,
-    getUsuariosComPermissao,
+    getInicial,
     darPermissao,
     alterarSenha,
     removerPermissao

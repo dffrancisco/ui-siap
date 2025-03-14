@@ -12,6 +12,11 @@ export interface iHistoricoSenha {
     HISTORICO?: string;
 }
 
+export interface iGetUsuariosResponse {
+    usuarios?: iUsuario[];
+    usuariosComPermissao?: iUsuario[];
+}
+
 export interface iUsuarioDesconto {
     COD_FUNCIONARIO?: number;
     SENHA?: string;
