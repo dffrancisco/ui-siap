@@ -8,6 +8,7 @@ export interface iFuncionarios {
     LOGIN: string;
     CPF: string;
     ID_CARGO: number;
+    NOME_COMP?: string;
     COD_FUNCIONARIO: number;
 }
 

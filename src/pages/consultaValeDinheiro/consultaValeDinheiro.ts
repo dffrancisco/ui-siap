@@ -4,10 +4,13 @@ import { reactive } from "vue";
 import serviceConsultaValeDinheiro from './services/consultaValeDinheiro.service';
 import { iFuncionarios, iLojas, iResponseVales } from "./interfaces";
 import utils, { dataBrasil, formatValor, iColumnPrint } from '@/ts/utils';
+import { mesesToSelect } from "../../constants/constants";
 
 export const state = reactive({
     loading: false,
     ano: new Date().getFullYear(),
+
+    selectedFuncionario: <iFuncionarios>{},
     dadosRelatorio: <iResponseVales[]>[],
     funcionarios: <iFuncionarios[]>[],
     codFuncionario: <number[]>[],
@@ -17,8 +20,18 @@ export const state = reactive({
         { title: "Valor", key: "VALOR", sortable: true, align: "left", value: (item: iResponseVales) => formatValor(item.VALOR), width: "20%" },
         { title: "Data", key: "DATA", sortable: true, align: "left", value: (item: iResponseVales) => dataBrasil(item.DATA), width: "20%" },
         { title: "Ano", key: "ANO", sortable: true, align: "left", width: "15%" },
-        { title: "Mês", key: "MES", sortable: true, align: "left", width: "15%" },
-        { title: "Forma de Pagamento", key: "FORMA_PAGAMENTO", sortable: true, align: "left", width: "20%" },
+        {
+            title: "Mês",
+            key: "MES",
+            sortable: true,
+            align: "left",
+            value: (item: iResponseVales) => {
+                const mesEncontrado = mesesToSelect.find(mes => mes.value === item.MES);
+                return mesEncontrado ? mesEncontrado.title : "";
+            },
+            width: "15%"
+        },
+        { title: "Forma de Pagamento", key: "FORMA_PAGAMENTO", sortable: true, align: "left", width: "20%", value: (item: iResponseVales) => item.FORMA_PAGAMENTO === "D" ? "Dinheiro" : "Pix", },
     ],
 });
 

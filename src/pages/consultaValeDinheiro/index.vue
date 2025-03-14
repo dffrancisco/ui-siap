@@ -15,18 +15,34 @@ onMounted(() => {
       :max-height="600"
     >
       <v-row>
-        <v-col cols="4">
-          <v-autocomplete
-            clearable
-            label="Funcionário"
+        <v-col cols="6">
+          <v-select
+            density="compact"
+            variant="outlined"
             multiple
-            v-model="state.codFuncionario"
+            name="Selecionar_usuario"
+            id="Selecionar_usuario"
             :items="state.funcionarios"
             item-title="NOME_COMP"
             item-value="COD_FUNCIONARIO"
-            :rules="[(v) => (v && v.length <= 3) || 'Você só pode selecionar até 3 registros']"
-            class="autocomplete-limit"
-          ></v-autocomplete>
+            v-model="state.codFuncionario"
+          >
+            <template v-slot:selection="{ item, index }">
+              <v-chip
+                v-if="index === 0"
+                style="font-size: 14px; padding: 10px"
+              >
+                <span>{{ item?.raw?.NOME_COMP || item.NOME_COMP }}</span>
+              </v-chip>
+
+              <span
+                v-if="index === 1 && state.codFuncionario.length > 1"
+                class="text-grey text-caption align-self-center"
+              >
+                (+{{ state.codFuncionario.length - 1 }})
+              </span>
+            </template>
+          </v-select>
         </v-col>
 
         <v-col cols="3">
