@@ -17,16 +17,34 @@ onMounted(() => {
       :max-height="600"
     >
       <v-row>
-        <v-col cols="6">
-          <v-autocomplete
-            :clearable="true"
-            label="Funcionário"
+        <v-col cols="7">
+          <v-select
+            density="compact"
+            variant="outlined"
             multiple
-            v-model="state.selectedFuncionario"
+            name="Selecionar_usuario"
+            id="Selecionar_usuario"
             :items="state.funcionarios"
             item-title="NOME_COMP"
             item-value="COD_FUNCIONARIO"
-          ></v-autocomplete>
+            v-model="state.selectedFuncionario"
+          >
+            <template v-slot:selection="{ item, index }">
+              <v-chip
+                v-if="index === 0"
+                style="font-size: 14px; padding: 10px"
+              >
+                <span>{{ item?.raw?.NOME_COMP || item.NOME_COMP }}</span>
+              </v-chip>
+
+              <span
+                v-if="index === 1 && state.selectedFuncionario.length > 1"
+                class="text-grey text-caption align-self-center"
+              >
+                (+{{ state.selectedFuncionario.length - 1 }})
+              </span>
+            </template>
+          </v-select>
         </v-col>
         <v-col cols="3">
           <v-text-field
@@ -72,7 +90,7 @@ onMounted(() => {
               <v-btn
                 variant="text"
                 size="small"
-                :icon="isGroupOpen ? 'mdi-plus' : 'mdi-plus'"
+                :icon="isGroupOpen ? 'mdi-arrow-right-bottom' : 'mdi-arrow-right-bottom'"
                 @click="toggleGroup(item)"
               ></v-btn>
 

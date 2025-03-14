@@ -205,7 +205,7 @@ onMounted(async () => {
             label="Desconto"
             id="DESCONTO"
             readonly
-            type="number"
+            type="text"
             v-model="state.dbDetalheOrçamento.DESCONTO"
             :clearable="false"
           ></v-text-field>
@@ -216,8 +216,9 @@ onMounted(async () => {
             label="Desc. Vendedor"
             id="VALOR_DESCONTO"
             readonly
-            type="number"
-            v-model="state.dbDetalheOrçamento.VALOR_DESCONTO"
+            type="text"
+            v-model="state.dbDetalheOrçamento.VALOR"
+            :value="utils.formatValor(state.dbDetalheOrçamento.VALOR_DESCONTO)"
             :clearable="false"
           ></v-text-field>
         </v-col>
@@ -227,8 +228,9 @@ onMounted(async () => {
             label="Valor"
             readonly
             id="VALOR"
-            type="number"
+            type="text"
             v-model="state.dbDetalheOrçamento.VALOR"
+            :value="utils.formatValor(state.dbDetalheOrçamento.VALOR)"
             :clearable="false"
           ></v-text-field>
         </v-col>
