@@ -77,7 +77,6 @@ export const actions = {
 
     async init() {
         await actions.grids();
-
     },
 
     async getUsuarios() {
@@ -97,7 +96,10 @@ export const actions = {
     async darPermissao() {
         try {
             if (state.senhaTemp.length < 6) {
-                Swal.fire("Aviso", "Senha deve ter no mínimo 6 caracteres!", "warning");
+                Swal.fire({
+                    icon: "warning",
+                    text: "Senha deve ter no mínimo 6 caracteres!",
+                });
                 return;
             }
 
@@ -129,7 +131,10 @@ export const actions = {
     async alterarSenha() {
         try {
             if (state.senhaTemp !== state.senhaConfirmacao) {
-                Swal.fire("As senhas não coincidem!", "warning");
+                Swal.fire({
+                    icon: "warning",
+                    text: "As senhas não coincidem!",
+                });
                 return;
             }
             state.loading = true;
@@ -144,7 +149,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "warning",
-                text: "Senha atual errada, informe a senha atual correta!",
+                text: "Informe a senha atual correta!",
             });
         } finally {
             state.loading = false;
@@ -164,7 +169,7 @@ export const actions = {
             } catch (error) {
                 Swal.fire({
                     icon: "warning",
-                    text: "Senha atual errada, informe a senha atual correta!",
+                    text: "Informe a senha atual correta!",
                 });
             } finally {
                 state.loading = false;

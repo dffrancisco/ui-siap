@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, defineProps } from "vue";
+import { reactive, defineProps, onMounted } from "vue";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 import serviceDescontoDeGerentes from "../services/descontoDeGerentes.service";
@@ -15,6 +15,13 @@ const state = reactive({
   confirmarSenha: "",
   loading: false,
 });
+
+const mudarFoco = (proximoCampo: string) => {
+  const campo = document.querySelector(`input[name="${proximoCampo}"]`);
+  if (campo) {
+    (campo as HTMLInputElement).focus();
+  }
+};
 
 const actions = {
   async validarCampos() {
@@ -78,25 +85,29 @@ const actions = {
     <v-card-text>
       <v-text-field
         v-model="state.senhaAtual"
+        name="senhaAtual"
         label="Senha atual:"
         type="password"
         class="mb-2"
         :disabled="state.loading"
-        @keydown.enter="state.novaSenha"
+        @keydown.enter="mudarFoco('novaSenha')"
       />
       <v-text-field
         v-model="state.novaSenha"
+        name="novaSenha"
         label="Nova senha:"
         type="password"
         class="mb-2"
         :disabled="state.loading"
-        @keydown.enter="state.confirmarSenha"
+        @keydown.enter="mudarFoco('confirmarSenha')"
       />
       <v-text-field
         v-model="state.confirmarSenha"
+        name="confirmarSenha"
         label="Confirmar nova senha:"
         type="password"
         :disabled="state.loading"
+        @keydown.enter="actions.confirmarAlteracao"
       />
     </v-card-text>
     <v-card-actions class="d-flex justify-end">

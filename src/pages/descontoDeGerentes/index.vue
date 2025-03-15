@@ -117,9 +117,8 @@ function onPermissaoConcedida() {
           size="64"
         ></v-progress-circular>
       </v-overlay>
-
-      <div id="pnCodigoTela">descontoDeGerentes</div>
     </v-card>
+    <div id="pnCodigoTela">descontoDeGerentes</div>
 
     <v-dialog
       v-model="state.modalAlterarSenha"

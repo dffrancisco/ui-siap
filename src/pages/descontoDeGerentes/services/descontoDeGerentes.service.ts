@@ -2,7 +2,6 @@ import axios from "axios";
 
 import {
     iGetUsuariosResponse,
-    iGetUsuariosComPermissaoResponse,
     iParamDarPermissao,
     iDarPermissaoResponse,
     iParamAlterarSenha,

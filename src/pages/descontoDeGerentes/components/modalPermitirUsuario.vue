@@ -5,16 +5,20 @@ import utils from "@/ts/utils";
 import descontoDeGerentesService from "../services/descontoDeGerentes.service";
 import { iParamDarPermissao, iUsuario } from "../interfaces";
 
-const props = defineProps<{
-  usuarioSelecionado: iUsuario;
-}>();
-
+const props = defineProps<{ usuarioSelecionado: iUsuario }>();
 const emit = defineEmits(["fecharModalPermitir", "senhaalterada"]);
 
 const state = reactive({
   senha: "",
   confirmarSenha: "",
 });
+
+const mudarFoco = (proximoCampo: string) => {
+  const campo = document.querySelector(`input[name="${proximoCampo}"]`);
+  if (campo) {
+    (campo as HTMLInputElement).focus();
+  }
+};
 
 const actions = {
   async permitirUsuario() {
@@ -38,12 +42,14 @@ const actions = {
         SENHA: utils.base64_encode(state.senha),
       };
       await descontoDeGerentesService.darPermissao(params);
+
       emit("senhaalterada");
       actions.fecharModalPermitir();
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Erro ao conceder permissão:", error);
       Swal.fire({
-        icon: "warning",
-        text: "Senha atual errada, informe a senha atual correta!",
+        icon: "error",
+        text: error?.response?.data?.msg || "Erro ao processar a solicitação.",
       });
     }
   },
@@ -59,21 +65,24 @@ const actions = {
     <v-card-title class="text-h5">Permitir Usuário</v-card-title>
     <v-card-text>
       <v-text-field
-        :value="props.usuarioSelecionado.NOME_COMP"
+        v-model="props.usuarioSelecionado.NOME_COMP"
         class="mb-2"
+        readonly
       />
       <v-text-field
         v-model="state.senha"
+        name="senha"
         label="Senha:"
         type="password"
         class="mb-2"
-        @keydown.enter="state.confirmarSenha"
+        @keydown.enter="mudarFoco('confirmarSenha')"
       />
       <v-text-field
         v-model="state.confirmarSenha"
+        name="confirmarSenha"
         label="Confirmar senha:"
         type="password"
-        ref="confirmarSenhaInput"
+        @keydown.enter="actions.permitirUsuario"
       />
     </v-card-text>
     <v-card-actions class="d-flex justify-end">
