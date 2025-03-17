@@ -9,6 +9,7 @@ import {
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
+
 import { configVMoney } from "../../../constants/constants";
 
 const props = defineProps<{
@@ -142,6 +143,10 @@ const actions = {
     try {
       state.loading = true;
 
+      if (param.TIPO_FRETE == 9) {
+        param.ID_TRANSPORTADORA = null;
+      }
+
       await serviceDevolucaoFornecedor.insertTransportadoraDevolucao(param);
 
       emits("selecionarTransportadoraDevolucao", param);
@@ -191,7 +196,10 @@ const actions = {
             class="ss obr"
             name="ID_TRANSPORTADORA"
             id="ID_TRANSPORTADORA"
+            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE == 9"
           >
+            <option value="">Nenhuma transportadora</option>
+            >
             <option
               v-for="transportadora in state.listaTransportadoras"
               :value="transportadora.ID_TRANSPORTADORA"
