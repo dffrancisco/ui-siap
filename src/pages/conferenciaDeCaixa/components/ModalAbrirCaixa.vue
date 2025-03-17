@@ -60,7 +60,7 @@ onMounted(async () => {
 <template>
   <v-card
     class="modal-container pa-4"
-    :max-width="800"
+    :max-width="600"
   >
     <v-card-title>Selecione o funcionário que deseja abrir o caixa</v-card-title>
     <div>
@@ -146,7 +146,7 @@ onMounted(async () => {
   justify-content: flex-end;
   gap: 8px;
   padding-top: 20px;
-  margin-right: 10px;
+  margin-right: 45px;
 }
 
 .btnCancelar {
@@ -160,7 +160,7 @@ onMounted(async () => {
   display: flex;
   border-radius: 8px !important;
   margin-bottom: 150px;
-  margin-left: 25%;
+  margin-left: 15%;
   height: 220px;
   border: 2px solid rgba(0, 0, 0, 0.261);
 }

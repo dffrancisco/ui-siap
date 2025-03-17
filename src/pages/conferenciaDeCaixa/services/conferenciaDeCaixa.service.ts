@@ -1,10 +1,11 @@
 import axios from "axios";
-import { iCaixas, iParamFecharCaixa, iParamsAbrirCaixa, iResponseDadosIniciais } from "../interfaces";
+import { iCaixas, iParamFecharCaixa, iParamsAbrirCaixa, iParamSangria, iResponseDadosIniciais, iSangrias } from "../interfaces";
 
 type iGetDadosIniciaisConfCaixa = (param: string) => Promise<iResponseDadosIniciais>
 type iAbrirMDC = (param: string) => Promise<string>
 type iAbrirCaixa = (param: iParamsAbrirCaixa) => Promise<iCaixas[]>
 type iFecharCaixa = (param: iParamFecharCaixa) => Promise<iCaixas[]>
+type iAdicionarSangria = (param: iParamSangria) => Promise<iSangrias[]>
 
 const caminho = "siap/conferenciaCaixa";
 
@@ -40,10 +41,18 @@ const fecharCaixa: iFecharCaixa = async (param) => {
     return data;
 }
 
+const efetuarSangria: iAdicionarSangria = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "efetuarSangria",
+        param
+    })
+    return data;
+}
 
 export default {
     getDadosIniciaisConfCaixa,
     abrirMDC,
     abrirCaixa,
-    fecharCaixa
+    fecharCaixa,
+    efetuarSangria
 };

@@ -23,7 +23,7 @@ export interface iCaixas {
     DINHEIRO: number;
     HORA_ABERTURA: string;
     HORA_FECHAMENTO: string;
-    ID_ABERTURA_CAIXA: string;
+    ID_ABERTURA_CAIXA: number;
     LOGIN: string;
     OBS: string;
     SANGRIA: number;
@@ -103,4 +103,10 @@ export interface iParamsAbrirCaixa {
 
 export interface iParamFecharCaixa {
     ID_ABERTURA_CAIXA: number;
+}
+
+export interface iParamSangria {
+    loginCaixa: string;
+    idAberturaCaixa: number;
+    valor: number;
 }

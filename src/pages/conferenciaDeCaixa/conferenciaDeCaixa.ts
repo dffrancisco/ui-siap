@@ -1,7 +1,7 @@
 import utils from './../../ts/utils';
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iSangrias, iTodasAsCompras, iTotalizadores } from "./interfaces";
+import { iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iParamSangria, iSangrias, iTodasAsCompras, iTotalizadores } from "./interfaces";
 import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -14,12 +14,14 @@ export const state = reactive({
     mdcAberto: true,
     msgAberturaMDC: '',
     caixas: <iCaixas[]>[],
+    caixaSelected: <iCaixas>{},
     funcionarios: <iFuncionarios[]>[],
     todasAsCompras: <iTodasAsCompras[]>[],
     totalizadores: <iTotalizadores[]>[],
     sangrias: <iSangrias[]>[],
     devolucoes: <iDevolucoes[]>[],
     modalAbrirCaixaOpened: false,
+    modalSangriaOpened: false,
     pagamentoSelecionado: null,
     headersLancamentos: [
         { title: "#", key: "INDEX", width: "50px" },
@@ -219,6 +221,49 @@ export const actions = {
     obterDescricaoPagamento(tipoPagamento: string) {
         const pagamento = state.totalizadores.find(p => p.TIPO_PAGAMENTO === tipoPagamento);
         return pagamento ? pagamento.DESCRICAO_PAGAMENTO : "Desconhecido";
+    },
+
+    modalSangria(caixa) {
+        state.caixaSelected = caixa
+
+        // xAuthManager("Autorizar sangria?", async () => {
+        state.modalSangriaOpened = true;
+        // });
+    },
+
+    async efetuarSangria(valorSangria: any, caixaSelecionado: iCaixas) {
+        try {
+            state.loading = true;
+
+            // console.log(valorSangria);
+
+            // return
+
+            let param: iParamSangria = {
+                loginCaixa: caixaSelecionado.LOGIN,
+                idAberturaCaixa: caixaSelecionado.ID_ABERTURA_CAIXA,
+                valor: parseFloat(valorSangria.replace(/\./g, "").replace(",", "."))
+            };
+
+            let sangrias = await serviceConferenciaDeCaixa.efetuarSangria(param);
+            state.sangrias = sangrias;
+
+            Swal.fire({
+                icon: "success",
+                title: "Sangria feita com sucesso.",
+                showConfirmButton: false,
+                timer: 1000,
+            });
+            state.modalSangriaOpened = false;
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao fazer sangria"
+            });
+        } finally {
+            state.loading = false;
+        }
     }
 }
 

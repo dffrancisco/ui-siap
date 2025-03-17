@@ -2,6 +2,7 @@
 import { state, options, actions, funcionariosDisponiveis, abaSelecionada } from "./conferenciaDeCaixa";
 import { onMounted } from "vue";
 import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
+import ModalSangria from "./components/ModalSangria.vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import Caixas from "./components/Caixas.vue";
 import Lancamentos from "./components/Lancamentos.vue";
@@ -99,6 +100,7 @@ onMounted(() => {
             <Caixas
               :caixa="caixa"
               @fechar-caixa="actions.fecharCaixa"
+              @salvar-sangria="actions.modalSangria"
             />
           </v-col>
 
@@ -152,6 +154,19 @@ onMounted(() => {
         :modalOpened="state.modalAbrirCaixaOpened"
         @closeModalAbrirCaixa="state.modalAbrirCaixaOpened = false"
         @dadosAbrirCaixa.sync="actions.abrirCaixa"
+      />
+    </v-dialog>
+
+    <!-- Modal Sangria -->
+    <v-dialog
+      v-model="state.modalSangriaOpened"
+      max-width="800"
+    >
+      <ModalSangria
+        :modalOpened="state.modalSangriaOpened"
+        :caixaSelecionado="state.caixaSelected"
+        @efetuarSangria="actions.efetuarSangria"
+        @closeModalSangria="state.modalSangriaOpened = false"
       />
     </v-dialog>
 

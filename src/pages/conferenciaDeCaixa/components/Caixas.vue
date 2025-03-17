@@ -18,7 +18,7 @@ const props = defineProps<{
   };
 }>();
 
-const emits = defineEmits(["fechar-caixa"]);
+const emits = defineEmits(["fechar-caixa", "salvar-sangria"]);
 
 const getFotoFuncionarioURL = (cpf: string) => {
   if (!cpf) {
@@ -132,6 +132,7 @@ const botoesVisiveis = computed(() => {
         color="primary"
         class="mx-1 btn-bordered"
         title="Sangria"
+        @click="emits('salvar-sangria', caixa)"
       >
         <v-icon :style="{ fontSize: '25px' }" />
       </v-btn>
