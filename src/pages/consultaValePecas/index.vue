@@ -18,7 +18,7 @@ onMounted(() => {
     >
       <v-row>
         <v-col cols="7">
-          <v-select
+          <v-autocomplete
             density="compact"
             variant="outlined"
             multiple
@@ -44,7 +44,7 @@ onMounted(() => {
                 (+{{ state.selectedFuncionario.length - 1 }})
               </span>
             </template>
-          </v-select>
+          </v-autocomplete>
         </v-col>
         <v-col cols="3">
           <v-text-field

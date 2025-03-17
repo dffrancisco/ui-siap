@@ -207,6 +207,7 @@ onMounted(async () => {
             readonly
             type="text"
             v-model="state.dbDetalheOrçamento.DESCONTO"
+            :value="utils.formatValor(state.dbDetalheOrçamento.DESCONTO)"
             :clearable="false"
           ></v-text-field>
         </v-col>
