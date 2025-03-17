@@ -64,7 +64,7 @@ const actions = {
       emit("senhaalterada");
       actions.fecharModalAlterar();
     } catch (error: any) {
-      const mensagem = error.response?.data?.message || "Falha na alteração da senha";
+      const mensagem = error.response?.data?.message || " Informe a senha atual correta";
       Swal.fire({
         icon: "error",
         text: mensagem,
@@ -89,6 +89,7 @@ const actions = {
         label="Senha atual:"
         type="password"
         class="mb-2"
+        maxlength="6"
         :disabled="state.loading"
         @keydown.enter="mudarFoco('novaSenha')"
       />
@@ -97,6 +98,7 @@ const actions = {
         name="novaSenha"
         label="Nova senha:"
         type="password"
+        maxlength="6"
         class="mb-2"
         :disabled="state.loading"
         @keydown.enter="mudarFoco('confirmarSenha')"
@@ -106,6 +108,7 @@ const actions = {
         name="confirmarSenha"
         label="Confirmar nova senha:"
         type="password"
+        maxlength="6"
         :disabled="state.loading"
         @keydown.enter="actions.confirmarAlteracao"
       />
