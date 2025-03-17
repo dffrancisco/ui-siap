@@ -16,7 +16,7 @@ export const state = reactive({
     caixas: <iCaixas[]>[],
     funcionarios: <iFuncionarios[]>[],
     todasAsCompras: <iTodasAsCompras[]>[],
-    valoresRecebidos: <iTotalizadores[]>[],
+    totalizadores: <iTotalizadores[]>[],
     sangrias: <iSangrias[]>[],
     devolucoes: <iDevolucoes[]>[],
     modalAbrirCaixaOpened: false,
@@ -67,7 +67,7 @@ export const actions = {
                 state.funcionarios = data.funcionarios;
                 state.caixas = data.caixas;
                 state.todasAsCompras = data.comprasAgrupadas;
-                state.valoresRecebidos = data.totalizadores;
+                state.totalizadores = data.totalizadores;
                 state.sangrias = data.sangrias;
                 state.devolucoes = data.devolucoes;
             }
@@ -87,7 +87,7 @@ export const actions = {
         state.funcionarios = [];
         state.caixas = [];
         state.todasAsCompras = [];
-        state.valoresRecebidos = [];
+        state.totalizadores = [];
         state.sangrias = [];
         state.devolucoes = [];
     },
@@ -227,7 +227,7 @@ export const actions = {
     },
 
     obterDescricaoPagamento(tipoPagamento: string) {
-        const pagamento = state.valoresRecebidos.find(p => p.TIPO_PAGAMENTO === tipoPagamento);
+        const pagamento = state.totalizadores.find(p => p.TIPO_PAGAMENTO === tipoPagamento);
         return pagamento ? pagamento.DESCRICAO_PAGAMENTO : "Desconhecido";
     }
 }
