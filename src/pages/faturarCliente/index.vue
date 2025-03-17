@@ -90,11 +90,11 @@ onMounted(async () => {
                         class="text-body-1 font-weight-bold"
                         style="color: #f87171"
                       >
-                        -{{ utils.formatValor(orcamento.DEVOLUCAO) }}
+                        -{{ utils.formatValor(orcamento.VALOR) }}
                       </span>
                     </div>
                     <v-icon
-                      @click="actions.excluirOrcLocalizado(orcamento)"
+                      @click="actions.excluirOrcLocalizado(false, orcamento)"
                       title="Excluir orçamento"
                       >mdi-delete</v-icon
                     >

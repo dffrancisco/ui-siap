@@ -25,8 +25,13 @@ export interface iOrcamentosClienteFaturado {
     DATA: string,
     DEVOLUCAO: number,
     VALOR: number,
-    NUM_DEVOLUCAO: number,
+    DEVOLUCAO_DETALHADA?: iDevolucaoDetalhada[],
     MONTAGEM: number,
+}
+
+export interface iDevolucaoDetalhada {
+    ID_DEVOLUCAO: number,
+    VALOR: number,
 }
 
 export interface iCreditoCliente {
@@ -43,7 +48,13 @@ export interface iDevolucaoFiltered {
     VALOR: number,
     CREDITO: 'N' | 'S',
 }
-export interface iOrcamentosLocalizados extends iOrcamentosClienteFaturado {
+
+export interface iOrcamentosLocalizados {
+    NUM_ORCAMENTO?: number,
+    DATA?: string,
+    VALOR: number,
+    NUM_DEVOLUCAO?: number,
+    DEVOLUCAO_DETALHADA?: iDevolucaoDetalhada[],
     IS_DEVOLUCAO?: boolean
 }
 

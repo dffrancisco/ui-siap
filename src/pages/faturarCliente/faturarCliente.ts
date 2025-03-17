@@ -214,19 +214,34 @@ export const actions = ({
 
         if (isDevolucao) {
             let num_devolucao = state.locValor.slice(3);
-            let orcamento: iOrcamentosLocalizados = state.dbOrcamentosClienteFaturado.find(
-                (orc) => orc.NUM_DEVOLUCAO == num_devolucao
+            let orcamento: iOrcamentosLocalizados = state.dbOrcamentosClienteFaturado.find((orc) =>
+                orc.DEVOLUCAO_DETALHADA?.some((dev) => dev.ID_DEVOLUCAO == num_devolucao)
             );
 
             if (orcamento) {
+                let devolucaoDetalhada = orcamento.DEVOLUCAO_DETALHADA.find((dev) => dev.ID_DEVOLUCAO == num_devolucao);
+
+                let devolucaoJaAdionada = state.orcamentosLocalizados.some((orc) => orc.NUM_DEVOLUCAO == devolucaoDetalhada?.ID_DEVOLUCAO);
+
+                if (devolucaoJaAdionada) {
+                    Swal.fire({
+                        icon: "warning",
+                        text: "Devolução já adicionada!"
+                    });
+                    state.locValor = null;
+                    return;
+                }
+
                 orcamento = {
-                    ...orcamento,
-                    IS_DEVOLUCAO: true
+                    IS_DEVOLUCAO: true,
+                    NUM_DEVOLUCAO: devolucaoDetalhada?.ID_DEVOLUCAO,
+                    VALOR: devolucaoDetalhada?.VALOR,
                 };
+
                 state.orcamentosLocalizados.push(orcamento);
             } else {
                 Swal.fire({
-                    icon: "error",
+                    icon: "warning",
                     text: "Orçamento de devolução não encontrado!"
                 });
             }
@@ -338,14 +353,22 @@ export const actions = ({
     },
 
 
-    excluirOrcLocalizado(orcamento?: iOrcamentosLocalizados) {
-        if (!orcamento.NUM_ORCAMENTO) {
+    excluirOrcLocalizado(deleteAll: boolean = true, orcamento?: iOrcamentosLocalizados) {
+        if (deleteAll) {
             state.gridPedido.source(state.dbOrcamentosClienteFaturado);
             state.orcamentosLocalizados = [];
             return;
         }
 
-        const { NUM_ORCAMENTO, DATA } = orcamento;
+        const { NUM_ORCAMENTO, DATA, IS_DEVOLUCAO, NUM_DEVOLUCAO } = orcamento;
+
+        if (IS_DEVOLUCAO) {
+            state.orcamentosLocalizados = state.orcamentosLocalizados.filter(
+                orc => !(orc.NUM_DEVOLUCAO === NUM_DEVOLUCAO)
+            );
+
+            return
+        }
 
         state.orcamentosLocalizados = state.orcamentosLocalizados.filter(
             orcLoc => !(orcLoc.NUM_ORCAMENTO === NUM_ORCAMENTO && orcLoc.DATA === DATA)
@@ -424,7 +447,7 @@ export const computeds = ({
 
         state.orcamentosLocalizados.forEach(orcamento => {
             if (orcamento.IS_DEVOLUCAO) {
-                total = Number((total - orcamento.DEVOLUCAO).toFixed(2));
+                total = Number((total - orcamento.VALOR).toFixed(2));
             } else {
                 total = Number((total + orcamento.VALOR).toFixed(2));
                 qtdOrcamentos++;
