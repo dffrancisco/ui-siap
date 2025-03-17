@@ -71,7 +71,7 @@ onMounted(async () => {
                 <div v-for="orcamento in state.orcamentosLocalizados">
                   <div class="d-flex ga-2">
                     <div
-                      v-if="!orcamento.ISDEVOLUCAO"
+                      v-if="!orcamento.IS_DEVOLUCAO"
                       class="d-flex justify-space-between flex-grow-1"
                     >
                       <span class="text-body-1">+{{ orcamento.NUM_ORCAMENTO }}</span>

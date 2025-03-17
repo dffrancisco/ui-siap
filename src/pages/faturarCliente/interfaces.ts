@@ -6,7 +6,7 @@ export interface iClienteFaturado {
     DIVIDIR_BOLETO: "S" | 'N',
     DESCONTO_MONTAGEM: "S" | 'N',
     DIA_VENCIMENTO_BOLETO: number,
-    TIPO_FATURAMENTO: "Q" | 'M',
+    TIPO_FATURAMENTO: "Q" | 'M' | 'D',
     ID_REGRA_FATURAMENTO: number
 }
 
@@ -44,7 +44,7 @@ export interface iDevolucaoFiltered {
     CREDITO: 'N' | 'S',
 }
 export interface iOrcamentosLocalizados extends iOrcamentosClienteFaturado {
-    ISDEVOLUCAO?: boolean
+    IS_DEVOLUCAO?: boolean
 }
 
 export interface iGetOrcamentosClienteFaturadoResponse extends iOrcamentosClienteFaturado { }

@@ -7,7 +7,7 @@ export interface iCliente {
     FATURADO: string;
     LIMITE_CREDITO: string;
     DIA_VENCIMENTO_BOLETO: number;
-    TIPO_FATURAMENTO: string;
+    TIPO_FATURAMENTO: 'Q' | 'M' | 'D' | "";
     DIVIDIR_BOLETO: string;
     DESCONTO_MONTAGEM: string;
 }

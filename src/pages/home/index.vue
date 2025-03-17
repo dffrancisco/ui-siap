@@ -343,12 +343,6 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
-              @click="router.push('/consultaCliente')"
-              >Consulta Cliente
-            </v-btn>
-
-            <v-btn
-              class="mr-4 mb-4"
               @click="router.push('/cliente')"
               >Cliente</v-btn
             >
@@ -356,13 +350,34 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/abrirCaixa')"
-              >Abrir Caixa</v-btn
+            >
+              Abrir Caixa
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/fornecedores')"
+            >
+              Fornecedores
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/gerirRamais')"
+              >Gerir Ramais</v-btn
             >
 
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/usoConsumo')"
-              >Uso Consumo</v-btn
+            >
+              Uso Consumo
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/relatorioDeConhecimento')"
+              >Relatorio de Conhecimento</v-btn
             >
 
             <v-btn
@@ -375,6 +390,24 @@ import login from "../login/login";
               class="mr-4 mb-4"
               @click="router.push('/consultaValePecas')"
               >Consulta Vale Peças</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/sociedade')"
+              >Sociedade</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/conhecimento')"
+              >Conhecimento</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/baixaManualBoleto')"
+              >Baixa de Boleto Manual</v-btn
             >
 
             <v-btn

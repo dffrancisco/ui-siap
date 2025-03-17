@@ -30,7 +30,3 @@ export interface iParamsAbrirCaixa {
     LOGIN: string;
     VALOR_TROCO: number;
 }
-
-export interface iParamFecharCaixa {
-    ID_ABERTURA_CAIXA: number;
-}

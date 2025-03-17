@@ -7,7 +7,7 @@ import serviceGerarXmlParaContabilidade from "./services/gerarXmlParaContabilida
 import { iParamGerarXml } from "./interfaces";
 
 const ano = moment().year();
-const mes = moment().month();
+const mes = moment().month() == 0 ? 12 : moment().month()
 
 export const meses = mesesToSelect;
 

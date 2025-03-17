@@ -1,9 +1,8 @@
-import utils, { formatValorUSA } from '@/ts/utils';
+import utils from '@/ts/utils';
 import Swal from "sweetalert2";
 import { computed, reactive } from "vue";
 import serviceAbrirCaixa from "./services/abrirCaixa.service";
-import { iCaixasAbertos, iFuncionarios, iMdc, iParamFecharCaixa, iParamsAbrirCaixa } from "./interfaces";
-import xAuthManager from "@/plugins/xAuthManager";
+import { iCaixasAbertos, iFuncionarios, iMdc, iParamsAbrirCaixa } from "./interfaces";
 
 export const state = reactive({
     loading: false,
@@ -104,47 +103,19 @@ export const actions = {
         return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
     },
 
-    async fecharCaixa(funcionario) {
+    async redirecionarParaConferencia() {
+        try {
+            state.loading = true;
 
-        let param: iParamFecharCaixa = {
-            ID_ABERTURA_CAIXA: funcionario.ID_ABERTURA_CAIXA
+            window.parent.location = 'http://192.168.100.60/siap+/?p=conferencia_caixa/conferencia_caixa';
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao redirecionar para conferência de caixa"
+            });
+        } finally {
+            state.loading = false
         }
 
-        xAuthManager("Autorizar fechamento de caixa?", async () => {
-            try {
-                state.loading = true;
-
-                let caixasAbertoAtualizados = await serviceAbrirCaixa.fecharCaixa(param);
-                state.caixasAbertos = caixasAbertoAtualizados;
-
-                // Reintroduzir o funcionário na lista de funcionários disponíveis
-                const funcionarioFechado = state.funcionarios.find(
-                    f => f.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO
-                );
-                if (!funcionarioFechado) {
-                    const retornarFuncionarioParaState = {
-                        COD_FUNCIONARIO: funcionario.COD_FUNCIONARIO,
-                        LOGIN: funcionario.LOGIN
-                    };
-                    state.funcionarios.push(retornarFuncionarioParaState);
-                }
-
-
-                Swal.fire({
-                    icon: "success",
-                    title: "Caixa fechado com sucesso.",
-                    showConfirmButton: false,
-                    timer: 1000,
-                });
-
-            } catch (error) {
-                Swal.fire({
-                    icon: "error",
-                    text: "Erro ao fechar o caixa"
-                });
-            } finally {
-                state.loading = false
-            }
-        });
     }
 }

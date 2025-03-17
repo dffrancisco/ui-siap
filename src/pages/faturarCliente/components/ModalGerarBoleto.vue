@@ -101,6 +101,7 @@ const actions = {
     let dataHoje = moment();
     let dataQuinzena = moment({ year: dataHoje.year(), month: dataHoje.month(), day: 15 });
     let dataMesAnterior = dataHoje.clone().subtract(1, "months");
+    let dataFaturamentoDiario = dataHoje.clone().add(3, "days").format("YYYY-MM-DD");
 
     // Definir o intervalo de dias para contagem do vencimento
     let dataComecoContagemVencimento = dataHoje.date() < 15 ? dataMesAnterior.endOf("months") : dataQuinzena;
@@ -122,6 +123,12 @@ const actions = {
       valorTotal <= FATURAMENTO_ATE_VALOR
         ? [FATURAMENTO_ATE_PRAZO_1, FATURAMENTO_ATE_PRAZO_2, FATURAMENTO_ATE_PRAZO_3]
         : [FATURAMENTO_ACIMA_DE_PRAZO_1, FATURAMENTO_ACIMA_DE_PRAZO_2, FATURAMENTO_ACIMA_DE_PRAZO_3];
+
+    // Se o cliente for faturamento diário
+    if (props.cliente.TIPO_FATURAMENTO == "D") {
+      actions.criarBoletoDiario(dataFaturamentoDiario, valorTotal);
+      return;
+    }
 
     // Se o cliente não dividir boletos
     if (props.cliente.DIVIDIR_BOLETO === "N") {
@@ -174,11 +181,16 @@ const actions = {
 
       let boleto = [{ DATA_VENCIMENTO: dataVencimento, VALOR: valor }];
       state.boletos = boleto;
-    } else {
-      const dataVencimento = dataComecoContagemVencimento.clone().add(prazo, "days").format("YYYY-MM-DD");
-      let boleto = [{ DATA_VENCIMENTO: dataVencimento, VALOR: valor }];
-      state.boletos = boleto;
+      return;
     }
+
+    const dataVencimento = dataComecoContagemVencimento.clone().add(prazo, "days").format("YYYY-MM-DD");
+    let boleto = [{ DATA_VENCIMENTO: dataVencimento, VALOR: valor }];
+    state.boletos = boleto;
+  },
+
+  async criarBoletoDiario(diaVencimento: string, valor: number) {
+    state.boletos = [{ DATA_VENCIMENTO: diaVencimento, VALOR: valor }];
   },
 
   async gerarBoletos() {
