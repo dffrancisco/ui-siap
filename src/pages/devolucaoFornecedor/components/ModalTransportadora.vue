@@ -8,8 +8,8 @@ import {
 } from "../interfaces";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
 import Swal from "sweetalert2";
+import { computed } from "vue";
 import utils from "@/ts/utils";
-
 import { configVMoney } from "../../../constants/constants";
 
 const props = defineProps<{
@@ -19,7 +19,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits(["closeModalTransportadoras", "selecionarTransportadoraDevolucao"]);
-
+const dasabilitado = computed(() => state.dbTransportadoraDevolucao.TIPO_FRETE == 9);
 watch(
   () => props.modalOpened,
   () => {
@@ -167,6 +167,10 @@ const actions = {
     try {
       state.loading = true;
 
+      if (param.TIPO_FRETE == 9) {
+        param.ID_TRANSPORTADORA = null;
+      }
+
       await serviceDevolucaoFornecedor.updateTransportadoraDevolucao(param);
 
       emits("selecionarTransportadoraDevolucao", param);
@@ -214,6 +218,7 @@ const actions = {
             class="obr ss"
             name="TIPO_FRETE"
             id="TIPO_FRETE"
+            :disabled="dasabilitado"
             v-model="state.dbTransportadoraDevolucao.TIPO_FRETE"
           >
             <option value="0">Por conta do emitente</option>
@@ -232,6 +237,7 @@ const actions = {
             type="text"
             name="ESPECIE"
             id="ESPECIE"
+            :disabled="dasabilitado"
             maxlength="6"
           />
         </v-col>
@@ -243,6 +249,7 @@ const actions = {
             type="number"
             name="QTD"
             id="QTD"
+            :disabled="dasabilitado"
             max="10000"
           />
         </v-col>
@@ -254,6 +261,7 @@ const actions = {
             type="text"
             name="AUTORIZACAO_CORREIOS"
             id="AUTORIZACAO_CORREIOS"
+            :disabled="dasabilitado"
             maxlength="20"
           />
         </v-col>
@@ -264,6 +272,7 @@ const actions = {
             type="text"
             name="PESO_BRUTO"
             id="PESO_BRUTO"
+            :disabled="dasabilitado"
             :model-modifiers="{ number: true }"
             v-model.lazy="state.dbTransportadoraDevolucao.PESO_BRUTO"
             v-money3="configVMoney"
@@ -277,6 +286,7 @@ const actions = {
             type="text"
             name="PESO_LIQUIDO"
             id="PESO_LIQUIDO"
+            :disabled="dasabilitado"
             :model-modifiers="{ number: true }"
             v-money3="configVMoney"
           />
@@ -293,6 +303,7 @@ const actions = {
             :model-modifiers="{ number: true }"
             v-model.lazy="state.dbTransportadoraDevolucao.VALOR_FRETE"
             v-money3="configVMoney"
+            :disabled="dasabilitado"
             @keydown.enter="actions.selecionarTransportadora"
           />
         </v-col>
