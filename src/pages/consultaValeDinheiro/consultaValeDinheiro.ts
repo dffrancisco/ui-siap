@@ -103,7 +103,14 @@ export const actions = {
             }
 
             state.loading = true;
-            const relatorioAjustado = actions.formatarDadosImpressao(state.dadosRelatorio);
+            const relatorioAjustado = actions.formatarDadosImpressao(state.dadosRelatorio).map(item => ({
+                ...item,
+                MES: (() => {
+                    const mesEncontrado = mesesToSelect.find(mes => mes.value === item.MES);
+                    return mesEncontrado ? mesEncontrado.title : "";
+                })(),
+                FORMA_PAGAMENTO: item.FORMA_PAGAMENTO === "D" ? "Dinheiro" : "Pix",
+            }));
 
             const columns: iColumnPrint[] = [
                 { key: "NOME_COMP", label: "Nome do Funcionario", align: "left" },
@@ -111,14 +118,14 @@ export const actions = {
                 { key: "DATA", label: "Data", align: "left" },
                 { key: "ANO", label: "Ano", align: "left" },
                 { key: "MES", label: "Mês", align: "left" },
-                { key: "FORMA_PAGAMENTO", label: "Forma de Pgt", align: "left" },
+                { key: "FORMA_PAGAMENTO", label: "Forma de Pagamento", align: "left" },
             ];
 
             const titulo = `
-                    <div style="text-align: center; margin-top: 10px;">
-                        <strong style="font-size: 16px;">Consulta Vale Dinheiro</strong>
-                    </div>
-                `;
+            <div style="text-align: center; margin-top: 10px;">
+            <strong style="font-size: 16px;">Consulta Vale Dinheiro</strong>
+            </div>
+            `;
 
             await utils.printComCabecalho(columns, relatorioAjustado, titulo);
         } catch (error) {
