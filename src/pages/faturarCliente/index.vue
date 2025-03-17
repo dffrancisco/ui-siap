@@ -197,6 +197,8 @@ onMounted(async () => {
         :cliente="state.dbClienteFaturado"
         :dataLimite="state.dataLimite"
         :regrasFaturamentoGeral="state.regrasFaturamentoGeral"
+        :boletoConferido="state.boletoConferido"
+        :valorConferido="state.valorConferido"
       />
     </v-dialog>
 

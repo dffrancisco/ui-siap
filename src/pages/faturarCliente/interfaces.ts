@@ -91,7 +91,9 @@ export interface iGerarBoletosParam {
     BOLETOS: iBoleto[],
     ID_CLIENTE: number,
     DATA_LIMITE: string,
-    REGRAS_FATURAMENTO: iRegrasFaturamentoGeral
+    REGRAS_FATURAMENTO: iRegrasFaturamentoGeral,
+    BOLETO_CONFERIDO: boolean,
+    VALOR_CONFERIDO: number,
 }
 
 export interface iResponseSuccess {
