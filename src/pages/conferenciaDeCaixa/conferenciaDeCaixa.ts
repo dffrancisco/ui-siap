@@ -22,21 +22,11 @@ export const state = reactive({
     modalAbrirCaixaOpened: false,
     pagamentoSelecionado: null,
     headersLancamentos: [
-        { title: "#", key: "id", width: "30px", value: (item: any) => `#` + item.id },
-        {
-            title: "N° Orçamento / Valor",
-            key: "NUM_ORCAMENTO",
-            width: "220px",
-            value: (item: any) => {
-                if (item.DADOS_ORCAMENTO?.length) {
-                    return item.DADOS_ORCAMENTO.map(d => d.NUM).join(", ");
-                }
-                return item.NUM_ORCAMENTO;
-            }
-        },
+        { title: "#", key: "INDEX", width: "50px" },
+        { title: "N° Orçamento / Valor", key: "NUM_ORCAMENTO", width: "220px" },
         { title: "Hora", key: "HORA", width: "60px", value: (item: any) => utils.formatHora(item.HORA) },
         { title: "Pagamentos", key: "PAGAMENTOS", width: "300px" },
-        { title: "Total", key: "VALOR", width: "120px", value: (item: any) => utils.formatValor(item.VALOR) },
+        { title: "Total", key: "VALOR", width: "120px", value: (item: any) => utils.formatValor(item.VALOR_TOTAL) },
     ],
 });
 
@@ -272,17 +262,31 @@ export const totalSangrias = computed(() => {
 });
 
 export const comprasFiltradas = computed(() => {
-    let compras = state.pagamentoSelecionado
-        ? state.todasAsCompras.filter(c =>
-            c.TIPOS_PAGAMENTO.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
-        )
-        : state.todasAsCompras;
+    let compras = state.todasAsCompras;
 
+    // Se um tipo de pagamento foi selecionado, filtrar os itens
+    if (state.pagamentoSelecionado) {
+        // if (state.pagamentoSelecionado == 6) {
+        //     // Quando pagamentoSelecionado == 6, filtra por ENTREGAR_RECEBER
+        //     compras = compras.filter(c =>
+        //         c.ENTREGAR_RECEBER === true ||
+        //         c.TIPOS_PAGAMENTO.some(tp => tp.TIPO_PAGAMENTO === "6")
+        //     );
+        // } else {
+        // Filtragem normal pelo TIPO_PAGAMENTO
+        compras = compras.filter(c =>
+            c.TIPOS_PAGAMENTO.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
+        );
+        // }
+    }
+
+    // Ordena as compras por hora antes de numerar
     return compras
         .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
         .map((compra, index) => ({
             ...compra,
-            INDEX: index + 1,
+            INDEX: index + 1, // A numeração é reiniciada sempre que a lista muda
         }));
 });
+
 

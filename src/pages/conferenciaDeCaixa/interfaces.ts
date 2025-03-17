@@ -54,7 +54,7 @@ export interface iTiposPagamento {
 
 export interface iTodasAsCompras {
     CAIXA: number;
-    DADOS_ORCAMENTO: iDadosOrcamento[];
+    ORCAMENTOS: iDadosOrcamento[];
     DATA: string;
     ENTREGAR_RECEBER: boolean;
     HORA: string;

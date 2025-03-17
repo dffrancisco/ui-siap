@@ -75,6 +75,7 @@ onMounted(async () => {
             class="mt-4 obr rounded-lg"
             v-model="state.funcionarioSelecionado"
             @keydown.enter="actions.focarNoInputTroco"
+            :clearable="false"
           ></v-autocomplete>
         </v-col>
 

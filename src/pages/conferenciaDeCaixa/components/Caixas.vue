@@ -36,7 +36,7 @@ const botoesVisiveis = computed(() => {
 <template>
   <v-card
     class="d-flex flex-column justify-space-between pt-2"
-    min-height="270px"
+    min-height="280px"
     :class="{
       'caixa-aberto': caixa.STATUS == 1,
       'caixa-fechado': caixa.STATUS == 2,
@@ -57,10 +57,10 @@ const botoesVisiveis = computed(() => {
       </v-col>
       <v-col cols="9">
         <div class="text-subtitle-1 font-weight-bold">
-          {{ caixa.LOGIN }}
+          <span>{{ caixa.LOGIN }}</span>
         </div>
         <div class="text-caption status-badge">
-          {{ caixa.STATUS == 1 ? "Caixa Aberto" : "Caixa Fechado" }}
+          <span>{{ caixa.STATUS == 1 ? "Caixa Aberto" : "Caixa Fechado" }}</span>
         </div>
       </v-col>
     </v-row>
@@ -69,27 +69,41 @@ const botoesVisiveis = computed(() => {
     <v-container class="pa-2">
       <v-row class="pt-2">
         <v-col cols="3">
-          Troco: <b>{{ utils.formatValor(caixa.TROCO) }}</b>
+          <span
+            >Troco: <b>{{ utils.formatValor(caixa.TROCO) }}</b></span
+          >
         </v-col>
         <v-col cols="4">
-          Abertura: <b>{{ utils.formatHora(caixa.HORA_ABERTURA) }}</b>
+          <span
+            >Abertura: <b>{{ utils.formatHora(caixa.HORA_ABERTURA) }}</b></span
+          >
         </v-col>
         <v-col cols="5">
-          Fechamento:
-          <b>{{ caixa.HORA_FECHAMENTO ? utils.formatHora(caixa.HORA_FECHAMENTO) : "----" }}</b>
+          <span
+            >Fechamento:
+            <b>{{ caixa.HORA_FECHAMENTO ? utils.formatHora(caixa.HORA_FECHAMENTO) : "----" }}</b></span
+          >
         </v-col>
         <v-col cols="6">
-          Devolução: <b>{{ utils.formatValor(caixa.DEVOLUCAO) }}</b>
+          <span
+            >Devolução: <b>{{ utils.formatValor(caixa.DEVOLUCAO) }}</b></span
+          >
         </v-col>
         <v-col cols="6">
-          Sangria: <b>{{ utils.formatValor(caixa.SANGRIA) }}</b>
+          <span
+            >Sangria: <b>{{ utils.formatValor(caixa.SANGRIA) }}</b></span
+          >
         </v-col>
         <v-col cols="12">
-          Dinheiro no caixa: <b>{{ utils.formatValor(caixa.DINHEIRO) }}</b>
+          <span
+            >Dinheiro no caixa: <b>{{ utils.formatValor(caixa.DINHEIRO) }}</b></span
+          >
         </v-col>
         <v-col cols="12">
-          Conferido por:
-          <b>{{ caixa.CONFERIDO && caixa.CONFERIDO.trim() !== "" ? caixa.CONFERIDO : "----" }}</b>
+          <span
+            >Conferido por:
+            <b>{{ caixa.CONFERIDO && caixa.CONFERIDO.trim() !== "" ? caixa.CONFERIDO : "----" }}</b></span
+          >
         </v-col>
       </v-row>
     </v-container>

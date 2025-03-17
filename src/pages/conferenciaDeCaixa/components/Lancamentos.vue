@@ -52,17 +52,31 @@ const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
           fixed-header
           class="elevation-1"
         >
+          <template v-slot:item.INDEX="{ item }">
+            <span class="text-center font-weight-bold"># {{ item.INDEX }}</span>
+          </template>
+
           <template v-slot:item.NUM_ORCAMENTO="{ item }">
             <div class="d-flex flex-wrap align-center">
               <div
-                v-for="orc in item.DADOS_ORCAMENTO?.length
-                  ? item.DADOS_ORCAMENTO
-                  : [{ NUM: item.NUM_ORCAMENTO, VL: item.VALOR }]"
-                :key="orc.NUM"
+                v-for="orc in item.ORCAMENTOS?.length
+                  ? item.ORCAMENTOS
+                  : [{ NUM_ORCAMENTO: item.NUM_ORCAMENTO, VALOR_ORCAMENTO: item.VALOR_ORCAMENTO }]"
+                :key="orc.NUM_ORCAMENTO"
                 class="orcamento-box"
+                :class="{ 'orcamento-entregar-receber': item.ENTREGAR_RECEBER == true }"
+                :title="item.ENTREGAR_RECEBER == true ? 'E/R Dias Anteriores' : 'Nº Orc. / Valor'"
               >
-                <div class="orcamento-numero">{{ orc.NUM }}</div>
-                <div class="orcamento-valor">{{ utils.formatValor(orc.VL) }}</div>
+                <div
+                  class="orcamento-numero"
+                  :class="{ 'orcamento-numero-entregar-receber': item.ENTREGAR_RECEBER == true }"
+                  >{{ orc.NUM_ORCAMENTO }}</div
+                >
+                <div
+                  class="orcamento-valor"
+                  :class="{ 'orcamento-valor-entregar-receber': item.ENTREGAR_RECEBER == true }"
+                  >{{ utils.formatValor(orc.VALOR_ORCAMENTO) }}</div
+                >
               </div>
             </div>
           </template>
@@ -70,8 +84,8 @@ const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
           <template v-slot:item.PAGAMENTOS="{ item }">
             <div class="d-flex flex-wrap">
               <v-chip
-                v-for="pagamento in item.TP"
-                :key="pagamento.TIPO_PAGAMENTO"
+                v-for="pagamento in item.TIPOS_PAGAMENTO"
+                :key="pagamento.TIPOS_PAGAMENTO"
                 class="mr-1 chip-custom"
                 color="primary"
                 style="border-radius: 8px !important; margin: 3px"
@@ -168,5 +182,33 @@ const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
   padding: 4px 8px;
   color: #0496ea;
   border-radius: 0 6px 6px 0;
+}
+
+.orcamento-numero-entregar-receber {
+  padding: 4px 8px;
+  background: #c2016575;
+  color: white;
+  border-radius: 0px 8px 8px 0px;
+}
+
+.orcamento-valor-entregar-receber {
+  padding: 4px 8px;
+  color: #c20165c1;
+  border-radius: 0 6px 6px 0;
+}
+
+.orcamento-entregar-receber {
+  display: flex;
+  align-items: center;
+  border: 1px solid #c20165c7;
+  border-radius: 6px;
+  overflow: hidden;
+  font-weight: bold;
+  color: #fb2be7;
+  background: rgba(243, 33, 229, 0.15);
+  width: fit-content;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  margin-right: 5px;
 }
 </style>

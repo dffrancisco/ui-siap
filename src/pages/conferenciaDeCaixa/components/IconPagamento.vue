@@ -20,11 +20,11 @@ const props = defineProps({
     required: true,
   },
   bandeira: {
-    type: Number,
+    type: Number || String,
     default: null,
   },
   descricaoBandeira: {
-    type: String,
+    type: String || null,
     default: null,
   },
 });

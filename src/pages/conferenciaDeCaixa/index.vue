@@ -3,7 +3,7 @@ import { state, options, actions, funcionariosDisponiveis, abaSelecionada } from
 import { onMounted } from "vue";
 import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
-import CaixaCard from "./components/CaixaCard.vue";
+import Caixas from "./components/Caixas.vue";
 import Lancamentos from "./components/Lancamentos.vue";
 import Sangrias from "./components/Sangrias.vue";
 import Devolucoes from "./components/Devolucoes.vue";
@@ -96,7 +96,7 @@ onMounted(() => {
             md="4"
             lg="4"
           >
-            <CaixaCard
+            <Caixas
               :caixa="caixa"
               @fechar-caixa="actions.fecharCaixa"
             />
@@ -111,8 +111,8 @@ onMounted(() => {
             v-if="state.mdcAberto"
           >
             <v-card
-              class="pa-4 d-flex align-center justify-center"
-              min-height="270px"
+              class="pa-4 d-flex flex-column align-center justify-center"
+              min-height="280px"
             >
               <v-btn
                 icon="mdi-plus"
@@ -121,6 +121,7 @@ onMounted(() => {
                 title="Abrir novo caixa"
                 @click="actions.openModalAbrirCaixa()"
               />
+              <span class="mt-2">Abrir Novo Caixa</span>
             </v-card>
           </v-col>
         </v-row>
