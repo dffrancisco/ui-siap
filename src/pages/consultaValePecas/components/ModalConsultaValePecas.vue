@@ -114,6 +114,7 @@ const actions = {
       ...item,
       DATA_ORCAMENTO: item.DATA_ORCAMENTO ? utils.dataBrasil(item.DATA_ORCAMENTO) : "-----",
       VALOR: item.VALOR ? utils.formatValor(item.VALOR) : "-----",
+      VALOR_REAL: item.VALOR_REAL ? utils.formatValor(item.VALOR_REAL) : "-----",
     }));
   },
 };
