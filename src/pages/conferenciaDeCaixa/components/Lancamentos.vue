@@ -20,9 +20,9 @@ const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
           outlined
         >
           <v-list>
-            <template v-if="state.valoresRecebidos.length > 0">
+            <template v-if="state.totalizadores.length > 0">
               <v-list-item
-                v-for="(item, index) in state.valoresRecebidos"
+                v-for="(item, index) in state.totalizadores"
                 :key="index"
                 @click="actions.selecionarPagamento(item.TIPO_PAGAMENTO)"
                 :class="{ tipo_pag_selected: item.TIPO_PAGAMENTO === state.pagamentoSelecionado }"

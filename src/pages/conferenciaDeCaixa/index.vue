@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { state, options, actions, funcionariosDisponiveis } from "./conferenciaDeCaixa";
-import { onMounted, computed } from "vue";
+import { state, options, actions, funcionariosDisponiveis, abaSelecionada } from "./conferenciaDeCaixa";
+import { onMounted } from "vue";
 import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import CaixaCard from "./components/CaixaCard.vue";
 import Lancamentos from "./components/Lancamentos.vue";
 import Sangrias from "./components/Sangrias.vue";
 import Devolucoes from "./components/Devolucoes.vue";
-
-const abaSelecionada = computed(() => state.selectedOption);
 
 onMounted(() => {
   actions.init();

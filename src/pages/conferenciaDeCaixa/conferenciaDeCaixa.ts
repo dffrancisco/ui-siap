@@ -1,7 +1,7 @@
 import utils from './../../ts/utils';
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iSangrias, iTodasAsCompras, iValoresRecebidos } from "./interfaces";
+import { iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iSangrias, iTodasAsCompras, iTotalizadores } from "./interfaces";
 import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -16,7 +16,7 @@ export const state = reactive({
     caixas: <iCaixas[]>[],
     funcionarios: <iFuncionarios[]>[],
     todasAsCompras: <iTodasAsCompras[]>[],
-    valoresRecebidos: <iValoresRecebidos[]>[],
+    valoresRecebidos: <iTotalizadores[]>[],
     sangrias: <iSangrias[]>[],
     devolucoes: <iDevolucoes[]>[],
     modalAbrirCaixaOpened: false,
@@ -59,14 +59,7 @@ export const actions = {
             const data = await serviceConferenciaDeCaixa.getDadosIniciaisConfCaixa(param);
 
             if (data.mdc.length == 0) {
-                state.mdcAberto = false;
-                state.msgAberturaMDC = "";
-                state.funcionarios = [];
-                state.caixas = [];
-                state.todasAsCompras = [];
-                state.valoresRecebidos = [];
-                state.sangrias = [];
-                state.devolucoes = [];
+                actions.limparStates();
                 return;
             } else {
                 state.mdcAberto = true;
@@ -74,22 +67,29 @@ export const actions = {
                 state.funcionarios = data.funcionarios;
                 state.caixas = data.caixas;
                 state.todasAsCompras = data.comprasAgrupadas;
-                state.valoresRecebidos = data.valoresRecebidosAll;
-                state.sangrias = data.sangriasAll;
-                state.devolucoes = data.devolucoesAll;
+                state.valoresRecebidos = data.totalizadores;
+                state.sangrias = data.sangrias;
+                state.devolucoes = data.devolucoes;
             }
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao trazer os dados iniciais!"
+                text: "Erro ao trazer os dados de conferência de caixa!"
             });
         } finally {
             state.loading = false;
         }
     },
 
-    alterarOpcao(novaOpcao: string) {
-        state.selectedOption = novaOpcao;
+    limparStates() {
+        state.mdcAberto = false;
+        state.msgAberturaMDC = "";
+        state.funcionarios = [];
+        state.caixas = [];
+        state.todasAsCompras = [];
+        state.valoresRecebidos = [];
+        state.sangrias = [];
+        state.devolucoes = [];
     },
 
     async validarDataAtual(caixaData) {
@@ -232,6 +232,8 @@ export const actions = {
     }
 }
 
+export const abaSelecionada = computed(() => state.selectedOption);
+
 export const funcionariosDisponiveis = computed(() =>
     state.funcionarios.filter(funcionario => {
         const temCaixaAberto = state.caixas.some(
@@ -272,7 +274,7 @@ export const totalSangrias = computed(() => {
 export const comprasFiltradas = computed(() => {
     let compras = state.pagamentoSelecionado
         ? state.todasAsCompras.filter(c =>
-            c.TP.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
+            c.TIPOS_PAGAMENTO.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
         )
         : state.todasAsCompras;
 
