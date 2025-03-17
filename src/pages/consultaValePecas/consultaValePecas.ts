@@ -25,7 +25,7 @@ export const state = reactive({
         { key: 'NUM_ORCAMENTO', title: 'Nº Orçamento', sortable: true, align: 'left', width: '100px' },
         { key: 'DATA_ORCAMENTO', title: 'Vencimento', sortable: true, align: 'left', value: (item: iParamsValePeca) => dataBrasil(item.DATA_ORCAMENTO), width: '90px' },
         { key: 'VALOR', title: 'Valor', sortable: true, align: 'left', width: '100px', value: (item: iParamsValePeca) => formatValor(item.VALOR) },
-        { key: 'MES', title: 'Mês', sortable: true, align: 'left', width: '100px' },
+        { key: 'MES', title: 'Mês', sortable: true, align: 'left', width: '100px', value: (item: iParamsValePeca) => getMonthName(item.MES) },
         { key: 'ANO', title: 'Ano', sortable: true, align: 'left', width: '90px' },
         { key: 'DIV', title: 'Parcela', sortable: true, align: 'left', width: '100px' },
         { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '100px' },
@@ -160,6 +160,7 @@ export const actions = {
             ...item,
             DATA_ORCAMENTO: item.DATA_ORCAMENTO ? utils.dataBrasil(item.DATA_ORCAMENTO) : '-----',
             VALOR: item.VALOR ? utils.formatValor(item.VALOR) : '-----',
+            MES: item.MES ? getMonthName(item.MES) : '',
         }));
     },
 
