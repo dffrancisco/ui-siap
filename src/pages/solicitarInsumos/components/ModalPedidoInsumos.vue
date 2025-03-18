@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import { onMounted, reactive, ref } from "vue";
+import { nextTick, onMounted, onUnmounted, reactive, ref } from "vue";
 import { iCarrinhoInsumos, iCategoriaComItens, iItemAdcPedido, iItens, iPedido } from "../interfaces";
 import serviceSolicitarInsumos from "../services/solicitarInsumos.service";
 import Swal from "sweetalert2";
@@ -107,7 +107,7 @@ const actions = {
     });
   },
 
-  async popularCarrinho() {
+  async selecionarCategoria() {
     if (props.pedidoSelecionado && props.pedidoSelecionado?.FINALIZADO == "S") {
       return;
     }
@@ -123,6 +123,7 @@ const actions = {
       if (categoriaSelecionada && categoriaSelecionada.itens) {
         state.dbItens = categoriaSelecionada.itens;
         state.gridItens.source(state.dbItens);
+        state.gridItens.focus();
       }
     } catch (error) {
       Swal.fire({
@@ -140,7 +141,7 @@ const actions = {
 
   async btnSearch() {
     if (!state.search) {
-      await actions.popularCarrinho();
+      await actions.selecionarCategoria();
       return;
     }
 
@@ -217,6 +218,10 @@ const actions = {
       state.gridCarrinho.source(state.dbCarrinho);
 
       state.modalQtdItemPedidoOpened = false;
+
+      nextTick(() => {
+        state.gridItens.focus(0);
+      });
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -247,6 +252,9 @@ const actions = {
       state.dbCarrinho = state.dbCarrinho.filter((item) => item.ID_INSUMO_PEDIDO_ITEM !== parseInt(idItem));
       state.gridCarrinho.source(state.dbCarrinho);
 
+      nextTick(() => {
+        state.gridCarrinho.focus(0);
+      });
       Swal.fire({
         icon: "success",
         text: "Item excluído do carrinho com sucesso!",
@@ -291,6 +299,14 @@ const actions = {
       }
     }
   },
+
+  async navegarCategorias(direcao: number) {
+    const ids = state.dbCategorias.map((c) => c.ID_INSUMO_CATEGORIA);
+    const indexAtual = ids.indexOf(state.categoriaSelecionada);
+    const novoIndex = Math.max(0, Math.min(indexAtual + direcao, ids.length - 1));
+    state.categoriaSelecionada = ids[novoIndex];
+    await actions.selecionarCategoria();
+  },
 };
 
 useEventListener(document, "keydown", async (event) => {
@@ -319,6 +335,14 @@ onMounted(async () => {
     }
   });
 });
+
+const eventoNavegarCategorias = (event: KeyboardEvent) => {
+  if (event.key === "ArrowLeft") actions.navegarCategorias(-1);
+  if (event.key === "ArrowRight") actions.navegarCategorias(1);
+};
+
+onMounted(() => window.addEventListener("keydown", eventoNavegarCategorias));
+onUnmounted(() => window.removeEventListener("keydown", eventoNavegarCategorias));
 </script>
 <template>
   <v-card class="pa-4">
@@ -340,7 +364,7 @@ onMounted(async () => {
               @click="
                 () => {
                   state.categoriaSelecionada = categoria.ID_INSUMO_CATEGORIA;
-                  actions.popularCarrinho();
+                  actions.selecionarCategoria();
                 }
               "
             >
@@ -429,6 +453,7 @@ onMounted(async () => {
     style="left: 30%"
     v-model="state.modalQtdItemPedidoOpened"
     transition="dialog-transition"
+    :retain-focus="false"
     variant="flat"
     :persistent="false"
     @click:outside="state.modalQtdItemPedidoOpened = false"
