@@ -152,6 +152,8 @@ onMounted(() => {
       </div>
     </v-card>
 
+    <div id="pnCodigoTela">conferenciaDeCaixa</div>
+
     <!-- Modal Abrir Caixa -->
     <v-dialog
       v-model="state.modalAbrirCaixaOpened"
