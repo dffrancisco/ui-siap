@@ -41,6 +41,16 @@ const props = defineProps({
     required: true,
     default: null,
   },
+  boletoConferido: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  valorConferido: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 });
 
 const emits = defineEmits(["closeModal"]);
@@ -202,6 +212,8 @@ const actions = {
         ID_CLIENTE: props.cliente.ID_CLIENTE,
         DATA_LIMITE: props.dataLimite,
         REGRAS_FATURAMENTO: state.regrasFaturamento,
+        BOLETO_CONFERIDO: props.boletoConferido,
+        VALOR_CONFERIDO: props.valorConferido,
       };
 
       const data = await serviceFaturarCliente.gerarBoletos(param);
@@ -253,11 +265,13 @@ const computeds = {
     let devolucoes = <iDevolucaoFiltered[]>[];
     props.orcamentos.forEach((item) => {
       if (item.DEVOLUCAO > 0) {
-        devolucoes.push({
-          DATA: dataBrasil(item.DATA),
-          NUM_ORCAMENTO: item.NUM_ORCAMENTO,
-          VALOR: item.DEVOLUCAO,
-          CREDITO: "N",
+        item.DEVOLUCAO_DETALHADA.forEach((dev) => {
+          devolucoes.push({
+            DATA: dataBrasil(item.DATA),
+            NUM_ORCAMENTO: item.NUM_ORCAMENTO,
+            VALOR: dev.VALOR,
+            CREDITO: "N",
+          });
         });
       }
     });

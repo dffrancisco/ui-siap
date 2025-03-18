@@ -19,7 +19,6 @@ export interface iOrcamentosClienteFaturado {
     DATA: string,
     DEVOLUCAO: number,
     VALOR: number,
-    NUM_DEVOLUCAO: number,
     MONTAGEM: number,
     DESCONTO: number,
 }

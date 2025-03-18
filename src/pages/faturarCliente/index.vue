@@ -71,7 +71,7 @@ onMounted(async () => {
                 <div v-for="orcamento in state.orcamentosLocalizados">
                   <div class="d-flex ga-2">
                     <div
-                      v-if="!orcamento.ISDEVOLUCAO"
+                      v-if="!orcamento.IS_DEVOLUCAO"
                       class="d-flex justify-space-between flex-grow-1"
                     >
                       <span class="text-body-1">+{{ orcamento.NUM_ORCAMENTO }}</span>
@@ -90,11 +90,11 @@ onMounted(async () => {
                         class="text-body-1 font-weight-bold"
                         style="color: #f87171"
                       >
-                        -{{ utils.formatValor(orcamento.DEVOLUCAO) }}
+                        -{{ utils.formatValor(orcamento.VALOR) }}
                       </span>
                     </div>
                     <v-icon
-                      @click="actions.excluirOrcLocalizado(orcamento)"
+                      @click="actions.excluirOrcLocalizado(false, orcamento)"
                       title="Excluir orçamento"
                       >mdi-delete</v-icon
                     >
@@ -197,6 +197,8 @@ onMounted(async () => {
         :cliente="state.dbClienteFaturado"
         :dataLimite="state.dataLimite"
         :regrasFaturamentoGeral="state.regrasFaturamentoGeral"
+        :boletoConferido="state.boletoConferido"
+        :valorConferido="state.valorConferido"
       />
     </v-dialog>
 
