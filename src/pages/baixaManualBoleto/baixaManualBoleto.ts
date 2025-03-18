@@ -209,7 +209,7 @@ export const actions = {
         state.extratoBancario = transacoes;
     },
 
-    async baixarBoletosEOrcamentos() {
+    async baixarBoletosEOrcamentos(justificativaBaixaManual: string) {
         const boletosSelecionados = state.dadosBoletosFiltrados.filter(boleto => boleto.checked);
         const orcamentosSelecionados = state.dadosOrcamentoFiltrados.filter(orcamento => orcamento.checked);
         const extratoSelecionado = state.extratoBancario.filter(transacao => transacao.checked);
@@ -240,7 +240,8 @@ export const actions = {
         let param = {
             orcamentosSelecionadosBaixa,
             boletosSelecionadosBaixa,
-            dadosParaLog
+            dadosParaLog,
+            justificativaBaixaManual: justificativaBaixaManual
         };
 
         try {

@@ -12,6 +12,9 @@ const props = defineProps<{
 
 const state = reactive({
   loading: false,
+  justificativaBaixaManual: "",
+  nomeImgComprovante: null,
+  formDataImgComprovante: null,
 });
 
 const actions = {
@@ -22,47 +25,6 @@ const actions = {
   abrirSeletorDeComprovante() {
     const input = document.getElementById("comprovanteInput") as HTMLInputElement;
     if (input) input.click();
-  },
-
-  async uploadComprovante(event: Event) {
-    const target = event.target as HTMLInputElement;
-    const file = target.files?.[0];
-    if (!file) return;
-
-    const formatosAceitos = ["pdf", "jpg", "jpeg"];
-    const extensaoDoArquivo = file.name.split(".").pop()?.toLowerCase();
-    if (!extensaoDoArquivo || !formatosAceitos.includes(extensaoDoArquivo)) {
-      Swal.fire({ icon: "error", text: "Formato inválido. Apenas PDF, JPG e JPEG são permitidos." });
-      return;
-    }
-
-    try {
-      state.loading = true;
-      let arquivoAjustado = file;
-
-      if (file.type.startsWith("image/")) {
-        arquivoAjustado = await actions.resizeImage(file, 5);
-      }
-
-      const nomeDoArquivo = props.clienteSelecionado.CNPJ;
-
-      const formData = new FormData();
-      formData.append("file", arquivoAjustado);
-      formData.append("nomeDoArquivo", nomeDoArquivo);
-      formData.append("extensaoDoArquivo", extensaoDoArquivo);
-      formData.append("class", "BaixaBoleto");
-      formData.append("call", "uploadDoc");
-
-      await serviceBaixaManualBoleto.uploadComprovante(formData);
-
-      emit("baixaManualBoleto");
-      emit("closeModalUploadComprovante");
-    } catch (error) {
-      Swal.fire({ icon: "error", text: "Erro ao processar o comprovante." });
-    } finally {
-      target.value = "";
-      state.loading = false;
-    }
   },
 
   async resizeImage(file: File, maxSizeMB: number): Promise<File> {
@@ -104,41 +66,128 @@ const actions = {
       reader.onerror = () => reject("Erro ao ler imagem.");
     });
   },
+
+  async processarComprovante(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (!file) return;
+
+    const formatosAceitos = ["pdf", "jpg", "jpeg"];
+    const extensaoDoArquivo = file.name.split(".").pop()?.toLowerCase();
+    if (!extensaoDoArquivo || !formatosAceitos.includes(extensaoDoArquivo)) {
+      Swal.fire({ icon: "error", text: "Formato inválido. Apenas PDF, JPG e JPEG são permitidos." });
+      return;
+    }
+
+    try {
+      state.loading = true;
+      let arquivoAjustado = file;
+
+      if (file.type.startsWith("image/")) {
+        arquivoAjustado = await actions.resizeImage(file, 5);
+      }
+
+      const nomeDoArquivo = props.clienteSelecionado.CNPJ;
+
+      const formData = new FormData();
+      formData.append("file", arquivoAjustado);
+      formData.append("nomeDoArquivo", nomeDoArquivo);
+      formData.append("extensaoDoArquivo", extensaoDoArquivo);
+      formData.append("class", "BaixaBoleto");
+      formData.append("call", "uploadDoc");
+
+      state.nomeImgComprovante = file.name;
+      state.formDataImgComprovante = formData;
+    } catch (error) {
+      Swal.fire({ icon: "error", text: "Erro ao processar o comprovante." });
+    } finally {
+      target.value = "";
+      state.loading = false;
+    }
+  },
+
+  async uploadComprovante() {
+    try {
+      state.loading = true;
+      const formData = state.formDataImgComprovante;
+      await serviceBaixaManualBoleto.uploadComprovante(formData);
+    } catch (error) {
+      Swal.fire({ icon: "error", text: "Erro ao enviar o comprovante." });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  async onClickEnviar() {
+    if (!state.justificativaBaixaManual || state.justificativaBaixaManual.trim() == "") {
+      Swal.fire({ icon: "warning", text: "Justificativa é obrigatória." });
+      return;
+    }
+
+    if (!state.formDataImgComprovante) {
+      Swal.fire({ icon: "warning", text: "Por favor, anexe um comprovante de pagamento." });
+      return;
+    }
+
+    await actions.uploadComprovante();
+
+    emit("baixaManualBoleto", state.justificativaBaixaManual);
+    emit("closeModalUploadComprovante");
+  },
 };
 </script>
 <template>
-  <v-card
-    width="310px"
-    height="200px"
-    class="mx-auto pa-4"
-  >
+  <v-card class="pa-4">
     <div
       ><span class="spanTitleUpload"
         ><u>E</u>nviar Comprovante de Pagamento para finalizar baixa manual.</span
       ></div
     >
-    <v-row>
+    <div class="d-flex align-center mt-4 flex-column">
       <input
         type="file"
         id="comprovanteInput"
         accept=".pdf, .jpg, .jpeg"
         style="display: none"
-        @change="actions.uploadComprovante"
+        @change="actions.processarComprovante"
       />
       <v-btn
-        class="iconUpload"
         icon="mdi-upload"
         size="50px"
         color="primary"
         title="Enviar Comprovante de Pagamento"
         @click="actions.abrirSeletorDeComprovante"
       />
-    </v-row>
+      <div
+        class="mt-2 d-flex"
+        style="max-width: 250px"
+      >
+        <span class="text-truncate text-body-2">{{ state.nomeImgComprovante }}</span>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <v-textarea
+        v-model="state.justificativaBaixaManual"
+        label="Justificativa*"
+        maxlength="200"
+        rows="4"
+      ></v-textarea>
+    </div>
+
     <v-btn
+      class="mt-4"
       variant="outlined"
       color="primary"
       @click="actions.cancelar()"
       >Cancelar</v-btn
+    >
+
+    <v-btn
+      class="mt-2"
+      color="primary"
+      @click="actions.onClickEnviar()"
+      >Enviar</v-btn
     >
   </v-card>
   <v-overlay
@@ -155,12 +204,6 @@ const actions = {
 </template>
 
 <style scoped>
-.iconUpload {
-  cursor: pointer;
-  margin-top: 25px;
-  margin-left: 125px;
-}
-
 .spanTitleUpload {
   font-size: 15px;
 }

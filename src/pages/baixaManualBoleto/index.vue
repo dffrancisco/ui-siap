@@ -233,7 +233,10 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
   </v-dialog>
 
   <!-- ModalUploadComprovante -->
-  <v-dialog v-model="state.modalUploadComprovanteOpened">
+  <v-dialog
+    v-model="state.modalUploadComprovanteOpened"
+    max-width="400"
+  >
     <ModalUploadComprovante
       :clienteSelecionado="state.clienteFaturadoSelecionado"
       @baixaManualBoleto="actions.baixarBoletosEOrcamentos"
