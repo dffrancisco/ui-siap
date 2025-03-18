@@ -61,7 +61,7 @@ const stateLancamentos = reactive({
           class="elevation-1"
         >
           <template v-slot:item.INDEX="{ item }">
-            <span class="text-center font-weight-bold"># {{ item.INDEX }}</span>
+            <span class="text-center font-weight"># {{ item.INDEX }}</span>
           </template>
 
           <template v-slot:item.NUM_ORCAMENTO="{ item }">
