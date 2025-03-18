@@ -8,7 +8,6 @@ import {
 } from "../interfaces";
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
 import Swal from "sweetalert2";
-import { computed } from "vue";
 import utils from "@/ts/utils";
 
 import { configVMoney } from "../../../constants/constants";
@@ -20,7 +19,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits(["closeModalTransportadoras", "selecionarTransportadoraDevolucao"]);
-const dasabilitado = computed(() => state.dbTransportadoraDevolucao.TIPO_FRETE == 9);
+
 watch(
   () => props.modalOpened,
   () => {
@@ -36,12 +35,20 @@ watch(
 );
 
 const state = reactive({
-  dbTransportadoraDevolucao: <iTranspordadoraDevolucao>{},
+  dbTransportadoraDevolucao: <iTranspordadoraDevolucao>{ TIPO_FRETE: 0 },
   listaTransportadoras: <iListaTransportadoras[]>[],
 
   loading: false,
   valor: 0,
+  isDisabled: false,
 });
+
+watch(
+  () => state.dbTransportadoraDevolucao.TIPO_FRETE,
+  (newVal) => {
+    state.isDisabled = newVal == 9;
+  }
+);
 
 const actions = {
   closeModalTransportadoras() {
@@ -182,10 +189,10 @@ const actions = {
           <h2 class="font-weight-regular">Transportadora</h2>
           <select
             v-model="state.dbTransportadoraDevolucao.ID_TRANSPORTADORA"
+            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE == 9"
             class="ss obr"
             name="ID_TRANSPORTADORA"
             id="ID_TRANSPORTADORA"
-            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE == 9"
           >
             <option value="">Nenhuma transportadora</option>
             >
@@ -203,8 +210,8 @@ const actions = {
             class="obr ss"
             name="TIPO_FRETE"
             id="TIPO_FRETE"
-            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE === 9"
             v-model="state.dbTransportadoraDevolucao.TIPO_FRETE"
+            :disabled="state.isDisabled"
           >
             <option value="0">Por conta do emitente</option>
             <option value="1">Por conta do destinatário/remetente</option>
@@ -218,11 +225,11 @@ const actions = {
           <h2 class="font-weight-regular">Espécie</h2>
           <input
             v-model="state.dbTransportadoraDevolucao.ESPECIE"
-            class="ss"
+            class="obr ss"
             type="text"
             name="ESPECIE"
             id="ESPECIE"
-            :disabled="dasabilitado"
+            :disabled="state.isDisabled"
             maxlength="6"
           />
         </v-col>
@@ -230,11 +237,11 @@ const actions = {
           <h2 class="font-weight-regular">Qtd. Volumes</h2>
           <input
             v-model="state.dbTransportadoraDevolucao.QTD"
-            class="ss"
+            class="obr ss"
             type="number"
             name="QTD"
             id="QTD"
-            :disabled="dasabilitado"
+            :disabled="state.isDisabled"
             max="10000"
           />
         </v-col>
@@ -246,7 +253,7 @@ const actions = {
             type="text"
             name="AUTORIZACAO_CORREIOS"
             id="AUTORIZACAO_CORREIOS"
-            :disabled="dasabilitado"
+            :disabled="state.isDisabled"
             maxlength="20"
           />
         </v-col>
@@ -257,7 +264,7 @@ const actions = {
             type="text"
             name="PESO_BRUTO"
             id="PESO_BRUTO"
-            :disabled="dasabilitado"
+            :disabled="state.isDisabled"
             :model-modifiers="{ number: true }"
             v-model.lazy="state.dbTransportadoraDevolucao.PESO_BRUTO"
             v-money3="configVMoney"
@@ -271,7 +278,7 @@ const actions = {
             type="text"
             name="PESO_LIQUIDO"
             id="PESO_LIQUIDO"
-            :disabled="dasabilitado"
+            :disabled="state.isDisabled"
             :model-modifiers="{ number: true }"
             v-money3="configVMoney"
           />
@@ -288,7 +295,7 @@ const actions = {
             :model-modifiers="{ number: true }"
             v-model.lazy="state.dbTransportadoraDevolucao.VALOR_FRETE"
             v-money3="configVMoney"
-            :disabled="dasabilitado"
+            :disabled="state.isDisabled"
             @keydown.enter="actions.selecionarTransportadora"
           />
         </v-col>
