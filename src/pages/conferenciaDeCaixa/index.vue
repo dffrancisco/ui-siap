@@ -22,7 +22,11 @@ onMounted(() => {
     >
       <!-- Input de Data -->
       <v-row class="pt-4 pl-2">
-        <v-col cols="3">
+        <v-col
+          cols="12"
+          sm="3"
+          md="3"
+        >
           <v-text-field
             v-model="state.data"
             label="Data"
@@ -31,15 +35,19 @@ onMounted(() => {
             @keypress.enter="actions.init"
           />
         </v-col>
-        <v-col cols="1">
-          <div class="d-flex align-center">
-            <v-btn
-              icon="mdi-magnify"
-              size="39"
-              color="primary"
-              @click="actions.init"
-            />
-          </div>
+
+        <v-col
+          cols="12"
+          sm="6"
+          md="1"
+          class="d-flex"
+        >
+          <v-btn
+            icon="mdi-magnify"
+            size="39"
+            color="primary"
+            @click="actions.init"
+          />
         </v-col>
       </v-row>
 

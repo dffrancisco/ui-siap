@@ -223,21 +223,29 @@ export const actions = {
         return pagamento ? pagamento.DESCRICAO_PAGAMENTO : "Desconhecido";
     },
 
-    modalSangria(caixa) {
+    async modalSangria(caixa) {
+        const hoje = moment().format("YYYY-MM-DD");
+
+        if (state.data !== hoje) {
+            await Swal.fire({
+                title: "Atenção",
+                text: "Só é possível fazer sangria na data atual!",
+                icon: "warning",
+                confirmButtonText: "OK",
+            });
+            return false;
+        }
+
         state.caixaSelected = caixa
 
-        // xAuthManager("Autorizar sangria?", async () => {
-        state.modalSangriaOpened = true;
-        // });
+        xAuthManager("Autorizar sangria?", async () => {
+            state.modalSangriaOpened = true;
+        });
     },
 
-    async efetuarSangria(valorSangria: any, caixaSelecionado: iCaixas) {
+    async efetuarSangria(valorSangria: string, caixaSelecionado: iCaixas) {
         try {
             state.loading = true;
-
-            // console.log(valorSangria);
-
-            // return
 
             let param: iParamSangria = {
                 loginCaixa: caixaSelecionado.LOGIN,

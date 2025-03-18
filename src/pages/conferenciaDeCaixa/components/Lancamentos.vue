@@ -3,10 +3,18 @@ import { state, actions, comprasFiltradas } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 import IconPagamento from "./IconPagamento.vue";
 import { iTiposPagamento } from "../interfaces";
+import { reactive } from "vue";
+import ModalDetalhesPagamento from "./ModalDetalhesPagamento.vue";
 
 const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
-  console.log("Detalhes do pagamento:", pagamento);
+  stateLancamentos.pagamentoSelecionado = pagamento;
+  stateLancamentos.modalDetalhesPagamentoOpened = true;
 };
+
+const stateLancamentos = reactive({
+  modalDetalhesPagamentoOpened: false,
+  pagamentoSelecionado: <null | iTiposPagamento>null,
+});
 </script>
 
 <template>
@@ -35,7 +43,7 @@ const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
             </template>
 
             <template v-else>
-              <span class="text-center d-block mt-3 text-grey">Ainda não teve lançamentos nesta data</span>
+              <span class="text-center d-block mt-3 text-grey">Não há lançamentos nesta data</span>
             </template>
           </v-list>
         </v-card>
@@ -121,6 +129,18 @@ const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
       </v-col>
     </v-row>
   </v-card>
+
+  <!-- Modal Detalhes Pagamento -->
+  <v-dialog
+    v-model="stateLancamentos.modalDetalhesPagamentoOpened"
+    max-width="500"
+  >
+    <ModalDetalhesPagamento
+      :modalOpened="stateLancamentos.modalDetalhesPagamentoOpened"
+      :pagamentoSelecionado="stateLancamentos.pagamentoSelecionado"
+      @closeModalDetalhesPagamento="stateLancamentos.modalDetalhesPagamentoOpened = false"
+    />
+  </v-dialog>
 </template>
 
 <style scoped>

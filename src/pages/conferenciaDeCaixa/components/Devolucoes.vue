@@ -4,13 +4,12 @@ import utils from "@/ts/utils";
 </script>
 
 <template>
-  <v-card class="pa-3">
+  <v-card class="pa-1">
     <v-row>
       <!--Totalizador Devoluções-->
       <v-col cols="4">
         <v-card
-          class="pa-2"
-          max-height="325px"
+          max-height="340px"
           style="overflow-y: scroll"
         >
           <v-list dense>
@@ -39,11 +38,10 @@ import utils from "@/ts/utils";
       <v-col cols="8">
         <v-data-table-virtual
           :items="state.devolucoes"
-          height="325"
+          height="340"
           :headers="[
             { title: 'Caixa', key: 'CAIXA' },
             { title: 'Valor', key: 'VALOR', value: (item) => utils.formatValor(item.VALOR) },
-            // { title: 'Orçamento', key: 'NUM_ORCAMENTO' },
             { title: 'Tipo Pagto', key: 'DESCRICAO_PAGAMENTO' },
             { title: 'Código', key: 'CODIGO' },
             { title: 'Autor', key: 'LOGIN' },

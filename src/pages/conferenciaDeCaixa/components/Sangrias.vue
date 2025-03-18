@@ -4,13 +4,12 @@ import utils from "@/ts/utils";
 </script>
 
 <template>
-  <v-card class="pa-3">
+  <v-card class="pa-1">
     <v-row>
       <!-- Totalizador Sangrias-->
       <v-col cols="4">
         <v-card
-          class="pa-2"
-          max-height="325px"
+          max-height="340px"
           style="overflow-y: scroll"
         >
           <v-list dense>
@@ -39,7 +38,7 @@ import utils from "@/ts/utils";
       <v-col cols="8">
         <v-data-table-virtual
           :items="state.sangrias"
-          height="325"
+          height="340"
           :headers="[
             { title: 'Valor', key: 'VALOR', value: (item) => utils.formatValor(item.VALOR) },
             { title: 'Hora', key: 'HORA', value: (item) => utils.formatHora(item.HORA) },
