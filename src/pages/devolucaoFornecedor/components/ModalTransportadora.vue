@@ -10,6 +10,7 @@ import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service"
 import Swal from "sweetalert2";
 import { computed } from "vue";
 import utils from "@/ts/utils";
+
 import { configVMoney } from "../../../constants/constants";
 
 const props = defineProps<{
@@ -71,22 +72,6 @@ const actions = {
       await Swal.fire({
         icon: "error",
         title: "Por favor, selecione uma modalidade de frete",
-      });
-      return false;
-    }
-
-    if (dadosTransportadoraDevolucao.ESPECIE == undefined) {
-      await Swal.fire({
-        icon: "error",
-        title: "Por favor, informe a espécie",
-      });
-      return false;
-    }
-
-    if (dadosTransportadoraDevolucao.QTD <= 0) {
-      await Swal.fire({
-        icon: "error",
-        title: "Por favor, informe a quantidade de volumes",
       });
       return false;
     }
@@ -218,7 +203,7 @@ const actions = {
             class="obr ss"
             name="TIPO_FRETE"
             id="TIPO_FRETE"
-            :disabled="dasabilitado"
+            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE === 9"
             v-model="state.dbTransportadoraDevolucao.TIPO_FRETE"
           >
             <option value="0">Por conta do emitente</option>
@@ -233,7 +218,7 @@ const actions = {
           <h2 class="font-weight-regular">Espécie</h2>
           <input
             v-model="state.dbTransportadoraDevolucao.ESPECIE"
-            class="ss obr"
+            class="ss"
             type="text"
             name="ESPECIE"
             id="ESPECIE"
@@ -245,7 +230,7 @@ const actions = {
           <h2 class="font-weight-regular">Qtd. Volumes</h2>
           <input
             v-model="state.dbTransportadoraDevolucao.QTD"
-            class="ss obr"
+            class="ss"
             type="number"
             name="QTD"
             id="QTD"
