@@ -20,22 +20,32 @@ export const state = reactive(({
         {
             title: "Assunto",
             key: "ASSUNTO",
-            sortable: true,
+            sortable: false,
+            width: "20%",
         },
         {
             title: "Solicitante",
             key: "SOLICITANTE",
             sortable: true,
+            width: "20%",
         },
         {
             title: "Data",
             key: "dataFormatada",
             sortable: true,
+            width: "20%",
         },
         {
             title: "Ação",
             key: "ACAO",
+            sortable: true,
+            width: "18%",
+        },
+        {
+            title: "Cod. do Chamado",
+            key: "KEY_JIRA",
             sortable: false,
+            width: "17%",
         },
     ],
     detalhes: <iVerDetalhesChamadoResponse>{},
