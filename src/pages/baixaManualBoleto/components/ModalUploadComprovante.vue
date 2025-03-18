@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
 import serviceBaixaManualBoleto from "../services/baixaManualBoleto.service";
-import { iClientesFaturados } from "../interfaces";
+import { iBoleto, iClientesFaturados, iOrcamento } from "../interfaces";
 import { reactive } from "vue";
+import globalState from "../../../store/globalState";
 
 const emit = defineEmits(["closeModalUploadComprovante", "baixaManualBoleto"]);
 
 const props = defineProps<{
   clienteSelecionado?: iClientesFaturados;
+  boletosSelecionados?: iBoleto[];
+  orcamentosSelecionados?: iOrcamento[];
 }>();
 
 const state = reactive({
@@ -87,7 +90,17 @@ const actions = {
         arquivoAjustado = await actions.resizeImage(file, 5);
       }
 
-      const nomeDoArquivo = props.clienteSelecionado.CNPJ;
+      let nomeDoArquivo = "";
+
+      props.boletosSelecionados.forEach((boleto) => {
+        nomeDoArquivo += `${boleto.NUM_BOLETO}_`;
+      });
+
+      props.orcamentosSelecionados.forEach((orcamento) => {
+        nomeDoArquivo += `OR${orcamento.NUM_ORCAMENTO}-${orcamento.DATA}_`;
+      });
+
+      nomeDoArquivo += `${props.clienteSelecionado.CNPJ}`;
 
       const formData = new FormData();
       formData.append("file", arquivoAjustado);
@@ -95,6 +108,7 @@ const actions = {
       formData.append("extensaoDoArquivo", extensaoDoArquivo);
       formData.append("class", "BaixaBoleto");
       formData.append("call", "uploadDoc");
+      formData.append("cnpjEmpresa", globalState.empresa.CGC_EMPRESA);
 
       state.nomeImgComprovante = file.name;
       state.formDataImgComprovante = formData;

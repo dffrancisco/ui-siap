@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { state, actions } from "./baixaManualBoleto";
+import { state, actions, computeds } from "./baixaManualBoleto";
 import utils from "@/ts/utils";
 import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
 import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
@@ -239,6 +239,8 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
   >
     <ModalUploadComprovante
       :clienteSelecionado="state.clienteFaturadoSelecionado"
+      :boletosSelecionados="computeds.boletosSelecionados.value"
+      :orcamentosSelecionados="computeds.orcamentosSelecionados.value"
       @baixaManualBoleto="actions.baixarBoletosEOrcamentos"
       @closeModalUploadComprovante="state.modalUploadComprovanteOpened = false"
     />
