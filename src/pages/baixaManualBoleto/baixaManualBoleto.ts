@@ -59,10 +59,15 @@ export const state = reactive({
             state.nomeClienteFaturadoSelecionado !== '' &&
             state.totalOrcamentosEBoletos !== 0
         );
-    })
+    }),
+    cnpjEmpresa: ""
 })
 
 export const actions = {
+
+    async init() {
+        await actions.getCnpjEmpresa();
+    },
 
     async salvarClienteFaturadoSelecionado(clienteFaturadoSelecionado: iClientesFaturados) {
         actions.limparStatesAnteriores();
@@ -262,6 +267,18 @@ export const actions = {
             }
         } catch (err) {
             Swal.fire({ icon: "error", text: "Erro ao dar baixa nos boletos e orçamentos." });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    async getCnpjEmpresa() {
+        try {
+            state.loading = true;
+            let data = await serviceBaixaManualBoleto.getCnpjEmpresa();
+            state.cnpjEmpresa = data.CGC_EMPRESA;
+        } catch (err) {
+            Swal.fire({ icon: "error", text: "Erro ao buscar CNPJ da empresa." });
         } finally {
             state.loading = false;
         }

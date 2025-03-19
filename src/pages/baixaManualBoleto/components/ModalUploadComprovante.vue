@@ -3,7 +3,6 @@ import Swal from "sweetalert2";
 import serviceBaixaManualBoleto from "../services/baixaManualBoleto.service";
 import { iBoleto, iClientesFaturados, iOrcamento } from "../interfaces";
 import { reactive } from "vue";
-import globalState from "../../../store/globalState";
 
 const emit = defineEmits(["closeModalUploadComprovante", "baixaManualBoleto"]);
 
@@ -11,6 +10,7 @@ const props = defineProps<{
   clienteSelecionado?: iClientesFaturados;
   boletosSelecionados?: iBoleto[];
   orcamentosSelecionados?: iOrcamento[];
+  cnpjEmpresa?: string;
 }>();
 
 const state = reactive({
@@ -108,7 +108,7 @@ const actions = {
       formData.append("extensaoDoArquivo", extensaoDoArquivo);
       formData.append("class", "BaixaBoleto");
       formData.append("call", "uploadDoc");
-      formData.append("cnpjEmpresa", globalState.empresa.CGC_EMPRESA);
+      formData.append("cnpjEmpresa", props.cnpjEmpresa);
 
       state.nomeImgComprovante = file.name;
       state.formDataImgComprovante = formData;

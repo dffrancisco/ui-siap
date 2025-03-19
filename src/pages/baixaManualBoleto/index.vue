@@ -3,6 +3,11 @@ import { state, actions, computeds } from "./baixaManualBoleto";
 import utils from "@/ts/utils";
 import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
 import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
+import { onMounted } from "vue";
+
+onMounted(async () => {
+  await actions.init();
+});
 </script>
 <template>
   <v-container>
@@ -241,6 +246,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
       :clienteSelecionado="state.clienteFaturadoSelecionado"
       :boletosSelecionados="computeds.boletosSelecionados.value"
       :orcamentosSelecionados="computeds.orcamentosSelecionados.value"
+      :cnpjEmpresa="state.cnpjEmpresa"
       @baixaManualBoleto="actions.baixarBoletosEOrcamentos"
       @closeModalUploadComprovante="state.modalUploadComprovanteOpened = false"
     />
