@@ -229,9 +229,9 @@ export const actions = {
         try {
             state.loading = true;
             let newFields = {
-                CFOP: state.dbCfop.CFOP.toUpperCase(),
+                CFOP: state.dbCfop.CFOP,
                 DESCRICAO: state.dbCfop.DESCRICAO?.toUpperCase(),
-                VALOR: utils.formatValorUSA(state.dbCfop.VALOR.toString()),
+                VALOR: state.dbCfop.VALOR,
                 UF: state.dbCfop.UF?.toUpperCase(),
             };
             await serviceCfop.toInsert(newFields);
