@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
+import { configVMoney } from "../../constants/constants";
 import { state, actions, computeds, selectedCarteira } from "./configBoleto";
 
 onMounted(async () => {
@@ -14,12 +15,17 @@ onMounted(async () => {
       maxHeight="550"
       class="ma-auto pa-4"
     >
+      <div class="d-flex align-center justify-center pb-5"
+        ><v-card-title>Opção do Boleto Bancário</v-card-title></div
+      >
+
       <div class="d-flex flex-column ga-2">
         <div class="d-flex ga-4">
           <v-row>
             <v-col cols="3">
               <v-text-field
                 label="Banco"
+                class="obr rounded-lg"
                 id="banco"
                 v-model="state.dadosBoleto.BANCO"
                 :clearable="false"
@@ -29,6 +35,7 @@ onMounted(async () => {
             <v-col cols="4">
               <v-text-field
                 label="Agência"
+                class="obr rounded-lg"
                 v-model="state.dadosBoleto.AGENCIA"
                 :clearable="false"
                 :disabled="state.botaoAlterarHabilitado"
@@ -37,6 +44,7 @@ onMounted(async () => {
             <v-col cols="5">
               <v-text-field
                 label="Conta Bancária"
+                class="obr rounded-lg"
                 v-model="state.dadosBoleto.CONTA_BANCARIA"
                 :clearable="false"
                 :disabled="state.botaoAlterarHabilitado"
@@ -50,6 +58,7 @@ onMounted(async () => {
               <v-select
                 label="Carteira"
                 :items="state.carteiraBancoBradesco"
+                class="obr rounded-lg"
                 item-title="NUM_CARTEIRA"
                 item-value="NUM_CARTEIRA"
                 v-model="selectedCarteira"
@@ -76,6 +85,7 @@ onMounted(async () => {
             <v-col cols="3">
               <v-text-field
                 label="Juros Boleto"
+                class="obr rounded-lg"
                 v-model="state.dadosBoleto.JUROS"
                 :clearable="false"
                 :disabled="state.botaoAlterarHabilitado"
@@ -88,6 +98,7 @@ onMounted(async () => {
             <v-col cols="12">
               <v-textarea
                 label="Instruções do Boleto"
+                class="obr rounded-lg"
                 v-model="state.dadosBoleto.OBS_BOLETO"
                 :clearable="false"
                 :disabled="state.botaoAlterarHabilitado"

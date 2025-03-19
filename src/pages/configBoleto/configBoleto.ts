@@ -87,18 +87,15 @@ export const actions = {
             agencia: state.dadosBoleto.AGENCIA,
             contaBancaria: state.dadosBoleto.CONTA_BANCARIA,
             carteira: state.dadosBoleto.CARTEIRA,
-            juros: state.dadosBoleto.JUROS
+            juros: state.dadosBoleto.JUROS,
+            obsBoleto: state.dadosBoleto.OBS_BOLETO
         }
 
         if (await msgConfirmSemCodigo("Confirmação", "Deseja alterar os dados do configuração do boleto?")) {
 
             try {
                 state.loading = true
-                const dadosConfigBoleto = await serviceConfigBoleto.updateConfigBoleto(param as iParamUpdateConfigBoleto)
-                state.carteiraBancoBradesco = dadosConfigBoleto.carteiraBancoBradesco;
-                state.dadosBoleto = dadosConfigBoleto.dadosBoleto;
-
-                selectedCarteira.value = state.dadosBoleto.CARTEIRA;
+                await serviceConfigBoleto.updateConfigBoleto(param as iParamUpdateConfigBoleto)
 
                 Swal.fire({
                     icon: "success",

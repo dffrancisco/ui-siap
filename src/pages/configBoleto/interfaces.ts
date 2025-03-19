@@ -24,4 +24,5 @@ export interface iParamUpdateConfigBoleto {
     contaBancaria: string;
     carteira: string;
     juros: number;
+    obsBoleto: string;
 }
