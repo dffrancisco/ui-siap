@@ -2,6 +2,7 @@
 import { actions, state } from "./cfop";
 import { onMounted, onUnmounted } from "vue";
 import { useEventListener } from "@vueuse/core";
+import { configVMoney } from "../../constants/constants";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (event.key === "F1") {
@@ -30,7 +31,7 @@ onUnmounted(() => {
       <div id="pnCampos">
         <v-row>
           <v-col cols="5">
-            <span>Descrição CFOP</span>
+            <span>Descrição</span>
             <input
               v-model="state.dbCfop.DESCRICAO"
               type="text"
@@ -42,10 +43,10 @@ onUnmounted(() => {
             />
           </v-col>
           <v-col cols="2">
-            <span>Código CFOP</span>
+            <span>CFOP</span>
             <input
-              v-model="state.dbCfop.CFOP"
-              type="text"
+              v-model.number="state.dbCfop.CFOP"
+              type="number"
               id="CFOP"
               name="CFOP"
               class="obr ss"
@@ -69,8 +70,8 @@ onUnmounted(() => {
           <v-col cols="3">
             <span>Valor</span>
             <input
-              v-model="state.dbCfop.VALOR"
-              type="text"
+              v-model.number="state.dbCfop.VALOR"
+              v-money3="configVMoney"
               id="VALOR"
               name="VALOR"
               class="obr ss"

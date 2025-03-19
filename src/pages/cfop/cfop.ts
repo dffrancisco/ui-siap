@@ -31,8 +31,8 @@ export const actions = {
             columns: {
                 "CFOP": { dataField: "CFOP" },
                 "Descrição": { dataField: "DESCRICAO", width: '50%' },
-                "Valor": { dataField: "VALOR", render: utils.formatValor },
-                "UF": { dataField: "UF" },
+                "Valor": { dataField: "VALOR", render: utils.formatValor, width: '20%' },
+                "UF": { dataField: "UF", width: '10%' },
             },
             query: {
                 async execute(rs) {
@@ -229,9 +229,9 @@ export const actions = {
         try {
             state.loading = true;
             let newFields = {
-                CFOP: state.dbCfop.CFOP,
+                CFOP: state.dbCfop.CFOP.toUpperCase(),
                 DESCRICAO: state.dbCfop.DESCRICAO?.toUpperCase(),
-                VALOR: state.dbCfop.VALOR,
+                VALOR: utils.formatValorUSA(state.dbCfop.VALOR.toString()),
                 UF: state.dbCfop.UF?.toUpperCase(),
             };
             await serviceCfop.toInsert(newFields);
