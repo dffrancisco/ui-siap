@@ -26,7 +26,7 @@ export const state = reactive(({
         {
             title: "Solicitante",
             key: "SOLICITANTE",
-            sortable: true,
+            sortable: false,
             width: "20%",
         },
         {
@@ -44,7 +44,7 @@ export const state = reactive(({
         {
             title: "Ação",
             key: "ACAO",
-            sortable: true,
+            sortable: false,
             width: "17%",
         },
 
