@@ -18,7 +18,7 @@ export const state = reactive({
 export const actions = {
     async init() {
         actions.grids();
-        state.gridPrincipal.queryOpen({ DESCRICAO: "", CFOP: "" }, () => {
+        state.gridPrincipal.queryOpen({ DESCRICAO: "" }, () => {
             state.gridPrincipal.focus();
         });
     },
@@ -255,7 +255,7 @@ export const actions = {
             let param = {
                 CFOP: state.dbCfop.CFOP,
                 DESCRICAO: state.dbCfop.DESCRICAO?.toUpperCase(),
-                VALOR: state.dbCfop.VALOR,
+                VALOR: utils.formatValorUSA(state.dbCfop.VALOR.toString()),
                 UF: state.dbCfop.UF?.toUpperCase(),
             };
             state.loading = true;
@@ -265,7 +265,7 @@ export const actions = {
                 icon: "success",
                 text: "CFOP atualizado com sucesso.",
             });
-        } catch (error: any) {
+        } catch (error) {
             Swal.fire({
                 icon: "error",
                 title: "Erro ao atualizar CFOP!",

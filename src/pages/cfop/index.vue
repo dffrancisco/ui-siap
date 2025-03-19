@@ -37,7 +37,7 @@ onUnmounted(() => {
               id="DESCRICAO"
               name="DESCRICAO"
               class="obr ss"
-              maxlength="51"
+              maxlength="40"
               autocomplete="off"
             />
           </v-col>
@@ -49,7 +49,7 @@ onUnmounted(() => {
               id="CFOP"
               name="CFOP"
               class="obr ss"
-              maxlength="5"
+              maxlength="10"
               autocomplete="off"
             />
           </v-col>
@@ -60,6 +60,7 @@ onUnmounted(() => {
               type="text"
               id="UF"
               name="UF"
+              v-mask="'SS'"
               class="obr ss"
               maxlength="2"
               autocomplete="off"
@@ -73,7 +74,7 @@ onUnmounted(() => {
               id="VALOR"
               name="VALOR"
               class="obr ss"
-              maxlength="5"
+              maxlength="15"
               autocomplete="off"
             />
           </v-col>
