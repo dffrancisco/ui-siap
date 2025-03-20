@@ -14,11 +14,11 @@ onMounted(async () => {
       maxHeight="550"
       class="ma-auto pa-4"
     >
-      <div class="d-flex align-center justify-center pb-5"
+      <div class="d-flex align-center justify-center pb-4"
         ><v-card-title>Opção do Boleto Bancário</v-card-title></div
       >
 
-      <div class="d-flex flex-column ga-2">
+      <div class="d-flex flex-column ga-2 pt-2">
         <div class="d-flex ga-4">
           <v-row>
             <v-col cols="3">
