@@ -61,11 +61,15 @@ const stateLancamentos = reactive({
           class="elevation-1"
         >
           <template v-slot:item.INDEX="{ item }">
-            <span class="text-center font-weight"># {{ item.INDEX }}</span>
+            <span
+              class="text-center font-weight"
+              style="max-width: 40px"
+              >{{ item.INDEX }}</span
+            >
           </template>
 
           <template v-slot:item.NUM_ORCAMENTO="{ item }">
-            <div class="d-flex flex-wrap align-center">
+            <div class="orcamento-group">
               <div
                 v-for="orc in item.ORCAMENTOS?.length
                   ? item.ORCAMENTOS
@@ -90,36 +94,32 @@ const stateLancamentos = reactive({
           </template>
 
           <template v-slot:item.PAGAMENTOS="{ item }">
-            <div class="d-flex flex-wrap">
+            <div class="d-flex flex-wrap pa-1">
               <v-chip
                 v-for="pagamento in item.TIPOS_PAGAMENTO"
                 :key="pagamento.TIPOS_PAGAMENTO"
                 class="mr-1 chip-custom"
                 color="primary"
-                style="border-radius: 8px !important; margin: 3px"
+                @click.stop="exibirDetalhesPagamento(pagamento)"
+                title="ver detalhes"
               >
                 <div class="chip-content">
-                  <div class="descricao-pagamento">
-                    {{ pagamento.DESCRICAO_PAGAMENTO }}
-                    <span v-if="pagamento.DIVIDE !== null"> {{ pagamento.DIVIDE }}x </span>
-                  </div>
+                  <IconPagamento
+                    :tipoPagamento="pagamento.DESCRICAO_PAGAMENTO"
+                    :bandeira="pagamento.BANDEIRA"
+                    :descricaoBandeira="pagamento.DESCRICAO_BANDEIRA"
+                  />
+                  <div class="d-flex flex-column">
+                    <div class="d-flex align-center justify-space-between">
+                      <div class="descricao-pagamento">
+                        {{ pagamento.DESCRICAO_PAGAMENTO }}
+                        <span v-if="pagamento.DIVIDE !== null"> {{ pagamento.DIVIDE }}x </span>
+                      </div>
+                    </div>
 
-                  <div class="d-flex align-center">
-                    <IconPagamento
-                      :tipoPagamento="pagamento.DESCRICAO_PAGAMENTO"
-                      :bandeira="pagamento.BANDEIRA"
-                      :descricaoBandeira="pagamento.DESCRICAO_BANDEIRA"
-                    />
-
-                    {{ utils.formatValor(pagamento.VALOR) }}
-
-                    <v-icon
-                      class="ml-3"
-                      @click.stop="exibirDetalhesPagamento(pagamento)"
-                      title="ver detalhes"
-                    >
-                      mdi-information
-                    </v-icon>
+                    <div class="d-flex align-center">
+                      <strong>{{ utils.formatValor(pagamento.VALOR) }}</strong>
+                    </div>
                   </div>
                 </div>
               </v-chip>
@@ -161,19 +161,29 @@ const stateLancamentos = reactive({
 }
 
 .chip-custom {
-  width: 120px;
+  width: 105px;
   height: 45px;
+  border-radius: 8px !important;
+}
+
+.chip-content {
+  width: 105px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 5px;
 }
 
 .descricao-pagamento {
   font-size: 9px;
-  font-weight: bold;
+  font-weight: 500;
   line-height: 1;
   margin-bottom: 2px;
+}
+
+.orcamento-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 4px;
+  gap: 2px;
 }
 
 .orcamento-box {
@@ -186,9 +196,6 @@ const stateLancamentos = reactive({
   color: #0496ea;
   background: rgba(33, 150, 243, 0.15);
   width: fit-content;
-  margin-top: 3px;
-  margin-bottom: 3px;
-  margin-right: 5px;
 }
 
 .orcamento-numero {
@@ -196,12 +203,20 @@ const stateLancamentos = reactive({
   background: #0496ea;
   color: white;
   border-radius: 0px 8px 8px 0px;
+  min-width: 54px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .orcamento-valor {
   padding: 4px 8px;
   color: #0496ea;
   border-radius: 0 6px 6px 0;
+  min-width: 56px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .orcamento-numero-entregar-receber {

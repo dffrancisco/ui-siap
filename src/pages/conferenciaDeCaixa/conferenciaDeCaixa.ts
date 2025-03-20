@@ -24,10 +24,10 @@ export const state = reactive({
     modalSangriaOpened: false,
     pagamentoSelecionado: null,
     headersLancamentos: [
-        { title: "#", key: "INDEX", width: "50px" },
-        { title: "N° Orçamento / Valor", key: "NUM_ORCAMENTO", width: "220px" },
+        { title: "#", key: "INDEX", width: "40px" },
+        { title: "Orçamentos", key: "NUM_ORCAMENTO", minWidth: "170px" },
         { title: "Hora", key: "HORA", width: "60px", value: (item: any) => utils.formatHora(item.HORA) },
-        { title: "Pagamentos", key: "PAGAMENTOS", width: "300px" },
+        { title: "Pagamentos", key: "PAGAMENTOS", width: "100%" },
         { title: "Total", key: "VALOR", width: "120px", value: (item: any) => utils.formatValor(item.VALOR_TOTAL) },
     ],
 });
