@@ -2,7 +2,7 @@ import Swal from "sweetalert2";
 import { computed, reactive, ref, watch } from "vue";
 import serviceConfigBoleto from "./services/configBoleto.service";
 import { iCarteiraBradesco, iDadosBoleto, iParamUpdateConfigBoleto } from "./interfaces";
-import { msgConfirmSemCodigo } from "@/ts/utils";
+import utils, { msgConfirmSemCodigo } from "@/ts/utils";
 
 export const state = reactive({
     loading: false,
@@ -54,8 +54,6 @@ export const actions = {
         state.botaoAlterarHabilitado = true;
         state.botaoSalvarHabilitado = false;
         state.botaoCancelarHabilitado = false;
-
-        console.log(state.dadosBoleto.BANCO);
 
         if (!state.dadosBoleto.BANCO ||
             !state.dadosBoleto.AGENCIA ||

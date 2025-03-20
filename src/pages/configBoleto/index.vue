@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { configVMoney } from "../../constants/constants";
 import { state, actions, computeds, selectedCarteira } from "./configBoleto";
 
 onMounted(async () => {
@@ -27,6 +26,7 @@ onMounted(async () => {
                 label="Banco"
                 class="obr rounded-lg"
                 id="banco"
+                maxlength="3"
                 v-model="state.dadosBoleto.BANCO"
                 :clearable="false"
                 :disabled="state.botaoAlterarHabilitado"
@@ -36,6 +36,7 @@ onMounted(async () => {
               <v-text-field
                 label="Agência"
                 class="obr rounded-lg"
+                maxlength="6"
                 v-model="state.dadosBoleto.AGENCIA"
                 :clearable="false"
                 :disabled="state.botaoAlterarHabilitado"
@@ -45,6 +46,7 @@ onMounted(async () => {
               <v-text-field
                 label="Conta Bancária"
                 class="obr rounded-lg"
+                maxlength="15"
                 v-model="state.dadosBoleto.CONTA_BANCARIA"
                 :clearable="false"
                 :disabled="state.botaoAlterarHabilitado"
@@ -86,9 +88,12 @@ onMounted(async () => {
               <v-text-field
                 label="Juros Boleto"
                 class="obr rounded-lg"
+                maxlength="15"
                 v-model="state.dadosBoleto.JUROS"
                 :clearable="false"
+                type="number"
                 :disabled="state.botaoAlterarHabilitado"
+                @keypress.enter.prevent="actions.salvar"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -99,9 +104,11 @@ onMounted(async () => {
               <v-textarea
                 label="Instruções do Boleto"
                 class="obr rounded-lg"
+                maxlength="200"
                 v-model="state.dadosBoleto.OBS_BOLETO"
                 :clearable="false"
                 :disabled="state.botaoAlterarHabilitado"
+                @keypress.enter.prevent="actions.salvar"
               ></v-textarea>
             </v-col>
           </v-row>
