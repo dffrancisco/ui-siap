@@ -59,7 +59,8 @@ export const actions = {
                             field: rs.field,
                         });
                         if (dup && Object.keys(dup).length > 0) {
-                            state.gridPrincipal.showMessageDuplicity(rs.text + " já cadastrado.");
+                            state.gridPrincipal.showMessageDuplicity(
+                                rs.text + " já cadastrado.");
                             return true;
                         }
                         return false;
@@ -240,7 +241,7 @@ export const actions = {
                 icon: "success",
                 text: "CFOP adicionado com sucesso.",
             });
-        } catch (error: any) {
+        } catch (error) {
             await Swal.fire({
                 icon: "error",
                 text: "Erro ao adicionar CFOP.",
