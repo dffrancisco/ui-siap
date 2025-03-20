@@ -118,18 +118,21 @@ onMounted(async () => {
             <v-btn
               color="primary"
               @click="actions.alterar"
+              prepend-icon="mdi-pen"
               :disabled="!state.botaoAlterarHabilitado"
               >Alterar</v-btn
             >
             <v-btn
               color="primary"
               @click="actions.salvar"
+              prepend-icon="mdi-content-save"
               :disabled="!state.botaoSalvarHabilitado"
               >Salvar</v-btn
             >
             <v-btn
               color="primary"
               @click="actions.cancelar"
+              prepend-icon="mdi-cancel"
               :disabled="!state.botaoCancelarHabilitado"
               >Cancelar</v-btn
             >
