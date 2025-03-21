@@ -54,7 +54,7 @@ function onPermissaoConcedida() {
     <title>Desconto Gerentes</title>
     <v-card
       class="pa-5 mx-auto"
-      max-width="1000px"
+      max-width="800px"
     >
       <div class="d-flex">
         <div class="flex-grow-1">
