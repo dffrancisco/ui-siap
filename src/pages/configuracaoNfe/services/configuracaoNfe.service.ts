@@ -15,48 +15,67 @@ import {
 } from '../interfaces';
 
 const caminho = 'configuracaoNfe';
-type iGetFunction<T> = () => Promise<Array<T>>;
-type iUpdateFunction<T> = (param: T) => Promise<void>;
-type iInsertFunction<T> = (param: T) => Promise<T>;
-type iDeleteFunction = (param: { id: string | number }) => Promise<iToDeleteResponse>;
-type iDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
 
-const getNfeConfig: iGetFunction<iNfeConfig> = async () => {
+
+type GetNfeConfigFn = () => Promise<iNfeConfig[]>;
+type GetRegimeTributarioFn = () => Promise<iRegimeTributario[]>;
+type GetPisFn = () => Promise<iPis[]>;
+type GetCofinsFn = () => Promise<iCofins[]>;
+
+type InsertNfeConfigFn = (param: iInsertNfeConfigParam) => Promise<void>;
+type UpdateNfeConfigFn = (param: iUpdateNfeConfig) => Promise<void>;
+
+type InsertRegimeTributarioFn = (param: iInsertRegimeTributario) => Promise<iRegimeTributario>;
+type UpdateRegimeTributarioFn = (param: iRegimeTributario) => Promise<void>;
+type DeleteRegimeTributarioFn = (id: number) => Promise<iToDeleteResponse>;
+
+type InsertPisFn = (param: iPis) => Promise<iPis>;
+type UpdatePisFn = (param: iPis) => Promise<void>;
+type DeletePisFn = (id: number) => Promise<iToDeleteResponse>;
+
+type InsertCofinsFn = (param: iCofins) => Promise<iCofins>;
+type UpdateCofinsFn = (param: iCofins) => Promise<void>;
+type DeleteCofinsFn = (id: number) => Promise<iToDeleteResponse>;
+
+type CheckDuplicityFn = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
+
+
+const getNfeConfig: GetNfeConfigFn = async () => {
     const { data } = await axios.post(caminho, {
         call: 'getNfeConfig'
     });
     return data;
 };
 
-const getRegimeTributario: iGetFunction<iRegimeTributario> = async () => {
+const getRegimeTributario: GetRegimeTributarioFn = async () => {
     const { data } = await axios.post(caminho, {
         call: 'getRegimeTributario'
     });
     return data;
 };
 
-const getPis: iGetFunction<iPis> = async () => {
+const getPis: GetPisFn = async () => {
     const { data } = await axios.post(caminho, {
         call: 'getPis'
     });
     return data;
 };
 
-const getCofins: iGetFunction<iCofins> = async () => {
+const getCofins: GetCofinsFn = async () => {
     const { data } = await axios.post(caminho, {
         call: 'getCofins'
     });
     return data;
 };
 
-const updateNfe: iUpdateFunction<iUpdateNfeConfig> = async (param) => {
+const updateNfe: UpdateNfeConfigFn = async (param) => {
     await axios.post(caminho, {
         call: 'updateNfe',
         param
     });
 };
 
-const toInsertRegimeTributario: iInsertFunction<iInsertRegimeTributario> = async (param) => {
+const toInsertRegimeTributario: InsertRegimeTributarioFn = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "createRegimeTributario",
         param
@@ -64,23 +83,22 @@ const toInsertRegimeTributario: iInsertFunction<iInsertRegimeTributario> = async
     return data;
 };
 
-const toUpdateRegimeTributario: iUpdateFunction<iRegimeTributario> = async (param) => {
-    const { data } = await axios.post(caminho, {
+const toUpdateRegimeTributario: UpdateRegimeTributarioFn = async (param) => {
+    await axios.post(caminho, {
         call: "updateRegimeTributario",
         param
     });
-    return data;
 };
 
-const toDeleteRegimeTributario: iDeleteFunction = async (param) => {
+const toDeleteRegimeTributario: DeleteRegimeTributarioFn = async (ID_REGIME_TRIBUTARIO) => {
     const { data } = await axios.post(caminho, {
         call: "deleteRegimeTributario",
-        param
+        param: { ID_REGIME_TRIBUTARIO }
     });
     return data;
 };
 
-const toInsertPis: iInsertFunction<iPis> = async (param) => {
+const toInsertPis: InsertPisFn = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "createPis",
         param
@@ -88,23 +106,22 @@ const toInsertPis: iInsertFunction<iPis> = async (param) => {
     return data;
 };
 
-const toUpdatePis: iUpdateFunction<iPis> = async (param) => {
-    const { data } = await axios.post(caminho, {
+const toUpdatePis: UpdatePisFn = async (param) => {
+    await axios.post(caminho, {
         call: "updatePis",
         param
     });
-    return data;
 };
 
-const toDeletePis: iDeleteFunction = async (param) => {
+const toDeletePis: DeletePisFn = async (id) => {
     const { data } = await axios.post(caminho, {
         call: "deletePis",
-        param
+        param: { id }
     });
     return data;
 };
 
-const toInsertCofins: iInsertFunction<iCofins> = async (param) => {
+const toInsertCofins: InsertCofinsFn = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "createCofins",
         param
@@ -112,27 +129,26 @@ const toInsertCofins: iInsertFunction<iCofins> = async (param) => {
     return data;
 };
 
-const toUpdateCofins: iUpdateFunction<iCofins> = async (param) => {
-    const { data } = await axios.post(caminho, {
+const toUpdateCofins: UpdateCofinsFn = async (param) => {
+    await axios.post(caminho, {
         call: "updateCofins",
         param
     });
-    return data;
 };
 
-const toDeleteCofins: iDeleteFunction = async (param) => {
+const toDeleteCofins: DeleteCofinsFn = async (id) => {
     const { data } = await axios.post(caminho, {
         call: "deleteCofins",
-        param
+        param: { id }
     });
     return data;
 };
 
-const getDuplicidade: iDuplicityFunction = async ({ value, field }) => {
+const getDuplicidade: CheckDuplicityFn = async ({ value, field }) => {
     const { data } = await axios.post(caminho, {
         call: "getDuplicidade",
-        value,
-        field
+        field,
+        value
     });
     return data;
 };
