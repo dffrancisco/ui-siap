@@ -45,12 +45,12 @@ onUnmounted(() => {
           <v-col cols="2">
             <span>CFOP</span>
             <input
-              v-model.number="state.dbCfop.CFOP"
-              type="number"
+              v-model="state.dbCfop.CFOP"
+              type="text"
               id="CFOP"
               name="CFOP"
               class="obr ss"
-              maxlength="10"
+              maxlength="4"
               autocomplete="off"
             />
           </v-col>
@@ -70,7 +70,8 @@ onUnmounted(() => {
           <v-col cols="3">
             <span>Valor</span>
             <input
-              v-model.number="state.dbCfop.VALOR"
+              v-model.lazy="state.dbCfop.VALOR"
+              :model-modifiers="{ number: true }"
               v-money3="configVMoney"
               id="VALOR"
               name="VALOR"

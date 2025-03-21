@@ -11,15 +11,16 @@ import {
 } from "../interfaces";
 
 const caminho = "siap/cfop";
+type iGetCfopFunction = (param: string) => Promise<iCfopResponse>;
 
-const getCfop = async ({ param, offset }: iParamGetCfop): Promise<iCfopResponse> => {
+
+const getCfop: iGetCfopFunction = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "getCfop",
-        offset,
-        param,
+        param
     });
     return data;
-};
+}
 
 const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
     const { data } = await axios.post(caminho, {

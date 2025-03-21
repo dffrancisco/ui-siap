@@ -18,9 +18,7 @@ export const state = reactive({
 export const actions = {
     async init() {
         actions.grids();
-        state.gridPrincipal.queryOpen({ DESCRICAO: "" }, () => {
-            state.gridPrincipal.focus();
-        });
+        actions.getCfop();
     },
 
     grids() {
@@ -36,15 +34,7 @@ export const actions = {
                 },
                 "UF": { dataField: "UF", width: '10%', center: true },
             },
-            query: {
-                async execute(rs) {
-                    let data = await actions.getCfop({
-                        offset: rs.offset,
-                        param: rs.param,
-                    });
-                    state.gridPrincipal.querySourceAdd(data);
-                },
-            },
+
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
@@ -107,26 +97,29 @@ export const actions = {
         });
     },
 
-    async getCfop({ offset, param }: iParamGetCfop) {
+    async getCfop() {
         try {
             state.loading = true;
-            const data = await serviceCfop.getCfop({ offset, param });
+            const param = state.edtSearch?.toUpperCase();
+
+            const data = await serviceCfop.getCfop(param);
+            state.gridPrincipal.source(data);
             return data;
         } catch (error) {
             Swal.fire({
                 icon: "error",
                 text: "Erro ao exibir os CFOP.",
             });
+            return [];
         } finally {
             state.loading = false;
         }
     },
 
     async search() {
-        const searchValue = state.edtSearch?.toUpperCase();
-        state.gridPrincipal.queryOpen({
-            DESCRICAO: searchValue,
-        });
+        state.gridPrincipal.clear();
+        const data = await actions.getCfop();
+        state.gridPrincipal.source(data);
     },
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
@@ -234,8 +227,8 @@ export const actions = {
             let newFields = {
                 CFOP: state.dbCfop.CFOP,
                 DESCRICAO: state.dbCfop.DESCRICAO?.toUpperCase(),
-                VALOR: state.dbCfop.VALOR,
-                UF: state.dbCfop.UF?.toUpperCase(),
+                VALOR: utils.formatValorUSA(state.dbCfop.VALOR.toString()),
+                UF: state.dbCfop.UF.toUpperCase(),
             };
             await serviceCfop.toInsert(newFields);
             state.gridPrincipal.insertLine({ ...newFields });
