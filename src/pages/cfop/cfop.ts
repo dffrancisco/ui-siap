@@ -30,9 +30,11 @@ export const actions = {
             count: true,
             columns: {
                 "CFOP": { dataField: "CFOP" },
-                "Descrição": { dataField: "DESCRICAO", width: '50%' },
-                "Valor": { dataField: "VALOR", render: utils.formatValor, width: '20%' },
-                "UF": { dataField: "UF", width: '10%' },
+                "Descrição": { dataField: "DESCRICAO", width: '60%' },
+                "Valor": {
+                    dataField: "VALOR", render: utils.formatValor, width: '15%', right: true
+                },
+                "UF": { dataField: "UF", width: '10%', center: true },
             },
             query: {
                 async execute(rs) {
