@@ -104,6 +104,7 @@ export const actions = {
 
             const data = await serviceCfop.getCfop(param);
             state.gridPrincipal.source(data);
+            state.gridPrincipal.focus();
             return data;
         } catch (error) {
             Swal.fire({
