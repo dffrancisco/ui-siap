@@ -59,9 +59,13 @@ export const actions = {
                 state.funcionarios = data.funcionarios;
                 state.caixas = data.caixas;
                 state.todasAsCompras = data.comprasAgrupadas;
-                state.totalizadores = data.totalizadores;
                 state.sangrias = data.sangrias;
                 state.devolucoes = data.devolucoes;
+
+                state.totalizadores = [
+                    { TIPO_PAGAMENTO: "TODOS", DESCRICAO_PAGAMENTO: "TODOS", VALOR: data.totalizadores.reduce((acc, item) => acc + item.VALOR, 0) },
+                    ...data.totalizadores
+                ];
             }
         } catch (error) {
             Swal.fire({
@@ -215,12 +219,7 @@ export const actions = {
     },
 
     selecionarPagamento(tipoPagamento: string) {
-        state.pagamentoSelecionado = tipoPagamento;
-    },
-
-    obterDescricaoPagamento(tipoPagamento: string) {
-        const pagamento = state.totalizadores.find(p => p.TIPO_PAGAMENTO === tipoPagamento);
-        return pagamento ? pagamento.DESCRICAO_PAGAMENTO : "Desconhecido";
+        state.pagamentoSelecionado = tipoPagamento === "TODOS" ? null : tipoPagamento;
     },
 
     async modalSangria(caixa) {
@@ -317,28 +316,17 @@ export const totalSangrias = computed(() => {
 export const comprasFiltradas = computed(() => {
     let compras = state.todasAsCompras;
 
-    // Se um tipo de pagamento foi selecionado, filtrar os itens
     if (state.pagamentoSelecionado) {
-        // if (state.pagamentoSelecionado == 6) {
-        //     // Quando pagamentoSelecionado == 6, filtra por ENTREGAR_RECEBER
-        //     compras = compras.filter(c =>
-        //         c.ENTREGAR_RECEBER === true ||
-        //         c.TIPOS_PAGAMENTO.some(tp => tp.TIPO_PAGAMENTO === "6")
-        //     );
-        // } else {
-        // Filtragem normal pelo TIPO_PAGAMENTO
         compras = compras.filter(c =>
             c.TIPOS_PAGAMENTO.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
         );
-        // }
     }
 
-    // Ordena as compras por hora antes de numerar
     return compras
         .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
         .map((compra, index) => ({
             ...compra,
-            INDEX: index + 1, // A numeração é reiniciada sempre que a lista muda
+            INDEX: index + 1,
         }));
 });
 
