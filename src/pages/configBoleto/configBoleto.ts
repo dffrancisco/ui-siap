@@ -26,7 +26,10 @@ export const actions = {
 
             let dadosConfigBoleto = await serviceConfigBoleto.getDadosIniciaisConfigBoleto();
             state.carteiraBancoBradesco = dadosConfigBoleto.carteiraBancoBradesco;
-            state.dadosBoleto = dadosConfigBoleto.dadosBoleto;
+            state.dadosBoleto = {
+                ...dadosConfigBoleto.dadosBoleto,
+                JUROS: utils.formatValor(dadosConfigBoleto.dadosBoleto.JUROS)
+            };
 
             selectedCarteira.value = state.dadosBoleto.CARTEIRA;
         } catch (error) {
@@ -85,7 +88,7 @@ export const actions = {
             agencia: state.dadosBoleto.AGENCIA,
             contaBancaria: state.dadosBoleto.CONTA_BANCARIA,
             carteira: state.dadosBoleto.CARTEIRA,
-            juros: state.dadosBoleto.JUROS,
+            juros: utils.formatValorUSA(state.dadosBoleto.JUROS),
             obsBoleto: state.dadosBoleto.OBS_BOLETO
         }
 

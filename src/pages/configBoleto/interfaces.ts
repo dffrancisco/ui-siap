@@ -9,7 +9,7 @@ export interface iDadosBoleto {
     BANCO: string;
     CARTEIRA: string;
     CONTA_BANCARIA: string;
-    JUROS: number;
+    JUROS: string;
     OBS_BOLETO: string;
 }
 

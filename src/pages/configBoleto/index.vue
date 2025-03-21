@@ -88,10 +88,9 @@ onMounted(async () => {
               <v-text-field
                 label="Juros Boleto"
                 class="obr rounded-lg"
-                maxlength="15"
+                v-mask-decimal.br="2"
                 v-model="state.dadosBoleto.JUROS"
                 :clearable="false"
-                type="number"
                 :disabled="state.botaoAlterarHabilitado"
                 @keypress.enter.prevent="actions.salvar"
               ></v-text-field>
