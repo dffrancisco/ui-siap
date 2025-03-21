@@ -8,13 +8,9 @@ export interface iUsuarioComPermissao {
     NOME_COMP: string;
 }
 
-export interface iHistoricoSenha {
-    HISTORICO?: string;
-}
-
 export interface iGetUsuariosResponse {
-    usuarios?: iUsuario[];
-    usuariosComPermissao?: iUsuario[];
+    usuarios: iUsuario[];
+    usuariosComPermissao: iUsuarioComPermissao[];
 }
 
 export interface iUsuarioDesconto {
@@ -23,7 +19,6 @@ export interface iUsuarioDesconto {
     HISTORICO?: string;
     NOME_COMP?: string;
     SENHA_ATUAL?: string;
-
 }
 
 export interface iParamGetUsuarios { }
@@ -38,6 +33,4 @@ export interface iAlterarSenhaResponse { }
 export interface iParamRemoverPermissao extends iUsuarioDesconto { }
 export interface iRemoverPermissaoResponse { }
 
-export interface iGetUsuariosResponse extends iUsuario { }
-export interface iGetUsuariosComPermissaoResponse extends iUsuarioComPermissao { }
-export interface iGetHistoricoSenhaResponse extends iHistoricoSenha { }
+

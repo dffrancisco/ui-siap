@@ -45,7 +45,7 @@ const actions = {
 
       emit("senhaalterada");
       actions.fecharModalPermitir();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erro ao conceder permissão:", error);
       Swal.fire({
         icon: "error",

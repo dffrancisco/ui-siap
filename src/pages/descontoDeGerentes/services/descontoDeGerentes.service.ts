@@ -19,7 +19,6 @@ const getInicial = async (): Promise<iGetUsuariosResponse> => {
     return data;
 };
 
-
 const darPermissao = async (param: iParamDarPermissao): Promise<iDarPermissaoResponse> => {
     let { data } = await axios.post(caminho, {
         call: "darPermissao",

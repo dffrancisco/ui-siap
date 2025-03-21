@@ -15,7 +15,6 @@ export const state = reactive({
     modalPermitirUsuario: false,
     senhaConfirmacao: "",
     loading: false,
-    confirmationInProgress: false,
 });
 
 export const actions = {
@@ -42,7 +41,12 @@ export const actions = {
             },
         });
 
-        await actions.carregaegarDados();
+        await actions.carregaegarDadoDeUsuario();
+    },
+
+
+    async init() {
+        await actions.grids();
     },
 
     async abrirModalDarPermissao(usuario: iUsuario) {
@@ -55,29 +59,29 @@ export const actions = {
         state.modalAlterarSenha = true;
     },
 
-    async carregaegarDados() {
+    async carregaegarDadoDeUsuario() {
         try {
             state.loading = true;
             const data = await actions.getUsuarios();
 
-            if (data?.usuarios) {
-                state.gridUsuariosSemPermissao.querySourceAdd(data.usuarios);
-            }
+            if (data.usuarios && data.usuariosComPermissao) {
 
-            if (data?.usuariosComPermissao) {
+                const usuariosSemPermissaoFiltrados = data.usuarios.filter(usuario =>
+                    !data.usuariosComPermissao.some(usuarioRepetido => usuarioRepetido.COD_FUNCIONARIO === usuario.COD_FUNCIONARIO)
+                );
+                state.gridUsuariosSemPermissao.querySourceAdd(usuariosSemPermissaoFiltrados);
                 state.gridUsuariosComPermissao.querySourceAdd(data.usuariosComPermissao);
             }
         } catch (error) {
-            console.error("Erro ao carregar dados:", error);
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao carregar os dados dos usuários!",
+            });
         } finally {
             state.loading = false;
         }
     },
 
-
-    async init() {
-        await actions.grids();
-    },
 
     async getUsuarios() {
         try {
@@ -91,8 +95,6 @@ export const actions = {
         }
     },
 
-
-
     async darPermissao() {
         try {
             if (state.senhaTemp.length < 6) {
@@ -104,7 +106,10 @@ export const actions = {
             }
 
             if (state.senhaTemp !== state.senhaConfirmacao) {
-                Swal.fire("Aviso", "As senhas não coincidem!", "warning");
+                Swal.fire({
+                    icon: "warning",
+                    text: "As senhas não coincidem!",
+                });
                 return;
             }
 

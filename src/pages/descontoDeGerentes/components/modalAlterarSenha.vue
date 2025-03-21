@@ -6,7 +6,6 @@ import serviceDescontoDeGerentes from "../services/descontoDeGerentes.service";
 import { iParamAlterarSenha, iUsuario } from "../interfaces";
 
 const props = defineProps<{ usuarioSelecionado: iUsuario }>();
-
 const emit = defineEmits(["fecharModalAlterar", "senhaalterada"]);
 
 const state = reactive({
