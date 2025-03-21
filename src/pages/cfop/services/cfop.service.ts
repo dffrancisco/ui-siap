@@ -32,7 +32,7 @@ const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDu
 
 const toInsert = async (newFields: iParamToInsertCfop): Promise<iInsertResponse> => {
     const { data } = await axios.post(caminho, {
-        call: "insert",
+        call: "insertCfop",
         param: newFields,
     });
     return data;
@@ -40,7 +40,7 @@ const toInsert = async (newFields: iParamToInsertCfop): Promise<iInsertResponse>
 
 const toUpdate = async (param: iParamToUpdateCfop) => {
     const { data } = await axios.post(caminho, {
-        call: "update",
+        call: "updateCfop",
         param,
     });
     return data;
@@ -48,7 +48,7 @@ const toUpdate = async (param: iParamToUpdateCfop) => {
 
 const toDelete = async (cfop: string): Promise<iToDeleteResponse> => {
     const { data } = await axios.post(caminho, {
-        call: "delete",
+        call: "deleteCfop",
         cfop,
     });
     return data;
