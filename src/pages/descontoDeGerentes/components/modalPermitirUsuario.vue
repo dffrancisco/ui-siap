@@ -74,7 +74,7 @@ const actions = {
         name="senha"
         label="Senha:"
         type="password"
-        maxlength="6"
+        maxlength="20"
         class="mb-2"
         @keydown.enter="mudarFoco('confirmarSenha')"
       />
@@ -83,7 +83,7 @@ const actions = {
         name="confirmarSenha"
         label="Confirmar senha:"
         type="password"
-        maxlength="6"
+        maxlength="20"
         @keydown.enter="actions.permitirUsuario"
       />
     </v-card-text>
