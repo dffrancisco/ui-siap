@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, actions, computeds, selectedCarteira } from "./configBoleto";
+import { state, actions, computeds } from "./configBoleto";
 
 onMounted(async () => {
   await actions.init();
@@ -63,7 +63,7 @@ onMounted(async () => {
                 class="obr rounded-lg"
                 item-title="NUM_CARTEIRA"
                 item-value="NUM_CARTEIRA"
-                v-model="selectedCarteira"
+                v-model="state.dadosBoleto.CARTEIRA"
                 :clearable="false"
                 :disabled="state.botaoAlterarHabilitado"
               ></v-select>

@@ -14,8 +14,6 @@ export const state = reactive({
     dadosBoletoOld: {} as iDadosBoleto
 });
 
-export const selectedCarteira = ref("");
-
 export const actions = {
     init() {
         actions.getDadosIniciaisConfigBoleto();
@@ -32,7 +30,6 @@ export const actions = {
                 JUROS: utils.formatValor(dadosConfigBoleto.dadosBoleto.JUROS)
             };
 
-            selectedCarteira.value = state.dadosBoleto.CARTEIRA;
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -129,19 +126,19 @@ export const actions = {
 export const computeds = {
     codigoEscritural: computed(() => {
         const carteiraSelecionada = state.carteiraBancoBradesco.find(
-            (carteira) => carteira.NUM_CARTEIRA === selectedCarteira.value
+            (carteira) => carteira.NUM_CARTEIRA === state.dadosBoleto.CARTEIRA
         );
         return carteiraSelecionada?.CODIGO_ESCRITURAL || "";
     }),
 
     digitoCodigoEscritural: computed(() => {
         const carteiraSelecionada = state.carteiraBancoBradesco.find(
-            (carteira) => carteira.NUM_CARTEIRA === selectedCarteira.value
+            (carteira) => carteira.NUM_CARTEIRA === state.dadosBoleto.CARTEIRA
         );
         return carteiraSelecionada?.DIGITO_CODIGO_ESCRITURAL || "";
     }),
 };
 
-watch(selectedCarteira, (newValue) => {
-    state.dadosBoleto.CARTEIRA = newValue;
-});
+// watch(selectedCarteira, (newValue) => {
+//     state.dadosBoleto.CARTEIRA = newValue;
+// });
