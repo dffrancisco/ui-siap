@@ -11,6 +11,7 @@ export const state = reactive({
     botaoAlterarHabilitado: true,
     botaoSalvarHabilitado: false,
     botaoCancelarHabilitado: false,
+    dadosBoletoOld: {} as iDadosBoleto
 });
 
 export const selectedCarteira = ref("");
@@ -47,6 +48,8 @@ export const actions = {
         state.botaoSalvarHabilitado = true;
         state.botaoCancelarHabilitado = true;
 
+        state.dadosBoletoOld = { ...state.dadosBoleto };
+
         const inputBanco = document.querySelector("#banco") as HTMLElement;
         setTimeout(() => {
             inputBanco.focus();
@@ -79,6 +82,7 @@ export const actions = {
         state.botaoAlterarHabilitado = true;
         state.botaoSalvarHabilitado = false;
         state.botaoCancelarHabilitado = false;
+        state.dadosBoleto = { ...state.dadosBoletoOld };
     },
 
     async updateConfigBoleto() {
@@ -103,7 +107,9 @@ export const actions = {
                     title: "Dados alterados com sucesso!",
                 });
 
-                actions.cancelar()
+                state.botaoAlterarHabilitado = true
+                state.botaoSalvarHabilitado = false
+                state.botaoCancelarHabilitado = false
 
             } catch (error) {
                 Swal.fire({
@@ -114,6 +120,8 @@ export const actions = {
                 state.loading = false
 
             }
+        } else {
+            actions.cancelar()
         }
     },
 };
