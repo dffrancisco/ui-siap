@@ -88,7 +88,7 @@ const actions = {
         label="Senha atual:"
         type="password"
         class="mb-2"
-        maxlength="20"
+        maxlength="10"
         :disabled="state.loading"
         @keydown.enter="mudarFoco('novaSenha')"
       />
@@ -97,7 +97,7 @@ const actions = {
         name="novaSenha"
         label="Nova senha:"
         type="password"
-        maxlength="20"
+        maxlength="10"
         class="mb-2"
         :disabled="state.loading"
         @keydown.enter="mudarFoco('confirmarSenha')"
@@ -107,7 +107,7 @@ const actions = {
         name="confirmarSenha"
         label="Confirmar nova senha:"
         type="password"
-        maxlength="20"
+        maxlength="10"
         :disabled="state.loading"
         @keydown.enter="actions.confirmarAlteracao"
       />
