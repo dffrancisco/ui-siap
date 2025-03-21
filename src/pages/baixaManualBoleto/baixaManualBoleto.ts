@@ -19,7 +19,7 @@ export const state = reactive({
     extratoBancario: [],
     headersExtrato: [
         { key: "checked", title: "Conf.", width: "50px", align: "center" },
-        { key: "DATA", title: "Data Lançamento", width: "100px", sortable: true },
+        { key: "DATA", title: "Data Lançamento", width: "80px", sortable: true },
         { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item) => utils.formatValor(item.VALOR) },
     ],
     headersOrcamento: [
