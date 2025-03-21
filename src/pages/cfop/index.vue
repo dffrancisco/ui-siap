@@ -25,7 +25,7 @@ onUnmounted(() => {
   <v-container>
     <title>Gerenciar CFOP</title>
     <v-card
-      width="700"
+      max-width="700"
       class="pa-5 ma-auto"
     >
       <div id="pnCampos">
