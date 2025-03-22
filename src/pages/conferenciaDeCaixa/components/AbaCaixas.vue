@@ -96,7 +96,10 @@ const botoesVisiveis = computed(() => {
         </v-col>
         <v-col cols="12">
           <span
-            >Dinheiro no caixa: <b>{{ utils.formatValor(caixa.DINHEIRO) }}</b></span
+            >Dinheiro no caixa:
+            <b :style="{ color: caixa.DINHEIRO > 400 ? '#E53935' : 'inherit' }">
+              {{ utils.formatValor(caixa.DINHEIRO) }}
+            </b></span
           >
         </v-col>
         <v-col cols="12">

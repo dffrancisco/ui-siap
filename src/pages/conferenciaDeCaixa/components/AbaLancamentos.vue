@@ -52,6 +52,7 @@ const stateLancamentos = reactive({
       <!-- Card Direito (Compras do Tipo Selecionado) -->
       <v-col cols="9">
         <v-data-table-virtual
+          :key="state.pagamentoSelecionado"
           :items="comprasFiltradas"
           :headers="state.headersLancamentos"
           height="325"
@@ -94,16 +95,16 @@ const stateLancamentos = reactive({
           </template>
 
           <template v-slot:item.PAGAMENTOS="{ item }">
-            <div class="d-flex flex-wrap pa-1">
+            <div class="chips-pagamentos">
               <v-chip
                 v-for="pagamento in item.TIPOS_PAGAMENTO"
                 :key="pagamento.TIPOS_PAGAMENTO"
-                class="mr-1 chip-custom"
+                class="mr-1 chip-pagamento"
                 color="primary"
                 @click.stop="exibirDetalhesPagamento(pagamento)"
                 title="ver detalhes"
               >
-                <div class="chip-content">
+                <div class="chip-pagamento-icon">
                   <IconPagamento
                     :tipoPagamento="pagamento.DESCRICAO_PAGAMENTO"
                     :bandeira="pagamento.BANDEIRA"
@@ -111,7 +112,7 @@ const stateLancamentos = reactive({
                   />
                   <div class="d-flex flex-column">
                     <div class="d-flex align-center justify-space-between">
-                      <div class="descricao-pagamento">
+                      <div class="chip-pagamento-descricao">
                         {{ pagamento.DESCRICAO_PAGAMENTO }}
                         <span v-if="pagamento.DIVIDE !== null"> {{ pagamento.DIVIDE }}x </span>
                       </div>
@@ -156,22 +157,29 @@ const stateLancamentos = reactive({
   height: 50px;
 }
 
+.chips-pagamentos {
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  flex-wrap: wrap;
+}
+
 .v-icon {
   cursor: pointer;
 }
 
-.chip-custom {
+.chip-pagamento {
   width: 105px;
   height: 45px;
   border-radius: 8px !important;
 }
 
-.chip-content {
+.chip-pagamento-icon {
   width: 105px;
   display: flex;
 }
 
-.descricao-pagamento {
+.chip-pagamento-descricao {
   font-size: 9px;
   font-weight: 500;
   line-height: 1;
