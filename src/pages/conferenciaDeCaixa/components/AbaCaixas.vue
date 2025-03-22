@@ -95,13 +95,20 @@ const botoesVisiveis = computed(() => {
           >
         </v-col>
         <v-col cols="12">
-          <span
-            >Dinheiro no caixa:
-            <b :style="{ color: caixa.DINHEIRO > 400 ? '#E53935' : 'inherit' }">
+          <span>
+            Dinheiro no caixa:
+            <span
+              class="dinheiro-caixa"
+              :class="{
+                'badge-dinheiro-caixa-red': caixa.DINHEIRO > 400,
+                'badge-dinheiro-caixa': caixa.DINHEIRO <= 400,
+              }"
+            >
               {{ utils.formatValor(caixa.DINHEIRO) }}
-            </b></span
-          >
+            </span>
+          </span>
         </v-col>
+
         <v-col cols="12">
           <span
             >Conferido por:
@@ -190,5 +197,22 @@ const botoesVisiveis = computed(() => {
 
 .v-col {
   padding-top: 0 !important;
+}
+
+.dinheiro-caixa {
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.badge-dinheiro-caixa-red {
+  background-color: #e53935;
+  color: white;
+}
+
+.badge-dinheiro-caixa {
+  background-color: inherit;
+  color: white;
 }
 </style>
