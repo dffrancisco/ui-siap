@@ -25,7 +25,7 @@ export const state = reactive({
     pagamentoSelecionado: null,
     headersLancamentos: [
         { title: "#", key: "INDEX", width: "40px" },
-        { title: "Orçamentos", key: "NUM_ORCAMENTO", minWidth: "170px" },
+        { title: "Orçamentos", key: "NUM_ORCAMENTO", minWidth: "160px" },
         { title: "Hora", key: "HORA", width: "60px", value: (item: any) => utils.formatHora(item.HORA) },
         { title: "Pagamentos", key: "PAGAMENTOS", width: "100%" },
         { title: "Total", key: "VALOR", width: "120px", value: (item: any) => utils.formatValor(item.VALOR_TOTAL) },
@@ -87,6 +87,7 @@ export const actions = {
         state.sangrias = [];
         state.devolucoes = [];
     },
+
 
     async validarDataAtual(caixaData) {
         const hoje = moment().format("YYYY-MM-DD");
@@ -219,7 +220,9 @@ export const actions = {
     },
 
     selecionarPagamento(tipoPagamento: string) {
+        state.loading = true;
         state.pagamentoSelecionado = tipoPagamento === "TODOS" ? null : tipoPagamento;
+        state.loading = false;
     },
 
     async modalSangria(caixa) {

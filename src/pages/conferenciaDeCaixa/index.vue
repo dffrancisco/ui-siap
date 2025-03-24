@@ -4,10 +4,10 @@ import { onMounted } from "vue";
 import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
 import ModalSangria from "./components/ModalSangria.vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
-import Caixas from "./components/Caixas.vue";
-import Lancamentos from "./components/Lancamentos.vue";
-import Sangrias from "./components/Sangrias.vue";
-import Devolucoes from "./components/Devolucoes.vue";
+import AbaCaixas from "./components/AbaCaixas.vue";
+import AbaLancamentos from "./components/AbaLancamentos.vue";
+import AbaSangrias from "./components/AbaSangrias.vue";
+import AbaDevolucoes from "./components/AbaDevolucoes.vue";
 
 onMounted(() => {
   actions.init();
@@ -80,11 +80,12 @@ onMounted(() => {
         <v-chip-group
           v-model="state.selectedOption"
           color="primary"
+          mandatory
         >
           <v-chip
             v-for="option in options"
             :key="option.value"
-            class="vchip ml-2"
+            class="vchip-options ml-2"
             style="font-size: 16px; width: 150px"
             :value="option.value"
             :class="{ 'selected-chip': state.selectedOption === option.value }"
@@ -105,7 +106,7 @@ onMounted(() => {
             md="4"
             lg="4"
           >
-            <Caixas
+            <AbaCaixas
               :caixa="caixa"
               @fechar-caixa="actions.fecharCaixa"
               @salvar-sangria="actions.modalSangria"
@@ -138,13 +139,13 @@ onMounted(() => {
       </template>
 
       <!-- Renderiza a aba de Lançamentos -->
-      <Lancamentos v-if="abaSelecionada === 'lancamentos'" />
+      <AbaLancamentos v-if="abaSelecionada === 'lancamentos'" />
 
       <!-- Renderiza a aba de Sangrias -->
-      <Sangrias v-if="abaSelecionada === 'sangria'" />
+      <AbaSangrias v-if="abaSelecionada === 'sangria'" />
 
       <!-- Renderiza a aba de Devolucoes -->
-      <Devolucoes v-if="abaSelecionada === 'devolucao'" />
+      <AbaDevolucoes v-if="abaSelecionada === 'devolucao'" />
 
       <!-- Mensagem de quem abriu o MDC -->
       <div class="pa-2 mt-3">
@@ -202,7 +203,7 @@ onMounted(() => {
   color: white !important;
 }
 
-.vchip {
+.vchip-options {
   display: flex !important;
   align-items: center;
   justify-content: center;
