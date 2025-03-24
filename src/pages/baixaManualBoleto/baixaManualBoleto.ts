@@ -19,7 +19,7 @@ export const state = reactive({
     extratoBancario: [],
     headersExtrato: [
         { key: "checked", title: "Conf.", width: "50px", align: "center" },
-        { key: "DATA", title: "Data", width: "100px", sortable: true },
+        { key: "DATA", title: "Data Lançamento", width: "80px", sortable: true },
         { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item) => utils.formatValor(item.VALOR) },
     ],
     headersOrcamento: [
@@ -172,13 +172,23 @@ export const actions = {
     extrairTransacoes(ofxText) {
         const transacoes = [];
         const linhas = ofxText.split("\n");
-        let dataTransacao = "", valor = 0, tipo = "", idTransacao = "";
+        let dataLancamento = "", valor = 0, tipo = "", idTransacao = "";
+        let dataInicio = "", dataFim = "";
 
         for (let i = 0; i < linhas.length; i++) {
             const linha = linhas[i].trim();
+
+            if (linha.startsWith("<DTSTART>")) {
+                dataInicio = linha.replace("<DTSTART>", "").substring(0, 8);
+            }
+
+            if (linha.startsWith("<DTEND>")) {
+                dataFim = linha.replace("<DTEND>", "").substring(0, 8);
+            }
+
             if (linha.startsWith("<DTPOSTED>")) {
-                dataTransacao = linha.replace("<DTPOSTED>", "").substring(0, 8);
-                dataTransacao = `${dataTransacao.substring(6, 8)}/${dataTransacao.substring(4, 6)}/${dataTransacao.substring(0, 4)}`;
+                dataLancamento = linha.replace("<DTPOSTED>", "").substring(0, 8);
+                dataLancamento = `${dataLancamento.substring(6, 8)}/${dataLancamento.substring(4, 6)}/${dataLancamento.substring(0, 4)}`;
             }
 
             if (linha.startsWith("<TRNAMT>")) {
@@ -195,19 +205,19 @@ export const actions = {
 
             if (linha.startsWith("</STMTTRN>")) {
                 if (valor > 0) {
-                    transacoes.push({ DATA: dataTransacao, VALOR: valor, TIPO: tipo, ID: idTransacao, checked: false });
+                    transacoes.push({ DATA: dataLancamento, VALOR: valor, TIPO: tipo, ID: idTransacao, checked: false });
                 }
             }
         }
 
-        const datasUnicas = new Set(transacoes.map(t => t.DATA));
-        if (datasUnicas.size > 1) {
+        if (dataInicio !== dataFim) {
             Swal.fire({ icon: "warning", text: "O extrato deve conter transações de apenas um dia." });
             return;
         }
 
         state.extratoBancario = transacoes;
     },
+
 
     async baixarBoletosEOrcamentos() {
         const boletosSelecionados = state.dadosBoletosFiltrados.filter(boleto => boleto.checked);
