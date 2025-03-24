@@ -430,6 +430,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/descontoDeGerentes')"
+              >Desconto de Gerentes</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="login.actions.confirmarSaida()"
               color="primary"
             >
