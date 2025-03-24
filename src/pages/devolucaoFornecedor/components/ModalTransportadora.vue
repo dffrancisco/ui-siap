@@ -9,6 +9,7 @@ import {
 import serviceDevolucaoFornecedor from "../services/devolucaoFornecedor.service";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
+
 import { configVMoney } from "../../../constants/constants";
 
 const props = defineProps<{
@@ -36,7 +37,6 @@ watch(
 const state = reactive({
   dbTransportadoraDevolucao: <iTranspordadoraDevolucao>{},
   listaTransportadoras: <iListaTransportadoras[]>[],
-
   loading: false,
   valor: 0,
 });
@@ -47,8 +47,10 @@ const actions = {
   },
 
   async selecionarTransportadora() {
-    let dadosTransportadoraDevolucao = {
+    let dadosTransportadoraDevolucao: iParamInsertTransportadoraDevolucao = {
       ...state.dbTransportadoraDevolucao,
+      ID_TRANSPORTADORA:
+        state.dbTransportadoraDevolucao.TIPO_FRETE == 9 ? null : state.dbTransportadoraDevolucao.ID_TRANSPORTADORA,
       ID_DEVOLUCAO_FORNECEDOR: props.id_devolucaoFornecedor,
       ID_DEVOLUCAO_FORNECEDOR_TRANSP: props.id_devolucaoFornecedorTransp,
       VALOR_FRETE: utils.formatValorUSA(state.dbTransportadoraDevolucao.VALOR_FRETE.toString()),
@@ -58,7 +60,10 @@ const actions = {
       AUTORIZACAO_CORREIOS: state.dbTransportadoraDevolucao.AUTORIZACAO_CORREIOS?.toUpperCase(),
     };
 
-    if (dadosTransportadoraDevolucao.ID_TRANSPORTADORA == undefined) {
+    if (
+      dadosTransportadoraDevolucao.ID_TRANSPORTADORA == undefined &&
+      dadosTransportadoraDevolucao.TIPO_FRETE != 9
+    ) {
       await Swal.fire({
         icon: "error",
         title: "Por favor, selecione uma transportadora",
@@ -66,7 +71,7 @@ const actions = {
       return false;
     }
 
-    if (dadosTransportadoraDevolucao.TIPO_FRETE == undefined) {
+    if (!dadosTransportadoraDevolucao.TIPO_FRETE) {
       await Swal.fire({
         icon: "error",
         title: "Por favor, selecione uma modalidade de frete",
@@ -74,23 +79,21 @@ const actions = {
       return false;
     }
 
-    if (dadosTransportadoraDevolucao.ESPECIE == undefined) {
+    if (
+      (!dadosTransportadoraDevolucao.ESPECIE || dadosTransportadoraDevolucao.ESPECIE.trim() == "") &&
+      dadosTransportadoraDevolucao.TIPO_FRETE != 9
+    ) {
       await Swal.fire({
         icon: "error",
-        title: "Por favor, informe a espécie",
+        title: "Por favor, preencha a espécie do produto",
       });
       return false;
     }
 
-    if (dadosTransportadoraDevolucao.QTD <= 0) {
-      await Swal.fire({
-        icon: "error",
-        title: "Por favor, informe a quantidade de volumes",
-      });
-      return false;
-    }
-
-    if (dadosTransportadoraDevolucao.QTD > 10000) {
+    if (
+      (dadosTransportadoraDevolucao.QTD < 1 || dadosTransportadoraDevolucao.QTD > 10000) &&
+      dadosTransportadoraDevolucao.TIPO_FRETE != 9
+    ) {
       await Swal.fire({
         icon: "error",
         title: "A quantidade de volumes deve ser menor ou igual a 10.000",
@@ -142,6 +145,10 @@ const actions = {
     try {
       state.loading = true;
 
+      if (param.TIPO_FRETE == 9) {
+        param.ID_TRANSPORTADORA = null;
+      }
+
       await serviceDevolucaoFornecedor.insertTransportadoraDevolucao(param);
 
       emits("selecionarTransportadoraDevolucao", param);
@@ -162,6 +169,10 @@ const actions = {
     try {
       state.loading = true;
 
+      if (param.TIPO_FRETE == 9) {
+        param.ID_TRANSPORTADORA = null;
+      }
+
       await serviceDevolucaoFornecedor.updateTransportadoraDevolucao(param);
 
       emits("selecionarTransportadoraDevolucao", param);
@@ -177,6 +188,21 @@ const actions = {
       });
     }
   },
+
+  async limparTransportadoraDevolucao() {
+    if (state.dbTransportadoraDevolucao.TIPO_FRETE == 9) {
+      state.dbTransportadoraDevolucao = {
+        ...state.dbTransportadoraDevolucao,
+        AUTORIZACAO_CORREIOS: null,
+        ESPECIE: null,
+        ID_TRANSPORTADORA: null,
+        PESO_BRUTO: null,
+        PESO_LIQUIDO: null,
+        QTD: null,
+        VALOR_FRETE: null,
+      };
+    }
+  },
 };
 </script>
 
@@ -188,6 +214,7 @@ const actions = {
           <h2 class="font-weight-regular">Transportadora</h2>
           <select
             v-model="state.dbTransportadoraDevolucao.ID_TRANSPORTADORA"
+            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE == 9"
             class="ss obr"
             name="ID_TRANSPORTADORA"
             id="ID_TRANSPORTADORA"
@@ -207,6 +234,7 @@ const actions = {
             name="TIPO_FRETE"
             id="TIPO_FRETE"
             v-model="state.dbTransportadoraDevolucao.TIPO_FRETE"
+            @change="actions.limparTransportadoraDevolucao"
           >
             <option value="0">Por conta do emitente</option>
             <option value="1">Por conta do destinatário/remetente</option>
@@ -220,10 +248,11 @@ const actions = {
           <h2 class="font-weight-regular">Espécie</h2>
           <input
             v-model="state.dbTransportadoraDevolucao.ESPECIE"
-            class="ss obr"
+            class="obr ss"
             type="text"
             name="ESPECIE"
             id="ESPECIE"
+            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE == 9"
             maxlength="6"
           />
         </v-col>
@@ -231,10 +260,11 @@ const actions = {
           <h2 class="font-weight-regular">Qtd. Volumes</h2>
           <input
             v-model="state.dbTransportadoraDevolucao.QTD"
-            class="ss obr"
+            class="obr ss"
             type="number"
             name="QTD"
             id="QTD"
+            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE == 9"
             max="10000"
           />
         </v-col>
@@ -246,6 +276,7 @@ const actions = {
             type="text"
             name="AUTORIZACAO_CORREIOS"
             id="AUTORIZACAO_CORREIOS"
+            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE == 9"
             maxlength="20"
           />
         </v-col>
@@ -256,6 +287,7 @@ const actions = {
             type="text"
             name="PESO_BRUTO"
             id="PESO_BRUTO"
+            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE == 9"
             :model-modifiers="{ number: true }"
             v-model.lazy="state.dbTransportadoraDevolucao.PESO_BRUTO"
             v-money3="configVMoney"
@@ -269,6 +301,7 @@ const actions = {
             type="text"
             name="PESO_LIQUIDO"
             id="PESO_LIQUIDO"
+            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE == 9"
             :model-modifiers="{ number: true }"
             v-money3="configVMoney"
           />
@@ -285,6 +318,7 @@ const actions = {
             :model-modifiers="{ number: true }"
             v-model.lazy="state.dbTransportadoraDevolucao.VALOR_FRETE"
             v-money3="configVMoney"
+            :disabled="state.dbTransportadoraDevolucao.TIPO_FRETE == 9"
             @keydown.enter="actions.selecionarTransportadora"
           />
         </v-col>
