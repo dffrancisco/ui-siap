@@ -29,6 +29,7 @@ export interface iCaixas {
     SANGRIA: number;
     STATUS: number;
     TROCO: number;
+    DINHEIRO_LIQUIDO: number;
 }
 
 export interface iDadosOrcamento {

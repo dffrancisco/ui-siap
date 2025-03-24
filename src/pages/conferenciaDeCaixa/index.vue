@@ -123,7 +123,7 @@ onMounted(() => {
           >
             <v-card
               class="pa-4 d-flex flex-column align-center justify-center"
-              min-height="280px"
+              min-height="260px"
             >
               <v-btn
                 icon="mdi-plus"

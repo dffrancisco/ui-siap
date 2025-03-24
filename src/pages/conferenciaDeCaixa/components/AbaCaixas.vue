@@ -15,6 +15,7 @@ const props = defineProps<{
     SANGRIA: number;
     DINHEIRO: number;
     CONFERIDO: string | null;
+    DINHEIRO_LIQUIDO: number;
   };
 }>();
 
@@ -36,7 +37,7 @@ const botoesVisiveis = computed(() => {
 <template>
   <v-card
     class="d-flex flex-column justify-space-between pt-2"
-    min-height="280px"
+    min-height="260px"
     :class="{
       'caixa-aberto': caixa.STATUS == 1,
       'caixa-fechado': caixa.STATUS == 2,
@@ -104,11 +105,13 @@ const botoesVisiveis = computed(() => {
             <span
               class="dinheiro-caixa"
               :class="{
-                'badge-dinheiro-caixa-red': caixa.DINHEIRO > 400,
-                'badge-dinheiro-caixa': caixa.DINHEIRO <= 400,
+                'badge-dinheiro-caixa-red': caixa.DINHEIRO_LIQUIDO > 400,
+                'badge-dinheiro-caixa': caixa.DINHEIRO_LIQUIDO <= 400,
               }"
             >
-              {{ utils.formatValor(caixa.DINHEIRO) }}
+              {{ utils.formatValor(caixa.DINHEIRO_LIQUIDO) }}
+
+              {{}}
             </span>
           </span>
         </v-col>
