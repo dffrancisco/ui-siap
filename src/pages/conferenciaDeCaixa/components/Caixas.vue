@@ -68,21 +68,25 @@ const botoesVisiveis = computed(() => {
 
     <v-container class="pa-2">
       <v-row class="pt-2">
-        <v-col cols="3">
+        <v-col cols="4">
           <span
             >Troco: <b>{{ utils.formatValor(caixa.TROCO) }}</b></span
           >
         </v-col>
-        <v-col cols="4">
-          <span
-            >Abertura: <b>{{ utils.formatHora(caixa.HORA_ABERTURA) }}</b></span
-          >
-        </v-col>
-        <v-col cols="5">
-          <span
-            >Fechamento:
-            <b>{{ caixa.HORA_FECHAMENTO ? utils.formatHora(caixa.HORA_FECHAMENTO) : "----" }}</b></span
-          >
+        <v-col
+          cols="8"
+          class="d-flex justify-space-between"
+        >
+          <div>
+            <span
+              >Aberto: <b>{{ utils.formatHora(caixa.HORA_ABERTURA) }}</b></span
+            >
+          </div>
+          <div>
+            <span
+              >Fechado: <b>{{ caixa.HORA_FECHAMENTO ? utils.formatHora(caixa.HORA_FECHAMENTO) : "----" }}</b></span
+            >
+          </div>
         </v-col>
         <v-col cols="6">
           <span
