@@ -84,7 +84,16 @@ onMounted(async () => {
       <div
         :style="{ minHeight: '20px' }"
         v-else
-      ></div>
+      >
+        <v-alert
+          type="warning"
+          color="primary"
+          prominent
+          class="mt-4"
+        >
+          Não há pedidos realizados no ano escolhido.
+        </v-alert></div
+      >
     </v-card>
 
     <v-overlay
@@ -103,6 +112,7 @@ onMounted(async () => {
     <v-dialog
       v-model="state.modalPedidoInsumosOpened"
       max-width="900"
+      :retain-focus="false"
       :persistent="true"
     >
       <ModalPedidoInsumos
