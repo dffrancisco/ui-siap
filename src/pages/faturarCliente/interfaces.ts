@@ -25,8 +25,13 @@ export interface iOrcamentosClienteFaturado {
     DATA: string,
     DEVOLUCAO: number,
     VALOR: number,
-    NUM_DEVOLUCAO: number,
+    DEVOLUCAO_DETALHADA?: iDevolucaoDetalhada[],
     MONTAGEM: number,
+}
+
+export interface iDevolucaoDetalhada {
+    ID_DEVOLUCAO: number,
+    VALOR: number,
 }
 
 export interface iCreditoCliente {
@@ -43,8 +48,14 @@ export interface iDevolucaoFiltered {
     VALOR: number,
     CREDITO: 'N' | 'S',
 }
-export interface iOrcamentosLocalizados extends iOrcamentosClienteFaturado {
-    ISDEVOLUCAO?: boolean
+
+export interface iOrcamentosLocalizados {
+    NUM_ORCAMENTO?: number,
+    DATA?: string,
+    VALOR: number,
+    NUM_DEVOLUCAO?: number,
+    DEVOLUCAO_DETALHADA?: iDevolucaoDetalhada[],
+    IS_DEVOLUCAO?: boolean
 }
 
 export interface iGetOrcamentosClienteFaturadoResponse extends iOrcamentosClienteFaturado { }
@@ -91,7 +102,9 @@ export interface iGerarBoletosParam {
     BOLETOS: iBoleto[],
     ID_CLIENTE: number,
     DATA_LIMITE: string,
-    REGRAS_FATURAMENTO: iRegrasFaturamentoGeral
+    REGRAS_FATURAMENTO: iRegrasFaturamentoGeral,
+    BOLETO_CONFERIDO: boolean,
+    VALOR_CONFERIDO: number,
 }
 
 export interface iResponseSuccess {
