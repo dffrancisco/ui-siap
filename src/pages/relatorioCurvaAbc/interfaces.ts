@@ -11,7 +11,6 @@ export interface iParamDadosParaRelatorio {
     funcionario?: number[];
 }
 
-
 export interface iDadosRelatorio {
     NUM_FABRICANTE: string;
     DESC_PRODUTO: string;
