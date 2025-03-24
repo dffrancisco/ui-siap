@@ -59,10 +59,15 @@ export const state = reactive({
             state.nomeClienteFaturadoSelecionado !== '' &&
             state.totalOrcamentosEBoletos !== 0
         );
-    })
+    }),
+    cnpjEmpresa: ""
 })
 
 export const actions = {
+
+    async init() {
+        await actions.getCnpjEmpresa();
+    },
 
     async salvarClienteFaturadoSelecionado(clienteFaturadoSelecionado: iClientesFaturados) {
         actions.limparStatesAnteriores();
@@ -218,39 +223,34 @@ export const actions = {
         state.extratoBancario = transacoes;
     },
 
-
-    async baixarBoletosEOrcamentos() {
-        const boletosSelecionados = state.dadosBoletosFiltrados.filter(boleto => boleto.checked);
-        const orcamentosSelecionados = state.dadosOrcamentoFiltrados.filter(orcamento => orcamento.checked);
-        const extratoSelecionado = state.extratoBancario.filter(transacao => transacao.checked);
-
-        const orcamentosSelecionadosBaixa = orcamentosSelecionados.map(orcamento => ({
+    async baixarBoletosEOrcamentos(justificativaBaixaManual: string) {
+        const orcamentosSelecionadosBaixa = computeds.orcamentosSelecionados.value.map(orcamento => ({
             numOrcamento: orcamento.NUM_ORCAMENTO,
             dataOrcamento: orcamento.DATA,
             valorOrcamento: orcamento.VALOR
         }));
 
-        const boletosSelecionadosBaixa = boletosSelecionados.map(boleto => ({
+        const boletosSelecionadosBaixa = computeds.boletosSelecionados.value.map(boleto => ({
             numBoleto: boleto.NUM_BOLETO,
-            dataBoleto: boleto.DATA,
             valorBoleto: boleto.VALOR
         }));
 
-        const dataExtrato = extratoSelecionado.length > 0 ? extratoSelecionado[0].DATA : null;
-        const extratoSelecionadoIds = extratoSelecionado.map(transacao => transacao.ID);
+        const dataExtrato = computeds.extratoSelecionado.value.length > 0 ? computeds.extratoSelecionado.value[0].DATA : null;
+        const extratoSelecionadoIds = computeds.extratoSelecionado.value.map(transacao => transacao.ID);
 
         const dadosParaLog = {
             dataExtrato,
             idsExtrato: extratoSelecionadoIds,
-            numOrcamentos: orcamentosSelecionados.map(orcamento => orcamento.NUM_ORCAMENTO),
-            numBoletos: boletosSelecionados.map(boleto => boleto.NUM_BOLETO),
+            numOrcamentos: computeds.orcamentosSelecionados.value.map(orcamento => orcamento.NUM_ORCAMENTO),
+            numBoletos: computeds.boletosSelecionados.value.map(boleto => boleto.NUM_BOLETO),
             totalBaixa: Number(state.totalOrcamentosEBoletos)
         };
 
         let param = {
             orcamentosSelecionadosBaixa,
             boletosSelecionadosBaixa,
-            dadosParaLog
+            dadosParaLog,
+            justificativaBaixaManual: justificativaBaixaManual
         };
 
         try {
@@ -279,6 +279,30 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    async getCnpjEmpresa() {
+        try {
+            state.loading = true;
+            let data = await serviceBaixaManualBoleto.getCnpjEmpresa();
+            state.cnpjEmpresa = data.CGC_EMPRESA;
+        } catch (err) {
+            Swal.fire({ icon: "error", text: "Erro ao buscar CNPJ da empresa." });
+        } finally {
+            state.loading = false;
+        }
     }
 
+}
+
+export const computeds = {
+    boletosSelecionados: computed(() => {
+        return state.dadosBoletosFiltrados.filter(boleto => boleto.checked);
+    }),
+    orcamentosSelecionados: computed(() => {
+        return state.dadosOrcamentoFiltrados.filter(orcamento => orcamento.checked);
+    }),
+    extratoSelecionado: computed(() => {
+        return state.extratoBancario.filter(transacao => transacao.checked);
+    })
 }
