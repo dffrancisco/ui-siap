@@ -32,7 +32,7 @@ onMounted(async () => {
                 class="obr text-uppercase rounded"
                 :items="[
                   { text: 'Sistema', value: 'SISTEMA' },
-                  { text: 'Equipamento de Ti', value: 'EQUIPAMENTO DE TI' },
+                  { text: 'Equipamento de TI', value: 'EQUIPAMENTO DE TI' },
                   { text: 'Rede', value: 'REDE' },
                   { text: 'Telefonia', value: 'TELEFONIA' },
                   { text: 'Alarme', value: 'ALARME' },
