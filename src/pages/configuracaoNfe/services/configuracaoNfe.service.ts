@@ -7,16 +7,13 @@ import {
     iInsertRegimeTributario,
     iDeleteRegimeTributario,
     iDuplicity,
+    iResponseDadosInputs,
     iGetDuplicityResponse
 } from '../interfaces';
 
-const caminho = 'configuracaoNfe';
 
 
-type GetNfeConfigFn = () => Promise<iNfeConfig[]>;
-type GetRegimeTributarioFn = () => Promise<iRegimeTributario[]>;
-type GetPisFn = () => Promise<iPis[]>;
-type GetCofinsFn = () => Promise<iCofins[]>;
+type iGetDadosParaInputs = () => Promise<iResponseDadosInputs>;
 type GetVerifica = (param: { REGIME_TRIBUTARIO: number }) => Promise<iNfeConfig[]>;
 
 type UpdateNfeConfigFn = (param: Partial<iNfeConfig>) => Promise<void>;
@@ -35,27 +32,15 @@ type DeleteCofinsFn = (id: number) => Promise<{ success: boolean }>;
 
 type Duplicidade = (param: iDuplicity) => Promise<iGetDuplicityResponse>;
 
+const caminho = 'configuracaoNfe';
 
-
-const getNfeConfig: GetNfeConfigFn = async () => {
-    const { data } = await axios.post(caminho, { call: 'getNfeConfig' });
+const getDadosParaInputs: iGetDadosParaInputs = async () => {
+    const { data } = await axios.post(caminho, {
+        call: 'getDadosParaInputs'
+    });
     return data;
 };
 
-const getRegimeTributario: GetRegimeTributarioFn = async () => {
-    const { data } = await axios.post(caminho, { call: 'getRegimeTributario' });
-    return data;
-};
-
-const getPis: GetPisFn = async () => {
-    const { data } = await axios.post(caminho, { call: 'getPis' });
-    return data;
-};
-
-const getCofins: GetCofinsFn = async () => {
-    const { data } = await axios.post(caminho, { call: 'getCofins' });
-    return data;
-};
 
 const updateNfeConfig: UpdateNfeConfigFn = async (param) => {
     await axios.post(caminho, {
@@ -150,10 +135,7 @@ const verificarRegimeTributarioEmNfe: GetVerifica = async ({ REGIME_TRIBUTARIO }
 };
 
 export default {
-    getNfeConfig,
-    getRegimeTributario,
-    getPis,
-    getCofins,
+    getDadosParaInputs,
     updateNfeConfig,
     toUpdateRegimeTributario,
     toInsertRegimeTributario,

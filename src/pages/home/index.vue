@@ -403,6 +403,11 @@ import login from "../login/login";
               @click="router.push('/baixaManualBoleto')"
               >Baixa de Boleto Manual</v-btn
             >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/configuracaoNfe')"
+              >Configuração NFe</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"

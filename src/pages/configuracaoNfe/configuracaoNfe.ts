@@ -4,90 +4,44 @@ import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
 import serviceNfe from './services/configuracaoNfe.service';
-import { iNfeConfig } from "../interfaces";
+import { iCidades, iNfeConfig, iCofins, iPis, iRegimeTributario, iResponseDadosInputs } from "./interfaces";
 
 export const state = reactive({
     nfeConfig: {} as iNfeConfig,
+    pisLista: [] as iPis[],
+    cofinsLista: [] as iCofins[],
+    regimeTributarioLista: [] as iRegimeTributario[],
     loading: false,
     isEditing: false,
-
+    cidades: <iCidades[]>[],
     originalConfig: {} as iNfeConfig,
 });
 
 export const actions = {
     async init() {
-        actions.getNfeConfig();
     },
 
-    async getNfeConfig() {
-        state.loading = true;
-
+    async getDadosParaInputs() {
         try {
-            const data = await serviceNfe.getNfeConfig();
-            state.nfeConfig = data;
+            state.loading = true;
+
+            const data = await serviceNfe.getDadosParaInputs();
+            state.cidades = data.cidades
+            state.nfeConfig = data.nfeConfig[0];
+            state.regimeTributarioLista = data.regimeTributario;
+            state.pisLista = data.pis;
+            state.cofinsLista = data.cofins;
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao buscar as configurações de NFe.",
+                text: "Erro ao buscar os dados iniciais!",
             });
-            return;
-        } finally {
-            state.loading = false;
-        }
-
-        state.loading = false;
-    },
-
-    async getPis() {
-        state.loading = true;
-
-        try {
-            const data = await serviceNfe.getPis();
-            state.nfeConfig.pis = data;
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao buscar informações de PIS.",
-            });
-            return;
         } finally {
             state.loading = false;
         }
     },
 
-    async getCofins() {
-        state.loading = true;
-
-        try {
-            const data = await serviceNfe.getCofins();
-            state.nfeConfig.cofins = data;
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao buscar informações de COFINS.",
-            });
-            return;
-        } finally {
-            state.loading = false;
-        }
-    },
-
-    async getRegimeTributario() {
-        state.loading = true;
-
-        try {
-            const data = await serviceNfe.getRegimeTributario();
-            state.nfeConfig.regimeTributario = data;
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao buscar informações de Regime Tributário.",
-            });
-            return;
-        } finally {
-            state.loading = false;
-        }
-    },
 
     btnEdit() {
         state.isEditing = true;
