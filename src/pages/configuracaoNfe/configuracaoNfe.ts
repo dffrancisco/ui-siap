@@ -4,12 +4,12 @@ import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
 import serviceNfe from './services/configuracaoNfe.service';
-import { iCidades, iNfeConfig, iCofins, iPis, iRegimeTributario, iResponseDadosInputs } from "./interfaces";
+import { iCidades, iNfeConfig, iCofins, iPis, iRegimeTributario } from "./interfaces";
 
 export const state = reactive({
     nfeConfig: {} as iNfeConfig,
-    pisLista: [] as iPis[],
-    cofinsLista: [] as iCofins[],
+    pis: [] as iPis[],
+    cofins: [] as iCofins[],
     regimeTributarioLista: [] as iRegimeTributario[],
     loading: false,
     isEditing: false,
@@ -29,8 +29,8 @@ export const actions = {
             state.cidades = data.cidades
             state.nfeConfig = data.nfeConfig[0];
             state.regimeTributarioLista = data.regimeTributario;
-            state.pisLista = data.pis;
-            state.cofinsLista = data.cofins;
+            state.pis = data.pis;
+            state.cofins = data.cofins;
 
         } catch (error) {
             Swal.fire({

@@ -11,8 +11,6 @@ import {
     iGetDuplicityResponse
 } from '../interfaces';
 
-
-
 type iGetDadosParaInputs = () => Promise<iResponseDadosInputs>;
 type GetVerifica = (param: { REGIME_TRIBUTARIO: number }) => Promise<iNfeConfig[]>;
 
@@ -32,7 +30,7 @@ type DeleteCofinsFn = (id: number) => Promise<{ success: boolean }>;
 
 type Duplicidade = (param: iDuplicity) => Promise<iGetDuplicityResponse>;
 
-const caminho = 'configuracaoNfe';
+const caminho = 'siap/configuracaoNfe';
 
 const getDadosParaInputs: iGetDadosParaInputs = async () => {
     const { data } = await axios.post(caminho, {

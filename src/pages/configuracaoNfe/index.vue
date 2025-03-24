@@ -51,7 +51,7 @@ const regimeOptions = computed(() => {
 
         <v-col cols="2">
           <v-text-field
-            v-model="state.nfeConfig.PIS"
+            v-model="state.pis.P_VALOR"
             label="Pis"
             readonly
             disabled
@@ -61,7 +61,7 @@ const regimeOptions = computed(() => {
 
         <v-col cols="2">
           <v-text-field
-            v-model="state.nfeConfig.COFINS"
+            v-model="state.cofins.P_VALOR"
             label="Cofins"
             readonly
             disabled
@@ -197,26 +197,26 @@ const regimeOptions = computed(() => {
       </v-row>
 
       <v-row
-        class="mt-6"
+        class="mt-5"
         justify="center"
       >
         <v-btn
           color="primary"
-          class="ma-2"
+          class="ma-1"
           @click="actions.btnEdit"
         >
           Editar
         </v-btn>
         <v-btn
           color="primary"
-          class="ma-2"
+          class="ma-1"
           @click="actions.btnSave"
         >
           Salvar
         </v-btn>
         <v-btn
           color="primary"
-          class="ma-2"
+          class="ma-1"
           @click="actions.btnCancel"
         >
           Cancelar
