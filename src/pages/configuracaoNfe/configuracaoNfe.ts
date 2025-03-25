@@ -8,8 +8,8 @@ import { iCidades, iNfeConfig, iCofins, iPis, iRegimeTributario } from "./interf
 
 export const state = reactive({
     nfeConfig: {} as iNfeConfig,
-    pis: [] as iPis[],
-    cofins: [] as iCofins[],
+    pis: {} as iPis,
+    cofins: {} as iCofins,
     regimeTributarioLista: [] as iRegimeTributario[],
     loading: false,
     isEditing: false,
@@ -29,8 +29,8 @@ export const actions = {
             state.cidades = data.cidades
             state.nfeConfig = data.nfeConfig[0];
             state.regimeTributarioLista = data.regimeTributario;
-            state.pis = data.pis;
-            state.cofins = data.cofins;
+            state.pis = data.pis[0];
+            state.cofins = data.cofins[0];
 
         } catch (error) {
             Swal.fire({

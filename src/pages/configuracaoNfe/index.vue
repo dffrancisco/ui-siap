@@ -37,7 +37,7 @@ const regimeOptions = computed(() => {
         />
       </v-overlay>
 
-      <v-row dense>
+      <v-row>
         <v-col cols="3">
           <v-select
             v-model="state.nfeConfig.REGIME_TRIBUTARIO"
