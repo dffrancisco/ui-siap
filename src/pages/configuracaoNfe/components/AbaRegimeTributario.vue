@@ -1,27 +1,103 @@
-<script setup>
-import { onMounted, computed } from "vue";
-import { reactive } from "vue";
+<script setup lang="ts">
+import { onMounted, reactive } from "vue";
+import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
-import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
-import serviceNfe from "@/services/configuracaoNfe.service";
+import utils from "@/ts/utils";
+import serviceNfe from "../services/configuracaoNfe.service";
 
 const state = reactive({
-  regimeTributarioLista: [],
-  regimeTributario: {},
+  grid: {} as ixGridCreate,
+  regimeTributarioLista: [] as any[],
+  regimeTributario: {} as any,
   loading: false,
   isEditing: false,
-  originalData: {},
 });
 
 const actions = {
-  async getRegimeTributario() {
+  async init() {
+    await actions.gridRegimeTributario();
+  },
+
+  gridRegimeTributario() {
+    state.grid = new xGridV2.create({
+      el: "#gridRegimeTributario",
+      height: 325,
+      count: true,
+      columns: {
+        "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "30%" },
+        Descrição: { dataField: "DESCRICAO", width: "70%" },
+      },
+      query: {
+        async execute(rs) {
+          const data = await actions.getDadosParaInputs();
+          state.grid.querySourceAdd(data);
+        },
+      },
+      sideBySide: {
+        el: "#pnRegimeCampos",
+        vModel(r) {
+          state.regimeTributario = r;
+        },
+        duplicity: {
+          dataField: ["ID_REGIME_TRIBUTARIO"],
+          async execute(rs) {
+            return false;
+          },
+        },
+        frame: {
+          el: "#pnRegimeBotoes",
+          buttons: {
+            novo: {
+              html: "Novo",
+              state: "insert",
+              click: actions.btnInsert,
+            },
+            update: {
+              html: "Alterar",
+              state: "update",
+              click: actions.btnEdit,
+              id: "btnRegimeUpdate",
+            },
+            excluir: {
+              html: "Excluir",
+              state: "delete",
+              click: actions.btnDelete,
+            },
+            salvar: {
+              html: "Salvar",
+              state: "save",
+              click: actions.btnSave,
+              preLoad: "Salvando",
+            },
+            cancela: {
+              html: "Cancelar",
+              state: "cancel",
+              click: actions.btnCancel,
+            },
+          },
+        },
+      },
+
+      enter: function () {
+        document.getElementById("btnRegimeUpdate")?.click();
+      },
+    });
+
+    actions.getDadosParaInputs().then((data) => {});
+  },
+
+  async getDadosParaInputs() {
     try {
       state.loading = true;
-      const data = await serviceNfe.getRegimeTributario();
-      state.regimeTributarioLista = data;
+
+      const data = await serviceNfe.getDadosParaInputs();
+      state.regimeTributarioLista = data.regimeTributario;
     } catch (error) {
-      Swal.fire({ icon: "error", text: "Erro ao buscar Regimes Tributários!" });
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao buscar os dados iniciais!",
+      });
     } finally {
       state.loading = false;
     }
@@ -30,63 +106,92 @@ const actions = {
   btnInsert() {
     state.isEditing = true;
     state.regimeTributario = {};
+    state.grid.disable();
+    state.grid.focusField();
   },
 
-  btnEdit(item) {
+  btnEdit() {
+    if (!state.grid.dataSource()) {
+      Swal.fire({
+        icon: "info",
+        text: "Nenhum registro selecionado para alteração.",
+      });
+      return;
+    }
     state.isEditing = true;
-    state.regimeTributario = { ...item };
-    state.originalData = { ...item };
+    state.grid.disable();
+    state.grid.focusField();
+  },
+
+  async btnDelete() {
+    if (!state.grid.dataSource()) {
+      Swal.fire({
+        icon: "info",
+        text: "Selecione um registro para excluir.",
+      });
+      return;
+    }
+    if (await msgConfirm("Confirmação", "Confirma a exclusão deste registro?")) {
+      try {
+        state.loading = true;
+        await serviceNfe.toDeleteRegimeTributario(state.grid.dataSource().ID_REGIME_TRIBUTARIO);
+        state.grid.deleteLine();
+        Swal.fire({
+          icon: "success",
+          text: "Registro excluído com sucesso!",
+        });
+      } catch (error: any) {
+        Swal.fire({
+          icon: "error",
+          text: "Erro ao excluir registro.",
+        });
+      } finally {
+        state.loading = false;
+      }
+    }
   },
 
   async btnSave() {
     if (utils.validaOBR()) return;
+    if (await state.grid.getDuplicityAll()) return;
     try {
       state.loading = true;
       if (state.regimeTributario.ID_REGIME_TRIBUTARIO) {
-        await serviceNfe.updateRegimeTributario(state.regimeTributario);
+        await serviceNfe.toUpdateRegimeTributario(state.regimeTributario);
+        state.grid.dataSource({ ...state.regimeTributario });
+        Swal.fire({
+          icon: "success",
+          text: "Registro atualizado com sucesso!",
+        });
       } else {
-        await serviceNfe.createRegimeTributario(state.regimeTributario);
+        const response = await serviceNfe.toUpdateRegimeTributario(state.regimeTributario);
+        state.regimeTributario.ID_REGIME_TRIBUTARIO = response.id;
+        state.grid.insertLine({ ...state.regimeTributario });
+        Swal.fire({
+          icon: "success",
+          text: "Registro inserido com sucesso!",
+        });
       }
-      Swal.fire({ icon: "success", text: "Registro salvo com sucesso!" });
-      state.isEditing = false;
-      actions.getRegimeTributario();
-    } catch (error) {
-      Swal.fire({ icon: "error", text: error.response?.data?.msg || "Erro ao salvar" });
+      state.grid.enable();
+      state.grid.focus();
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao salvar registro.",
+      });
     } finally {
       state.loading = false;
     }
   },
 
-  async btnDelete(id) {
-    const confirm = await msgConfirm("Confirma exclusão deste registro?");
-    if (!confirm.isConfirmed) return;
-    try {
-      state.loading = true;
-      await serviceNfe.deleteRegimeTributario(id);
-      Swal.fire({ icon: "success", text: "Registro excluído!" });
-      actions.getRegimeTributario();
-    } catch (error) {
-      Swal.fire({ icon: "error", text: "Erro ao excluir" });
-    } finally {
-      state.loading = false;
-    }
-  },
-
-  btnCancel() {
-    state.regimeTributario = { ...state.originalData };
-    state.isEditing = false;
+  async btnCancel() {
+    state.grid.enable();
+    state.grid.focus();
   },
 };
 
 onMounted(() => {
-  actions.getRegimeTributario();
-});
-
-const regimeOptions = computed(() => {
-  return state.regimeTributarioLista.map((item) => ({
-    text: item.DESCRICAO,
-    value: item.ID_REGIME_TRIBUTARIO,
-  }));
+  actions.init();
 });
 </script>
 
@@ -97,7 +202,7 @@ const regimeOptions = computed(() => {
       class="pa-5 ma-auto"
     >
       <v-overlay
-        :model-value="state.loading"
+        :value="state.loading"
         absolute
       >
         <v-progress-circular
@@ -106,10 +211,12 @@ const regimeOptions = computed(() => {
           size="50"
         />
       </v-overlay>
-
       <h2 class="text-center">Regime Tributário</h2>
 
-      <v-form @submit.prevent="actions.btnSave">
+      <v-form
+        @submit.prevent="actions.btnSave"
+        id="pnRegimeCampos"
+      >
         <v-row dense>
           <v-col cols="3">
             <v-text-field
@@ -120,7 +227,6 @@ const regimeOptions = computed(() => {
               dense
             />
           </v-col>
-
           <v-col cols="6">
             <v-text-field
               v-model="state.regimeTributario.DESCRICAO"
@@ -131,7 +237,6 @@ const regimeOptions = computed(() => {
             />
           </v-col>
         </v-row>
-
         <v-row
           justify="center"
           class="mt-3"
@@ -156,34 +261,13 @@ const regimeOptions = computed(() => {
 
       <v-divider class="my-4"></v-divider>
 
-      <v-data-table-virtual
-        :items="state.regimeTributarioLista"
-        :headers="[
-          { text: 'Código', value: 'ID_REGIME_TRIBUTARIO' },
-          { text: 'Descrição', value: 'DESCRICAO' },
-          { text: 'Ações', value: 'actions', sortable: false },
-        ]"
-        height="325"
-        class="elevation-1"
-      >
-        <template v-slot:item.actions="{ item }">
-          <v-btn
-            color="blue"
-            class="ma-1"
-            @click="actions.btnEdit(item)"
-          >
-            Editar
-          </v-btn>
-          <v-btn
-            color="red"
-            class="ma-1"
-            @click="actions.btnDelete(item.ID_REGIME_TRIBUTARIO)"
-          >
-            Excluir
-          </v-btn>
-        </template>
-        </template>
-      </v-data-table-virtual>
+      <div id="gridRegimeTributario"></div>
+
+      <div
+        id="pnRegimeBotoes"
+        class="mt-2"
+        style="text-align: center"
+      ></div>
     </v-card>
   </v-container>
 </template>

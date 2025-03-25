@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { onMounted, computed } from "vue";
+import { onMounted, computed, reactive } from "vue";
 import { state, actions } from "./configuracaoNfe";
+// import ModalConfiguracaoNfe from "./ModalConfiguracaoNfe.vue";
+// import ModalRegimeTributario from "./ModalRegimeTributario.vue";
+// import ModalPis from "./ModalPis.vue";
+// import ModalCofins from "./ModalCofins.vue";
 
 if (!state.regimeTributarioLista) {
   state.regimeTributarioLista = [];
@@ -8,7 +12,6 @@ if (!state.regimeTributarioLista) {
 
 onMounted(async () => {
   await actions.init();
-
   await actions.getDadosParaInputs();
 });
 
@@ -18,6 +21,27 @@ const regimeOptions = computed(() => {
     value: item.ID_REGIME_TRIBUTARIO,
   }));
 });
+
+const modalState = reactive({
+  selectedOption: "configuracaoNfe",
+  modalOpen: false,
+});
+
+const modalOptions = [
+  { value: "configuracaoNfe", label: "Configuração NFE" },
+  { value: "regimeTributario", label: "Regime Tributário" },
+  { value: "pis", label: "PIS" },
+  { value: "cofins", label: "Cofins" },
+];
+
+const openModal = (optionValue: string) => {
+  modalState.selectedOption = optionValue;
+  modalState.modalOpen = true;
+};
+
+const closeModal = () => {
+  modalState.modalOpen = false;
+};
 </script>
 
 <template>
@@ -36,6 +60,25 @@ const regimeOptions = computed(() => {
           size="50"
         />
       </v-overlay>
+
+      <v-row
+        justify="center"
+        class="mb-4"
+      >
+        <v-col
+          cols="auto"
+          class="d-flex align-center"
+          v-for="option in modalOptions"
+          :key="option.value"
+        >
+          <v-btn
+            color="primary"
+            @click="openModal(option.value)"
+          >
+            {{ option.label }}
+          </v-btn>
+        </v-col>
+      </v-row>
 
       <v-row>
         <v-col cols="3">
@@ -223,5 +266,23 @@ const regimeOptions = computed(() => {
         </v-btn>
       </v-row>
     </v-card>
+
+    <v-dialog
+      v-model="modalState.modalOpen"
+      max-width="800px"
+    >
+      <template v-if="modalState.selectedOption === 'configuracaoNfe'">
+        <ModalConfiguracaoNfe @close="closeModal" />
+      </template>
+      <template v-else-if="modalState.selectedOption === 'regimeTributario'">
+        <ModalRegimeTributario @close="closeModal" />
+      </template>
+      <template v-else-if="modalState.selectedOption === 'pis'">
+        <ModalPis @close="closeModal" />
+      </template>
+      <template v-else-if="modalState.selectedOption === 'cofins'">
+        <ModalCofins @close="closeModal" />
+      </template>
+    </v-dialog>
   </v-container>
 </template>

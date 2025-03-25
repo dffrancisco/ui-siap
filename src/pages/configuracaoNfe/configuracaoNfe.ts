@@ -42,7 +42,6 @@ export const actions = {
         }
     },
 
-
     btnEdit() {
         state.isEditing = true;
         nextTick(() => {
