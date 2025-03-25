@@ -263,7 +263,7 @@ onMounted(() => {
             Salvar
           </v-btn>
           <v-btn
-            color="secondary"
+            color="primary"
             class="ma-1"
             @click="actions.btnCancel"
           >
@@ -274,7 +274,6 @@ onMounted(() => {
 
       <v-divider class="my-4"></v-divider>
 
-      <!-- Grid para exibição dos registros de Regime Tributário -->
       <div id="gridRegimeTributario"></div>
       <div
         id="pnRegimeBotoes"

@@ -279,7 +279,7 @@ onMounted(() => {
             Salvar
           </v-btn>
           <v-btn
-            color="secondary"
+            color="primary"
             class="ma-2"
             @click="actions.btnCancel"
           >
