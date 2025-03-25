@@ -7,6 +7,7 @@ import {
     iInsertRegimeTributario,
     iDeleteRegimeTributario,
     iDuplicity,
+    iFieldDuplicity,
     iResponseDadosInputs,
     iGetDuplicityResponse
 } from '../interfaces';
@@ -116,10 +117,11 @@ const toDeleteCofins: DeleteCofinsFn = async (id) => {
     return data;
 };
 
-const getDuplicidade: Duplicidade = async (param) => {
+const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
     const { data } = await axios.post(caminho, {
-        call: "duplicity",
-        param
+        call: "getDuplicidade",
+        value,
+        field,
     });
     return data;
 };

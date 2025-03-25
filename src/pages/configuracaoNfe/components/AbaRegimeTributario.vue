@@ -5,11 +5,12 @@ import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import serviceNfe from "../services/configuracaoNfe.service";
+import { iRegimeTributario } from "../interfaces";
 
 const state = reactive({
   grid: {} as ixGridCreate,
-  regimeTributarioLista: [] as any[],
-  regimeTributario: {} as any,
+  regimeTributarioLista: [] as iRegimeTributario[],
+  regimeTributario: {} as iRegimeTributario,
   loading: false,
   isEditing: false,
 });
@@ -17,6 +18,7 @@ const state = reactive({
 const actions = {
   async init() {
     await actions.gridRegimeTributario();
+    await actions.getDadosParaInputs();
   },
 
   gridRegimeTributario() {
@@ -25,13 +27,19 @@ const actions = {
       height: 325,
       count: true,
       columns: {
-        "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "30%" },
-        Descrição: { dataField: "DESCRICAO", width: "70%" },
+        "Código Regime Tributário": {
+          dataField: "ID_REGIME_TRIBUTARIO",
+          width: "30%",
+        },
+        Descrição: {
+          dataField: "DESCRICAO",
+          width: "70%",
+        },
       },
       query: {
-        async execute(rs) {
+        async execute() {
           const data = await actions.getDadosParaInputs();
-          state.grid.querySourceAdd(data);
+          state.grid.querySourceAdd(data.regimeTributario);
         },
       },
       sideBySide: {
@@ -42,6 +50,7 @@ const actions = {
         duplicity: {
           dataField: ["ID_REGIME_TRIBUTARIO"],
           async execute(rs) {
+            // Se houver verificação de duplicidade, implemente aqui
             return false;
           },
         },
@@ -78,26 +87,24 @@ const actions = {
           },
         },
       },
-
       enter: function () {
         document.getElementById("btnRegimeUpdate")?.click();
       },
     });
-
-    actions.getDadosParaInputs().then((data) => {});
   },
 
   async getDadosParaInputs() {
     try {
       state.loading = true;
-
       const data = await serviceNfe.getDadosParaInputs();
       state.regimeTributarioLista = data.regimeTributario;
+      return data;
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Erro ao buscar os dados iniciais!",
       });
+      return { regimeTributario: [] };
     } finally {
       state.loading = false;
     }
@@ -105,7 +112,8 @@ const actions = {
 
   btnInsert() {
     state.isEditing = true;
-    state.regimeTributario = {};
+    // Inicialize com um objeto vazio ou com valores padrão, se necessário
+    state.regimeTributario = {} as iRegimeTributario;
     state.grid.disable();
     state.grid.focusField();
   },
@@ -124,7 +132,8 @@ const actions = {
   },
 
   async btnDelete() {
-    if (!state.grid.dataSource()) {
+    const selected = state.grid.dataSource();
+    if (!selected) {
       Swal.fire({
         icon: "info",
         text: "Selecione um registro para excluir.",
@@ -134,7 +143,7 @@ const actions = {
     if (await msgConfirm("Confirmação", "Confirma a exclusão deste registro?")) {
       try {
         state.loading = true;
-        await serviceNfe.toDeleteRegimeTributario(state.grid.dataSource().ID_REGIME_TRIBUTARIO);
+        await serviceNfe.toDeleteRegimeTributario(selected.ID_REGIME_TRIBUTARIO);
         state.grid.deleteLine();
         Swal.fire({
           icon: "success",
@@ -157,6 +166,7 @@ const actions = {
     try {
       state.loading = true;
       if (state.regimeTributario.ID_REGIME_TRIBUTARIO) {
+        // Atualiza o registro existente
         await serviceNfe.toUpdateRegimeTributario(state.regimeTributario);
         state.grid.dataSource({ ...state.regimeTributario });
         Swal.fire({
@@ -164,8 +174,10 @@ const actions = {
           text: "Registro atualizado com sucesso!",
         });
       } else {
-        const response = await serviceNfe.toUpdateRegimeTributario(state.regimeTributario);
-        state.regimeTributario.ID_REGIME_TRIBUTARIO = response.id;
+        // Insere um novo registro
+        const response = await serviceNfe.toInsertRegimeTributario(state.regimeTributario);
+        // Considerando que a resposta contenha o ID inserido
+        state.regimeTributario.ID_REGIME_TRIBUTARIO = response.ID_REGIME_TRIBUTARIO;
         state.grid.insertLine({ ...state.regimeTributario });
         Swal.fire({
           icon: "success",
@@ -184,9 +196,10 @@ const actions = {
     }
   },
 
-  async btnCancel() {
+  btnCancel() {
     state.grid.enable();
     state.grid.focus();
+    state.regimeTributario = {} as iRegimeTributario;
   },
 };
 
@@ -211,7 +224,7 @@ onMounted(() => {
           size="50"
         />
       </v-overlay>
-      <h2 class="text-center">Regime Tributário</h2>
+      <h2 class="text-center mb-4">Regime Tributário</h2>
 
       <v-form
         @submit.prevent="actions.btnSave"
@@ -244,7 +257,7 @@ onMounted(() => {
           <v-btn
             color="primary"
             class="ma-1"
-            @click="actions.btnSave"
+            type="submit"
             :loading="state.loading"
           >
             Salvar
@@ -261,8 +274,8 @@ onMounted(() => {
 
       <v-divider class="my-4"></v-divider>
 
+      <!-- Grid para exibição dos registros de Regime Tributário -->
       <div id="gridRegimeTributario"></div>
-
       <div
         id="pnRegimeBotoes"
         class="mt-2"

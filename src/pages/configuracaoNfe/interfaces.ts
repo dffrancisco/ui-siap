@@ -3,7 +3,7 @@ export interface iResponseDadosInputs {
     regimeTributario: iRegimeTributario[];
     pis: iPis[];
     cofins: iCofins[];
-    cidades: iCidades[];
+
 }
 
 export interface iCidades {
@@ -12,7 +12,6 @@ export interface iCidades {
     COD_IBGE: string;
     UF: string;
 }
-
 
 export interface iNfeConfig {
     ID_NFE_CONFIG: number;
@@ -34,7 +33,6 @@ export interface iNfeConfig {
     NCM_MONTAGEM_GERAL: string;
     PIS: string;
     COFINS: string;
-
 }
 
 export interface iInsertNfeConfigParam extends iNfeConfig { }

@@ -5,48 +5,66 @@ import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import serviceNfe from "../services/configuracaoNfe.service";
+import { iCofins, iRegimeTributario, iFieldDuplicity } from "../interfaces";
 
 const state = reactive({
   grid: {} as ixGridCreate,
-  confinsLista: [] as any[],
-  confins: {} as any,
+  confinsLista: [] as iCofins[],
+  regimeTributarioLista: [] as iRegimeTributario[],
+  confins: {} as iCofins,
   loading: false,
   isEditing: false,
 });
 
 const actions = {
   async init() {
-    await actions.gridRegimeTributario();
+    await actions.gridConfins();
+    await actions.getDadosParaInputs();
   },
 
-  gridRegimeTributario() {
+  gridConfins() {
     state.grid = new xGridV2.create({
-      el: "#gridRegimeTributario",
+      el: "#gridConfins",
       height: 325,
       count: true,
       columns: {
-        Valor: { dataField: "P_VALOR", width: "50%" },
-        "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "50%" },
+        Valor: {
+          dataField: "P_VALOR",
+          width: "50%",
+        },
+        "Código Regime Tributário": {
+          dataField: "ID_REGIME_TRIBUTARIO",
+          width: "50%",
+        },
       },
       query: {
         async execute(rs) {
           const data = await actions.getDadosParaInputs();
-          state.grid.querySourceAdd(data);
+          state.grid.querySourceAdd(data.cofins);
         },
       },
       sideBySide: {
-        el: "#pnRegimeCampos",
+        el: "#pnConfinsCampos",
         vModel(r) {
           state.confins = r;
         },
         duplicity: {
           dataField: ["ID_REGIME_TRIBUTARIO"],
           async execute(rs) {
+            let dup = await actions.getDuplicidade({
+              value: rs.value.toUpperCase(),
+              field: rs.field,
+            });
+
+            if (dup && Object.keys(dup).length > 0) {
+              state.grid.showMessageDuplicity(rs.text + " já cadastrado.");
+              return true;
+            }
             return false;
           },
         },
         frame: {
-          el: "#pnRegimeBotoes",
+          el: "#pnConfinsBotoes",
           buttons: {
             novo: {
               html: "Novo",
@@ -57,7 +75,7 @@ const actions = {
               html: "Alterar",
               state: "update",
               click: actions.btnEdit,
-              id: "btnRegimeUpdate",
+              id: "btnConfinsUpdate",
             },
             excluir: {
               html: "Excluir",
@@ -78,34 +96,46 @@ const actions = {
           },
         },
       },
-
       enter: function () {
-        document.getElementById("btnRegimeUpdate")?.click();
+        document.getElementById("btnConfinsUpdate")?.click();
       },
     });
-
-    actions.getDadosParaInputs().then((data) => {});
   },
 
   async getDadosParaInputs() {
     try {
       state.loading = true;
-
       const data = await serviceNfe.getDadosParaInputs();
-      state.confinsLista = data.regimeTributario;
+      state.confinsLista = data.cofins;
+      state.regimeTributarioLista = data.regimeTributario;
+      return data;
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Erro ao buscar os dados iniciais!",
       });
+      return { cofins: [], regimeTributario: [] };
     } finally {
       state.loading = false;
     }
   },
 
+  async getDuplicidade({ value, field }: iFieldDuplicity) {
+    try {
+      const data = await serviceNfe.getDuplicidade({ value, field });
+      return data;
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao verificar duplicidade.",
+        text: error.message,
+      });
+    }
+  },
+
   btnInsert() {
     state.isEditing = true;
-    state.confins = {};
+    state.confins = {} as iCofins;
     state.grid.disable();
     state.grid.focusField();
   },
@@ -124,26 +154,28 @@ const actions = {
   },
 
   async btnDelete() {
-    if (!state.grid.dataSource()) {
+    const selected = state.grid.dataSource();
+    if (!selected) {
       Swal.fire({
         icon: "info",
         text: "Selecione um registro para excluir.",
       });
       return;
     }
+
     if (await msgConfirm("Confirmação", "Confirma a exclusão deste registro?")) {
       try {
         state.loading = true;
-        await serviceNfe.toDeleteRegimeTributario(state.grid.dataSource().ID_REGIME_TRIBUTARIO);
+        await serviceNfe.toDeleteCofins(selected.ID_COFINS);
         state.grid.deleteLine();
         Swal.fire({
           icon: "success",
-          text: "Registro excluído com sucesso!",
+          text: "COFINS excluído com sucesso!",
         });
       } catch (error: any) {
         Swal.fire({
           icon: "error",
-          text: "Erro ao excluir registro.",
+          text: error.response?.data?.msg || "Erro ao excluir registro.",
         });
       } finally {
         state.loading = false;
@@ -154,39 +186,43 @@ const actions = {
   async btnSave() {
     if (utils.validaOBR()) return;
     if (await state.grid.getDuplicityAll()) return;
+
     try {
       state.loading = true;
-      if (state.confins.ID_REGIME_TRIBUTARIO) {
-        await serviceNfe.toUpdateRegimeTributario(state.confins);
+
+      if (state.confins.ID_COFINS) {
+        await serviceNfe.toUpdateCofins(state.confins);
         state.grid.dataSource({ ...state.confins });
         Swal.fire({
           icon: "success",
-          text: "Registro atualizado com sucesso!",
+          text: "COFINS atualizado com sucesso!",
         });
       } else {
-        const response = await serviceNfe.toUpdateCofins(state.confins);
-        state.confins.ID_REGIME_TRIBUTARIO = response.id;
+        const response = await serviceNfe.toInsertCofins(state.confins);
+        state.confins.ID_COFINS = response.ID_COFINS;
         state.grid.insertLine({ ...state.confins });
         Swal.fire({
           icon: "success",
-          text: "Registro inserido com sucesso!",
+          text: "COFINS cadastrado com sucesso!",
         });
       }
+
       state.grid.enable();
       state.grid.focus();
-    } catch (error: any) {
+    } catch (error) {
       Swal.fire({
         icon: "error",
-        text: "Erro ao salvar registro.",
+        text: error.response?.data?.msg || "Erro ao salvar registro.",
       });
     } finally {
       state.loading = false;
     }
   },
 
-  async btnCancel() {
+  btnCancel() {
     state.grid.enable();
     state.grid.focus();
+    state.confins = {} as iCofins;
   },
 };
 
@@ -202,7 +238,7 @@ onMounted(() => {
       class="pa-5 ma-auto"
     >
       <v-overlay
-        :value="state.loading"
+        :model-value="state.loading"
         absolute
       >
         <v-progress-circular
@@ -211,47 +247,53 @@ onMounted(() => {
           size="50"
         />
       </v-overlay>
-      <h2 class="text-center">Regime Tributário</h2>
+
+      <h2 class="text-center mb-4">Configuração de COFINS</h2>
 
       <v-form
         @submit.prevent="actions.btnSave"
-        id="pnRegimeCampos"
+        id="pnConfinsCampos"
       >
         <v-row dense>
-          <v-col cols="3">
-            <v-text-field
+          <v-col cols="4">
+            <v-select
               v-model="state.confins.ID_REGIME_TRIBUTARIO"
-              label="Código Tributário"
-              type="number"
+              :items="state.regimeTributarioLista"
+              item-title="DESCRICAO"
+              item-value="ID_REGIME_TRIBUTARIO"
+              label="Regime Tributário"
               outlined
               dense
             />
           </v-col>
-          <v-col cols="6">
+
+          <v-col cols="4">
             <v-text-field
-              v-model="state.confins.DESCRICAO"
-              label="Descrição"
-              type="text"
+              v-model="state.confins.P_VALOR"
+              label="Valor do COFINS"
+              type="number"
+              suffix="%"
               outlined
               dense
             />
           </v-col>
         </v-row>
+
         <v-row
           justify="center"
-          class="mt-3"
+          class="mt-4"
         >
           <v-btn
             color="primary"
-            class="ma-1"
-            @click="actions.btnSave"
+            class="ma-2"
+            type="submit"
             :loading="state.loading"
           >
             Salvar
           </v-btn>
           <v-btn
-            color="secondary"
-            class="ma-1"
+            color="primary"
+            class="ma-2"
             @click="actions.btnCancel"
           >
             Cancelar
@@ -259,15 +301,27 @@ onMounted(() => {
         </v-row>
       </v-form>
 
-      <v-divider class="my-4"></v-divider>
-
-      <div id="gridRegimeTributario"></div>
+      <v-divider class="my-6" />
 
       <div
-        id="pnRegimeBotoes"
-        class="mt-2"
+        id="gridConfins"
+        class="mb-4"
+      />
+      <div
+        id="pnConfinsBotoes"
         style="text-align: center"
-      ></div>
+      />
     </v-card>
   </v-container>
 </template>
+
+<style scoped>
+.v-card {
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+}
+
+.v-select,
+.v-text-field {
+  margin-bottom: 12px;
+}
+</style>

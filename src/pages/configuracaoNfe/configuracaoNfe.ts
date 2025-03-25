@@ -26,7 +26,7 @@ export const actions = {
             state.loading = true;
 
             const data = await serviceNfe.getDadosParaInputs();
-            state.cidades = data.cidades
+
             state.nfeConfig = data.nfeConfig[0];
             state.regimeTributarioLista = data.regimeTributario;
             state.pis = data.pis[0];

@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { onMounted, computed, reactive } from "vue";
 import { state, actions } from "./configuracaoNfe";
-// import ModalConfiguracaoNfe from "./ModalConfiguracaoNfe.vue";
-// import ModalRegimeTributario from "./ModalRegimeTributario.vue";
-// import ModalPis from "./ModalPis.vue";
-// import ModalCofins from "./ModalCofins.vue";
+import ModalRegimeTributario from "./components/AbaRegimeTributario.vue";
+import ModalPis from "./components/AbaPis.vue";
+import ModalCofins from "./components/AbaConfins.vue";
 
 if (!state.regimeTributarioLista) {
   state.regimeTributarioLista = [];
