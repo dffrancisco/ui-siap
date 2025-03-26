@@ -14,13 +14,6 @@ onMounted(async () => {
   await actions.getDadosParaInputs();
 });
 
-const regimeOptions = computed(() => {
-  return state.regimeTributarioLista.map((item) => ({
-    text: item.DESCRICAO,
-    value: item.ID_REGIME_TRIBUTARIO,
-  }));
-});
-
 const modalState = reactive({
   selectedOption: "configuracaoNfe",
   modalOpen: false,

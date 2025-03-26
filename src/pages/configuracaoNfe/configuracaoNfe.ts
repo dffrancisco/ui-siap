@@ -4,12 +4,15 @@ import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
 import serviceNfe from './services/configuracaoNfe.service';
-import { iCidades, iNfeConfig, iCofins, iPis, iRegimeTributario } from "./interfaces";
+import { iCidades, iNfeConfig, iCofins, iPis, iRegimeTributario, iResponseDadosInputs } from "./interfaces";
 
 export const state = reactive({
     nfeConfig: {} as iNfeConfig,
     pis: {} as iPis,
     cofins: {} as iCofins,
+    regimeTributario: {} as iRegimeTributario,
+
+    cofinsLista: [] as iCofins[],
     regimeTributarioLista: [] as iRegimeTributario[],
     loading: false,
     isEditing: false,
@@ -22,13 +25,11 @@ export const actions = {
     async init() {
     },
 
-
-
     async getDadosParaInputs() {
         try {
             state.loading = true;
 
-            const data = await serviceNfe.getDadosParaInputs();
+            const data = (await serviceNfe.getDadosParaInputs()) as iResponseDadosInputs;
 
             state.nfeConfig = data.nfeConfig[0];
             state.regimeTributarioLista = data.regimeTributario;

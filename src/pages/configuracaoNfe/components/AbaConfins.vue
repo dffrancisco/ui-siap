@@ -24,35 +24,25 @@ const props = defineProps({
   },
 });
 
-watch(
-  () => props.confins,
-  (newData) => {
-    if (state.grid && newData.length) {
-      state.grid.source([]);
-      state.grid.querySourceAdd(newData);
-    }
-  },
-  { immediate: true }
-);
-
 const actions = {
   async init() {
     await actions.gridConfins();
     await actions.getDadosParaInputs();
   },
 
-  gridConfins() {
+  async gridConfins() {
     state.grid = new xGridV2.create({
       el: "#gridConfins",
       height: 325,
       count: true,
       columns: {
         Valor: { dataField: "P_VALOR", width: "50%" },
-        "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "50%" },
+        Tributário: { dataField: "ID_REGIME_TRIBUTARIO", width: "50%" },
       },
       query: {
         async execute(rs) {
-          state.grid.querySourceAdd(props.confins);
+          let data = await actions.getDadosParaInputs();
+          state.grid.querySourceAdd(data);
         },
       },
       sideBySide: {
@@ -121,11 +111,13 @@ const actions = {
       const data = await serviceNfe.getDadosParaInputs();
 
       state.confins = data.cofins[0];
+      return data.cofins;
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Erro ao buscar os dados iniciais!",
       });
+      return [];
     } finally {
       state.loading = false;
     }
