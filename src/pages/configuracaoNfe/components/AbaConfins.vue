@@ -4,17 +4,36 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
+import {} from "../configuracaoNfe";
 import serviceNfe from "../services/configuracaoNfe.service";
-import { iCofins, iRegimeTributario, iFieldDuplicity } from "../interfaces";
+import { iCofins, iFieldDuplicity } from "../interfaces";
+import { watch } from "vue";
 
 const state = reactive({
   grid: {} as ixGridCreate,
   confinsLista: [] as iCofins[],
-  regimeTributarioLista: [] as iRegimeTributario[],
   confins: {} as iCofins,
   loading: false,
   isEditing: false,
 });
+
+const props = defineProps({
+  confins: {
+    type: Array,
+    default: () => [],
+  },
+});
+
+watch(
+  () => props.confins,
+  (newData) => {
+    if (state.grid && newData.length) {
+      state.grid.source([]);
+      state.grid.querySourceAdd(newData);
+    }
+  },
+  { immediate: true }
+);
 
 const actions = {
   async init() {
@@ -28,19 +47,12 @@ const actions = {
       height: 325,
       count: true,
       columns: {
-        Valor: {
-          dataField: "P_VALOR",
-          width: "50%",
-        },
-        "Código Regime Tributário": {
-          dataField: "ID_REGIME_TRIBUTARIO",
-          width: "50%",
-        },
+        Valor: { dataField: "P_VALOR", width: "50%" },
+        "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "50%" },
       },
       query: {
         async execute(rs) {
-          const data = await actions.getDadosParaInputs();
-          state.grid.querySourceAdd(data.cofins);
+          state.grid.querySourceAdd(props.confins);
         },
       },
       sideBySide: {
@@ -105,16 +117,15 @@ const actions = {
   async getDadosParaInputs() {
     try {
       state.loading = true;
+
       const data = await serviceNfe.getDadosParaInputs();
-      state.confinsLista = data.cofins;
-      state.regimeTributarioLista = data.regimeTributario;
-      return data;
+
+      state.confins = data.cofins[0];
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Erro ao buscar os dados iniciais!",
       });
-      return { cofins: [], regimeTributario: [] };
     } finally {
       state.loading = false;
     }
@@ -254,16 +265,14 @@ onMounted(() => {
         @submit.prevent="actions.btnSave"
         id="pnConfinsCampos"
       >
-        <v-row dense>
+        <v-row>
           <v-col cols="4">
             <v-select
               v-model="state.confins.ID_REGIME_TRIBUTARIO"
-              :items="state.regimeTributarioLista"
+              :items="state.confinsLista"
               item-title="DESCRICAO"
               item-value="ID_REGIME_TRIBUTARIO"
               label="Regime Tributário"
-              outlined
-              dense
             />
           </v-col>
 
@@ -273,8 +282,6 @@ onMounted(() => {
               label="Valor do COFINS"
               type="number"
               suffix="%"
-              outlined
-              dense
             />
           </v-col>
         </v-row>
@@ -283,25 +290,8 @@ onMounted(() => {
           justify="center"
           class="mt-4"
         >
-          <v-btn
-            color="primary"
-            class="ma-2"
-            type="submit"
-            :loading="state.loading"
-          >
-            Salvar
-          </v-btn>
-          <v-btn
-            color="primary"
-            class="ma-2"
-            @click="actions.btnCancel"
-          >
-            Cancelar
-          </v-btn>
         </v-row>
       </v-form>
-
-      <v-divider class="my-6" />
 
       <div
         id="gridConfins"

@@ -83,7 +83,11 @@ const closeModal = () => {
         <v-col cols="3">
           <v-select
             v-model="state.nfeConfig.REGIME_TRIBUTARIO"
-            :items="regimeOptions"
+            :items="[
+              { text: 'Lucro Presumido', value: 1 },
+              { text: 'Lucro Real', value: 2 },
+              { text: 'Simples Nacional', value: 0 },
+            ]"
             label="Regime Tributário"
             item-text="text"
             item-value="value"
@@ -271,16 +275,28 @@ const closeModal = () => {
       max-width="800px"
     >
       <template v-if="modalState.selectedOption === 'configuracaoNfe'">
-        <ModalConfiguracaoNfe @close="closeModal" />
+        <ModalConfiguracaoNfe
+          @close="closeModal"
+          :nfeConfig="state.nfeConfig"
+        />
       </template>
       <template v-else-if="modalState.selectedOption === 'regimeTributario'">
-        <ModalRegimeTributario @close="closeModal" />
+        <ModalRegimeTributario
+          @close="closeModal"
+          :regimeTributarioLista="state.regimeTributarioLista"
+        />
       </template>
       <template v-else-if="modalState.selectedOption === 'pis'">
-        <ModalPis @close="closeModal" />
+        <ModalPis
+          @close="closeModal"
+          :pis="state.pis"
+        />
       </template>
       <template v-else-if="modalState.selectedOption === 'cofins'">
-        <ModalCofins @close="closeModal" />
+        <ModalCofins
+          @close="closeModal"
+          :cofins="state.cofins"
+        />
       </template>
     </v-dialog>
   </v-container>

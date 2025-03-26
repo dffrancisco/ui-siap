@@ -29,7 +29,6 @@ type InsertCofinsFn = (param: iCofins) => Promise<iCofins>;
 type UpdateCofinsFn = (param: iCofins) => Promise<void>;
 type DeleteCofinsFn = (id: number) => Promise<{ success: boolean }>;
 
-type Duplicidade = (param: iDuplicity) => Promise<iGetDuplicityResponse>;
 
 const caminho = 'siap/configuracaoNfe';
 
@@ -40,7 +39,6 @@ const getDadosParaInputs: iGetDadosParaInputs = async () => {
     return data;
 };
 
-
 const updateNfeConfig: UpdateNfeConfigFn = async (param) => {
     await axios.post(caminho, {
         call: 'updateNfe',
@@ -48,6 +46,7 @@ const updateNfeConfig: UpdateNfeConfigFn = async (param) => {
     });
 };
 
+// Regime Tributário
 const toInsertRegimeTributario: InsertRegimeTributarioFn = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "createRegimeTributario",
@@ -71,6 +70,15 @@ const toDeleteRegimeTributario: DeleteRegimeTributarioFn = async (ID_REGIME_TRIB
     return data;
 };
 
+const verificarRegimeTributarioEmNfe: GetVerifica = async ({ REGIME_TRIBUTARIO }) => {
+    const { data } = await axios.post(caminho, {
+        call: "verificarRegimeTributarioEmNfe",
+        param: { REGIME_TRIBUTARIO }
+    });
+    return data;
+};
+
+// Pis
 const toInsertPis: InsertPisFn = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "createPis",
@@ -94,6 +102,7 @@ const toDeletePis: DeletePisFn = async (id) => {
     return data;
 };
 
+// Cofins
 const toInsertCofins: InsertCofinsFn = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "createCofins",
@@ -117,19 +126,12 @@ const toDeleteCofins: DeleteCofinsFn = async (id) => {
     return data;
 };
 
+// Duplicidade
 const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
     const { data } = await axios.post(caminho, {
         call: "getDuplicidade",
         value,
         field,
-    });
-    return data;
-};
-
-const verificarRegimeTributarioEmNfe: GetVerifica = async ({ REGIME_TRIBUTARIO }) => {
-    const { data } = await axios.post(caminho, {
-        call: "verificarRegimeTributarioEmNfe",
-        param: { REGIME_TRIBUTARIO }
     });
     return data;
 };

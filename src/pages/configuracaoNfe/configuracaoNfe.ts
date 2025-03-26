@@ -17,9 +17,12 @@ export const state = reactive({
     originalConfig: {} as iNfeConfig,
 });
 
+
 export const actions = {
     async init() {
     },
+
+
 
     async getDadosParaInputs() {
         try {

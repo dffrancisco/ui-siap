@@ -67,9 +67,9 @@ export interface iDeleteRegimeTributario {
 }
 
 export interface iPis {
-    ID_PIS: number;
-    ID_REGIME_TRIBUTARIO: string;
-    P_VALOR: number;
+    ID_PIS?: number;
+    ID_REGIME_TRIBUTARIO?: string;
+    P_VALOR?: number;
 }
 
 export interface iCofins {

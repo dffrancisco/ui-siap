@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import serviceNfe from "../services/configuracaoNfe.service";
-import { iRegimeTributario } from "../interfaces";
+import { iFieldDuplicity, iRegimeTributario } from "../interfaces";
 
 const state = reactive({
   grid: {} as ixGridCreate,
@@ -13,6 +13,10 @@ const state = reactive({
   regimeTributario: {} as iRegimeTributario,
   loading: false,
   isEditing: false,
+});
+
+defineProps({
+  regimeTributario: Object,
 });
 
 const actions = {
@@ -39,7 +43,6 @@ const actions = {
       query: {
         async execute() {
           const data = await actions.getDadosParaInputs();
-          state.grid.querySourceAdd(data.regimeTributario);
         },
       },
       sideBySide: {
@@ -50,7 +53,6 @@ const actions = {
         duplicity: {
           dataField: ["ID_REGIME_TRIBUTARIO"],
           async execute(rs) {
-            // Se houver verificação de duplicidade, implemente aqui
             return false;
           },
         },
@@ -96,23 +98,36 @@ const actions = {
   async getDadosParaInputs() {
     try {
       state.loading = true;
+
       const data = await serviceNfe.getDadosParaInputs();
-      state.regimeTributarioLista = data.regimeTributario;
-      return data;
+
+      state.regimeTributario = data.regimeTributario[0];
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Erro ao buscar os dados iniciais!",
       });
-      return { regimeTributario: [] };
     } finally {
       state.loading = false;
     }
   },
 
+  async getDuplicidade({ value, field }: iFieldDuplicity) {
+    try {
+      const data = await serviceNfe.getDuplicidade({ value, field });
+      return data;
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao verificar duplicidade.",
+        text: error.message,
+      });
+    }
+  },
+
   btnInsert() {
     state.isEditing = true;
-    // Inicialize com um objeto vazio ou com valores padrão, se necessário
+
     state.regimeTributario = {} as iRegimeTributario;
     state.grid.disable();
     state.grid.focusField();
@@ -166,7 +181,6 @@ const actions = {
     try {
       state.loading = true;
       if (state.regimeTributario.ID_REGIME_TRIBUTARIO) {
-        // Atualiza o registro existente
         await serviceNfe.toUpdateRegimeTributario(state.regimeTributario);
         state.grid.dataSource({ ...state.regimeTributario });
         Swal.fire({
@@ -174,9 +188,8 @@ const actions = {
           text: "Registro atualizado com sucesso!",
         });
       } else {
-        // Insere um novo registro
         const response = await serviceNfe.toInsertRegimeTributario(state.regimeTributario);
-        // Considerando que a resposta contenha o ID inserido
+
         state.regimeTributario.ID_REGIME_TRIBUTARIO = response.ID_REGIME_TRIBUTARIO;
         state.grid.insertLine({ ...state.regimeTributario });
         Swal.fire({
@@ -236,39 +249,14 @@ onMounted(() => {
               v-model="state.regimeTributario.ID_REGIME_TRIBUTARIO"
               label="Código Tributário"
               type="number"
-              outlined
-              dense
             />
           </v-col>
           <v-col cols="6">
             <v-text-field
               v-model="state.regimeTributario.DESCRICAO"
               label="Descrição"
-              type="text"
-              outlined
-              dense
             />
           </v-col>
-        </v-row>
-        <v-row
-          justify="center"
-          class="mt-3"
-        >
-          <v-btn
-            color="primary"
-            class="ma-1"
-            type="submit"
-            :loading="state.loading"
-          >
-            Salvar
-          </v-btn>
-          <v-btn
-            color="primary"
-            class="ma-1"
-            @click="actions.btnCancel"
-          >
-            Cancelar
-          </v-btn>
         </v-row>
       </v-form>
 

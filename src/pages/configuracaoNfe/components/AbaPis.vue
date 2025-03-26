@@ -4,8 +4,8 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
-import servicePis from "../services/configuracaoNfe.service";
 import { iPis, iRegimeTributario, iFieldDuplicity } from "../interfaces";
+import serviceNfe from "../services/configuracaoNfe.service";
 
 const state = reactive({
   grid: {} as ixGridCreate,
@@ -14,6 +14,12 @@ const state = reactive({
   pis: {} as iPis,
   loading: false,
   isEditing: false,
+});
+
+const props = defineProps({
+  pis: {
+    type: Object,
+  },
 });
 
 const actions = {
@@ -33,8 +39,7 @@ const actions = {
       },
       query: {
         async execute() {
-          const data = await actions.getDadosParaInputs();
-          state.grid.querySourceAdd(data.pis);
+          state.grid.querySourceAdd(props.pis);
         },
       },
       sideBySide: {
@@ -68,7 +73,6 @@ const actions = {
               html: "Alterar",
               state: "update",
               click: actions.btnEdit,
-              id: "btnPisUpdate",
             },
             excluir: {
               html: "Excluir",
@@ -79,7 +83,6 @@ const actions = {
               html: "Salvar",
               state: "save",
               click: actions.btnSave,
-              preLoad: "Salvando",
             },
             cancela: {
               html: "Cancelar",
@@ -98,16 +101,13 @@ const actions = {
   async getDadosParaInputs() {
     try {
       state.loading = true;
-      const data = await servicePis.getDadosParaInputs();
-      state.pisLista = data.pis;
-      state.regimeTributarioLista = data.regimeTributario;
-      return data;
+      const data = await serviceNfe.getDadosParaInputs();
+      state.pis = data.pis[0];
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Erro ao buscar os dados iniciais!",
       });
-      return { pis: [], regimeTributario: [] };
     } finally {
       state.loading = false;
     }
@@ -115,9 +115,9 @@ const actions = {
 
   async getDuplicidade({ value, field }: iFieldDuplicity) {
     try {
-      const data = await servicePis.getDuplicidade({ value, field });
+      const data = await serviceNfe.getDuplicidade({ value, field });
       return data;
-    } catch (error: any) {
+    } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Erro ao verificar duplicidade.",
@@ -158,7 +158,7 @@ const actions = {
     if (await msgConfirm("Confirmação", "Confirma a exclusão deste registro?")) {
       try {
         state.loading = true;
-        await servicePis.toDeletePis(selected.ID_PIS);
+        await serviceNfe.toDeletePis(selected.ID_PIS);
         state.grid.deleteLine();
         Swal.fire({
           icon: "success",
@@ -181,14 +181,14 @@ const actions = {
     try {
       state.loading = true;
       if (state.pis.ID_PIS) {
-        await servicePis.toUpdatePis(state.pis);
+        await serviceNfe.toUpdatePis(state.pis);
         state.grid.dataSource({ ...state.pis });
         Swal.fire({
           icon: "success",
           text: "PIS atualizado com sucesso!",
         });
       } else {
-        const response = await servicePis.toInsertPis(state.pis);
+        const response = await serviceNfe.toInsertPis(state.pis);
         state.pis.ID_PIS = response.ID_PIS;
         state.grid.insertLine({ ...state.pis });
         Swal.fire({
@@ -251,8 +251,6 @@ onMounted(() => {
               item-title="DESCRICAO"
               item-value="ID_REGIME_TRIBUTARIO"
               label="Regime Tributário"
-              outlined
-              dense
             />
           </v-col>
           <v-col cols="4">
@@ -261,8 +259,6 @@ onMounted(() => {
               label="Valor do PIS"
               type="number"
               suffix="%"
-              outlined
-              dense
             />
           </v-col>
         </v-row>
@@ -270,25 +266,8 @@ onMounted(() => {
           justify="center"
           class="mt-4"
         >
-          <v-btn
-            color="primary"
-            class="ma-2"
-            type="submit"
-            :loading="state.loading"
-          >
-            Salvar
-          </v-btn>
-          <v-btn
-            color="primary"
-            class="ma-2"
-            @click="actions.btnCancel"
-          >
-            Cancelar
-          </v-btn>
         </v-row>
       </v-form>
-
-      <v-divider class="my-6" />
 
       <div
         id="gridPis"
