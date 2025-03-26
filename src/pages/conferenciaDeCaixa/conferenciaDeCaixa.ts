@@ -1,14 +1,14 @@
 import utils from './../../ts/utils';
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iParamSangria, iSangrias, iTodasAsCompras, iTotalizadores } from "./interfaces";
+import { iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iParamSangria, iSangrias, iTodasAsCompras, iTotalizadores, iTotalizadoresAgrupados } from "./interfaces";
 import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import xAuthManager from "@/plugins/xAuthManager";
 
 export const state = reactive({
-    data: moment().format("YYYY-MM-DD"),
+    data: '2025-03-24',
     selectedOption: "caixas",
     loading: false,
     mdcAberto: true,
@@ -30,6 +30,10 @@ export const state = reactive({
         { title: "Pagamentos", key: "PAGAMENTOS", width: "100%" },
         { title: "Total", key: "VALOR", width: "120px", value: (item: any) => utils.formatValor(item.VALOR_TOTAL) },
     ],
+    modalConferirCaixaOpened: false,
+    selectOptionModal: "lancamentos",
+    totalizadoresIndividuais: <iTotalizadoresAgrupados[]>[],
+    pagamentosSelecionadosModal: [] as string[],
 });
 
 export const options: iOptions[] = [
@@ -66,6 +70,8 @@ export const actions = {
                     { TIPO_PAGAMENTO: "TODOS", DESCRICAO_PAGAMENTO: "TODOS", VALOR: data.totalizadores.reduce((acc, item) => acc + item.VALOR, 0) },
                     ...data.totalizadores
                 ];
+
+                state.totalizadoresIndividuais = data.totalizadoresAgrupadosPorCaixa;
             }
         } catch (error) {
             Swal.fire({
@@ -86,6 +92,7 @@ export const actions = {
         state.totalizadores = [];
         state.sangrias = [];
         state.devolucoes = [];
+        state.totalizadoresIndividuais = [];
     },
 
 
@@ -225,6 +232,17 @@ export const actions = {
         state.loading = false;
     },
 
+    selecionarPagamentoModal(tipoPagamento: string) {
+        if (tipoPagamento === "TODOS") {
+            state.pagamentosSelecionadosModal = ["TODOS"];
+            return;
+        }
+
+        state.pagamentosSelecionadosModal = state.pagamentosSelecionadosModal.includes(tipoPagamento)
+            ? state.pagamentosSelecionadosModal.filter(p => p !== tipoPagamento)
+            : [...state.pagamentosSelecionadosModal.filter(p => p !== "TODOS"), tipoPagamento];
+    },
+
     async modalSangria(caixa) {
         const hoje = moment().format("YYYY-MM-DD");
 
@@ -274,6 +292,11 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    abrirModalConferirCaixa(caixa) {
+        state.caixaSelected = caixa;
+        state.modalConferirCaixaOpened = true;
     }
 }
 
@@ -331,6 +354,70 @@ export const comprasFiltradas = computed(() => {
             ...compra,
             INDEX: index + 1,
         }));
+});
+
+// funcoes para modalConferirCaixa
+
+export const abaSelecionadaModal = computed(() => state.selectOptionModal);
+
+export const comprasFiltradasPorCaixa = computed(() => {
+    if (!state.caixaSelected) return [];
+
+    let compras = state.todasAsCompras.filter(
+        (c) => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO
+    );
+
+    // Se "TODOS" estiver selecionado, retorna todas as compras sem filtragem de pagamento
+    if (state.pagamentosSelecionadosModal.includes("TODOS")) {
+        return compras
+            .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
+            .map((compra, index) => ({
+                ...compra,
+                INDEX: index + 1,
+            }));
+    }
+
+    // Filtra apenas as compras que possuem pelo menos um dos pagamentos selecionados
+    if (state.pagamentosSelecionadosModal.length > 0) {
+        compras = compras
+            .map((c) => {
+                const pagamentosFiltrados = c.TIPOS_PAGAMENTO.filter((p) =>
+                    state.pagamentosSelecionadosModal.includes(p.TIPO_PAGAMENTO)
+                );
+
+                return pagamentosFiltrados.length > 0
+                    ? { ...c, TIPOS_PAGAMENTO: pagamentosFiltrados }
+                    : null;
+            })
+            .filter(item => item !== null)
+    }
+
+    return compras
+        .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
+        .map((compra, index) => ({
+            ...compra,
+            INDEX: index + 1,
+        }));
+});
+
+export const totalizadoresFiltradosPorCaixa = computed<iTotalizadores[]>(() => {
+    if (!state.caixaSelected || !state.totalizadoresIndividuais) {
+        return [];
+    }
+
+    const codFuncionario = state.caixaSelected.COD_FUNCIONARIO;
+    const totalizadores = state.totalizadoresIndividuais[codFuncionario] ?? [];
+
+    return [
+        {
+            TIPO_PAGAMENTO: "TODOS",
+            DESCRICAO_PAGAMENTO: "TODOS",
+            VALOR: Array.isArray(totalizadores)
+                ? totalizadores.reduce((sum, t) => sum + t.VALOR, 0)
+                : 0
+        },
+        ...(Array.isArray(totalizadores) ? totalizadores : [totalizadores])
+    ];
 });
 
 

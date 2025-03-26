@@ -25,6 +25,7 @@ export interface iCaixas {
     HORA_FECHAMENTO: string;
     ID_ABERTURA_CAIXA: number;
     LOGIN: string;
+    NOME_COMP: string;
     OBS: string;
     SANGRIA: number;
     STATUS: number;
@@ -94,6 +95,7 @@ export interface iResponseDadosIniciais {
     totalizadores: iTotalizadores[];
     devolucoes: iDevolucoes[];
     sangrias: iSangrias[];
+    totalizadoresAgrupadosPorCaixa: iTotalizadoresAgrupados[];
 }
 
 export interface iParamsAbrirCaixa {
@@ -110,4 +112,15 @@ export interface iParamSangria {
     loginCaixa: string;
     idAberturaCaixa: number;
     valor: number;
+}
+
+export interface iTotalizadorIndividual {
+    COD_FUNCIONARIO: number;
+    TIPO_PAGAMENTO: string;
+    DESCRICAO_PAGAMENTO: string;
+    VALOR: number;
+}
+
+export interface iTotalizadoresAgrupados {
+    [codFuncionario: number]: iTotalizadores[];
 }

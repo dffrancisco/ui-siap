@@ -3,6 +3,7 @@ import { state, options, actions, funcionariosDisponiveis, abaSelecionada } from
 import { onMounted } from "vue";
 import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
 import ModalSangria from "./components/ModalSangria.vue";
+import ModalConferirCaixa from "./components/ModalConferirCaixa.vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import AbaCaixas from "./components/AbaCaixas.vue";
 import AbaLancamentos from "./components/AbaLancamentos.vue";
@@ -110,6 +111,7 @@ onMounted(() => {
               :caixa="caixa"
               @fechar-caixa="actions.fecharCaixa"
               @salvar-sangria="actions.modalSangria"
+              @conferir-caixa="actions.abrirModalConferirCaixa"
             />
           </v-col>
 
@@ -178,6 +180,21 @@ onMounted(() => {
         :caixaSelecionado="state.caixaSelected"
         @efetuarSangria="actions.efetuarSangria"
         @closeModalSangria="state.modalSangriaOpened = false"
+      />
+    </v-dialog>
+
+    <!-- Modal Conferir Caixa -->
+    <v-dialog
+      v-model="state.modalConferirCaixaOpened"
+      max-width="1050"
+    >
+      <ModalConferirCaixa
+        :modalOpened="state.modalConferirCaixaOpened"
+        :caixaSelecionado="state.caixaSelected"
+        :lancamentos="state.todasAsCompras"
+        :sangrias="state.sangrias"
+        :devolucoes="state.devolucoes"
+        @closeModalConferirCaixa="state.modalConferirCaixaOpened = false"
       />
     </v-dialog>
 
