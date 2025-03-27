@@ -1,38 +1,29 @@
 <script setup lang="ts">
 import { onMounted, reactive } from "vue";
 import { state, actions } from "./configuracaoNfe";
-import ModalRegimeTributario from "./components/AbaRegimeTributario.vue";
-import ModalPis from "./components/AbaPis.vue";
-import ModalCofins from "./components/AbaConfins.vue";
-
-if (!state.regimeTributarioLista) {
-  state.regimeTributarioLista = [];
-}
+// import AbaRegimeTributario from "../components/AbaRegimeTributario.vue";
+// import AbaPis from "../components/AbaPis.vue";
+// import AbaCofins from "../components/AbaCofins.vue";
+// import AbaConfiguracaoNfe from "../components/AbaConfiguracaoNfe.vue";
 
 onMounted(async () => {
   await actions.init();
   await actions.getDadosParaInputs();
 });
 
-const modalState = reactive({
-  selectedOption: "configuracaoNfe",
-  modalOpen: false,
-});
-
-const modalOptions = [
+const tabOptions = [
   { value: "configuracaoNfe", label: "Configuração NFE" },
   { value: "regimeTributario", label: "Regime Tributário" },
   { value: "pis", label: "PIS" },
   { value: "cofins", label: "Cofins" },
 ];
 
-const openModal = (optionValue: string) => {
-  modalState.selectedOption = optionValue;
-  modalState.modalOpen = true;
-};
+const tabState = reactive({
+  selectedTab: "configuracaoNfe",
+});
 
-const closeModal = () => {
-  modalState.modalOpen = false;
+const changeTab = (tabValue: string) => {
+  tabState.selectedTab = tabValue;
 };
 </script>
 
@@ -60,14 +51,14 @@ const closeModal = () => {
         <v-col
           cols="auto"
           class="d-flex align-center"
-          v-for="option in modalOptions"
+          v-for="option in tabOptions"
           :key="option.value"
         >
           <v-btn
             color="primary"
             class="pa-1"
             small
-            @click="openModal(option.value)"
+            @click="changeTab(option.value)"
           >
             {{ option.label }}
           </v-btn>
@@ -263,36 +254,19 @@ const closeModal = () => {
           Cancelar
         </v-btn>
       </v-row>
-    </v-card>
 
-    <v-dialog
-      v-model="modalState.modalOpen"
-      max-width="800px"
-    >
-      <template v-if="modalState.selectedOption === 'configuracaoNfe'">
-        <ModalConfiguracaoNfe
-          @close="closeModal"
-          :nfeConfig="state.nfeConfig"
-        />
-      </template>
-      <template v-else-if="modalState.selectedOption === 'regimeTributario'">
-        <ModalRegimeTributario
-          @close="closeModal"
-          :regimeTributarioLista="state.regimeTributarioLista"
-        />
-      </template>
-      <template v-else-if="modalState.selectedOption === 'pis'">
-        <ModalPis
-          @close="closeModal"
-          :pis="state.pis"
-        />
-      </template>
-      <template v-else-if="modalState.selectedOption === 'cofins'">
-        <ModalCofins
-          @close="closeModal"
-          :cofins="state.cofins"
-        />
-      </template>
-    </v-dialog>
+      <div v-if="tabState.selectedTab === 'configuracaoNfe'">
+        <AbaConfiguracaoNfe :nfeConfig="state.nfeConfig" />
+      </div>
+      <div v-else-if="tabState.selectedTab === 'regimeTributario'">
+        <AbaRegimeTributario :regimeTributarioLista="state.regimeTributarioLista" />
+      </div>
+      <div v-else-if="tabState.selectedTab === 'pis'">
+        <AbaPis :pis="state.pis" />
+      </div>
+      <div v-else-if="tabState.selectedTab === 'cofins'">
+        <AbaCofins :cofins="state.cofins" />
+      </div>
+    </v-card>
   </v-container>
 </template>
