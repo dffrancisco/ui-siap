@@ -5,8 +5,6 @@ import {
     iPis,
     iCofins,
     iInsertRegimeTributario,
-    iDeleteRegimeTributario,
-    iDuplicity,
     iFieldDuplicity,
     iResponseDadosInputs,
     iGetDuplicityResponse

@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { onMounted, reactive } from "vue";
 import { state, actions } from "./configuracaoNfe";
-// import AbaRegimeTributario from "../components/AbaRegimeTributario.vue";
-// import AbaPis from "../components/AbaPis.vue";
-// import AbaCofins from "../components/AbaCofins.vue";
-// import AbaConfiguracaoNfe from "../components/AbaConfiguracaoNfe.vue";
+import AbaRegimeTributario from "./components/AbaRegimeTributario.vue";
+import AbaPis from "./components/AbaPis.vue";
+import AbaCofins from "./components/AbaConfins.vue";
 
 onMounted(async () => {
   await actions.init();

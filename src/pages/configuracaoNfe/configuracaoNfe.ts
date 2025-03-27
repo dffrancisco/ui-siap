@@ -2,7 +2,6 @@
 import { reactive, nextTick } from "vue";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
-import { msgConfirm } from "@/ts/message";
 import serviceNfe from './services/configuracaoNfe.service';
 import { iCidades, iNfeConfig, iCofins, iPis, iRegimeTributario, iResponseDadosInputs } from "./interfaces";
 
