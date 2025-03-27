@@ -11,6 +11,8 @@ export const state = reactive({
     transportadoras: <iTransportadora[]>[],
     dataInicio: moment().startOf('month').format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
+    dataInicioImpressao: moment().startOf('month').format('YYYY-MM-DD'),
+    dataFimImpressao: moment().endOf('month').format('YYYY-MM-DD'),
     dadosRelatorio: [] as iRelatorioConhecimento[],
     selectTransportadora: null as number | null,
     selectedOrdem: <string[]>[],
@@ -152,15 +154,15 @@ export const actions = {
                 { key: 'NUM_NOTA', label: 'Nº Nota', align: 'center' },
                 { key: 'NUM_CONHECIMENTO', label: 'Nº Conhecimento', align: 'center' },
                 { key: 'DATA_CONHECIMENTO', label: 'Data Conhecimento', align: 'center' },
-                { key: 'TOTAL_FATURA', label: 'Total Fatura', align: 'right' },
-                { key: 'PERCENTUAL', label: '%', align: 'right' },
-                { key: 'PAGAMENTO', label: 'Pagar', align: 'right' },
+                { key: 'TOTAL_FATURA', label: 'Total Fatura', align: 'center' },
+                { key: 'PERCENTUAL', label: '%', align: 'center' },
+                { key: 'PAGAMENTO', label: 'Pagar', align: 'center' },
             ];
 
             const titulo = `
                    <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
                        <span>&nbsp;</span>
-                       <strong style="font-size: 14px;">Relatório de conhecimento - Período: ${utils.dataBrasil(state.dataInicio)} até: ${utils.dataBrasil(state.dataFim)}</strong>
+                       <strong style="font-size: 14px;">Relatório de conhecimento - Período: ${utils.dataBrasil(state.dataInicioImpressao)} até: ${utils.dataBrasil(state.dataFimImpressao)}</strong>
                    </div>
                `;
 
@@ -188,9 +190,12 @@ export const actions = {
         return data.map(item => ({
             ...item,
             DATA_CONHECIMENTO: item.DATA_CONHECIMENTO ? moment(item.DATA_CONHECIMENTO).format('DD/MM/YYYY') : '----',
-            TOTAL_FATURA: typeof item.TOTAL_FATURA === 'number' ? utils.formatValor(item.TOTAL_FATURA) : item.TOTAL_FATURA,
+            TOTAL_FATURA: typeof item.TOTAL_FATURA === 'number' ? utils.formatValor(item.TOTAL_FATURA) : '----',
             PAGAMENTO: utils.formatValor(item.PAGAMENTO),
             NUM_CONHECIMENTO: item.NUM_CONHECIMENTO || '----',
+            NUM_NOTA: item.NUM_NOTA || '----',
+            PERCENTUAL: item.PERCENTUAL ? `${item.PERCENTUAL}` : '----',
+            NOME_FANTAZIA: item.NOME_FANTAZIA || '----',
         }));
     },
 
