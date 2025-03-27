@@ -1,6 +1,8 @@
 
 import { reactive, nextTick } from "vue";
 import Swal from "sweetalert2";
+import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
+
 import utils from "@/ts/utils";
 import serviceNfe from './services/configuracaoNfe.service';
 import { iCidades, iNfeConfig, iCofins, iPis, iRegimeTributario, iResponseDadosInputs } from "./interfaces";
@@ -11,8 +13,15 @@ export const state = reactive({
     cofins: {} as iCofins,
     regimeTributario: {} as iRegimeTributario,
 
+    nfeConfigLista: [] as iNfeConfig[],
     cofinsLista: [] as iCofins[],
+    pisLista: [] as iPis[],
     regimeTributarioLista: [] as iRegimeTributario[],
+
+    gridCofins: <ixGridCreate>{},
+    gridPis: <ixGridCreate>{},
+    gridRegimeTributario: <ixGridCreate>{},
+
     loading: false,
     isEditing: false,
     cidades: <iCidades[]>[],
@@ -20,8 +29,10 @@ export const state = reactive({
 });
 
 
+
 export const actions = {
     async init() {
+
     },
 
     async getDadosParaInputs() {
