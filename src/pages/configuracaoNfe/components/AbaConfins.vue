@@ -17,13 +17,6 @@ const state = reactive({
   isEditing: false,
 });
 
-const props = defineProps({
-  confins: {
-    type: Array,
-    default: () => [],
-  },
-});
-
 const actions = {
   async init() {
     await actions.gridConfins();

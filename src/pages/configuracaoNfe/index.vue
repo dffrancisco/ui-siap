@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed, reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import { state, actions } from "./configuracaoNfe";
 import ModalRegimeTributario from "./components/AbaRegimeTributario.vue";
 import ModalPis from "./components/AbaPis.vue";
@@ -54,8 +54,8 @@ const closeModal = () => {
       </v-overlay>
 
       <v-row
-        justify="center"
-        class="mb-4"
+        justify="start"
+        class="mb-1"
       >
         <v-col
           cols="auto"
@@ -65,6 +65,8 @@ const closeModal = () => {
         >
           <v-btn
             color="primary"
+            class="pa-1"
+            small
             @click="openModal(option.value)"
           >
             {{ option.label }}

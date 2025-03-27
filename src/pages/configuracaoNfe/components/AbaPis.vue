@@ -6,6 +6,7 @@ import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import { iPis, iRegimeTributario, iFieldDuplicity } from "../interfaces";
 import serviceNfe from "../services/configuracaoNfe.service";
+import { data } from "jquery";
 
 const state = reactive({
   grid: {} as ixGridCreate,
@@ -16,16 +17,10 @@ const state = reactive({
   isEditing: false,
 });
 
-const props = defineProps({
-  pis: {
-    type: Object,
-  },
-});
-
 const actions = {
   async init() {
-    await actions.gridPis();
     await actions.getDadosParaInputs();
+    await actions.gridPis();
   },
 
   gridPis() {
@@ -39,7 +34,8 @@ const actions = {
       },
       query: {
         async execute() {
-          state.grid.querySourceAdd(props.pis);
+          await actions.getDadosParaInputs();
+          state.grid.querySourceAdd(data);
         },
       },
       sideBySide: {
@@ -101,8 +97,12 @@ const actions = {
   async getDadosParaInputs() {
     try {
       state.loading = true;
+
       const data = await serviceNfe.getDadosParaInputs();
       state.pis = data.pis[0];
+      if (state.grid && typeof state.grid.queryOpen === "function") {
+        state.grid.queryOpen({ search: "" });
+      }
     } catch (error) {
       Swal.fire({
         icon: "error",
