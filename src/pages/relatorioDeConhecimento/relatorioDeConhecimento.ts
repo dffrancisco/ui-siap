@@ -11,8 +11,8 @@ export const state = reactive({
     transportadoras: <iTransportadora[]>[],
     dataInicio: moment().startOf('month').format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
-    dataInicioImpressao: moment().startOf('month').format('YYYY-MM-DD'),
-    dataFimImpressao: moment().endOf('month').format('YYYY-MM-DD'),
+    dataInicioImpressao: null,
+    dataFimImpressao: null,
     dadosRelatorio: [] as iRelatorioConhecimento[],
     selectTransportadora: null as number | null,
     selectedOrdem: <string[]>[],
@@ -87,6 +87,7 @@ export const actions = {
         }
     },
 
+
     async getDadosParaRelatorio() {
         try {
             state.loading = true;
@@ -96,6 +97,8 @@ export const actions = {
                 dataFim: state.dataFim,
                 ordem: state.selectedOrdem
             };
+            state.dataInicioImpressao = state.dataInicio
+            state.dataFimImpressao = state.dataFim
 
             const response = await serviceRelatorioConhecimento.getRelatorioConhecimento(params as unknown as iParamsRelatorioConhecimento);
             let dados = response.dadosRelatorio;
@@ -132,6 +135,7 @@ export const actions = {
         }
     },
 
+
     async onClickImprimir() {
         if (!actions.validarInputs()) {
             return;
@@ -160,10 +164,10 @@ export const actions = {
             ];
 
             const titulo = `
-                   <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
-                       <span>&nbsp;</span>
-                       <strong style="font-size: 14px;">Relatório de conhecimento - Período: ${utils.dataBrasil(state.dataInicioImpressao)} até: ${utils.dataBrasil(state.dataFimImpressao)}</strong>
-                   </div>
+          <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                    <span>Período: ${moment(state.dataInicioImpressao).format('DD/MM/YYYY')} até ${moment(state.dataFimImpressao).format('DD/MM/YYYY')}</span>
+                    <strong style="font-size: 16px;">Relatorio de conhecimento</strong>
+                </div>
                `;
 
             const reducaoFonte = `
