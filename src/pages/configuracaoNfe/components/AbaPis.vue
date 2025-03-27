@@ -99,15 +99,15 @@ const actions = {
       state.loading = true;
 
       const data = await serviceNfe.getDadosParaInputs();
+
       state.pis = data.pis[0];
-      if (state.grid && typeof state.grid.queryOpen === "function") {
-        state.grid.queryOpen({ search: "" });
-      }
+      return data.cofins;
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Erro ao buscar os dados iniciais!",
       });
+      return [];
     } finally {
       state.loading = false;
     }
