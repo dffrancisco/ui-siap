@@ -55,7 +55,25 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-card class="pa-3">
+  <v-card
+    class="pa-3"
+    height="400px"
+    v-if="comprasFiltradasPorCaixa.length === 0"
+  >
+    <v-alert
+      type="warning"
+      color="primary"
+      prominent
+      class="mb-4"
+    >
+      Não há lançamentos para o caixa selecionado!
+    </v-alert>
+  </v-card>
+
+  <v-card
+    v-else
+    class="pa-3"
+  >
     <v-row>
       <!-- Totalizadores Valores Recebidos -->
       <v-col

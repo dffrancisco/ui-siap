@@ -109,6 +109,7 @@ export interface iParamsAbrirCaixa {
 
 export interface iParamFecharCaixa {
     ID_ABERTURA_CAIXA: number;
+    DATA: string;
 }
 
 export interface iParamSangria {

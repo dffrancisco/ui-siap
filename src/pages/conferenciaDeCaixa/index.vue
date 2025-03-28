@@ -195,10 +195,11 @@ onMounted(() => {
         :sangrias="state.sangrias"
         :devolucoes="state.devolucoes"
         @closeModalConferirCaixa="state.modalConferirCaixaOpened = false"
+        :retain-focus="false"
       />
     </v-dialog>
 
-    <modalXAuthManager />
+    <modalXAuthManager :retain-focus="false" />
   </v-container>
 
   <v-overlay

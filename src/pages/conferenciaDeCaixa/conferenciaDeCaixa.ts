@@ -8,7 +8,7 @@ import { msgConfirm } from "@/ts/message";
 import xAuthManager from "@/plugins/xAuthManager";
 
 export const state = reactive({
-    data: '2025-03-19',
+    data: '2025-03-24',
     selectedOption: "caixas",
     loading: false,
     mdcAberto: true,
@@ -184,9 +184,11 @@ export const actions = {
     },
 
     async fecharCaixa(funcionario) {
+        state.modalConferirCaixaOpened = false;
 
         let param: iParamFecharCaixa = {
-            ID_ABERTURA_CAIXA: funcionario.ID_ABERTURA_CAIXA
+            ID_ABERTURA_CAIXA: funcionario.ID_ABERTURA_CAIXA,
+            DATA: funcionario.DATA_ABERTURA,
         }
 
         xAuthManager("Autorizar fechamento de caixa?", async () => {

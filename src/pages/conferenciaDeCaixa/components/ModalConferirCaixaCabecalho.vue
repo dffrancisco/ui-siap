@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { iCaixas } from "../interfaces";
 import utils from "@/ts/utils";
-import { actions } from "../conferenciaDeCaixa";
-
-const props = defineProps<{
-  caixaSelecionado: iCaixas;
-}>();
+import { actions, state } from "../conferenciaDeCaixa";
 
 const emit = defineEmits(["closeModalConferirCaixa"]);
 </script>
@@ -21,7 +16,7 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
         class="ml-2 btn-bordered"
       >
         <v-img
-          :src="actions.getFotoFuncionarioURL(props.caixaSelecionado.CPF)"
+          :src="actions.getFotoFuncionarioURL(state.caixaSelected.CPF)"
           cover
         ></v-img>
       </v-avatar>
@@ -30,21 +25,19 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
     <v-col cols="4">
       <v-row class="mt-3">
         <div
-          ><span>{{ props.caixaSelecionado.NOME_COMP }}</span
+          ><span>{{ state.caixaSelected.NOME_COMP }}</span
           ><br />
-          <span>Data: {{ utils.dataBrasil(props.caixaSelecionado.DATA_ABERTURA) }}</span>
+          <span>Data: {{ utils.dataBrasil(state.caixaSelected.DATA_ABERTURA) }}</span>
           <span class="ml-2"
             >Aberto:
             {{
-              props.caixaSelecionado.HORA_ABERTURA ? utils.formatHora(props.caixaSelecionado.HORA_ABERTURA) : "---"
+              state.caixaSelected.HORA_ABERTURA ? utils.formatHora(state.caixaSelected.HORA_ABERTURA) : "---"
             }}</span
           >
           <span class="ml-2"
             >Fechado:
             {{
-              props.caixaSelecionado.HORA_FECHAMENTO
-                ? utils.formatHora(props.caixaSelecionado.HORA_FECHAMENTO)
-                : "---"
+              state.caixaSelected.HORA_FECHAMENTO ? utils.formatHora(state.caixaSelected.HORA_FECHAMENTO) : "---"
             }}</span
           > </div
         ><v-divider
@@ -62,14 +55,14 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
       >
         <v-row class="pb-3"><span>Resumo Dinheiro</span></v-row>
         <v-row class="mt-1">
-          <v-col cols="4">Recebido: {{ utils.formatValor(props.caixaSelecionado.DINHEIRO) }}</v-col>
-          <v-col cols="4">Devolvido: {{ utils.formatValor(props.caixaSelecionado.DEVOLUCAO) }}</v-col>
-          <v-col cols="4">Vlr. Liquído: {{ utils.formatValor(props.caixaSelecionado.DINHEIRO_LIQUIDO) }}</v-col>
+          <v-col cols="4">Recebido: {{ utils.formatValor(state.caixaSelected.DINHEIRO) }}</v-col>
+          <v-col cols="4">Devolvido: {{ utils.formatValor(state.caixaSelected.DEVOLUCAO) }}</v-col>
+          <v-col cols="4">Vlr. Liquído: {{ utils.formatValor(state.caixaSelected.DINHEIRO_LIQUIDO) }}</v-col>
         </v-row>
         <v-row>
-          <v-col cols="4">Sangria: {{ utils.formatValor(props.caixaSelecionado.SANGRIA) }}</v-col>
-          <v-col cols="4">No caixa: {{ utils.formatValor(props.caixaSelecionado.DINHEIRO_LIQUIDO) }}</v-col>
-          <v-col cols="4">Troco: {{ utils.formatValor(props.caixaSelecionado.TROCO) }} </v-col>
+          <v-col cols="4">Sangria: {{ utils.formatValor(state.caixaSelected.SANGRIA) }}</v-col>
+          <v-col cols="4">No caixa: {{ utils.formatValor(state.caixaSelected.DINHEIRO_LIQUIDO) }}</v-col>
+          <v-col cols="4">Troco: {{ utils.formatValor(state.caixaSelected.TROCO) }} </v-col>
         </v-row>
       </div>
     </v-col>
@@ -81,14 +74,51 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
           :thickness="3"
         ></v-divider>
         <div class="pa-4">
-          <v-btn
-            title="Fechar Caixa"
-            size="small"
-            class="mt-3 ml-2"
-            color="primary"
-            @click="emit('closeModalConferirCaixa')"
-            >Fechar Caixa</v-btn
+          <div
+            class="pl-3"
+            v-if="state.caixaSelected.STATUS == 1 && state.caixaSelected.CONFERIDO == ''"
           >
+            <v-btn
+              title="Fechar Caixa"
+              size="small"
+              class="mt-3 ml-2"
+              color="primary"
+              @click="actions.fecharCaixa(state.caixaSelected)"
+            >
+              Fechar Caixa
+            </v-btn>
+          </div>
+
+          <div
+            class="pl-2"
+            v-if="state.caixaSelected.STATUS == 2 && state.caixaSelected.CONFERIDO == ''"
+          >
+            <v-btn
+              title="Conferir Caixa"
+              size="small"
+              class="mt-3 ml-2"
+              color="#A5D6A7"
+              @click="emit('closeModalConferirCaixa')"
+            >
+              Conferir Caixa
+            </v-btn>
+          </div>
+
+          <div v-if="state.caixaSelected.STATUS == 2 && state.caixaSelected.CONFERIDO !== ''">
+            <div style="display: flex; justify-content: flex-end">
+              <v-btn
+                color="primary"
+                size="x-small"
+                title="Fechar Modal"
+                @click="emit('closeModalConferirCaixa')"
+                >x</v-btn
+              >
+            </div>
+            <div style="margin-top: -10px">
+              <label>Conferido por: </label><br />
+              <label>{{ state.caixaSelected.CONFERIDO }}</label>
+            </div>
+          </div>
         </div>
       </v-row>
     </v-col>

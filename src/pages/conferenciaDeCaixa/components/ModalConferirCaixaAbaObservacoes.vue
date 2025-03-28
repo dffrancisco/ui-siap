@@ -35,6 +35,7 @@ import utils from "@/ts/utils";
           rounded="lg"
           class="w-100"
           height="30px"
+          title="Adicionar Observação"
         >
           Incluir
         </v-btn>
