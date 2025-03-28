@@ -17,7 +17,25 @@ const stateDevolucoes = reactive({
 });
 </script>
 <template>
-  <v-card class="pa-3">
+  <v-card
+    v-if="devolucoesPorCaixa.length === 0"
+    class="pa-3"
+    height="400px"
+  >
+    <v-alert
+      type="warning"
+      color="primary"
+      prominent
+      class="mb-4"
+    >
+      Não há devoluções cadastradas para o caixa selecionado!
+    </v-alert>
+  </v-card>
+
+  <v-card
+    v-else
+    class="pa-3"
+  >
     <v-row>
       <v-col
         class="d-flex flex-column"

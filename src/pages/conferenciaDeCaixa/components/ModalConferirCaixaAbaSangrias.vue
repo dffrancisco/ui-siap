@@ -6,6 +6,22 @@ import utils from "@/ts/utils";
   <v-card
     class="pa-3"
     height="400px"
+    v-if="sangriasPorCaixa.length === 0"
+  >
+    <v-alert
+      type="warning"
+      color="primary"
+      prominent
+      class="mb-4"
+    >
+      Não há sangrias cadastradas para o caixa selecionado!
+    </v-alert>
+  </v-card>
+
+  <v-card
+    v-else
+    class="pa-3"
+    height="400px"
   >
     <v-row>
       <v-col class="text-h6 font-weight-bold"> Total: {{ utils.formatValor(totalSangriasPorCaixa) }} </v-col>
