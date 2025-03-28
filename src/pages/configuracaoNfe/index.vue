@@ -22,7 +22,7 @@ const changeTab = (tabValue: string) => {
       class="pa-5 ma-auto"
     >
       <v-row class="mb-2">
-        <v-col cols="10">
+        <v-col cols="12">
           <v-tabs
             v-model="stateTabs.selectedTab"
             background-color="primary"
@@ -45,6 +45,7 @@ const changeTab = (tabValue: string) => {
             item-title="text"
             item-value="value"
             dense
+            clearable
           />
         </v-col>
         <v-col cols="2">
@@ -106,28 +107,24 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.CFOP_TRANSP"
             label="CFOP Transporte"
-            outlined
           />
         </v-col>
         <v-col cols="3">
           <v-text-field
             v-model="state.nfeConfig.CFOP_MONTAGEM_INTERNO"
             label="CFOP Montagem Interno"
-            outlined
           />
         </v-col>
         <v-col cols="3">
           <v-text-field
             v-model="state.nfeConfig.CFOP_MONTAGEM_INTERESTADUAL"
             label="CFOP Montagem Interestadual"
-            outlined
           />
         </v-col>
         <v-col cols="3">
           <v-text-field
             v-model="state.nfeConfig.CFOP_ECF_INTERNO"
             label="CFOP ECF Interno"
-            outlined
           />
         </v-col>
       </v-row>
@@ -140,21 +137,18 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.CFOP_ECF_INTERESTADUAL"
             label="CFOP ECF Interestadual"
-            outlined
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.CFOP_DEV_INTERNO"
             label="CFOP Dev. Interno"
-            outlined
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.CFOP_DEV_INTERESTADUAL"
             label="CFOP Dev. Interestadual"
-            outlined
           />
         </v-col>
       </v-row>
@@ -165,21 +159,18 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.EMIT_IM"
             label="Inscrição Municipal"
-            outlined
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.EMIT_CNAE"
             label="CNAE"
-            outlined
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.PROD_CEST"
             label="Prod. CEST"
-            outlined
           />
         </v-col>
       </v-row>
@@ -190,21 +181,18 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.CST"
             label="CST"
-            outlined
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.COD_LISTA_SERVICO"
             label="Cod. Lista Serviço"
-            outlined
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.NCM_MONTAGEM_GERAL"
             label="NCM Montagem Geral"
-            outlined
           />
         </v-col>
       </v-row>

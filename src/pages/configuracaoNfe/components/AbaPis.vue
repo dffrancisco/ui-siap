@@ -28,7 +28,7 @@ const actionsPis = {
       height: 300,
       count: true,
       columns: {
-        Valor: { dataField: "P_VALOR", width: "47%" },
+        Valor: { dataField: "P_VALOR", width: "47%", render: utils.formatValor },
         "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "49%" },
       },
 

@@ -31,7 +31,7 @@ const actionsCofins = {
       height: 300,
       count: true,
       columns: {
-        Valor: { dataField: "P_VALOR", width: "47%" },
+        Valor: { dataField: "P_VALOR", width: "47%", render: utils.formatValor },
         "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "49%" },
       },
 
@@ -240,7 +240,6 @@ onMounted(() => {
           :items="regimeTributarioOptions"
           item-title="text"
           item-value="value"
-          outlined
         />
       </v-col>
       <v-col cols="3">
@@ -248,7 +247,6 @@ onMounted(() => {
           v-model="stateCofins.cofins.P_VALOR"
           label="Valor do COFINS"
           type="number"
-          suffix="%"
         />
       </v-col>
     </v-row>
