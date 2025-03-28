@@ -4,6 +4,7 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
+import { regimeTributarioOptions } from "../configuracaoNfe";
 import serviceNfe from "../services/configuracaoNfe.service";
 import { iCofins, iFieldDuplicity } from "../interfaces";
 
@@ -253,10 +254,11 @@ onMounted(() => {
           <v-col cols="4">
             <v-select
               v-model="stateCofins.cofins.ID_REGIME_TRIBUTARIO"
-              :items="stateCofins.cofinsLista"
-              item-title="DESCRICAO"
-              item-value="ID_REGIME_TRIBUTARIO"
               label="Regime Tributário"
+              :items="regimeTributarioOptions"
+              item-title="text"
+              item-value="value"
+              outlined
             />
           </v-col>
           <v-col cols="4">

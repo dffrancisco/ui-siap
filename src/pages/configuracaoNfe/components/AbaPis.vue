@@ -4,6 +4,7 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
+import { regimeTributarioOptions } from "../configuracaoNfe";
 import serviceNfe from "../services/configuracaoNfe.service";
 import { iPis, iFieldDuplicity } from "../interfaces";
 
@@ -34,7 +35,7 @@ const actionsPis = {
         Valor: { dataField: "P_VALOR", width: "50%" },
         "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "50%" },
       },
-      // Esse método pode ser chamado posteriormente se houver necessidade de recarregar a grid
+
       query: {
         async execute() {
           const dados = await actionsPis.getDadosParaInputs();
@@ -91,7 +92,7 @@ const actionsPis = {
           },
         },
       },
-      // Se o usuário pressionar a tecla ENTER, podemos disparar uma ação de atualização
+
       enter: function () {
         document.getElementById("btnPisUpdate")?.click();
       },
@@ -101,11 +102,11 @@ const actionsPis = {
   async getDadosParaInputs() {
     try {
       statePis.loading = true;
-      // Chama o serviço que retorna os dados (array de PIS)
+
       const data = await serviceNfe.getDadosParaInputs();
-      // Atualiza o objeto de edição com o primeiro item, se necessário
+
       statePis.pis = { ...data.pis[0] };
-      // Retorna o array completo para a grid
+
       return data.pis;
     } catch (error) {
       Swal.fire({
@@ -231,7 +232,6 @@ onMounted(() => {
       width="880"
       class="pa-5 ma-auto"
     >
-      <!-- Overlay de loading -->
       <v-overlay
         :model-value="statePis.loading"
         absolute
@@ -245,20 +245,19 @@ onMounted(() => {
 
       <h2 class="text-center mb-4">Configuração de PIS</h2>
 
-      <!-- Formulário para edição dos dados (ex.: select e campo de valor) -->
       <v-form
         @submit.prevent="actionsPis.btnSave"
         id="pnPisCampos"
       >
         <v-row dense>
           <v-col cols="4">
-            <!-- Usando props.pis para popular o select, assumindo que props.pis é a lista de regimes -->
             <v-select
               v-model="statePis.pis.ID_REGIME_TRIBUTARIO"
-              :items="props.pis"
-              item-title="DESCRICAO"
-              item-value="ID_REGIME_TRIBUTARIO"
               label="Regime Tributário"
+              :items="regimeTributarioOptions"
+              item-title="text"
+              item-value="value"
+              outlined
             />
           </v-col>
           <v-col cols="4">

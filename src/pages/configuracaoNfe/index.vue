@@ -44,7 +44,7 @@ const changeTab = (tabValue: string) => {
         >
           <v-btn
             color="primary"
-            class="pa-1"
+            class="pa-1 mr-1"
             small
             @click="changeTab(option.value)"
           >
@@ -56,10 +56,10 @@ const changeTab = (tabValue: string) => {
       <v-row>
         <v-col cols="3">
           <v-select
-            v-model="state.nfeConfig.REGIME_TRIBUTARIO"
+            v-model="state.pis.ID_REGIME_TRIBUTARIO"
             label="Regime Tributário"
             :items="regimeTributarioOptions"
-            item-text="text"
+            item-title="text"
             item-value="value"
             outlined
           />
@@ -232,20 +232,33 @@ const changeTab = (tabValue: string) => {
         >
       </v-row>
 
-      <div v-if="stateTabs.selectedTab === 'configuracaoNfe'">
+      <div v-show="stateTabs.selectedTab === 'configuracaoNfe'">
         <AbaConfiguracaoNfe :nfeConfig="state.nfeConfig" />
       </div>
-      <div v-else-if="stateTabs.selectedTab === 'regimeTributario'">
+      <div v-show="stateTabs.selectedTab === 'regimeTributario'">
         <AbaRegimeTributario :regimeTributarioLista="[state.regimeTributarioLista]" />
       </div>
-      <div v-else-if="stateTabs.selectedTab === 'pis'">
+      <div v-show="stateTabs.selectedTab === 'pis'">
         <AbaPis :pis="[state.pis]" />
       </div>
-      <div v-else-if="stateTabs.selectedTab === 'cofins'">
+      <div v-show="stateTabs.selectedTab === 'cofins'">
         <AbaCofins :cofins="[state.cofins]" />
       </div>
     </v-card>
   </v-container>
 </template>
 
-<style scoped></style>
+<style scoped>
+.aba-flutuante {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-height: 400px;
+  background: white;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  z-index: 100;
+}
+</style>
