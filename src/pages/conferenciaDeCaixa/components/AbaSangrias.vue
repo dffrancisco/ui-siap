@@ -41,10 +41,10 @@ import utils from "@/ts/utils";
           :items="state.sangrias"
           height="340"
           :headers="[
-            { title: 'Valor', key: 'VALOR', value: (item) => utils.formatValor(item.VALOR) },
-            { title: 'Hora', key: 'HORA', value: (item) => utils.formatHora(item.HORA) },
-            { title: 'Caixa', key: 'LOGIN' },
-            { title: 'Entregue Para', key: 'ENTREGUE_PARA' },
+            { title: 'Valor', key: 'VALOR', value: (item) => utils.formatValor(item.VALOR), sortable: false },
+            { title: 'Hora', key: 'HORA', value: (item) => utils.formatHora(item.HORA), sortable: false },
+            { title: 'Caixa', key: 'LOGIN', sortable: false },
+            { title: 'Entregue Para', key: 'ENTREGUE_PARA', sortable: false },
           ]"
           item-value="HORA"
           density="compact"

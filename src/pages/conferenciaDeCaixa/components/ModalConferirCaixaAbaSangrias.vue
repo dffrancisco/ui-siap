@@ -5,7 +5,7 @@ import utils from "@/ts/utils";
 <template>
   <v-card
     class="pa-3"
-    height="400px"
+    height="410px"
     v-if="computeds.sangriasPorCaixa.value.length === 0"
   >
     <v-alert

@@ -22,7 +22,7 @@ import utils from "@/ts/utils";
   <v-card
     v-else
     class="pa-3"
-    height="400px"
+    height="410px"
   >
     <v-row class="h-100">
       <v-col

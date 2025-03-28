@@ -40,11 +40,11 @@ import utils from "@/ts/utils";
           :items="state.devolucoes"
           height="340"
           :headers="[
-            { title: 'Caixa', key: 'CAIXA' },
-            { title: 'Valor', key: 'VALOR', value: (item) => utils.formatValor(item.VALOR) },
-            { title: 'Tipo Pagto', key: 'DESCRICAO_PAGAMENTO' },
-            { title: 'Código', key: 'CODIGO' },
-            { title: 'Autor', key: 'LOGIN' },
+            { title: 'Caixa', key: 'CAIXA', sortable: false },
+            { title: 'Valor', key: 'VALOR', value: (item) => utils.formatValor(item.VALOR), sortable: false },
+            { title: 'Tipo Pagto', key: 'DESCRICAO_PAGAMENTO', sortable: false },
+            { title: 'Código', key: 'CODIGO', sortable: false },
+            { title: 'Autor', key: 'LOGIN', sortable: false },
           ]"
           item-value="NUM_ORCAMENTO"
           density="compact"

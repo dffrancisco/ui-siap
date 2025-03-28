@@ -20,7 +20,7 @@ const stateDevolucoes = reactive({
   <v-card
     v-if="computeds.devolucoesPorCaixa.value.length === 0"
     class="pa-3"
-    height="400px"
+    height="410px"
   >
     <v-alert
       type="warning"
