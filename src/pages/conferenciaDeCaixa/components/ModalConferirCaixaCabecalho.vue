@@ -1,18 +1,11 @@
 <script setup lang="ts">
 import { iCaixas } from "../interfaces";
 import utils from "@/ts/utils";
+import { actions } from "../conferenciaDeCaixa";
 
 const props = defineProps<{
   caixaSelecionado: iCaixas;
 }>();
-
-const getFotoFuncionarioURL = (cpf: string) => {
-  if (!cpf) {
-    return "";
-  }
-  const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
-  return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
-};
 
 const emit = defineEmits(["closeModalConferirCaixa"]);
 </script>
@@ -28,7 +21,7 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
         class="ml-2 btn-bordered"
       >
         <v-img
-          :src="getFotoFuncionarioURL(props.caixaSelecionado.CPF)"
+          :src="actions.getFotoFuncionarioURL(props.caixaSelecionado.CPF)"
           cover
         ></v-img>
       </v-avatar>

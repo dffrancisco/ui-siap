@@ -437,6 +437,9 @@ export const sangriasPorCaixa = computed(() => {
     return state.sangrias.filter(s => s.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
 });
 
+export const totalSangriasPorCaixa = computed(() => {
+    return sangriasPorCaixa.value.reduce((acc, s) => acc + s.VALOR, 0);
+});
 
 
 export const observacoesPorCaixa = computed(() => {

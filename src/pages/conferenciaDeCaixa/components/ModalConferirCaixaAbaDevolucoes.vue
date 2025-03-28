@@ -25,7 +25,7 @@ const stateDevolucoes = reactive({
       >
         <v-card
           class="flex-grow-1"
-          height="360px"
+          height="400px"
           style="overflow-y: scroll"
           outlined
           mandatory
