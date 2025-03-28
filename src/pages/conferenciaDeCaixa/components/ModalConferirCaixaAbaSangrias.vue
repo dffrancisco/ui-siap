@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { sangriasPorCaixa, actions, state, totalSangriasPorCaixa } from "../conferenciaDeCaixa";
+import { actions, state, computeds } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 </script>
 <template>
   <v-card
     class="pa-3"
     height="400px"
-    v-if="sangriasPorCaixa.length === 0"
+    v-if="computeds.sangriasPorCaixa.value.length === 0"
   >
     <v-alert
       type="warning"
@@ -24,12 +24,14 @@ import utils from "@/ts/utils";
     height="400px"
   >
     <v-row>
-      <v-col class="text-h6 font-weight-bold"> Total: {{ utils.formatValor(totalSangriasPorCaixa) }} </v-col>
+      <v-col class="text-h6 font-weight-bold">
+        Total: {{ utils.formatValor(computeds.totalSangriasPorCaixa.value) }}
+      </v-col>
     </v-row>
 
     <v-row class="overflow-auto">
       <v-col
-        v-for="(sangria, index) in sangriasPorCaixa"
+        v-for="(sangria, index) in computeds.sangriasPorCaixa.value"
         :key="index"
         cols="12"
         md="6"

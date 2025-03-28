@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { devolucoesPorCaixa, totalizadorDevolucaoPorCaixa, actions, state } from "../conferenciaDeCaixa";
+import { computeds, actions, state } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 import { iTiposPagamento } from "../interfaces";
 import { reactive } from "vue";
@@ -18,7 +18,7 @@ const stateDevolucoes = reactive({
 </script>
 <template>
   <v-card
-    v-if="devolucoesPorCaixa.length === 0"
+    v-if="computeds.devolucoesPorCaixa.value.length === 0"
     class="pa-3"
     height="400px"
   >
@@ -49,7 +49,7 @@ const stateDevolucoes = reactive({
           mandatory
         >
           <v-list-item
-            v-for="(item, index) in totalizadorDevolucaoPorCaixa"
+            v-for="(item, index) in computeds.totalizadorDevolucaoPorCaixa.value"
             :key="index"
             @click="actions.selecionarPagamentoDevolucao(item.DESCRICAO_PAGAMENTO)"
             :class="{
@@ -66,7 +66,7 @@ const stateDevolucoes = reactive({
       <v-col cols="9">
         <v-data-table-virtual
           :key="state.pagamentoSelecionado"
-          :items="devolucoesPorCaixa"
+          :items="computeds.devolucoesPorCaixa.value"
           :headers="stateDevolucoes.headersDevolucoes"
           height="325"
           item-value="id"
@@ -129,7 +129,7 @@ const stateDevolucoes = reactive({
 }
 
 .chip-pagamento {
-  width: 105px;
+  width: 120px;
   height: 45px;
   border-radius: 8px !important;
 }

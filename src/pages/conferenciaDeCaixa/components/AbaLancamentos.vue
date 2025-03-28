@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { state, actions, comprasFiltradas } from "../conferenciaDeCaixa";
+import { state, actions, computeds } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 import IconPagamento from "./IconPagamento.vue";
 import { iTiposPagamento } from "../interfaces";
@@ -53,7 +53,7 @@ const stateLancamentos = reactive({
       <v-col cols="9">
         <v-data-table-virtual
           :key="state.pagamentoSelecionado"
-          :items="comprasFiltradas"
+          :items="computeds.comprasFiltradas.value"
           :headers="state.headersLancamentos"
           height="325"
           item-value="id"

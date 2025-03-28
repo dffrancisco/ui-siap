@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { state, totalSangrias } from "../conferenciaDeCaixa";
+import { state, computeds } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 </script>
 
@@ -15,7 +15,7 @@ import utils from "@/ts/utils";
           <v-list dense>
             <v-list-subheader><u>Totalizador Sangrias</u></v-list-subheader>
             <v-list-item
-              v-for="(total, pessoa) in totalSangrias.totaisPorPessoa"
+              v-for="(total, pessoa) in computeds.totalSangrias.value.totaisPorPessoa"
               :key="pessoa"
             >
               <v-list-item-title>
@@ -24,11 +24,12 @@ import utils from "@/ts/utils";
             </v-list-item>
           </v-list>
 
-          <v-divider class="my-2"></v-divider>
+          <v-divider></v-divider>
 
           <v-list-item>
             <v-list-item-title>
-              <strong>Total Geral:</strong> {{ utils.formatValor(totalSangrias.totalGeral as number) }}
+              <strong>Total Geral:</strong>
+              {{ utils.formatValor(computeds.totalSangrias.value.totalGeral) }}
             </v-list-item-title>
           </v-list-item>
         </v-card>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { state, actions, comprasFiltradasPorCaixa, totalizadoresFiltradosPorCaixa } from "../conferenciaDeCaixa";
+import { state, actions, computeds } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 import IconPagamento from "./IconPagamento.vue";
 import { iTiposPagamento } from "../interfaces";
@@ -58,7 +58,7 @@ onMounted(() => {
   <v-card
     class="pa-3"
     height="400px"
-    v-if="comprasFiltradasPorCaixa.length === 0"
+    v-if="computeds.comprasFiltradasPorCaixa.value.length === 0"
   >
     <v-alert
       type="warning"
@@ -88,7 +88,7 @@ onMounted(() => {
           mandatory
         >
           <v-list-item
-            v-for="(item, index) in totalizadoresFiltradosPorCaixa"
+            v-for="(item, index) in computeds.totalizadoresFiltradosPorCaixa.value"
             :key="index"
             @click="actions.selecionarPagamentoModal(item.TIPO_PAGAMENTO)"
             :class="{ tipo_pag_selected: state.pagamentosSelecionadosModal.includes(item.TIPO_PAGAMENTO) }"
@@ -105,7 +105,7 @@ onMounted(() => {
       <v-col cols="8">
         <v-data-table-virtual
           :key="state.pagamentoSelecionado"
-          :items="comprasFiltradasPorCaixa"
+          :items="computeds.comprasFiltradasPorCaixa.value"
           :headers="state.headersLancamentos"
           height="325"
           item-value="id"

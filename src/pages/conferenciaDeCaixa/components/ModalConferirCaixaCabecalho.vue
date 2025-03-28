@@ -61,7 +61,13 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
         </v-row>
         <v-row>
           <v-col cols="4">Sangria: {{ utils.formatValor(state.caixaSelected.SANGRIA) }}</v-col>
-          <v-col cols="4">No caixa: {{ utils.formatValor(state.caixaSelected.DINHEIRO_LIQUIDO) }}</v-col>
+          <v-col
+            cols="4"
+            :class="{ 'text-red': state.caixaSelected.DINHEIRO_LIQUIDO > 500 }"
+          >
+            No caixa: {{ utils.formatValor(state.caixaSelected.DINHEIRO_LIQUIDO) }}
+          </v-col>
+
           <v-col cols="4">Troco: {{ utils.formatValor(state.caixaSelected.TROCO) }} </v-col>
         </v-row>
       </div>
@@ -107,7 +113,6 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
           <div v-if="state.caixaSelected.STATUS == 2 && state.caixaSelected.CONFERIDO !== ''">
             <div style="display: flex; justify-content: flex-end">
               <v-btn
-                color="primary"
                 size="x-small"
                 title="Fechar Modal"
                 @click="emit('closeModalConferirCaixa')"

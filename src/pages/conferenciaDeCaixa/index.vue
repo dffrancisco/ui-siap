@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { state, options, actions, funcionariosDisponiveis, abaSelecionada } from "./conferenciaDeCaixa";
+import { state, options, actions, computeds } from "./conferenciaDeCaixa";
 import { onMounted } from "vue";
 import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
 import ModalSangria from "./components/ModalSangria.vue";
@@ -97,7 +97,7 @@ onMounted(() => {
       </div>
 
       <!-- Renderiza a aba de caixas -->
-      <template v-if="abaSelecionada === 'caixas'">
+      <template v-if="computeds.abaSelecionada.value === 'caixas'">
         <v-row style="overflow-y: scroll; max-height: 370px">
           <v-col
             v-for="caixa in state.caixas"
@@ -141,13 +141,13 @@ onMounted(() => {
       </template>
 
       <!-- Renderiza a aba de Lançamentos -->
-      <AbaLancamentos v-if="abaSelecionada === 'lancamentos'" />
+      <AbaLancamentos v-if="computeds.abaSelecionada.value === 'lancamentos'" />
 
       <!-- Renderiza a aba de Sangrias -->
-      <AbaSangrias v-if="abaSelecionada === 'sangria'" />
+      <AbaSangrias v-if="computeds.abaSelecionada.value === 'sangria'" />
 
       <!-- Renderiza a aba de Devolucoes -->
-      <AbaDevolucoes v-if="abaSelecionada === 'devolucao'" />
+      <AbaDevolucoes v-if="computeds.abaSelecionada.value === 'devolucao'" />
 
       <!-- Mensagem de quem abriu o MDC -->
       <div class="pa-2 mt-3">
@@ -163,7 +163,7 @@ onMounted(() => {
       max-width="800"
     >
       <ModalAbrirCaixa
-        :funcionarios="funcionariosDisponiveis"
+        :funcionarios="computeds.funcionariosDisponiveis.value"
         :modalOpened="state.modalAbrirCaixaOpened"
         @closeModalAbrirCaixa="state.modalAbrirCaixaOpened = false"
         @dadosAbrirCaixa.sync="actions.abrirCaixa"

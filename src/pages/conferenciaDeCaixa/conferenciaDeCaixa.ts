@@ -1,7 +1,10 @@
 import utils from './../../ts/utils';
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iParamSangria, iSangrias, iTodasAsCompras, iTotalizadores, iTotalizadoresAgrupados } from "./interfaces";
+import {
+    iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa,
+    iParamSangria, iSangrias, iTodasAsCompras, iTotalizadores, iTotalizadoresAgrupados
+} from "./interfaces";
 import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -313,203 +316,201 @@ export const actions = {
     }
 }
 
-export const abaSelecionada = computed(() => state.selectedOption);
+export const computeds = {
+    abaSelecionada: computed(() => {
+        return state.selectedOption;
+    }),
 
-export const funcionariosDisponiveis = computed(() =>
-    state.funcionarios.filter(funcionario => {
-        const temCaixaAberto = state.caixas.some(
-            caixa => caixa.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO && caixa.STATUS === 1
-        );
-        return !temCaixaAberto;
-    })
-);
+    abaSelecionadaModal: computed(() => {
+        return state.selectOptionModal;
+    }),
 
-export const totalDevolucoes = computed(() => {
-    const totaisPorCaixa = state.devolucoes.reduce((acc, devolucao) => {
-        if (!acc[devolucao.CAIXA]) {
-            acc[devolucao.CAIXA] = 0;
+    funcionariosDisponiveis: computed(() => {
+        state.funcionarios.filter(funcionario => {
+            const temCaixaAberto = state.caixas.some(
+                caixa => caixa.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO && caixa.STATUS === 1
+            );
+            return !temCaixaAberto;
+        })
+    }),
+
+    comprasFiltradas: computed(() => {
+        let compras = state.todasAsCompras;
+
+        if (state.pagamentoSelecionado) {
+            compras = compras.filter(c =>
+                c.TIPOS_PAGAMENTO.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
+            );
         }
-        acc[devolucao.CAIXA] += devolucao.VALOR;
-        return acc;
-    }, {} as Record<string, number>);
 
-    const totalGeral = Object.values(totaisPorCaixa).reduce((acc, val) => acc + val, 0);
-
-    return { totaisPorCaixa, totalGeral };
-});
-
-export const totalSangrias = computed(() => {
-    const totaisPorPessoa = state.sangrias.reduce((acc, sangria) => {
-        if (!acc[sangria.ENTREGUE_PARA]) {
-            acc[sangria.ENTREGUE_PARA] = 0;
-        }
-        acc[sangria.ENTREGUE_PARA] += sangria.VALOR;
-        return acc;
-    }, {} as Record<string, number>);
-
-    const totalGeral = Object.values(totaisPorPessoa).reduce((acc, val) => acc + val, 0);
-
-    return { totaisPorPessoa, totalGeral };
-});
-
-export const comprasFiltradas = computed(() => {
-    let compras = state.todasAsCompras;
-
-    if (state.pagamentoSelecionado) {
-        compras = compras.filter(c =>
-            c.TIPOS_PAGAMENTO.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
-        );
-    }
-
-    return compras
-        .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
-        .map((compra, index) => ({
-            ...compra,
-            INDEX: index + 1,
-        }));
-});
-
-// funcoes para modalConferirCaixa
-
-export const abaSelecionadaModal = computed(() => state.selectOptionModal);
-
-export const comprasFiltradasPorCaixa = computed(() => {
-    if (!state.caixaSelected) return [];
-
-    let compras = state.todasAsCompras.filter(
-        (c) => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO
-    );
-
-    // Se "TODOS" estiver selecionado, retorna todas as compras sem filtragem de pagamento
-    if (state.pagamentosSelecionadosModal.includes("TODOS")) {
         return compras
             .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
             .map((compra, index) => ({
                 ...compra,
                 INDEX: index + 1,
             }));
-    }
+    }),
 
-    // Filtra apenas as compras que possuem pelo menos um dos pagamentos selecionados
-    if (state.pagamentosSelecionadosModal.length > 0) {
-        compras = compras
-            .map((c) => {
-                const pagamentosFiltrados = c.TIPOS_PAGAMENTO.filter((p) =>
-                    state.pagamentosSelecionadosModal.includes(p.TIPO_PAGAMENTO)
-                );
+    comprasFiltradasPorCaixa: computed(() => {
+        if (!state.caixaSelected) return [];
 
-                return pagamentosFiltrados.length > 0
-                    ? { ...c, TIPOS_PAGAMENTO: pagamentosFiltrados }
-                    : null;
-            })
-            .filter(item => item !== null)
-    }
+        let compras = state.todasAsCompras.filter(
+            (c) => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO
+        );
 
-    return compras
-        .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
-        .map((compra, index) => ({
-            ...compra,
-            INDEX: index + 1,
-        }));
-});
+        // Se "TODOS" estiver selecionado, retorna todas as compras sem filtragem de pagamento
+        if (state.pagamentosSelecionadosModal.includes("TODOS")) {
+            return compras
+                .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
+                .map((compra, index) => ({
+                    ...compra,
+                    INDEX: index + 1,
+                }));
+        }
 
-export const totalizadoresFiltradosPorCaixa = computed<iTotalizadores[]>(() => {
-    if (!state.caixaSelected || !state.totalizadoresIndividuais) {
-        return [];
-    }
+        // Filtra apenas as compras que possuem pelo menos um dos pagamentos selecionados
+        if (state.pagamentosSelecionadosModal.length > 0) {
+            compras = compras
+                .map((c) => {
+                    const pagamentosFiltrados = c.TIPOS_PAGAMENTO.filter((p) =>
+                        state.pagamentosSelecionadosModal.includes(p.TIPO_PAGAMENTO)
+                    );
 
-    const codFuncionario = state.caixaSelected.COD_FUNCIONARIO;
-    const totalizadores = state.totalizadoresIndividuais[codFuncionario] ?? [];
+                    return pagamentosFiltrados.length > 0
+                        ? { ...c, TIPOS_PAGAMENTO: pagamentosFiltrados }
+                        : null;
+                })
+                .filter(item => item !== null)
+        }
 
-    return [
-        {
-            TIPO_PAGAMENTO: "TODOS",
-            DESCRICAO_PAGAMENTO: "TODOS",
-            VALOR: Array.isArray(totalizadores)
-                ? totalizadores.reduce((sum, t) => sum + t.VALOR, 0)
-                : 0
-        },
-        ...(Array.isArray(totalizadores) ? totalizadores : [totalizadores])
-    ];
-});
+        return compras
+            .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
+            .map((compra, index) => ({
+                ...compra,
+                INDEX: index + 1,
+            }));
+    }),
 
-export const sangriasPorCaixa = computed(() => {
-    if (!state.caixaSelected) return [];
+    sangriasPorCaixa: computed(() => {
+        if (!state.caixaSelected) return [];
+        return state.sangrias.filter(s => s.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
+    }),
 
-    return state.sangrias.filter(s => s.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
-});
+    observacoesPorCaixa: computed(() => {
+        if (!state.caixaSelected) return [];
 
-export const totalSangriasPorCaixa = computed(() => {
-    return sangriasPorCaixa.value.reduce((acc, s) => acc + s.VALOR, 0);
-});
+        let compras = state.todasAsCompras.filter(
+            (c) => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO
+        );
 
+        compras.filter(o => o.CAIXA === state.caixaSelected.COD_FUNCIONARIO);
+        return compras.map(compra => compra.TIPOS_PAGAMENTO.map(pagamento => pagamento.OBS));
+    }),
 
-export const observacoesPorCaixa = computed(() => {
-    if (!state.caixaSelected) return [];
+    devolucoesPorCaixa: computed(() => {
+        if (!state.caixaSelected) return [];
 
-    let compras = state.todasAsCompras.filter(
-        (c) => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO
-    );
+        let devolucoesFiltradas = state.devolucoes.filter(d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
 
-    compras.filter(o => o.CAIXA === state.caixaSelected.COD_FUNCIONARIO);
+        // Se nenhum pagamento foi selecionado ou "TODOS" está na lista, mostra tudo
+        if (
+            state.pagamentosSelecionadosDevolucao.length === 0 ||
+            state.pagamentosSelecionadosDevolucao.includes("TODOS")
+        ) {
+            return devolucoesFiltradas.map((compra, index) => ({
+                ...compra,
+                INDEX: index + 1,
+            }));
+        }
 
-    return compras.map(compra => compra.TIPOS_PAGAMENTO.map(pagamento => pagamento.OBS));
-});
+        // Filtra pelo tipo de pagamento selecionado
+        devolucoesFiltradas = devolucoesFiltradas.filter(d =>
+            state.pagamentosSelecionadosDevolucao.includes(d.DESCRICAO_PAGAMENTO)
+        );
 
-export const devolucoesPorCaixa = computed(() => {
-    if (!state.caixaSelected) return [];
-
-    let devolucoesFiltradas = state.devolucoes.filter(d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
-
-    // Se nenhum pagamento foi selecionado ou "TODOS" está na lista, mostra tudo
-    if (
-        state.pagamentosSelecionadosDevolucao.length === 0 ||
-        state.pagamentosSelecionadosDevolucao.includes("TODOS")
-    ) {
         return devolucoesFiltradas.map((compra, index) => ({
             ...compra,
             INDEX: index + 1,
         }));
-    }
+    }),
 
-    // Filtra pelo tipo de pagamento selecionado
-    devolucoesFiltradas = devolucoesFiltradas.filter(d =>
-        state.pagamentosSelecionadosDevolucao.includes(d.DESCRICAO_PAGAMENTO)
-    );
+    totalSangriasPorCaixa: computed(() => {
+        return computeds.sangriasPorCaixa.value.reduce((acc, s) => acc + s.VALOR, 0);
+    }),
 
-    return devolucoesFiltradas.map((compra, index) => ({
-        ...compra,
-        INDEX: index + 1,
-    }));
-});
+    totalizadoresFiltradosPorCaixa: computed<iTotalizadores[]>(() => {
+        if (!state.caixaSelected || !state.totalizadoresIndividuais) {
+            return [];
+        }
 
+        const codFuncionario = state.caixaSelected.COD_FUNCIONARIO;
+        const totalizadores = state.totalizadoresIndividuais[codFuncionario] ?? [];
 
+        return [
+            {
+                TIPO_PAGAMENTO: "TODOS",
+                DESCRICAO_PAGAMENTO: "TODOS",
+                VALOR: Array.isArray(totalizadores)
+                    ? totalizadores.reduce((sum, t) => sum + t.VALOR, 0)
+                    : 0
+            },
+            ...(Array.isArray(totalizadores) ? totalizadores : [totalizadores])
+        ];
+    }),
 
-export const totalizadorDevolucaoPorCaixa = computed(() => {
-    if (!state.caixaSelected) return [];
+    totalizadorDevolucaoPorCaixa: computed(() => {
+        if (!state.caixaSelected) return [];
 
-    // Filtra as devoluções do caixa selecionado
-    const devolucoes = state.devolucoes.filter(d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
+        // Filtra as devoluções do caixa selecionado
+        const devolucoes = state.devolucoes.filter(d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
 
-    // Agrupa os pagamentos e soma os valores por tipo de pagamento
-    const pagamentosMap = new Map<string, number>();
+        // Agrupa os pagamentos e soma os valores por tipo de pagamento
+        const pagamentosMap = new Map<string, number>();
 
-    devolucoes.forEach(({ DESCRICAO_PAGAMENTO, VALOR }) => {
-        const valorAtual = pagamentosMap.get(DESCRICAO_PAGAMENTO) || 0;
-        pagamentosMap.set(DESCRICAO_PAGAMENTO, valorAtual + VALOR);
-    });
+        devolucoes.forEach(({ DESCRICAO_PAGAMENTO, VALOR }) => {
+            const valorAtual = pagamentosMap.get(DESCRICAO_PAGAMENTO) || 0;
+            pagamentosMap.set(DESCRICAO_PAGAMENTO, valorAtual + VALOR);
+        });
 
-    // Converte o Map para um array de objetos com os totalizadores
-    const totalizadores = Array.from(pagamentosMap, ([DESCRICAO_PAGAMENTO, VALOR]) => ({
-        DESCRICAO_PAGAMENTO,
-        VALOR,
-    }));
+        // Converte o Map para um array de objetos com os totalizadores
+        const totalizadores = Array.from(pagamentosMap, ([DESCRICAO_PAGAMENTO, VALOR]) => ({
+            DESCRICAO_PAGAMENTO,
+            VALOR,
+        }));
 
-    // Adiciona a opção "TODOS" com a soma total de todas as devoluções do caixa
-    const totalTodos = totalizadores.reduce((acc, item) => acc + item.VALOR, 0);
-    totalizadores.unshift({ DESCRICAO_PAGAMENTO: "TODOS", VALOR: totalTodos });
+        // Adiciona a opção "TODOS" com a soma total de todas as devoluções do caixa
+        const totalTodos = totalizadores.reduce((acc, item) => acc + item.VALOR, 0);
+        totalizadores.unshift({ DESCRICAO_PAGAMENTO: "TODOS", VALOR: totalTodos });
 
-    return totalizadores;
-});
+        return totalizadores;
+    }),
 
+    totalDevolucoes: computed(() => {
+        const totaisPorCaixa = state.devolucoes.reduce((acc, devolucao) => {
+            if (!acc[devolucao.CAIXA]) {
+                acc[devolucao.CAIXA] = 0;
+            }
+            acc[devolucao.CAIXA] += devolucao.VALOR;
+            return acc;
+        }, {} as Record<string, number>);
+
+        const totalGeral = Object.values(totaisPorCaixa).reduce((acc, val) => acc + val, 0);
+
+        return { totaisPorCaixa, totalGeral };
+    }),
+
+    totalSangrias: computed(() => {
+        const totaisPorPessoa = state.sangrias.reduce((acc, sangria) => {
+            if (!acc[sangria.ENTREGUE_PARA]) {
+                acc[sangria.ENTREGUE_PARA] = 0;
+            }
+            acc[sangria.ENTREGUE_PARA] += sangria.VALOR;
+            return acc;
+        }, {} as Record<string, number>);
+
+        const totalGeral = Object.values(totaisPorPessoa).reduce((acc, val) => acc + val, 0);
+
+        return { totaisPorPessoa, totalGeral };
+    })
+}
 

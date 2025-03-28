@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { observacoesPorCaixa, actions, state } from "../conferenciaDeCaixa";
+import { computeds, actions, state } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 </script>
 
@@ -7,7 +7,7 @@ import utils from "@/ts/utils";
   <v-card
     class="pa-3"
     height="400px"
-    v-if="observacoesPorCaixa.length === 0"
+    v-if="computeds.observacoesPorCaixa.value.length === 0"
   >
     <v-alert
       type="warning"
@@ -48,7 +48,7 @@ import utils from "@/ts/utils";
       >
         <v-row>
           <v-col
-            v-for="(observacao, index) in observacoesPorCaixa.filter((obs) => obs[0])"
+            v-for="(observacao, index) in computeds.observacoesPorCaixa.value.filter((obs) => obs[0])"
             :key="index"
             cols="12"
           >

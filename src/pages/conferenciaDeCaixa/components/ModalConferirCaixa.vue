@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { iOptions } from "../interfaces";
-import { state, abaSelecionadaModal } from "../conferenciaDeCaixa";
+import { state, computeds } from "../conferenciaDeCaixa";
 import ModalConferirCaixaAbaLancamentos from "./ModalConferirCaixaAbaLancamentos.vue";
 import ModalConferirCaixaAbaSangrias from "./ModalConferirCaixaAbaSangrias.vue";
 import ModalConferirCaixaAbaDevolucoes from "./ModalConferirCaixaAbaDevolucoes.vue";
@@ -39,11 +39,10 @@ const options: iOptions[] = [
     </div>
     <v-divider :thickness="3"></v-divider>
 
-    <!-- Renderiza a aba de Lançamentos -->
-    <ModalConferirCaixaAbaLancamentos v-if="abaSelecionadaModal === 'lancamentos'" />
-    <ModalConferirCaixaAbaSangrias v-if="abaSelecionadaModal === 'sangria'" />
-    <ModalConferirCaixaAbaDevolucoes v-if="abaSelecionadaModal === 'devolucao'" />
-    <ModalConferirCaixaAbaObservacoes v-if="abaSelecionadaModal === 'observacao'" />
+    <ModalConferirCaixaAbaLancamentos v-if="computeds.abaSelecionadaModal.value === 'lancamentos'" />
+    <ModalConferirCaixaAbaSangrias v-if="computeds.abaSelecionadaModal.value === 'sangria'" />
+    <ModalConferirCaixaAbaDevolucoes v-if="computeds.abaSelecionadaModal.value === 'devolucao'" />
+    <ModalConferirCaixaAbaObservacoes v-if="computeds.abaSelecionadaModal.value === 'observacao'" />
   </v-card>
 </template>
 <style scoped>
