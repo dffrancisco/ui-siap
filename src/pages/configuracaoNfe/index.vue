@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, reactive } from "vue";
-import { state, actions } from "./configuracaoNfe";
+import { onMounted } from "vue";
+import { state, actions, stateTabs, tabOptions } from "./configuracaoNfe";
 import AbaRegimeTributario from "./components/AbaRegimeTributario.vue";
 import AbaPis from "./components/AbaPis.vue";
 import AbaCofins from "./components/AbaConfins.vue";
@@ -10,19 +10,8 @@ onMounted(async () => {
   await actions.getDadosParaInputs();
 });
 
-const tabOptions = [
-  { value: "configuracaoNfe", label: "Configuração NFE" },
-  { value: "regimeTributario", label: "Regime Tributário" },
-  { value: "pis", label: "PIS" },
-  { value: "cofins", label: "Cofins" },
-];
-
-const tabState = reactive({
-  selectedTab: "configuracaoNfe",
-});
-
 const changeTab = (tabValue: string) => {
-  tabState.selectedTab = tabValue;
+  stateTabs.selectedTab = tabValue;
 };
 </script>
 
@@ -68,18 +57,12 @@ const changeTab = (tabValue: string) => {
         <v-col cols="3">
           <v-select
             v-model="state.nfeConfig.REGIME_TRIBUTARIO"
-            :items="[
-              { text: 'Lucro Presumido', value: 1 },
-              { text: 'Lucro Real', value: 2 },
-              { text: 'Simples Nacional', value: 0 },
-            ]"
             label="Regime Tributário"
             item-text="text"
             item-value="value"
             outlined
           />
         </v-col>
-
         <v-col cols="2">
           <v-text-field
             v-model="state.pis.P_VALOR"
@@ -89,7 +72,6 @@ const changeTab = (tabValue: string) => {
             outlined
           />
         </v-col>
-
         <v-col cols="2">
           <v-text-field
             v-model="state.cofins.P_VALOR"
@@ -99,7 +81,6 @@ const changeTab = (tabValue: string) => {
             outlined
           />
         </v-col>
-
         <v-col cols="2">
           <v-text-field
             v-model="state.nfeConfig.LOCAL_XML"
@@ -107,7 +88,6 @@ const changeTab = (tabValue: string) => {
             outlined
           />
         </v-col>
-
         <v-col cols="3">
           <v-text-field
             v-model="state.nfeConfig.LOCAL_PDF"
@@ -235,37 +215,36 @@ const changeTab = (tabValue: string) => {
           color="primary"
           class="ma-1"
           @click="actions.btnEdit"
+          >Editar</v-btn
         >
-          Editar
-        </v-btn>
         <v-btn
           color="primary"
           class="ma-1"
           @click="actions.btnSave"
+          >Salvar</v-btn
         >
-          Salvar
-        </v-btn>
         <v-btn
           color="primary"
           class="ma-1"
           @click="actions.btnCancel"
+          >Cancelar</v-btn
         >
-          Cancelar
-        </v-btn>
       </v-row>
 
-      <div v-if="tabState.selectedTab === 'configuracaoNfe'">
+      <div v-if="stateTabs.selectedTab === 'configuracaoNfe'">
         <AbaConfiguracaoNfe :nfeConfig="state.nfeConfig" />
       </div>
-      <div v-else-if="tabState.selectedTab === 'regimeTributario'">
-        <AbaRegimeTributario :regimeTributarioLista="state.regimeTributarioLista" />
+      <div v-else-if="stateTabs.selectedTab === 'regimeTributario'">
+        <AbaRegimeTributario :regimeTributarioLista="[state.regimeTributarioLista]" />
       </div>
-      <div v-else-if="tabState.selectedTab === 'pis'">
-        <AbaPis :pis="state.pis" />
+      <div v-else-if="stateTabs.selectedTab === 'pis'">
+        <AbaPis :pis="[state.pis]" />
       </div>
-      <div v-else-if="tabState.selectedTab === 'cofins'">
-        <AbaCofins :cofins="state.cofins" />
+      <div v-else-if="stateTabs.selectedTab === 'cofins'">
+        <AbaCofins :cofins="[state.cofins]" />
       </div>
     </v-card>
   </v-container>
 </template>
+
+<style scoped></style>

@@ -4,27 +4,29 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
-import { iPis, iRegimeTributario, iFieldDuplicity } from "../interfaces";
 import serviceNfe from "../services/configuracaoNfe.service";
-import { data } from "jquery";
+import { iPis, iFieldDuplicity } from "../interfaces";
 
-const state = reactive({
+const props = defineProps<{
+  pis: iPis[];
+}>();
+
+const statePis = reactive({
   grid: {} as ixGridCreate,
-  pisLista: [] as iPis[],
-  regimeTributarioLista: [] as iRegimeTributario[],
   pis: {} as iPis,
   loading: false,
   isEditing: false,
 });
 
-const actions = {
+const actionsPis = {
   async init() {
-    await actions.getDadosParaInputs();
-    await actions.gridPis();
-  },
+    const dadosPis = await actionsPis.getDadosParaInputs();
+    actionsPis.gridPis();
 
+    statePis.grid.querySourceAdd(dadosPis);
+  },
   gridPis() {
-    state.grid = new xGridV2.create({
+    statePis.grid = new xGridV2.create({
       el: "#gridPis",
       height: 325,
       count: true,
@@ -32,26 +34,27 @@ const actions = {
         Valor: { dataField: "P_VALOR", width: "50%" },
         "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "50%" },
       },
+      // Esse método pode ser chamado posteriormente se houver necessidade de recarregar a grid
       query: {
         async execute() {
-          await actions.getDadosParaInputs();
-          state.grid.querySourceAdd(data);
+          const dados = await actionsPis.getDadosParaInputs();
+          statePis.grid.querySourceAdd(dados);
         },
       },
       sideBySide: {
         el: "#pnPisCampos",
         vModel(r) {
-          state.pis = r;
+          statePis.pis = r;
         },
         duplicity: {
           dataField: ["ID_REGIME_TRIBUTARIO"],
           async execute(rs) {
-            let dup = await actions.getDuplicidade({
+            const dup = await actionsPis.getDuplicidade({
               value: rs.value.toUpperCase(),
               field: rs.field,
             });
             if (dup && Object.keys(dup).length > 0) {
-              state.grid.showMessageDuplicity(rs.text + " já cadastrado.");
+              statePis.grid.showMessageDuplicity(rs.text + " já cadastrado.");
               return true;
             }
             return false;
@@ -63,31 +66,32 @@ const actions = {
             novo: {
               html: "Novo",
               state: "insert",
-              click: actions.btnInsert,
+              click: actionsPis.btnInsert,
             },
             update: {
               html: "Alterar",
               state: "update",
-              click: actions.btnEdit,
+              click: actionsPis.btnEdit,
             },
             excluir: {
               html: "Excluir",
               state: "delete",
-              click: actions.btnDelete,
+              click: actionsPis.btnDelete,
             },
             salvar: {
               html: "Salvar",
               state: "save",
-              click: actions.btnSave,
+              click: actionsPis.btnSave,
             },
             cancela: {
               html: "Cancelar",
               state: "cancel",
-              click: actions.btnCancel,
+              click: actionsPis.btnCancel,
             },
           },
         },
       },
+      // Se o usuário pressionar a tecla ENTER, podemos disparar uma ação de atualização
       enter: function () {
         document.getElementById("btnPisUpdate")?.click();
       },
@@ -96,12 +100,13 @@ const actions = {
 
   async getDadosParaInputs() {
     try {
-      state.loading = true;
-
+      statePis.loading = true;
+      // Chama o serviço que retorna os dados (array de PIS)
       const data = await serviceNfe.getDadosParaInputs();
-
-      state.pis = data.pis[0];
-      return data.cofins;
+      // Atualiza o objeto de edição com o primeiro item, se necessário
+      statePis.pis = { ...data.pis[0] };
+      // Retorna o array completo para a grid
+      return data.pis;
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -109,7 +114,7 @@ const actions = {
       });
       return [];
     } finally {
-      state.loading = false;
+      statePis.loading = false;
     }
   },
 
@@ -127,27 +132,27 @@ const actions = {
   },
 
   btnInsert() {
-    state.isEditing = true;
-    state.pis = {} as iPis;
-    state.grid.disable();
-    state.grid.focusField();
+    statePis.isEditing = true;
+    statePis.pis = {} as iPis;
+    statePis.grid.disable();
+    statePis.grid.focusField();
   },
 
   btnEdit() {
-    if (!state.grid.dataSource()) {
+    if (!statePis.grid.dataSource()) {
       Swal.fire({
         icon: "info",
         text: "Nenhum registro selecionado para alteração.",
       });
       return;
     }
-    state.isEditing = true;
-    state.grid.disable();
-    state.grid.focusField();
+    statePis.isEditing = true;
+    statePis.grid.disable();
+    statePis.grid.focusField();
   },
 
   async btnDelete() {
-    const selected = state.grid.dataSource();
+    const selected = statePis.grid.dataSource();
     if (!selected) {
       Swal.fire({
         icon: "info",
@@ -157,9 +162,9 @@ const actions = {
     }
     if (await msgConfirm("Confirmação", "Confirma a exclusão deste registro?")) {
       try {
-        state.loading = true;
+        statePis.loading = true;
         await serviceNfe.toDeletePis(selected.ID_PIS);
-        state.grid.deleteLine();
+        statePis.grid.deleteLine();
         Swal.fire({
           icon: "success",
           text: "PIS excluído com sucesso!",
@@ -170,53 +175,53 @@ const actions = {
           text: error.response?.data?.msg || "Erro ao excluir registro.",
         });
       } finally {
-        state.loading = false;
+        statePis.loading = false;
       }
     }
   },
 
   async btnSave() {
     if (utils.validaOBR()) return;
-    if (await state.grid.getDuplicityAll()) return;
+    if (await statePis.grid.getDuplicityAll()) return;
     try {
-      state.loading = true;
-      if (state.pis.ID_PIS) {
-        await serviceNfe.toUpdatePis(state.pis);
-        state.grid.dataSource({ ...state.pis });
+      statePis.loading = true;
+      if (statePis.pis.ID_PIS) {
+        await serviceNfe.toUpdatePis(statePis.pis);
+        statePis.grid.dataSource({ ...statePis.pis });
         Swal.fire({
           icon: "success",
           text: "PIS atualizado com sucesso!",
         });
       } else {
-        const response = await serviceNfe.toInsertPis(state.pis);
-        state.pis.ID_PIS = response.ID_PIS;
-        state.grid.insertLine({ ...state.pis });
+        const response = await serviceNfe.toInsertPis(statePis.pis);
+        statePis.pis.ID_PIS = response.ID_PIS;
+        statePis.grid.insertLine({ ...statePis.pis });
         Swal.fire({
           icon: "success",
           text: "PIS cadastrado com sucesso!",
         });
       }
-      state.grid.enable();
-      state.grid.focus();
+      statePis.grid.enable();
+      statePis.grid.focus();
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: error.response?.data?.msg || "Erro ao salvar registro.",
       });
     } finally {
-      state.loading = false;
+      statePis.loading = false;
     }
   },
 
   btnCancel() {
-    state.grid.enable();
-    state.grid.focus();
-    state.pis = {} as iPis;
+    statePis.grid.enable();
+    statePis.grid.focus();
+    statePis.pis = {} as iPis;
   },
 };
 
 onMounted(() => {
-  actions.init();
+  actionsPis.init();
 });
 </script>
 
@@ -226,8 +231,9 @@ onMounted(() => {
       width="880"
       class="pa-5 ma-auto"
     >
+      <!-- Overlay de loading -->
       <v-overlay
-        :model-value="state.loading"
+        :model-value="statePis.loading"
         absolute
       >
         <v-progress-circular
@@ -239,15 +245,17 @@ onMounted(() => {
 
       <h2 class="text-center mb-4">Configuração de PIS</h2>
 
+      <!-- Formulário para edição dos dados (ex.: select e campo de valor) -->
       <v-form
-        @submit.prevent="actions.btnSave"
+        @submit.prevent="actionsPis.btnSave"
         id="pnPisCampos"
       >
         <v-row dense>
           <v-col cols="4">
+            <!-- Usando props.pis para popular o select, assumindo que props.pis é a lista de regimes -->
             <v-select
-              v-model="state.pis.ID_REGIME_TRIBUTARIO"
-              :items="state.regimeTributarioLista"
+              v-model="statePis.pis.ID_REGIME_TRIBUTARIO"
+              :items="props.pis"
               item-title="DESCRICAO"
               item-value="ID_REGIME_TRIBUTARIO"
               label="Regime Tributário"
@@ -255,28 +263,24 @@ onMounted(() => {
           </v-col>
           <v-col cols="4">
             <v-text-field
-              v-model="state.pis.P_VALOR"
+              v-model="statePis.pis.P_VALOR"
               label="Valor do PIS"
               type="number"
               suffix="%"
             />
           </v-col>
         </v-row>
-        <v-row
-          justify="center"
-          class="mt-4"
-        >
-        </v-row>
       </v-form>
 
       <div
         id="gridPis"
         class="mb-4"
-      />
+      ></div>
+
       <div
         id="pnPisBotoes"
         style="text-align: center"
-      />
+      ></div>
     </v-card>
   </v-container>
 </template>

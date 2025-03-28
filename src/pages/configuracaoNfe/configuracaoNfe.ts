@@ -2,7 +2,6 @@
 import { reactive, nextTick } from "vue";
 import Swal from "sweetalert2";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-
 import utils from "@/ts/utils";
 import serviceNfe from './services/configuracaoNfe.service';
 import { iCidades, iNfeConfig, iCofins, iPis, iRegimeTributario, iResponseDadosInputs } from "./interfaces";
@@ -28,12 +27,22 @@ export const state = reactive({
     originalConfig: {} as iNfeConfig,
 });
 
+export const stateTabs = reactive({
+    selectedTab: "configuracaoNfe",
+});
 
+export const tabOptions = [
+    { value: "configuracaoNfe", label: "Configuração NFE" },
+    { value: "regimeTributario", label: "Regime Tributário" },
+    { value: "pis", label: "PIS" },
+    { value: "cofins", label: "Cofins" },
+];
 
 export const actions = {
     async init() {
 
     },
+
 
     async getDadosParaInputs() {
         try {

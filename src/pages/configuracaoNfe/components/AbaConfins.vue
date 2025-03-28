@@ -4,89 +4,90 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
-import {} from "../configuracaoNfe";
 import serviceNfe from "../services/configuracaoNfe.service";
 import { iCofins, iFieldDuplicity } from "../interfaces";
-import { watch } from "vue";
 
-const state = reactive({
+const stateCofins = reactive({
   grid: {} as ixGridCreate,
-  confinsLista: [] as iCofins[],
-  confins: {} as iCofins,
+  cofins: {} as iCofins,
   loading: false,
   isEditing: false,
+
+  cofinsLista: [] as iCofins[],
 });
 
-const actions = {
+const actionsCofins = {
   async init() {
-    await actions.gridConfins();
-    await actions.getDadosParaInputs();
+    const dadosCofins = await actionsCofins.getDadosParaInputs();
+
+    actionsCofins.gridConfins();
+    stateCofins.grid.querySourceAdd(dadosCofins);
   },
 
-  async gridConfins() {
-    state.grid = new xGridV2.create({
-      el: "#gridConfins",
+  gridConfins() {
+    stateCofins.grid = new xGridV2.create({
+      el: "#gridCofins",
       height: 325,
       count: true,
       columns: {
         Valor: { dataField: "P_VALOR", width: "50%" },
         Tributário: { dataField: "ID_REGIME_TRIBUTARIO", width: "50%" },
       },
+
       query: {
-        async execute(rs) {
-          let data = await actions.getDadosParaInputs();
-          state.grid.querySourceAdd(data);
+        async execute() {
+          const dados = await actionsCofins.getDadosParaInputs();
+          stateCofins.grid.querySourceAdd(dados);
         },
       },
       sideBySide: {
-        el: "#pnConfinsCampos",
+        el: "#pncofinsCampos",
         vModel(r) {
-          state.confins = r;
+          stateCofins.cofins = r;
         },
         duplicity: {
           dataField: ["ID_REGIME_TRIBUTARIO"],
           async execute(rs) {
-            let dup = await actions.getDuplicidade({
+            const dup = await actionsCofins.getDuplicidade({
               value: rs.value.toUpperCase(),
               field: rs.field,
             });
-
             if (dup && Object.keys(dup).length > 0) {
-              state.grid.showMessageDuplicity(rs.text + " já cadastrado.");
+              stateCofins.grid.showMessageDuplicity(rs.text + " já cadastrado.");
               return true;
             }
             return false;
           },
         },
         frame: {
-          el: "#pnConfinsBotoes",
+          el: "#pncofinsBotoes",
           buttons: {
             novo: {
               html: "Novo",
               state: "insert",
-              click: actions.btnInsert,
+              click: actionsCofins.btnInsert,
             },
             update: {
               html: "Alterar",
               state: "update",
-              click: actions.btnEdit,
+              click: actionsCofins.btnEdit,
               id: "btnConfinsUpdate",
             },
             excluir: {
               html: "Excluir",
               state: "delete",
-              click: actions.btnDelete,
+              click: actionsCofins.btnDelete,
             },
             salvar: {
               html: "Salvar",
               state: "save",
-              click: actions.btnSave,
+              click: actionsCofins.btnSave,
               preLoad: "Salvando",
             },
             cancela: {
               html: "Cancelar",
               state: "cancel",
-              click: actions.btnCancel,
+              click: actionsCofins.btnCancel,
             },
           },
         },
@@ -99,11 +100,13 @@ const actions = {
 
   async getDadosParaInputs() {
     try {
-      state.loading = true;
+      stateCofins.loading = true;
 
       const data = await serviceNfe.getDadosParaInputs();
 
-      state.confins = data.cofins[0];
+      stateCofins.cofins = { ...data.cofins[0] };
+
+      stateCofins.cofinsLista = data.cofins;
       return data.cofins;
     } catch (error) {
       Swal.fire({
@@ -112,7 +115,7 @@ const actions = {
       });
       return [];
     } finally {
-      state.loading = false;
+      stateCofins.loading = false;
     }
   },
 
@@ -130,27 +133,27 @@ const actions = {
   },
 
   btnInsert() {
-    state.isEditing = true;
-    state.confins = {} as iCofins;
-    state.grid.disable();
-    state.grid.focusField();
+    stateCofins.isEditing = true;
+    stateCofins.cofins = {} as iCofins;
+    stateCofins.grid.disable();
+    stateCofins.grid.focusField();
   },
 
   btnEdit() {
-    if (!state.grid.dataSource()) {
+    if (!stateCofins.grid.dataSource()) {
       Swal.fire({
         icon: "info",
         text: "Nenhum registro selecionado para alteração.",
       });
       return;
     }
-    state.isEditing = true;
-    state.grid.disable();
-    state.grid.focusField();
+    stateCofins.isEditing = true;
+    stateCofins.grid.disable();
+    stateCofins.grid.focusField();
   },
 
   async btnDelete() {
-    const selected = state.grid.dataSource();
+    const selected = stateCofins.grid.dataSource();
     if (!selected) {
       Swal.fire({
         icon: "info",
@@ -158,12 +161,11 @@ const actions = {
       });
       return;
     }
-
     if (await msgConfirm("Confirmação", "Confirma a exclusão deste registro?")) {
       try {
-        state.loading = true;
+        stateCofins.loading = true;
         await serviceNfe.toDeleteCofins(selected.ID_COFINS);
-        state.grid.deleteLine();
+        stateCofins.grid.deleteLine();
         Swal.fire({
           icon: "success",
           text: "COFINS excluído com sucesso!",
@@ -174,56 +176,53 @@ const actions = {
           text: error.response?.data?.msg || "Erro ao excluir registro.",
         });
       } finally {
-        state.loading = false;
+        stateCofins.loading = false;
       }
     }
   },
 
   async btnSave() {
     if (utils.validaOBR()) return;
-    if (await state.grid.getDuplicityAll()) return;
-
+    if (await stateCofins.grid.getDuplicityAll()) return;
     try {
-      state.loading = true;
-
-      if (state.confins.ID_COFINS) {
-        await serviceNfe.toUpdateCofins(state.confins);
-        state.grid.dataSource({ ...state.confins });
+      stateCofins.loading = true;
+      if (stateCofins.cofins.ID_COFINS) {
+        await serviceNfe.toUpdateCofins(stateCofins.cofins);
+        stateCofins.grid.dataSource({ ...stateCofins.cofins });
         Swal.fire({
           icon: "success",
           text: "COFINS atualizado com sucesso!",
         });
       } else {
-        const response = await serviceNfe.toInsertCofins(state.confins);
-        state.confins.ID_COFINS = response.ID_COFINS;
-        state.grid.insertLine({ ...state.confins });
+        const response = await serviceNfe.toInsertCofins(stateCofins.cofins);
+        stateCofins.cofins.ID_COFINS = response.ID_COFINS;
+        stateCofins.grid.insertLine({ ...stateCofins.cofins });
         Swal.fire({
           icon: "success",
           text: "COFINS cadastrado com sucesso!",
         });
       }
-
-      state.grid.enable();
-      state.grid.focus();
+      stateCofins.grid.enable();
+      stateCofins.grid.focus();
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: error.response?.data?.msg || "Erro ao salvar registro.",
       });
     } finally {
-      state.loading = false;
+      stateCofins.loading = false;
     }
   },
 
   btnCancel() {
-    state.grid.enable();
-    state.grid.focus();
-    state.confins = {} as iCofins;
+    stateCofins.grid.enable();
+    stateCofins.grid.focus();
+    stateCofins.cofins = {} as iCofins;
   },
 };
 
 onMounted(() => {
-  actions.init();
+  actionsCofins.init();
 });
 </script>
 
@@ -234,7 +233,7 @@ onMounted(() => {
       class="pa-5 ma-auto"
     >
       <v-overlay
-        :model-value="state.loading"
+        :model-value="stateCofins.loading"
         absolute
       >
         <v-progress-circular
@@ -247,45 +246,39 @@ onMounted(() => {
       <h2 class="text-center mb-4">Configuração de COFINS</h2>
 
       <v-form
-        @submit.prevent="actions.btnSave"
-        id="pnConfinsCampos"
+        @submit.prevent="actionsCofins.btnSave"
+        id="pncofinsCampos"
       >
         <v-row>
           <v-col cols="4">
             <v-select
-              v-model="state.confins.ID_REGIME_TRIBUTARIO"
-              :items="state.confinsLista"
+              v-model="stateCofins.cofins.ID_REGIME_TRIBUTARIO"
+              :items="stateCofins.cofinsLista"
               item-title="DESCRICAO"
               item-value="ID_REGIME_TRIBUTARIO"
               label="Regime Tributário"
             />
           </v-col>
-
           <v-col cols="4">
             <v-text-field
-              v-model="state.confins.P_VALOR"
+              v-model="stateCofins.cofins.P_VALOR"
               label="Valor do COFINS"
               type="number"
               suffix="%"
             />
           </v-col>
         </v-row>
-
-        <v-row
-          justify="center"
-          class="mt-4"
-        >
-        </v-row>
       </v-form>
 
       <div
-        id="gridConfins"
+        id="gridCofins"
         class="mb-4"
-      />
+      ></div>
+
       <div
-        id="pnConfinsBotoes"
+        id="pncofinsBotoes"
         style="text-align: center"
-      />
+      ></div>
     </v-card>
   </v-container>
 </template>
@@ -294,7 +287,6 @@ onMounted(() => {
 .v-card {
   box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
 }
-
 .v-select,
 .v-text-field {
   margin-bottom: 12px;

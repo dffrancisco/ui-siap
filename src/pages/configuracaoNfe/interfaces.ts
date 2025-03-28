@@ -3,9 +3,7 @@ export interface iResponseDadosInputs {
     regimeTributario: iRegimeTributario[];
     pis: iPis[];
     cofins: iCofins[];
-
 }
-
 export interface iCidades {
     COD_CIDADE: number;
     DESCRICAO: string;
