@@ -10,13 +10,6 @@ onMounted(async () => {
   await actions.getDadosParaInputs();
 });
 
-const tabOptions = [
-  { value: "configuracaoNfe", label: "Configuração NFE" },
-  { value: "regimeTributario", label: "Regime Tributário" },
-  { value: "pis", label: "PIS" },
-  { value: "cofins", label: "Cofins" },
-];
-
 const changeTab = (tabValue: string) => {
   stateTabs.selectedTab = tabValue;
 };
@@ -28,23 +21,18 @@ const changeTab = (tabValue: string) => {
       width="800"
       class="pa-5 ma-auto"
     >
-      <v-row
-        justify="start"
-        class="mb-1"
-      >
-        <v-col
-          cols="auto"
-          v-for="option in tabOptions"
-          :key="option.value"
-        >
-          <v-btn
+      <v-row class="mb-2">
+        <v-col cols="10">
+          <v-tabs
+            v-model="stateTabs.selectedTab"
+            background-color="primary"
             color="primary"
-            class="pa-1 mr-1"
-            small
-            @click="changeTab(option.value)"
           >
-            {{ option.label }}
-          </v-btn>
+            <v-tab value="configuracaoNfe">Configuração NFE</v-tab>
+            <v-tab value="regimeTributario">Regime Tributário</v-tab>
+            <v-tab value="pis">PIS</v-tab>
+            <v-tab value="cofins">Cofins</v-tab>
+          </v-tabs>
         </v-col>
       </v-row>
 
@@ -56,7 +44,6 @@ const changeTab = (tabValue: string) => {
             :items="regimeTributarioOptions"
             item-title="text"
             item-value="value"
-            outlined
             dense
           />
         </v-col>
@@ -64,7 +51,6 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.pis.P_VALOR"
             label="Pis"
-            outlined
             dense
           />
         </v-col>
@@ -72,7 +58,6 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.cofins.P_VALOR"
             label="Cofins"
-            outlined
             dense
           />
         </v-col>
@@ -80,7 +65,6 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.LOCAL_XML"
             label="Local XML"
-            outlined
             dense
           />
         </v-col>
@@ -88,7 +72,6 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.LOCAL_PDF"
             label="Local PDF"
-            outlined
             dense
           />
         </v-col>
@@ -227,24 +210,24 @@ const changeTab = (tabValue: string) => {
       </v-row>
 
       <v-row
-        class="mt-5"
+        class="mt-4"
         justify="center"
       >
         <v-btn
           color="primary"
-          class="ma-1"
+          class="ma-1 btn-style"
           @click="actions.btnEdit"
           >Editar</v-btn
         >
         <v-btn
           color="primary"
-          class="ma-1"
+          class="ma-1 btn-style"
           @click="actions.btnSave"
           >Salvar</v-btn
         >
         <v-btn
           color="primary"
-          class="ma-1"
+          class="ma-1 btn-style"
           @click="actions.btnCancel"
           >Cancelar</v-btn
         >
@@ -267,7 +250,7 @@ const changeTab = (tabValue: string) => {
 <style scoped>
 .aba-flutuante {
   position: absolute;
-  top: 60px;
+  top: 70px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -277,5 +260,10 @@ const changeTab = (tabValue: string) => {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   padding: 20px;
   z-index: 100;
+}
+
+.btn-style {
+  padding: 5px 7px;
+  border-radius: 4px;
 }
 </style>

@@ -28,7 +28,7 @@ const actionsCofins = {
   gridConfins() {
     stateCofins.grid = new xGridV2.create({
       el: "#gridCofins",
-      height: 320,
+      height: 300,
       count: true,
       columns: {
         Valor: { dataField: "P_VALOR", width: "47%" },

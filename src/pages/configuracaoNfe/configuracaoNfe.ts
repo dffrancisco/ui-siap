@@ -39,7 +39,6 @@ export const regimeTributarioOptions = [
 
 export const actions = {
     async init() {
-
     },
 
 

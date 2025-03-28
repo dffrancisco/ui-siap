@@ -25,7 +25,7 @@ const actionsRegime = {
   gridRegimeTributario() {
     stateRegime.grid = new xGridV2.create({
       el: "#gridRegimeTributario",
-      height: 320,
+      height: 300,
       count: true,
       columns: {
         "Código Regime Tributário": {
@@ -220,7 +220,7 @@ onMounted(() => {
 });
 </script>
 
-<template width="600" class="pa-1 ma-auto">
+<template width="600" class="pa-2 ma-auto">
   <v-form
     @submit.prevent="actionsRegime.btnSave"
     id="pnRegimeCampos"
