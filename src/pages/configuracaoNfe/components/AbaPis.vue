@@ -223,23 +223,12 @@ onMounted(() => {
 </script>
 
 <template width="600" class="pa-1 ma-auto">
-  <v-overlay
-    :model-value="statePis.loading"
-    absolute
-  >
-    <v-progress-circular
-      indeterminate
-      color="primary"
-      size="50"
-    />
-  </v-overlay>
-
   <v-form
     @submit.prevent="actionsPis.btnSave"
     id="pnPisCampos"
   >
     <v-row dense>
-      <v-col cols="3">
+      <v-col cols="4">
         <v-select
           v-model="statePis.pis.ID_REGIME_TRIBUTARIO"
           label="Regime Tributário"

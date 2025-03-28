@@ -31,8 +31,6 @@ export const stateTabs = reactive({
     selectedTab: "configuracaoNfe",
 });
 
-
-
 export const regimeTributarioOptions = [
     { text: "Simples Nacional", value: 0 },
     { text: "Lucro Presumido", value: 1 },

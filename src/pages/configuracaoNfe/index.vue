@@ -25,20 +25,9 @@ const changeTab = (tabValue: string) => {
 <template>
   <v-container>
     <v-card
-      width="880"
+      width="800"
       class="pa-5 ma-auto"
     >
-      <v-overlay
-        :value="state.loading"
-        absolute
-      >
-        <v-progress-circular
-          indeterminate
-          color="primary"
-          size="50"
-        />
-      </v-overlay>
-
       <v-row
         justify="start"
         class="mb-1"
@@ -59,7 +48,7 @@ const changeTab = (tabValue: string) => {
         </v-col>
       </v-row>
 
-      <v-row>
+      <v-row dense>
         <v-col cols="3">
           <v-select
             v-model="state.nfeConfig.REGIME_TRIBUTARIO"
@@ -68,24 +57,39 @@ const changeTab = (tabValue: string) => {
             item-title="text"
             item-value="value"
             outlined
+            dense
           />
         </v-col>
         <v-col cols="2">
           <v-text-field
             v-model="state.pis.P_VALOR"
             label="Pis"
-            readonly
-            disabled
             outlined
+            dense
           />
         </v-col>
         <v-col cols="2">
           <v-text-field
             v-model="state.cofins.P_VALOR"
             label="Cofins"
-            readonly
-            disabled
             outlined
+            dense
+          />
+        </v-col>
+        <v-col cols="2">
+          <v-text-field
+            v-model="state.nfeConfig.LOCAL_XML"
+            label="Local XML"
+            outlined
+            dense
+          />
+        </v-col>
+        <v-col cols="3">
+          <v-text-field
+            v-model="state.nfeConfig.LOCAL_PDF"
+            label="Local PDF"
+            outlined
+            dense
           />
         </v-col>
       </v-row>
@@ -112,6 +116,7 @@ const changeTab = (tabValue: string) => {
       </v-card>
 
       <v-divider class="my-4"></v-divider>
+
       <h4 class="mb-2">Informações CFOP</h4>
       <v-row dense>
         <v-col cols="3">
@@ -244,6 +249,17 @@ const changeTab = (tabValue: string) => {
           >Cancelar</v-btn
         >
       </v-row>
+      <v-overlay
+        :model-value="state.loading"
+        class="load"
+        persistent
+      >
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-overlay>
     </v-card>
   </v-container>
 </template>

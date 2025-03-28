@@ -28,7 +28,7 @@ const actionsRegime = {
       height: 320,
       count: true,
       columns: {
-        "Codigo Regime Tributário": {
+        "Código Regime Tributário": {
           dataField: "ID_REGIME_TRIBUTARIO",
           width: "47%",
         },
@@ -221,23 +221,12 @@ onMounted(() => {
 </script>
 
 <template width="600" class="pa-1 ma-auto">
-  <v-overlay
-    :value="stateRegime.loading"
-    absolute
-  >
-    <v-progress-circular
-      indeterminate
-      color="primary"
-      size="50"
-    />
-  </v-overlay>
-
   <v-form
     @submit.prevent="actionsRegime.btnSave"
     id="pnRegimeCampos"
   >
     <v-row dense>
-      <v-col cols="3">
+      <v-col cols="4">
         <v-text-field
           v-model="stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO"
           label="Código Tributário"

@@ -32,7 +32,7 @@ const actionsCofins = {
       count: true,
       columns: {
         Valor: { dataField: "P_VALOR", width: "47%" },
-        Tributário: { dataField: "ID_REGIME_TRIBUTARIO", width: "49%" },
+        "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "49%" },
       },
 
       query: {
@@ -228,23 +228,12 @@ onMounted(() => {
 </script>
 
 <template width="500" class="pa-4 ma-auto">
-  <v-overlay
-    :model-value="stateCofins.loading"
-    absolute
-  >
-    <v-progress-circular
-      indeterminate
-      color="primary"
-      size="50"
-    />
-  </v-overlay>
-
   <v-form
     @submit.prevent="actionsCofins.btnSave"
     id="pncofinsCampos"
   >
     <v-row dense>
-      <v-col cols="3">
+      <v-col cols="4">
         <v-select
           v-model="stateCofins.cofins.ID_REGIME_TRIBUTARIO"
           label="Regime Tributário"
