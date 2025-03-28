@@ -27,6 +27,7 @@ const changeTab = (tabValue: string) => {
             v-model="stateTabs.selectedTab"
             background-color="primary"
             color="primary"
+            grow
           >
             <v-tab value="configuracaoNfe">Configuração NFE</v-tab>
             <v-tab value="regimeTributario">Regime Tributário</v-tab>
