@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, actions, stateTabs, tabOptions, regimeTributarioOptions } from "./configuracaoNfe";
+import { state, actions, stateTabs, regimeTributarioOptions } from "./configuracaoNfe";
 import AbaRegimeTributario from "./components/AbaRegimeTributario.vue";
 import AbaPis from "./components/AbaPis.vue";
 import AbaCofins from "./components/AbaConfins.vue";
@@ -9,6 +9,13 @@ onMounted(async () => {
   await actions.init();
   await actions.getDadosParaInputs();
 });
+
+const tabOptions = [
+  { value: "configuracaoNfe", label: "Configuração NFE" },
+  { value: "regimeTributario", label: "Regime Tributário" },
+  { value: "pis", label: "PIS" },
+  { value: "cofins", label: "Cofins" },
+];
 
 const changeTab = (tabValue: string) => {
   stateTabs.selectedTab = tabValue;
@@ -38,7 +45,6 @@ const changeTab = (tabValue: string) => {
       >
         <v-col
           cols="auto"
-          class="d-flex align-center"
           v-for="option in tabOptions"
           :key="option.value"
         >
@@ -56,7 +62,7 @@ const changeTab = (tabValue: string) => {
       <v-row>
         <v-col cols="3">
           <v-select
-            v-model="state.pis.ID_REGIME_TRIBUTARIO"
+            v-model="state.nfeConfig.REGIME_TRIBUTARIO"
             label="Regime Tributário"
             :items="regimeTributarioOptions"
             item-title="text"
@@ -82,21 +88,28 @@ const changeTab = (tabValue: string) => {
             outlined
           />
         </v-col>
-        <v-col cols="2">
-          <v-text-field
-            v-model="state.nfeConfig.LOCAL_XML"
-            label="Local XML"
-            outlined
-          />
-        </v-col>
-        <v-col cols="3">
-          <v-text-field
-            v-model="state.nfeConfig.LOCAL_PDF"
-            label="Local PDF"
-            outlined
-          />
-        </v-col>
       </v-row>
+
+      <v-card
+        v-show="stateTabs.selectedTab === 'regimeTributario'"
+        class="aba-flutuante"
+      >
+        <AbaRegimeTributario :regimeTributarioLista="[state.regimeTributarioLista]" />
+      </v-card>
+
+      <v-card
+        v-show="stateTabs.selectedTab === 'pis'"
+        class="aba-flutuante"
+      >
+        <AbaPis :pis="[state.pis]" />
+      </v-card>
+
+      <v-card
+        v-show="stateTabs.selectedTab === 'cofins'"
+        class="aba-flutuante"
+      >
+        <AbaCofins :cofins="[state.cofins]" />
+      </v-card>
 
       <v-divider class="my-4"></v-divider>
       <h4 class="mb-2">Informações CFOP</h4>
@@ -231,19 +244,6 @@ const changeTab = (tabValue: string) => {
           >Cancelar</v-btn
         >
       </v-row>
-
-      <div v-show="stateTabs.selectedTab === 'configuracaoNfe'">
-        <AbaConfiguracaoNfe :nfeConfig="state.nfeConfig" />
-      </div>
-      <div v-show="stateTabs.selectedTab === 'regimeTributario'">
-        <AbaRegimeTributario :regimeTributarioLista="[state.regimeTributarioLista]" />
-      </div>
-      <div v-show="stateTabs.selectedTab === 'pis'">
-        <AbaPis :pis="[state.pis]" />
-      </div>
-      <div v-show="stateTabs.selectedTab === 'cofins'">
-        <AbaCofins :cofins="[state.cofins]" />
-      </div>
     </v-card>
   </v-container>
 </template>
@@ -251,11 +251,12 @@ const changeTab = (tabValue: string) => {
 <style scoped>
 .aba-flutuante {
   position: absolute;
-  top: 50px;
+  top: 60px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80%;
-  max-height: 400px;
+  width: 100%;
+  max-width: 1400px;
+  max-height: 459px;
   background: white;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   padding: 20px;

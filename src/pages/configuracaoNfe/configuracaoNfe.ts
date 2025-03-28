@@ -31,12 +31,7 @@ export const stateTabs = reactive({
     selectedTab: "configuracaoNfe",
 });
 
-export const tabOptions = [
-    { value: "configuracaoNfe", label: "Configuração NFE" },
-    { value: "regimeTributario", label: "Regime Tributário" },
-    { value: "pis", label: "PIS" },
-    { value: "cofins", label: "Cofins" },
-];
+
 
 export const regimeTributarioOptions = [
     { text: "Simples Nacional", value: 0 },

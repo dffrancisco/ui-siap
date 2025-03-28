@@ -28,11 +28,11 @@ const actionsCofins = {
   gridConfins() {
     stateCofins.grid = new xGridV2.create({
       el: "#gridCofins",
-      height: 325,
+      height: 320,
       count: true,
       columns: {
-        Valor: { dataField: "P_VALOR", width: "50%" },
-        Tributário: { dataField: "ID_REGIME_TRIBUTARIO", width: "50%" },
+        Valor: { dataField: "P_VALOR", width: "47%" },
+        Tributário: { dataField: "ID_REGIME_TRIBUTARIO", width: "49%" },
       },
 
       query: {
@@ -227,62 +227,53 @@ onMounted(() => {
 });
 </script>
 
-<template>
-  <v-container>
-    <v-card
-      width="880"
-      class="pa-5 ma-auto"
-    >
-      <v-overlay
-        :model-value="stateCofins.loading"
-        absolute
-      >
-        <v-progress-circular
-          indeterminate
-          color="primary"
-          size="50"
+<template width="500" class="pa-4 ma-auto">
+  <v-overlay
+    :model-value="stateCofins.loading"
+    absolute
+  >
+    <v-progress-circular
+      indeterminate
+      color="primary"
+      size="50"
+    />
+  </v-overlay>
+
+  <v-form
+    @submit.prevent="actionsCofins.btnSave"
+    id="pncofinsCampos"
+  >
+    <v-row dense>
+      <v-col cols="3">
+        <v-select
+          v-model="stateCofins.cofins.ID_REGIME_TRIBUTARIO"
+          label="Regime Tributário"
+          :items="regimeTributarioOptions"
+          item-title="text"
+          item-value="value"
+          outlined
         />
-      </v-overlay>
+      </v-col>
+      <v-col cols="3">
+        <v-text-field
+          v-model="stateCofins.cofins.P_VALOR"
+          label="Valor do COFINS"
+          type="number"
+          suffix="%"
+        />
+      </v-col>
+    </v-row>
+  </v-form>
 
-      <h2 class="text-center mb-4">Configuração de COFINS</h2>
+  <div
+    id="gridCofins"
+    class="mb-4"
+  ></div>
 
-      <v-form
-        @submit.prevent="actionsCofins.btnSave"
-        id="pncofinsCampos"
-      >
-        <v-row>
-          <v-col cols="4">
-            <v-select
-              v-model="stateCofins.cofins.ID_REGIME_TRIBUTARIO"
-              label="Regime Tributário"
-              :items="regimeTributarioOptions"
-              item-title="text"
-              item-value="value"
-              outlined
-            />
-          </v-col>
-          <v-col cols="4">
-            <v-text-field
-              v-model="stateCofins.cofins.P_VALOR"
-              label="Valor do COFINS"
-              type="number"
-              suffix="%"
-            />
-          </v-col>
-        </v-row>
-      </v-form>
-
-      <div
-        id="gridCofins"
-        class="mb-4"
-      ></div>
-
-      <div
-        id="pncofinsBotoes"
-        style="text-align: center"
-      ></div>
-    </v-card>
-  </v-container>
+  <div
+    id="pncofinsBotoes"
+    style="text-align: center"
+  ></div>
 </template>
 
 <style scoped>

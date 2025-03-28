@@ -25,16 +25,16 @@ const actionsRegime = {
   gridRegimeTributario() {
     stateRegime.grid = new xGridV2.create({
       el: "#gridRegimeTributario",
-      height: 325,
+      height: 320,
       count: true,
       columns: {
         "Codigo Regime Tributário": {
           dataField: "ID_REGIME_TRIBUTARIO",
-          width: "30%",
+          width: "47%",
         },
         Descrição: {
           dataField: "DESCRICAO",
-          width: "70%",
+          width: "49%",
         },
       },
 
@@ -220,56 +220,46 @@ onMounted(() => {
 });
 </script>
 
-<template>
-  <v-container>
-    <v-card
-      width="880"
-      class="pa-5 ma-auto"
-    >
-      <v-overlay
-        :value="stateRegime.loading"
-        absolute
-      >
-        <v-progress-circular
-          indeterminate
-          color="primary"
-          size="50"
+<template width="600" class="pa-1 ma-auto">
+  <v-overlay
+    :value="stateRegime.loading"
+    absolute
+  >
+    <v-progress-circular
+      indeterminate
+      color="primary"
+      size="50"
+    />
+  </v-overlay>
+
+  <v-form
+    @submit.prevent="actionsRegime.btnSave"
+    id="pnRegimeCampos"
+  >
+    <v-row dense>
+      <v-col cols="3">
+        <v-text-field
+          v-model="stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO"
+          label="Código Tributário"
+          type="number"
         />
-      </v-overlay>
-      <h2 class="text-center mb-4">Regime Tributário</h2>
+      </v-col>
+      <v-col cols="3">
+        <v-text-field
+          v-model="stateRegime.regimeTributario.DESCRICAO"
+          label="Descrição"
+        />
+      </v-col>
+    </v-row>
+  </v-form>
 
-      <v-form
-        @submit.prevent="actionsRegime.btnSave"
-        id="pnRegimeCampos"
-      >
-        <v-row dense>
-          <v-col cols="3">
-            <v-text-field
-              v-model="stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO"
-              label="Código Tributário"
-              type="number"
-            />
-          </v-col>
-          <v-col cols="6">
-            <v-text-field
-              v-model="stateRegime.regimeTributario.DESCRICAO"
-              label="Descrição"
-            />
-          </v-col>
-        </v-row>
-      </v-form>
+  <div id="gridRegimeTributario"></div>
 
-      <v-divider class="my-4"></v-divider>
-
-      <div id="gridRegimeTributario"></div>
-
-      <div
-        id="pnRegimeBotoes"
-        class="mt-2"
-        style="text-align: center"
-      ></div>
-    </v-card>
-  </v-container>
+  <div
+    id="pnRegimeBotoes"
+    class="mt-4"
+    style="text-align: center"
+  ></div>
 </template>
 
 <style scoped>

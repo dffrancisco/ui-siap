@@ -8,10 +8,6 @@ import { regimeTributarioOptions } from "../configuracaoNfe";
 import serviceNfe from "../services/configuracaoNfe.service";
 import { iPis, iFieldDuplicity } from "../interfaces";
 
-const props = defineProps<{
-  pis: iPis[];
-}>();
-
 const statePis = reactive({
   grid: {} as ixGridCreate,
   pis: {} as iPis,
@@ -29,11 +25,11 @@ const actionsPis = {
   gridPis() {
     statePis.grid = new xGridV2.create({
       el: "#gridPis",
-      height: 325,
+      height: 320,
       count: true,
       columns: {
-        Valor: { dataField: "P_VALOR", width: "50%" },
-        "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "50%" },
+        Valor: { dataField: "P_VALOR", width: "47%" },
+        "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "49%" },
       },
 
       query: {
@@ -226,67 +222,58 @@ onMounted(() => {
 });
 </script>
 
-<template>
-  <v-container>
-    <v-card
-      width="880"
-      class="pa-5 ma-auto"
-    >
-      <v-overlay
-        :model-value="statePis.loading"
-        absolute
-      >
-        <v-progress-circular
-          indeterminate
-          color="primary"
-          size="50"
+<template width="600" class="pa-1 ma-auto">
+  <v-overlay
+    :model-value="statePis.loading"
+    absolute
+  >
+    <v-progress-circular
+      indeterminate
+      color="primary"
+      size="50"
+    />
+  </v-overlay>
+
+  <v-form
+    @submit.prevent="actionsPis.btnSave"
+    id="pnPisCampos"
+  >
+    <v-row dense>
+      <v-col cols="3">
+        <v-select
+          v-model="statePis.pis.ID_REGIME_TRIBUTARIO"
+          label="Regime Tributário"
+          :items="regimeTributarioOptions"
+          item-title="text"
+          item-value="value"
+          outlined
         />
-      </v-overlay>
+      </v-col>
+      <v-col cols="3">
+        <v-text-field
+          v-model="statePis.pis.P_VALOR"
+          label="Valor do PIS"
+          type="number"
+          suffix="%"
+        />
+      </v-col>
+    </v-row>
+  </v-form>
 
-      <h2 class="text-center mb-4">Configuração de PIS</h2>
+  <div
+    id="gridPis"
+    class="mb-4"
+  ></div>
 
-      <v-form
-        @submit.prevent="actionsPis.btnSave"
-        id="pnPisCampos"
-      >
-        <v-row dense>
-          <v-col cols="4">
-            <v-select
-              v-model="statePis.pis.ID_REGIME_TRIBUTARIO"
-              label="Regime Tributário"
-              :items="regimeTributarioOptions"
-              item-title="text"
-              item-value="value"
-              outlined
-            />
-          </v-col>
-          <v-col cols="4">
-            <v-text-field
-              v-model="statePis.pis.P_VALOR"
-              label="Valor do PIS"
-              type="number"
-              suffix="%"
-            />
-          </v-col>
-        </v-row>
-      </v-form>
-
-      <div
-        id="gridPis"
-        class="mb-4"
-      ></div>
-
-      <div
-        id="pnPisBotoes"
-        style="text-align: center"
-      ></div>
-    </v-card>
-  </v-container>
+  <div
+    id="pnPisBotoes"
+    style="text-align: center"
+  ></div>
 </template>
 
 <style scoped>
 .v-card {
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 15px rgba(128, 93, 93, 0.1);
 }
 .v-select,
 .v-text-field {
