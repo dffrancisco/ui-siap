@@ -38,6 +38,12 @@ export const tabOptions = [
     { value: "cofins", label: "Cofins" },
 ];
 
+export const regimeTributarioOptions = [
+    { text: "Simples Nacional", value: 0 },
+    { text: "Lucro Presumido", value: 1 },
+    { text: "Lucro Real", value: 2 }
+];
+
 export const actions = {
     async init() {
 

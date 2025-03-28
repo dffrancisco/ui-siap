@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, actions, stateTabs, tabOptions } from "./configuracaoNfe";
+import { state, actions, stateTabs, tabOptions, regimeTributarioOptions } from "./configuracaoNfe";
 import AbaRegimeTributario from "./components/AbaRegimeTributario.vue";
 import AbaPis from "./components/AbaPis.vue";
 import AbaCofins from "./components/AbaConfins.vue";
@@ -58,6 +58,7 @@ const changeTab = (tabValue: string) => {
           <v-select
             v-model="state.nfeConfig.REGIME_TRIBUTARIO"
             label="Regime Tributário"
+            :items="regimeTributarioOptions"
             item-text="text"
             item-value="value"
             outlined

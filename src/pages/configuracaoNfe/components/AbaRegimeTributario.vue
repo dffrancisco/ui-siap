@@ -28,7 +28,7 @@ const actionsRegime = {
       height: 325,
       count: true,
       columns: {
-        "Código Regime Tributário": {
+        "Codigo Regime Tributário": {
           dataField: "ID_REGIME_TRIBUTARIO",
           width: "30%",
         },
@@ -98,9 +98,7 @@ const actionsRegime = {
     try {
       stateRegime.loading = true;
       const data = await serviceNfe.getDadosParaInputs();
-
       stateRegime.regimeTributario = { ...data.regimeTributario[0] };
-
       stateRegime.regimeTributarioLista = data.regimeTributario;
 
       return data.regimeTributario;
