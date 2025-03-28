@@ -26,7 +26,7 @@ export interface iCaixas {
     ID_ABERTURA_CAIXA: number;
     LOGIN: string;
     NOME_COMP: string;
-    OBS: string;
+    OBS: string | null;
     SANGRIA: number;
     STATUS: number;
     TROCO: number;
@@ -73,7 +73,9 @@ export interface iTotalizadores {
 
 export interface iDevolucoes {
     CAIXA: string;
+    COD_FUNCIONARIO: number;
     CODIGO: string;
+    DESC_DEVOLUCAO: string;
     DESCRICAO_PAGAMENTO: string;
     LOGIN: string;
     NUM_ORCAMENTO: number;
@@ -85,6 +87,7 @@ export interface iSangrias {
     HORA: string;
     LOGIN: string;
     VALOR: number;
+    COD_FUNCIONARIO: number;
 }
 
 export interface iResponseDadosIniciais {

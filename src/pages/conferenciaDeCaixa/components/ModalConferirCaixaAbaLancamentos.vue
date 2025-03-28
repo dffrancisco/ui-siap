@@ -3,8 +3,9 @@ import { state, actions, comprasFiltradasPorCaixa, totalizadoresFiltradosPorCaix
 import utils from "@/ts/utils";
 import IconPagamento from "./IconPagamento.vue";
 import { iTiposPagamento } from "../interfaces";
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import ModalDetalhesPagamento from "./ModalDetalhesPagamento.vue";
+import { useEventListener } from "@vueuse/core";
 
 const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
   stateLancamentos.pagamentoSelecionado = pagamento;
@@ -14,6 +15,42 @@ const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
 const stateLancamentos = reactive({
   modalDetalhesPagamentoOpened: false,
   pagamentoSelecionado: <null | iTiposPagamento>null,
+  inputLocalizarOrcamento: <HTMLInputElement>null,
+  inputLocalizarAutCartao: <HTMLInputElement>null,
+  inputLocalizarValorSomatorio: <HTMLInputElement>null,
+});
+
+const actionsLancamentos = {
+  init: () => {
+    stateLancamentos.inputLocalizarOrcamento = document.getElementById(
+      "inputLocalizarOrcamento"
+    ) as HTMLInputElement;
+    stateLancamentos.inputLocalizarAutCartao = document.getElementById(
+      "inputLocalizarAutCartao"
+    ) as HTMLInputElement;
+    stateLancamentos.inputLocalizarValorSomatorio = document.getElementById(
+      "inputLocalizarValorSomatorio"
+    ) as HTMLInputElement;
+  },
+};
+
+useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F2") {
+    event.preventDefault();
+    stateLancamentos.inputLocalizarOrcamento?.focus();
+  }
+  if (event.key === "F4") {
+    event.preventDefault();
+    stateLancamentos.inputLocalizarAutCartao?.focus();
+  }
+  if (event.key === "F3") {
+    event.preventDefault();
+    stateLancamentos.inputLocalizarValorSomatorio?.focus();
+  }
+});
+
+onMounted(() => {
+  actionsLancamentos.init();
 });
 </script>
 
@@ -21,8 +58,12 @@ const stateLancamentos = reactive({
   <v-card class="pa-3">
     <v-row>
       <!-- Totalizadores Valores Recebidos -->
-      <v-col cols="3">
+      <v-col
+        class="d-flex flex-column"
+        cols="2"
+      >
         <v-card
+          class="flex-grow-1"
           max-height="325px"
           style="overflow-y: scroll"
           outlined
@@ -43,7 +84,7 @@ const stateLancamentos = reactive({
       </v-col>
 
       <!-- Card Direito (Compras do Tipo Selecionado) -->
-      <v-col cols="9">
+      <v-col cols="8">
         <v-data-table-virtual
           :key="state.pagamentoSelecionado"
           :items="comprasFiltradasPorCaixa"
@@ -121,9 +162,46 @@ const stateLancamentos = reactive({
           </template>
         </v-data-table-virtual>
       </v-col>
-    </v-row>
-  </v-card>
 
+      <v-col cols="2">
+        <v-card height="325"><div>somatorio</div></v-card>
+      </v-col>
+    </v-row>
+    <v-container>
+      <v-row>
+        <v-col
+          cols="3"
+          class="pl-0"
+        >
+          <v-text-field
+            id="inputLocalizarOrcamento"
+            label="Localizar Orçamento (F2)"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-text-field
+            id="inputLocalizarAutCartao"
+            label="Localizar Aut. Cartao (F4)"
+          ></v-text-field>
+        </v-col>
+        <v-col
+          cols="4"
+          class="pt-1"
+        >
+          <v-checkbox label="Exibir apenas valores não conferidos"></v-checkbox>
+        </v-col>
+        <v-col
+          cols="2"
+          class="pr-0"
+        >
+          <v-text-field
+            id="inputLocalizarValorSomatorio"
+            label="Localizar (F3)"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-card>
   <!-- Modal Detalhes Pagamento -->
   <v-dialog
     v-model="stateLancamentos.modalDetalhesPagamentoOpened"

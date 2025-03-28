@@ -1,23 +1,19 @@
 <script setup lang="ts">
-import { iCaixas, iOptions } from "../interfaces";
-import utils from "@/ts/utils";
+import { iCaixas, iOptions, iSangrias } from "../interfaces";
 import { state, abaSelecionadaModal } from "../conferenciaDeCaixa";
 import ModalConferirCaixaAbaLancamentos from "./ModalConferirCaixaAbaLancamentos.vue";
+import ModalConferirCaixaAbaSangrias from "./ModalConferirCaixaAbaSangrias.vue";
+import ModalConferirCaixaAbaDevolucoes from "./ModalConferirCaixaAbaDevolucoes.vue";
+import ModalConferirCaixaAbaObservacoes from "./ModalConferirCaixaAbaObservacoes.vue";
+import ModalConferirCaixaCabecalho from "./ModalConferirCaixaCabecalho.vue";
 
 const props = defineProps<{
   caixaSelecionado: iCaixas;
+  sangrias: iSangrias[];
   modalOpened: boolean;
 }>();
 
 const emit = defineEmits(["closeModalConferirCaixa"]);
-
-const getFotoFuncionarioURL = (cpf: string) => {
-  if (!cpf) {
-    return "";
-  }
-  const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
-  return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
-};
 
 const options: iOptions[] = [
   { value: "lancamentos", label: "Lançamentos" },
@@ -27,11 +23,8 @@ const options: iOptions[] = [
 ];
 </script>
 <template
-  ><v-card
-    class="pa-5"
-    style="width: 1000px; height: 525px; margin: 0 auto"
-  >
-    <v-row class="cabecalho">
+  ><v-card class="pa-5 ma-auto modal-container">
+    <!-- <v-row class="cabecalho">
       <v-col
         cols="1"
         class="mt-2"
@@ -115,9 +108,16 @@ const options: iOptions[] = [
           </div>
         </v-row>
       </v-col>
-    </v-row>
-    <v-divider :thickness="3"></v-divider>
+      <v-divider
+        class="mb-3 mt-2"
+        :thickness="3"
+      ></v-divider>
+    </v-row> -->
 
+    <ModalConferirCaixaCabecalho
+      @closeModalConferirCaixa="emit('closeModalConferirCaixa')"
+      :caixaSelecionado="props.caixaSelecionado"
+    />
     <!--Lista de Opções -->
     <div>
       <v-chip-group
@@ -140,9 +140,20 @@ const options: iOptions[] = [
 
     <!-- Renderiza a aba de Lançamentos -->
     <ModalConferirCaixaAbaLancamentos v-if="abaSelecionadaModal === 'lancamentos'" />
+    <ModalConferirCaixaAbaSangrias v-if="abaSelecionadaModal === 'sangria'" />
+    <ModalConferirCaixaAbaDevolucoes v-if="abaSelecionadaModal === 'devolucao'" />
+    <ModalConferirCaixaAbaObservacoes v-if="abaSelecionadaModal === 'observacao'" />
   </v-card>
 </template>
 <style scoped>
+.modal-container {
+  max-height: 560px;
+  width: 1070px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
 .divider {
   width: 1px;
   height: 60px;
@@ -152,10 +163,6 @@ const options: iOptions[] = [
 .v-col {
   padding: 0;
   margin: 0;
-}
-
-.cabecalho {
-  max-height: 80px;
 }
 
 .vchip-options-modal {
