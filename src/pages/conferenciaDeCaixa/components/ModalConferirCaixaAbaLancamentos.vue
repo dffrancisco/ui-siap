@@ -6,6 +6,7 @@ import { iTiposPagamento } from "../interfaces";
 import { computed, nextTick, onMounted, reactive } from "vue";
 import ModalDetalhesPagamento from "./ModalDetalhesPagamento.vue";
 import { useEventListener } from "@vueuse/core";
+import toast from "@/plugins/toast/toast";
 
 const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
   stateLancamentos.pagamentoSelecionado = pagamento;
@@ -26,83 +27,84 @@ const stateLancamentos = reactive({
 });
 
 const actionsLancamentos = {
+  // Atualize a função adicionarAoSomatorio
   adicionarAoSomatorio: () => {
     if (!stateLancamentos.valorConferido.trim()) return;
+
+    toast.error("Nenhum pagamento encontrado com esse valor.");
 
     const input = stateLancamentos.valorConferido.trim();
     const comprasFiltradas = computeds.comprasFiltradasPorCaixa.value;
 
-    // Caso 1: Apenas número do orçamento
+    // Função para verificar se o orçamento já existe
+    const orcamentoJaExiste = (numOrcamento: number) => {
+      return state.somatorioLista.some((item) => item.orcamento === numOrcamento.toString());
+    };
+
+    // Caso 1: Apenas número do orçamento (ex: "25")
     if (/^\d+$/.test(input)) {
-      const orcamento = input;
-      let valorEncontrado = 0;
-      let encontrou = false;
+      const numOrcamento = parseInt(input);
 
-      // Procura em todas as compras e orçamentos
-      for (const compra of comprasFiltradas) {
-        const orcamentoEncontrado = compra.ORCAMENTOS?.find((o) => o.NUM_ORCAMENTO.toString() === orcamento);
+      if (!orcamentoJaExiste(numOrcamento)) {
+        const pagamento = comprasFiltradas
+          .flatMap((c) => c.TIPOS_PAGAMENTO)
+          .find((p) => p.NUM_ORCAMENTO === numOrcamento);
 
-        if (orcamentoEncontrado) {
-          valorEncontrado = orcamentoEncontrado.VALOR_ORCAMENTO;
-          encontrou = true;
-          break;
+        if (pagamento) {
+          state.somatorioLista.push({
+            orcamento: numOrcamento.toString(),
+            valor: pagamento.VALOR,
+          });
         }
       }
-
-      if (encontrou) {
-        stateLancamentos.somatorioLista.push({
-          orcamento,
-          valor: valorEncontrado,
-        });
-      }
     }
-    // Caso 2: Apenas valor
+    // Caso 2: Apenas valor (ex: "100,00") - Adiciona o PRIMEIRO encontrado
     else if (/^[\d,.]+$/.test(input)) {
       const valor = parseFloat(input.replace(/\./g, "").replace(",", "."));
-      if (!isNaN(valor)) {
-        // Procura o primeiro orçamento com esse valor
-        for (const compra of comprasFiltradas) {
-          const orcamentoEncontrado = compra.ORCAMENTOS?.find((o) => Math.abs(o.VALOR_ORCAMENTO - valor) < 0.01);
 
-          if (orcamentoEncontrado) {
-            stateLancamentos.somatorioLista.push({
-              orcamento: orcamentoEncontrado.NUM_ORCAMENTO.toString(),
-              valor,
-            });
-            break;
-          }
+      if (!isNaN(valor)) {
+        // Encontra o PRIMEIRO pagamento com esse valor que ainda não está no somatório
+        const pagamento = comprasFiltradas
+          .flatMap((c) => c.TIPOS_PAGAMENTO)
+          .find((p) => Math.abs(p.VALOR - valor) < 0.01 && !orcamentoJaExiste(p.NUM_ORCAMENTO));
+
+        if (pagamento) {
+          state.somatorioLista.push({
+            orcamento: pagamento.NUM_ORCAMENTO.toString(),
+            valor: pagamento.VALOR,
+          });
         }
       }
     }
-    // Caso 3: Formato completo (número e valor)
+    // Caso 3: Formato completo (ex: "25 100,00")
     else {
       const partes = input.split(/[\s,]+/).filter(Boolean);
       if (partes.length >= 2) {
-        const orcamento = partes[0];
-        const valorStr = partes[1].replace(/\./g, "").replace(",", ".");
-        const valor = parseFloat(valorStr);
+        const numOrcamento = parseInt(partes[0]);
+        const valor = parseFloat(partes[1].replace(/\./g, "").replace(",", "."));
 
-        if (!isNaN(valor)) {
-          stateLancamentos.somatorioLista.push({
-            orcamento,
+        if (!isNaN(numOrcamento) && !orcamentoJaExiste(numOrcamento)) {
+          state.somatorioLista.push({
+            orcamento: numOrcamento.toString(),
             valor,
           });
         }
       }
     }
 
-    // Limpa o input e mantém o foco
     stateLancamentos.valorConferido = "";
     nextTick(() => {
       const inputEl = document.getElementById("inputValorSomatorio") as HTMLInputElement;
       if (inputEl) inputEl.focus();
     });
   },
+
   removerDoSomatorio: (index: number) => {
-    stateLancamentos.somatorioLista.splice(index, 1);
+    state.somatorioLista.splice(index, 1);
   },
+
   limparSomatorio: () => {
-    stateLancamentos.somatorioLista = [];
+    state.somatorioLista = [];
   },
 
   atualizarFiltroOrcamento() {
@@ -124,7 +126,6 @@ const actionsLancamentos = {
 };
 
 // Computed para calcular totalizadores
-// Em ModalConferirCaixaAbaLancamentos.vue:
 const totalizadores = computed(() => {
   return {
     quantidade: state.somatorioLista.length,
@@ -172,8 +173,9 @@ const isOrcamentoNoSomatorio = (numOrcamento: number) => {
 };
 
 const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
-  return stateLancamentos.somatorioLista.some(
-    (item) => item.orcamento === numOrcamento.toString() && Math.abs(item.valor - valor) < 0.01
+  return state.somatorioLista.some(
+    (item) =>
+      item.orcamento === numOrcamento.toString() && Math.abs(parseFloat(item.valor.toString()) - valor) < 0.01
   );
 };
 </script>
@@ -187,7 +189,7 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
       >
         <v-card
           class="flex-grow-1"
-          max-height="335px"
+          max-height="355px"
           style="overflow-y: scroll"
           outlined
           mandatory
@@ -208,14 +210,14 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
 
       <!-- Card Direito (Compras do Tipo Selecionado) -->
       <v-col
-        cols="7.5"
+        cols="7"
         style="padding: 0"
       >
         <v-data-table-virtual
           :key="state.pagamentoSelecionado"
           :items="computeds.comprasFiltradasPorCaixa.value"
           :headers="state.headersLancamentos"
-          height="337"
+          height="345"
           item-value="id"
           :loading="state.loading"
           fixed-header
@@ -289,10 +291,15 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
         </v-data-table-virtual>
       </v-col>
 
-      <v-col cols="3">
-        <v-card height="325">
+      <v-col
+        cols="3"
+        style="padding: 5px"
+      >
+        <v-card>
           <v-data-table-virtual
-            :items="stateLancamentos.somatorioLista"
+            :items="state.somatorioLista"
+            height="303"
+            fixed-header
             :headers="[
               { title: 'Orç.', key: 'orcamento' },
               { title: 'Valor', key: 'valor' },
@@ -307,7 +314,7 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
 
             <template v-slot:item.acoes="{ index }">
               <v-icon
-                color="red"
+                color="primary"
                 @click="actionsLancamentos.removerDoSomatorio(index)"
                 title="Remover"
                 >mdi-delete</v-icon
@@ -328,7 +335,7 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
                   size="20px"
                   v-bind="props"
                 >
-                  <v-icon>mdi-delete</v-icon>
+                  <v-icon color="primary">mdi-delete</v-icon>
                 </v-btn>
               </template>
               <span>Limpar tudo</span>
@@ -337,7 +344,10 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
         </v-card>
       </v-col>
     </v-row>
-    <v-container fluid>
+    <v-container
+      fluid
+      class="pa-4 mt-1"
+    >
       <v-row>
         <v-col
           cols="3"
@@ -378,9 +388,9 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
             id="inputValorSomatorio"
             ref="inputValorSomatorio"
             v-model="stateLancamentos.valorConferido"
-            label="Orç. Valor (F3 + Enter)"
+            label="Orç. ou Valor (F3 + Enter)"
             :clearable="false"
-            placeholder="Ex: 12345 100,00"
+            placeholder="Ex: 12345 ou 100,00"
             @keydown.enter.prevent="actionsLancamentos.adicionarAoSomatorio"
           ></v-text-field>
         </v-col>

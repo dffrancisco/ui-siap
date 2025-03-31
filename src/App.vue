@@ -147,6 +147,7 @@ const enviarEventoClick = () => {
 @import "animate.css";
 @import "@/styles/global.scss";
 @import "vue3-photo-preview/dist/index.css";
+@import "vue-toastification/dist/index.css";
 
 #pnCalk .xModal-modal-content {
   margin: 0 !important;
