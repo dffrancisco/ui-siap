@@ -1,10 +1,11 @@
 import utils from './../../ts/utils';
 import moment from "moment";
-import { computed, reactive } from "vue";
+import { computed, nextTick, reactive } from "vue";
 import {
     iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa,
     iParamSangria, iSangrias, iTodasAsCompras, iTotalizadores, iTotalizadoresAgrupados
 } from "./interfaces";
+// import { stateLancamentos } from "./components/ModalConferirCaixaAbaLancamentos.vue"
 import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -27,18 +28,27 @@ export const state = reactive({
     modalSangriaOpened: false,
     pagamentoSelecionado: null,
     headersLancamentos: [
-        { title: "#", key: "INDEX", width: "40px" },
+        { title: "#", key: "INDEX", width: "20px" },
         { title: "Orçamentos", key: "NUM_ORCAMENTO", minWidth: "160px", sortable: false, },
         { title: "Hora", key: "HORA", width: "60px", value: (item: any) => utils.formatHora(item.HORA), sortable: false, },
         { title: "Pagamentos", key: "PAGAMENTOS", width: "100%", sortable: false, },
-        { title: "Total", key: "VALOR", width: "120px", value: (item: any) => utils.formatValor(item.VALOR_TOTAL), sortable: false, },
+        { title: "Total", key: "VALOR", width: "120px", value: (item: any) => utils.formatValor(item.VALOR_FILTRADO ?? item.VALOR_TOTAL), },
     ],
     modalConferirCaixaOpened: false,
     selectOptionModal: "lancamentos",
     totalizadoresIndividuais: <iTotalizadoresAgrupados[]>[],
     pagamentosSelecionadosModal: [] as string[],
     pagamentosSelecionadosDevolucao: ["TODOS"] as string[],
-
+    //novos states
+    filtrosAdicionais: {
+        orcamento: '',
+        autorizacao: '',
+        apenasNaoConferidos: false,
+        valorConferido: ''
+    },
+    valoresConferidos: [] as { caixa: number, nossoNum: number, numOrcamento: number, valor: number }[],
+    somatorioLista: [] as { orcamento: string; valor: number }[],
+    //observacoes: [] as { caixa: number, nossoNum: number, observacao: string, usuario: string, dataHora: string }[]
 });
 
 export const options: iOptions[] = [
@@ -313,7 +323,79 @@ export const actions = {
     abrirModalConferirCaixa(caixa) {
         state.caixaSelected = caixa;
         state.modalConferirCaixaOpened = true;
-    }
+    },
+
+    //novas actions 
+
+    filtrarPorOrcamento(numOrcamento: string) {
+        state.filtrosAdicionais.orcamento = numOrcamento;
+    },
+
+    filtrarPorAutorizacao(autorizacao: string) {
+        state.filtrosAdicionais.autorizacao = autorizacao;
+    },
+
+    toggleApenasNaoConferidos() {
+        state.filtrosAdicionais.apenasNaoConferidos = !state.filtrosAdicionais.apenasNaoConferidos;
+        console.log('Estado do toggle:', state.filtrosAdicionais.apenasNaoConferidos);
+
+        // Debug: Verificar valores conferidos
+        console.log('Valores conferidos:', state.valoresConferidos);
+
+        // Forçar recálculo
+        state.todasAsCompras = [...state.todasAsCompras];
+
+        // Debug: Verificar compras após filtro
+        nextTick(() => {
+            console.log('Compras filtradas:', computeds.comprasFiltradasPorCaixa.value);
+        });
+    },
+
+    conferirValor(valorDigitado: string) {
+        if (!valorDigitado.trim()) return;
+
+        const valor = parseFloat(valorDigitado.replace(",", "."));
+        if (isNaN(valor)) {
+            //utils.toastError("Valor inválido");
+            return;
+        }
+
+        // RN8: Busca apenas nos orçamentos filtrados
+        const comprasFiltradas = computeds.comprasFiltradasPorCaixa.value;
+
+        // Encontrar o primeiro pagamento não conferido com o valor especificado
+        let pagamentoEncontrado = null;
+
+        outerLoop:
+        for (const compra of comprasFiltradas) {
+            for (const pagamento of compra.TIPOS_PAGAMENTO) {
+                // Verifica se o valor bate e se não está já conferido
+                if (Math.abs(pagamento.VALOR - valor) < 0.01 &&
+                    !state.valoresConferidos.some(vc =>
+                        vc.nossoNum === compra.NOSSO_NUM &&
+                        vc.numOrcamento === pagamento.NUM_ORCAMENTO &&
+                        Math.abs(vc.valor - valor) < 0.01
+                    )) {
+                    pagamentoEncontrado = {
+                        caixa: compra.CAIXA,
+                        nossoNum: compra.NOSSO_NUM,
+                        numOrcamento: pagamento.NUM_ORCAMENTO,
+                        valor: valor
+                    };
+                    break outerLoop;
+                }
+            }
+        }
+
+        if (pagamentoEncontrado) {
+            // RN9: Adiciona apenas o primeiro valor encontrado
+            state.valoresConferidos.push(pagamentoEncontrado);
+            // RN11: O input é limpo no método da modal
+        } else {
+            //utils.toastError("O valor digitado não foi localizado");
+            console.log("O valor digitado não foi localizado");
+        }
+    },
 }
 
 export const computeds = {
@@ -358,38 +440,165 @@ export const computeds = {
             (c) => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO
         );
 
-        // Se "TODOS" estiver selecionado, retorna todas as compras sem filtragem de pagamento
-        if (state.pagamentosSelecionadosModal.includes("TODOS")) {
-            return compras
-                .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
-                .map((compra, index) => ({
-                    ...compra,
-                    INDEX: index + 1,
-                }));
-        }
+        // Filtro por tipo de pagamento
+        const estaFiltrandoPagamentos = state.pagamentosSelecionadosModal.length > 0 &&
+            !state.pagamentosSelecionadosModal.includes("TODOS");
 
-        // Filtra apenas as compras que possuem pelo menos um dos pagamentos selecionados
-        if (state.pagamentosSelecionadosModal.length > 0) {
-            compras = compras
-                .map((c) => {
-                    const pagamentosFiltrados = c.TIPOS_PAGAMENTO.filter((p) =>
-                        state.pagamentosSelecionadosModal.includes(p.TIPO_PAGAMENTO)
+        // Aplica todos os filtros
+        compras = compras.map((compra) => {
+            // Filtra os pagamentos conforme os critérios
+            let pagamentosFiltrados = [...compra.TIPOS_PAGAMENTO];
+
+            // Filtro por tipo de pagamento
+            if (estaFiltrandoPagamentos) {
+                pagamentosFiltrados = pagamentosFiltrados.filter(p =>
+                    state.pagamentosSelecionadosModal.includes(p.TIPO_PAGAMENTO)
+                );
+            }
+
+            // Filtro por número de orçamento (RN5)
+            if (state.filtrosAdicionais.orcamento) {
+                pagamentosFiltrados = pagamentosFiltrados.filter(p =>
+                    p.NUM_ORCAMENTO?.toString().includes(state.filtrosAdicionais.orcamento) ||
+                    compra.ORCAMENTOS?.some(o => o.NUM_ORCAMENTO.toString().includes(state.filtrosAdicionais.orcamento))
+                );
+            }
+
+            // Filtro por autorização de cartão (RN5)
+            if (state.filtrosAdicionais.autorizacao) {
+                pagamentosFiltrados = pagamentosFiltrados.filter(p =>
+                    p.AUTORIZACAO?.includes(state.filtrosAdicionais.autorizacao)
+                );
+            }
+
+            // Filtro por apenas não conferidos (RN6)
+            if (state.filtrosAdicionais.apenasNaoConferidos) {
+                pagamentosFiltrados = pagamentosFiltrados.filter(p => {
+                    const valorConferido = state.valoresConferidos.some(vc =>
+                        vc.nossoNum === compra.NOSSO_NUM &&
+                        vc.numOrcamento === p.NUM_ORCAMENTO
                     );
 
-                    return pagamentosFiltrados.length > 0
-                        ? { ...c, TIPOS_PAGAMENTO: pagamentosFiltrados }
-                        : null;
-                })
-                .filter(item => item !== null)
-        }
+                    // Mostra apenas pagamentos não conferidos
+                    return !valorConferido;
+                });
+            }
 
-        return compras
-            .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
-            .map((compra, index) => ({
+            // Se não houver pagamentos após os filtros, retorna null
+            if (pagamentosFiltrados.length === 0) return null;
+
+            // Calcula o valor filtrado
+            const valorFiltrado = pagamentosFiltrados.reduce((sum, p) => sum + p.VALOR, 0);
+
+            return {
                 ...compra,
-                INDEX: index + 1,
-            }));
+                TIPOS_PAGAMENTO: pagamentosFiltrados,
+                VALOR_FILTRADO: valorFiltrado,
+                // Adiciona flag para pagamentos conferidos (para estilização)
+                PAGAMENTOS_CONFERIDOS: pagamentosFiltrados.map(p => ({
+                    ...p,
+                    CONFERIDO: state.valoresConferidos.some(vc =>
+                        vc.nossoNum === compra.NOSSO_NUM &&
+                        vc.numOrcamento === p.NUM_ORCAMENTO &&
+                        Math.abs(vc.valor - p.VALOR) < 0.01
+                    )
+                }))
+            };
+        }).filter(compra => compra !== null);
+
+        // Ordena por hora
+        compras.sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime());
+
+        // Adiciona índice
+        return compras.map((compra, index) => ({
+            ...compra,
+            INDEX: index + 1,
+        }));
     }),
+    //     if (!state.caixaSelected) return [];
+
+    //     let compras: any[] = state.todasAsCompras.filter(
+    //         (c) => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO
+    //     );
+
+    //     // RN5: Filtragem por orçamento e autorização do cartão
+    //     if (stateLancamentos.inputLocalizarOrcamento) {
+    //         compras = compras.filter((c) =>
+    //             c.ORCAMENTOS.some((orc) =>
+    //                 orc.NUM_ORCAMENTO.toString().includes(stateLancamentos.inputLocalizarOrcamento)
+    //             )
+    //         );
+    //     }
+
+    //     if (stateLancamentos.inputLocalizarAutCartao) {
+    //         compras = compras.filter((c) =>
+    //             c.TIPOS_PAGAMENTO.some((p) =>
+    //                 p.AUTORIZACAO?.toString().includes(stateLancamentos.inputLocalizarAutCartao)
+    //             )
+    //         );
+    //     }
+
+    //     // RN6: Exibir apenas valores não conferidos
+    //     if (state.exibirApenasNaoConferidos) {
+    //         compras = compras.map((c) => {
+    //             const pagamentosNaoConferidos = c.TIPOS_PAGAMENTO.filter((p) => !p.CONFERIDO);
+    //             return pagamentosNaoConferidos.length > 0
+    //                 ? { ...c, TIPOS_PAGAMENTO: pagamentosNaoConferidos }
+    //                 : null;
+    //         }).filter((item) => item !== null) as any[];
+    //     }
+
+    //     // RN4: Filtro por formas de pagamento
+    //     if (!state.pagamentosSelecionadosModal.includes("TODOS")) {
+    //         compras = compras
+    //             .map((c) => {
+    //                 const pagamentosFiltrados = c.TIPOS_PAGAMENTO.filter((p) =>
+    //                     state.pagamentosSelecionadosModal.includes(p.TIPO_PAGAMENTO)
+    //                 );
+    //                 return pagamentosFiltrados.length > 0 ? { ...c, TIPOS_PAGAMENTO: pagamentosFiltrados } : null;
+    //             })
+    //             .filter((item) => item !== null) as any[];
+    //     }
+
+    //     // RN7 e RN8: Buscar valor de conferência
+    //     if (stateLancamentos.inputLocalizarValorSomatorio) {
+    //         let encontrouValor = false;
+    //         compras = compras.map((c) => {
+    //             if (encontrouValor) return c; // Apenas o primeiro valor será marcado
+
+    //             const pagamentos = c.TIPOS_PAGAMENTO.map((p) => {
+    //                 if (
+    //                     !p.CONFERIDO &&
+    //                     parseFloat(p.VALOR) === parseFloat(stateLancamentos.inputLocalizarValorSomatorio)
+    //                 ) {
+    //                     encontrouValor = true;
+    //                     return { ...p, CONFIRMADO: true }; // Marca o valor como encontrado (verde)
+    //                 }
+    //                 return p;
+    //             });
+
+    //             return { ...c, TIPOS_PAGAMENTO: pagamentos };
+    //         });
+
+    //         // RN10: Exibir toast se o valor não foi encontrado
+    //         if (!encontrouValor) {
+    //             toast.error("O valor digitado não foi localizado", { timeout: 3000 });
+    //         }
+
+    //         // RN11: Resetar input e focar novamente
+    //         setTimeout(() => {
+    //             stateLancamentos.inputLocalizarValorSomatorio = "";
+    //             document.getElementById("inputLocalizarValorSomatorio")?.focus();
+    //         }, 100);
+    //     }
+
+    //     return compras
+    //         .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
+    //         .map((compra, index) => ({
+    //             ...compra,
+    //             INDEX: index + 1,
+    //         }));
+    // }),
 
     sangriasPorCaixa: computed(() => {
         if (!state.caixaSelected) return [];
@@ -410,25 +619,25 @@ export const computeds = {
     devolucoesPorCaixa: computed(() => {
         if (!state.caixaSelected) return [];
 
-        let devolucoesFiltradas = state.devolucoes.filter(d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
+        let devolucoesFiltradasPorCaixa = state.devolucoes.filter(d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
 
         // Se nenhum pagamento foi selecionado ou "TODOS" está na lista, mostra tudo
         if (
             state.pagamentosSelecionadosDevolucao.length === 0 ||
             state.pagamentosSelecionadosDevolucao.includes("TODOS")
         ) {
-            return devolucoesFiltradas.map((compra, index) => ({
+            return devolucoesFiltradasPorCaixa.map((compra, index) => ({
                 ...compra,
                 INDEX: index + 1,
             }));
         }
 
         // Filtra pelo tipo de pagamento selecionado
-        devolucoesFiltradas = devolucoesFiltradas.filter(d =>
+        devolucoesFiltradasPorCaixa = devolucoesFiltradasPorCaixa.filter(d =>
             state.pagamentosSelecionadosDevolucao.includes(d.DESCRICAO_PAGAMENTO)
         );
 
-        return devolucoesFiltradas.map((compra, index) => ({
+        return devolucoesFiltradasPorCaixa.map((compra, index) => ({
             ...compra,
             INDEX: index + 1,
         }));
@@ -461,13 +670,12 @@ export const computeds = {
     totalizadorDevolucaoPorCaixa: computed(() => {
         if (!state.caixaSelected) return [];
 
-        // Filtra as devoluções do caixa selecionado
-        const devolucoes = state.devolucoes.filter(d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
+        const devolucoesPorCaixa = state.devolucoes.filter(d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
 
         // Agrupa os pagamentos e soma os valores por tipo de pagamento
         const pagamentosMap = new Map<string, number>();
 
-        devolucoes.forEach(({ DESCRICAO_PAGAMENTO, VALOR }) => {
+        devolucoesPorCaixa.forEach(({ DESCRICAO_PAGAMENTO, VALOR }) => {
             const valorAtual = pagamentosMap.get(DESCRICAO_PAGAMENTO) || 0;
             pagamentosMap.set(DESCRICAO_PAGAMENTO, valorAtual + VALOR);
         });

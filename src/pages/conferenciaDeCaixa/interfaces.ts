@@ -63,6 +63,8 @@ export interface iTodasAsCompras {
     NOSSO_NUM: number | null;
     TIPOS_PAGAMENTO: iTiposPagamento[];
     VALOR_TOTAL: number;
+    VALOR_FILTRADO?: number;
+    PAGAMENTOS_CONFERIDOS?: any[];
 }
 
 export interface iTotalizadores {

@@ -3,7 +3,7 @@ import { state, actions, computeds } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 import IconPagamento from "./IconPagamento.vue";
 import { iTiposPagamento } from "../interfaces";
-import { onMounted, reactive } from "vue";
+import { computed, nextTick, onMounted, reactive } from "vue";
 import ModalDetalhesPagamento from "./ModalDetalhesPagamento.vue";
 import { useEventListener } from "@vueuse/core";
 
@@ -17,22 +17,120 @@ const stateLancamentos = reactive({
   pagamentoSelecionado: <null | iTiposPagamento>null,
   inputLocalizarOrcamento: <HTMLInputElement>null,
   inputLocalizarAutCartao: <HTMLInputElement>null,
-  inputLocalizarValorSomatorio: <HTMLInputElement>null,
+  inputValorSomatorio: <HTMLInputElement>null,
+  somatorioLista: [] as { orcamento: string; valor: number }[],
+  localizarOrcamento: "",
+  localizarAutCartao: "",
+  exibirApenasNaoConferidos: false,
+  valorConferido: "",
 });
 
 const actionsLancamentos = {
-  init: () => {
-    stateLancamentos.inputLocalizarOrcamento = document.getElementById(
-      "inputLocalizarOrcamento"
-    ) as HTMLInputElement;
-    stateLancamentos.inputLocalizarAutCartao = document.getElementById(
-      "inputLocalizarAutCartao"
-    ) as HTMLInputElement;
-    stateLancamentos.inputLocalizarValorSomatorio = document.getElementById(
-      "inputLocalizarValorSomatorio"
-    ) as HTMLInputElement;
+  adicionarAoSomatorio: () => {
+    if (!stateLancamentos.valorConferido.trim()) return;
+
+    const input = stateLancamentos.valorConferido.trim();
+    const comprasFiltradas = computeds.comprasFiltradasPorCaixa.value;
+
+    // Caso 1: Apenas número do orçamento
+    if (/^\d+$/.test(input)) {
+      const orcamento = input;
+      let valorEncontrado = 0;
+      let encontrou = false;
+
+      // Procura em todas as compras e orçamentos
+      for (const compra of comprasFiltradas) {
+        const orcamentoEncontrado = compra.ORCAMENTOS?.find((o) => o.NUM_ORCAMENTO.toString() === orcamento);
+
+        if (orcamentoEncontrado) {
+          valorEncontrado = orcamentoEncontrado.VALOR_ORCAMENTO;
+          encontrou = true;
+          break;
+        }
+      }
+
+      if (encontrou) {
+        stateLancamentos.somatorioLista.push({
+          orcamento,
+          valor: valorEncontrado,
+        });
+      }
+    }
+    // Caso 2: Apenas valor
+    else if (/^[\d,.]+$/.test(input)) {
+      const valor = parseFloat(input.replace(/\./g, "").replace(",", "."));
+      if (!isNaN(valor)) {
+        // Procura o primeiro orçamento com esse valor
+        for (const compra of comprasFiltradas) {
+          const orcamentoEncontrado = compra.ORCAMENTOS?.find((o) => Math.abs(o.VALOR_ORCAMENTO - valor) < 0.01);
+
+          if (orcamentoEncontrado) {
+            stateLancamentos.somatorioLista.push({
+              orcamento: orcamentoEncontrado.NUM_ORCAMENTO.toString(),
+              valor,
+            });
+            break;
+          }
+        }
+      }
+    }
+    // Caso 3: Formato completo (número e valor)
+    else {
+      const partes = input.split(/[\s,]+/).filter(Boolean);
+      if (partes.length >= 2) {
+        const orcamento = partes[0];
+        const valorStr = partes[1].replace(/\./g, "").replace(",", ".");
+        const valor = parseFloat(valorStr);
+
+        if (!isNaN(valor)) {
+          stateLancamentos.somatorioLista.push({
+            orcamento,
+            valor,
+          });
+        }
+      }
+    }
+
+    // Limpa o input e mantém o foco
+    stateLancamentos.valorConferido = "";
+    nextTick(() => {
+      const inputEl = document.getElementById("inputValorSomatorio") as HTMLInputElement;
+      if (inputEl) inputEl.focus();
+    });
+  },
+  removerDoSomatorio: (index: number) => {
+    stateLancamentos.somatorioLista.splice(index, 1);
+  },
+  limparSomatorio: () => {
+    stateLancamentos.somatorioLista = [];
+  },
+
+  atualizarFiltroOrcamento() {
+    actions.filtrarPorOrcamento(stateLancamentos.localizarOrcamento);
+  },
+
+  atualizarFiltroAutorizacao() {
+    actions.filtrarPorAutorizacao(stateLancamentos.localizarAutCartao);
+  },
+
+  toggleFiltroNaoConferidos() {
+    actions.toggleApenasNaoConferidos();
+  },
+
+  conferirValor() {
+    actions.conferirValor(stateLancamentos.valorConferido);
+    stateLancamentos.valorConferido = ""; // Limpa o input após conferir
   },
 };
+
+// Computed para calcular totalizadores
+// Em ModalConferirCaixaAbaLancamentos.vue:
+const totalizadores = computed(() => {
+  return {
+    quantidade: state.somatorioLista.length,
+    total: state.somatorioLista.reduce((acc, item) => acc + item.valor, 0),
+  };
+});
 
 useEventListener(document, "keydown", async (event) => {
   if (event.key === "F2") {
@@ -45,44 +143,51 @@ useEventListener(document, "keydown", async (event) => {
   }
   if (event.key === "F3") {
     event.preventDefault();
-    stateLancamentos.inputLocalizarValorSomatorio?.focus();
+    stateLancamentos.inputValorSomatorio?.focus();
+  }
+  if (event.key === "Enter" && document.activeElement === stateLancamentos.inputValorSomatorio) {
+    event.preventDefault();
+    actionsLancamentos.adicionarAoSomatorio();
   }
 });
 
 onMounted(() => {
-  actionsLancamentos.init();
+  stateLancamentos.inputLocalizarOrcamento = document.getElementById(
+    "inputLocalizarOrcamento"
+  ) as HTMLInputElement;
+  stateLancamentos.inputLocalizarAutCartao = document.getElementById(
+    "inputLocalizarAutCartao"
+  ) as HTMLInputElement;
+  stateLancamentos.inputValorSomatorio = document.getElementById("inputValorSomatorio") as HTMLInputElement;
+
+  nextTick(() => {
+    if (stateLancamentos.inputValorSomatorio) {
+      stateLancamentos.inputValorSomatorio.focus();
+    }
+  });
 });
+
+const isOrcamentoNoSomatorio = (numOrcamento: number) => {
+  return stateLancamentos.somatorioLista.some((item) => item.orcamento === numOrcamento.toString());
+};
+
+const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
+  return stateLancamentos.somatorioLista.some(
+    (item) => item.orcamento === numOrcamento.toString() && Math.abs(item.valor - valor) < 0.01
+  );
+};
 </script>
 
 <template>
-  <v-card
-    class="pa-3"
-    height="400px"
-    v-if="computeds.comprasFiltradasPorCaixa.value.length === 0"
-  >
-    <v-alert
-      type="warning"
-      color="primary"
-      prominent
-      class="mb-4"
-    >
-      Não há lançamentos para o caixa selecionado!
-    </v-alert>
-  </v-card>
-
-  <v-card
-    v-else
-    class="pa-3"
-  >
+  <v-card class="pa-1">
     <v-row>
-      <!-- Totalizadores Valores Recebidos -->
       <v-col
         class="d-flex flex-column"
         cols="2"
       >
         <v-card
           class="flex-grow-1"
-          max-height="325px"
+          max-height="335px"
           style="overflow-y: scroll"
           outlined
           mandatory
@@ -102,46 +207,47 @@ onMounted(() => {
       </v-col>
 
       <!-- Card Direito (Compras do Tipo Selecionado) -->
-      <v-col cols="8">
+      <v-col
+        cols="7.5"
+        style="padding: 0"
+      >
         <v-data-table-virtual
           :key="state.pagamentoSelecionado"
           :items="computeds.comprasFiltradasPorCaixa.value"
           :headers="state.headersLancamentos"
-          height="325"
+          height="337"
           item-value="id"
           :loading="state.loading"
           fixed-header
           class="elevation-1"
         >
           <template v-slot:item.INDEX="{ item }">
-            <span
-              class="text-center font-weight"
-              style="max-width: 40px"
-              >{{ item.INDEX }}</span
-            >
+            <span class="text-center font-weight">{{ item.INDEX }}</span>
           </template>
 
           <template v-slot:item.NUM_ORCAMENTO="{ item }">
             <div class="orcamento-group">
               <div
-                v-for="orc in item.ORCAMENTOS?.length
-                  ? item.ORCAMENTOS
-                  : [{ NUM_ORCAMENTO: item.NUM_ORCAMENTO, VALOR_ORCAMENTO: item.VALOR_ORCAMENTO }]"
+                v-for="orc in item.ORCAMENTOS?.length ? item.ORCAMENTOS : []"
                 :key="orc.NUM_ORCAMENTO"
                 class="orcamento-box"
-                :class="{ 'orcamento-entregar-receber': item.ENTREGAR_RECEBER == true }"
-                :title="item.ENTREGAR_RECEBER == true ? 'E/R Dias Anteriores' : 'Nº Orc. / Valor'"
+                :class="{
+                  'orcamento-entregar-receber': item.ENTREGAR_RECEBER,
+                  'orcamento-no-somatorio': isOrcamentoNoSomatorio(orc.NUM_ORCAMENTO),
+                }"
               >
                 <div
                   class="orcamento-numero"
-                  :class="{ 'orcamento-numero-entregar-receber': item.ENTREGAR_RECEBER == true }"
-                  >{{ orc.NUM_ORCAMENTO }}</div
+                  :class="{ 'orcamento-numero-entregar-receber': item.ENTREGAR_RECEBER }"
                 >
+                  {{ orc.NUM_ORCAMENTO }}
+                </div>
                 <div
                   class="orcamento-valor"
-                  :class="{ 'orcamento-valor-entregar-receber': item.ENTREGAR_RECEBER == true }"
-                  >{{ utils.formatValor(orc.VALOR_ORCAMENTO) }}</div
+                  :class="{ 'orcamento-valor-entregar-receber': item.ENTREGAR_RECEBER }"
                 >
+                  {{ utils.formatValor(orc.VALOR_ORCAMENTO) }}
+                </div>
               </div>
             </div>
           </template>
@@ -152,9 +258,12 @@ onMounted(() => {
                 v-for="pagamento in item.TIPOS_PAGAMENTO"
                 :key="pagamento.TIPOS_PAGAMENTO"
                 class="mr-1 chip-pagamento"
-                color="primary"
+                :color="pagamento.CONFERIDO ? 'success' : 'primary'"
                 @click.stop="exibirDetalhesPagamento(pagamento)"
                 title="ver detalhes"
+                :class="{
+                  'chip-no-somatorio': isPagamentoNoSomatorio(pagamento.NUM_ORCAMENTO, pagamento.VALOR),
+                }"
               >
                 <div class="chip-pagamento-icon">
                   <IconPagamento
@@ -169,7 +278,6 @@ onMounted(() => {
                         <span v-if="pagamento.DIVIDE !== null"> {{ pagamento.DIVIDE }}x </span>
                       </div>
                     </div>
-
                     <div class="d-flex align-center">
                       <strong>{{ utils.formatValor(pagamento.VALOR) }}</strong>
                     </div>
@@ -181,11 +289,55 @@ onMounted(() => {
         </v-data-table-virtual>
       </v-col>
 
-      <v-col cols="2">
-        <v-card height="325"><div>somatorio</div></v-card>
+      <v-col cols="3">
+        <v-card height="325">
+          <v-data-table-virtual
+            :items="stateLancamentos.somatorioLista"
+            :headers="[
+              { title: 'Orç.', key: 'orcamento' },
+              { title: 'Valor', key: 'valor' },
+              { title: 'Ações', key: 'acoes', sortable: false },
+            ]"
+            dense
+            hide-default-footer
+          >
+            <template v-slot:item.valor="{ item }">
+              <b>{{ utils.formatValor(item.valor) }}</b>
+            </template>
+
+            <template v-slot:item.acoes="{ index }">
+              <v-icon
+                color="red"
+                @click="actionsLancamentos.removerDoSomatorio(index)"
+                title="Remover"
+                >mdi-delete</v-icon
+              >
+            </template>
+          </v-data-table-virtual>
+
+          <v-divider></v-divider>
+
+          <v-footer class="d-flex justify-space-between px-4 py-2">
+            <span><b>Qtd:</b> {{ totalizadores.quantidade }}</span>
+            <span><b>Total:</b> {{ utils.formatValor(totalizadores.total) }}</span>
+            <v-tooltip top>
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  @click="actionsLancamentos.limparSomatorio"
+                  icon
+                  size="20px"
+                  v-bind="props"
+                >
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+              <span>Limpar tudo</span>
+            </v-tooltip>
+          </v-footer>
+        </v-card>
       </v-col>
     </v-row>
-    <v-container>
+    <v-container fluid>
       <v-row>
         <v-col
           cols="3"
@@ -193,28 +345,43 @@ onMounted(() => {
         >
           <v-text-field
             id="inputLocalizarOrcamento"
+            v-model="stateLancamentos.localizarOrcamento"
             label="Localizar Orçamento (F2)"
+            :clearable="false"
+            @input="actionsLancamentos.atualizarFiltroOrcamento"
           ></v-text-field>
         </v-col>
         <v-col cols="3">
           <v-text-field
             id="inputLocalizarAutCartao"
+            v-model="stateLancamentos.localizarAutCartao"
             label="Localizar Aut. Cartao (F4)"
+            :clearable="false"
+            @input="actionsLancamentos.atualizarFiltroAutorizacao"
           ></v-text-field>
         </v-col>
         <v-col
-          cols="4"
+          cols="3"
           class="pt-1"
         >
-          <v-checkbox label="Exibir apenas valores não conferidos"></v-checkbox>
+          <v-checkbox
+            v-model="stateLancamentos.exibirApenasNaoConferidos"
+            label="Exibir apenas valores não conferidos"
+            @change="actionsLancamentos.toggleFiltroNaoConferidos"
+          ></v-checkbox>
         </v-col>
         <v-col
-          cols="2"
+          cols="3"
           class="pr-0"
         >
           <v-text-field
-            id="inputLocalizarValorSomatorio"
-            label="Localizar (F3)"
+            id="inputValorSomatorio"
+            ref="inputValorSomatorio"
+            v-model="stateLancamentos.valorConferido"
+            label="Orç. Valor (F3 + Enter)"
+            :clearable="false"
+            placeholder="Ex: 12345 100,00"
+            @keydown.enter.prevent="actionsLancamentos.adicionarAoSomatorio"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -249,8 +416,10 @@ onMounted(() => {
 .chips-pagamentos {
   display: flex;
   gap: 4px;
-  padding: 6px;
+  padding: 2px;
   flex-wrap: wrap;
+  margin-left: -10px;
+  width: 130%;
 }
 
 .v-icon {
@@ -258,9 +427,15 @@ onMounted(() => {
 }
 
 .chip-pagamento {
-  width: 105px;
+  width: 100px;
   height: 45px;
   border-radius: 8px !important;
+  transition: all 0.3s ease;
+}
+
+.chip-no-somatorio {
+  border: 2px solid #4caf50 !important;
+  box-shadow: 0 0 0 1px #4caf50 !important;
 }
 
 .chip-pagamento-icon {
@@ -342,5 +517,14 @@ onMounted(() => {
   margin-top: 3px;
   margin-bottom: 3px;
   margin-right: 5px;
+}
+
+#inputValorSomatorio {
+  font-weight: bold;
+}
+
+.orcamento-no-somatorio {
+  border: 2px solid #4caf50 !important;
+  background: rgba(76, 175, 80, 0.1) !important;
 }
 </style>
