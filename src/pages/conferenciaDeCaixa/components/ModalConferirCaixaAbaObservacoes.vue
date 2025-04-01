@@ -1,10 +1,23 @@
 <script setup lang="ts">
 import { computeds, actions, state } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
+import ModalIncluirObs from "./ModalIncluirObs.vue";
+import { reactive } from "vue";
+
+const stateObs = reactive({
+  modalIncluirObsOpened: false,
+});
+
+const actionsObs = {
+  salvarObs: (obs: string) => {
+    actions.salvarObs(obs);
+    stateObs.modalIncluirObsOpened = false;
+  },
+};
 </script>
 
 <template>
-  <v-card
+  <!-- <v-card
     class="pa-3"
     height="400px"
     v-if="computeds.observacoesPorCaixa.value.length === 0"
@@ -17,10 +30,9 @@ import utils from "@/ts/utils";
     >
       Não há observações cadastradas para o caixa selecionado!
     </v-alert>
-  </v-card>
+  </v-card> -->
 
   <v-card
-    v-else
     class="pa-3"
     height="410px"
   >
@@ -36,6 +48,7 @@ import utils from "@/ts/utils";
           class="w-100"
           height="30px"
           title="Adicionar Observação"
+          @click="stateObs.modalIncluirObsOpened = true"
         >
           Incluir
         </v-btn>
@@ -82,5 +95,16 @@ import utils from "@/ts/utils";
         </v-row>
       </v-col>
     </v-row>
+
+    <v-dialog
+      v-model="stateObs.modalIncluirObsOpened"
+      max-width="800"
+    >
+      <ModalIncluirObs
+        :modalOpened="stateObs.modalIncluirObsOpened"
+        @closeModalIncluirObs="stateObs.modalIncluirObsOpened = false"
+        @adicionarObs="actionsObs.salvarObs"
+      />
+    </v-dialog>
   </v-card>
 </template>

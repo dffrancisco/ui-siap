@@ -130,3 +130,7 @@ export interface iTotalizadorIndividual {
 export interface iTotalizadoresAgrupados {
     [codFuncionario: number]: iTotalizadores[];
 }
+
+// export interface iParamObs {
+
+// }

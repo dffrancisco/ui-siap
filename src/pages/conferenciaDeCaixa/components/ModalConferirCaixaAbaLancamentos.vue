@@ -29,74 +29,105 @@ const stateLancamentos = reactive({
 const actionsLancamentos = {
   // Atualize a função adicionarAoSomatorio
   adicionarAoSomatorio: () => {
-    if (!stateLancamentos.valorConferido.trim()) return;
-
-    toast.error("Nenhum pagamento encontrado com esse valor.");
-
+    if (!stateLancamentos.valorConferido?.trim()) return;
     const input = stateLancamentos.valorConferido.trim();
     const comprasFiltradas = computeds.comprasFiltradasPorCaixa.value;
+    let mensagemErro: string | null = null;
+    let itemAdicionado = false;
 
-    // Função para verificar se o orçamento já existe
     const orcamentoJaExiste = (numOrcamento: number) => {
       return state.somatorioLista.some((item) => item.orcamento === numOrcamento.toString());
     };
 
-    // Caso 1: Apenas número do orçamento (ex: "25")
+    const todosPagamentos = comprasFiltradas.flatMap((c) => c.TIPOS_PAGAMENTO);
+
+    // Caso 1: Apenas número do orçamento
     if (/^\d+$/.test(input)) {
       const numOrcamento = parseInt(input);
 
-      if (!orcamentoJaExiste(numOrcamento)) {
-        const pagamento = comprasFiltradas
-          .flatMap((c) => c.TIPOS_PAGAMENTO)
-          .find((p) => p.NUM_ORCAMENTO === numOrcamento);
-
+      if (orcamentoJaExiste(numOrcamento)) {
+        mensagemErro = `Orçamento ${numOrcamento} já está no somatório.`;
+      } else {
+        const pagamento = todosPagamentos.find((p) => p.NUM_ORCAMENTO === numOrcamento);
         if (pagamento) {
           state.somatorioLista.push({
             orcamento: numOrcamento.toString(),
             valor: pagamento.VALOR,
           });
+          itemAdicionado = true;
+        } else {
+          mensagemErro = `Orçamento ${numOrcamento} não encontrado.`;
         }
       }
     }
-    // Caso 2: Apenas valor (ex: "100,00") - Adiciona o PRIMEIRO encontrado
+    // Caso 2: Apenas valor
     else if (/^[\d,.]+$/.test(input)) {
       const valor = parseFloat(input.replace(/\./g, "").replace(",", "."));
 
       if (!isNaN(valor)) {
-        // Encontra o PRIMEIRO pagamento com esse valor que ainda não está no somatório
-        const pagamento = comprasFiltradas
-          .flatMap((c) => c.TIPOS_PAGAMENTO)
-          .find((p) => Math.abs(p.VALOR - valor) < 0.01 && !orcamentoJaExiste(p.NUM_ORCAMENTO));
+        const pagamento = todosPagamentos.find(
+          (p) => Math.abs(p.VALOR - valor) < 0.01 && !orcamentoJaExiste(p.NUM_ORCAMENTO)
+        );
 
         if (pagamento) {
           state.somatorioLista.push({
             orcamento: pagamento.NUM_ORCAMENTO.toString(),
             valor: pagamento.VALOR,
           });
+          itemAdicionado = true;
+        } else {
+          mensagemErro = `Nenhum pagamento não conferido encontrado com valor ${utils.formatValor(valor)}.`;
         }
+      } else {
+        mensagemErro = "Valor inválido.";
       }
     }
-    // Caso 3: Formato completo (ex: "25 100,00")
+    // Caso 3: Formato completo
     else {
       const partes = input.split(/[\s,]+/).filter(Boolean);
       if (partes.length >= 2) {
         const numOrcamento = parseInt(partes[0]);
         const valor = parseFloat(partes[1].replace(/\./g, "").replace(",", "."));
 
-        if (!isNaN(numOrcamento) && !orcamentoJaExiste(numOrcamento)) {
-          state.somatorioLista.push({
-            orcamento: numOrcamento.toString(),
-            valor,
-          });
+        if (!isNaN(numOrcamento)) {
+          if (orcamentoJaExiste(numOrcamento)) {
+            mensagemErro = `Orçamento ${numOrcamento} já está no somatório.`;
+          } else {
+            const pagamento = todosPagamentos.find(
+              (p) => p.NUM_ORCAMENTO === numOrcamento && Math.abs(p.VALOR - valor) < 0.01
+            );
+
+            if (pagamento) {
+              state.somatorioLista.push({
+                orcamento: numOrcamento.toString(),
+                valor,
+              });
+              itemAdicionado = true;
+            } else {
+              mensagemErro = `Combinação orçamento/valor não encontrada (${numOrcamento} / ${utils.formatValor(
+                valor
+              )}).`;
+            }
+          }
+        } else {
+          mensagemErro = "Formato inválido. Use: 'ORCAMENTO VALOR' (ex: '25 100,00').";
         }
+      } else {
+        mensagemErro = "Formato inválido. Use: 'ORCAMENTO VALOR' (ex: '25 100,00').";
       }
     }
 
+    // Exibe mensagem de erro se houver
+    if (mensagemErro) {
+      toast.error(mensagemErro);
+    } else if (itemAdicionado) {
+      // Feedback visual quando adiciona com sucesso
+      toast.success("Item adicionado ao somatório!");
+    }
+
     stateLancamentos.valorConferido = "";
-    nextTick(() => {
-      const inputEl = document.getElementById("inputValorSomatorio") as HTMLInputElement;
-      if (inputEl) inputEl.focus();
-    });
+    const inputEl = document.getElementById("inputValorSomatorio") as HTMLInputElement;
+    if (inputEl) inputEl.focus();
   },
 
   removerDoSomatorio: (index: number) => {
@@ -117,11 +148,6 @@ const actionsLancamentos = {
 
   toggleFiltroNaoConferidos() {
     actions.toggleApenasNaoConferidos();
-  },
-
-  conferirValor() {
-    actions.conferirValor(stateLancamentos.valorConferido);
-    stateLancamentos.valorConferido = ""; // Limpa o input após conferir
   },
 };
 
@@ -167,10 +193,6 @@ onMounted(() => {
     }
   });
 });
-
-const isOrcamentoNoSomatorio = (numOrcamento: number) => {
-  return stateLancamentos.somatorioLista.some((item) => item.orcamento === numOrcamento.toString());
-};
 
 const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
   return state.somatorioLista.some(
@@ -235,7 +257,6 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
                 class="orcamento-box"
                 :class="{
                   'orcamento-entregar-receber': item.ENTREGAR_RECEBER,
-                  'orcamento-no-somatorio': isOrcamentoNoSomatorio(orc.NUM_ORCAMENTO),
                 }"
               >
                 <div
@@ -444,8 +465,9 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
 }
 
 .chip-no-somatorio {
-  border: 2px solid #4caf50 !important;
+  border: 1px solid #4caf50 !important;
   box-shadow: 0 0 0 1px #4caf50 !important;
+  background-color: #6cff715f !important;
 }
 
 .chip-pagamento-icon {
@@ -531,10 +553,5 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
 
 #inputValorSomatorio {
   font-weight: bold;
-}
-
-.orcamento-no-somatorio {
-  border: 2px solid #4caf50 !important;
-  background: rgba(76, 175, 80, 0.1) !important;
 }
 </style>
