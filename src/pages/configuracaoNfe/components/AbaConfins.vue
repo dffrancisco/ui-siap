@@ -231,9 +231,9 @@ const actionsCofins = {
         P_VALOR: stateCofins.cofins.P_VALOR,
         ID_REGIME_TRIBUTARIO: stateCofins.cofins.ID_REGIME_TRIBUTARIO,
       };
-      await serviceNfe.toInsertCofins(newFields.P_VALOR, newFields.ID_REGIME_TRIBUTARIO);
 
-      stateCofins.grid.querySourceAdd({ ...newFields });
+      await serviceNfe.toInsertCofins(newFields);
+      stateCofins.grid.insertLine({ ...newFields });
 
       await Swal.fire({
         icon: "success",

@@ -37,7 +37,6 @@ const actionsRegime = {
           width: "49%",
         },
       },
-
       query: {
         async execute() {
           const dados = await actionsRegime.getDadosParaInputs();
@@ -203,12 +202,12 @@ const actionsRegime = {
       stateRegime.grid.deleteLine();
       await Swal.fire({
         icon: "success",
-        text: "COFINS deletado com sucesso.",
+        text: "Regime Tributario deletado com sucesso.",
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Erro ao excluir o COFINS, verificar",
+        title: "Erro ao excluir o Regime Tributario, verificar",
         text: error.message,
       });
     } finally {
@@ -225,18 +224,17 @@ const actionsRegime = {
         ID_REGIME_TRIBUTARIO: stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO,
       };
 
-      await serviceNfe.toInsertPis(newFields.DESCRICAO, newFields.ID_REGIME_TRIBUTARIO);
-
-      stateRegime.grid.querySourceAdd({ ...newFields });
+      await serviceNfe.toInsertRegimeTributario(newFields);
+      stateRegime.grid.insertLine({ ...newFields });
 
       await Swal.fire({
         icon: "success",
-        text: "COFINS adicionado com sucesso.",
+        text: "Regime Tributario adicionado com sucesso.",
       });
     } catch (error) {
       await Swal.fire({
         icon: "error",
-        text: "Erro ao adicionar COFINS.",
+        text: "Erro ao adicionar Regime Tributario.",
       });
     } finally {
       stateRegime.loading = false;
@@ -258,12 +256,12 @@ const actionsRegime = {
 
       await Swal.fire({
         icon: "success",
-        text: "COFINS atualizado com sucesso.",
+        text: "Regime Tributario atualizado com sucesso.",
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Erro ao atualizar COFINS!",
+        title: "Erro ao atualizar Regime Tributario!",
         text: error.message,
       });
     } finally {

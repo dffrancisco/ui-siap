@@ -53,6 +53,7 @@ export interface iRegimeTributario {
 
 export interface iInsertRegimeTributario {
     DESCRICAO: string;
+    ID_REGIME_TRIBUTARIO: number;
 }
 
 export interface iDeleteRegimeTributario {
@@ -61,13 +62,13 @@ export interface iDeleteRegimeTributario {
 
 export interface iPis {
     ID_PIS?: number;
-    ID_REGIME_TRIBUTARIO?: string;
+    ID_REGIME_TRIBUTARIO?: number;
     P_VALOR?: number;
 }
 
 export interface iCofins {
-    ID_COFINS: number;
-    ID_REGIME_TRIBUTARIO?: string;
+    ID_COFINS?: number;
+    ID_REGIME_TRIBUTARIO?: number;
     P_VALOR: number;
 }
 

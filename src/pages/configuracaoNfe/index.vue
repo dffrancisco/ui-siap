@@ -7,7 +7,6 @@ import AbaCofins from "./components/AbaConfins.vue";
 
 onMounted(async () => {
   await actions.init();
-  await actions.getDadosParaInputs();
 });
 
 const changeTab = (tabValue: string) => {

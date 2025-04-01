@@ -196,21 +196,22 @@ const actionsPis = {
   },
   async toDelete() {
     try {
-      const idCofins = statePis.pis.ID_PIS;
+      const idPis = statePis.pis.ID_PIS;
 
       statePis.loading = true;
 
-      await serviceNfe.toDeleteCofins(idCofins);
+      await serviceNfe.toDeletePis(idPis);
 
       statePis.grid.deleteLine();
+
       await Swal.fire({
         icon: "success",
-        text: "COFINS deletado com sucesso.",
+        text: "Pis deletado com sucesso.",
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Erro ao excluir o COFINS, verificar",
+        title: "Erro ao excluir o Pis, verificar",
         text: error.message,
       });
     } finally {
@@ -227,18 +228,17 @@ const actionsPis = {
         ID_REGIME_TRIBUTARIO: statePis.pis.ID_REGIME_TRIBUTARIO,
       };
 
-      await serviceNfe.toInsertPis(newFields.P_VALOR, newFields.ID_REGIME_TRIBUTARIO);
-
-      statePis.grid.querySourceAdd({ ...newFields });
+      await serviceNfe.toInsertPis(newFields);
+      statePis.grid.insertLine({ ...newFields });
 
       await Swal.fire({
         icon: "success",
-        text: "COFINS adicionado com sucesso.",
+        text: "Pis adicionado com sucesso.",
       });
     } catch (error) {
       await Swal.fire({
         icon: "error",
-        text: "Erro ao adicionar COFINS.",
+        text: "Erro ao adicionar Pis.",
       });
     } finally {
       statePis.loading = false;
@@ -249,23 +249,23 @@ const actionsPis = {
     try {
       let param = {
         P_VALOR: statePis.pis.P_VALOR,
-        ID_COFINS: statePis.pis.ID_PIS,
+        ID_PiS: statePis.pis.ID_PIS,
       };
 
       statePis.loading = true;
 
-      await serviceNfe.toUpdateCofins(param);
+      await serviceNfe.toUpdatePis(param);
 
       statePis.grid.dataSource(param);
 
       await Swal.fire({
         icon: "success",
-        text: "COFINS atualizado com sucesso.",
+        text: "Pis atualizado com sucesso.",
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Erro ao atualizar COFINS!",
+        title: "Erro ao atualizar Pis!",
         text: error.message,
       });
     } finally {

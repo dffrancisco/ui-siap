@@ -38,14 +38,14 @@ export const regimeTributarioOptions = [
 
 export const actions = {
     async init() {
+        await actions.getDadosParaInputs();
     },
-
 
     async getDadosParaInputs() {
         try {
             state.loading = true;
 
-            const data = (await serviceNfe.getDadosParaInputs()) as iResponseDadosInputs;
+            const data = await serviceNfe.getDadosParaInputs();
 
             state.nfeConfig = data.nfeConfig[0];
             state.regimeTributarioLista = data.regimeTributario;
@@ -70,6 +70,7 @@ export const actions = {
         });
     },
 
+
     async btnSave() {
         if (utils.validaOBR()) return;
 
@@ -81,13 +82,13 @@ export const actions = {
                 icon: "success",
                 text: "Configurações salvas com sucesso!",
             });
-
             state.originalConfig = { ...state.nfeConfig };
             state.isEditing = false;
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: error.response?.data?.msg || "Erro ao salvar configurações",
+                title: "Erro",
+                text: error.message || "Erro ao salvar configurações.",
             });
         } finally {
             state.loading = false;
@@ -95,9 +96,10 @@ export const actions = {
     },
 
     btnCancel() {
-        state.nfeConfig = { ...state.originalConfig };
         state.isEditing = false;
     },
+
+
 };
 
 export default { state, actions };
