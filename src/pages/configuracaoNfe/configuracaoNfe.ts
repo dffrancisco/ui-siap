@@ -87,8 +87,8 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro",
-                text: error.message || "Erro ao salvar configurações.",
+                text: "Erro ao salvar configuções",
+
             });
         } finally {
             state.loading = false;
