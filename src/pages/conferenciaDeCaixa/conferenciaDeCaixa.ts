@@ -2,14 +2,13 @@ import utils from './../../ts/utils';
 import moment from "moment";
 import { computed, reactive } from "vue";
 import {
-    iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa,
+    iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamObs, iParamsAbrirCaixa,
     iParamSangria, iSangrias, iTodasAsCompras, iTotalizadores, iTotalizadoresAgrupados
 } from "./interfaces";
 import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import xAuthManager from "@/plugins/xAuthManager";
-import toast from '@/plugins/toast/toast';
 
 export const state = reactive({
     data: '2025-03-24',
@@ -246,7 +245,6 @@ export const actions = {
         state.loading = false;
     },
 
-
     selecionarPagamentoDevolucao(tipoPagamento: string) {
         if (tipoPagamento === "TODOS") {
             state.pagamentosSelecionadosDevolucao = ["TODOS"];
@@ -314,16 +312,17 @@ export const actions = {
         state.modalConferirCaixaOpened = true;
     },
 
-    async salvarObs(obs: string) {
+    async salvarObs(observacao: string) {
         try {
             state.loading = true;
 
-            let param: any = {
+            let param: iParamObs = {
                 idAberturaCaixa: state.caixaSelected.ID_ABERTURA_CAIXA,
-                observacao: obs
+                observacao: observacao
             };
 
-            //let obs = await serviceConferenciaDeCaixa.salvarObs(param)
+            await serviceConferenciaDeCaixa.salvarObs(param)
+            state.caixaSelected.OBS = param.observacao;
 
             Swal.fire({
                 icon: "success",
@@ -335,7 +334,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao abrir o caixa"
+                text: "Erro ao salvar observação."
             });
         } finally {
             state.loading = false;
@@ -353,7 +352,6 @@ export const actions = {
             ? state.pagamentosSelecionadosModal.filter(p => p !== tipoPagamento)
             : [...state.pagamentosSelecionadosModal.filter(p => p !== "TODOS"), tipoPagamento];
     },
-
 
     filtrarPorOrcamento(numOrcamento: string) {
         state.filtrosAdicionais.orcamento = numOrcamento;
@@ -481,12 +479,24 @@ export const computeds = {
     observacoesPorCaixa: computed(() => {
         if (!state.caixaSelected) return [];
 
-        let compras = state.todasAsCompras.filter(
-            (c) => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO
+        const comprasDoCaixa = state.todasAsCompras.filter(
+            c => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO
         );
 
-        compras.filter(o => o.CAIXA === state.caixaSelected.COD_FUNCIONARIO);
-        return compras.map(compra => compra.TIPOS_PAGAMENTO.map(pagamento => pagamento.OBS));
+        const obsCaixaSelecionado: string[] = [];
+
+        if (state.caixaSelected.OBS) {
+            obsCaixaSelecionado.push(state.caixaSelected.OBS);
+        }
+
+        comprasDoCaixa.forEach(compra => {
+            compra.TIPOS_PAGAMENTO.forEach(pagamento => {
+                if (pagamento.OBS) {
+                    obsCaixaSelecionado.push(pagamento.OBS);
+                }
+            });
+        });
+        return obsCaixaSelecionado;
     }),
 
     devolucoesPorCaixa: computed(() => {

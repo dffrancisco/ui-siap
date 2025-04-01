@@ -27,9 +27,9 @@ const stateLancamentos = reactive({
 });
 
 const actionsLancamentos = {
-  // Atualize a função adicionarAoSomatorio
   adicionarAoSomatorio: () => {
     if (!stateLancamentos.valorConferido?.trim()) return;
+
     const input = stateLancamentos.valorConferido.trim();
     const comprasFiltradas = computeds.comprasFiltradasPorCaixa.value;
     let mensagemErro: string | null = null;
@@ -149,10 +149,17 @@ const actionsLancamentos = {
   toggleFiltroNaoConferidos() {
     actions.toggleApenasNaoConferidos();
   },
+
+  pagamentoNoSomatorio(numOrcamento: number, valor: number) {
+    return state.somatorioLista.some(
+      (item) =>
+        item.orcamento === numOrcamento.toString() && Math.abs(parseFloat(item.valor.toString()) - valor) < 0.01
+    );
+  },
 };
 
-// Computed para calcular totalizadores
-const totalizadores = computed(() => {
+// Computed para calcular totalizadores do somatorio
+const totalizadoresSomatorio = computed(() => {
   return {
     quantidade: state.somatorioLista.length,
     total: state.somatorioLista.reduce((acc, item) => acc + item.valor, 0),
@@ -193,13 +200,6 @@ onMounted(() => {
     }
   });
 });
-
-const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
-  return state.somatorioLista.some(
-    (item) =>
-      item.orcamento === numOrcamento.toString() && Math.abs(parseFloat(item.valor.toString()) - valor) < 0.01
-  );
-};
 </script>
 
 <template>
@@ -285,7 +285,10 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
                 @click.stop="exibirDetalhesPagamento(pagamento)"
                 title="ver detalhes"
                 :class="{
-                  'chip-no-somatorio': isPagamentoNoSomatorio(pagamento.NUM_ORCAMENTO, pagamento.VALOR),
+                  'chip-no-somatorio': actionsLancamentos.pagamentoNoSomatorio(
+                    pagamento.NUM_ORCAMENTO,
+                    pagamento.VALOR
+                  ),
                 }"
               >
                 <div class="chip-pagamento-icon">
@@ -346,8 +349,8 @@ const isPagamentoNoSomatorio = (numOrcamento: number, valor: number) => {
           <v-divider></v-divider>
 
           <v-footer class="d-flex justify-space-between px-4 py-2">
-            <span><b>Qtd:</b> {{ totalizadores.quantidade }}</span>
-            <span><b>Total:</b> {{ utils.formatValor(totalizadores.total) }}</span>
+            <span><b>Qtd:</b> {{ totalizadoresSomatorio.quantidade }}</span>
+            <span><b>Total:</b> {{ utils.formatValor(totalizadoresSomatorio.total) }}</span>
             <v-tooltip top>
               <template v-slot:activator="{ props }">
                 <v-btn

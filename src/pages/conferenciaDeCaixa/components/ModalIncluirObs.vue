@@ -12,8 +12,9 @@ const stateModalIncluirObs = reactive({
       <v-textarea
         v-model="stateModalIncluirObs.observacao"
         label="Observação*"
-        maxlength="1000"
-        rows="6"
+        maxlength="200"
+        rows="4"
+        @keydown.enter.prevent="emit('adicionarObs', stateModalIncluirObs.observacao)"
       ></v-textarea>
     </div>
 
@@ -54,7 +55,7 @@ const stateModalIncluirObs = reactive({
   margin-bottom: 150px;
   margin-left: 25%;
   max-width: 520px;
-  height: 280px;
+  height: 220px;
   border: 2px solid rgba(0, 0, 0, 0.261);
 }
 

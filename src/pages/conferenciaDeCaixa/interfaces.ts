@@ -131,6 +131,7 @@ export interface iTotalizadoresAgrupados {
     [codFuncionario: number]: iTotalizadores[];
 }
 
-// export interface iParamObs {
-
-// }
+export interface iParamObs {
+    idAberturaCaixa: number;
+    observacao: string;
+}

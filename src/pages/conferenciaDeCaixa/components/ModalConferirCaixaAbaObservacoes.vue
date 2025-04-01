@@ -61,7 +61,7 @@ const actionsObs = {
       >
         <v-row>
           <v-col
-            v-for="(observacao, index) in computeds.observacoesPorCaixa.value.filter((obs) => obs[0])"
+            v-for="(observacao, index) in computeds.observacoesPorCaixa.value"
             :key="index"
             cols="12"
           >
@@ -76,20 +76,21 @@ const actionsObs = {
                     :src="actions.getFotoFuncionarioURL(state.caixaSelected.CPF)"
                     cover
                     :title="state.caixaSelected.LOGIN"
-                  ></v-img> </v-avatar
-              ></v-col>
+                  ></v-img>
+                </v-avatar>
+              </v-col>
 
               <v-col cols="8">
                 <div class="font-weight-bold">
-                  {{ observacao[0] }}
+                  {{ observacao }}
                 </div>
               </v-col>
 
-              <v-col cols="3"
-                ><div class="text-right text-caption font-weight-bold">
+              <v-col cols="3">
+                <div class="text-right text-caption font-weight-bold">
                   {{ utils.dataBrasil(state.caixaSelected.DATA_ABERTURA) }}
-                </div></v-col
-              >
+                </div>
+              </v-col>
             </v-card>
           </v-col>
         </v-row>

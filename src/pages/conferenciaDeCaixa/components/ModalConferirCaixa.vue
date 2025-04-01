@@ -31,9 +31,16 @@ const options: iOptions[] = [
           :key="option.value"
           class="vchip-options-modal"
           :value="option.value"
-          :class="{ 'selected-chip': state.selectOptionModal === option.value }"
+          ::class="{ 
+            'selected-chip': state.selectOptionModal === option.value,
+            'existe-obs': option.value === 'observacao' && computeds.observacoesPorCaixa.value.length > 0}"
         >
           {{ option.label }}
+          <span
+            title="Existe observação nesse caixa"
+            v-if="option.value === 'observacao' && computeds.observacoesPorCaixa.value.length > 0"
+            class="observation-badge"
+          ></span>
         </v-chip>
       </v-chip-group>
     </div>
@@ -73,5 +80,19 @@ const options: iOptions[] = [
   border-radius: 8px !important;
   font-size: 14px;
   width: 150px;
+}
+
+.v-chip.existe-obs {
+  position: relative;
+}
+
+.observation-badge {
+  position: absolute;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+  border: 1px solid white;
 }
 </style>
