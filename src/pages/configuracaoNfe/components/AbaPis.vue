@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, nextTick } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -128,92 +128,149 @@ const actionsPis = {
     }
   },
 
-  btnInsert() {
+  async btnInsert() {
     statePis.isEditing = true;
     statePis.pis = {} as iPis;
-    statePis.grid.disable();
+    await nextTick();
+
     statePis.grid.focusField();
+    statePis.grid.disable();
   },
 
   btnEdit() {
     if (!statePis.grid.dataSource()) {
       Swal.fire({
         icon: "info",
-        text: "Nenhum registro selecionado para alteração.",
+        text: "Operação cancelada, nenhum registro selecionado.",
       });
-      return;
+      return false;
     }
-    statePis.isEditing = true;
     statePis.grid.disable();
     statePis.grid.focusField();
   },
 
   async btnDelete() {
-    const selected = statePis.grid.dataSource();
-    if (!selected) {
+    if (!statePis.grid.dataSource()) {
       Swal.fire({
         icon: "info",
-        text: "Selecione um registro para excluir.",
+        text: "Operação cancelada selecione um registro",
       });
-      return;
+      return false;
     }
-    if (await msgConfirm("Confirmação", "Confirma a exclusão deste registro?")) {
-      try {
-        statePis.loading = true;
-        await serviceNfe.toDeletePis(selected.ID_PIS);
-        statePis.grid.deleteLine();
-        Swal.fire({
-          icon: "success",
-          text: "PIS excluído com sucesso!",
-        });
-      } catch (error: any) {
-        Swal.fire({
-          icon: "error",
-          text: error.response?.data?.msg || "Erro ao excluir registro.",
-        });
-      } finally {
-        statePis.loading = false;
-      }
+
+    if (await msgConfirm("Confirmação", "Confirma a exclusão?")) {
+      await actionsPis.toDelete();
+      statePis.grid.focus();
     }
   },
 
   async btnSave() {
-    if (utils.validaOBR()) return;
-    if (await statePis.grid.getDuplicityAll()) return;
+    if (utils.validaOBR()) {
+      return false;
+    }
+
+    if (await statePis.grid.getDuplicityAll()) {
+      return false;
+    }
+
+    if (statePis.grid.dataSource() == false) {
+      actionsPis.toInsert();
+    } else {
+      actionsPis.toUpdate();
+    }
+
+    statePis.isEditing = false;
+    await nextTick();
+
+    statePis.grid.enable();
+    statePis.grid.focus();
+  },
+
+  async btnCancel() {
+    statePis.isEditing = false;
+    let linhaGrid = <any>statePis.grid.getIndex();
+    await nextTick();
+
+    statePis.grid.enable();
+    statePis.grid.focus(linhaGrid);
+  },
+  async toDelete() {
     try {
+      const idCofins = statePis.pis.ID_PIS;
+
       statePis.loading = true;
-      if (statePis.pis.ID_PIS) {
-        await serviceNfe.toUpdatePis(statePis.pis);
-        statePis.grid.dataSource({ ...statePis.pis });
-        Swal.fire({
-          icon: "success",
-          text: "PIS atualizado com sucesso!",
-        });
-      } else {
-        const response = await serviceNfe.toInsertPis(statePis.pis);
-        statePis.pis.ID_PIS = response.ID_PIS;
-        statePis.grid.insertLine({ ...statePis.pis });
-        Swal.fire({
-          icon: "success",
-          text: "PIS cadastrado com sucesso!",
-        });
-      }
-      statePis.grid.enable();
-      statePis.grid.focus();
+
+      await serviceNfe.toDeleteCofins(idCofins);
+
+      statePis.grid.deleteLine();
+      await Swal.fire({
+        icon: "success",
+        text: "COFINS deletado com sucesso.",
+      });
     } catch (error) {
       Swal.fire({
         icon: "error",
-        text: error.response?.data?.msg || "Erro ao salvar registro.",
+        title: "Erro ao excluir o COFINS, verificar",
+        text: error.message,
       });
     } finally {
       statePis.loading = false;
     }
   },
 
-  btnCancel() {
-    statePis.grid.enable();
-    statePis.grid.focus();
-    statePis.pis = {} as iPis;
+  async toInsert() {
+    try {
+      statePis.loading = true;
+
+      let newFields = {
+        P_VALOR: statePis.pis.P_VALOR,
+        ID_REGIME_TRIBUTARIO: statePis.pis.ID_REGIME_TRIBUTARIO,
+      };
+
+      await serviceNfe.toInsertPis(newFields.P_VALOR, newFields.ID_REGIME_TRIBUTARIO);
+
+      statePis.grid.querySourceAdd({ ...newFields });
+
+      await Swal.fire({
+        icon: "success",
+        text: "COFINS adicionado com sucesso.",
+      });
+    } catch (error) {
+      await Swal.fire({
+        icon: "error",
+        text: "Erro ao adicionar COFINS.",
+      });
+    } finally {
+      statePis.loading = false;
+    }
+  },
+
+  async toUpdate() {
+    try {
+      let param = {
+        P_VALOR: statePis.pis.P_VALOR,
+        ID_COFINS: statePis.pis.ID_PIS,
+      };
+
+      statePis.loading = true;
+
+      await serviceNfe.toUpdateCofins(param);
+
+      statePis.grid.dataSource(param);
+
+      await Swal.fire({
+        icon: "success",
+        text: "COFINS atualizado com sucesso.",
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao atualizar COFINS!",
+        text: error.message,
+      });
+    } finally {
+      statePis.loading = false;
+    }
   },
 };
 

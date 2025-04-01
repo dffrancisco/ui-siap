@@ -15,17 +15,17 @@ type GetVerifica = (param: { REGIME_TRIBUTARIO: number }) => Promise<iNfeConfig[
 
 type UpdateNfeConfigFn = (param: Partial<iNfeConfig>) => Promise<void>;
 
-type InsertRegimeTributarioFn = (param: iInsertRegimeTributario) => Promise<iRegimeTributario>;
-type UpdateRegimeTributarioFn = (param: iRegimeTributario) => Promise<void>;
-type DeleteRegimeTributarioFn = (id: number) => Promise<{ success: boolean }>;
+type InsertRegimeTributario = (param: iInsertRegimeTributario) => Promise<iRegimeTributario>;
+type UpdateRegimeTributario = (param: iRegimeTributario) => Promise<void>;
+type DeleteRegimeTributario = (id: number) => Promise<{ success: boolean }>;
 
-type InsertPisFn = (param: iPis) => Promise<iPis>;
-type UpdatePisFn = (param: iPis) => Promise<void>;
-type DeletePisFn = (id: number) => Promise<{ success: boolean }>;
+type InsertPis = (param: iPis) => Promise<iPis>;
+type UpdatePis = (param: iPis) => Promise<void>;
+type DeletePis = (id: number) => Promise<{ success: boolean }>;
 
-type InsertCofinsFn = (param: iCofins) => Promise<iCofins>;
-type UpdateCofinsFn = (param: iCofins) => Promise<void>;
-type DeleteCofinsFn = (id: number) => Promise<{ success: boolean }>;
+type InsertCofins = (param: iCofins) => Promise<iCofins>;
+type UpdateCofins = (param: iCofins) => Promise<void>;
+type DeleteCofins = (id: number) => Promise<{ success: boolean }>;
 
 
 const caminho = 'siap/configuracaoNfe';
@@ -45,7 +45,7 @@ const updateNfeConfig: UpdateNfeConfigFn = async (param) => {
 };
 
 // Regime Tributário
-const toInsertRegimeTributario: InsertRegimeTributarioFn = async (param) => {
+const toInsertRegimeTributario: InsertRegimeTributario = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "createRegimeTributario",
         param
@@ -53,14 +53,14 @@ const toInsertRegimeTributario: InsertRegimeTributarioFn = async (param) => {
     return data;
 };
 
-const toUpdateRegimeTributario: UpdateRegimeTributarioFn = async (param) => {
+const toUpdateRegimeTributario: UpdateRegimeTributario = async (param) => {
     await axios.post(caminho, {
         call: "updateRegimeTributario",
         param
     });
 };
 
-const toDeleteRegimeTributario: DeleteRegimeTributarioFn = async (ID_REGIME_TRIBUTARIO) => {
+const toDeleteRegimeTributario: DeleteRegimeTributario = async (ID_REGIME_TRIBUTARIO) => {
     const { data } = await axios.post(caminho, {
         call: "deleteRegimeTributario",
         param: { ID_REGIME_TRIBUTARIO }
@@ -77,7 +77,7 @@ const verificarRegimeTributarioEmNfe: GetVerifica = async ({ REGIME_TRIBUTARIO }
 };
 
 // Pis
-const toInsertPis: InsertPisFn = async (param) => {
+const toInsertPis: InsertPis = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "createPis",
         param
@@ -85,14 +85,14 @@ const toInsertPis: InsertPisFn = async (param) => {
     return data;
 };
 
-const toUpdatePis: UpdatePisFn = async (param) => {
+const toUpdatePis: UpdatePis = async (param) => {
     await axios.post(caminho, {
         call: "updatePis",
         param
     });
 };
 
-const toDeletePis: DeletePisFn = async (id) => {
+const toDeletePis: DeletePis = async (id) => {
     const { data } = await axios.post(caminho, {
         call: "deletePis",
         param: { ID_PIS: id }
@@ -101,7 +101,7 @@ const toDeletePis: DeletePisFn = async (id) => {
 };
 
 // Cofins
-const toInsertCofins: InsertCofinsFn = async (param) => {
+const toInsertCofins: InsertCofins = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "createCofins",
         param
@@ -109,14 +109,14 @@ const toInsertCofins: InsertCofinsFn = async (param) => {
     return data;
 };
 
-const toUpdateCofins: UpdateCofinsFn = async (param) => {
+const toUpdateCofins: UpdateCofins = async (param) => {
     await axios.post(caminho, {
         call: "updateCofins",
         param
     });
 };
 
-const toDeleteCofins: DeleteCofinsFn = async (id) => {
+const toDeleteCofins: DeleteCofins = async (id) => {
     const { data } = await axios.post(caminho, {
         call: "deleteCofins",
         param: { ID_COFINS: id }

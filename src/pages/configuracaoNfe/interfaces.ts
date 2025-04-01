@@ -4,12 +4,7 @@ export interface iResponseDadosInputs {
     pis: iPis[];
     cofins: iCofins[];
 }
-export interface iCidades {
-    COD_CIDADE: number;
-    DESCRICAO: string;
-    COD_IBGE: string;
-    UF: string;
-}
+
 
 export interface iNfeConfig {
     ID_NFE_CONFIG: number;
@@ -52,8 +47,8 @@ export interface iGetDuplicityResponse {
 }
 
 export interface iRegimeTributario {
-    ID_REGIME_TRIBUTARIO: number;
-    DESCRICAO: string;
+    ID_REGIME_TRIBUTARIO?: number;
+    DESCRICAO?: string;
 }
 
 export interface iInsertRegimeTributario {
@@ -72,7 +67,7 @@ export interface iPis {
 
 export interface iCofins {
     ID_COFINS: number;
-    ID_REGIME_TRIBUTARIO: string;
+    ID_REGIME_TRIBUTARIO?: string;
     P_VALOR: number;
 }
 

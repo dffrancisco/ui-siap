@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import utils from "@/ts/utils";
 import serviceNfe from './services/configuracaoNfe.service';
-import { iCidades, iNfeConfig, iCofins, iPis, iRegimeTributario, iResponseDadosInputs } from "./interfaces";
+import { iNfeConfig, iCofins, iPis, iRegimeTributario, iResponseDadosInputs } from "./interfaces";
 
 export const state = reactive({
     nfeConfig: {} as iNfeConfig,
@@ -23,7 +23,6 @@ export const state = reactive({
 
     loading: false,
     isEditing: false,
-    cidades: <iCidades[]>[],
     originalConfig: {} as iNfeConfig,
 });
 

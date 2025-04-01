@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, nextTick } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -126,92 +126,149 @@ const actionsRegime = {
     }
   },
 
-  btnInsert() {
+  async btnInsert() {
     stateRegime.isEditing = true;
     stateRegime.regimeTributario = {} as iRegimeTributario;
-    stateRegime.grid.disable();
+    await nextTick();
+
     stateRegime.grid.focusField();
+    stateRegime.grid.disable();
   },
 
   btnEdit() {
     if (!stateRegime.grid.dataSource()) {
       Swal.fire({
         icon: "info",
-        text: "Nenhum registro selecionado para alteração.",
+        text: "Operação cancelada, nenhum registro selecionado.",
       });
-      return;
+      return false;
     }
-    stateRegime.isEditing = true;
     stateRegime.grid.disable();
     stateRegime.grid.focusField();
   },
 
   async btnDelete() {
-    const selected = stateRegime.grid.dataSource();
-    if (!selected) {
+    if (!stateRegime.grid.dataSource()) {
       Swal.fire({
         icon: "info",
-        text: "Selecione um registro para excluir.",
+        text: "Operação cancelada selecione um registro",
       });
-      return;
+      return false;
     }
-    if (await msgConfirm("Confirmação", "Confirma a exclusão deste registro?")) {
-      try {
-        stateRegime.loading = true;
-        await serviceNfe.toDeleteRegimeTributario(selected.ID_REGIME_TRIBUTARIO);
-        stateRegime.grid.deleteLine();
-        Swal.fire({
-          icon: "success",
-          text: "Registro excluído com sucesso!",
-        });
-      } catch (error: any) {
-        Swal.fire({
-          icon: "error",
-          text: "Erro ao excluir registro.",
-        });
-      } finally {
-        stateRegime.loading = false;
-      }
+
+    if (await msgConfirm("Confirmação", "Confirma a exclusão?")) {
+      await actionsRegime.toDelete();
+      stateRegime.grid.focus();
     }
   },
 
   async btnSave() {
-    if (utils.validaOBR()) return;
-    if (await stateRegime.grid.getDuplicityAll()) return;
+    if (utils.validaOBR()) {
+      return false;
+    }
+
+    if (await stateRegime.grid.getDuplicityAll()) {
+      return false;
+    }
+
+    if (stateRegime.grid.dataSource() == false) {
+      actionsRegime.toInsert();
+    } else {
+      actionsRegime.toUpdate();
+    }
+
+    stateRegime.isEditing = false;
+    await nextTick();
+
+    stateRegime.grid.enable();
+    stateRegime.grid.focus();
+  },
+
+  async btnCancel() {
+    stateRegime.isEditing = false;
+    let linhaGrid = <any>stateRegime.grid.getIndex();
+    await nextTick();
+
+    stateRegime.grid.enable();
+    stateRegime.grid.focus(linhaGrid);
+  },
+  async toDelete() {
     try {
+      const idCofins = stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO;
+
       stateRegime.loading = true;
-      if (stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO) {
-        await serviceNfe.toUpdateRegimeTributario(stateRegime.regimeTributario);
-        stateRegime.grid.dataSource({ ...stateRegime.regimeTributario });
-        Swal.fire({
-          icon: "success",
-          text: "Registro atualizado com sucesso!",
-        });
-      } else {
-        const response = await serviceNfe.toInsertRegimeTributario(stateRegime.regimeTributario);
-        stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO = response.ID_REGIME_TRIBUTARIO;
-        stateRegime.grid.insertLine({ ...stateRegime.regimeTributario });
-        Swal.fire({
-          icon: "success",
-          text: "Registro inserido com sucesso!",
-        });
-      }
-      stateRegime.grid.enable();
-      stateRegime.grid.focus();
-    } catch (error: any) {
+
+      await serviceNfe.toDeleteCofins(idCofins);
+
+      stateRegime.grid.deleteLine();
+      await Swal.fire({
+        icon: "success",
+        text: "COFINS deletado com sucesso.",
+      });
+    } catch (error) {
       Swal.fire({
         icon: "error",
-        text: "Erro ao salvar registro.",
+        title: "Erro ao excluir o COFINS, verificar",
+        text: error.message,
       });
     } finally {
       stateRegime.loading = false;
     }
   },
 
-  btnCancel() {
-    stateRegime.grid.enable();
-    stateRegime.grid.focus();
-    stateRegime.regimeTributario = {} as iRegimeTributario;
+  async toInsert() {
+    try {
+      stateRegime.loading = true;
+
+      let newFields = {
+        DESCRICAO: stateRegime.regimeTributario.DESCRICAO,
+        ID_REGIME_TRIBUTARIO: stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO,
+      };
+
+      await serviceNfe.toInsertPis(newFields.DESCRICAO, newFields.ID_REGIME_TRIBUTARIO);
+
+      stateRegime.grid.querySourceAdd({ ...newFields });
+
+      await Swal.fire({
+        icon: "success",
+        text: "COFINS adicionado com sucesso.",
+      });
+    } catch (error) {
+      await Swal.fire({
+        icon: "error",
+        text: "Erro ao adicionar COFINS.",
+      });
+    } finally {
+      stateRegime.loading = false;
+    }
+  },
+
+  async toUpdate() {
+    try {
+      let param = {
+        P_VALOR: stateRegime.regimeTributario.DESCRICAO,
+        ID_REGIME_TRIBUTARIO: stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO,
+      };
+
+      stateRegime.loading = true;
+
+      await serviceNfe.toUpdateRegimeTributario(param);
+
+      stateRegime.grid.dataSource(param);
+
+      await Swal.fire({
+        icon: "success",
+        text: "COFINS atualizado com sucesso.",
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao atualizar COFINS!",
+        text: error.message,
+      });
+    } finally {
+      stateRegime.loading = false;
+    }
   },
 };
 

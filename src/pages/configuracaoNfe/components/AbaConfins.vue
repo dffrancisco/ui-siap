@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, nextTick } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -21,11 +21,11 @@ const actionsCofins = {
   async init() {
     const dadosCofins = await actionsCofins.getDadosParaInputs();
 
-    actionsCofins.gridConfins();
+    actionsCofins.grid();
     stateCofins.grid.querySourceAdd(dadosCofins);
   },
 
-  gridConfins() {
+  grid() {
     stateCofins.grid = new xGridV2.create({
       el: "#gridCofins",
       height: 300,
@@ -133,92 +133,148 @@ const actionsCofins = {
     }
   },
 
-  btnInsert() {
+  async btnInsert() {
     stateCofins.isEditing = true;
     stateCofins.cofins = {} as iCofins;
-    stateCofins.grid.disable();
+    await nextTick();
+
     stateCofins.grid.focusField();
+    stateCofins.grid.disable();
   },
 
   btnEdit() {
     if (!stateCofins.grid.dataSource()) {
       Swal.fire({
         icon: "info",
-        text: "Nenhum registro selecionado para alteração.",
+        text: "Operação cancelada, nenhum registro selecionado.",
       });
-      return;
+      return false;
     }
-    stateCofins.isEditing = true;
     stateCofins.grid.disable();
     stateCofins.grid.focusField();
   },
 
   async btnDelete() {
-    const selected = stateCofins.grid.dataSource();
-    if (!selected) {
+    if (!stateCofins.grid.dataSource()) {
       Swal.fire({
         icon: "info",
-        text: "Selecione um registro para excluir.",
+        text: "Operação cancelada selecione um registro",
       });
-      return;
+      return false;
     }
-    if (await msgConfirm("Confirmação", "Confirma a exclusão deste registro?")) {
-      try {
-        stateCofins.loading = true;
-        await serviceNfe.toDeleteCofins(selected.ID_COFINS);
-        stateCofins.grid.deleteLine();
-        Swal.fire({
-          icon: "success",
-          text: "COFINS excluído com sucesso!",
-        });
-      } catch (error: any) {
-        Swal.fire({
-          icon: "error",
-          text: error.response?.data?.msg || "Erro ao excluir registro.",
-        });
-      } finally {
-        stateCofins.loading = false;
-      }
+
+    if (await msgConfirm("Confirmação", "Confirma a exclusão?")) {
+      await actionsCofins.toDelete();
+      stateCofins.grid.focus();
     }
   },
 
   async btnSave() {
-    if (utils.validaOBR()) return;
-    if (await stateCofins.grid.getDuplicityAll()) return;
+    if (utils.validaOBR()) {
+      return false;
+    }
+
+    if (await stateCofins.grid.getDuplicityAll()) {
+      return false;
+    }
+
+    if (stateCofins.grid.dataSource() == false) {
+      actionsCofins.toInsert();
+    } else {
+      actionsCofins.toUpdate();
+    }
+
+    stateCofins.isEditing = false;
+    await nextTick();
+
+    stateCofins.grid.enable();
+    stateCofins.grid.focus();
+  },
+
+  async btnCancel() {
+    stateCofins.isEditing = false;
+    let linhaGrid = <any>stateCofins.grid.getIndex();
+    await nextTick();
+
+    stateCofins.grid.enable();
+    stateCofins.grid.focus(linhaGrid);
+  },
+  async toDelete() {
     try {
+      const idCofins = stateCofins.cofins.ID_COFINS;
+
       stateCofins.loading = true;
-      if (stateCofins.cofins.ID_COFINS) {
-        await serviceNfe.toUpdateCofins(stateCofins.cofins);
-        stateCofins.grid.dataSource({ ...stateCofins.cofins });
-        Swal.fire({
-          icon: "success",
-          text: "COFINS atualizado com sucesso!",
-        });
-      } else {
-        const response = await serviceNfe.toInsertCofins(stateCofins.cofins);
-        stateCofins.cofins.ID_COFINS = response.ID_COFINS;
-        stateCofins.grid.insertLine({ ...stateCofins.cofins });
-        Swal.fire({
-          icon: "success",
-          text: "COFINS cadastrado com sucesso!",
-        });
-      }
-      stateCofins.grid.enable();
-      stateCofins.grid.focus();
+
+      await serviceNfe.toDeleteCofins(idCofins);
+
+      stateCofins.grid.deleteLine();
+      await Swal.fire({
+        icon: "success",
+        text: "COFINS deletado com sucesso.",
+      });
     } catch (error) {
       Swal.fire({
         icon: "error",
-        text: error.response?.data?.msg || "Erro ao salvar registro.",
+        title: "Erro ao excluir o COFINS, verificar",
+        text: error.message,
       });
     } finally {
       stateCofins.loading = false;
     }
   },
 
-  btnCancel() {
-    stateCofins.grid.enable();
-    stateCofins.grid.focus();
-    stateCofins.cofins = {} as iCofins;
+  async toInsert() {
+    try {
+      stateCofins.loading = true;
+
+      let newFields = {
+        P_VALOR: stateCofins.cofins.P_VALOR,
+        ID_REGIME_TRIBUTARIO: stateCofins.cofins.ID_REGIME_TRIBUTARIO,
+      };
+      await serviceNfe.toInsertCofins(newFields.P_VALOR, newFields.ID_REGIME_TRIBUTARIO);
+
+      stateCofins.grid.querySourceAdd({ ...newFields });
+
+      await Swal.fire({
+        icon: "success",
+        text: "COFINS adicionado com sucesso.",
+      });
+    } catch (error) {
+      await Swal.fire({
+        icon: "error",
+        text: "Erro ao adicionar COFINS.",
+      });
+    } finally {
+      stateCofins.loading = false;
+    }
+  },
+
+  async toUpdate() {
+    try {
+      let param = {
+        P_VALOR: stateCofins.cofins.P_VALOR,
+        ID_COFINS: stateCofins.cofins.ID_COFINS,
+      };
+
+      stateCofins.loading = true;
+
+      await serviceNfe.toUpdateCofins(param);
+
+      stateCofins.grid.dataSource(param);
+
+      await Swal.fire({
+        icon: "success",
+        text: "COFINS atualizado com sucesso.",
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao atualizar COFINS!",
+        text: error.message,
+      });
+    } finally {
+      stateCofins.loading = false;
+    }
   },
 };
 
