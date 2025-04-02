@@ -6,6 +6,7 @@ import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import serviceNfe from "../services/configuracaoNfe.service";
 import { iFieldDuplicity, iRegimeTributario } from "../interfaces";
+import { regimeTributarioOptions } from "../configuracaoNfe";
 
 const stateRegime = reactive({
   grid: {} as ixGridCreate,
@@ -13,6 +14,11 @@ const stateRegime = reactive({
   loading: false,
   isEditing: false,
   regimeTributarioLista: [] as iRegimeTributario[],
+});
+
+defineProps({
+  regimeTributario: Object,
+  regimeTributarioLista: Array,
 });
 
 const actionsRegime = {

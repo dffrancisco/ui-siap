@@ -15,6 +15,10 @@ const statePis = reactive({
   isEditing: false,
 });
 
+defineProps({
+  pis: Object,
+});
+
 const actionsPis = {
   async init() {
     const dadosPis = await actionsPis.getDadosParaInputs();
@@ -43,20 +47,20 @@ const actionsPis = {
         vModel(r) {
           statePis.pis = r;
         },
-        duplicity: {
-          dataField: ["ID_REGIME_TRIBUTARIO"],
-          async execute(rs) {
-            const dup = await actionsPis.getDuplicidade({
-              value: rs.value.toUpperCase(),
-              field: rs.field,
-            });
-            if (dup && Object.keys(dup).length > 0) {
-              statePis.grid.showMessageDuplicity(rs.text + " já cadastrado.");
-              return true;
-            }
-            return false;
-          },
-        },
+        // duplicity: {
+        //   dataField: ["ID_REGIME_TRIBUTARIO"],
+        //   async execute(rs) {
+        //     const dup = await actionsPis.getDuplicidade({
+        //       value: rs.value.toUpperCase(),
+        //       field: rs.field,
+        //     });
+        //     if (dup && Object.keys(dup).length > 0) {
+        //       statePis.grid.showMessageDuplicity(rs.text + " já cadastrado.");
+        //       return true;
+        //     }
+        //     return false;
+        //   },
+        // },
         frame: {
           el: "#pnPisBotoes",
           buttons: {
@@ -115,18 +119,18 @@ const actionsPis = {
     }
   },
 
-  async getDuplicidade({ value, field }: iFieldDuplicity) {
-    try {
-      const data = await serviceNfe.getDuplicidade({ value, field });
-      return data;
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Erro ao verificar duplicidade.",
-        text: error.message,
-      });
-    }
-  },
+  // async getDuplicidade({ value, field }: iFieldDuplicity) {
+  //   try {
+  //     const data = await serviceNfe.getDuplicidade({ value, field });
+  //     return data;
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Erro ao verificar duplicidade.",
+  //       text: error.message,
+  //     });
+  //   }
+  // },
 
   async btnInsert() {
     statePis.isEditing = true;
@@ -169,9 +173,9 @@ const actionsPis = {
       return false;
     }
 
-    if (await statePis.grid.getDuplicityAll()) {
-      return false;
-    }
+    // if (await statePis.grid.getDuplicityAll()) {
+    //   return false;
+    // }
 
     if (statePis.grid.dataSource() == false) {
       actionsPis.toInsert();

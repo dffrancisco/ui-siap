@@ -52,6 +52,7 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.pis.P_VALOR"
             label="Pis"
+            maxlength="100"
             dense
           />
         </v-col>
@@ -66,6 +67,7 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.LOCAL_XML"
             label="Local XML"
+            maxlength="255"
             dense
           />
         </v-col>
@@ -73,6 +75,7 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.LOCAL_PDF"
             label="Local PDF"
+            maxlength="255"
             dense
           />
         </v-col>
@@ -82,21 +85,21 @@ const changeTab = (tabValue: string) => {
         v-show="stateTabs.selectedTab === 'regimeTributario'"
         class="aba-flutuante"
       >
-        <AbaRegimeTributario :regimeTributarioLista="[state.regimeTributarioLista]" />
+        <AbaRegimeTributario :regimeTributarioLista="state.regimeTributarioLista" />
       </v-card>
 
       <v-card
         v-show="stateTabs.selectedTab === 'pis'"
         class="aba-flutuante"
       >
-        <AbaPis :pis="[state.pis]" />
+        <AbaPis :pis="state.pis" />
       </v-card>
 
       <v-card
         v-show="stateTabs.selectedTab === 'cofins'"
         class="aba-flutuante"
       >
-        <AbaCofins :cofins="[state.cofins]" />
+        <AbaCofins :cofins="state.cofins" />
       </v-card>
 
       <v-divider class="my-4"></v-divider>
@@ -171,6 +174,7 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.PROD_CEST"
             label="Prod. CEST"
+            maxlength="7"
           />
         </v-col>
       </v-row>
@@ -180,18 +184,21 @@ const changeTab = (tabValue: string) => {
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.CST"
+            maxlength="2"
             label="CST"
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.COD_LISTA_SERVICO"
+            maxlength="10"
             label="Cod. Lista Serviço"
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.NCM_MONTAGEM_GERAL"
+            maxlength="10"
             label="NCM Montagem Geral"
           />
         </v-col>
