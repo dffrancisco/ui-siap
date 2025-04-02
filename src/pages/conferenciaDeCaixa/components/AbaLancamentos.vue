@@ -50,7 +50,10 @@ const stateLancamentos = reactive({
       </v-col>
 
       <!-- Card Direito (Compras do Tipo Selecionado) -->
-      <v-col cols="9">
+      <v-col
+        cols="9"
+        style="padding-left: 0"
+      >
         <v-data-table-virtual
           :key="state.pagamentoSelecionado"
           :items="computeds.comprasFiltradas.value"
@@ -62,11 +65,7 @@ const stateLancamentos = reactive({
           class="elevation-1"
         >
           <template v-slot:item.INDEX="{ item }">
-            <span
-              class="text-center font-weight"
-              style="max-width: 40px"
-              >{{ item.INDEX }}</span
-            >
+            <span class="text-center font-weight">{{ item.INDEX }}</span>
           </template>
 
           <template v-slot:item.NUM_ORCAMENTO="{ item }">
@@ -160,8 +159,10 @@ const stateLancamentos = reactive({
 .chips-pagamentos {
   display: flex;
   gap: 4px;
-  padding: 6px;
+  padding: 4px;
   flex-wrap: wrap;
+  margin-left: -20px;
+  width: 130%;
 }
 
 .v-icon {
@@ -169,7 +170,7 @@ const stateLancamentos = reactive({
 }
 
 .chip-pagamento {
-  width: 105px;
+  width: 100px;
   height: 45px;
   border-radius: 8px !important;
 }
@@ -191,6 +192,7 @@ const stateLancamentos = reactive({
   flex-direction: column;
   align-items: center;
   margin: 4px;
+  margin-left: -10px;
   gap: 2px;
 }
 

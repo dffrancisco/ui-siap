@@ -3,6 +3,7 @@ import { configVMoney } from "../../../constants/constants";
 import { onMounted, reactive, ref } from "vue";
 import { iCaixas } from "../interfaces";
 import Swal from "sweetalert2";
+import utils from "@/ts/utils";
 
 const valorSangria = ref();
 
@@ -20,7 +21,7 @@ const actions = {
   },
 
   async salvarSangria() {
-    if (state.valorSangria == "0,00") {
+    if (utils.formatValorUSA(state.valorSangria) == 0) {
       Swal.fire({
         icon: "warning",
         text: "O valor da sangria não pode ser 0,00",

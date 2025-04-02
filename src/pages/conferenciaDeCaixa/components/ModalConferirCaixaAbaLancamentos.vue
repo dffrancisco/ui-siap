@@ -211,7 +211,7 @@ onMounted(() => {
       >
         <v-card
           class="flex-grow-1"
-          max-height="355px"
+          height="335px"
           style="overflow-y: scroll"
           outlined
           mandatory
@@ -370,7 +370,7 @@ onMounted(() => {
     </v-row>
     <v-container
       fluid
-      class="pa-4 mt-1"
+      class="pa-4 mt-2"
     >
       <v-row>
         <v-col
@@ -452,7 +452,7 @@ onMounted(() => {
   gap: 4px;
   padding: 2px;
   flex-wrap: wrap;
-  margin-left: -10px;
+  margin-left: -20px;
   width: 130%;
 }
 
@@ -490,6 +490,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   margin: 4px;
+  margin-left: -10px;
   gap: 2px;
 }
 

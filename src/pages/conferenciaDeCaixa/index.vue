@@ -18,7 +18,7 @@ onMounted(() => {
 <template>
   <v-container>
     <v-card
-      width="1100px"
+      max-width="1100px"
       class="ma-auto pa-4"
     >
       <!-- Input de Data -->

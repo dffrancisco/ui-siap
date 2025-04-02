@@ -11,7 +11,7 @@ import { msgConfirm } from "@/ts/message";
 import xAuthManager from "@/plugins/xAuthManager";
 
 export const state = reactive({
-    data: moment().format("YYYY-MM-DD"),
+    data: '2025-03-24',
     selectedOption: "caixas",
     loading: false,
     mdcAberto: true,
@@ -282,7 +282,7 @@ export const actions = {
             let param: iParamSangria = {
                 loginCaixa: caixaSelecionado.LOGIN,
                 idAberturaCaixa: caixaSelecionado.ID_ABERTURA_CAIXA,
-                valor: parseFloat(valorSangria.replace(/\./g, "").replace(",", "."))
+                valor: utils.formatValorUSA(valorSangria)
             };
 
             let sangrias = await serviceConferenciaDeCaixa.efetuarSangria(param);

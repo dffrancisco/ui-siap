@@ -121,7 +121,7 @@ const botoesVisiveis = computed(() => {
     <v-divider></v-divider>
     <v-row
       :justify="botoesVisiveis === 1 ? 'center' : 'space-between'"
-      class="mt-2 px-3"
+      class="mt-1 pa-2"
     >
       <v-btn
         v-if="caixa.STATUS !== 2"

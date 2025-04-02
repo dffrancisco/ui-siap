@@ -55,7 +55,7 @@ const options: iOptions[] = [
 <style scoped>
 .modal-container {
   max-height: 560px;
-  width: 1070px;
+  width: 1050px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
