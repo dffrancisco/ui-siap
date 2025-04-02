@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import utils from "@/ts/utils";
 import serviceNfe from './services/configuracaoNfe.service';
-import { iNfeConfig, iCofins, iPis, iRegimeTributario, iResponseDadosInputs } from "./interfaces";
+import { iNfeConfig, iCofins, iPis, iRegimeTributario } from "./interfaces";
 
 export const state = reactive({
     nfeConfig: {} as iNfeConfig,
@@ -17,12 +17,11 @@ export const state = reactive({
     pisLista: [] as iPis[],
     regimeTributarioLista: [] as iRegimeTributario[],
 
-    gridCofins: <ixGridCreate>{},
-    gridPis: <ixGridCreate>{},
-    gridRegimeTributario: <ixGridCreate>{},
+    pisSelecionado: {} as iPis,
+    cofinsSelecionado: {} as iCofins,
 
     loading: false,
-    isEditing: false,
+    isEditable: false,
     originalConfig: {} as iNfeConfig,
 });
 
@@ -49,8 +48,12 @@ export const actions = {
 
             state.nfeConfig = data.nfeConfig[0];
             state.regimeTributarioLista = data.regimeTributario;
-            state.pis = data.pis[0];
-            state.cofins = data.cofins[0];
+            state.pisLista = data.pis;
+            state.cofinsLista = data.cofins;
+
+            const regimeId = Number(state.nfeConfig.REGIME_TRIBUTARIO);
+            state.pisSelecionado = state.pisLista.find(p => p.ID_REGIME_TRIBUTARIO === regimeId) || {} as iPis;
+            state.cofinsSelecionado = state.cofinsLista.find(c => c.ID_REGIME_TRIBUTARIO === regimeId) || {} as iCofins;
 
         } catch (error) {
             Swal.fire({
@@ -61,9 +64,9 @@ export const actions = {
             state.loading = false;
         }
     },
-
     btnEdit() {
-        state.isEditing = true;
+
+        state.isEditable = true;
         nextTick(() => {
             const firstInput = document.querySelector('input');
             firstInput?.focus();
@@ -83,20 +86,17 @@ export const actions = {
                 text: "Configurações salvas com sucesso!",
             });
             state.originalConfig = { ...state.nfeConfig };
-            state.isEditing = false;
+            state.isEditable = false;
         } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Erro ao salvar configuções",
 
-            });
+
         } finally {
             state.loading = false;
         }
     },
 
     btnCancel() {
-        state.isEditing = false;
+        state.isEditable = false;
     },
 
 

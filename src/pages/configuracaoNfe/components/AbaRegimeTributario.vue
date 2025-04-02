@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { onMounted, reactive, nextTick } from "vue";
+import { onMounted, reactive, nextTick, watch } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import serviceNfe from "../services/configuracaoNfe.service";
 import { iFieldDuplicity, iRegimeTributario } from "../interfaces";
-import { regimeTributarioOptions } from "../configuracaoNfe";
 
 const stateRegime = reactive({
   grid: {} as ixGridCreate,
@@ -14,18 +13,27 @@ const stateRegime = reactive({
   loading: false,
   isEditing: false,
   regimeTributarioLista: [] as iRegimeTributario[],
+  gridRegimeTributario: <ixGridCreate>{},
 });
 
-defineProps({
+const props = defineProps({
   regimeTributario: Object,
+  abaOpened: Boolean,
   regimeTributarioLista: Array,
 });
 
+watch(
+  () => props.abaOpened,
+  async () => {
+    if (props.abaOpened) {
+      stateRegime.grid.source(props.regimeTributario);
+    }
+  }
+);
+
 const actionsRegime = {
   async init() {
-    const dadosRegime = await actionsRegime.getDadosParaInputs();
-    actionsRegime.gridRegimeTributario();
-    stateRegime.grid.querySourceAdd(dadosRegime);
+    await actionsRegime.gridRegimeTributario();
   },
 
   gridRegimeTributario() {
@@ -276,8 +284,8 @@ const actionsRegime = {
   },
 };
 
-onMounted(() => {
-  actionsRegime.init();
+onMounted(async () => {
+  await actionsRegime.init();
 });
 </script>
 

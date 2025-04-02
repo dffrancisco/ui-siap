@@ -44,23 +44,28 @@ const changeTab = (tabValue: string) => {
             :items="regimeTributarioOptions"
             item-title="text"
             item-value="value"
-            dense
-            clearable
-          />
-        </v-col>
-        <v-col cols="2">
-          <v-text-field
-            v-model="state.pis.P_VALOR"
-            label="Pis"
             maxlength="100"
             dense
+            clearable
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="2">
           <v-text-field
-            v-model="state.cofins.P_VALOR"
-            label="Cofins"
+            v-model="state.pisSelecionado.P_VALOR"
+            label="Pis"
+            maxlength="15"
             dense
+            :disabled="!state.isEditable"
+          />
+        </v-col>
+        <v-col cols="2">
+          <v-text-field
+            v-model="state.cofinsSelecionado.P_VALOR"
+            label="Cofins"
+            maxlength="15"
+            dense
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="2">
@@ -69,6 +74,7 @@ const changeTab = (tabValue: string) => {
             label="Local XML"
             maxlength="255"
             dense
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="3">
@@ -77,6 +83,7 @@ const changeTab = (tabValue: string) => {
             label="Local PDF"
             maxlength="255"
             dense
+            :disabled="!state.isEditable"
           />
         </v-col>
       </v-row>
@@ -85,21 +92,33 @@ const changeTab = (tabValue: string) => {
         v-show="stateTabs.selectedTab === 'regimeTributario'"
         class="aba-flutuante"
       >
-        <AbaRegimeTributario :regimeTributarioLista="state.regimeTributarioLista" />
+        <AbaRegimeTributario
+          :regime-tributario="state.regimeTributarioLista"
+          :abaOpened="stateTabs.selectedTab == 'regimeTributario' ? true : false"
+          :isEditable="state.isEditable"
+        />
       </v-card>
 
       <v-card
         v-show="stateTabs.selectedTab === 'pis'"
         class="aba-flutuante"
       >
-        <AbaPis :pis="state.pis" />
+        <AbaPis
+          :pis="state.pisLista"
+          :abaOpened="stateTabs.selectedTab == 'pis' ? true : false"
+          :isEditable="state.isEditable"
+        />
       </v-card>
 
       <v-card
         v-show="stateTabs.selectedTab === 'cofins'"
         class="aba-flutuante"
       >
-        <AbaCofins :cofins="state.cofins" />
+        <AbaCofins
+          :cofins="state.cofinsLista"
+          :abaOpened="stateTabs.selectedTab == 'cofins' ? true : false"
+          :isEditable="state.isEditable"
+        />
       </v-card>
 
       <v-divider class="my-4"></v-divider>
@@ -110,24 +129,30 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.CFOP_TRANSP"
             label="CFOP Transporte"
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="3">
           <v-text-field
             v-model="state.nfeConfig.CFOP_MONTAGEM_INTERNO"
             label="CFOP Montagem Interno"
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="3">
           <v-text-field
             v-model="state.nfeConfig.CFOP_MONTAGEM_INTERESTADUAL"
             label="CFOP Montagem Interestadual"
+            maxlength="4"
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="3">
           <v-text-field
             v-model="state.nfeConfig.CFOP_ECF_INTERNO"
             label="CFOP ECF Interno"
+            maxlength="4"
+            :disabled="!state.isEditable"
           />
         </v-col>
       </v-row>
@@ -140,18 +165,24 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.CFOP_ECF_INTERESTADUAL"
             label="CFOP ECF Interestadual"
+            maxlength="4"
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.CFOP_DEV_INTERNO"
             label="CFOP Dev. Interno"
+            maxlength="4"
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.CFOP_DEV_INTERESTADUAL"
             label="CFOP Dev. Interestadual"
+            maxlength="4"
+            :disabled="!state.isEditable"
           />
         </v-col>
       </v-row>
@@ -162,12 +193,16 @@ const changeTab = (tabValue: string) => {
           <v-text-field
             v-model="state.nfeConfig.EMIT_IM"
             label="Inscrição Municipal"
+            maxlength="7"
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.EMIT_CNAE"
             label="CNAE"
+            maxlength="7"
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
@@ -175,6 +210,7 @@ const changeTab = (tabValue: string) => {
             v-model="state.nfeConfig.PROD_CEST"
             label="Prod. CEST"
             maxlength="7"
+            :disabled="!state.isEditable"
           />
         </v-col>
       </v-row>
@@ -186,6 +222,7 @@ const changeTab = (tabValue: string) => {
             v-model="state.nfeConfig.CST"
             maxlength="2"
             label="CST"
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
@@ -193,6 +230,7 @@ const changeTab = (tabValue: string) => {
             v-model="state.nfeConfig.COD_LISTA_SERVICO"
             maxlength="10"
             label="Cod. Lista Serviço"
+            :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
@@ -200,6 +238,7 @@ const changeTab = (tabValue: string) => {
             v-model="state.nfeConfig.NCM_MONTAGEM_GERAL"
             maxlength="10"
             label="NCM Montagem Geral"
+            :disabled="!state.isEditable"
           />
         </v-col>
       </v-row>

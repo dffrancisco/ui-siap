@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, nextTick } from "vue";
+import { onMounted, reactive, nextTick, watch } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -13,18 +13,27 @@ const statePis = reactive({
   pis: {} as iPis,
   loading: false,
   isEditing: false,
+  gridPis: <ixGridCreate>{},
 });
 
-defineProps({
+const props = defineProps({
   pis: Object,
+  abaOpened: Boolean,
+  pisLista: Array,
 });
+
+watch(
+  () => props.abaOpened,
+  async () => {
+    if (props.abaOpened) {
+      statePis.grid.source(props.pis);
+    }
+  }
+);
 
 const actionsPis = {
   async init() {
-    const dadosPis = await actionsPis.getDadosParaInputs();
-    actionsPis.gridPis();
-
-    statePis.grid.querySourceAdd(dadosPis);
+    await actionsPis.gridPis();
   },
   gridPis() {
     statePis.grid = new xGridV2.create({
@@ -278,8 +287,8 @@ const actionsPis = {
   },
 };
 
-onMounted(() => {
-  actionsPis.init();
+onMounted(async () => {
+  await actionsPis.init();
 });
 </script>
 

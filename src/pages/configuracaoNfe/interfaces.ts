@@ -13,7 +13,7 @@ export interface iNfeConfig {
     REGIME_TRIBUTARIO: string;
     CFOP_TRANSP: string;
     CFOP_MONTAGEM_INTERNO: string;
-    CFOP_MONTAGEM_INTERESTADUAL: string;
+    CFOP_MONTAGEM_INTERESTADUAL: number;
     EMIT_IM: number;
     EMIT_CNAE: number;
     PROD_CEST: string;
@@ -59,17 +59,16 @@ export interface iInsertRegimeTributario {
 export interface iDeleteRegimeTributario {
     ID_REGIME_TRIBUTARIO: number;
 }
-
 export interface iPis {
     ID_PIS?: number;
-    ID_REGIME_TRIBUTARIO?: number;
     P_VALOR?: number;
+    ID_REGIME_TRIBUTARIO?: number;
 }
 
 export interface iCofins {
     ID_COFINS?: number;
+    P_VALOR?: number;
     ID_REGIME_TRIBUTARIO?: number;
-    P_VALOR: number;
 }
 
 export interface iDuplicity {

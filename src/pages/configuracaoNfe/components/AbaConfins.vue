@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, nextTick } from "vue";
+import { onMounted, reactive, nextTick, watch } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -13,23 +13,31 @@ const stateCofins = reactive({
   cofins: {} as iCofins,
   loading: false,
   isEditing: false,
-
   cofinsLista: [] as iCofins[],
+  gridCofins: <ixGridCreate>{},
 });
 
-defineProps({
+const props = defineProps({
   cofins: Object,
+  abaOpened: Boolean,
+  cofinsLista: Array,
 });
+
+watch(
+  () => props.abaOpened,
+  async () => {
+    if (props.abaOpened) {
+      stateCofins.grid.source(props.cofins);
+    }
+  }
+);
 
 const actionsCofins = {
   async init() {
-    const dadosCofins = await actionsCofins.getDadosParaInputs();
-
-    actionsCofins.grid();
-    stateCofins.grid.querySourceAdd(dadosCofins);
+    await actionsCofins.gridCofins();
   },
 
-  grid() {
+  gridCofins() {
     stateCofins.grid = new xGridV2.create({
       el: "#gridCofins",
       height: 300,
@@ -236,8 +244,12 @@ const actionsCofins = {
         ID_REGIME_TRIBUTARIO: Number(stateCofins.cofins.ID_REGIME_TRIBUTARIO),
       };
 
-      await serviceNfe.toInsertCofins(newFields);
-      stateCofins.grid.insertLine({ ...newFields });
+      const resultado = await serviceNfe.toInsertCofins(newFields);
+
+      stateCofins.grid.insertLine({
+        ...newFields,
+        ID_COFINS: resultado.ID_COFINS,
+      });
 
       await Swal.fire({
         icon: "success",
@@ -282,8 +294,8 @@ const actionsCofins = {
   },
 };
 
-onMounted(() => {
-  actionsCofins.init();
+onMounted(async () => {
+  await actionsCofins.init();
 });
 </script>
 
