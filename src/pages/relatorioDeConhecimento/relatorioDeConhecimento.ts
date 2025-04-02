@@ -11,6 +11,8 @@ export const state = reactive({
     transportadoras: <iTransportadora[]>[],
     dataInicio: moment().startOf('month').format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
+    dataInicioImpressao: null,
+    dataFimImpressao: null,
     dadosRelatorio: [] as iRelatorioConhecimento[],
     selectTransportadora: null as number | null,
     selectedOrdem: <string[]>[],
@@ -18,13 +20,14 @@ export const state = reactive({
     inputDataFinal: <HTMLInputElement>{},
     inputDataInicio: <HTMLInputElement>{},
     headers: <any>[
+        { key: 'CONTADOR', title: ' ', sortable: false, align: 'center' },
         { key: 'NOME_FANTAZIA', title: 'Nome', sortable: true, align: 'left' },
         { key: 'NUM_NOTA', title: 'Nº Nota', sortable: true, align: 'center' },
         { key: 'NUM_CONHECIMENTO', title: 'Nº Conhecimento', sortable: true, align: 'center' },
         { key: 'DATA_CONHECIMENTO', title: 'Data Conhecimento', sortable: true, align: 'center', value: (item: iRelatorioConhecimento) => dataBrasil(item.DATA_CONHECIMENTO) },
         { key: 'TOTAL_FATURA', title: 'Total Fatura', sortable: true, align: 'right', value: (item: iRelatorioConhecimento) => typeof item.TOTAL_FATURA === 'number' ? utils.formatValor(item.TOTAL_FATURA) : item.TOTAL_FATURA },
-        { key: 'PAGAMENTO', title: 'Pagar', sortable: true, align: 'center', value: (item: iRelatorioConhecimento) => utils.formatValor(item.PAGAMENTO) },
         { key: 'PERCENTUAL', title: '%', sortable: true, align: 'right' },
+        { key: 'PAGAMENTO', title: 'Pagar', sortable: true, align: 'center', value: (item: iRelatorioConhecimento) => utils.formatValor(item.PAGAMENTO) },
     ],
 });
 
@@ -84,6 +87,7 @@ export const actions = {
         }
     },
 
+
     async getDadosParaRelatorio() {
         try {
             state.loading = true;
@@ -93,20 +97,30 @@ export const actions = {
                 dataFim: state.dataFim,
                 ordem: state.selectedOrdem
             };
+            state.dataInicioImpressao = state.dataInicio
+            state.dataFimImpressao = state.dataFim
 
             const response = await serviceRelatorioConhecimento.getRelatorioConhecimento(params as unknown as iParamsRelatorioConhecimento);
-            const dados = response.dadosRelatorio;
+            let dados = response.dadosRelatorio;
+
+
+            dados = dados.map((item, CONTADOR) => ({
+                ...item,
+                CONTADOR: CONTADOR + 1,
+            }));
 
             const totalPagamento = dados.reduce((acc, item) => acc + Number(item.PAGAMENTO || 0), 0);
 
             const linhaTotal = {
-                NOME_FANTAZIA: '',
+                index: '—',
+                NOME_FANTAZIA: 'Totalizador:',
                 NUM_NOTA: '',
                 NUM_CONHECIMENTO: '',
                 DATA_CONHECIMENTO: '',
                 PERCENTUAL: '',
                 PAGAMENTO: totalPagamento,
-                TOTAL_FATURA: 'Totalizador:',
+                TOTAL_FATURA: '',
+                CONTADOR: '',
             };
 
             state.dadosRelatorio = [...dados, linhaTotal];
@@ -120,6 +134,7 @@ export const actions = {
             state.loading = false;
         }
     },
+
 
     async onClickImprimir() {
         if (!actions.validarInputs()) {
@@ -138,21 +153,32 @@ export const actions = {
             state.loading = true;
             const relatorioAjustado = actions.formatarDadosImpressao([...state.dadosRelatorio]);
             const columns: iColumnPrint[] = [
-                { key: 'NOME_FANTAZIA', label: 'Nome', align: 'left' },
+                { key: 'CONTADOR', label: ' ', align: 'center', width: '5px' },
+                { key: 'NOME_FANTAZIA', label: 'Nome', align: 'left', width: '25px' },
                 { key: 'NUM_NOTA', label: 'Nº Nota', align: 'center' },
                 { key: 'NUM_CONHECIMENTO', label: 'Nº Conhecimento', align: 'center' },
                 { key: 'DATA_CONHECIMENTO', label: 'Data Conhecimento', align: 'center' },
-                { key: 'TOTAL_FATURA', label: 'Total Fatura', align: 'right' },
-                { key: 'PAGAMENTO', label: 'Pagar', align: 'right' },
-                { key: 'PERCENTUAL', label: '%', align: 'right' },
+                { key: 'TOTAL_FATURA', label: 'Total Fatura', align: 'center' },
+                { key: 'PERCENTUAL', label: '%', align: 'center' },
+                { key: 'PAGAMENTO', label: 'Pagar', align: 'center' },
             ];
 
             const titulo = `
-                <div style="text-align: center;">
-                    <strong style="font-size: 16px;"> Relatorio de Conhecimento </strong>
+          <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                    <span>Período: ${moment(state.dataInicioImpressao).format('DD/MM/YYYY')} até ${moment(state.dataFimImpressao).format('DD/MM/YYYY')}</span>
+                    <strong style="font-size: 16px;">Relatorio de conhecimento</strong>
+                </div>
+               `;
+
+            const reducaoFonte = `
+                <style>
+                    table {
+                        font-size: 12px;
+                    }
+                </style>
             `;
 
-            await utils.printComCabecalho(columns, relatorioAjustado, titulo);
+            await utils.printComCabecalho(columns, relatorioAjustado, titulo + reducaoFonte);
         } catch (error) {
 
             Swal.fire({
@@ -168,9 +194,12 @@ export const actions = {
         return data.map(item => ({
             ...item,
             DATA_CONHECIMENTO: item.DATA_CONHECIMENTO ? moment(item.DATA_CONHECIMENTO).format('DD/MM/YYYY') : '----',
-            TOTAL_FATURA: typeof item.TOTAL_FATURA === 'number' ? utils.formatValor(item.TOTAL_FATURA) : item.TOTAL_FATURA,
+            TOTAL_FATURA: typeof item.TOTAL_FATURA === 'number' ? utils.formatValor(item.TOTAL_FATURA) : '----',
             PAGAMENTO: utils.formatValor(item.PAGAMENTO),
             NUM_CONHECIMENTO: item.NUM_CONHECIMENTO || '----',
+            NUM_NOTA: item.NUM_NOTA || '----',
+            PERCENTUAL: item.PERCENTUAL ? `${item.PERCENTUAL}` : '----',
+            NOME_FANTAZIA: item.NOME_FANTAZIA || '----',
         }));
     },
 
