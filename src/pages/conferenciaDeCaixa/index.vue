@@ -9,6 +9,7 @@ import AbaCaixas from "./components/AbaCaixas.vue";
 import AbaLancamentos from "./components/AbaLancamentos.vue";
 import AbaSangrias from "./components/AbaSangrias.vue";
 import AbaDevolucoes from "./components/AbaDevolucoes.vue";
+import moment from "moment";
 
 onMounted(() => {
   actions.init();
@@ -121,7 +122,7 @@ onMounted(() => {
             sm="4"
             md="4"
             lg="4"
-            v-if="state.mdcAberto"
+            v-if="state.mdcAberto && state.data == moment().format('YYYY-MM-DD')"
           >
             <v-card
               class="pa-4 d-flex flex-column align-center justify-center"
@@ -141,13 +142,13 @@ onMounted(() => {
       </template>
 
       <!-- Renderiza a aba de Lançamentos -->
-      <AbaLancamentos v-if="computeds.abaSelecionada.value === 'lancamentos'" />
+      <AbaLancamentos v-if="computeds.abaSelecionada.value === 'lancamentos' && state.mdcAberto" />
 
       <!-- Renderiza a aba de Sangrias -->
-      <AbaSangrias v-if="computeds.abaSelecionada.value === 'sangria'" />
+      <AbaSangrias v-if="computeds.abaSelecionada.value === 'sangria' && state.mdcAberto" />
 
       <!-- Renderiza a aba de Devolucoes -->
-      <AbaDevolucoes v-if="computeds.abaSelecionada.value === 'devolucao'" />
+      <AbaDevolucoes v-if="computeds.abaSelecionada.value === 'devolucao' && state.mdcAberto" />
 
       <!-- Mensagem de quem abriu o MDC -->
       <div class="pa-2 mt-3">

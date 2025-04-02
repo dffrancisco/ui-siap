@@ -11,7 +11,7 @@ import { msgConfirm } from "@/ts/message";
 import xAuthManager from "@/plugins/xAuthManager";
 
 export const state = reactive({
-    data: '2025-03-24',
+    data: moment().format("YYYY-MM-DD"),
     selectedOption: "caixas",
     loading: false,
     mdcAberto: true,
@@ -57,6 +57,9 @@ export const options: iOptions[] = [
 
 export const actions = {
     async init() {
+        const isValid = await actions.validarInputData();
+        if (!isValid) return;
+
         await actions.getDadosIniciaisConfCaixa();
     },
 
@@ -119,6 +122,34 @@ export const actions = {
             });
             return false;
         }
+        return true;
+    },
+
+    async validarInputData() {
+        const caixaData = state.data;
+
+        // Verifica se a data é válida
+        if (!moment(caixaData, "YYYY-MM-DD", true).isValid()) {
+            await Swal.fire({
+                title: "Atenção",
+                text: "Data inválida!",
+                icon: "warning",
+                confirmButtonText: "OK",
+            });
+            return false;
+        }
+
+        // Verifica se a data está no futuro
+        if (moment(caixaData).isAfter(moment(), "day")) {
+            await Swal.fire({
+                title: "Atenção",
+                text: "Não é possível buscar dados para datas futuras!",
+                icon: "warning",
+                confirmButtonText: "OK",
+            });
+            return false;
+        }
+
         return true;
     },
 
