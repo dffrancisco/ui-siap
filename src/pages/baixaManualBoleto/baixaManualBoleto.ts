@@ -1,5 +1,5 @@
 import { computed, reactive } from "vue";
-import { iBoleto, iClientesFaturados, iOrcamento } from "./interfaces";
+import { iBoleto, iClientesFaturados, iOrcamento, iParamAddJuros } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceBaixaManualBoleto from "./services/baixaManualBoleto.service";
 import utils from "@/ts/utils";
@@ -10,56 +10,39 @@ export const state = reactive({
     clienteFaturadoSelecionado: <iClientesFaturados>{},
     nomeClienteFaturadoSelecionado: '',
     loading: false,
-    dadosOrcamento: [] as iOrcamento[],
-    dadosBoletos: [] as iBoleto[],
+    dadosOrcamento: <iOrcamento[]>[],
+    dadosBoletos: <iBoleto[]>[],
     filtroOrcamento: '',
     filtroBoleto: '',
-    dadosOrcamentoFiltrados: [] as iOrcamento[],
-    dadosBoletosFiltrados: [] as iBoleto[],
+    dadosOrcamentoFiltrados: <iOrcamento[]>[],
+    dadosBoletosFiltrados: <iBoleto[]>[],
     extratoBancario: [],
+    modalJuros: {
+        open: false,
+        numBoleto: 0,
+        numOrcamento: 0,
+        dataOrcamento: '',
+        valorJurosToEdit: null
+    },
     headersExtrato: [
         { key: "checked", title: "Conf.", width: "50px", align: "center" },
         { key: "DATA", title: "Data Lançamento", width: "80px", sortable: true },
         { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item) => utils.formatValor(item.VALOR) },
     ],
     headersOrcamento: [
-        { key: "checked", title: "Conferido", width: "50px", align: "center" },
+        { key: "checked", title: "Conferido", align: "center" },
         { key: "NUM_ORCAMENTO", title: "N° Orç.", width: "100px", sortable: true },
-        { key: "DATA", title: "Data", width: "100px", sortable: true, value: (item: any) => utils.dataBrasil(item.DATA) },
-        { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: any) => utils.formatValor(item.VALOR) },
+        { key: "DATA", title: "Data", width: "100px", sortable: true, value: (item: iOrcamento) => utils.dataBrasil(item.DATA) },
+        { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: iOrcamento) => utils.formatValor(item.VALOR) },
+        { key: "JUROS", title: "Juros", width: "50px", align: "center" },
     ],
     headersBoletos: [
-        { key: "checked", title: "Conferido", width: "50px", align: "center" },
+        { key: "checked", title: "Conferido", align: "center" },
         { key: "NUM_BOLETO", title: "N° Boleto", width: "100px", sortable: true },
-        { key: "DATA_VENCIMENTO", title: "Data Vencimento", width: "100px", sortable: true, value: (item: any) => utils.dataBrasil(item.DATA_VENCIMENTO) },
-        { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: any) => utils.formatValor(item.VALOR) },
+        { key: "DATA_VENCIMENTO", title: "Data Venc.", width: "100px", sortable: true, value: (item: iBoleto) => utils.dataBrasil(item.DATA_VENCIMENTO) },
+        { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: iBoleto) => utils.formatValor(item.VALOR) },
+        { key: "JUROS", title: "Juros", width: "50px", align: "center" },
     ],
-    totalSelecionadoExtrato: computed(() => {
-        const totalExtrato = state.extratoBancario
-            .filter(item => item.checked)
-            .reduce((sum, item) => sum + item.VALOR, 0);
-
-        return parseFloat(totalExtrato.toFixed(2));
-    }),
-    totalOrcamentosEBoletos: computed(() => {
-        const totalOrcamentos = state.dadosOrcamento
-            .filter(item => item.checked)
-            .reduce((sum, item) => sum + item.VALOR, 0);
-
-        const totalBoletos = state.dadosBoletos
-            .filter(item => item.checked)
-            .reduce((sum, item) => sum + item.VALOR, 0);
-
-        let total = totalOrcamentos + totalBoletos;
-        return parseFloat(total.toFixed(2));
-    }),
-    podeBaixarManual: computed(() => {
-        return (
-            state.totalOrcamentosEBoletos === state.totalSelecionadoExtrato &&
-            state.nomeClienteFaturadoSelecionado !== '' &&
-            state.totalOrcamentosEBoletos !== 0
-        );
-    }),
     cnpjEmpresa: ""
 })
 
@@ -89,7 +72,7 @@ export const actions = {
 
     limparExtratoBancarioECliente() {
         state.extratoBancario = [];
-        state.clienteFaturadoSelecionado = [];
+        state.clienteFaturadoSelecionado = {} as iClientesFaturados;;
         state.nomeClienteFaturadoSelecionado = '';
     },
 
@@ -243,7 +226,7 @@ export const actions = {
             idsExtrato: extratoSelecionadoIds,
             numOrcamentos: computeds.orcamentosSelecionados.value.map(orcamento => orcamento.NUM_ORCAMENTO),
             numBoletos: computeds.boletosSelecionados.value.map(boleto => boleto.NUM_BOLETO),
-            totalBaixa: Number(state.totalOrcamentosEBoletos)
+            totalBaixa: Number(computeds.totalOrcamentosEBoletos.value)
         };
 
         let param = {
@@ -291,8 +274,47 @@ export const actions = {
         } finally {
             state.loading = false;
         }
-    }
+    },
 
+    openModalAddJuros(numBoleto: number, numOrcamento: number, dataOrcamento: string) {
+        state.modalJuros.valorJurosToEdit = null;
+        state.modalJuros.open = true;
+        state.modalJuros.numBoleto = numBoleto;
+        state.modalJuros.numOrcamento = numOrcamento;
+        state.modalJuros.dataOrcamento = dataOrcamento;
+    },
+
+    openModalEditJuros(numBoleto: number, numOrcamento: number, dataOrcamento: string, valorJurosToEdit: number) {
+        state.modalJuros.open = true;
+        state.modalJuros.numBoleto = numBoleto;
+        state.modalJuros.numOrcamento = numOrcamento;
+        state.modalJuros.dataOrcamento = dataOrcamento;
+        state.modalJuros.valorJurosToEdit = valorJurosToEdit;
+    },
+
+    addJuros(param: iParamAddJuros) {
+        if (param.numBoleto) {
+            const findedIndex = state.dadosBoletos.findIndex(boleto => boleto.NUM_BOLETO === param.numBoleto);
+
+            if (findedIndex !== -1) {
+                state.dadosBoletos[findedIndex].JUROS = param.valorJuros;
+                state.dadosBoletos[findedIndex].VALOR_JUROS = Number((state.dadosBoletos[findedIndex].VALOR * (param.valorJuros / 100)).toFixed(2));
+            }
+        }
+
+        if (param.numOrcamento) {
+            const findedIndex = state.dadosOrcamento.findIndex(
+                orcamento => orcamento.NUM_ORCAMENTO === param.numOrcamento && orcamento.DATA === param.dataOrcamento
+            );
+
+            if (findedIndex !== -1) {
+                state.dadosOrcamento[findedIndex].JUROS = param.valorJuros;
+                state.dadosOrcamento[findedIndex].VALOR_JUROS = Number((state.dadosOrcamentoFiltrados[findedIndex].VALOR * (param.valorJuros / 100)).toFixed(2));
+            }
+        }
+
+        state.modalJuros.open = false;
+    }
 }
 
 export const computeds = {
@@ -304,5 +326,31 @@ export const computeds = {
     }),
     extratoSelecionado: computed(() => {
         return state.extratoBancario.filter(transacao => transacao.checked);
-    })
+    }),
+    totalSelecionadoExtrato: computed(() => {
+        const totalExtrato = state.extratoBancario
+            .filter(item => item.checked)
+            .reduce((sum, item) => sum + item.VALOR, 0);
+
+        return parseFloat(totalExtrato.toFixed(2));
+    }),
+    totalOrcamentosEBoletos: computed(() => {
+        const totalOrcamentos = state.dadosOrcamento
+            .filter(item => item.checked)
+            .reduce((sum, item) => sum + item.VALOR + (item.VALOR_JUROS || 0), 0);
+
+        const totalBoletos = state.dadosBoletos
+            .filter(item => item.checked)
+            .reduce((sum, item) => sum + item.VALOR + (item.VALOR_JUROS || 0), 0);
+
+        let total = totalOrcamentos + totalBoletos;
+        return parseFloat(total.toFixed(2));
+    }),
+    podeBaixarManual: computed(() => {
+        return (
+            computeds.totalOrcamentosEBoletos.value === computeds.totalSelecionadoExtrato.value &&
+            state.nomeClienteFaturadoSelecionado !== '' &&
+            computeds.totalOrcamentosEBoletos.value !== 0
+        );
+    }),
 }

@@ -4,6 +4,7 @@ import utils from "@/ts/utils";
 import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
 import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
 import { onMounted } from "vue";
+import ModalJuros from "./components/ModalJuros.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -83,7 +84,7 @@ onMounted(async () => {
 
               <div>
                 <strong style="font-size: 15px"
-                  >Total: {{ utils.formatValor(state.totalSelecionadoExtrato) }}</strong
+                  >Total: {{ utils.formatValor(computeds.totalSelecionadoExtrato.value) }}</strong
                 >
               </div>
             </div>
@@ -131,12 +132,31 @@ onMounted(async () => {
             height="155"
           >
             <template v-slot:item.checked="{ item }">
-              <div style="margin-left: 20px">
+              <div class="d-flex justify-center">
                 <v-checkbox
                   v-model="item.checked"
                   hide-details
                   density="compact"
                 />
+              </div>
+            </template>
+            <template v-slot:item.JUROS="{ item }">
+              <div class="d-flex justify-center">
+                <v-icon
+                  v-if="!item.JUROS || item.JUROS == 0"
+                  color="primary"
+                  @click="actions.openModalAddJuros(null, item.NUM_ORCAMENTO, item.DATA)"
+                  >mdi-percent</v-icon
+                >
+                <div
+                  v-else
+                  class="d-flex align-center ga-2 justify-center"
+                >
+                  <span>{{ utils.formatValor(item.VALOR_JUROS) }}</span>
+                  <v-icon @click="actions.openModalEditJuros(null, item.NUM_ORCAMENTO, item.DATA, item.JUROS)"
+                    >mdi-pencil</v-icon
+                  >
+                </div>
               </div>
             </template>
           </v-data-table-virtual>
@@ -172,12 +192,31 @@ onMounted(async () => {
             height="155"
           >
             <template v-slot:item.checked="{ item }">
-              <div style="margin-left: 20px">
+              <div class="d-flex justify-center">
                 <v-checkbox
                   v-model="item.checked"
                   hide-details
                   density="compact"
                 />
+              </div>
+            </template>
+            <template v-slot:item.JUROS="{ item }">
+              <div class="d-flex justify-center">
+                <v-icon
+                  v-if="!item.JUROS || item.JUROS == 0"
+                  color="primary"
+                  @click="actions.openModalAddJuros(item.NUM_BOLETO, null, null)"
+                  >mdi-percent</v-icon
+                >
+                <div
+                  v-else
+                  class="d-flex align-center ga-2 justify-center"
+                >
+                  <span>{{ utils.formatValor(item.VALOR_JUROS) }}</span>
+                  <v-icon @click="actions.openModalEditJuros(item.NUM_BOLETO, null, null, item.JUROS)"
+                    >mdi-pencil</v-icon
+                  >
+                </div>
               </div>
             </template>
           </v-data-table-virtual>
@@ -188,7 +227,7 @@ onMounted(async () => {
               style="font-size: 15px"
             >
               <span
-                ><strong>Total: {{ utils.formatValor(state.totalOrcamentosEBoletos) }}</strong></span
+                ><strong>Total: {{ utils.formatValor(computeds.totalOrcamentosEBoletos.value) }}</strong></span
               >
             </v-col>
 
@@ -202,7 +241,7 @@ onMounted(async () => {
                 max-width="220px"
                 color="#3680AB"
                 @click="state.modalUploadComprovanteOpened = true"
-                :disabled="!state.podeBaixarManual"
+                :disabled="!computeds.podeBaixarManual.value"
               >
                 Baixar Manual
               </v-btn>
@@ -249,6 +288,20 @@ onMounted(async () => {
       :cnpjEmpresa="state.cnpjEmpresa"
       @baixaManualBoleto="actions.baixarBoletosEOrcamentos"
       @closeModalUploadComprovante="state.modalUploadComprovanteOpened = false"
+    />
+  </v-dialog>
+
+  <v-dialog
+    v-model="state.modalJuros.open"
+    max-width="350px"
+  >
+    <ModalJuros
+      :dataOrcamento="state.modalJuros.dataOrcamento"
+      :numOrcamento="state.modalJuros.numOrcamento"
+      :numBoleto="state.modalJuros.numBoleto"
+      :valorJurosToEdit="state.modalJuros.valorJurosToEdit"
+      @addJuros="actions.addJuros"
+      @close="state.modalJuros.open = false"
     />
   </v-dialog>
 </template>

@@ -22,6 +22,8 @@ export interface iOrcamento {
     VALOR: number;
     NUM_DEVOLUCAO: number;
     MONTAGEM: number;
+    JUROS?: number;
+    VALOR_JUROS?: number;
     checked?: boolean;
 }
 
@@ -31,6 +33,8 @@ export interface iBoleto {
     DATA_PROCESSAMENTO: string;
     DATA_VENCIMENTO: string;
     DIVISAO: string;
+    JUROS?: number;
+    VALOR_JUROS?: number;
     checked?: boolean;
 }
 
@@ -49,4 +53,11 @@ export interface iBaixarBoletosEOrcamentosParams {
         numBoletos: number[];
         totalBaixa: number;
     };
+}
+
+export interface iParamAddJuros {
+    numBoleto: number,
+    numOrcamento: number,
+    dataOrcamento: string,
+    valorJuros: number,
 }
