@@ -11,7 +11,7 @@ import { msgConfirm } from "@/ts/message";
 import xAuthManager from "@/plugins/xAuthManager";
 
 export const state = reactive({
-    data: '2025-03-24',
+    data: moment().format("YYYY-MM-DD"),
     selectedOption: "caixas",
     loading: false,
     mdcAberto: true,
@@ -339,7 +339,6 @@ export const actions = {
         } finally {
             state.loading = false;
         }
-
     },
 
     selecionarPagamentoModal(tipoPagamento: string) {
@@ -365,6 +364,34 @@ export const actions = {
         state.filtrosAdicionais.apenasNaoConferidos = !state.filtrosAdicionais.apenasNaoConferidos;
         state.todasAsCompras = [...state.todasAsCompras];
         state.valoresConferidos = [...state.valoresConferidos];
+    },
+
+    async conferirCaixa() {
+        state.modalConferirCaixaOpened = false;
+
+        xAuthManager("Confirma a conferência de caixa?", async () => {
+            try {
+                state.loading = true;
+
+                let conferido = await serviceConferenciaDeCaixa.conferirCaixa(state.caixaSelected.ID_ABERTURA_CAIXA);
+                state.caixaSelected.CONFERIDO = conferido.conferido;
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Caixa conferido com sucesso.",
+                    showConfirmButton: false,
+                    timer: 1000,
+                });
+
+            } catch (error) {
+                Swal.fire({
+                    icon: "error",
+                    text: "Erro ao conferir caixa."
+                });
+            } finally {
+                state.loading = false;
+            }
+        });
     }
 }
 
@@ -378,12 +405,12 @@ export const computeds = {
     }),
 
     funcionariosDisponiveis: computed(() => {
-        state.funcionarios.filter(funcionario => {
+        return state.funcionarios.filter(funcionario => {
             const temCaixaAberto = state.caixas.some(
                 caixa => caixa.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO && caixa.STATUS === 1
             );
             return !temCaixaAberto;
-        })
+        });
     }),
 
     comprasFiltradas: computed(() => {
@@ -459,7 +486,7 @@ export const computeds = {
                     )
                 }))
             };
-        }).filter(Boolean); // Remove compras nulas (sem pagamentos após filtro)
+        }).filter(Boolean);
 
         // Ordena por hora
         compras.sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime());
@@ -496,6 +523,7 @@ export const computeds = {
                 }
             });
         });
+
         return obsCaixaSelecionado;
     }),
 

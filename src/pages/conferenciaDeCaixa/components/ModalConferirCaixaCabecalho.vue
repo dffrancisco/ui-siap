@@ -104,7 +104,7 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
               size="small"
               class="mt-3 ml-2"
               color="#A5D6A7"
-              @click="emit('closeModalConferirCaixa')"
+              @click="actions.conferirCaixa()"
             >
               Conferir Caixa
             </v-btn>

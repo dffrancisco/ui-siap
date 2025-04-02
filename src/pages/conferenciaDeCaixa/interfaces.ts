@@ -135,3 +135,7 @@ export interface iParamObs {
     idAberturaCaixa: number;
     observacao: string;
 }
+
+export interface iResponseConferido {
+    conferido: string
+}
