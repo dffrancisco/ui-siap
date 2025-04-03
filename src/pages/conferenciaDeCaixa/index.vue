@@ -70,6 +70,7 @@ onMounted(() => {
           color="primary"
           size="large"
           @click="actions.abrirMDC"
+          v-if="state.data == moment().format('YYYY-MM-DD')"
           >Abrir MDC</v-btn
         >
       </div>

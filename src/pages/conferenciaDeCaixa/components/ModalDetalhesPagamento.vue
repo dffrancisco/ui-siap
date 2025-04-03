@@ -79,6 +79,7 @@ const debitoOuCredito = computed(() => {
         class="btnCancelar"
         size="large"
         color="outline"
+        density="compact"
         @click="actions.cancelar"
         >Cancelar</v-btn
       >

@@ -72,6 +72,7 @@ onMounted(() => {
         title="Cancelar"
         class="btnCancelar"
         size="large"
+        density="compact"
         color="outline"
         @click="actions.cancelar"
         >Cancelar</v-btn
@@ -80,6 +81,7 @@ onMounted(() => {
         title="Adicionar Filtro"
         class="btnSalvar"
         color="primary"
+        density="compact"
         size="large"
         @click="actions.salvarSangria()"
         >Salvar</v-btn

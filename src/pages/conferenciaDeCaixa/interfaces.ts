@@ -52,6 +52,7 @@ export interface iTiposPagamento {
     TIPO_PAGAMENTO: string | null;
     NUM_ORCAMENTO: number;
     VALOR: number | null;
+    CONFERIDO: boolean;
 }
 
 export interface iTodasAsCompras {
@@ -64,7 +65,7 @@ export interface iTodasAsCompras {
     TIPOS_PAGAMENTO: iTiposPagamento[];
     VALOR_TOTAL: number;
     VALOR_FILTRADO?: number;
-    PAGAMENTOS_CONFERIDOS?: any[];
+    // PAGAMENTOS_CONFERIDOS?: any[];
 }
 
 export interface iTotalizadores {

@@ -58,6 +58,22 @@ const actionsObs = {
         cols="10"
         class="overflow-auto mt-2"
         style="max-height: 370px"
+        v-if="computeds.observacoesPorCaixa.value.length === 0"
+      >
+        <v-alert
+          type="warning"
+          color="primary"
+          prominent
+          class="mb-4"
+        >
+          Não há observações cadastradas para o caixa selecionado!
+        </v-alert>
+      </v-col>
+
+      <v-col
+        cols="10"
+        class="overflow-auto mt-2"
+        style="max-height: 370px"
       >
         <v-row>
           <v-col

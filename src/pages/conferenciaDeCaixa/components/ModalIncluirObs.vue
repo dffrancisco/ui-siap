@@ -25,6 +25,7 @@ const stateModalIncluirObs = reactive({
           class="btnCancelar"
           size="large"
           color="outline"
+          density="compact"
           @click="emit('closeModalIncluirObs')"
           >Cancelar</v-btn
         >
@@ -32,6 +33,7 @@ const stateModalIncluirObs = reactive({
           title="Adicionar Filtro"
           class="btnSalvar"
           color="primary"
+          density="compact"
           size="large"
           @click="emit('adicionarObs', stateModalIncluirObs.observacao)"
           >Salvar</v-btn

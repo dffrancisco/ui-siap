@@ -19,7 +19,7 @@ const stateLancamentos = reactive({
   inputLocalizarOrcamento: <HTMLInputElement>null,
   inputLocalizarAutCartao: <HTMLInputElement>null,
   inputValorSomatorio: <HTMLInputElement>null,
-  somatorioLista: [] as { orcamento: string; valor: number }[],
+  somatorioLista: [] as { valor: number; orcamento?: number }[],
   localizarOrcamento: "",
   localizarAutCartao: "",
   exibirApenasNaoConferidos: false,
@@ -27,115 +27,72 @@ const stateLancamentos = reactive({
 });
 
 const actionsLancamentos = {
-  adicionarAoSomatorio: () => {
+  adicionarAoSomatorio() {
     if (!stateLancamentos.valorConferido?.trim()) return;
 
-    const input = stateLancamentos.valorConferido.trim();
-    const comprasFiltradas = computeds.comprasFiltradasPorCaixa.value;
-    let mensagemErro: string | null = null;
-    let itemAdicionado = false;
-
-    const orcamentoJaExiste = (numOrcamento: number) => {
-      return state.somatorioLista.some((item) => item.orcamento === numOrcamento.toString());
-    };
-
-    const todosPagamentos = comprasFiltradas.flatMap((c) => c.TIPOS_PAGAMENTO);
-
-    // Caso 1: Apenas número do orçamento
-    if (/^\d+$/.test(input)) {
-      const numOrcamento = parseInt(input);
-
-      if (orcamentoJaExiste(numOrcamento)) {
-        mensagemErro = `Orçamento ${numOrcamento} já está no somatório.`;
-      } else {
-        const pagamento = todosPagamentos.find((p) => p.NUM_ORCAMENTO === numOrcamento);
-        if (pagamento) {
-          state.somatorioLista.push({
-            orcamento: numOrcamento.toString(),
-            valor: pagamento.VALOR,
-          });
-          itemAdicionado = true;
-        } else {
-          mensagemErro = `Orçamento ${numOrcamento} não encontrado.`;
-        }
-      }
-    }
-    // Caso 2: Apenas valor
-    else if (/^[\d,.]+$/.test(input)) {
-      const valor = parseFloat(input.replace(/\./g, "").replace(",", "."));
-
-      if (!isNaN(valor)) {
-        const pagamento = todosPagamentos.find(
-          (p) => Math.abs(p.VALOR - valor) < 0.01 && !orcamentoJaExiste(p.NUM_ORCAMENTO)
-        );
-
-        if (pagamento) {
-          state.somatorioLista.push({
-            orcamento: pagamento.NUM_ORCAMENTO.toString(),
-            valor: pagamento.VALOR,
-          });
-          itemAdicionado = true;
-        } else {
-          mensagemErro = `Nenhum pagamento não conferido encontrado com valor ${utils.formatValor(valor)}.`;
-        }
-      } else {
-        mensagemErro = "Valor inválido.";
-      }
-    }
-    // Caso 3: Formato completo
-    else {
-      const partes = input.split(/[\s,]+/).filter(Boolean);
-      if (partes.length >= 2) {
-        const numOrcamento = parseInt(partes[0]);
-        const valor = parseFloat(partes[1].replace(/\./g, "").replace(",", "."));
-
-        if (!isNaN(numOrcamento)) {
-          if (orcamentoJaExiste(numOrcamento)) {
-            mensagemErro = `Orçamento ${numOrcamento} já está no somatório.`;
-          } else {
-            const pagamento = todosPagamentos.find(
-              (p) => p.NUM_ORCAMENTO === numOrcamento && Math.abs(p.VALOR - valor) < 0.01
-            );
-
-            if (pagamento) {
-              state.somatorioLista.push({
-                orcamento: numOrcamento.toString(),
-                valor,
-              });
-              itemAdicionado = true;
-            } else {
-              mensagemErro = `Combinação orçamento/valor não encontrada (${numOrcamento} / ${utils.formatValor(
-                valor
-              )}).`;
-            }
-          }
-        } else {
-          mensagemErro = "Formato inválido. Use: 'ORCAMENTO VALOR' (ex: '25 100,00').";
-        }
-      } else {
-        mensagemErro = "Formato inválido. Use: 'ORCAMENTO VALOR' (ex: '25 100,00').";
-      }
+    const valor = utils.formatValorUSA(stateLancamentos.valorConferido.trim());
+    if (isNaN(valor)) {
+      toast.error("Valor inválido. Use formato como '100,00'");
+      stateLancamentos.valorConferido = "";
+      return;
     }
 
-    // Exibe mensagem de erro se houver
-    if (mensagemErro) {
-      toast.error(mensagemErro);
-    } else if (itemAdicionado) {
-      // Feedback visual quando adiciona com sucesso
-      toast.success("Item adicionado ao somatório!");
+    let pagamentoParaAdicionar: iTiposPagamento | undefined;
+
+    //Math.abs(p.VALOR - valor) < 0.01 Verifica se o valor do pagamento é igual ao valor digitado (com margem de 0.01 para evitar problemas de arredondamento)
+    for (const compra of computeds.comprasFiltradasPorCaixa.value) {
+      pagamentoParaAdicionar = compra.TIPOS_PAGAMENTO.find(
+        (p) => Math.abs(p.VALOR - valor) < 0.01 && !p.CONFERIDO
+      );
+
+      if (pagamentoParaAdicionar) break;
     }
 
+    if (!pagamentoParaAdicionar) {
+      toast.error(`Nenhum pagamento disponível com valor ${utils.formatValor(valor)}`);
+      stateLancamentos.valorConferido = "";
+      return;
+    }
+
+    pagamentoParaAdicionar.CONFERIDO = true;
+    stateLancamentos.somatorioLista.push({
+      valor,
+      orcamento: pagamentoParaAdicionar.NUM_ORCAMENTO,
+    });
+
+    toast.success(`Orçamento ${pagamentoParaAdicionar.NUM_ORCAMENTO} adicionado!`);
     stateLancamentos.valorConferido = "";
-    const inputEl = document.getElementById("inputValorSomatorio") as HTMLInputElement;
-    if (inputEl) inputEl.focus();
+    nextTick(() => document.getElementById("inputValorSomatorio")?.focus());
   },
 
-  removerDoSomatorio: (index: number) => {
-    state.somatorioLista.splice(index, 1);
+  removerDoSomatorio(index: number) {
+    const itemRemovido = stateLancamentos.somatorioLista[index];
+
+    const compras = computeds.comprasFiltradasPorCaixa.value;
+    for (const compra of compras) {
+      const pagamento = compra.TIPOS_PAGAMENTO.find(
+        (p) => p.NUM_ORCAMENTO === itemRemovido.orcamento && Math.abs(p.VALOR - itemRemovido.valor) < 0.01
+      );
+      if (pagamento) {
+        pagamento.CONFERIDO = false;
+        break;
+      }
+    }
+
+    stateLancamentos.somatorioLista.splice(index, 1);
+    toast.success("Item removido do somatório!");
   },
 
-  limparSomatorio: () => {
-    state.somatorioLista = [];
+  limparSomatorio() {
+    const compras = computeds.comprasFiltradasPorCaixa.value;
+    for (const compra of compras) {
+      for (const pagamento of compra.TIPOS_PAGAMENTO) {
+        pagamento.CONFERIDO = false;
+      }
+    }
+
+    stateLancamentos.somatorioLista = [];
+    toast.success("Somatório limpo com sucesso!");
   },
 
   atualizarFiltroOrcamento() {
@@ -150,19 +107,17 @@ const actionsLancamentos = {
     actions.toggleApenasNaoConferidos();
   },
 
-  pagamentoNoSomatorio(numOrcamento: number, valor: number) {
-    return state.somatorioLista.some(
-      (item) =>
-        item.orcamento === numOrcamento.toString() && Math.abs(parseFloat(item.valor.toString()) - valor) < 0.01
+  pagamentoConferido(numOrcamento: number, valor: number) {
+    return stateLancamentos.somatorioLista.some(
+      (item) => item.orcamento === numOrcamento && Math.abs(item.valor - valor) < 0.01
     );
   },
 };
 
-// Computed para calcular totalizadores do somatorio
 const totalizadoresSomatorio = computed(() => {
   return {
-    quantidade: state.somatorioLista.length,
-    total: state.somatorioLista.reduce((acc, item) => acc + item.valor, 0),
+    quantidade: stateLancamentos.somatorioLista.length,
+    total: stateLancamentos.somatorioLista.reduce((acc, item) => acc + item.valor, 0),
   };
 });
 
@@ -186,6 +141,8 @@ useEventListener(document, "keydown", async (event) => {
 });
 
 onMounted(() => {
+  stateLancamentos.somatorioLista = [];
+
   stateLancamentos.inputLocalizarOrcamento = document.getElementById(
     "inputLocalizarOrcamento"
   ) as HTMLInputElement;
@@ -285,7 +242,7 @@ onMounted(() => {
                 @click.stop="exibirDetalhesPagamento(pagamento)"
                 title="ver detalhes"
                 :class="{
-                  'chip-no-somatorio': actionsLancamentos.pagamentoNoSomatorio(
+                  'chip-no-somatorio': actionsLancamentos.pagamentoConferido(
                     pagamento.NUM_ORCAMENTO,
                     pagamento.VALOR
                   ),
@@ -321,7 +278,7 @@ onMounted(() => {
       >
         <v-card>
           <v-data-table-virtual
-            :items="state.somatorioLista"
+            :items="stateLancamentos.somatorioLista"
             height="303"
             fixed-header
             :headers="[
@@ -332,13 +289,16 @@ onMounted(() => {
             dense
             hide-default-footer
           >
+            <template v-slot:item.orcamento="{ item }">
+              <span> + {{ item.orcamento }}</span>
+            </template>
+
             <template v-slot:item.valor="{ item }">
-              <b>{{ utils.formatValor(item.valor) }}</b>
+              <b style="color: #0288d1">{{ utils.formatValor(item.valor) }}</b>
             </template>
 
             <template v-slot:item.acoes="{ index }">
               <v-icon
-                color="primary"
                 @click="actionsLancamentos.removerDoSomatorio(index)"
                 title="Remover"
                 >mdi-delete</v-icon

@@ -42,10 +42,7 @@ export const state = reactive({
         orcamento: '',
         autorizacao: '',
         apenasNaoConferidos: false,
-        valorConferido: ''
-    },
-    valoresConferidos: [] as { caixa: number, numOrcamento: number, valor: number }[],
-    somatorioLista: [] as { orcamento: string; valor: number }[],
+    }
 });
 
 export const options: iOptions[] = [
@@ -57,7 +54,7 @@ export const options: iOptions[] = [
 
 export const actions = {
     async init() {
-        const isValid = await actions.validarInputData();
+        const isValid = await actions.validarData(state.data);
         if (!isValid) return;
 
         await actions.getDadosIniciaisConfCaixa();
@@ -110,24 +107,7 @@ export const actions = {
         state.totalizadoresIndividuais = [];
     },
 
-    async validarDataAtual(caixaData) {
-        const hoje = moment().format("YYYY-MM-DD");
-
-        if (!moment(caixaData, "YYYY-MM-DD", true).isValid() || caixaData !== hoje) {
-            await Swal.fire({
-                title: "Atenção",
-                text: "Só é possível abrir o caixa ou MDC na data atual!",
-                icon: "warning",
-                confirmButtonText: "OK",
-            });
-            return false;
-        }
-        return true;
-    },
-
-    async validarInputData() {
-        const caixaData = state.data;
-
+    async validarData(caixaData) {
         // Verifica se a data é válida
         if (!moment(caixaData, "YYYY-MM-DD", true).isValid()) {
             await Swal.fire({
@@ -154,12 +134,6 @@ export const actions = {
     },
 
     async abrirMDC() {
-        const caixaData = state.data;
-
-        if (!(await actions.validarDataAtual(caixaData))) {
-            return;
-        }
-
         if (await msgConfirm("Confirmação", "Gostaria de Abrir o MDC do dia " + utils.dataBrasil(state.data) + "?")) {
             try {
                 state.loading = true;
@@ -178,11 +152,6 @@ export const actions = {
     },
 
     async openModalAbrirCaixa() {
-        const caixaData = state.data;
-
-        if (!(await actions.validarDataAtual(caixaData))) {
-            return;
-        }
         state.modalAbrirCaixaOpened = true;
     },
 
@@ -339,7 +308,6 @@ export const actions = {
 
     abrirModalConferirCaixa(caixa) {
         state.caixaSelected = caixa;
-        state.somatorioLista = []
         state.modalConferirCaixaOpened = true;
     },
 
@@ -393,8 +361,6 @@ export const actions = {
 
     toggleApenasNaoConferidos() {
         state.filtrosAdicionais.apenasNaoConferidos = !state.filtrosAdicionais.apenasNaoConferidos;
-        state.todasAsCompras = [...state.todasAsCompras];
-        state.valoresConferidos = [...state.valoresConferidos];
     },
 
     async conferirCaixa() {
@@ -491,13 +457,9 @@ export const computeds = {
                     return false;
                 }
 
-                // Filtro por não conferidos
-                if (state.filtrosAdicionais.apenasNaoConferidos) {
-                    const foiConferido = state.somatorioLista.some(item =>
-                        item.orcamento === pagamento.NUM_ORCAMENTO?.toString() &&
-                        Math.abs(parseFloat(item.valor.toString()) - pagamento.VALOR) < 0.01
-                    );
-                    if (foiConferido) return false;
+                // Filtro por não conferido
+                if (state.filtrosAdicionais.apenasNaoConferidos && pagamento.CONFERIDO) {
+                    return false;
                 }
 
                 return true;
@@ -508,14 +470,7 @@ export const computeds = {
             return {
                 ...compra,
                 TIPOS_PAGAMENTO: pagamentosFiltrados,
-                VALOR_FILTRADO: pagamentosFiltrados.reduce((sum, p) => sum + p.VALOR, 0),
-                PAGAMENTOS_CONFERIDOS: pagamentosFiltrados.map(p => ({
-                    ...p,
-                    CONFERIDO: state.valoresConferidos.some(conferidos =>
-                        conferidos.numOrcamento === p.NUM_ORCAMENTO &&
-                        Math.abs(conferidos.valor - p.VALOR) < 0.01
-                    )
-                }))
+                VALOR_FILTRADO: pagamentosFiltrados.reduce((sum, p) => sum + p.VALOR, 0)
             };
         }).filter(Boolean);
 
