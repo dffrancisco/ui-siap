@@ -421,7 +421,7 @@ import login from "../login/login";
               @click="router.push('/consultaValeDinheiro')"
               >Consulta Vale Dinheiro</v-btn
             >
-            
+
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/cfop')"
@@ -432,6 +432,12 @@ import login from "../login/login";
               class="mr-4 mb-4"
               @click="router.push('/descontoDeGerentes')"
               >Desconto de Gerentes</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/conferenciaDeCaixa')"
+              >Conferência de Caixa</v-btn
             >
 
             <v-btn
