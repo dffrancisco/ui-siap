@@ -211,7 +211,7 @@ const actionsRegime = {
 
       stateRegime.loading = true;
 
-      await serviceNfe.toDeleteCofins(idCofins);
+      await serviceNfe.toDeleteRegimeTributario(idCofins);
 
       stateRegime.grid.deleteLine();
       await Swal.fire({

@@ -58,20 +58,20 @@ const actionsCofins = {
         vModel(r) {
           stateCofins.cofins = r;
         },
-        // duplicity: {
-        //   dataField: ["ID_REGIME_TRIBUTARIO"],
-        //   async execute(rs) {
-        //     const dup = await actionsCofins.getDuplicidade({
-        //       value: rs.value.toUpperCase(),
-        //       field: rs.field,
-        //     });
-        //     if (dup && Object.keys(dup).length > 0) {
-        //       stateCofins.grid.showMessageDuplicity(rs.text + " já cadastrado.");
-        //       return true;
-        //     }
-        //     return false;
-        //   },
-        // },
+        duplicity: {
+          dataField: ["ID_REGIME_TRIBUTARIO"],
+          async execute(rs) {
+            const dup = await actionsCofins.getDuplicidade({
+              value: rs.value.toUpperCase(),
+              field: rs.field,
+            });
+            if (dup && Object.keys(dup).length > 0) {
+              stateCofins.grid.showMessageDuplicity(rs.text + " já cadastrado.");
+              return true;
+            }
+            return false;
+          },
+        },
         frame: {
           el: "#pncofinsBotoes",
           buttons: {
@@ -132,18 +132,18 @@ const actionsCofins = {
     }
   },
 
-  // async getDuplicidade({ value, field }: iFieldDuplicity) {
-  //   try {
-  //     const data = await serviceNfe.getDuplicidade({ value, field });
-  //     return data;
-  //   } catch (error) {
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Erro ao verificar duplicidade.",
-  //       text: error.message,
-  //     });
-  //   }
-  // },
+  async getDuplicidade({ value, field }: iFieldDuplicity) {
+    try {
+      const data = await serviceNfe.getDuplicidade({ value, field });
+      return data;
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao verificar duplicidade.",
+        text: error.message,
+      });
+    }
+  },
 
   async btnInsert() {
     stateCofins.isEditing = true;
@@ -186,9 +186,9 @@ const actionsCofins = {
       return false;
     }
 
-    // if (await stateCofins.grid.getDuplicityAll()) {
-    //   return false;
-    // }
+    if (await stateCofins.grid.getDuplicityAll()) {
+      return false;
+    }
 
     if (stateCofins.grid.dataSource() == false) {
       actionsCofins.toInsert();

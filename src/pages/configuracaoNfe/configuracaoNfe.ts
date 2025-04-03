@@ -65,7 +65,6 @@ export const actions = {
         }
     },
     btnEdit() {
-
         state.isEditable = true;
         nextTick(() => {
             const firstInput = document.querySelector('input');
@@ -73,8 +72,15 @@ export const actions = {
         });
     },
 
-
     async btnSave() {
+        if (!state.isEditable) {
+            Swal.fire({
+                icon: "warning",
+                text: "Realize uma alteração antes de salvar!",
+            });
+            return;
+        }
+
         if (utils.validaOBR()) return;
 
         try {
@@ -88,8 +94,10 @@ export const actions = {
             state.originalConfig = { ...state.nfeConfig };
             state.isEditable = false;
         } catch (error) {
-
-
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao salvar as configurações!",
+            });
         } finally {
             state.loading = false;
         }
@@ -98,8 +106,6 @@ export const actions = {
     btnCancel() {
         state.isEditable = false;
     },
-
-
 };
 
 export default { state, actions };

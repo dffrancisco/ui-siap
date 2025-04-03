@@ -4,14 +4,27 @@ import { state, actions, stateTabs, regimeTributarioOptions } from "./configurac
 import AbaRegimeTributario from "./components/AbaRegimeTributario.vue";
 import AbaPis from "./components/AbaPis.vue";
 import AbaCofins from "./components/AbaConfins.vue";
+import { computed } from "vue";
 
 onMounted(async () => {
   await actions.init();
 });
 
-const changeTab = (tabValue: string) => {
-  stateTabs.selectedTab = tabValue;
-};
+const regimeTributarioSelecionado = computed({
+  get: () => {
+    return (
+      regimeTributarioOptions.find(
+        (option) => String(option.value) === String(state.nfeConfig.REGIME_TRIBUTARIO)
+      ) || {
+        text: "",
+        value: null,
+      }
+    );
+  },
+  set: (newValue) => {
+    state.nfeConfig.REGIME_TRIBUTARIO = String(newValue.value);
+  },
+});
 </script>
 
 <template>
@@ -39,14 +52,13 @@ const changeTab = (tabValue: string) => {
       <v-row dense>
         <v-col cols="3">
           <v-select
-            v-model="state.nfeConfig.REGIME_TRIBUTARIO"
+            v-model="regimeTributarioSelecionado"
             label="Regime Tributário"
             :items="regimeTributarioOptions"
             item-title="text"
             item-value="value"
             maxlength="100"
             dense
-            clearable
             :disabled="!state.isEditable"
           />
         </v-col>
