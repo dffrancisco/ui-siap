@@ -207,15 +207,17 @@ export const actions = {
     },
 
     async baixarBoletosEOrcamentos(justificativaBaixaManual: string) {
-        const orcamentosSelecionadosBaixa = computeds.orcamentosSelecionados.value.map(orcamento => ({
+        const orcamentosSelecionadosBaixa = computeds.orcamentosSelecionados.value.map((orcamento: iOrcamento) => ({
             numOrcamento: orcamento.NUM_ORCAMENTO,
             dataOrcamento: orcamento.DATA,
-            valorOrcamento: orcamento.VALOR
+            valorOrcamento: orcamento.VALOR,
+            valorJuros: orcamento.VALOR_JUROS
         }));
 
-        const boletosSelecionadosBaixa = computeds.boletosSelecionados.value.map(boleto => ({
+        const boletosSelecionadosBaixa = computeds.boletosSelecionados.value.map((boleto: iBoleto) => ({
             numBoleto: boleto.NUM_BOLETO,
-            valorBoleto: boleto.VALOR
+            valorBoleto: boleto.VALOR,
+            valorJuros: boleto.VALOR_JUROS
         }));
 
         const dataExtrato = computeds.extratoSelecionado.value.length > 0 ? computeds.extratoSelecionado.value[0].DATA : null;
