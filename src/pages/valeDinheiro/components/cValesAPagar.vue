@@ -128,7 +128,8 @@ const onClickPagar = async () => {
 
   if (funcionarioEmpresa) {
     Swal.fire({
-      icon: "error",
+      icon: "warning",
+      title: "Atenção!",
       text: "Não é permitido pagar vale para usuário empresa.",
     });
     return;
