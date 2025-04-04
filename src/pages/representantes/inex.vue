@@ -10,7 +10,7 @@ onMounted(async () => {
 
 <template>
   <v-container>
-    <title>Gerenciar Fornecedores</title>
+    <title>Gerenciar Representantes</title>
     <v-card
       width="900"
       height="650"
@@ -283,7 +283,7 @@ onMounted(async () => {
       </div>
     </v-card>
 
-    <div id="pnCodigoTela">fornecedores</div>
+    <div id="pnCodigoTela">representantes</div>
    
   </v-container>
 </template>

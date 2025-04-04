@@ -8,9 +8,6 @@ import {
     iRepresentantesParam,
     iMarcas,
     iParamGetRepresentantes,
-    iGetDuplicityResponse,
-    iToInativarFunction,
-    iGetFornecedoresResponse,
     iParamToInsert,
     iParamToUpdate,
 } from "./interfaces";
