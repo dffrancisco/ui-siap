@@ -17,10 +17,16 @@ const options: iOptions[] = [
 ];
 </script>
 <template
-  ><v-card class="pa-5 ma-auto modal-container">
+  ><v-card class="pa-4 modal-container">
     <ModalConferirCaixaCabecalho @closeModalConferirCaixa="emit('closeModalConferirCaixa')" />
+
+    <v-divider
+      :thickness="3"
+      class="mt-3"
+    ></v-divider>
+
     <!--Lista de Opções -->
-    <div>
+    <div class="mt-1">
       <v-chip-group
         v-model="state.selectOptionModal"
         color="primary"
@@ -44,20 +50,26 @@ const options: iOptions[] = [
         </v-chip>
       </v-chip-group>
     </div>
-    <v-divider :thickness="3"></v-divider>
 
-    <ModalConferirCaixaAbaLancamentos v-if="computeds.abaSelecionadaModal.value === 'lancamentos'" />
-    <ModalConferirCaixaAbaSangrias v-if="computeds.abaSelecionadaModal.value === 'sangria'" />
-    <ModalConferirCaixaAbaDevolucoes v-if="computeds.abaSelecionadaModal.value === 'devolucao'" />
-    <ModalConferirCaixaAbaObservacoes v-if="computeds.abaSelecionadaModal.value === 'observacao'" />
+    <v-divider
+      :thickness="3"
+      class="mt-1"
+    ></v-divider>
+
+    <div>
+      <ModalConferirCaixaAbaLancamentos v-if="computeds.abaSelecionadaModal.value === 'lancamentos'" />
+      <ModalConferirCaixaAbaSangrias v-if="computeds.abaSelecionadaModal.value === 'sangria'" />
+      <ModalConferirCaixaAbaDevolucoes v-if="computeds.abaSelecionadaModal.value === 'devolucao'" />
+      <ModalConferirCaixaAbaObservacoes v-if="computeds.abaSelecionadaModal.value === 'observacao'" />
+    </div>
   </v-card>
 </template>
 <style scoped>
 .modal-container {
-  max-height: 560px;
-  width: 1050px;
+  max-width: 1050px;
   overflow-y: auto;
   display: flex;
+  max-height: 600px;
   flex-direction: column;
 }
 

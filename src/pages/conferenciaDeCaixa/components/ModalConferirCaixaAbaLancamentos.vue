@@ -160,7 +160,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-card class="pa-1">
+  <v-card class="pa-1 modalAbaLancamentos">
     <v-row>
       <v-col
         class="d-flex flex-column"
@@ -238,7 +238,6 @@ onMounted(() => {
                 v-for="pagamento in item.TIPOS_PAGAMENTO"
                 :key="pagamento.TIPOS_PAGAMENTO"
                 class="mr-1 chip-pagamento"
-                :color="pagamento.CONFERIDO ? 'success' : 'primary'"
                 @click.stop="exibirDetalhesPagamento(pagamento)"
                 title="ver detalhes"
                 :class="{
@@ -261,7 +260,7 @@ onMounted(() => {
                         <span v-if="pagamento.DIVIDE !== null"> {{ pagamento.DIVIDE }}x </span>
                       </div>
                     </div>
-                    <div class="d-flex align-center">
+                    <div class="d-flex align-center valor-pagamento">
                       <strong>{{ utils.formatValor(pagamento.VALOR) }}</strong>
                     </div>
                   </div>
@@ -330,13 +329,10 @@ onMounted(() => {
     </v-row>
     <v-container
       fluid
-      class="pa-4 mt-2"
+      class="containerFooter"
     >
-      <v-row>
-        <v-col
-          cols="3"
-          class="pl-0"
-        >
+      <v-row class="ma-0 pa-0">
+        <v-col cols="3">
           <v-text-field
             id="inputLocalizarOrcamento"
             v-model="stateLancamentos.localizarOrcamento"
@@ -366,15 +362,16 @@ onMounted(() => {
         </v-col>
         <v-col
           cols="3"
-          class="pr-0"
+          class="pr-3"
         >
           <v-text-field
             id="inputValorSomatorio"
             ref="inputValorSomatorio"
             v-model="stateLancamentos.valorConferido"
-            label="Orç. ou Valor (F3 + Enter)"
+            v-mask-decimal.br="2"
+            label="Valor (F3)"
             :clearable="false"
-            placeholder="Ex: 12345 ou 100,00"
+            placeholder="Ex: 100,00"
             @keydown.enter.prevent="actionsLancamentos.adicionarAoSomatorio"
           ></v-text-field>
         </v-col>
@@ -425,12 +422,13 @@ onMounted(() => {
   height: 45px;
   border-radius: 8px !important;
   transition: all 0.3s ease;
+  background-color: #ebf7ff;
 }
 
 .chip-no-somatorio {
-  border: 1px solid #4caf50 !important;
-  box-shadow: 0 0 0 1px #4caf50 !important;
-  background-color: #6cff715f !important;
+  border: 1px solid #4caf50;
+  box-shadow: 0 0 0 1px #4caf50;
+  background-color: #6cff715f;
 }
 
 .chip-pagamento-icon {
@@ -443,6 +441,11 @@ onMounted(() => {
   font-weight: 500;
   line-height: 1;
   margin-bottom: 2px;
+  color: #017bc2c7;
+}
+
+.valor-pagamento {
+  color: #017bc2c7;
 }
 
 .orcamento-group {
@@ -517,5 +520,17 @@ onMounted(() => {
 
 #inputValorSomatorio {
   font-weight: bold;
+}
+
+.containerFooter {
+  padding: 0;
+  margin: 0;
+  margin-bottom: -30px;
+}
+
+.modalAbaLancamentos {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>

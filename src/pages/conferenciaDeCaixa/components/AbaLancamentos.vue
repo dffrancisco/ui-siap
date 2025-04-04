@@ -131,10 +131,7 @@ const stateLancamentos = reactive({
   </v-card>
 
   <!-- Modal Detalhes Pagamento -->
-  <v-dialog
-    v-model="stateLancamentos.modalDetalhesPagamentoOpened"
-    max-width="500"
-  >
+  <v-dialog v-model="stateLancamentos.modalDetalhesPagamentoOpened">
     <ModalDetalhesPagamento
       :modalOpened="stateLancamentos.modalDetalhesPagamentoOpened"
       :pagamentoSelecionado="stateLancamentos.pagamentoSelecionado"

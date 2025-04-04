@@ -12,7 +12,7 @@ const stateModalIncluirObs = reactive({
       <v-textarea
         v-model="stateModalIncluirObs.observacao"
         label="Observação*"
-        maxlength="200"
+        maxlength="150"
         rows="4"
         @keydown.enter.prevent="emit('adicionarObs', stateModalIncluirObs.observacao)"
       ></v-textarea>
