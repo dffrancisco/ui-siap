@@ -63,9 +63,8 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
     <v-divider vertical></v-divider>
 
     <div
-      cols="2"
       style="position: relative"
-      class="d-flex flex-grow-1"
+      class="d-flex flex-grow-1 justify-center"
     >
       <div>
         <div
