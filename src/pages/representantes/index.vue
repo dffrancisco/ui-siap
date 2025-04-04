@@ -13,7 +13,7 @@ onMounted(async () => {
     <title>Gerenciar Representantes</title>
     <v-card
       width="900"
-      height="650"
+      height="550"
       class="pa-5 ma-auto"
     >
       <div id="pnCampos">
@@ -55,7 +55,7 @@ onMounted(async () => {
             />
           </v-col>
           <v-col cols="3">
-            <span>Telefone/span>
+            <span>Telefone</span>
             <input
               v-model="state.dbRepresentantes.TELEFONE"
               type="text"
@@ -79,7 +79,8 @@ onMounted(async () => {
                 class="ss"
                 maxlength="60"
                 autocomplete="off"
-                :disabled="true" /></div>
+                :disabled="true"
+            /></div>
           </v-col>
 
           <v-col cols="4">
@@ -174,7 +175,6 @@ onMounted(async () => {
               maxlength="9"
               v-mask="'#####-###'"
               autocomplete="off"
-             
             />
           </v-col>
           <v-col cols="4">
@@ -224,21 +224,13 @@ onMounted(async () => {
               maxlength="50"
               autocomplete="off"
             />
-            </select>
           </v-col>
         </v-row>
 
-        <v-row class="mt-n1">
-          <v-col cols="3">
-
-
-
-          </v-col>
-
-         
-        </v-row>
-
-        <div class="d-flex ga-2 align-items-center">
+        <div
+          class="d-flex ga-2 align-items-center mt-4"
+          style="gap: 16px"
+        >
           <input
             v-model="state.edtSearch"
             type="text"
@@ -284,7 +276,6 @@ onMounted(async () => {
     </v-card>
 
     <div id="pnCodigoTela">representantes</div>
-   
   </v-container>
 </template>
 <style scoped>

@@ -12,7 +12,7 @@ import {
 const caminho = "siap/representantes";
 
 type iGetMarcas = () => Promise<iMarcas[]>
-type iGetRepresentantesFunction = (param: iParamGetRepresentantes) => Promise<iRepresentantes[]>;
+type iGetRepresentantesFunction = (param: iRepresentantes, offset: number) => Promise<iParamGetRepresentantes[]>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<iRepresentantes>;
 type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>;

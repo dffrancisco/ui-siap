@@ -129,12 +129,16 @@ export const actions = {
     async getRepresentantes({ offset, param }: iParamGetRepresentantes) {
         try {
             state.loading = true;
-            const data = await serviceRepresentantes.getRepresentantes({ offset, param });
+            const data = await serviceRepresentantes.getRepresentantes({
+                offset,
+                param
+            });
+
+            state.loading = false;
             return data;
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao exibir os representantes",
                 text: "erro ao exibir registro de representantes",
             });
         } finally {
