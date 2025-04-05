@@ -1,10 +1,25 @@
 <script setup lang="ts">
 const emit = defineEmits(["closeModalIncluirObs", "adicionarObs"]);
 import { reactive } from "vue";
+import Swal from "sweetalert2";
 
 const stateModalIncluirObs = reactive({
   observacao: "",
 });
+
+const actionsModalIncluirObs = {
+  adicionarObs() {
+    if (stateModalIncluirObs.observacao == "") {
+      Swal.fire({
+        icon: "warning",
+        text: "Campo observação é obrigatório.",
+      });
+      return false;
+    }
+    emit("adicionarObs", stateModalIncluirObs.observacao);
+    stateModalIncluirObs.observacao = "";
+  },
+};
 </script>
 <template
   ><div class="modal-container">
@@ -35,7 +50,7 @@ const stateModalIncluirObs = reactive({
           color="primary"
           density="compact"
           size="large"
-          @click="emit('adicionarObs', stateModalIncluirObs.observacao)"
+          @click="actionsModalIncluirObs.adicionarObs"
           >Salvar</v-btn
         >
       </v-row>

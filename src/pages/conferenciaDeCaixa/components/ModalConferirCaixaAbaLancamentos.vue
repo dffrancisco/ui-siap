@@ -32,7 +32,7 @@ const actionsLancamentos = {
 
     const valor = utils.formatValorUSA(stateLancamentos.valorConferido.trim());
     if (isNaN(valor)) {
-      toast.error("Valor inválido. Use formato como '100,00'");
+      toast.warning("Valor inválido. Use formato como '100,00'");
       stateLancamentos.valorConferido = "";
       return;
     }
@@ -49,7 +49,7 @@ const actionsLancamentos = {
     }
 
     if (!pagamentoParaAdicionar) {
-      toast.error(`Nenhum pagamento disponível com valor ${utils.formatValor(valor)}`);
+      toast.warning(`Nenhum pagamento disponível com valor ${utils.formatValor(valor)}`);
       stateLancamentos.valorConferido = "";
       return;
     }
