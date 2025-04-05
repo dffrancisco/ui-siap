@@ -17,21 +17,6 @@ const actionsObs = {
 </script>
 
 <template>
-  <!-- <v-card
-    class="pa-3"
-    height="400px"
-    v-if="computeds.observacoesPorCaixa.value.length === 0"
-  >
-    <v-alert
-      type="warning"
-      color="primary"
-      prominent
-      class="mb-4"
-    >
-      Não há observações cadastradas para o caixa selecionado!
-    </v-alert>
-  </v-card> -->
-
   <v-card
     class="pa-3"
     height="410px"

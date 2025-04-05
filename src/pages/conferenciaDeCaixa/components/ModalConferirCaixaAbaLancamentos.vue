@@ -126,7 +126,7 @@ useEventListener(document, "keydown", async (event) => {
     event.preventDefault();
     stateLancamentos.inputLocalizarOrcamento?.focus();
   }
-  if (event.key === "F4") {
+  if (event.key === "F6") {
     event.preventDefault();
     stateLancamentos.inputLocalizarAutCartao?.focus();
   }
@@ -345,7 +345,7 @@ onMounted(() => {
           <v-text-field
             id="inputLocalizarAutCartao"
             v-model="stateLancamentos.localizarAutCartao"
-            label="Localizar Aut. Cartao (F4)"
+            label="Localizar Aut. Cartao (F6)"
             :clearable="false"
             @input="actionsLancamentos.atualizarFiltroAutorizacao"
           ></v-text-field>

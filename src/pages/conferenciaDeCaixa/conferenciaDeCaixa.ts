@@ -420,7 +420,9 @@ export const computeds = {
         }
 
         return compras
-            .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
+            .sort((a, b) =>
+                moment(a.HORA).valueOf() - moment(b.HORA).valueOf()
+            )
             .map((compra, index) => ({
                 ...compra,
                 INDEX: index + 1,
@@ -475,7 +477,9 @@ export const computeds = {
         }).filter(Boolean);
 
         // Ordena por hora
-        compras.sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime());
+        compras.sort((a, b) =>
+            moment(a.HORA).valueOf() - moment(b.HORA).valueOf()
+        )
 
         // Adiciona índice
         return compras.map((compra, index) => ({
@@ -502,13 +506,13 @@ export const computeds = {
             obsCaixaSelecionado.push(state.caixaSelected.OBS);
         }
 
-        comprasDoCaixa.forEach(compra => {
-            compra.TIPOS_PAGAMENTO.forEach(pagamento => {
-                if (pagamento.OBS) {
-                    obsCaixaSelecionado.push(pagamento.OBS);
-                }
-            });
-        });
+        for (const compra of comprasDoCaixa) {
+            const pagamentoComObs = compra.TIPOS_PAGAMENTO.find(p => p.OBS);
+
+            if (pagamentoComObs) {
+                obsCaixaSelecionado.push(pagamentoComObs.OBS);
+            }
+        }
 
         return obsCaixaSelecionado;
     }),
@@ -567,28 +571,28 @@ export const computeds = {
     totalizadorDevolucaoPorCaixa: computed(() => {
         if (!state.caixaSelected) return [];
 
-        const devolucoesPorCaixa = state.devolucoes.filter(d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
+        const devolucoesPorCaixa = state.devolucoes.filter(
+            d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO
+        );
 
-        // Agrupa os pagamentos e soma os valores por tipo de pagamento
-        const pagamentosMap = new Map<string, number>();
+        const totais: { [descricao: string]: number } = {};
 
-        devolucoesPorCaixa.forEach(({ DESCRICAO_PAGAMENTO, VALOR }) => {
-            const valorAtual = pagamentosMap.get(DESCRICAO_PAGAMENTO) || 0;
-            pagamentosMap.set(DESCRICAO_PAGAMENTO, valorAtual + VALOR);
-        });
+        for (const { DESCRICAO_PAGAMENTO, VALOR } of devolucoesPorCaixa) {
+            totais[DESCRICAO_PAGAMENTO] = (totais[DESCRICAO_PAGAMENTO] || 0) + VALOR;
+        }
 
-        // Converte o Map para um array de objetos com os totalizadores
-        const totalizadores = Array.from(pagamentosMap, ([DESCRICAO_PAGAMENTO, VALOR]) => ({
+        //pega o obj e retorna um array de pares em outra estrutura
+        const totalizadores = Object.entries(totais).map(([DESCRICAO_PAGAMENTO, VALOR]) => ({
             DESCRICAO_PAGAMENTO,
             VALOR,
         }));
 
-        // Adiciona a opção "TODOS" com a soma total de todas as devoluções do caixa
         const totalTodos = totalizadores.reduce((acc, item) => acc + item.VALOR, 0);
         totalizadores.unshift({ DESCRICAO_PAGAMENTO: "TODOS", VALOR: totalTodos });
 
         return totalizadores;
     }),
+
 
     totalDevolucoes: computed(() => {
         const totaisPorCaixa = state.devolucoes.reduce((acc, devolucao) => {

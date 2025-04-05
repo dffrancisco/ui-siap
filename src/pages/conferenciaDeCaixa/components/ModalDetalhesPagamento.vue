@@ -92,6 +92,7 @@ const debitoOuCredito = computed(() => {
   display: flex;
   flex-direction: column;
   max-height: 500px;
+  left: 25%;
   max-width: 420px;
   background: white;
   border-radius: 12px;

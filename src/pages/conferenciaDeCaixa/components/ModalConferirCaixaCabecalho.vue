@@ -116,11 +116,6 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
   </div>
 </template>
 <style scoped>
-.v-col {
-  padding: 0;
-  margin: 0;
-}
-
 .cabecalho {
   display: flex;
   height: 60px;
