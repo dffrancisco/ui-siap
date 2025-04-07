@@ -145,6 +145,7 @@ onMounted(async () => {
                 <v-icon
                   v-if="!item.JUROS || item.JUROS == 0"
                   color="primary"
+                  title="Adicionar juros"
                   @click="actions.openModalAddJuros(null, item.NUM_ORCAMENTO, item.DATA)"
                   >mdi-percent</v-icon
                 >
@@ -152,8 +153,12 @@ onMounted(async () => {
                   v-else
                   class="d-flex align-center ga-2 justify-center"
                 >
-                  <span>{{ utils.formatValor(item.VALOR_JUROS) }}</span>
-                  <v-icon @click="actions.openModalEditJuros(null, item.NUM_ORCAMENTO, item.DATA, item.JUROS)"
+                  <span :title="utils.formatValor(item.JUROS) + '%'">{{
+                    utils.formatValor(item.VALOR_JUROS)
+                  }}</span>
+                  <v-icon
+                    title="Editar Juros"
+                    @click="actions.openModalEditJuros(null, item.NUM_ORCAMENTO, item.DATA, item.JUROS)"
                     >mdi-pencil</v-icon
                   >
                 </div>
@@ -205,6 +210,7 @@ onMounted(async () => {
                 <v-icon
                   v-if="!item.JUROS || item.JUROS == 0"
                   color="primary"
+                  title="Adicionar juros"
                   @click="actions.openModalAddJuros(item.NUM_BOLETO, null, null)"
                   >mdi-percent</v-icon
                 >
@@ -212,8 +218,12 @@ onMounted(async () => {
                   v-else
                   class="d-flex align-center ga-2 justify-center"
                 >
-                  <span>{{ utils.formatValor(item.VALOR_JUROS) }}</span>
-                  <v-icon @click="actions.openModalEditJuros(item.NUM_BOLETO, null, null, item.JUROS)"
+                  <span :title="utils.formatValor(item.JUROS) + '%'">{{
+                    utils.formatValor(item.VALOR_JUROS)
+                  }}</span>
+                  <v-icon
+                    @click="actions.openModalEditJuros(item.NUM_BOLETO, null, null, item.JUROS)"
+                    title="Editar Juros"
                     >mdi-pencil</v-icon
                   >
                 </div>

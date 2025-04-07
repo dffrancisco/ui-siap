@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import utils from "@/ts/utils";
-import { on } from "events";
+import Swal from "sweetalert2";
 import { onMounted, reactive } from "vue";
 
 const props = defineProps({
@@ -26,6 +26,17 @@ const state = reactive({
 
 const actions = {
   onClickBtnSalvar() {
+    if (utils.formatValorUSA(state.juros) < 0) {
+      Swal.fire({
+        title: "Atenção",
+        text: "Valor do juros não pode ser negativo!",
+        icon: "warning",
+        confirmButtonText: "Ok",
+      });
+
+      return;
+    }
+
     emits("addJuros", {
       numBoleto: props.numBoleto,
       numOrcamento: props.numOrcamento,
@@ -60,6 +71,7 @@ onMounted(() => {
           label="Juros"
           maxlength="5"
           autofocus
+          append-inner-icon="mdi-percent"
           :clearable="false"
           @keypress.enter="actions.onClickBtnSalvar"
           v-mask-decimal.br="2"
