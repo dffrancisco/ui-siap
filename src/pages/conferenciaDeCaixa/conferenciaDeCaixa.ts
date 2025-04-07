@@ -194,7 +194,6 @@ export const actions = {
     },
 
     async fecharCaixa(funcionario) {
-        state.modalConferirCaixaOpened = false;
 
         let param: iParamFecharCaixa = {
             ID_ABERTURA_CAIXA: funcionario.ID_ABERTURA_CAIXA,
@@ -205,8 +204,8 @@ export const actions = {
             try {
                 state.loading = true;
 
-                let caixasAbertoAtualizados = await serviceConferenciaDeCaixa.fecharCaixa(param);
-                state.caixas = caixasAbertoAtualizados;
+                let caixasAtualizados = await serviceConferenciaDeCaixa.fecharCaixa(param);
+                state.caixas = caixasAtualizados;
 
                 // Reintroduzir o funcionário na lista de funcionários disponíveis
                 const funcionarioFechado = state.funcionarios.find(
@@ -218,6 +217,20 @@ export const actions = {
                         LOGIN: funcionario.LOGIN
                     };
                     state.funcionarios.push(retornarFuncionarioParaState);
+                }
+
+                // Atualiza o caixaSelecionado com os novos dados
+                const caixaFechado = caixasAtualizados.find(
+                    c => c.ID_ABERTURA_CAIXA === funcionario.ID_ABERTURA_CAIXA
+                );
+
+                if (caixaFechado) {
+                    state.caixaSelected = {
+                        ...state.caixaSelected,
+                        STATUS: caixaFechado.STATUS,
+                        HORA_FECHAMENTO: caixaFechado.HORA_FECHAMENTO,
+                        CONFERIDO: caixaFechado.CONFERIDO || ''
+                    };
                 }
 
 
@@ -364,7 +377,6 @@ export const actions = {
     },
 
     async conferirCaixa() {
-        state.modalConferirCaixaOpened = false;
 
         xAuthManager("Confirma a conferência de caixa?", async () => {
             try {

@@ -189,6 +189,8 @@ onMounted(() => {
     <v-dialog
       v-model="state.modalConferirCaixaOpened"
       max-width="1050"
+      :retain-focus="false"
+      z-index="500"
     >
       <ModalConferirCaixa
         :modalOpened="state.modalConferirCaixaOpened"
@@ -197,7 +199,6 @@ onMounted(() => {
         :sangrias="state.sangrias"
         :devolucoes="state.devolucoes"
         @closeModalConferirCaixa="state.modalConferirCaixaOpened = false"
-        :retain-focus="false"
       />
     </v-dialog>
 

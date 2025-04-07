@@ -1,8 +1,17 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
 import { actions, state } from "../conferenciaDeCaixa";
+import { watch } from "vue";
 
 const emit = defineEmits(["closeModalConferirCaixa"]);
+
+watch(
+  () => state.caixaSelected,
+  (newVal) => {
+    // Força a re-renderização dos btns de fechar e conferir caixa
+  },
+  { deep: true }
+);
 </script>
 <template>
   <div class="cabecalho">
@@ -69,7 +78,7 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
       <div>
         <div
           class="pl-3"
-          v-if="state.caixaSelected.STATUS == 1 && state.caixaSelected.CONFERIDO == ''"
+          v-if="state.caixaSelected.STATUS == 1 && !state.caixaSelected.CONFERIDO"
         >
           <v-btn
             title="Fechar Caixa"
@@ -80,11 +89,19 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
           >
             Fechar Caixa
           </v-btn>
+          <div style="position: absolute; right: 0; top: 0">
+            <v-icon
+              size="large"
+              title="Fechar Modal"
+              @click="emit('closeModalConferirCaixa')"
+              >mdi-close</v-icon
+            >
+          </div>
         </div>
 
         <div
           class="pl-2"
-          v-if="state.caixaSelected.STATUS == 2 && state.caixaSelected.CONFERIDO == ''"
+          v-if="state.caixaSelected.STATUS == 2 && !state.caixaSelected.CONFERIDO"
         >
           <v-btn
             title="Conferir Caixa"
@@ -95,9 +112,17 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
           >
             Conferir Caixa
           </v-btn>
+          <div style="position: absolute; right: 0; top: 0">
+            <v-icon
+              size="large"
+              title="Fechar Modal"
+              @click="emit('closeModalConferirCaixa')"
+              >mdi-close</v-icon
+            >
+          </div>
         </div>
 
-        <div v-if="state.caixaSelected.STATUS == 2 && state.caixaSelected.CONFERIDO !== ''">
+        <div v-if="state.caixaSelected.CONFERIDO">
           <div style="position: absolute; right: 0; top: 0">
             <v-icon
               size="large"
