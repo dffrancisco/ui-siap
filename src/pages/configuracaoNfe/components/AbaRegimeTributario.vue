@@ -19,6 +19,7 @@ const stateRegime = reactive({
 const props = defineProps({
   regimeTributario: Object,
   abaOpened: Boolean,
+  isEditable: Boolean,
   regimeTributarioLista: Array,
 });
 
@@ -149,6 +150,8 @@ const actionsRegime = {
   },
 
   btnEdit() {
+    stateRegime.isEditing = true;
+
     if (!stateRegime.grid.dataSource()) {
       Swal.fire({
         icon: "info",
@@ -299,12 +302,14 @@ onMounted(async () => {
         <v-text-field
           v-model="stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO"
           label="Código Tributário"
+          :disabled="!stateRegime.isEditing"
           type="number"
         />
       </v-col>
       <v-col cols="3">
         <v-text-field
           v-model="stateRegime.regimeTributario.DESCRICAO"
+          :disabled="!stateRegime.isEditing"
           label="Descrição"
         />
       </v-col>

@@ -3,7 +3,7 @@ import { onMounted } from "vue";
 import { state, actions, stateTabs, regimeTributarioOptions } from "./configuracaoNfe";
 import AbaRegimeTributario from "./components/AbaRegimeTributario.vue";
 import AbaPis from "./components/AbaPis.vue";
-import AbaCofins from "./components/AbaConfins.vue";
+import AbaCofins from "./components/AbaCofins.vue";
 import { computed } from "vue";
 
 onMounted(async () => {
@@ -59,6 +59,7 @@ const regimeTributarioSelecionado = computed({
             item-value="value"
             maxlength="100"
             dense
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -68,6 +69,7 @@ const regimeTributarioSelecionado = computed({
             label="Pis"
             maxlength="15"
             dense
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -77,6 +79,7 @@ const regimeTributarioSelecionado = computed({
             label="Cofins"
             maxlength="15"
             dense
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -86,6 +89,7 @@ const regimeTributarioSelecionado = computed({
             label="Local XML"
             maxlength="255"
             dense
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -95,6 +99,7 @@ const regimeTributarioSelecionado = computed({
             label="Local PDF"
             maxlength="255"
             dense
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -141,6 +146,7 @@ const regimeTributarioSelecionado = computed({
           <v-text-field
             v-model="state.nfeConfig.CFOP_TRANSP"
             label="CFOP Transporte"
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -148,6 +154,7 @@ const regimeTributarioSelecionado = computed({
           <v-text-field
             v-model="state.nfeConfig.CFOP_MONTAGEM_INTERNO"
             label="CFOP Montagem Interno"
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -156,6 +163,7 @@ const regimeTributarioSelecionado = computed({
             v-model="state.nfeConfig.CFOP_MONTAGEM_INTERESTADUAL"
             label="CFOP Montagem Interestadual"
             maxlength="4"
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -164,6 +172,7 @@ const regimeTributarioSelecionado = computed({
             v-model="state.nfeConfig.CFOP_ECF_INTERNO"
             label="CFOP ECF Interno"
             maxlength="4"
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -178,6 +187,7 @@ const regimeTributarioSelecionado = computed({
             v-model="state.nfeConfig.CFOP_ECF_INTERESTADUAL"
             label="CFOP ECF Interestadual"
             maxlength="4"
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -186,6 +196,7 @@ const regimeTributarioSelecionado = computed({
             v-model="state.nfeConfig.CFOP_DEV_INTERNO"
             label="CFOP Dev. Interno"
             maxlength="4"
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -194,6 +205,7 @@ const regimeTributarioSelecionado = computed({
             v-model="state.nfeConfig.CFOP_DEV_INTERESTADUAL"
             label="CFOP Dev. Interestadual"
             maxlength="4"
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -206,6 +218,7 @@ const regimeTributarioSelecionado = computed({
             v-model="state.nfeConfig.EMIT_IM"
             label="Inscrição Municipal"
             maxlength="7"
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -214,6 +227,7 @@ const regimeTributarioSelecionado = computed({
             v-model="state.nfeConfig.EMIT_CNAE"
             label="CNAE"
             maxlength="7"
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -222,6 +236,7 @@ const regimeTributarioSelecionado = computed({
             v-model="state.nfeConfig.PROD_CEST"
             label="Prod. CEST"
             maxlength="7"
+            :clearable="false"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -233,6 +248,7 @@ const regimeTributarioSelecionado = computed({
           <v-text-field
             v-model="state.nfeConfig.CST"
             maxlength="2"
+            :clearable="false"
             label="CST"
             :disabled="!state.isEditable"
           />
@@ -241,6 +257,7 @@ const regimeTributarioSelecionado = computed({
           <v-text-field
             v-model="state.nfeConfig.COD_LISTA_SERVICO"
             maxlength="10"
+            :clearable="false"
             label="Cod. Lista Serviço"
             :disabled="!state.isEditable"
           />
@@ -249,6 +266,7 @@ const regimeTributarioSelecionado = computed({
           <v-text-field
             v-model="state.nfeConfig.NCM_MONTAGEM_GERAL"
             maxlength="10"
+            :clearable="false"
             label="NCM Montagem Geral"
             :disabled="!state.isEditable"
           />

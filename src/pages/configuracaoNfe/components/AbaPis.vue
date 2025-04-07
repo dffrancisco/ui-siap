@@ -20,6 +20,7 @@ const props = defineProps({
   pis: Object,
   abaOpened: Boolean,
   pisLista: Array,
+  isEditable: Boolean,
 });
 
 watch(
@@ -151,6 +152,8 @@ const actionsPis = {
   },
 
   btnEdit() {
+    statePis.isEditing = true;
+
     if (!statePis.grid.dataSource()) {
       Swal.fire({
         icon: "info",
@@ -305,6 +308,7 @@ onMounted(async () => {
           :items="regimeTributarioOptions"
           item-title="text"
           item-value="value"
+          :disabled="!statePis.isEditing"
           outlined
         />
       </v-col>
@@ -312,6 +316,7 @@ onMounted(async () => {
         <v-text-field
           v-model="statePis.pis.P_VALOR"
           label="Valor do PIS"
+          :disabled="!statePis.isEditing"
           type="text"
         />
       </v-col>

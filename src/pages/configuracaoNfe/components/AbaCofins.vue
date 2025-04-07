@@ -20,6 +20,7 @@ const stateCofins = reactive({
 const props = defineProps({
   cofins: Object,
   abaOpened: Boolean,
+  isEditable: Boolean,
   cofinsLista: Array,
 });
 
@@ -155,6 +156,8 @@ const actionsCofins = {
   },
 
   btnEdit() {
+    stateCofins.isEditing = true;
+
     if (!stateCofins.grid.dataSource()) {
       Swal.fire({
         icon: "info",
@@ -311,6 +314,7 @@ onMounted(async () => {
           label="Regime Tributário"
           :items="regimeTributarioOptions"
           item-title="text"
+          :disabled="!stateCofins.isEditing"
           item-value="value"
         />
       </v-col>
@@ -318,6 +322,7 @@ onMounted(async () => {
         <v-text-field
           v-model="stateCofins.cofins.P_VALOR"
           label="Valor do COFINS"
+          :disabled="!stateCofins.isEditing"
           type="number"
         />
       </v-col>
