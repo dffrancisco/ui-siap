@@ -73,13 +73,6 @@ export const actions = {
     },
 
     async btnSave() {
-        if (!state.isEditable) {
-            Swal.fire({
-                icon: "warning",
-                text: "Realize uma alteração antes de salvar!",
-            });
-            return;
-        }
 
         if (utils.validaOBR()) return;
 

@@ -63,12 +63,12 @@ const actionsRegime = {
         vModel(r) {
           stateRegime.regimeTributario = r;
         },
-        duplicity: {
-          dataField: ["ID_REGIME_TRIBUTARIO"],
-          async execute(rs) {
-            return false;
-          },
-        },
+        // duplicity: {
+        //   dataField: ["ID_REGIME_TRIBUTARIO"],
+        //   async execute(rs) {
+        //     return false;
+        //   },
+        // },
         frame: {
           el: "#pnRegimeBotoes",
           buttons: {
@@ -127,18 +127,18 @@ const actionsRegime = {
     }
   },
 
-  async getDuplicidade({ value, field }: iFieldDuplicity) {
-    try {
-      const data = await serviceNfe.getDuplicidade({ value, field });
-      return data;
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Erro ao verificar duplicidade.",
-        text: error.message,
-      });
-    }
-  },
+  // async getDuplicidade({ value, field }: iFieldDuplicity) {
+  //   try {
+  //     const data = await serviceNfe.getDuplicidade({ value, field });
+  //     return data;
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Erro ao verificar duplicidade.",
+  //       text: error.message,
+  //     });
+  //   }
+  // },
 
   async btnInsert() {
     stateRegime.isEditing = true;
@@ -183,9 +183,9 @@ const actionsRegime = {
       return false;
     }
 
-    if (await stateRegime.grid.getDuplicityAll()) {
-      return false;
-    }
+    // if (await stateRegime.grid.getDuplicityAll()) {
+    //   return false;
+    // }
 
     if (stateRegime.grid.dataSource() == false) {
       actionsRegime.toInsert();
@@ -261,7 +261,7 @@ const actionsRegime = {
   async toUpdate() {
     try {
       let param = {
-        P_VALOR: stateRegime.regimeTributario.DESCRICAO,
+        DESCRICAO: stateRegime.regimeTributario.DESCRICAO,
         ID_REGIME_TRIBUTARIO: stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO,
       };
 

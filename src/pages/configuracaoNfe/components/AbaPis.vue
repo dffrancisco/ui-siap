@@ -57,20 +57,20 @@ const actionsPis = {
         vModel(r) {
           statePis.pis = r;
         },
-        duplicity: {
-          dataField: ["ID_REGIME_TRIBUTARIO"],
-          async execute(rs) {
-            const dup = await actionsPis.getDuplicidade({
-              value: rs.value.toUpperCase(),
-              field: rs.field,
-            });
-            if (dup && Object.keys(dup).length > 0) {
-              statePis.grid.showMessageDuplicity(rs.text + " já cadastrado.");
-              return true;
-            }
-            return false;
-          },
-        },
+        // duplicity: {
+        //   dataField: ["ID_REGIME_TRIBUTARIO"],
+        //   async execute(rs) {
+        //     const dup = await actionsPis.getDuplicidade({
+        //       value: rs.value.toUpperCase(),
+        //       field: rs.field,
+        //     });
+        //     if (dup && Object.keys(dup).length > 0) {
+        //       statePis.grid.showMessageDuplicity(rs.text + " já cadastrado.");
+        //       return true;
+        //     }
+        //     return false;
+        //   },
+        // },
         frame: {
           el: "#pnPisBotoes",
           buttons: {
@@ -129,18 +129,18 @@ const actionsPis = {
     }
   },
 
-  async getDuplicidade({ value, field }: iFieldDuplicity) {
-    try {
-      const data = await serviceNfe.getDuplicidade({ value, field });
-      return data;
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Erro ao verificar duplicidade.",
-        text: error.message,
-      });
-    }
-  },
+  // async getDuplicidade({ value, field }: iFieldDuplicity) {
+  //   try {
+  //     const data = await serviceNfe.getDuplicidade({ value, field });
+  //     return data;
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Erro ao verificar duplicidade.",
+  //       text: error.message,
+  //     });
+  //   }
+  // },
 
   async btnInsert() {
     statePis.isEditing = true;
@@ -189,10 +189,10 @@ const actionsPis = {
       return false;
     }
 
-    if (statePis.grid.dataSource() == false) {
-      actionsPis.toInsert();
+    if (!statePis.pis.ID_PIS) {
+      await actionsPis.toInsert();
     } else {
-      actionsPis.toUpdate();
+      await actionsPis.toUpdate();
     }
 
     statePis.isEditing = false;
@@ -265,7 +265,6 @@ const actionsPis = {
     try {
       let param = {
         P_VALOR: statePis.pis.P_VALOR,
-        ID_PiS: statePis.pis.ID_PIS,
       };
 
       statePis.loading = true;

@@ -272,7 +272,7 @@ const actionsCofins = {
     try {
       let param = {
         P_VALOR: stateCofins.cofins.P_VALOR,
-        ID_COFINS: stateCofins.cofins.ID_COFINS,
+        ID_REGIME_TRIBUTARIO: stateCofins.cofins.ID_REGIME_TRIBUTARIO,
       };
 
       stateCofins.loading = true;
