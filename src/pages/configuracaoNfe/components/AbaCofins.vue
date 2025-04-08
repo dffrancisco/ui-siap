@@ -59,28 +59,9 @@ const actionsCofins = {
         vModel(r) {
           stateCofins.cofins = r;
         },
-        // duplicity: {
-        //   dataField: ["ID_REGIME_TRIBUTARIO"],
-        //   async execute(rs) {
-        //     const dup = await actionsCofins.getDuplicidade({
-        //       value: rs.value.toUpperCase(),
-        //       field: rs.field,
-        //     });
-        //     if (dup && Object.keys(dup).length > 0) {
-        //       stateCofins.grid.showMessageDuplicity(rs.text + " já cadastrado.");
-        //       return true;
-        //     }
-        //     return false;
-        //   },
-        // },
         frame: {
           el: "#pncofinsBotoes",
           buttons: {
-            novo: {
-              html: "Novo",
-              state: "insert",
-              click: actionsCofins.btnInsert,
-            },
             update: {
               html: "Alterar",
               state: "update",
@@ -133,28 +114,6 @@ const actionsCofins = {
     }
   },
 
-  // async getDuplicidade({ value, field }: iFieldDuplicity) {
-  //   try {
-  //     const data = await serviceNfe.getDuplicidade({ value, field });
-  //     return data;
-  //   } catch (error) {
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Erro ao verificar duplicidade.",
-  //       text: error.message,
-  //     });
-  //   }
-  // },
-
-  async btnInsert() {
-    stateCofins.isEditing = true;
-    stateCofins.cofins = {} as iCofins;
-    await nextTick();
-
-    stateCofins.grid.focusField();
-    stateCofins.grid.disable();
-  },
-
   btnEdit() {
     stateCofins.isEditing = true;
 
@@ -189,14 +148,8 @@ const actionsCofins = {
       return false;
     }
 
-    // if (await stateCofins.grid.getDuplicityAll()) {
-    //   return false;
-    // }
-
-    if (stateCofins.grid.dataSource() == false) {
-      actionsCofins.toInsert();
-    } else {
-      actionsCofins.toUpdate();
+    if (!stateCofins.cofins.ID_COFINS) {
+      await actionsCofins.toUpdate();
     }
 
     stateCofins.isEditing = false;
@@ -214,6 +167,7 @@ const actionsCofins = {
     stateCofins.grid.enable();
     stateCofins.grid.focus(linhaGrid);
   },
+
   async toDelete() {
     try {
       const idCofins = stateCofins.cofins.ID_COFINS;
@@ -232,32 +186,6 @@ const actionsCofins = {
         icon: "error",
         title: "Erro ao excluir o COFINS, verificar",
         text: error.message,
-      });
-    } finally {
-      stateCofins.loading = false;
-    }
-  },
-
-  async toInsert() {
-    try {
-      stateCofins.loading = true;
-
-      let newFields = {
-        P_VALOR: stateCofins.cofins.P_VALOR,
-        ID_REGIME_TRIBUTARIO: stateCofins.cofins.ID_REGIME_TRIBUTARIO,
-      };
-
-      await serviceNfe.toInsertCofins(newFields);
-      stateCofins.grid.insertLine({ ...newFields });
-
-      await Swal.fire({
-        icon: "success",
-        text: "COFINS adicionado com sucesso.",
-      });
-    } catch (error) {
-      await Swal.fire({
-        icon: "error",
-        text: "Erro ao adicionar COFINS.",
       });
     } finally {
       stateCofins.loading = false;

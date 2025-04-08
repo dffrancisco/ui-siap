@@ -6,7 +6,7 @@ import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import { regimeTributarioOptions } from "../configuracaoNfe";
 import serviceNfe from "../services/configuracaoNfe.service";
-import { iPis, iFieldDuplicity } from "../interfaces";
+import { iPis } from "../interfaces";
 
 const statePis = reactive({
   grid: {} as ixGridCreate,
@@ -57,28 +57,9 @@ const actionsPis = {
         vModel(r) {
           statePis.pis = r;
         },
-        // duplicity: {
-        //   dataField: ["ID_REGIME_TRIBUTARIO"],
-        //   async execute(rs) {
-        //     const dup = await actionsPis.getDuplicidade({
-        //       value: rs.value.toUpperCase(),
-        //       field: rs.field,
-        //     });
-        //     if (dup && Object.keys(dup).length > 0) {
-        //       statePis.grid.showMessageDuplicity(rs.text + " já cadastrado.");
-        //       return true;
-        //     }
-        //     return false;
-        //   },
-        // },
         frame: {
           el: "#pnPisBotoes",
           buttons: {
-            novo: {
-              html: "Novo",
-              state: "insert",
-              click: actionsPis.btnInsert,
-            },
             update: {
               html: "Alterar",
               state: "update",
@@ -129,28 +110,6 @@ const actionsPis = {
     }
   },
 
-  // async getDuplicidade({ value, field }: iFieldDuplicity) {
-  //   try {
-  //     const data = await serviceNfe.getDuplicidade({ value, field });
-  //     return data;
-  //   } catch (error) {
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Erro ao verificar duplicidade.",
-  //       text: error.message,
-  //     });
-  //   }
-  // },
-
-  async btnInsert() {
-    statePis.isEditing = true;
-    statePis.pis = {} as iPis;
-    await nextTick();
-
-    statePis.grid.focusField();
-    statePis.grid.disable();
-  },
-
   btnEdit() {
     statePis.isEditing = true;
 
@@ -185,13 +144,7 @@ const actionsPis = {
       return false;
     }
 
-    // if (await statePis.grid.getDuplicityAll()) {
-    //   return false;
-    // }
-
     if (!statePis.pis.ID_PIS) {
-      await actionsPis.toInsert();
-    } else {
       await actionsPis.toUpdate();
     }
 
@@ -229,32 +182,6 @@ const actionsPis = {
         icon: "error",
         title: "Erro ao excluir o Pis, verificar",
         text: error.message,
-      });
-    } finally {
-      statePis.loading = false;
-    }
-  },
-
-  async toInsert() {
-    try {
-      statePis.loading = true;
-
-      let newFields = {
-        P_VALOR: statePis.pis.P_VALOR,
-        ID_REGIME_TRIBUTARIO: statePis.pis.ID_REGIME_TRIBUTARIO,
-      };
-
-      await serviceNfe.toInsertPis(newFields);
-      statePis.grid.insertLine({ ...newFields });
-
-      await Swal.fire({
-        icon: "success",
-        text: "Pis adicionado com sucesso.",
-      });
-    } catch (error) {
-      await Swal.fire({
-        icon: "error",
-        text: "Erro ao adicionar Pis.",
       });
     } finally {
       statePis.loading = false;

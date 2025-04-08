@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import serviceNfe from "../services/configuracaoNfe.service";
-import { iFieldDuplicity, iRegimeTributario } from "../interfaces";
+import { iRegimeTributario } from "../interfaces";
 
 const stateRegime = reactive({
   grid: {} as ixGridCreate,
@@ -63,12 +63,6 @@ const actionsRegime = {
         vModel(r) {
           stateRegime.regimeTributario = r;
         },
-        // duplicity: {
-        //   dataField: ["ID_REGIME_TRIBUTARIO"],
-        //   async execute(rs) {
-        //     return false;
-        //   },
-        // },
         frame: {
           el: "#pnRegimeBotoes",
           buttons: {
@@ -126,19 +120,6 @@ const actionsRegime = {
     }
   },
 
-  // async getDuplicidade({ value, field }: iFieldDuplicity) {
-  //   try {
-  //     const data = await serviceNfe.getDuplicidade({ value, field });
-  //     return data;
-  //   } catch (error) {
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Erro ao verificar duplicidade.",
-  //       text: error.message,
-  //     });
-  //   }
-  // },
-
   async btnInsert() {
     stateRegime.isEditing = true;
     stateRegime.regimeTributario = {} as iRegimeTributario;
@@ -181,10 +162,6 @@ const actionsRegime = {
     if (utils.validaOBR()) {
       return false;
     }
-
-    // if (await stateRegime.grid.getDuplicityAll()) {
-    //   return false;
-    // }
 
     if (stateRegime.grid.dataSource() == false) {
       actionsRegime.toInsert();

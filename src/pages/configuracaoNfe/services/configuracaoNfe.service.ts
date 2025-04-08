@@ -9,7 +9,7 @@ import {
     iResponseDadosInputs,
     iGetDuplicityResponse
 } from '../interfaces';
-import { param } from 'jquery';
+
 
 type iGetDadosParaInputs = () => Promise<iResponseDadosInputs>;
 type GetVerifica = (param: { REGIME_TRIBUTARIO: number }) => Promise<iNfeConfig[]>;
@@ -79,13 +79,6 @@ const verificarRegimeTributarioEmNfe: GetVerifica = async ({ REGIME_TRIBUTARIO }
 };
 
 // Pis
-const toInsertPis = async (newFields: iPis): Promise<iPis> => {
-    const { data } = await axios.post(caminho, {
-        call: "createPis",
-        param: newFields,
-    });
-    return data;
-};
 
 const toUpdatePis: UpdatePis = async (param) => {
     const { data } = await axios.post(caminho, {
@@ -104,13 +97,6 @@ const toDeletePis: DeletePis = async (id) => {
 };
 
 // Cofins
-const toInsertCofins: InsertCofins = async (param) => {
-    const { data } = await axios.post(caminho, {
-        call: "createCofins",
-        param
-    });
-    return data;
-};
 
 const toUpdateCofins = async (param: iCofins) => {
     let { data } = await axios.post(caminho, {
@@ -145,10 +131,8 @@ export default {
     toInsertRegimeTributario,
     toDeleteRegimeTributario,
     verificarRegimeTributarioEmNfe,
-    toInsertPis,
     toUpdatePis,
     toDeletePis,
-    toInsertCofins,
     toUpdateCofins,
     toDeleteCofins,
     getDuplicidade

@@ -41,8 +41,7 @@ export interface iFieldDuplicity {
 }
 
 export interface iGetDuplicityResponse {
-    ID_NFE_CONFIG: string;
-    LOCAL_XML: string;
+    ID_REGIME_TRIBUTARIO?: number;
 }
 
 export interface iRegimeTributario {
