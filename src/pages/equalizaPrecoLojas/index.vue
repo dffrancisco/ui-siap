@@ -27,6 +27,7 @@ onMounted(async () => {
               :items="state.notas"
               item-value="ID_ENTRADA"
               @click:row="actions.selecionarNota"
+              item-index="index"
               fixed-header
               class="elevation-1"
               :row-props="actions.getClassCorLinha"
@@ -53,8 +54,10 @@ onMounted(async () => {
               :items="state.itensNota"
               item-value="COD_PRODUTO"
               fixed-header
+              item-index="index"
               class="elevation-1"
               :row-props="actions.getClassCorLinha"
+              @click:row="(event, { item, index }) => (state.linhaSelecionadaItens = index)"
               height="450"
             >
               <template v-slot:item.CUSTO_N="{ item }">
@@ -128,7 +131,6 @@ onMounted(async () => {
               >Imprimir</v-btn
             >
             <v-btn
-              @click="actions.atualizar"
               color="primary"
               :disabled="!state.notaSelecionada"
             >
@@ -157,6 +159,23 @@ onMounted(async () => {
 <style>
 .cor-zebrada-1 {
   background-color: #f0f0f0;
+}
+
+.linha-selecionada {
+  background-color: #45b2ff !important;
+  font-weight: 500;
+}
+
+.v-data-table__tr {
+  cursor: pointer;
+}
+
+.v-data-table__tr:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.v-data-table__tr.linha-selecionada:hover {
+  background-color: #bbdefb !important;
 }
 
 .v-overlay__scrim {
