@@ -24,8 +24,7 @@ export interface iNfeConfig {
     CFOP_DEV_INTERESTADUAL: string;
     COD_LISTA_SERVICO: string;
     NCM_MONTAGEM_GERAL: string;
-    PIS: string;
-    COFINS: string;
+
 }
 
 export interface iInsertNfeConfigParam extends iNfeConfig { }
@@ -63,6 +62,7 @@ export interface iPis {
     ID_PIS?: number;
     P_VALOR?: number;
     ID_REGIME_TRIBUTARIO?: number;
+    ID_EMPRESA?: number;
 }
 
 export interface iCofins {

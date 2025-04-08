@@ -112,7 +112,6 @@ const actionsRegime = {
     try {
       stateRegime.loading = true;
       const data = await serviceNfe.getDadosParaInputs();
-      stateRegime.regimeTributario = { ...data.regimeTributario[0] };
       stateRegime.regimeTributarioLista = data.regimeTributario;
 
       return data.regimeTributario;
@@ -306,11 +305,12 @@ onMounted(async () => {
           type="number"
         />
       </v-col>
-      <v-col cols="3">
+      <v-col cols="4">
         <v-text-field
           v-model="stateRegime.regimeTributario.DESCRICAO"
           :disabled="!stateRegime.isEditing"
           label="Descrição"
+          type="text"
         />
       </v-col>
     </v-row>

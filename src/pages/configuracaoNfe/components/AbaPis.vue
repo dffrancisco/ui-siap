@@ -185,9 +185,9 @@ const actionsPis = {
       return false;
     }
 
-    if (await statePis.grid.getDuplicityAll()) {
-      return false;
-    }
+    // if (await statePis.grid.getDuplicityAll()) {
+    //   return false;
+    // }
 
     if (!statePis.pis.ID_PIS) {
       await actionsPis.toInsert();
@@ -265,6 +265,7 @@ const actionsPis = {
     try {
       let param = {
         P_VALOR: statePis.pis.P_VALOR,
+        ID_REGIME_TRIBUTARIO: statePis.pis.ID_REGIME_TRIBUTARIO,
       };
 
       statePis.loading = true;

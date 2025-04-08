@@ -1,7 +1,6 @@
 
 import { reactive, nextTick } from "vue";
 import Swal from "sweetalert2";
-import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import utils from "@/ts/utils";
 import serviceNfe from './services/configuracaoNfe.service';
 import { iNfeConfig, iCofins, iPis, iRegimeTributario } from "./interfaces";
@@ -71,29 +70,54 @@ export const actions = {
             firstInput?.focus();
         });
     },
-
-    async btnSave() {
-
-        if (utils.validaOBR()) return;
-
+    async toUpdate() {
         try {
-            state.loading = true;
-            await serviceNfe.updateNfeConfig(state.nfeConfig);
+            const param: iNfeConfig = {
+                ID_NFE_CONFIG: state.nfeConfig.ID_NFE_CONFIG,
+                LOCAL_XML: state.nfeConfig.LOCAL_XML?.toUpperCase(),
+                LOCAL_PDF: state.nfeConfig.LOCAL_PDF?.toUpperCase(),
+                REGIME_TRIBUTARIO: state.nfeConfig.REGIME_TRIBUTARIO,
+                CFOP_TRANSP: state.nfeConfig.CFOP_TRANSP,
+                CFOP_MONTAGEM_INTERNO: state.nfeConfig.CFOP_MONTAGEM_INTERNO,
+                CFOP_MONTAGEM_INTERESTADUAL: state.nfeConfig.CFOP_MONTAGEM_INTERESTADUAL,
+                EMIT_IM: state.nfeConfig.EMIT_IM,
+                EMIT_CNAE: state.nfeConfig.EMIT_CNAE,
+                PROD_CEST: state.nfeConfig.PROD_CEST,
+                CFOP_ECF_INTERNO: state.nfeConfig.CFOP_ECF_INTERNO,
+                CFOP_ECF_INTERESTADUAL: state.nfeConfig.CFOP_ECF_INTERESTADUAL,
+                CST: state.nfeConfig.CST,
+                CFOP_DEV_INTERNO: state.nfeConfig.CFOP_DEV_INTERNO,
+                CFOP_DEV_INTERESTADUAL: state.nfeConfig.CFOP_DEV_INTERESTADUAL,
+                COD_LISTA_SERVICO: state.nfeConfig.COD_LISTA_SERVICO,
+                NCM_MONTAGEM_GERAL: state.nfeConfig.NCM_MONTAGEM_GERAL,
+            };
 
-            Swal.fire({
+            state.loading = true;
+
+            await serviceNfe.updateNfeConfig(param);
+
+            await Swal.fire({
                 icon: "success",
-                text: "Configurações salvas com sucesso!",
+                text: "Configuração atualizada com sucesso.",
             });
-            state.originalConfig = { ...state.nfeConfig };
+
+            state.originalConfig = { ...param };
             state.isEditable = false;
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                text: "Erro ao salvar as configurações!",
+                title: "Erro ao atualizar configuração!",
+                text: error.message,
             });
         } finally {
             state.loading = false;
         }
+    },
+
+    async btnSave() {
+        if (utils.validaOBR()) return;
+
+        await actions.toUpdate();
     },
 
     btnCancel() {
