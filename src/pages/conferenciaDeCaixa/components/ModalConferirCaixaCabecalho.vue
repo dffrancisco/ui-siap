@@ -1,17 +1,8 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
 import { actions, state } from "../conferenciaDeCaixa";
-import { watch } from "vue";
 
 const emit = defineEmits(["closeModalConferirCaixa"]);
-
-watch(
-  () => state.caixaSelected,
-  (newVal) => {
-    // Força a re-renderização dos btns de fechar e conferir caixa
-  },
-  { deep: true }
-);
 </script>
 <template>
   <div class="cabecalho">
