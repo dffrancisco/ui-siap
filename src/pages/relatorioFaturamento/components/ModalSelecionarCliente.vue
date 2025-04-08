@@ -56,7 +56,7 @@ const actions = {
     emits("closeModal");
   },
 
-  async getClientesFaturados(param: iGetClientesFaturadosParam, offset: number) {
+  async getClientesFaturados(param: iGetClientesFaturadosParam, offset?: number) {
     try {
       state.loading = true;
 
@@ -94,6 +94,15 @@ const actions = {
 
     emits("selecionarCliente", clienteSelecionado);
 
+    actions.closeModal();
+  },
+
+  async selecionarClienteContorno() {
+    let clienteContorno = await actions.getClientesFaturados({
+      contorno: true,
+    });
+
+    emits("selecionarCliente", clienteContorno);
     actions.closeModal();
   },
 };
@@ -140,18 +149,28 @@ onMounted(async () => {
       id="gridCliente"
     ></div>
 
-    <div class="d-flex justify-end ga-4 mt-4">
+    <div class="d-flex justify-space-between mt-4 align-center">
       <v-btn
+        size="x-small"
         color="primary"
-        variant="outlined"
-        @click="actions.closeModal"
-        >cancelar</v-btn
+        icon="mdi-alpha-c-circle mdi-24px"
+        title="Selecionar Contorno"
+        @click="actions.selecionarClienteContorno"
       >
-      <v-btn
-        @click="actions.selecionarCliente"
-        color="primary"
-        >selecionar</v-btn
-      >
+      </v-btn>
+      <div class="d-flex justify-end ga-4">
+        <v-btn
+          color="primary"
+          variant="outlined"
+          @click="actions.closeModal"
+          >cancelar</v-btn
+        >
+        <v-btn
+          @click="actions.selecionarCliente"
+          color="primary"
+          >selecionar</v-btn
+        >
+      </div>
     </div>
   </v-card>
 
