@@ -6,19 +6,19 @@ import {
     iFieldDuplicity,
     iParamToInsert,
     iParamToUpdate,
-    iMarcas
+    iGetRepresentantes,
 } from "../interfaces";
 
 const caminho = "siap/representantes";
 
-type iGetMarcas = () => Promise<iMarcas[]>
-type iGetRepresentantesFunction = (param: iRepresentantes, offset: number) => Promise<iParamGetRepresentantes[]>;
+
+type iGetRepresentantesFunction = (param: iRepresentantes, offset: number) => Promise<iGetRepresentantes>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<iRepresentantes>;
 type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>;
 type iToDeleteFunction = (id_Representantes: number) => Promise<void>;
 
-const getMarcas: iGetMarcas = async () => {
+const getMarcas = async () => {
     let { data } = await axios.post(caminho, {
         call: "getMarcas",
     });
@@ -26,12 +26,15 @@ const getMarcas: iGetMarcas = async () => {
     return data;
 };
 
-const getRepresentantes: iGetRepresentantesFunction = async (param) => {
+const getRepresentantes: iGetRepresentantesFunction = async (param, offset) => {
     let { data } = await axios.post(caminho, {
         call: "getRepresentantes",
-        ...param,
+        offset,
+        param: {
+            search: "",
+        },
     });
-    return data;
+    return data as iGetRepresentantes;
 };
 
 const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {

@@ -55,6 +55,7 @@ const actions = {
       state.loading = false;
     }
   },
+
   async btnSearch() {
     state.gridRepresentante.queryOpen({
       search: inputSearch.value.value,

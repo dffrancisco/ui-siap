@@ -35,6 +35,22 @@ export interface iFieldDuplicity {
     value: string;
 }
 
+export interface iGetRepresentantes {
+    ID_REPRESENTANTE: number;
+    NOME: string;
+    ENDERECO: string;
+    BAIRRO: string;
+    COD_CIDADE: number;
+    CEP: string;
+    TELEFONE: string;
+    TELEFONE2: string;
+    FAX: string;
+    CELULAR: string;
+    EMAIL: string;
+    OBS: string;
+    MARCAS: string;
+}
+
 export interface iRepresentantes {
     search: string;
 }

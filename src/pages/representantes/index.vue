@@ -54,6 +54,8 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
+        </v-row>
+        <v-row class="mt-n1">
           <v-col cols="3">
             <span>Telefone</span>
             <input
@@ -66,9 +68,7 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-        </v-row>
-        <v-row class="mt-n1">
-          <v-col cols="5">
+          <v-col cols="3">
             <span>Telefone 2</span>
             <div class="d-flex ga-2 align-center"
               ><input
@@ -95,23 +95,11 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="3">
-            <span>Cep</span>
-            <input
-              v-model="state.dbRepresentantes.CEP"
-              type="text"
-              id="CEP"
-              name="CEP"
-              class="ss"
-              maxlength="60"
-              autocomplete="off"
-            />
-          </v-col>
         </v-row>
 
         <v-row class="mt-n1">
           <v-col cols="3">
-            <span>Nome Responsável</span>
+            <span>Endereço</span>
             <input
               v-model="state.dbRepresentantes.ENDERECO"
               type="text"
@@ -119,45 +107,6 @@ onMounted(async () => {
               name="CONTADO"
               class="ss"
               maxlength="60"
-              autocomplete="off"
-            />
-          </v-col>
-          <v-col cols="3">
-            <span>Telefone 1</span>
-            <input
-              v-model="state.dbRepresentantes.TELEFONE"
-              type="text"
-              id="TELEFONE1"
-              name="TELEFONE1"
-              class="ss"
-              maxlength="15"
-              v-mask="'(##) #####-####'"
-              autocomplete="off"
-            />
-          </v-col>
-          <v-col cols="3">
-            <span>Telefone 2</span>
-            <input
-              v-model="state.dbRepresentantes.TELEFONE2"
-              type="text"
-              id="TELEFONE2"
-              name="TELEFONE2"
-              class="ss"
-              maxlength="15"
-              v-mask="'(##) #####-####'"
-              autocomplete="off"
-            />
-          </v-col>
-          <v-col cols="3">
-            <span>Telefone 3</span>
-            <input
-              v-model="state.dbRepresentantes.FAX"
-              type="text"
-              id="FAX"
-              name="FAX"
-              class="ss"
-              maxlength="15"
-              v-mask="'(##) #####-####'"
               autocomplete="off"
             />
           </v-col>
@@ -189,18 +138,7 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="2">
-            <span>Obs</span>
-            <input
-              v-model="state.dbRepresentantes.OBS"
-              type="text"
-              id="OBS"
-              name="OBS"
-              class="ss"
-              maxlength="50"
-              autocomplete="off"
-            />
-          </v-col>
+
           <v-col cols="2">
             <span>Bairro</span>
             <input
@@ -225,6 +163,18 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
+          <v-col cols="2">
+            <span>Obs</span>
+            <input
+              v-model="state.dbRepresentantes.OBS"
+              type="text"
+              id="OBS"
+              name="OBS"
+              class="ss"
+              maxlength="50"
+              autocomplete="off"
+            />
+          </v-col>
         </v-row>
 
         <div
@@ -238,8 +188,9 @@ onMounted(async () => {
             :disabled="state.pnSearch"
             @keydown.enter.prevent="actions.search()"
             @keydown.arrow-down="state.gridPrincipal.focus(0)"
-            id="edtSearch"
+            ref="edtSearch"
             class="ss"
+            autofocus
           />
           <v-btn
             :disabled="state.pnSearch"

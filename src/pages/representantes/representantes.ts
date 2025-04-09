@@ -1,5 +1,5 @@
 
-import { nextTick, reactive } from "vue";
+import { nextTick, reactive, onMounted, ref } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -7,6 +7,7 @@ import {
     iFieldDuplicity,
     iRepresentantesParam,
     iMarcas,
+    iRepresentantes,
     iParamGetRepresentantes,
     iParamToInsert,
     iParamToUpdate,
@@ -14,6 +15,7 @@ import {
 import utils from "@/ts/utils";
 import serviceRepresentantes from "./services/representantes.service";
 import { useEventListener } from "@vueuse/core";
+const inputSearch = ref();
 
 export const state = reactive({
     gridPrincipal: <ixGridCreate>{},
@@ -35,10 +37,24 @@ export const eventListener = useEventListener(document, "keydown", async (event)
     }
 });
 
+onMounted(async () => {
+    await actions.init();
+
+    state.gridPrincipal.queryOpen(
+        {
+            search: "",
+        },
+        () => {
+            inputSearch.value.focus();
+        }
+    );
+});
+
 export const actions = {
     async init() {
         actions.grids();
-        state.gridPrincipal.queryOpen({ ID_REPRESENTANTE: "" }, () => {
+        await actions.getMarcas();
+        state.gridPrincipal.queryOpen({}, () => {
             state.gridPrincipal.focus();
         });
     },
@@ -56,10 +72,7 @@ export const actions = {
             },
             query: {
                 async execute(rs) {
-                    let data = await actions.getRepresentantes({
-                        offset: rs.offset,
-                        param: rs.param,
-                    });
+                    let data = await actions.getRepresentantes(rs.param as iRepresentantes, rs.offset);
                     state.gridPrincipal.querySourceAdd(data);
                 },
             },
@@ -80,10 +93,8 @@ export const actions = {
                             state.gridPrincipal.showMessageDuplicity(
                                 rs.text + " já cadastrado!"
                             );
-                            state.RepresentanteJaExiste = true;
                             return true;
                         }
-                        state.RepresentanteJaExiste = false;
                         return false;
                     },
                 },
@@ -126,15 +137,13 @@ export const actions = {
         });
     },
 
-    async getRepresentantes({ offset, param }: iParamGetRepresentantes) {
+
+
+    async getRepresentantes(param: iRepresentantes, offset: number) {
         try {
             state.loading = true;
-            const data = await serviceRepresentantes.getRepresentantes({
-                offset,
-                param
-            });
 
-            state.loading = false;
+            const data = await serviceRepresentantes.getRepresentantes(param, offset);
             return data;
         } catch (error) {
             Swal.fire({
@@ -253,6 +262,12 @@ export const actions = {
         await nextTick();
         state.gridPrincipal.enable();
         state.gridPrincipal.focus(linhaGrid);
+    },
+
+    async btnSearch() {
+        state.gridPrincipal.queryOpen({
+            search: inputSearch.value.value,
+        });
     },
 
     async toDelete() {
