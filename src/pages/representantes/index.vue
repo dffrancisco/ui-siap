@@ -1,6 +1,15 @@
 <script setup lang="ts">
-import { actions, state, eventListener } from "./representantes";
+import { actions, state } from "./representantes";
+import { useEventListener } from "@vueuse/core";
 import { onMounted } from "vue";
+
+const eventListener = useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F1") {
+    document.getElementById("edtSearch")?.focus();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
 
 onMounted(async () => {
   await actions.init();
@@ -83,7 +92,7 @@ onMounted(async () => {
             /></div>
           </v-col>
 
-          <v-col cols="4">
+          <v-col cols="3">
             <span>Telefone 3</span>
             <input
               v-model="state.dbRepresentantes.FAX"
@@ -95,25 +104,7 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-        </v-row>
-
-        <v-row class="mt-n1">
           <v-col cols="3">
-            <span>Endereço</span>
-            <input
-              v-model="state.dbRepresentantes.ENDERECO"
-              type="text"
-              id="CONTADO"
-              name="CONTADO"
-              class="ss"
-              maxlength="60"
-              autocomplete="off"
-            />
-          </v-col>
-        </v-row>
-
-        <v-row class="mt-n1">
-          <v-col cols="2">
             <span>CEP</span>
             <input
               v-model="state.dbRepresentantes.CEP"
@@ -126,7 +117,10 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="4">
+        </v-row>
+
+        <v-row class="mt-n1">
+          <v-col cols="3">
             <span>Endereço</span>
             <input
               v-model="state.dbRepresentantes.ENDERECO"
@@ -151,7 +145,7 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="2">
+          <v-col cols="3">
             <span>Cidade</span>
             <input
               v-model="state.dbRepresentantes.COD_CIDADE"
@@ -163,24 +157,22 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="2">
-            <span>Obs</span>
-            <input
+          <v-col cols="4">
+            <span>Observações</span>
+            <textarea
               v-model="state.dbRepresentantes.OBS"
               type="text"
               id="OBS"
               name="OBS"
               class="ss"
+              rows="3"
               maxlength="50"
               autocomplete="off"
-            />
+            ></textarea>
           </v-col>
         </v-row>
 
-        <div
-          class="d-flex ga-2 align-items-center mt-4"
-          style="gap: 16px"
-        >
+        <div class="mt-2 d-flex ga-2">
           <input
             v-model="state.edtSearch"
             type="text"
@@ -188,9 +180,8 @@ onMounted(async () => {
             :disabled="state.pnSearch"
             @keydown.enter.prevent="actions.search()"
             @keydown.arrow-down="state.gridPrincipal.focus(0)"
-            ref="edtSearch"
+            id="edtSearch"
             class="ss"
-            autofocus
           />
           <v-btn
             :disabled="state.pnSearch"

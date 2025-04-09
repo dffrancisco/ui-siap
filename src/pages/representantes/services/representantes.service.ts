@@ -12,7 +12,7 @@ import {
 const caminho = "siap/representantes";
 
 
-type iGetRepresentantesFunction = (param: iRepresentantes, offset: number) => Promise<iGetRepresentantes>;
+type iGetRepresentantesFunction = (param: string) => Promise<iGetRepresentantes>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<iRepresentantes>;
 type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>;
@@ -26,13 +26,10 @@ const getMarcas = async () => {
     return data;
 };
 
-const getRepresentantes: iGetRepresentantesFunction = async (param, offset) => {
+const getRepresentantes: iGetRepresentantesFunction = async (param,) => {
     let { data } = await axios.post(caminho, {
         call: "getRepresentantes",
-        offset,
-        param: {
-            search: "",
-        },
+        param,
     });
     return data as iGetRepresentantes;
 };

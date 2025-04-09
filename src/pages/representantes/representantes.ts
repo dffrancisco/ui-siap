@@ -37,26 +37,13 @@ export const eventListener = useEventListener(document, "keydown", async (event)
     }
 });
 
-onMounted(async () => {
-    await actions.init();
 
-    state.gridPrincipal.queryOpen(
-        {
-            search: "",
-        },
-        () => {
-            inputSearch.value.focus();
-        }
-    );
-});
 
 export const actions = {
     async init() {
         actions.grids();
         await actions.getMarcas();
-        state.gridPrincipal.queryOpen({}, () => {
-            state.gridPrincipal.focus();
-        });
+        await actions.getRepresentantes();
     },
 
     grids() {
@@ -70,12 +57,7 @@ export const actions = {
                 "Telefone": { dataField: "TELEFONE" },
                 "Celular": { dataField: "CELULAR" },
             },
-            query: {
-                async execute(rs) {
-                    let data = await actions.getRepresentantes(rs.param as iRepresentantes, rs.offset);
-                    state.gridPrincipal.querySourceAdd(data);
-                },
-            },
+
 
             sideBySide: {
                 el: "#pnCampos",
@@ -137,13 +119,14 @@ export const actions = {
         });
     },
 
-
-
-    async getRepresentantes(param: iRepresentantes, offset: number) {
+    async getRepresentantes() {
         try {
             state.loading = true;
+            const param = state.edtSearch?.toUpperCase();
 
-            const data = await serviceRepresentantes.getRepresentantes(param, offset);
+            const data = await serviceRepresentantes.getRepresentantes(param);
+            state.gridPrincipal.source(data);
+            state.gridPrincipal.focus();
             return data;
         } catch (error) {
             Swal.fire({
@@ -156,10 +139,9 @@ export const actions = {
     },
 
     async search() {
-        const searchValue = state.edtSearch?.toUpperCase();
-        state.gridPrincipal.queryOpen({
-            NOME: searchValue,
-        });
+        state.gridPrincipal.clear();
+        const data = await actions.getRepresentantes();
+        state.gridPrincipal.source(data);
     },
 
     async getMarcas() {
