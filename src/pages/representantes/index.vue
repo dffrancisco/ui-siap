@@ -23,7 +23,7 @@ onMounted(async () => {
     <title>Gerenciar Representantes</title>
     <v-card
       width="900"
-      height="550"
+      height="560"
       class="pa-5 ma-auto"
     >
       <div id="pnCampos">
@@ -52,7 +52,49 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="4">
+        </v-row>
+        <v-row class="mt-n1">
+          <v-col cols="5">
+            <span>Cidade</span>
+            <select
+              v-model="state.dbRepresentantes.COD_CIDADE"
+              id="COD_CIDADE"
+              name="COD_CIDADE"
+              class="obr ss"
+              maxlength="50"
+            >
+              <option
+                v-for="cidade in state.listaCidades"
+                :key="cidade.COD_CIDADE"
+                :value="cidade.COD_CIDADE"
+              >
+                {{ cidade.DESCRICAO }}
+              </option>
+            </select>
+          </v-col>
+
+          <v-col cols="7">
+            <span>Marca</span>
+            <div class="d-flex ga-2 align-center">
+              <input
+                v-model="state.dbRepresentantes.MARCAS"
+                type="text"
+                id="MARCAS"
+                name="MARCAS"
+                class="ss"
+                maxlength="60"
+              />
+              <v-btn
+                color="primary"
+                icon="mdi-plus"
+                @click="state.modalFornecedorOpened = true"
+                size="30"
+              />
+            </div>
+          </v-col>
+        </v-row>
+        <v-row class="mt-n1">
+          <v-col cols="3">
             <span>Celular</span>
             <input
               v-model="state.dbRepresentantes.CELULAR"
@@ -65,8 +107,6 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-        </v-row>
-        <v-row class="mt-n1">
           <v-col cols="3">
             <span>Telefone</span>
             <input
@@ -76,7 +116,7 @@ onMounted(async () => {
               name="TELEFONE"
               class="ss"
               maxlength="20"
-              v-mask="'#####-####'"
+              v-mask="'####-####'"
               autocomplete="off"
             />
           </v-col>
@@ -90,7 +130,7 @@ onMounted(async () => {
                 name="TELEFONE2"
                 class="ss"
                 maxlength="20"
-                v-mask="'#####-####'"
+                v-mask="'####-####'"
                 autocomplete="off"
             /></div>
           </v-col>
@@ -104,10 +144,13 @@ onMounted(async () => {
               name="FAX"
               class="ss"
               maxlength="20"
-              v-mask="'#####-####'"
+              v-mask="'####-####'"
               autocomplete="off"
             />
           </v-col>
+        </v-row>
+
+        <v-row class="mt-n1">
           <v-col cols="3">
             <span>CEP</span>
             <input
@@ -122,9 +165,6 @@ onMounted(async () => {
               v-on:focusout="actions.buscaCEP"
             />
           </v-col>
-        </v-row>
-
-        <v-row class="mt-n1">
           <v-col cols="3">
             <span>Endereço</span>
             <input
@@ -150,24 +190,7 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-          <v-col cols="3">
-            <span>Cidade</span>
-            <select
-              v-model="state.dbRepresentantes.COD_CIDADE"
-              id="COD_CIDADE"
-              name="COD_CIDADE"
-              class="obr ss"
-              maxlength="50"
-            >
-              <option
-                v-for="cidade in state.listaCidades"
-                :key="cidade.COD_CIDADE"
-                :value="cidade.COD_CIDADE"
-              >
-                {{ cidade.DESCRICAO }}
-              </option>
-            </select>
-          </v-col>
+
           <v-col cols="4">
             <span>Observações</span>
             <textarea
@@ -202,26 +225,7 @@ onMounted(async () => {
             icon="mdi-magnify"
           />
         </div>
-        <v-row class="mt-n1">
-          <v-col cols="5">
-            <span>Marca</span>
-            <div class="d-flex ga-2 align-center"
-              ><input
-                v-model="state.marca.DESCRICAO"
-                type="text"
-                id="DESCRICAO"
-                name="DESCRICAO"
-                class="ss"
-                maxlength="60" />
-              <v-btn
-                ga-2
-                color="primary"
-                icon="mdi-magnify"
-                @click="state.modalFornecedorOpened = true"
-                size="30"
-            /></div>
-          </v-col>
-        </v-row>
+
         <div
           id="gridPrincipal"
           class="mt-4"

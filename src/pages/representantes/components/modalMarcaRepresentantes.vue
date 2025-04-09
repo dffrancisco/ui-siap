@@ -42,15 +42,13 @@ const actions = {
   async getMarcas(param: iSearchMarcas, offset: number) {
     try {
       state.loading = true;
-
       const data = await serviceRepresentantes.getMarcas(param, offset);
-
       return data;
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Erro ao carregar os marcas",
-        text: "erro ao carregar marcas",
+        title: "Erro ao carregar marcas",
+        text: "Erro ao carregar marcas",
       });
     } finally {
       state.loading = false;
@@ -58,16 +56,14 @@ const actions = {
   },
 
   async btnSearch() {
-    state.gridRepresentante.queryOpen({
-      search: state.marcaSearch,
-    });
+    state.gridRepresentante.queryOpen({ search: state.marcaSearch });
   },
 
   validarInputs() {
     const representanteSelecionado = state.gridRepresentante.dataSource();
     if (!representanteSelecionado) {
       Swal.fire({
-        text: "Nenhuma maraca  foi selecionado.",
+        text: "Nenhuma marca foi selecionada.",
         icon: "warning",
       });
       return false;
@@ -77,6 +73,7 @@ const actions = {
 
   selecionarRepresentante() {
     const representanteSelecionado = state.gridRepresentante.dataSource();
+
     emits("selecionarRepresentante", representanteSelecionado);
     actions.closeModal();
   },
@@ -88,15 +85,9 @@ const actions = {
 
 onMounted(async () => {
   await actions.init();
-
-  state.gridRepresentante.queryOpen(
-    {
-      search: "",
-    },
-    () => {
-      inputSearch.value.focus();
-    }
-  );
+  state.gridRepresentante.queryOpen({ search: "" }, () => {
+    inputSearch.value.focus();
+  });
 });
 </script>
 
@@ -115,7 +106,6 @@ onMounted(async () => {
             @keydown.enter.prevent="actions.btnSearch"
             @keydown.arrow.down.prevent="state.gridRepresentante.focus()"
           ></v-text-field>
-
           <div class="d-flex align-center">
             <v-btn
               icon="mdi-magnify"
@@ -136,13 +126,15 @@ onMounted(async () => {
         color="primary"
         variant="outlined"
         @click="actions.closeModal"
-        >Cancelar</v-btn
       >
+        Cancelar
+      </v-btn>
       <v-btn
         @click="actions.validarInputs"
         color="primary"
-        >Selecionar</v-btn
       >
+        Selecionar
+      </v-btn>
     </div>
   </v-card>
 </template>

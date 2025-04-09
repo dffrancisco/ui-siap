@@ -12,6 +12,7 @@ export interface iRepresentantesParam {
     EMAIL: string;
     OBS: string;
     MARCAS: string;
+    DESCRICAO?: string;
 }
 
 export interface iMarcas {

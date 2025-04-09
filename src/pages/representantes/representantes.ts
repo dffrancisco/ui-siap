@@ -8,10 +8,6 @@ import {
     iRepresentantesParam,
     iMarcas,
     iCidades,
-    iRepresentantes,
-    iParamGetRepresentantes,
-    iParamToInsert,
-    iParamToUpdate,
 } from "./interfaces";
 import utils from "@/ts/utils";
 import serviceRepresentantes from "./services/representantes.service";
@@ -166,11 +162,12 @@ export const actions = {
     },
 
     selecionarRepresentante(representanteSelecionado: iRepresentantesParam) {
-        state.dbRepresentantes.NOME = representanteSelecionado.NOME
-        state.dbRepresentantes.ID_REPRESENTANTE = representanteSelecionado.ID_REPRESENTANTE
+
+        state.dbRepresentantes.MARCAS = representanteSelecionado.DESCRICAO;
         state.representanteSelecionado = representanteSelecionado;
         actions.closeModal();
     },
+
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
         try {
