@@ -1,5 +1,5 @@
 export interface iRepresentantesParam {
-    ID_REPRESENTANTE: number;
+    ID_REPRESENTANTE?: number;
     NOME?: string;
     ENDERECO: string;
     BAIRRO: string;
@@ -27,12 +27,13 @@ export interface iParamGetRepresentantes {
 }
 
 export interface iGetDuplicityResponse {
-    ID_REPRESENTANTE?: string;
+    CEP?: number;
 }
 
 export interface iFieldDuplicity {
-    field: string;
     value: string;
+    field: string;
+
 }
 
 export interface iGetRepresentantes {

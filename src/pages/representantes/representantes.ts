@@ -65,7 +65,7 @@ export const actions = {
                     state.dbRepresentantes = r;
                 },
                 duplicity: {
-                    dataField: ["ID_REPRESENTANTE"],
+                    dataField: ["CEP"],
                     async execute(rs) {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),
@@ -213,25 +213,15 @@ export const actions = {
         if (utils.validaOBR()) {
             return false;
         }
-
-        if (state.RepresentanteJaExiste) {
-            Swal.fire({
-                icon: "warning",
-                text: "Representante já existe.",
-            });
+        if (await state.gridPrincipal.getDuplicityAll()) {
             return false;
         }
 
-
-        if (state.gridPrincipal.dataSource() == false) {
-            if (await state.gridPrincipal.getDuplicityAll()) {
-                return false;
-            }
+        if (!state.gridPrincipal.dataSource()) {
             actions.toInsert();
         } else {
             actions.toUpdate();
         }
-
         state.pnSearch = false;
         await nextTick();
         state.gridPrincipal.enable();
@@ -280,7 +270,8 @@ export const actions = {
 
             let newFields = {
 
-                ID_REPRESENTANTE: state.dbRepresentantes.ID_REPRESENTANTE || 0,
+                ID_REPRESENTANTE: state.dbRepresentantes.ID_REPRESENTANTE,
+                NOME: state.dbRepresentantes.NOME?.toUpperCase(),
                 ENDERECO: state.dbRepresentantes.ENDERECO,
                 BAIRRO: state.dbRepresentantes.BAIRRO,
                 COD_CIDADE: state.dbRepresentantes.COD_CIDADE,

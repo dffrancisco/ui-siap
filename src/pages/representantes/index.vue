@@ -88,7 +88,6 @@ onMounted(async () => {
                 class="ss"
                 maxlength="60"
                 autocomplete="off"
-                :disabled="true"
             /></div>
           </v-col>
 
