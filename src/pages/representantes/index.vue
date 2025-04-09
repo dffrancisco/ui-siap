@@ -2,6 +2,7 @@
 import { actions, state } from "./representantes";
 import { useEventListener } from "@vueuse/core";
 import { onMounted } from "vue";
+import ModalMarcaRepresentantes from "./components/modalMarcaRepresentantes.vue";
 
 const eventListener = useEventListener(document, "keydown", async (event) => {
   if (event.key === "F1") {
@@ -35,7 +36,7 @@ onMounted(async () => {
               id="NOME"
               name="NOME"
               class="obr ss"
-              maxlength="18"
+              maxlength="30"
               autocomplete="off"
             />
           </v-col>
@@ -47,7 +48,7 @@ onMounted(async () => {
               id="EMAIL"
               name="EMAIL"
               class="ss"
-              maxlength="15"
+              maxlength="60"
               autocomplete="off"
             />
           </v-col>
@@ -59,7 +60,8 @@ onMounted(async () => {
               id="CELULAR"
               name="CELULAR"
               class="obr ss"
-              maxlength="60"
+              maxlength="20"
+              v-mask="'(##) #####-####'"
               autocomplete="off"
             />
           </v-col>
@@ -73,7 +75,8 @@ onMounted(async () => {
               id="TELEFONE"
               name="TELEFONE"
               class="ss"
-              maxlength="60"
+              maxlength="20"
+              v-mask="'#####-####'"
               autocomplete="off"
             />
           </v-col>
@@ -86,7 +89,8 @@ onMounted(async () => {
                 id="TELEFONE2"
                 name="TELEFONE2"
                 class="ss"
-                maxlength="60"
+                maxlength="20"
+                v-mask="'#####-####'"
                 autocomplete="off"
             /></div>
           </v-col>
@@ -99,7 +103,8 @@ onMounted(async () => {
               id="FAX"
               name="FAX"
               class="ss"
-              maxlength="100"
+              maxlength="20"
+              v-mask="'#####-####'"
               autocomplete="off"
             />
           </v-col>
@@ -111,9 +116,10 @@ onMounted(async () => {
               id="CEP"
               name="CEP"
               class="obr ss"
-              maxlength="9"
+              maxlength="15"
               v-mask="'#####-###'"
               autocomplete="off"
+              v-on:focusout="actions.buscaCEP"
             />
           </v-col>
         </v-row>
@@ -127,7 +133,7 @@ onMounted(async () => {
               id="ENDERECO"
               name="ENDERECO"
               class="obr ss"
-              maxlength="100"
+              maxlength="40"
               autocomplete="off"
             />
           </v-col>
@@ -140,21 +146,27 @@ onMounted(async () => {
               id="BAIRRO"
               name="BAIRRO"
               class="obr ss"
-              maxlength="50"
+              maxlength="30"
               autocomplete="off"
             />
           </v-col>
           <v-col cols="3">
             <span>Cidade</span>
-            <input
+            <select
               v-model="state.dbRepresentantes.COD_CIDADE"
-              type="text"
               id="COD_CIDADE"
               name="COD_CIDADE"
               class="obr ss"
               maxlength="50"
-              autocomplete="off"
-            />
+            >
+              <option
+                v-for="cidade in state.listaCidades"
+                :key="cidade.COD_CIDADE"
+                :value="cidade.COD_CIDADE"
+              >
+                {{ cidade.DESCRICAO }}
+              </option>
+            </select>
           </v-col>
           <v-col cols="4">
             <span>Observações</span>
@@ -165,7 +177,7 @@ onMounted(async () => {
               name="OBS"
               class="ss"
               rows="3"
-              maxlength="50"
+              maxlength="200"
               autocomplete="off"
             ></textarea>
           </v-col>
@@ -190,7 +202,26 @@ onMounted(async () => {
             icon="mdi-magnify"
           />
         </div>
-
+        <v-row class="mt-n1">
+          <v-col cols="5">
+            <span>Marca</span>
+            <div class="d-flex ga-2 align-center"
+              ><input
+                v-model="state.marca.DESCRICAO"
+                type="text"
+                id="DESCRICAO"
+                name="DESCRICAO"
+                class="ss"
+                maxlength="60" />
+              <v-btn
+                ga-2
+                color="primary"
+                icon="mdi-magnify"
+                @click="state.modalFornecedorOpened = true"
+                size="30"
+            /></div>
+          </v-col>
+        </v-row>
         <div
           id="gridPrincipal"
           class="mt-4"
@@ -217,6 +248,15 @@ onMounted(async () => {
     </v-card>
 
     <div id="pnCodigoTela">representantes</div>
+    <v-dialog
+      v-model="state.modalFornecedorOpened"
+      width="600"
+    >
+      <ModalMarcaRepresentantes
+        @selecionarRepresentante="actions.selecionarRepresentante"
+        @cancelar="actions.closeModal"
+      />
+    </v-dialog>
   </v-container>
 </template>
 <style scoped>

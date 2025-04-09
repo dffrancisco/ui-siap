@@ -1,9 +1,10 @@
 import axios from "axios";
 import {
-    iParamGetRepresentantes,
     iRepresentantes,
+    iMarcasParam,
     iGetDuplicityResponse,
     iFieldDuplicity,
+    iSearchMarcas,
     iParamToInsert,
     iParamToUpdate,
     iGetRepresentantes,
@@ -11,22 +12,24 @@ import {
 
 const caminho = "siap/representantes";
 
-
+type iGetMarcas = (param: iSearchMarcas, offset: number) => Promise<iMarcasParam>;
 type iGetRepresentantesFunction = (param: string) => Promise<iGetRepresentantes>;
-type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<iRepresentantes>;
 type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>;
 type iToDeleteFunction = (id_Representantes: number) => Promise<void>;
 
-const getMarcas = async () => {
+const getMarcas: iGetMarcas = async (param, offset) => {
     let { data } = await axios.post(caminho, {
         call: "getMarcas",
+        offset,
+        param,
+
     });
 
     return data;
 };
 
-const getRepresentantes: iGetRepresentantesFunction = async (param,) => {
+const getRepresentantes: iGetRepresentantesFunction = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "getRepresentantes",
         param,
@@ -65,9 +68,24 @@ const toDelete: iToDeleteFunction = async (id_Representantes) => {
     });
 };
 
+const getCidades = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getCidades"
+    });
+
+    return data;
+}
+
+const buscarCEP = async (cep: string) => {
+    let data = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+    return data;
+}
+
 export default {
     getMarcas,
     getRepresentantes,
+    buscarCEP,
+    getCidades,
     getDuplicidade,
     toInsert,
     toUpdate,

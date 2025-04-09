@@ -7,6 +7,7 @@ import {
     iFieldDuplicity,
     iRepresentantesParam,
     iMarcas,
+    iCidades,
     iRepresentantes,
     iParamGetRepresentantes,
     iParamToInsert,
@@ -22,10 +23,14 @@ export const state = reactive({
     pnSearch: false,
     lista: <iRepresentantesParam[]>[],
     edtSearch: "",
+    listaCidades: <iCidades[]>[],
     dbRepresentantes: <iRepresentantesParam>{},
     loading: false,
-    marca: <iMarcas[]>[],
+    modalFornecedorOpened: false,
+    marca: <iMarcas>{},
+    cepInserido: false,
     RepresentanteJaExiste: false,
+    representanteSelecionado: <iRepresentantesParam>{},
 
 });
 
@@ -42,14 +47,14 @@ export const eventListener = useEventListener(document, "keydown", async (event)
 export const actions = {
     async init() {
         actions.grids();
-        await actions.getMarcas();
+        await actions.getCidades();
         await actions.getRepresentantes();
     },
 
     grids() {
         state.gridPrincipal = new xGridV2.create({
             el: "#gridPrincipal",
-            height: 200,
+            height: 190,
             count: true,
             columns: {
                 "Nome": { dataField: "NOME" },
@@ -138,26 +143,33 @@ export const actions = {
         }
     },
 
+    async getCidades() {
+        try {
+            const data = await serviceRepresentantes.getCidades();
+            state.listaCidades = data;
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Erro ao exibir as cidades'
+            })
+        }
+    },
+
     async search() {
         state.gridPrincipal.clear();
         const data = await actions.getRepresentantes();
         state.gridPrincipal.source(data);
     },
 
-    async getMarcas() {
-        try {
-            state.loading = true;
-            const data = await serviceRepresentantes.getMarcas();
-            state.marca = data;
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Erro ao carregar os marcas",
-                text: "erro ao carregar marcas",
-            });
-        } finally {
-            state.loading = false;
-        }
+    closeModal() {
+        state.modalFornecedorOpened = false;
+    },
+
+    selecionarRepresentante(representanteSelecionado: iRepresentantesParam) {
+        state.dbRepresentantes.NOME = representanteSelecionado.NOME
+        state.dbRepresentantes.ID_REPRESENTANTE = representanteSelecionado.ID_REPRESENTANTE
+        state.representanteSelecionado = representanteSelecionado;
+        actions.closeModal();
     },
 
     async getDuplicidade({ value, field }: iFieldDuplicity) {
@@ -336,6 +348,77 @@ export const actions = {
                 text: error.message,
             });
         } finally {
+            state.loading = false;
+        }
+    },
+
+    encontrarCodCidade(COD_IBGE: string) {
+        const cidadeEncontrada = state.listaCidades.find(cidade => {
+            if (cidade.COD_IBGE == COD_IBGE) {
+                return true;
+            }
+
+            return false;
+
+        })
+
+        if (cidadeEncontrada) {
+            let cidade = cidadeEncontrada.COD_CIDADE
+            return cidade
+        } else {
+            let cidade = null
+
+            return cidade
+        }
+    },
+
+    encontrarCidades(COD_CIDADE: number) {
+        const cidadeEncontrada = state.listaCidades.find(cidade => {
+            if (cidade.COD_CIDADE == COD_CIDADE) {
+                return true;
+            }
+
+            return false;
+        })
+
+        if (cidadeEncontrada) {
+            let cidade = cidadeEncontrada.DESCRICAO
+            return cidade
+        } else {
+            let cidade = null
+            return cidade
+        }
+    },
+
+    async buscaCEP() {
+        try {
+
+            if (state.cepInserido == true) {
+                return false
+            }
+
+            if (!state.dbRepresentantes.CEP) {
+                return false
+            }
+
+            let cep = state.dbRepresentantes.CEP
+
+            state.loading = true
+
+            let request = await serviceRepresentantes.buscarCEP(cep)
+            let dataJSON = await request.data;
+
+            let cod_cidade = actions.encontrarCodCidade(dataJSON.ibge)
+            let bairro = dataJSON.bairro
+            let endereco = dataJSON.logradouro
+
+            state.dbRepresentantes.ENDERECO = endereco
+            state.dbRepresentantes.BAIRRO = bairro.substring(0, 20)
+            state.dbRepresentantes.COD_CIDADE = cod_cidade
+
+            state.loading = false
+
+        } catch (error) {
             state.loading = false;
         }
     },

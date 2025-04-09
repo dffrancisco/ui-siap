@@ -21,6 +21,14 @@ export interface iMarcas {
     ID_MARCA_GRUPO: number;
 }
 
+
+export interface iCidades {
+    COD_CIDADE: number;
+    DESCRICAO: string;
+    COD_IBGE: string
+    CEP?: string;
+}
+
 export interface iParamGetRepresentantes {
     offset?: number;
     param: object;
@@ -52,7 +60,17 @@ export interface iGetRepresentantes {
     MARCAS: string;
 }
 
+export interface iMarcasParam {
+    ID_MARCA: number;
+    DESCRICAO: string;
+    GRUPO: string;
+    ID_MARCA_GRUPO: number;
+}
 export interface iRepresentantes {
+    search: string;
+}
+
+export interface iSearchMarcas {
     search: string;
 }
 
