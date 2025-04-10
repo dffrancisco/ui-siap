@@ -20,3 +20,8 @@ export interface iItemNota {
     COD_TRAY?: string;
     VENDA_WEB?: number;
 }
+
+export interface iParamGetItensNotas {
+    ID_ENTRADA: string;
+    CNPJ: string;
+}

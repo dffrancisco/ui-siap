@@ -1,7 +1,7 @@
-import { computed, nextTick, reactive } from "vue";
+import { nextTick, reactive } from "vue";
 import serviceEqualizaPrecoLojas from "./services/equalizaPrecoLojas.service";
 import Swal from "sweetalert2";
-import { iItemNota, iNota } from "./interfaces";
+import { iItemNota, iNota, iParamGetItensNotas } from "./interfaces";
 import utils, { iColumnPrint } from "@/ts/utils";
 import xAuthManager from "@/plugins/xAuthManager";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
@@ -10,7 +10,6 @@ import { useEventListener } from "@vueuse/core";
 
 export const state = reactive({
     loading: false,
-    notaSelecionada: null as iNota | null,
     xgNotas: <ixGridCreate>{},
     xgItensNotas: <ixGridCreate>{},
     dbNotasOriginal: <iNota[]>[],
@@ -18,10 +17,9 @@ export const state = reactive({
     dbNotas: <iNota[]>[],
     dbItensNota: <iItemNota[]>[],
     filtroNota: "",
+    filtroItemNota: "",
     inputFiltroNota: <HTMLInputElement>null,
     inputFiltroItensNota: <HTMLInputElement>null,
-    filtroItemNota: "",
-    linhaSelecionadaItens: null as number | null,
 });
 
 export const actions = {
@@ -62,8 +60,8 @@ export const actions = {
             },
             onKeyDown: {
                 46: () => {
-                    xAuthManager("Atualizar preços?", () => {
-                        //actions.deleteNota();
+                    xAuthManager("Deletar nota?", () => {
+                        actions.deleteNota();
                     });
                 },
             },
@@ -75,8 +73,8 @@ export const actions = {
             count: true,
             heightLine: 35,
             columns: {
-                "Nº Fab.": { dataField: "NUM_FABRICANTE", width: "12%" },
-                "Descrição do Produto": { dataField: "DESC_PRODUTO", width: "45%" },
+                "Nº Fab.": { dataField: "NUM_FABRICANTE", width: "15%" },
+                "Descrição do Produto": { dataField: "DESC_PRODUTO", width: "43%" },
                 "Custo: Atual/Novo": {
                     dataField: "CUSTO_N",
                     compare: "statusCusto",
@@ -87,7 +85,7 @@ export const actions = {
                     compare: "statusVenda",
                     right: true,
                 },
-                "Atualizar": {
+                "Atual.": {
                     dataField: "ATUALIZAR",
                     compare: "atualizar",
                     center: true,
@@ -110,7 +108,6 @@ export const actions = {
                 //         historicoEntradaCompacto: false,
                 //     });
                 // },
-
             },
             compare: {
                 statusCusto: function (r: any) {
@@ -172,10 +169,9 @@ export const actions = {
     async getNotas() {
         try {
             state.loading = true;
-            const notas = await serviceEqualizaPrecoLojas.getNotas();
-            state.dbNotas = notas;
-            state.dbNotasOriginal = [...notas]
-            state.xgNotas.source(notas);
+            state.dbNotas = await serviceEqualizaPrecoLojas.getNotas();
+            state.dbNotasOriginal = [...state.dbNotas]
+            state.xgNotas.source(state.dbNotas);
         } catch (error) {
             Swal.fire({ icon: "error", text: "Erro ao buscar as notas." });
         } finally {
@@ -183,18 +179,12 @@ export const actions = {
         }
     },
 
-
-
-    async getItensNotas(param: any) {
-        state.notaSelecionada = param;
+    async getItensNotas(param: iParamGetItensNotas) {
         try {
             state.loading = true;
-
-            state.linhaSelecionadaItens = null;
-            const itens = await serviceEqualizaPrecoLojas.getItensNotas(param);
-            state.xgItensNotas.source(itens);
-            state.dbItensNota = itens;
-            state.dbItensNotaOriginal = [...itens];
+            state.dbItensNota = await serviceEqualizaPrecoLojas.getItensNotas(param);
+            state.xgItensNotas.source(state.dbItensNota);
+            state.dbItensNotaOriginal = [...state.dbItensNota];
         } catch (error) {
             Swal.fire({ icon: "error", text: "Erro ao buscar os itens da nota." });
         } finally {
@@ -251,11 +241,6 @@ export const actions = {
 
     getClassCorLinha(dados: any) {
         let classe = dados.index % 2 == 0 ? "cor-zebrada-1" : "";
-
-        if (dados.item.NUM_FABRICANTE !== undefined && state.linhaSelecionadaItens === dados.index) {
-            classe += " linha-selecionada";
-        }
-
         return { class: classe };
     },
 
@@ -324,22 +309,22 @@ export const actions = {
         });
     },
 
-    //   async deleteNota() {
-    //     try {
-    //       state.loading = true;
-    //       await serviceEqualizaPrecoLojas.deleteNota({
-    //         ID_ENTRADA: state.xgNotas.dataSource().ID_ENTRADA,
-    //         CNPJ: state.xgNotas.dataSource().CNPJ,
-    //       });
+    async deleteNota() {
+        try {
+            state.loading = true;
+            //   await serviceEqualizaPrecoLojas.deleteNota({
+            //     ID_ENTRADA: state.xgNotas.dataSource().ID_ENTRADA,
+            //     CNPJ: state.xgNotas.dataSource().CNPJ,
+            //   });
 
-    //       state.xgItensNotas.clear();
-    //       state.xgNotas.deleteLine();
-    //     } catch (error) {
-    //       Swal.fire({ icon: "error", text: "Erro ao excluir a nota." });
-    //     } finally {
-    //       state.loading = false;
-    //     }
-    //   },
+            state.xgItensNotas.clear();
+            state.xgNotas.deleteLine();
+        } catch (error) {
+            Swal.fire({ icon: "error", text: "Erro ao excluir a nota." });
+        } finally {
+            state.loading = false;
+        }
+    },
 };
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
