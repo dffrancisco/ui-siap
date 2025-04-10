@@ -6,7 +6,7 @@ import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import { regimeTributarioOptions } from "../configuracaoNfe";
 import serviceNfe from "../services/configuracaoNfe.service";
-import { iCofins, iFieldDuplicity } from "../interfaces";
+import { iCofins } from "../interfaces";
 
 const stateCofins = reactive({
   grid: {} as ixGridCreate,
@@ -148,7 +148,7 @@ const actionsCofins = {
       return false;
     }
 
-    if (!stateCofins.cofins.ID_COFINS) {
+    if (stateCofins.cofins.ID_COFINS) {
       await actionsCofins.toUpdate();
     }
 
@@ -198,7 +198,6 @@ const actionsCofins = {
         P_VALOR: stateCofins.cofins.P_VALOR,
         ID_REGIME_TRIBUTARIO: stateCofins.cofins.ID_REGIME_TRIBUTARIO,
       };
-
       stateCofins.loading = true;
 
       await serviceNfe.toUpdateCofins(param);

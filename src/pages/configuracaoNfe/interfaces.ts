@@ -61,7 +61,7 @@ export interface iPis {
     ID_PIS?: number;
     P_VALOR?: number;
     ID_REGIME_TRIBUTARIO?: number;
-    ID_EMPRESA?: number;
+
 }
 
 export interface iCofins {

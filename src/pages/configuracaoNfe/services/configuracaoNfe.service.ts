@@ -13,17 +13,9 @@ import {
 
 type iGetDadosParaInputs = () => Promise<iResponseDadosInputs>;
 type GetVerifica = (param: { REGIME_TRIBUTARIO: number }) => Promise<iNfeConfig[]>;
-
-type UpdateNfeConfigFn = (param: Partial<iNfeConfig>) => Promise<void>;
-
-type InsertRegimeTributario = (param: iInsertRegimeTributario) => Promise<iRegimeTributario>;
 type DeleteRegimeTributario = (id: number) => Promise<{ success: boolean }>;
-
-type InsertPis = (param: iPis) => Promise<iPis>;
 type UpdatePis = (param: iPis) => Promise<void>;
 type DeletePis = (id: number) => Promise<{ success: boolean }>;
-
-type InsertCofins = (param: iCofins) => Promise<iCofins>;
 type UpdateCofins = (param: iCofins) => Promise<void>;
 type DeleteCofins = (id: number) => Promise<{ success: boolean }>;
 
@@ -98,7 +90,7 @@ const toDeletePis: DeletePis = async (id) => {
 
 // Cofins
 
-const toUpdateCofins = async (param: iCofins) => {
+const toUpdateCofins: UpdateCofins = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "updateCofins",
         param
