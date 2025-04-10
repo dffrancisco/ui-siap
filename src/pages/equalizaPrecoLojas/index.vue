@@ -1,8 +1,8 @@
-<!-- equalizaPrecoLojas/index.vue -->
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { state, actions } from "./equalizaPrecoLojas";
-import utils from "@/ts/utils";
+// import utils from "@/ts/utils";
+import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -12,134 +12,90 @@ onMounted(async () => {
 <template>
   <v-container fluid>
     <v-card
-      :max-width="1200"
+      :max-width="1100"
       class="mx-auto pa-4"
     >
       <v-row>
         <v-col cols="5">
-          <v-card
-            title="Notas Fiscais"
-            class="mb-4"
-          >
+          <div class="d-flex ga-2 pa-2">
+            <v-text-field
+              label="Filtrar Loja ou Nº Nota (F1)"
+              :clearable="false"
+              v-model="state.filtroNota"
+              id="inputFiltroNota"
+              width="300px"
+              density="compact"
+              append-inner-icon="mdi-magnify"
+              ref="inputSearch"
+              autocomplete="off"
+              @keydown.enter.prevent="actions.searchNota"
+              @keydown.arrow.down.prevent="state.xgNotas.focus()"
+            ></v-text-field>
+          </div>
+        </v-col>
+
+        <v-col cols="7">
+          <div class="d-flex ga-2 pa-2">
+            <v-text-field
+              label="Filtrar Item da Nota (F2)"
+              :clearable="false"
+              v-model="state.filtroItemNota"
+              id="inputFiltroItensNota"
+              width="300px"
+              autocomplete="off"
+              density="compact"
+              append-inner-icon="mdi-magnify"
+              ref="inputSearch"
+              @keydown.enter.prevent="actions.searchItemNota"
+              @keydown.arrow.down.prevent="state.xgItensNotas.focus()"
+            ></v-text-field>
+          </div>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col
+          cols="5"
+          class="pa-2"
+        >
+          <v-card title="Notas Fiscais">
             <v-divider></v-divider>
-            <v-data-table-virtual
-              :headers="state.headersNotas"
-              :items="state.notas"
-              item-value="ID_ENTRADA"
-              @click:row="actions.selecionarNota"
-              item-index="index"
-              fixed-header
-              class="elevation-1"
-              :row-props="actions.getClassCorLinha"
-              height="450"
-            >
-              <template v-slot:item.DATA="{ item }">
-                {{ utils.dataBrasil(item.DATA) }}
-              </template>
-            </v-data-table-virtual>
+            <div id="xgNotas"></div>
           </v-card>
         </v-col>
 
         <v-col
           cols="7"
-          class="pl-4"
+          class="pl-2 pa-2"
         >
-          <v-card
-            title="Itens da Nota"
-            class="mb-4"
-          >
+          <v-card title="Itens da Nota">
             <v-divider></v-divider>
-            <v-data-table-virtual
-              :headers="state.headersItens"
-              :items="state.itensNota"
-              item-value="COD_PRODUTO"
-              fixed-header
-              item-index="index"
-              class="elevation-1"
-              :row-props="actions.getClassCorLinha"
-              @click:row="(event, { item, index }) => (state.linhaSelecionadaItens = index)"
-              height="450"
-            >
-              <template v-slot:item.CUSTO_N="{ item }">
-                <div class="d-flex align-center">
-                  <span>{{ utils.formatValor(item.CUSTO) }}</span>
-                  <v-icon
-                    color="grey lighten-1"
-                    class="mx-2"
-                    >mdi-arrow-left</v-icon
-                  >
-                  <span :class="{ 'text-blue': true }">{{ utils.formatValor(item.CUSTO_N) }}</span>
-                  <v-icon
-                    v-if="item.CUSTO > item.CUSTO_N"
-                    color="green"
-                    class="ml-1"
-                    >mdi-arrow-down</v-icon
-                  >
-                  <v-icon
-                    v-else-if="item.CUSTO < item.CUSTO_N"
-                    color="red"
-                    class="ml-1"
-                    >mdi-arrow-up</v-icon
-                  >
-                  <v-icon
-                    v-else
-                    color="blue lighten-3"
-                    class="ml-1"
-                    >mdi-circle</v-icon
-                  >
-                </div>
-              </template>
-
-              <template v-slot:item.VENDA_N="{ item }">
-                <div class="d-flex align-center">
-                  <span>{{ utils.formatValor(item.VENDA) }}</span>
-                  <v-icon
-                    color="grey lighten-1"
-                    class="mx-2"
-                    >mdi-arrow-left</v-icon
-                  >
-                  <span :class="{ 'text-blue': true }">{{ utils.formatValor(item.VENDA_N) }}</span>
-                  <v-icon
-                    v-if="item.VENDA > item.VENDA_N"
-                    color="green"
-                    class="ml-1"
-                    >mdi-arrow-down</v-icon
-                  >
-                  <v-icon
-                    v-else-if="item.VENDA < item.VENDA_N"
-                    color="red"
-                    class="ml-1"
-                    >mdi-arrow-up</v-icon
-                  >
-                  <v-icon
-                    v-else
-                    color="blue lighten-3"
-                    class="ml-1"
-                    >mdi-circle</v-icon
-                  >
-                </div>
-              </template>
-            </v-data-table-virtual>
+            <div id="xgItensNotas"></div>
           </v-card>
 
-          <v-card-actions>
-            <v-spacer></v-spacer>
+          <div class="d-flex justify-end ga-2 pt-3">
             <v-btn
               @click="actions.imprimir"
-              class="mr-2"
-              append-icon="mdi-printer"
-              >Imprimir</v-btn
+              :disabled="state.dbItensNota.length === 0"
+              icon="mdi-printer"
+              color="primary"
+              size="36px"
+              title="Imprimir"
             >
+              <v-icon left>mdi-printer</v-icon>
+            </v-btn>
             <v-btn
               color="primary"
-              :disabled="!state.notaSelecionada"
+              @click="actions.atualizar"
+              :disabled="state.dbItensNota.length === 0"
             >
               Atualizar
             </v-btn>
-          </v-card-actions>
+          </div>
         </v-col>
       </v-row>
     </v-card>
+    <modalXAuthManager :retain-focus="false" />
 
     <v-overlay
       :model-value="state.loading"
@@ -162,19 +118,20 @@ onMounted(async () => {
 }
 
 .linha-selecionada {
-  background-color: #45b2ff !important;
+  background-color: #a5d6f9 !important;
   font-weight: 500;
+  font-weight: bold;
 }
 
-.v-data-table__tr {
+.tabelaEqualizaPrecos .v-data-table__tr {
   cursor: pointer;
 }
 
-.v-data-table__tr:hover {
+.tabelaEqualizaPrecos .v-data-table__tr:hover {
   background-color: #f5f5f5 !important;
 }
 
-.v-data-table__tr.linha-selecionada:hover {
+.tabelaEqualizaPrecos .v-data-table__tr.linha-selecionada:hover {
   background-color: #bbdefb !important;
 }
 
