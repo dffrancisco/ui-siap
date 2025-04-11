@@ -317,14 +317,11 @@ export const actions = {
                     cnpj: notaSelecionada.CNPJ
                 }
 
-                await serviceEqualizaPrecoLojas.atualizarProdutos(param);
+                let response = await serviceEqualizaPrecoLojas.atualizarProdutos(param);
 
-                await actions.getItensNotas({
-                    ID_ENTRADA: notaSelecionada.ID_ENTRADA,
-                    CNPJ: notaSelecionada.CNPJ
-                });
+                state.xgItensNotas.source(response.itensAtualizados);
 
-                Swal.fire('Sucesso!', 'Preços atualizados com sucesso.', 'success');
+                Swal.fire('Sucesso!', 'Produtos atualizados com sucesso.', 'success');
             } catch (error) {
                 Swal.fire({ icon: "error", text: "Erro ao atualizar os preços." });
             } finally {

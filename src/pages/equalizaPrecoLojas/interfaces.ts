@@ -33,6 +33,5 @@ export interface iParamUpdateProdutos {
     cnpj: string;
 }
 export interface iRespostaAtualizacao {
-    success: string;
     itensAtualizados?: iItemNota[];
 }

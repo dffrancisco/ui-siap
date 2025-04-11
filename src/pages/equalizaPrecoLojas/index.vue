@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { state, actions } from "./equalizaPrecoLojas";
-// import utils from "@/ts/utils";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 
 onMounted(async () => {
