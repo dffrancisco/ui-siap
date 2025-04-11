@@ -1,7 +1,7 @@
 import { nextTick, reactive } from "vue";
 import serviceEqualizaPrecoLojas from "./services/equalizaPrecoLojas.service";
 import Swal from "sweetalert2";
-import { iItemNota, iNota, iParamGetItensNotas } from "./interfaces";
+import { iItemNota, iNota, iParamGetItensNotas, iParamUpdateProdutos } from "./interfaces";
 import utils, { iColumnPrint } from "@/ts/utils";
 import xAuthManager from "@/plugins/xAuthManager";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
@@ -34,6 +34,7 @@ export const actions = {
         state.xgNotas = new xGridV2.create({
             el: "#xgNotas",
             height: 450,
+            heightLine: 30,
             columns: {
                 Loja: { dataField: "loja", width: "35%" },
                 "Nº Nota": { dataField: "NUM_NOTA", right: true },
@@ -46,13 +47,13 @@ export const actions = {
                 Hora: { dataField: "HORA", width: "15%", center: true },
                 Qto: { dataField: "QTO_ITENS", width: "10%", center: true },
             },
-            dblClick: (r: any) => {
+            dblClick: (r: iNota) => {
                 actions.getItensNotas({
                     ID_ENTRADA: r.ID_ENTRADA,
                     CNPJ: r.CNPJ,
                 });
             },
-            enter: (r: any) => {
+            enter: (r: iNota) => {
                 actions.getItensNotas({
                     ID_ENTRADA: r.ID_ENTRADA,
                     CNPJ: r.CNPJ,
@@ -110,7 +111,7 @@ export const actions = {
                 // },
             },
             compare: {
-                statusCusto: function (r: any) {
+                statusCusto: function (r: iItemNota) {
                     let vl = "";
                     let icon = ' <i class="fa fa-arrow-left" style="color: #edeeef;"></i>';
                     const custo = Number(r.CUSTO) || 0;
@@ -132,7 +133,7 @@ export const actions = {
                         "</span></div>"
                     );
                 },
-                statusVenda: function (r: any) {
+                statusVenda: function (r: iItemNota) {
                     let vl = "";
                     let icon = ' <i class="fa fa-arrow-left" style="color: #edeeef;"></i>';
 
@@ -157,10 +158,10 @@ export const actions = {
                         "</span></div>"
                     );
                 },
-                atualizar: (r: any) => {
+                atualizar: (r: iItemNota) => {
                     if (r.ATUALIZAR == "N")
-                        return `<span style="color:red" >${r.value}</span>`;
-                    if (r.ATUALIZAR == "S") return r.value;
+                        return `<span style="color:red" >${r.ATUALIZAR}</span>`;
+                    if (r.ATUALIZAR == "S") return r.ATUALIZAR;
                 },
             },
         });
@@ -235,15 +236,14 @@ export const actions = {
             );
         });
 
+        state.dbItensNota = itensFiltrados;
         state.xgItensNotas.source(itensFiltrados);
     },
-
 
     getClassCorLinha(dados: any) {
         let classe = dados.index % 2 == 0 ? "cor-zebrada-1" : "";
         return { class: classe };
     },
-
 
     async imprimir() {
         try {
@@ -283,22 +283,46 @@ export const actions = {
     },
 
     async atualizar() {
-        xAuthManager("Atualizar preços?", async (codFuncionario: string) => {
+
+        if (!state.xgNotas.dataSource()) {
+            Swal.fire({
+                icon: "warning",
+                text: "Selecione uma nota para atualizar os preços."
+            });
+            return;
+        }
+
+        const itensParaAtualizar = state.dbItensNota.filter(item => item.ATUALIZAR === 'S');
+
+        if (!itensParaAtualizar.length) {
+            Swal.fire({
+                icon: "warning",
+                text: "Nenhum item selecionado para atualização."
+            });
+            return;
+        }
+
+        xAuthManager("Atualizar preços?", async () => {
             try {
                 state.loading = true;
-                const itensParaAtualizar = state.xgItensNotas.dataSource() as iItemNota[];
 
-                for (const item of itensParaAtualizar) {
-                    await serviceEqualizaPrecoLojas.updateProduto({
-                        ...item,
-                        COD_FUNCIONARIO: codFuncionario,
-                        loja: state.xgNotas.dataSource().loja,
-                        id_entrada: state.xgNotas.dataSource().ID_ENTRADA,
-                        nota: state.xgNotas.dataSource().NUM_NOTA,
-                        data: utils.dataBrasil(state.xgNotas.dataSource().DATA),
-                        //central: empresa.cnpj === "05.849.121.0001-26" ? "S" : "N"
-                    });
+                const notaSelecionada = state.xgNotas.dataSource();
+
+                let param: iParamUpdateProdutos = {
+                    loja: notaSelecionada.loja,
+                    idEntrada: notaSelecionada.ID_ENTRADA,
+                    numNota: notaSelecionada.NUM_NOTA,
+                    dataNota: utils.dataBrasil(notaSelecionada.DATA),
+                    itensNota: itensParaAtualizar,
+                    cnpj: notaSelecionada.CNPJ
                 }
+
+                await serviceEqualizaPrecoLojas.atualizarProdutos(param);
+
+                await actions.getItensNotas({
+                    ID_ENTRADA: notaSelecionada.ID_ENTRADA,
+                    CNPJ: notaSelecionada.CNPJ
+                });
 
                 Swal.fire('Sucesso!', 'Preços atualizados com sucesso.', 'success');
             } catch (error) {
@@ -312,10 +336,10 @@ export const actions = {
     async deleteNota() {
         try {
             state.loading = true;
-            //   await serviceEqualizaPrecoLojas.deleteNota({
-            //     ID_ENTRADA: state.xgNotas.dataSource().ID_ENTRADA,
-            //     CNPJ: state.xgNotas.dataSource().CNPJ,
-            //   });
+            await serviceEqualizaPrecoLojas.deleteNota({
+                ID_ENTRADA: state.xgNotas.dataSource().ID_ENTRADA,
+                CNPJ: state.xgNotas.dataSource().CNPJ,
+            });
 
             state.xgItensNotas.clear();
             state.xgNotas.deleteLine();
@@ -345,6 +369,4 @@ export const eventListener = useEventListener(document, "keydown", async (event)
         event.preventDefault();
         event.stopPropagation();
     }
-
-
 });

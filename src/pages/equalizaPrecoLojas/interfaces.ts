@@ -17,11 +17,22 @@ export interface iItemNota {
     CUSTO_N: number;
     VENDA_N: number;
     ATUALIZAR: 'S' | 'N';
-    COD_TRAY?: string;
-    VENDA_WEB?: number;
 }
 
 export interface iParamGetItensNotas {
     ID_ENTRADA: string;
     CNPJ: string;
+}
+
+export interface iParamUpdateProdutos {
+    loja: string;
+    idEntrada: string;
+    numNota: string;
+    dataNota: string;
+    itensNota: iItemNota[];
+    cnpj: string;
+}
+export interface iRespostaAtualizacao {
+    success: string;
+    itensAtualizados?: iItemNota[];
 }

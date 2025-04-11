@@ -1,8 +1,10 @@
 import axios from "axios";
-import { iNota } from "../interfaces";
+import { iItemNota, iNota, iParamUpdateProdutos, iRespostaAtualizacao } from "../interfaces";
 type iGetNotas = () => Promise<iNota[]>
-type iGetItensNotas = (params: { ID_ENTRADA: string; CNPJ: string }) => Promise<any>;
+type iGetItensNotas = (params: { ID_ENTRADA: string; CNPJ: string }) => Promise<iItemNota[]>;
 type iUpdateProduto = (params: any) => Promise<any>;
+type iDeleteNota = (params: { ID_ENTRADA: string; CNPJ: string }) => Promise<string>;
+type iAtualizar = (params: iParamUpdateProdutos) => Promise<iRespostaAtualizacao>;
 
 const caminho = "siap/equalizaPrecoLojas";
 
@@ -28,8 +30,26 @@ const updateProduto: iUpdateProduto = async () => {
     return data;
 }
 
+const deleteNota: iDeleteNota = async (params) => {
+    let { data } = await axios.post(caminho, {
+        call: "deleteNota",
+        param: params
+    });
+    return data;
+}
+
+const atualizarProdutos: iAtualizar = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "atualizarProdutos",
+        param: param
+    });
+    return data;
+}
+
 export default {
     getNotas,
     getItensNotas,
-    updateProduto
+    updateProduto,
+    deleteNota,
+    atualizarProdutos
 };
