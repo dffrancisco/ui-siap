@@ -116,24 +116,6 @@ onMounted(async () => {
   background-color: #f0f0f0;
 }
 
-.linha-selecionada {
-  background-color: #a5d6f9 !important;
-  font-weight: 500;
-  font-weight: bold;
-}
-
-.tabelaEqualizaPrecos .v-data-table__tr {
-  cursor: pointer;
-}
-
-.tabelaEqualizaPrecos .v-data-table__tr:hover {
-  background-color: #f5f5f5 !important;
-}
-
-.tabelaEqualizaPrecos .v-data-table__tr.linha-selecionada:hover {
-  background-color: #bbdefb !important;
-}
-
 .v-overlay__scrim {
   background-color: black;
 }
