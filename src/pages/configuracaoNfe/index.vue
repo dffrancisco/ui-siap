@@ -1,29 +1,18 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, actions, stateTabs, regimeTributarioOptions } from "./configuracaoNfe";
+import {
+  state,
+  actions,
+  stateTabs,
+  regimeTributarioOptions,
+  regimeTributarioSelecionado,
+} from "./configuracaoNfe";
 import AbaRegimeTributario from "./components/AbaRegimeTributario.vue";
 import AbaPis from "./components/AbaPis.vue";
 import AbaCofins from "./components/AbaCofins.vue";
-import { computed } from "vue";
 
 onMounted(async () => {
   await actions.init();
-});
-
-const regimeTributarioSelecionado = computed({
-  get: () => {
-    return (
-      regimeTributarioOptions.find(
-        (option) => String(option.value) === String(state.nfeConfig.REGIME_TRIBUTARIO)
-      ) || {
-        text: "",
-        value: null,
-      }
-    );
-  },
-  set: (newValue) => {
-    state.nfeConfig.REGIME_TRIBUTARIO = String(newValue.value);
-  },
 });
 </script>
 
@@ -50,7 +39,7 @@ const regimeTributarioSelecionado = computed({
       </v-row>
 
       <v-row dense>
-        <v-col cols="3">
+        <v-col cols="4">
           <v-select
             v-model="regimeTributarioSelecionado"
             label="Regime Tributário"
@@ -63,7 +52,7 @@ const regimeTributarioSelecionado = computed({
             :disabled="!state.isEditable"
           />
         </v-col>
-        <v-col cols="2">
+        <v-col cols="4">
           <v-text-field
             v-model="state.pisSelecionado.P_VALOR"
             label="Pis"
@@ -73,7 +62,7 @@ const regimeTributarioSelecionado = computed({
             :disabled="!state.isEditable"
           />
         </v-col>
-        <v-col cols="2">
+        <v-col cols="4">
           <v-text-field
             v-model="state.cofinsSelecionado.P_VALOR"
             label="Cofins"
@@ -83,7 +72,9 @@ const regimeTributarioSelecionado = computed({
             :disabled="!state.isEditable"
           />
         </v-col>
-        <v-col cols="2">
+      </v-row>
+      <v-row dense>
+        <v-col cols="6">
           <v-text-field
             v-model="state.nfeConfig.LOCAL_XML"
             label="Local XML"
@@ -93,7 +84,7 @@ const regimeTributarioSelecionado = computed({
             :disabled="!state.isEditable"
           />
         </v-col>
-        <v-col cols="3">
+        <v-col cols="6">
           <v-text-field
             v-model="state.nfeConfig.LOCAL_PDF"
             label="Local PDF"
@@ -138,7 +129,7 @@ const regimeTributarioSelecionado = computed({
         />
       </v-card>
 
-      <v-divider class="my-4"></v-divider>
+      <v-divider class="my-3"></v-divider>
 
       <h4 class="mb-2">Informações CFOP</h4>
       <v-row dense>
@@ -180,7 +171,7 @@ const regimeTributarioSelecionado = computed({
 
       <v-row
         dense
-        class="mt-4"
+        class="mt-2"
       >
         <v-col cols="4">
           <v-text-field
@@ -211,8 +202,10 @@ const regimeTributarioSelecionado = computed({
         </v-col>
       </v-row>
 
-      <v-divider class="my-4"></v-divider>
-      <v-row dense>
+      <v-row
+        dense
+        class="mt-2"
+      >
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.EMIT_IM"
@@ -242,8 +235,10 @@ const regimeTributarioSelecionado = computed({
         </v-col>
       </v-row>
 
-      <v-divider class="my-4"></v-divider>
-      <v-row dense>
+      <v-row
+        dense
+        class="mt-2"
+      >
         <v-col cols="4">
           <v-text-field
             v-model="state.nfeConfig.CST"
@@ -287,12 +282,14 @@ const regimeTributarioSelecionado = computed({
           color="primary"
           class="ma-1 btn-style"
           @click="actions.btnSave"
+          :disabled="!state.isEditable"
           >Salvar</v-btn
         >
         <v-btn
           color="primary"
           class="ma-1 btn-style"
           @click="actions.btnCancel"
+          :disabled="!state.isEditable"
           >Cancelar</v-btn
         >
       </v-row>
@@ -309,6 +306,7 @@ const regimeTributarioSelecionado = computed({
       size="64"
     ></v-progress-circular>
   </v-overlay>
+  <div id="pnCodigoTela">configuracaoNFe</div>
 </template>
 
 <style scoped>

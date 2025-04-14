@@ -4,7 +4,6 @@ import {
     iRegimeTributario,
     iPis,
     iCofins,
-    iInsertRegimeTributario,
     iFieldDuplicity,
     iResponseDadosInputs,
     iGetDuplicityResponse
@@ -13,7 +12,6 @@ import {
 
 type iGetDadosParaInputs = () => Promise<iResponseDadosInputs>;
 type GetVerifica = (param: { REGIME_TRIBUTARIO: number }) => Promise<iNfeConfig[]>;
-type DeleteRegimeTributario = (id: number) => Promise<{ success: boolean }>;
 type UpdatePis = (param: iPis) => Promise<void>;
 type DeletePis = (id: number) => Promise<{ success: boolean }>;
 type UpdateCofins = (param: iCofins) => Promise<void>;
@@ -54,13 +52,7 @@ const toUpdateRegimeTributario = async (param: iRegimeTributario) => {
     return data;
 };
 
-const toDeleteRegimeTributario: DeleteRegimeTributario = async (ID_REGIME_TRIBUTARIO) => {
-    const { data } = await axios.post(caminho, {
-        call: "deleteRegimeTributario",
-        param: { ID_REGIME_TRIBUTARIO }
-    });
-    return data;
-};
+
 
 const verificarRegimeTributarioEmNfe: GetVerifica = async ({ REGIME_TRIBUTARIO }) => {
     const { data } = await axios.post(caminho, {
@@ -71,7 +63,6 @@ const verificarRegimeTributarioEmNfe: GetVerifica = async ({ REGIME_TRIBUTARIO }
 };
 
 // Pis
-
 const toUpdatePis: UpdatePis = async (param) => {
     const { data } = await axios.post(caminho, {
         call: "updatePis",
@@ -89,7 +80,6 @@ const toDeletePis: DeletePis = async (id) => {
 };
 
 // Cofins
-
 const toUpdateCofins: UpdateCofins = async (param) => {
     let { data } = await axios.post(caminho, {
         call: "updateCofins",
@@ -121,7 +111,6 @@ export default {
     updateNfeConfig,
     toUpdateRegimeTributario,
     toInsertRegimeTributario,
-    toDeleteRegimeTributario,
     verificarRegimeTributarioEmNfe,
     toUpdatePis,
     toDeletePis,

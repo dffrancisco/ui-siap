@@ -2,7 +2,6 @@
 import { onMounted, reactive, nextTick, watch } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
-import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import serviceNfe from "../services/configuracaoNfe.service";
 import { iRegimeTributario } from "../interfaces";
@@ -40,7 +39,7 @@ const actionsRegime = {
   gridRegimeTributario() {
     stateRegime.grid = new xGridV2.create({
       el: "#gridRegimeTributario",
-      height: 300,
+      height: 290,
       count: true,
       columns: {
         "Código Regime Tributário": {
@@ -76,11 +75,6 @@ const actionsRegime = {
               state: "update",
               click: actionsRegime.btnEdit,
               id: "btnRegimeUpdate",
-            },
-            excluir: {
-              html: "Excluir",
-              state: "delete",
-              click: actionsRegime.btnDelete,
             },
             salvar: {
               html: "Salvar",
@@ -143,21 +137,6 @@ const actionsRegime = {
     stateRegime.grid.focusField();
   },
 
-  async btnDelete() {
-    if (!stateRegime.grid.dataSource()) {
-      Swal.fire({
-        icon: "info",
-        text: "Operação cancelada selecione um registro",
-      });
-      return false;
-    }
-
-    if (await msgConfirm("Confirmação", "Confirma a exclusão?")) {
-      await actionsRegime.toDelete();
-      stateRegime.grid.focus();
-    }
-  },
-
   async btnSave() {
     if (utils.validaOBR()) {
       return false;
@@ -183,29 +162,6 @@ const actionsRegime = {
 
     stateRegime.grid.enable();
     stateRegime.grid.focus(linhaGrid);
-  },
-  async toDelete() {
-    try {
-      const idCofins = stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO;
-
-      stateRegime.loading = true;
-
-      await serviceNfe.toDeleteRegimeTributario(idCofins);
-
-      stateRegime.grid.deleteLine();
-      await Swal.fire({
-        icon: "success",
-        text: "Regime Tributario deletado com sucesso.",
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Erro ao excluir o Regime Tributario, verificar",
-        text: error.message,
-      });
-    } finally {
-      stateRegime.loading = false;
-    }
   },
 
   async toInsert() {
@@ -274,14 +230,6 @@ onMounted(async () => {
     id="pnRegimeCampos"
   >
     <v-row dense>
-      <v-col cols="4">
-        <v-text-field
-          v-model="stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO"
-          label="Código Tributário"
-          :disabled="!stateRegime.isEditing"
-          type="number"
-        />
-      </v-col>
       <v-col cols="4">
         <v-text-field
           v-model="stateRegime.regimeTributario.DESCRICAO"

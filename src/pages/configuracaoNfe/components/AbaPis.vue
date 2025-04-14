@@ -39,7 +39,7 @@ const actionsPis = {
   gridPis() {
     statePis.grid = new xGridV2.create({
       el: "#gridPis",
-      height: 300,
+      height: 290,
       count: true,
       columns: {
         Valor: { dataField: "P_VALOR", width: "47%", render: utils.formatValor },
@@ -191,6 +191,7 @@ const actionsPis = {
   async toUpdate() {
     try {
       let param = {
+        ID_PIS: statePis.pis.ID_PIS,
         P_VALOR: statePis.pis.P_VALOR,
         ID_REGIME_TRIBUTARIO: statePis.pis.ID_REGIME_TRIBUTARIO,
       };
@@ -237,6 +238,7 @@ onMounted(async () => {
           item-value="value"
           :disabled="!statePis.isEditing"
           outlined
+          :clearable="false"
         />
       </v-col>
       <v-col cols="3">
@@ -245,6 +247,7 @@ onMounted(async () => {
           label="Valor do PIS"
           :disabled="!statePis.isEditing"
           type="text"
+          :clearable="false"
         />
       </v-col>
     </v-row>

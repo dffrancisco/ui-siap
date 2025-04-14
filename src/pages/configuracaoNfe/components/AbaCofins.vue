@@ -41,7 +41,7 @@ const actionsCofins = {
   gridCofins() {
     stateCofins.grid = new xGridV2.create({
       el: "#gridCofins",
-      height: 300,
+      height: 290,
       count: true,
       columns: {
         Valor: { dataField: "P_VALOR", width: "47%", render: utils.formatValor },
@@ -195,6 +195,7 @@ const actionsCofins = {
   async toUpdate() {
     try {
       let param = {
+        ID_COFINS: stateCofins.cofins.ID_COFINS,
         P_VALOR: stateCofins.cofins.P_VALOR,
         ID_REGIME_TRIBUTARIO: stateCofins.cofins.ID_REGIME_TRIBUTARIO,
       };
@@ -239,6 +240,7 @@ onMounted(async () => {
           item-title="text"
           :disabled="!stateCofins.isEditing"
           item-value="value"
+          :clearable="false"
         />
       </v-col>
       <v-col cols="3">
@@ -247,6 +249,7 @@ onMounted(async () => {
           label="Valor do COFINS"
           :disabled="!stateCofins.isEditing"
           type="number"
+          :clearable="false"
         />
       </v-col>
     </v-row>

@@ -1,5 +1,5 @@
 
-import { reactive, nextTick } from "vue";
+import { reactive, nextTick, computed } from "vue";
 import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 import serviceNfe from './services/configuracaoNfe.service';
@@ -22,6 +22,19 @@ export const state = reactive({
     loading: false,
     isEditable: false,
     originalConfig: {} as iNfeConfig,
+});
+
+export const regimeTributarioSelecionado = computed({
+    get: () => {
+        return (
+            regimeTributarioOptions.find(
+                (option) => String(option.value) === String(state.nfeConfig.REGIME_TRIBUTARIO)
+            ) || { text: "", value: null }
+        );
+    },
+    set: (newValue) => {
+        state.nfeConfig.REGIME_TRIBUTARIO = String(newValue.value);
+    },
 });
 
 export const stateTabs = reactive({
