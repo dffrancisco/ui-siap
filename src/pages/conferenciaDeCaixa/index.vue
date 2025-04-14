@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { state, options, actions, funcionariosDisponiveis, abaSelecionada } from "./conferenciaDeCaixa";
+import { state, options, actions, computeds } from "./conferenciaDeCaixa";
 import { onMounted } from "vue";
 import ModalAbrirCaixa from "./components/ModalAbrirCaixa.vue";
 import ModalSangria from "./components/ModalSangria.vue";
+import ModalConferirCaixa from "./components/ModalConferirCaixa.vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import AbaCaixas from "./components/AbaCaixas.vue";
 import AbaLancamentos from "./components/AbaLancamentos.vue";
 import AbaSangrias from "./components/AbaSangrias.vue";
 import AbaDevolucoes from "./components/AbaDevolucoes.vue";
+import moment from "moment";
 
 onMounted(() => {
   actions.init();
@@ -17,7 +19,7 @@ onMounted(() => {
 <template>
   <v-container>
     <v-card
-      width="1100px"
+      max-width="1100px"
       class="ma-auto pa-4"
     >
       <!-- Input de Data -->
@@ -68,6 +70,7 @@ onMounted(() => {
           color="primary"
           size="large"
           @click="actions.abrirMDC"
+          v-if="state.data == moment().format('YYYY-MM-DD')"
           >Abrir MDC</v-btn
         >
       </div>
@@ -96,7 +99,7 @@ onMounted(() => {
       </div>
 
       <!-- Renderiza a aba de caixas -->
-      <template v-if="abaSelecionada === 'caixas'">
+      <template v-if="computeds.abaSelecionada.value === 'caixas'">
         <v-row style="overflow-y: scroll; max-height: 370px">
           <v-col
             v-for="caixa in state.caixas"
@@ -110,6 +113,7 @@ onMounted(() => {
               :caixa="caixa"
               @fechar-caixa="actions.fecharCaixa"
               @salvar-sangria="actions.modalSangria"
+              @conferir-caixa="actions.abrirModalConferirCaixa"
             />
           </v-col>
 
@@ -119,7 +123,7 @@ onMounted(() => {
             sm="4"
             md="4"
             lg="4"
-            v-if="state.mdcAberto"
+            v-if="state.mdcAberto && state.data == moment().format('YYYY-MM-DD')"
           >
             <v-card
               class="pa-4 d-flex flex-column align-center justify-center"
@@ -139,13 +143,13 @@ onMounted(() => {
       </template>
 
       <!-- Renderiza a aba de Lançamentos -->
-      <AbaLancamentos v-if="abaSelecionada === 'lancamentos'" />
+      <AbaLancamentos v-if="computeds.abaSelecionada.value === 'lancamentos' && state.mdcAberto" />
 
       <!-- Renderiza a aba de Sangrias -->
-      <AbaSangrias v-if="abaSelecionada === 'sangria'" />
+      <AbaSangrias v-if="computeds.abaSelecionada.value === 'sangria' && state.mdcAberto" />
 
       <!-- Renderiza a aba de Devolucoes -->
-      <AbaDevolucoes v-if="abaSelecionada === 'devolucao'" />
+      <AbaDevolucoes v-if="computeds.abaSelecionada.value === 'devolucao' && state.mdcAberto" />
 
       <!-- Mensagem de quem abriu o MDC -->
       <div class="pa-2 mt-3">
@@ -161,7 +165,7 @@ onMounted(() => {
       max-width="800"
     >
       <ModalAbrirCaixa
-        :funcionarios="funcionariosDisponiveis"
+        :funcionarios="computeds.funcionariosDisponiveis.value"
         :modalOpened="state.modalAbrirCaixaOpened"
         @closeModalAbrirCaixa="state.modalAbrirCaixaOpened = false"
         @dadosAbrirCaixa.sync="actions.abrirCaixa"
@@ -181,7 +185,24 @@ onMounted(() => {
       />
     </v-dialog>
 
-    <modalXAuthManager />
+    <!-- Modal Conferir Caixa -->
+    <v-dialog
+      v-model="state.modalConferirCaixaOpened"
+      max-width="1050"
+      :retain-focus="false"
+      z-index="500"
+    >
+      <ModalConferirCaixa
+        :modalOpened="state.modalConferirCaixaOpened"
+        :caixaSelecionado="state.caixaSelected"
+        :lancamentos="state.todasAsCompras"
+        :sangrias="state.sangrias"
+        :devolucoes="state.devolucoes"
+        @closeModalConferirCaixa="state.modalConferirCaixaOpened = false"
+      />
+    </v-dialog>
+
+    <modalXAuthManager :retain-focus="false" />
   </v-container>
 
   <v-overlay

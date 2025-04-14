@@ -103,6 +103,7 @@ onMounted(async () => {
             class="btnCancelar"
             size="large"
             color="outline"
+            density="compact"
             @click="actions.cancelar"
             >Cancelar</v-btn
           >
@@ -111,6 +112,7 @@ onMounted(async () => {
             class="btnSalvar"
             color="primary"
             size="large"
+            density="compact"
             @click="actions.abrirCaixa"
             >Salvar</v-btn
           >
@@ -161,7 +163,7 @@ onMounted(async () => {
   border-radius: 8px !important;
   margin-bottom: 150px;
   margin-left: 15%;
-  height: 220px;
+  height: 200px;
   border: 2px solid rgba(0, 0, 0, 0.261);
 }
 </style>
