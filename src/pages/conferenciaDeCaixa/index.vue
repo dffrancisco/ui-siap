@@ -17,10 +17,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid>
     <v-card
       max-width="1100px"
-      class="ma-auto pa-4"
+      class="pa-4 mx-auto"
     >
       <!-- Input de Data -->
       <v-row class="pt-4 pl-2">

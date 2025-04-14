@@ -2,6 +2,7 @@
 import { state, actions, computeds } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 import IconPagamento from "./IconPagamento.vue";
+import VChipOrcamento from "./VChipOrcamentos.vue";
 import { iTiposPagamento } from "../interfaces";
 import { reactive } from "vue";
 import ModalDetalhesPagamento from "./ModalDetalhesPagamento.vue";
@@ -69,28 +70,14 @@ const stateLancamentos = reactive({
           </template>
 
           <template v-slot:item.NUM_ORCAMENTO="{ item }">
-            <div class="orcamento-group">
-              <div
-                v-for="orc in item.ORCAMENTOS?.length
+            <VChipOrcamento
+              :orcamentos="
+                item.ORCAMENTOS?.length
                   ? item.ORCAMENTOS
-                  : [{ NUM_ORCAMENTO: item.NUM_ORCAMENTO, VALOR_ORCAMENTO: item.VALOR_ORCAMENTO }]"
-                :key="orc.NUM_ORCAMENTO"
-                class="orcamento-box"
-                :class="{ 'orcamento-entregar-receber': item.ENTREGAR_RECEBER == true }"
-                :title="item.ENTREGAR_RECEBER == true ? 'E/R Dias Anteriores' : 'Nº Orc. / Valor'"
-              >
-                <div
-                  class="orcamento-numero"
-                  :class="{ 'orcamento-numero-entregar-receber': item.ENTREGAR_RECEBER == true }"
-                  >{{ orc.NUM_ORCAMENTO }}</div
-                >
-                <div
-                  class="orcamento-valor"
-                  :class="{ 'orcamento-valor-entregar-receber': item.ENTREGAR_RECEBER == true }"
-                  >{{ utils.formatValor(orc.VALOR_ORCAMENTO) }}</div
-                >
-              </div>
-            </div>
+                  : [{ NUM_ORCAMENTO: item.NUM_ORCAMENTO, VALOR_ORCAMENTO: item.VALOR_ORCAMENTO }]
+              "
+              :entregarReceber="item.ENTREGAR_RECEBER"
+            />
           </template>
 
           <template v-slot:item.PAGAMENTOS="{ item }">
@@ -159,7 +146,7 @@ const stateLancamentos = reactive({
   padding: 4px;
   flex-wrap: wrap;
   margin-left: -20px;
-  width: 130%;
+  max-width: 100%;
 }
 
 .v-icon {
@@ -167,7 +154,7 @@ const stateLancamentos = reactive({
 }
 
 .chip-pagamento {
-  width: 100px;
+  max-width: 100px;
   height: 45px;
   border-radius: 8px !important;
 }
@@ -182,75 +169,5 @@ const stateLancamentos = reactive({
   font-weight: 500;
   line-height: 1;
   margin-bottom: 2px;
-}
-
-.orcamento-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 4px;
-  margin-left: -10px;
-  gap: 2px;
-}
-
-.orcamento-box {
-  display: flex;
-  align-items: center;
-  border: 1px solid #017bc2c7;
-  border-radius: 6px;
-  overflow: hidden;
-  font-weight: bold;
-  color: #0496ea;
-  background: rgba(33, 150, 243, 0.15);
-  width: fit-content;
-}
-
-.orcamento-numero {
-  padding: 4px 8px;
-  background: #0496ea;
-  color: white;
-  border-radius: 0px 8px 8px 0px;
-  min-width: 54px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.orcamento-valor {
-  padding: 4px 8px;
-  color: #0496ea;
-  border-radius: 0 6px 6px 0;
-  min-width: 56px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.orcamento-numero-entregar-receber {
-  padding: 4px 8px;
-  background: #c2016575;
-  color: white;
-  border-radius: 0px 8px 8px 0px;
-}
-
-.orcamento-valor-entregar-receber {
-  padding: 4px 8px;
-  color: #c20165c1;
-  border-radius: 0 6px 6px 0;
-}
-
-.orcamento-entregar-receber {
-  display: flex;
-  align-items: center;
-  border: 1px solid #c20165c7;
-  border-radius: 6px;
-  overflow: hidden;
-  font-weight: bold;
-  color: #fb2be7;
-  background: rgba(243, 33, 229, 0.15);
-  width: fit-content;
-  margin-top: 3px;
-  margin-bottom: 3px;
-  margin-right: 5px;
 }
 </style>
