@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { state, totalSangrias } from "../conferenciaDeCaixa";
+import { state, computeds } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 </script>
 
@@ -15,7 +15,7 @@ import utils from "@/ts/utils";
           <v-list dense>
             <v-list-subheader><u>Totalizador Sangrias</u></v-list-subheader>
             <v-list-item
-              v-for="(total, pessoa) in totalSangrias.totaisPorPessoa"
+              v-for="(total, pessoa) in computeds.totalSangrias.value.totaisPorPessoa"
               :key="pessoa"
             >
               <v-list-item-title>
@@ -24,11 +24,12 @@ import utils from "@/ts/utils";
             </v-list-item>
           </v-list>
 
-          <v-divider class="my-2"></v-divider>
+          <v-divider></v-divider>
 
           <v-list-item>
             <v-list-item-title>
-              <strong>Total Geral:</strong> {{ utils.formatValor(totalSangrias.totalGeral as number) }}
+              <strong>Total Geral:</strong>
+              {{ utils.formatValor(computeds.totalSangrias.value.totalGeral) }}
             </v-list-item-title>
           </v-list-item>
         </v-card>
@@ -40,10 +41,10 @@ import utils from "@/ts/utils";
           :items="state.sangrias"
           height="340"
           :headers="[
-            { title: 'Valor', key: 'VALOR', value: (item) => utils.formatValor(item.VALOR) },
-            { title: 'Hora', key: 'HORA', value: (item) => utils.formatHora(item.HORA) },
-            { title: 'Caixa', key: 'LOGIN' },
-            { title: 'Entregue Para', key: 'ENTREGUE_PARA' },
+            { title: 'Valor', key: 'VALOR', value: (item) => utils.formatValor(item.VALOR), sortable: false },
+            { title: 'Hora', key: 'HORA', value: (item) => utils.formatHora(item.HORA), sortable: false },
+            { title: 'Caixa', key: 'LOGIN', sortable: false },
+            { title: 'Entregue Para', key: 'ENTREGUE_PARA', sortable: false },
           ]"
           item-value="HORA"
           density="compact"

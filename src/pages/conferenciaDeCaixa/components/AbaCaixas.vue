@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, computed } from "vue";
 import utils from "@/ts/utils";
+import { actions } from "../conferenciaDeCaixa";
 
 const props = defineProps<{
   caixa: {
@@ -19,15 +20,7 @@ const props = defineProps<{
   };
 }>();
 
-const emits = defineEmits(["fechar-caixa", "salvar-sangria"]);
-
-const getFotoFuncionarioURL = (cpf: string) => {
-  if (!cpf) {
-    return "";
-  }
-  const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
-  return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
-};
+const emits = defineEmits(["fechar-caixa", "salvar-sangria", "conferir-caixa"]);
 
 const botoesVisiveis = computed(() => {
   return [props.caixa.STATUS !== 2, props.caixa.STATUS !== 2, true].filter(Boolean).length;
@@ -51,7 +44,7 @@ const botoesVisiveis = computed(() => {
           class="ml-2 btn-bordered"
         >
           <v-img
-            :src="getFotoFuncionarioURL(caixa.CPF)"
+            :src="actions.getFotoFuncionarioURL(caixa.CPF)"
             cover
           ></v-img>
         </v-avatar>
@@ -128,7 +121,7 @@ const botoesVisiveis = computed(() => {
     <v-divider></v-divider>
     <v-row
       :justify="botoesVisiveis === 1 ? 'center' : 'space-between'"
-      class="mt-2 px-3"
+      class="mt-1 pa-2"
     >
       <v-btn
         v-if="caixa.STATUS !== 2"
@@ -160,6 +153,7 @@ const botoesVisiveis = computed(() => {
         color="primary"
         title="Conferir Caixa"
         class="mr-5 mx-1 btn-bordered"
+        @click="emits('conferir-caixa', caixa)"
       >
         <v-icon :style="{ fontSize: '25px' }" />
       </v-btn>

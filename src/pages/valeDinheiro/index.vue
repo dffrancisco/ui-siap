@@ -12,8 +12,14 @@ onMounted(async () => {
 <template>
   <v-main>
     <v-container>
-      <v-card max-width="1000" class="mx-auto pa-3">
-        <v-tabs v-model="state.tab" color="primary">
+      <v-card
+        max-width="1000"
+        class="mx-auto pa-3"
+      >
+        <v-tabs
+          v-model="state.tab"
+          color="primary"
+        >
           <v-tab value="valesAPagar">Vales a Pagar</v-tab>
           <v-tab value="valesPagoDoMes">Pagos do mês</v-tab>
         </v-tabs>
