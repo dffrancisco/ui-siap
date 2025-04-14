@@ -80,14 +80,6 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
           >
             Fechar Caixa
           </v-btn>
-          <div style="position: absolute; right: 0; top: 0">
-            <v-icon
-              size="large"
-              title="Fechar Modal"
-              @click="emit('closeModalConferirCaixa')"
-              >mdi-close</v-icon
-            >
-          </div>
         </div>
 
         <div
@@ -103,25 +95,9 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
           >
             Conferir Caixa
           </v-btn>
-          <div style="position: absolute; right: 0; top: 0">
-            <v-icon
-              size="large"
-              title="Fechar Modal"
-              @click="emit('closeModalConferirCaixa')"
-              >mdi-close</v-icon
-            >
-          </div>
         </div>
 
         <div v-if="state.caixaSelected.CONFERIDO">
-          <div style="position: absolute; right: 0; top: 0">
-            <v-icon
-              size="large"
-              title="Fechar Modal"
-              @click="emit('closeModalConferirCaixa')"
-              >mdi-close</v-icon
-            >
-          </div>
           <div class="mt-2">
             <label>Conferido por: </label><br />
             <label>{{ state.caixaSelected.CONFERIDO }}</label>

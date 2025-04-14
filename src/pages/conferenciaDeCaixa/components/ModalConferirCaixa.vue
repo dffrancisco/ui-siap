@@ -17,7 +17,7 @@ const options: iOptions[] = [
 ];
 </script>
 <template
-  ><v-card class="pa-4 modal-container">
+  ><v-card class="pa-2 modal-container">
     <ModalConferirCaixaCabecalho @closeModalConferirCaixa="emit('closeModalConferirCaixa')" />
 
     <v-divider
@@ -26,7 +26,7 @@ const options: iOptions[] = [
     ></v-divider>
 
     <!--Lista de Opções -->
-    <div class="mt-1">
+    <div>
       <v-chip-group
         v-model="state.selectOptionModal"
         color="primary"
@@ -51,10 +51,7 @@ const options: iOptions[] = [
       </v-chip-group>
     </div>
 
-    <v-divider
-      :thickness="3"
-      class="mt-1"
-    ></v-divider>
+    <v-divider :thickness="3"></v-divider>
 
     <div>
       <ModalConferirCaixaAbaLancamentos v-if="computeds.abaSelecionadaModal.value === 'lancamentos'" />

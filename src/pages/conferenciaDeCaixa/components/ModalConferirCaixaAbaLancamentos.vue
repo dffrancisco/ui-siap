@@ -163,35 +163,32 @@ onMounted(() => {
   <v-card class="pa-1 modalAbaLancamentos">
     <v-row>
       <v-col
-        class="d-flex flex-column"
+        class="d-flex flex-column pt-7 pl-4"
         cols="2"
       >
-        <v-card
+        <!-- <v-card
           class="flex-grow-1"
           height="335px"
           style="overflow-y: scroll"
           outlined
           mandatory
+        > -->
+        <v-list-item
+          v-for="(item, index) in computeds.totalizadoresFiltradosPorCaixa.value"
+          :key="index"
+          @click="actions.selecionarPagamentoModal(item.TIPO_PAGAMENTO)"
+          :class="{ tipo_pag_selected: state.pagamentosSelecionadosModal.includes(item.TIPO_PAGAMENTO) }"
         >
-          <v-list-item
-            v-for="(item, index) in computeds.totalizadoresFiltradosPorCaixa.value"
-            :key="index"
-            @click="actions.selecionarPagamentoModal(item.TIPO_PAGAMENTO)"
-            :class="{ tipo_pag_selected: state.pagamentosSelecionadosModal.includes(item.TIPO_PAGAMENTO) }"
-          >
-            <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
-            <v-list-item-subtitle>
-              <b>{{ utils.formatValor(item.VALOR) }}</b>
-            </v-list-item-subtitle>
-          </v-list-item>
-        </v-card>
+          <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
+          <v-list-item-subtitle>
+            <b>{{ utils.formatValor(item.VALOR) }}</b>
+          </v-list-item-subtitle>
+        </v-list-item>
+        <!-- </v-card> -->
       </v-col>
 
       <!-- Card Direito (Compras do Tipo Selecionado) -->
-      <v-col
-        cols="7"
-        style="padding: 0"
-      >
+      <v-col cols="7">
         <v-data-table-virtual
           :key="state.pagamentoSelecionado"
           :items="computeds.comprasFiltradasPorCaixa.value"
@@ -230,6 +227,10 @@ onMounted(() => {
                 </div>
               </div>
             </div>
+          </template>
+
+          <template v-slot:item.HORA="{ item }">
+            <span class="text-center font-weight horaTable">{{ utils.formatHora(item.HORA) }}</span>
           </template>
 
           <template v-slot:item.PAGAMENTOS="{ item }">
@@ -278,7 +279,7 @@ onMounted(() => {
         <v-card>
           <v-data-table-virtual
             :items="stateLancamentos.somatorioLista"
-            height="303"
+            height="316"
             fixed-header
             :headers="[
               { title: 'Orç.', key: 'orcamento' },
@@ -352,7 +353,7 @@ onMounted(() => {
         </v-col>
         <v-col
           cols="3"
-          class="pt-1"
+          class="pt-0"
         >
           <v-checkbox
             v-model="stateLancamentos.exibirApenasNaoConferidos"
@@ -407,9 +408,8 @@ onMounted(() => {
 .chips-pagamentos {
   display: flex;
   gap: 4px;
-  padding: 2px;
   flex-wrap: wrap;
-  margin-left: -20px;
+  margin-left: -10px;
   width: 130%;
 }
 
@@ -418,8 +418,9 @@ onMounted(() => {
 }
 
 .chip-pagamento {
-  width: 100px;
+  width: 90px;
   height: 45px;
+  padding: 6px;
   border-radius: 8px !important;
   transition: all 0.3s ease;
   background-color: #ebf7ff;
@@ -452,9 +453,12 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 4px;
-  margin-left: -10px;
+  margin-left: -40px;
   gap: 2px;
+}
+
+.horaTable {
+  margin-left: -10px;
 }
 
 .orcamento-box {
@@ -525,7 +529,7 @@ onMounted(() => {
 .containerFooter {
   padding: 0;
   margin: 0;
-  margin-bottom: -30px;
+  margin-bottom: -35px;
 }
 
 .modalAbaLancamentos {

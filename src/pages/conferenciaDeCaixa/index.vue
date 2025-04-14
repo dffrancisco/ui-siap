@@ -104,10 +104,11 @@ onMounted(() => {
           <v-col
             v-for="caixa in state.caixas"
             :key="caixa.COD_FUNCIONARIO"
+            style="padding: 5px 5px 5px 5px"
             cols="12"
-            sm="4"
+            sm="6"
             md="4"
-            lg="4"
+            lg="3"
           >
             <AbaCaixas
               :caixa="caixa"

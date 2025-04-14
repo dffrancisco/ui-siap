@@ -321,7 +321,8 @@ export const actions = {
 
     abrirModalConferirCaixa(caixa) {
         state.caixaSelected = caixa;
-        state.modalConferirCaixaOpened = true;
+        state.selectOptionModal = "lancamentos",
+            state.modalConferirCaixaOpened = true;
     },
 
     async salvarObs(observacao: string) {
