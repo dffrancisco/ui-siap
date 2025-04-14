@@ -17,10 +17,7 @@ const actionsObs = {
 </script>
 
 <template>
-  <v-card
-    class="pa-3"
-    height="410px"
-  >
+  <v-card class="pa-3 h-100">
     <v-row class="h-100">
       <v-col
         cols="2"

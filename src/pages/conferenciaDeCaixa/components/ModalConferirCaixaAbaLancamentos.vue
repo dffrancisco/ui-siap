@@ -160,40 +160,31 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-card class="pa-1 modalAbaLancamentos">
-    <v-row>
-      <v-col
-        class="d-flex flex-column pt-7 pl-4"
-        cols="2"
-      >
-        <!-- <v-card
-          class="flex-grow-1"
-          height="335px"
-          style="overflow-y: scroll"
-          outlined
-          mandatory
-        > -->
-        <v-list-item
-          v-for="(item, index) in computeds.totalizadoresFiltradosPorCaixa.value"
-          :key="index"
-          @click="actions.selecionarPagamentoModal(item.TIPO_PAGAMENTO)"
-          :class="{ tipo_pag_selected: state.pagamentosSelecionadosModal.includes(item.TIPO_PAGAMENTO) }"
-        >
-          <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
-          <v-list-item-subtitle>
-            <b>{{ utils.formatValor(item.VALOR) }}</b>
-          </v-list-item-subtitle>
-        </v-list-item>
-        <!-- </v-card> -->
-      </v-col>
+  <div class="pa-1 modalAbaLancamentos">
+    <div class="modal-aba-lancamentos-corpo">
+      <div class="d-flex flex-column">
+        <v-list height="328px">
+          <v-list-item
+            v-for="(item, index) in computeds.totalizadoresFiltradosPorCaixa.value"
+            :key="index"
+            @click="actions.selecionarPagamentoModal(item.TIPO_PAGAMENTO)"
+            :class="{ tipo_pag_selected: state.pagamentosSelecionadosModal.includes(item.TIPO_PAGAMENTO) }"
+          >
+            <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
+            <v-list-item-subtitle>
+              <b>{{ utils.formatValor(item.VALOR) }}</b>
+            </v-list-item-subtitle>
+          </v-list-item>
+        </v-list>
+      </div>
 
       <!-- Card Direito (Compras do Tipo Selecionado) -->
-      <v-col cols="7">
+      <div class="h-100">
         <v-data-table-virtual
           :key="state.pagamentoSelecionado"
           :items="computeds.comprasFiltradasPorCaixa.value"
           :headers="state.headersLancamentos"
-          height="345"
+          height="330px"
           item-value="id"
           :loading="state.loading"
           fixed-header
@@ -270,16 +261,13 @@ onMounted(() => {
             </div>
           </template>
         </v-data-table-virtual>
-      </v-col>
+      </div>
 
-      <v-col
-        cols="3"
-        style="padding: 5px"
-      >
+      <div style="width: 250px">
         <v-card>
           <v-data-table-virtual
             :items="stateLancamentos.somatorioLista"
-            height="316"
+            height="290px"
             fixed-header
             :headers="[
               { title: 'Orç.', key: 'orcamento' },
@@ -326,59 +314,52 @@ onMounted(() => {
             </v-tooltip>
           </v-footer>
         </v-card>
-      </v-col>
-    </v-row>
-    <v-container
-      fluid
-      class="containerFooter"
-    >
-      <v-row class="ma-0 pa-0">
-        <v-col cols="3">
-          <v-text-field
-            id="inputLocalizarOrcamento"
-            v-model="stateLancamentos.localizarOrcamento"
-            label="Localizar Orçamento (F2)"
-            :clearable="false"
-            @input="actionsLancamentos.atualizarFiltroOrcamento"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="3">
-          <v-text-field
-            id="inputLocalizarAutCartao"
-            v-model="stateLancamentos.localizarAutCartao"
-            label="Localizar Aut. Cartao (F6)"
-            :clearable="false"
-            @input="actionsLancamentos.atualizarFiltroAutorizacao"
-          ></v-text-field>
-        </v-col>
-        <v-col
-          cols="3"
-          class="pt-0"
-        >
-          <v-checkbox
-            v-model="stateLancamentos.exibirApenasNaoConferidos"
-            label="Exibir apenas valores não conferidos"
-            @change="actionsLancamentos.toggleFiltroNaoConferidos"
-          ></v-checkbox>
-        </v-col>
-        <v-col
-          cols="3"
-          class="pr-3"
-        >
-          <v-text-field
-            id="inputValorSomatorio"
-            ref="inputValorSomatorio"
-            v-model="stateLancamentos.valorConferido"
-            v-mask-decimal.br="2"
-            label="Valor (F3)"
-            :clearable="false"
-            placeholder="Ex: 100,00"
-            @keydown.enter.prevent="actionsLancamentos.adicionarAoSomatorio"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-card>
+      </div>
+    </div>
+    <div class="d-flex pt-2 align-center ga-2 justify-space-between">
+      <div class="container-input-footer">
+        <v-text-field
+          id="inputLocalizarOrcamento"
+          v-model="stateLancamentos.localizarOrcamento"
+          label="Localizar Orçamento (F2)"
+          :clearable="false"
+          @input="actionsLancamentos.atualizarFiltroOrcamento"
+          hide-details
+        ></v-text-field>
+      </div>
+      <div class="container-input-footer">
+        <v-text-field
+          id="inputLocalizarAutCartao"
+          v-model="stateLancamentos.localizarAutCartao"
+          label="Localizar Aut. Cartao (F6)"
+          :clearable="false"
+          @input="actionsLancamentos.atualizarFiltroAutorizacao"
+          hide-details
+        ></v-text-field>
+      </div>
+      <div class="pt-0 container-input-footer">
+        <v-checkbox
+          v-model="stateLancamentos.exibirApenasNaoConferidos"
+          label="Exibir apenas valores não conferidos"
+          @change="actionsLancamentos.toggleFiltroNaoConferidos"
+          hide-details
+        ></v-checkbox>
+      </div>
+      <div class="pr-3 container-input-footer">
+        <v-text-field
+          id="inputValorSomatorio"
+          ref="inputValorSomatorio"
+          v-model="stateLancamentos.valorConferido"
+          v-mask-decimal.br="2"
+          label="Valor (F3)"
+          :clearable="false"
+          placeholder="Ex: 100,00"
+          @keydown.enter.prevent="actionsLancamentos.adicionarAoSomatorio"
+          hide-details
+        ></v-text-field>
+      </div>
+    </div>
+  </div>
   <!-- Modal Detalhes Pagamento -->
   <v-dialog
     v-model="stateLancamentos.modalDetalhesPagamentoOpened"
@@ -409,8 +390,6 @@ onMounted(() => {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
-  margin-left: -10px;
-  width: 130%;
 }
 
 .v-icon {
@@ -526,15 +505,28 @@ onMounted(() => {
   font-weight: bold;
 }
 
-.containerFooter {
-  padding: 0;
-  margin: 0;
-  margin-bottom: -35px;
-}
-
 .modalAbaLancamentos {
   width: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.modal-aba-lancamentos-corpo {
+  flex-grow: 1;
+  height: 100%;
+  display: flex;
+  gap: 8px;
+}
+
+.containerFooter {
+  padding: 0;
+  margin: 0;
+}
+
+.container-input-footer {
+  width: 25%;
 }
 </style>
