@@ -12,6 +12,7 @@ export interface iRepresentantesParam {
     EMAIL: string;
     OBS: string;
     MARCAS: string;
+    DELETADO?: string;
     DESCRICAO?: string;
 }
 
@@ -33,6 +34,7 @@ export interface iCidades {
 export interface iParamGetRepresentantes {
     offset?: number;
     param: object;
+    checkboxAtiva?: boolean;
 }
 
 export interface iGetDuplicityResponse {
@@ -46,8 +48,8 @@ export interface iFieldDuplicity {
 }
 
 export interface iGetRepresentantes {
-    ID_REPRESENTANTE: number;
-    NOME: string;
+    ID_REPRESENTANTE?: number;
+    NOME?: string;
     ENDERECO: string;
     BAIRRO: string;
     COD_CIDADE: number;
@@ -59,6 +61,8 @@ export interface iGetRepresentantes {
     EMAIL: string;
     OBS: string;
     MARCAS: string;
+    DELETADO?: string;
+    DESCRICAO?: string;
 }
 
 export interface iMarcasParam {

@@ -28,7 +28,7 @@ onMounted(async () => {
     >
       <div id="pnCampos">
         <v-row class="mt-n1">
-          <v-col>
+          <v-col cols="3">
             <span>Nome</span>
             <input
               v-model="state.dbRepresentantes.NOME"
@@ -52,28 +52,7 @@ onMounted(async () => {
               autocomplete="off"
             />
           </v-col>
-        </v-row>
-        <v-row class="mt-n1">
-          <v-col cols="5">
-            <span>Cidade</span>
-            <select
-              v-model="state.dbRepresentantes.COD_CIDADE"
-              id="COD_CIDADE"
-              name="COD_CIDADE"
-              class="obr ss"
-              maxlength="50"
-            >
-              <option
-                v-for="cidade in state.listaCidades"
-                :key="cidade.COD_CIDADE"
-                :value="cidade.COD_CIDADE"
-              >
-                {{ cidade.DESCRICAO }}
-              </option>
-            </select>
-          </v-col>
-
-          <v-col cols="7">
+          <v-col cols="3">
             <span>Marca</span>
             <div class="d-flex ga-2 align-center">
               <input
@@ -93,6 +72,7 @@ onMounted(async () => {
             </div>
           </v-col>
         </v-row>
+
         <v-row class="mt-n1">
           <v-col cols="3">
             <span>Celular</span>
@@ -165,7 +145,30 @@ onMounted(async () => {
               v-on:focusout="actions.buscaCEP"
             />
           </v-col>
-          <v-col cols="3">
+          <v-col cols="5">
+            <span>Cidade</span>
+            <select
+              v-model="state.dbRepresentantes.COD_CIDADE"
+              id="COD_CIDADE"
+              name="COD_CIDADE"
+              class="obr ss"
+              maxlength="50"
+            >
+              <option
+                v-for="cidade in state.listaCidades"
+                :key="cidade.COD_CIDADE"
+                :value="cidade.COD_CIDADE"
+              >
+                {{ cidade.DESCRICAO }}
+              </option>
+            </select>
+          </v-col>
+          <v-col cols="4">
+            <span>Observações</span>
+          </v-col>
+        </v-row>
+        <v-row class="mt-n1">
+          <v-col cols="4">
             <span>Endereço</span>
             <input
               v-model="state.dbRepresentantes.ENDERECO"
@@ -178,7 +181,7 @@ onMounted(async () => {
             />
           </v-col>
 
-          <v-col cols="2">
+          <v-col cols="4">
             <span>Bairro</span>
             <input
               v-model="state.dbRepresentantes.BAIRRO"
@@ -191,18 +194,23 @@ onMounted(async () => {
             />
           </v-col>
 
-          <v-col cols="4">
-            <span>Observações</span>
+          <v-col
+            cols="4"
+            class="d-flex flex-column"
+            style="height: 80px"
+          >
+            <span style="margin-bottom: -33px"></span>
             <textarea
               v-model="state.dbRepresentantes.OBS"
               type="text"
               id="OBS"
               name="OBS"
               class="ss"
-              rows="3"
+              rows="4"
               maxlength="200"
               autocomplete="off"
-            ></textarea>
+            >
+            </textarea>
           </v-col>
         </v-row>
 

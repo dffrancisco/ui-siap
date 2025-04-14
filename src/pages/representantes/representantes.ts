@@ -7,6 +7,7 @@ import {
     iFieldDuplicity,
     iRepresentantesParam,
     iMarcas,
+    iParamGetRepresentantes,
     iCidades,
 } from "./interfaces";
 import utils from "@/ts/utils";
@@ -22,6 +23,7 @@ export const state = reactive({
     listaCidades: <iCidades[]>[],
     dbRepresentantes: <iRepresentantesParam>{},
     loading: false,
+    isChecked: false,
     modalFornecedorOpened: false,
     marca: <iMarcas>{},
     cepInserido: false,
@@ -38,13 +40,13 @@ export const eventListener = useEventListener(document, "keydown", async (event)
     }
 });
 
-
-
 export const actions = {
     async init() {
         actions.grids();
         await actions.getCidades();
-        await actions.getRepresentantes();
+        state.gridPrincipal.queryOpen({}, () => {
+            state.gridPrincipal.focus();
+        });
     },
 
     grids() {
@@ -58,8 +60,20 @@ export const actions = {
                 "Telefone": { dataField: "TELEFONE" },
                 "Celular": { dataField: "CELULAR" },
             },
+            query: {
+
+                async execute(rs) {
+                    let data = await actions.getRepresentantes({
+                        offset: rs.offset,
+                        param: rs.param,
+                        checkboxAtiva: state.isChecked,
+
+                    });
+                    state.gridPrincipal.querySourceAdd(data);
+                }
 
 
+            },
             sideBySide: {
                 el: "#pnCampos",
                 vModel(r) {
@@ -120,14 +134,14 @@ export const actions = {
         });
     },
 
-    async getRepresentantes() {
+    async getRepresentantes({ offset, param, checkboxAtiva }: iParamGetRepresentantes) {
         try {
             state.loading = true;
-            const param = state.edtSearch?.toUpperCase();
 
-            const data = await serviceRepresentantes.getRepresentantes(param);
-            state.gridPrincipal.source(data);
-            state.gridPrincipal.focus();
+
+            const data = await serviceRepresentantes.getRepresentantes({ offset, param, checkboxAtiva });
+            state.loading = false;
+
             return data;
         } catch (error) {
             Swal.fire({
@@ -150,11 +164,17 @@ export const actions = {
             })
         }
     },
-
     async search() {
-        state.gridPrincipal.clear();
-        const data = await actions.getRepresentantes();
-        state.gridPrincipal.source(data);
+        if (state.isChecked) {
+            document.querySelector('button[state="delete"]').textContent = 'Reativar';
+        } else {
+            document.querySelector('button[state="delete"]').textContent = 'Inativar';
+        }
+
+        const searchValue = state.edtSearch?.toUpperCase();
+        state.gridPrincipal.queryOpen({
+            NOME: searchValue,
+        });
     },
 
     closeModal() {
@@ -203,19 +223,25 @@ export const actions = {
     },
 
     async btnDelete() {
-
-        if (!state.gridPrincipal.dataSource()) {
+        if (state.gridPrincipal.dataSource() === false) {
             Swal.fire({
-                icon: "info",
-                text: "Operação cancelada, selecione um registro.",
-            });
+                icon: 'info',
+                text: 'Nenhum registro selecionado para alteração, operação cancelada!'
+            })
             return false;
         }
-
-        if (await msgConfirm("Confirmação", "Confirma a exclusão?")) {
-            await actions.toDelete();
-            state.gridPrincipal.focus();
+        if (!state.isChecked) {
+            if (await msgConfirm("Confirmação", "Confirma a inativação deste registro?")) {
+                await actions.toInativar()
+                state.gridPrincipal.focus();
+            }
+        } else {
+            if (await msgConfirm("Confirmação", "Confirma a reativação deste registro?")) {
+                await actions.toInativar()
+                state.gridPrincipal.focus();
+            }
         }
+        state.gridPrincipal.clearElementSideBySide();
     },
 
     async btnSave() {
@@ -251,12 +277,15 @@ export const actions = {
         });
     },
 
-    async toDelete() {
+    async toInativar() {
         try {
-            let id_Representantes = state.dbRepresentantes.ID_REPRESENTANTE;
-            state.loading = true;
+            let ID_REPRESENTANTE = state.dbRepresentantes.ID_REPRESENTANTE;
+            let DELELETADO = state.dbRepresentantes.DELETADO;
 
-            await serviceRepresentantes.toDelete(id_Representantes);
+            state.loading = true;
+            await serviceRepresentantes.toInativar(ID_REPRESENTANTE, DELELETADO);
+            state.loading = false;
+
             state.gridPrincipal.deleteLine();
             await Swal.fire({
                 icon: "success",
@@ -265,7 +294,6 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: "error",
-                title: "Erro ao excluir o representante.",
                 text: "erro ao executar exclusão",
             });
         } finally {

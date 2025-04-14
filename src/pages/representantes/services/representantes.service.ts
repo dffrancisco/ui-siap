@@ -6,17 +6,18 @@ import {
     iFieldDuplicity,
     iSearchMarcas,
     iParamToInsert,
+    iParamGetRepresentantes,
     iParamToUpdate,
     iGetRepresentantes,
 } from "../interfaces";
 
 const caminho = "siap/representantes";
 
+type iGetRepresentantesFunction = (param: iParamGetRepresentantes) => Promise<iGetRepresentantes[]>;
 type iGetMarcas = (param: iSearchMarcas, offset: number) => Promise<iMarcasParam>;
-type iGetRepresentantesFunction = (param: string) => Promise<iGetRepresentantes>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<iRepresentantes>;
 type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>;
-type iToDeleteFunction = (id_Representantes: number) => Promise<void>;
+
 
 const getMarcas: iGetMarcas = async (param, offset) => {
     let { data } = await axios.post(caminho, {
@@ -29,12 +30,14 @@ const getMarcas: iGetMarcas = async (param, offset) => {
     return data;
 };
 
-const getRepresentantes: iGetRepresentantesFunction = async (param) => {
+const getRepresentantes: iGetRepresentantesFunction = async ({ param, offset, checkboxAtiva }) => {
     let { data } = await axios.post(caminho, {
         call: "getRepresentantes",
+        offset,
         param,
+        checkboxAtiva,
     });
-    return data as iGetRepresentantes;
+    return data;
 };
 
 const getDuplicidade = async ({ value, field }: iFieldDuplicity): Promise<iGetDuplicityResponse> => {
@@ -61,10 +64,11 @@ const toUpdate: iToUpdateFunction = async (param) => {
     });
 };
 
-const toDelete: iToDeleteFunction = async (id_Representantes) => {
+const toInativar = async (ID_REPRESENTANTE: number, DELETADO: string | null) => {
     await axios.post(caminho, {
-        call: "delete",
-        id_Representantes,
+        call: "inativar",
+        ID_REPRESENTANTE: ID_REPRESENTANTE,
+        DELETADO: DELETADO,
     });
 };
 
@@ -89,5 +93,5 @@ export default {
     getDuplicidade,
     toInsert,
     toUpdate,
-    toDelete,
+    toInativar,
 };
