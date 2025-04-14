@@ -6,6 +6,7 @@ import { msgConfirm } from "@/ts/message";
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import xAuthManager from "@/plugins/xAuthManager";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
+import Swal from "sweetalert2";
 
 const props = defineProps({
   loading: {
@@ -69,10 +70,7 @@ const valorTotalDinheiro = computed(() => {
   let valor = 0;
 
   props.valesAPagar.forEach((item) => {
-    if (
-      item.FORMA_PAGAMENTO === "D" &&
-      codFuncionariosSelecionados.value.includes(item.COD_FUNCIONARIO)
-    ) {
+    if (item.FORMA_PAGAMENTO === "D" && codFuncionariosSelecionados.value.includes(item.COD_FUNCIONARIO)) {
       valor += item.VALOR;
     }
   });
@@ -83,10 +81,7 @@ const valorTotalDinheiro = computed(() => {
 const valorTotalPix = computed(() => {
   let valor = 0;
   props.valesAPagar.forEach((item) => {
-    if (
-      item.FORMA_PAGAMENTO === "P" &&
-      codFuncionariosSelecionados.value.includes(item.COD_FUNCIONARIO)
-    ) {
+    if (item.FORMA_PAGAMENTO === "P" && codFuncionariosSelecionados.value.includes(item.COD_FUNCIONARIO)) {
       valor += item.VALOR;
     }
   });
@@ -115,10 +110,7 @@ const disableBotaoPagar = computed(() => {
 });
 
 const onClickNegar = async (item: iValeAPagar) => {
-  const confirmado = await msgConfirm(
-    "Confirmação",
-    `Gostaria de negar o vale do(a) ${item.NOME}`
-  );
+  const confirmado = await msgConfirm("Confirmação", `Gostaria de negar o vale do(a) ${item.NOME}`);
 
   if (confirmado) {
     emit("negarVale", item);
@@ -132,6 +124,17 @@ const onClickAlterar = async (item: iValeAPagar) => {
 };
 
 const onClickPagar = async () => {
+  const funcionarioEmpresa = state.itensSelecionados.find((item) => item.CPF === "000.000.000-00");
+
+  if (funcionarioEmpresa) {
+    Swal.fire({
+      icon: "warning",
+      title: "Atenção!",
+      text: "Não é permitido pagar vale para usuário empresa.",
+    });
+    return;
+  }
+
   xAuthManager("Autorizar Pagamento", (dados) => {
     const funcionarios = state.itensSelecionados.map((funcionario) => {
       return {
@@ -240,7 +243,11 @@ nextTick(() => {
     <div class="d-flex align-center justify-space-between mt-4">
       <div class="d-flex flex-column flex-grow-1">
         <span> Valor disponível para vales: </span>
-        <v-skeleton-loader :loading="loading" type="text" max-width="120px">
+        <v-skeleton-loader
+          :loading="loading"
+          type="text"
+          max-width="120px"
+        >
           <span class="text-h6"> R$ {{ formatValor(valorDisponivel) }} </span>
         </v-skeleton-loader>
       </div>
@@ -267,7 +274,10 @@ nextTick(() => {
       </div>
     </div>
 
-    <div id="pnAlterarVale" title="Alterar Vale">
+    <div
+      id="pnAlterarVale"
+      title="Alterar Vale"
+    >
       <div class="pa-4">
         <v-row>
           <v-col cols="8">
