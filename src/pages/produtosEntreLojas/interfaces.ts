@@ -12,9 +12,10 @@ export interface ParamsOrcamentos extends ParamsProdutos {
     codProduto: number;
 }
 
-export interface iLoja {
+export interface iLojas {
+    id: number;
     nome: string;
-    cgc_cliente: string;
+    cgc: string;
     host: string;
 }
 
@@ -45,7 +46,7 @@ export interface iCount {
 
 
 export interface iResponseLojas {
-    data: iLoja[];
+    data: iLojas[];
     total: iCount[];
 }
 

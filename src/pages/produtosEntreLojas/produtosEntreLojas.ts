@@ -4,7 +4,7 @@ import moment from 'moment';
 import serviceProdutosEntreLojas from './services/produtosEntreLojas.service';
 import {
     ParamsProdutos, ParamsOrcamentos,
-    iLoja, iVendaLoja, iProduto,
+    iLojas, iProduto,
     iOrcamento, iCount, iResponseLojas,
     iResponseVendaLoja, iResponseProdutos, iResponseOrcamentos
 } from './interfaces';
@@ -15,15 +15,18 @@ export const meses = mesesToSelect;
 const ano = moment().year();
 const mes = moment().month() + 1;
 
-
 export const state = reactive({
     loading: false,
     mes: mes,
     ano: ano || null,
-    dadosRelatorio: <iDadosAvaiacao[]>[],
+
+    lojas: <Array<{ id: number, label: string, cgc: string, host: string }>>[],
+
+    selectedLoja: null,
+    dadosRelatorio: <any[]>[],
 
     headers: <any>[
-        { title: "Lojas", key: "lojas ", sortable: true, align: "left" },
+        { title: "Lojas", key: "lojas", sortable: true, align: "left" },
         { title: "Valores", key: "valores", sortable: true, align: "left" },
     ],
 });
@@ -31,79 +34,34 @@ export const state = reactive({
 export const actions = {
 
     async init() {
+        await actions.getDadosIniciais();
         actions.validarFiltros();
     },
 
+    async getDadosIniciais() {
+        try {
+            state.loading = true;
+
+            const lojas = await serviceProdutosEntreLojas.getLojas();
+
+            state.lojas = lojas.map(loja => ({
+                id: loja.ID_CLIENTE,
+                label: loja.NOME,
+                cgc: loja.CGC_CLIENTE,
+                host: loja.HOST
+            }));
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao carregar lojas!"
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
     validarFiltros() {
-        let dataFormatada = moment({ year: state.ano, month: state.mes - 1, day: 1 })
 
-        if (dataFormatada.isAfter(moment())) {
-            Swal.fire({
-                icon: "warning",
-                text: "Insira uma data válida para continuar"
-            });
-            return
-        }
-        actions.getDadosRelatorio();
-    },
-
-    async getDadosRelatorio() {
-        try {
-            state.loading = true;
-
-            const params: ParamsLojas = {
-                mes: state.mes,
-                ano: state.ano,
-            };
-
-            const response: iResponseRelatorio = await serviceProdutosEntreLojas.vaiNaLoja(params);
-            state.dadosRelatorio = response.dadosRelatorio || [];
-
-
-            if (!state.dadosRelatorio) {
-                Swal.fire({
-                    icon: "warning",
-                    text: "Nenhum dado foi retornado para os filtros aplicados.",
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: "warning",
-                title: "Erro",
-                text: "Nenhum dado disponível para relatorio",
-            });
-        } finally {
-            setTimeout(() => { state.loading = false; }, 200)
-        }
-    },
-
-    async vaiNaLoja() {
-
-        try {
-            state.loading = true;
-            const params: iParamsRelatorio = {
-
-                mes: state.mes,
-                ano: state.ano,
-            };
-            const response: iResponseRelatorio = await serviceProdutosEntreLojas.vaiNaLoja(params);
-            state.dadosRelatorio = response.dadosRelatorio || [];
-            if (!state.dadosRelatorio) {
-                Swal.fire({
-                    icon: "warning",
-                    text: "Nenhum dado foi retornado para os filtros aplicados.",
-                });
-            }
-
-        } catch (error) {
-            Swal.fire({
-                icon: "warning",
-                title: "Erro",
-                text: "Nenhum dado disponível para relatorio",
-            });
-        } finally {
-            setTimeout(() => { state.loading = false; }, 200)
-        }
     },
 
     async onClickImprimir() {
@@ -136,7 +94,7 @@ export const actions = {
         }
     },
 
-    formatarDadosImpressao(data: iDadosAvaliacao[]) {
+    formatarDadosImpressao(data: any[]) {
         return data.map(item => ({
             ...item,
             DT_AVALIACAO: item.DT_AVALIACAO ? utils.dataBrasil(item.DT_AVALIACAO) : '-------',
@@ -144,8 +102,8 @@ export const actions = {
     },
 
     getClassCorLinha(dados: any) {
-        let classe = dados.index % 2 == 0 ? 'cor-zebrada-1' : 'cor-zebrada-2'
-        return { class: classe }
+        let classe = dados.index % 2 === 0 ? 'cor-zebrada-1' : 'cor-zebrada-2';
+        return { class: classe };
     },
 
 };
