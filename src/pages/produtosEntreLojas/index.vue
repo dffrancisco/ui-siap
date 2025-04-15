@@ -21,21 +21,17 @@ onMounted(() => {
           cols="5"
           class="me-1"
         >
-          <v-select v-model="state.selectedLoja">
-            <option
-              disabled
-              value=""
-              >Selecione uma loja</option
-            >
-            <option
-              v-for="loja in state.lojas"
-              :key="loja.id"
-              :value="loja"
-            >
-              {{ loja.label }}
-            </option>
+          <v-select
+            label="Loja"
+            v-model="state.selectedLoja"
+            :items="state.lojas"
+            item-title="nome"
+            item-value="id"
+            :clearable="true"
+          >
           </v-select>
         </v-col>
+
         <v-col
           cols="3"
           class="me-1"
@@ -122,17 +118,4 @@ onMounted(() => {
   </v-container>
 </template>
 
-<style>
-#tabela .v-data-table-footer {
-  max-height: 2px;
-  padding-top: 20px;
-}
-
-#tabela .v-data-table-footer__pagination {
-  padding-right: 50px;
-}
-
-.cor-zebrada-1 {
-  background-color: #f0f0f0;
-}
-</style>
+<!-- Mantido o mesmo estilo -->

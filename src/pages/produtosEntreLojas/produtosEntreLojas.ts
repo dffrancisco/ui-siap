@@ -3,10 +3,7 @@ import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceProdutosEntreLojas from './services/produtosEntreLojas.service';
 import {
-    ParamsProdutos, ParamsOrcamentos,
     iLojas, iProduto,
-    iOrcamento, iCount, iResponseLojas,
-    iResponseVendaLoja, iResponseProdutos, iResponseOrcamentos
 } from './interfaces';
 import utils, { iColumnPrint } from '@/ts/utils';
 import { mesesToSelect } from "@/constants/constants";
@@ -19,10 +16,8 @@ export const state = reactive({
     loading: false,
     mes: mes,
     ano: ano || null,
-
-    lojas: <Array<{ id: number, label: string, cgc: string, host: string }>>[],
-
-    selectedLoja: null,
+    selectedLoja: null as iLojas | null,
+    lojas: <iLojas[]>[],
     dadosRelatorio: <any[]>[],
 
     headers: <any>[
@@ -45,10 +40,10 @@ export const actions = {
             const lojas = await serviceProdutosEntreLojas.getLojas();
 
             state.lojas = lojas.map(loja => ({
-                id: loja.ID_CLIENTE,
-                label: loja.NOME,
-                cgc: loja.CGC_CLIENTE,
-                host: loja.HOST
+                id_cliente: loja.id_cliente,
+                nome: loja.nome,
+                cgc_cliente: loja.cgc_cliente,
+                host: loja.host
             }));
         } catch (error) {
             Swal.fire({
@@ -57,6 +52,35 @@ export const actions = {
             });
         } finally {
             state.loading = false;
+        }
+    },
+
+    async vaiNaLoja() {
+
+        try {
+            state.loading = true;
+            const params: iParamsRelatorio = {
+
+                mes: state.mes,
+                ano: state.ano,
+            };
+            const response: iResponseRelatorio = await serviceProdutosEntreLojas.vaiNaLoja(params);
+            state.dadosRelatorio = response.dadosRelatorio || [];
+            if (!state.dadosRelatorio) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "Nenhum dado foi retornado para os filtros aplicados.",
+                });
+            }
+
+        } catch (error) {
+            Swal.fire({
+                icon: "warning",
+                title: "Erro",
+                text: "Nenhum dado disponível para relatorio",
+            });
+        } finally {
+            setTimeout(() => { state.loading = false; }, 200)
         }
     },
 
