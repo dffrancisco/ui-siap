@@ -65,7 +65,7 @@ export interface iResponseRelatorio {
     dadosRelatorio: iDadosLojas[];
 }
 export interface iDadosLojas {
-    nome: string;
-    cgc_cliente: string;
-    vlr: number;
+    NOME: string;
+    CGC_CLIENTE: string;
+    VLR: number;
 }

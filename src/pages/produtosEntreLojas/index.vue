@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { state, actions, meses } from "./produtosEntreLojas";
+import { state, actions, meses, totalGeral } from "./produtosEntreLojas";
+import utils, { formatValor } from "@/ts/utils";
 
 onMounted(() => {
   actions.init();
@@ -25,17 +26,10 @@ onMounted(() => {
             label="Loja"
             v-model="state.selectedLoja"
             :items="state.lojas"
-            item-title="nome"
-            item-value="id"
-            return-object
+            item-title="NOME"
+            item-value="CGC_CLIENTE"
             :clearable="true"
           >
-            <template v-slot:item="{ props, item }">
-              <v-list-item
-                v-bind="props"
-                :title="item.raw.NOME"
-              ></v-list-item>
-            </template>
           </v-select>
         </v-col>
 
@@ -81,7 +75,7 @@ onMounted(() => {
         </v-col>
       </v-row>
 
-      <v-data-table
+      <v-data-table-virtual
         id="tabela"
         class="mt-4 pt-5"
         :items="state.dadosRelatorio"
@@ -90,7 +84,15 @@ onMounted(() => {
         fixed-header
         :row-props="actions.getClassCorLinha"
       >
-      </v-data-table>
+        <template #body.append>
+          <tr class="total-row">
+            <td colspan="1"><strong>Total Geral:</strong></td>
+            <td colspan="1">
+              <strong>{{ formatValor(totalGeral) }}</strong>
+            </td>
+          </tr>
+        </template>
+      </v-data-table-virtual>
 
       <div class="d-flex justify-end pt-5">
         <v-btn
