@@ -28,8 +28,8 @@ const debitoOuCredito = computed(() => {
     <v-card-title class="modal-title"> Detalhes do Pagamento </v-card-title>
 
     <v-card-text class="modal-content">
-      <span v-if="props.pagamentoSelecionado.NUM_ORCAMENTO">
-        <strong>Nº Orçamento:</strong> {{ props.pagamentoSelecionado.NUM_ORCAMENTO }}
+      <span v-if="props.pagamentoSelecionado.UNION_ORCAMENTO">
+        <strong>Nº Orçamento:</strong> {{ props.pagamentoSelecionado.UNION_ORCAMENTO }}
       </span>
 
       <span v-if="props.pagamentoSelecionado.DESCRICAO_PAGAMENTO">

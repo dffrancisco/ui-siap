@@ -51,7 +51,7 @@ const actionsLancamentos = {
 
     if (!pagamentoParaAdicionar) {
       toast.warning(`Nenhum pagamento disponível com valor ${utils.formatValor(valor)}`);
-      stateLancamentos.valorConferido = "";
+      nextTick(() => document.getElementById("inputValorSomatorio")?.focus());
       return;
     }
 
@@ -69,7 +69,7 @@ const actionsLancamentos = {
   removerDoSomatorio(index: number) {
     const itemRemovido = stateLancamentos.somatorioLista[index];
 
-    const compras = computeds.comprasFiltradasPorCaixa.value;
+    const compras = state.todasAsCompras;
     for (const compra of compras) {
       const pagamento = compra.TIPOS_PAGAMENTO.find(
         (p) => p.NUM_ORCAMENTO === itemRemovido.orcamento && Math.abs(p.VALOR - itemRemovido.valor) < 0.01
@@ -85,7 +85,7 @@ const actionsLancamentos = {
   },
 
   limparSomatorio() {
-    const compras = computeds.comprasFiltradasPorCaixa.value;
+    const compras = state.todasAsCompras;
     for (const compra of compras) {
       for (const pagamento of compra.TIPOS_PAGAMENTO) {
         pagamento.CONFERIDO = false;
@@ -93,6 +93,12 @@ const actionsLancamentos = {
     }
 
     stateLancamentos.somatorioLista = [];
+
+    if (state.filtrosAdicionais.apenasNaoConferidos) {
+      actions.toggleApenasNaoConferidos();
+      nextTick(() => actions.toggleApenasNaoConferidos());
+    }
+
     toast.success("Somatório limpo com sucesso!");
   },
 
@@ -142,6 +148,12 @@ useEventListener(document, "keydown", async (event) => {
 });
 
 onMounted(() => {
+  const compras = state.todasAsCompras;
+  for (const compra of compras) {
+    for (const pagamento of compra.TIPOS_PAGAMENTO) {
+      pagamento.CONFERIDO = false;
+    }
+  }
   stateLancamentos.somatorioLista = [];
 
   stateLancamentos.inputLocalizarOrcamento = document.getElementById(
@@ -261,7 +273,7 @@ onMounted(() => {
             hide-default-footer
           >
             <template v-slot:item.orcamento="{ item }">
-              <span> + {{ item.orcamento }}</span>
+              <span> {{ item.orcamento }}</span>
             </template>
 
             <template v-slot:item.valor="{ item }">
@@ -337,7 +349,6 @@ onMounted(() => {
           label="Valor (F3)"
           :clearable="false"
           placeholder="Ex: 100,00"
-          @keydown.enter.prevent="actionsLancamentos.adicionarAoSomatorio"
           hide-details
         ></v-text-field>
       </div>
