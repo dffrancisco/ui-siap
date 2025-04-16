@@ -87,7 +87,8 @@ onMounted(() => {
         <template #body.append>
           <tr class="total-row">
             <td colspan="1"><strong>Total Geral:</strong></td>
-            <td colspan="1">
+            <td colspan="1"> </td
+            ><td colspan="1">
               <strong>{{ formatValor(totalGeral) }}</strong>
             </td>
           </tr>

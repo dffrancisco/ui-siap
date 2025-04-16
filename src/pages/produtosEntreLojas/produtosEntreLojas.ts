@@ -5,7 +5,7 @@ import serviceProdutosEntreLojas from './services/produtosEntreLojas.service';
 import {
     iLojas, ParamsLojas, iDadosLojas, iResponseRelatorio,
 } from './interfaces';
-import utils, { dataBrasil, formatValor, iColumnPrint } from '@/ts/utils';
+import utils, { formatValor, iColumnPrint } from '@/ts/utils';
 import { mesesToSelect } from "@/constants/constants";
 
 
@@ -18,12 +18,14 @@ export const state = reactive({
     mes: mes,
     cnpj: '',
     ano: ano || null,
+    modalValeOpened: false,
     selectedLoja: null as iLojas | null,
     lojas: <iLojas[]>[],
     dadosRelatorio: <iDadosLojas[]>[],
 
     headers: <any>[
         { title: "Lojas", key: "NOME", sortable: true, align: "left" },
+        { key: 'acao', title: 'Detalhes', sortable: true, align: 'left', width: '100px' },
         {
             title: "Valores",
             key: "VLR",
@@ -46,10 +48,16 @@ export const actions = {
         actions.validarFiltros();
     },
 
+
+    abrirModal(item) {
+
+        state.modalValeOpened = true;
+    },
+
     async getDadosIniciais() {
         state.loading = true;
         try {
-
+            //@ts-ignore
             state.lojas = await serviceProdutosEntreLojas.getLojas();
 
 
@@ -129,7 +137,7 @@ export const actions = {
 
             const titulo = `
                 <div style="text-align: center; margin-top: 10px;">
-                    <strong style="font-size: 16px;">Relatório de Avaliação de Estoque</strong>
+                    <strong style="font-size: 16px;">Produtor entre lojas</strong>
                 </div>
             `;
 
