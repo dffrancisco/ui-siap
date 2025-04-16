@@ -3,10 +3,11 @@ import Swal from 'sweetalert2';
 import moment from 'moment';
 import serviceProdutosEntreLojas from './services/produtosEntreLojas.service';
 import {
-    iLojas, iProduto,
+    iLojas, ParamsLojas, iDadosLojas, iResponseRelatorio,
 } from './interfaces';
 import utils, { iColumnPrint } from '@/ts/utils';
 import { mesesToSelect } from "@/constants/constants";
+
 
 export const meses = mesesToSelect;
 const ano = moment().year();
@@ -15,10 +16,11 @@ const mes = moment().month() + 1;
 export const state = reactive({
     loading: false,
     mes: mes,
+    cnpj: '',
     ano: ano || null,
     selectedLoja: null as iLojas | null,
     lojas: <iLojas[]>[],
-    dadosRelatorio: <any[]>[],
+    dadosRelatorio: <iDadosLojas[]>[],
 
     headers: <any>[
         { title: "Lojas", key: "lojas", sortable: true, align: "left" },
@@ -31,20 +33,15 @@ export const actions = {
     async init() {
         await actions.getDadosIniciais();
         actions.validarFiltros();
+
     },
 
     async getDadosIniciais() {
+        state.loading = true;
         try {
-            state.loading = true;
 
-            const lojas = await serviceProdutosEntreLojas.getLojas();
+            state.lojas = await serviceProdutosEntreLojas.getLojas();
 
-            state.lojas = lojas.map(loja => ({
-                id_cliente: loja.id_cliente,
-                nome: loja.nome,
-                cgc_cliente: loja.cgc_cliente,
-                host: loja.host
-            }));
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -55,24 +52,28 @@ export const actions = {
         }
     },
 
-    async vaiNaLoja() {
-
+    async getDadosRelatorio() {
         try {
             state.loading = true;
-            const params: iParamsRelatorio = {
 
+            const params: ParamsLojas = {
+                cnpj: state.cnpj,
                 mes: state.mes,
                 ano: state.ano,
+
             };
-            const response: iResponseRelatorio = await serviceProdutosEntreLojas.vaiNaLoja(params);
+
+
+            const response: iResponseRelatorio = await serviceProdutosEntreLojas.getDadosParaRelatorio(params);
             state.dadosRelatorio = response.dadosRelatorio || [];
+
+
             if (!state.dadosRelatorio) {
                 Swal.fire({
                     icon: "warning",
                     text: "Nenhum dado foi retornado para os filtros aplicados.",
                 });
             }
-
         } catch (error) {
             Swal.fire({
                 icon: "warning",
@@ -81,6 +82,7 @@ export const actions = {
             });
         } finally {
             setTimeout(() => { state.loading = false; }, 200)
+
         }
     },
 

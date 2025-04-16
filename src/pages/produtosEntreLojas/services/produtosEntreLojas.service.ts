@@ -4,15 +4,16 @@ import {
     ParamsProdutos,
     ParamsOrcamentos,
     iResponseLojas,
-    iResponseVendaLoja,
+    iResponseRelatorio,
     iResponseProdutos,
-    iResponseOrcamentos
+    iResponseOrcamentos,
+
 } from "../interfaces";
 
 const caminho = 'siap/produtosEntreLojas';
 
 type GetLojas = () => Promise<iResponseLojas>;
-type VaiNaLoja = (param: ParamsLojas & { cnpj: string }) => Promise<iResponseVendaLoja>;
+type iGetDadosParaRelatorio = (param: ParamsLojas) => Promise<iResponseRelatorio>;
 type GetProdutos = (param: ParamsProdutos) => Promise<iResponseProdutos>;
 type GetOrcamentosProduto = (param: ParamsOrcamentos) => Promise<iResponseOrcamentos>;
 
@@ -22,18 +23,13 @@ const getLojas: GetLojas = async () => {
     });
     return data;
 };
-
-const vaiNaLoja: VaiNaLoja = async (param) => {
-    const { data } = await axios.post(caminho, {
-        call: "vaiNaLoja",
-        param: {
-            cnpj: param.cnpj,
-            mes: param.mes,
-            ano: param.ano
-        }
+const getDadosParaRelatorio: iGetDadosParaRelatorio = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: "getDadosParaRelatorio",
+        param
     });
     return data;
-};
+}
 
 const getProdutos: GetProdutos = async (param) => {
     const { data } = await axios.post(caminho, {
@@ -54,7 +50,7 @@ const getOrcamentosProduto: GetOrcamentosProduto = async (param) => {
 
 export default {
     getLojas,
-    vaiNaLoja,
+    getDadosParaRelatorio,
     getProdutos,
     getOrcamentosProduto
 };

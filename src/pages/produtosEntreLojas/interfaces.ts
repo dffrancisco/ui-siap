@@ -1,5 +1,6 @@
 
 export interface ParamsLojas {
+    cnpj: string;
     mes: number;
     ano: number;
 }
@@ -13,10 +14,10 @@ export interface ParamsOrcamentos extends ParamsProdutos {
 }
 
 export interface iLojas {
-    id: number;
-    nome: string;
-    cgc: string;
-    host: string;
+    ID_CLIENTE: number;
+    NOME: string;
+    CGC_CLIENTE: string;
+    HOST: string;
 }
 
 export interface iVendaLoja {
@@ -26,11 +27,11 @@ export interface iVendaLoja {
 }
 
 export interface iProduto {
-    cod_produto: number;
-    desc_produto: string;
-    qtd: number;
-    num_fabricante: string;
-    valor: number;
+    COD_PRODUTO: number;
+    DESC_PRODUTO: string;
+    QTD: number;
+    NUM_FABRICANTE: string;
+    VALOR: number;
 }
 
 export interface iOrcamento {
@@ -47,12 +48,7 @@ export interface iCount {
 
 export interface iResponseLojas {
     data: iLojas[];
-    total: iCount[];
-}
 
-export interface iResponseVendaLoja {
-    data: iVendaLoja[];
-    total: iCount[];
 }
 
 export interface iResponseProdutos {
@@ -63,4 +59,13 @@ export interface iResponseProdutos {
 export interface iResponseOrcamentos {
     data: iOrcamento[];
     total: iCount[];
+}
+
+export interface iResponseRelatorio {
+    dadosRelatorio: iDadosLojas[];
+}
+export interface iDadosLojas {
+    nome: string;
+    cgc_cliente: string;
+    vlr: number;
 }

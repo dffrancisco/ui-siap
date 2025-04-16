@@ -27,8 +27,15 @@ onMounted(() => {
             :items="state.lojas"
             item-title="nome"
             item-value="id"
+            return-object
             :clearable="true"
           >
+            <template v-slot:item="{ props, item }">
+              <v-list-item
+                v-bind="props"
+                :title="item.raw.NOME"
+              ></v-list-item>
+            </template>
           </v-select>
         </v-col>
 
@@ -117,5 +124,3 @@ onMounted(() => {
     </v-overlay>
   </v-container>
 </template>
-
-<!-- Mantido o mesmo estilo -->
