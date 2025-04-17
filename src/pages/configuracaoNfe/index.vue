@@ -41,59 +41,66 @@ onMounted(async () => {
 
       <v-row dense>
         <v-col cols="4">
-          <v-select
+          <span>Regime Tributário</span>
+          <select
             v-model="regimeTributarioSelecionado"
-            label="Regime Tributário"
-            :items="regimeTributarioOptions"
-            item-title="text"
-            item-value="value"
-            maxlength="100"
-            dense
-            :clearable="false"
+            id="regimeTributarioSelecionado"
+            name="regimeTributarioSelecionado"
+            class="obr ss"
             :disabled="!state.isEditable"
-          />
+          >
+            <option
+              v-for="option in regimeTributarioOptions"
+              :key="option.value"
+              :value="option"
+            >
+              {{ option.text }}
+            </option>
+          </select>
         </v-col>
         <v-col cols="4">
-          <v-text-field
+          <span>Valor PIS</span>
+          <input
             v-model="state.pisSelecionado.P_VALOR"
-            :value="utils.formatValor(state.pisSelecionado.P_VALOR)"
-            @input="state.pisSelecionado.P_VALOR"
-            label="Pis"
-            maxlength="15"
-            dense
-            :clearable="false"
+            id="P_VALOR_PIS"
+            name="P_VALOR_PIS"
+            type="text"
+            class="ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
-          <v-text-field
-            :value="utils.formatValor(state.cofinsSelecionado.P_VALOR)"
-            label="Cofins"
-            maxlength="15"
-            dense
-            :clearable="false"
+          <span>Valor Cofins</span>
+          <input
+            v-model="state.cofinsSelecionado.P_VALOR"
+            id="P_VALOR_COFINS"
+            name="P_VALOR_COFINS"
+            type="text"
+            class="ss"
             :disabled="!state.isEditable"
           />
         </v-col>
       </v-row>
       <v-row dense>
         <v-col cols="6">
-          <v-text-field
+          <span>Local XML</span>
+          <input
             v-model="state.nfeConfig.LOCAL_XML"
-            label="Local XML"
-            maxlength="255"
-            dense
-            :clearable="false"
+            id="LOCAL_XML"
+            name="LOCAL_XML"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="6">
-          <v-text-field
+          <span>Local PDF</span>
+          <input
             v-model="state.nfeConfig.LOCAL_PDF"
-            label="Local PDF"
-            maxlength="255"
-            dense
-            :clearable="false"
+            id="LOCAL_PDF"
+            name="LOCAL_PDF"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -137,36 +144,46 @@ onMounted(async () => {
       <h4 class="mb-2">Informações CFOP</h4>
       <v-row dense>
         <v-col cols="3">
-          <v-text-field
+          <span>CFOP Transporte</span>
+          <input
             v-model="state.nfeConfig.CFOP_TRANSP"
-            label="CFOP Transporte"
-            :clearable="false"
+            id="CFOP_TRANSP"
+            name="CFOP_TRANSP"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="3">
-          <v-text-field
+          <span>CFOP Montagem Interno</span>
+          <input
             v-model="state.nfeConfig.CFOP_MONTAGEM_INTERNO"
-            label="CFOP Montagem Interno"
-            :clearable="false"
+            id="CFOP_MONTAGEM_INTERNO"
+            name="CFOP_MONTAGEM_INTERNO"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="3">
-          <v-text-field
+          <span>CFOP Montagem Interestadual</span>
+          <input
             v-model="state.nfeConfig.CFOP_MONTAGEM_INTERESTADUAL"
-            label="CFOP Montagem Interestadual"
-            maxlength="4"
-            :clearable="false"
+            id="CFOP_MONTAGEM_INTERESTADUAL"
+            name="CFOP_MONTAGEM_INTERESTADUAL"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="3">
-          <v-text-field
+          <span>CFOP ECF Interno</span>
+          <input
             v-model="state.nfeConfig.CFOP_ECF_INTERNO"
-            label="CFOP ECF Interno"
-            maxlength="4"
-            :clearable="false"
+            id="CFOP_ECF_INTERNO"
+            name="CFOP_ECF_INTERNO"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -177,29 +194,35 @@ onMounted(async () => {
         class="mt-2"
       >
         <v-col cols="4">
-          <v-text-field
+          <span>CFOP ECF Interestadual</span>
+          <input
             v-model="state.nfeConfig.CFOP_ECF_INTERESTADUAL"
-            label="CFOP ECF Interestadual"
-            maxlength="4"
-            :clearable="false"
+            id="CFOP_ECF_INTERESTADUAL"
+            name="CFOP_ECF_INTERESTADUAL"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
-          <v-text-field
+          <span>CFOP Devolução Interno</span>
+          <input
             v-model="state.nfeConfig.CFOP_DEV_INTERNO"
-            label="CFOP Dev. Interno"
-            maxlength="4"
-            :clearable="false"
+            id="CFOP_DEV_INTERNO"
+            name="CFOP_DEV_INTERNO"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
-          <v-text-field
+          <span>CFOP Devolução Interestadual</span>
+          <input
             v-model="state.nfeConfig.CFOP_DEV_INTERESTADUAL"
-            label="CFOP Dev. Interestadual"
-            maxlength="4"
-            :clearable="false"
+            id="CFOP_DEV_INTERESTADUAL"
+            name="CFOP_DEV_INTERESTADUAL"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -210,29 +233,35 @@ onMounted(async () => {
         class="mt-2"
       >
         <v-col cols="4">
-          <v-text-field
+          <span>Emitente IM</span>
+          <input
             v-model="state.nfeConfig.EMIT_IM"
-            label="Inscrição Municipal"
-            maxlength="7"
-            :clearable="false"
+            id="EMIT_IM"
+            name="EMIT_IM"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
-          <v-text-field
+          <span>Emitente CNAE</span>
+          <input
             v-model="state.nfeConfig.EMIT_CNAE"
-            label="CNAE"
-            maxlength="7"
-            :clearable="false"
+            id="EMIT_CNAE"
+            name="EMIT_CNAE"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
-          <v-text-field
+          <span>Produto CEST</span>
+          <input
             v-model="state.nfeConfig.PROD_CEST"
-            label="Prod. CEST"
-            maxlength="7"
-            :clearable="false"
+            id="PROD_CEST"
+            name="PROD_CEST"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -243,29 +272,35 @@ onMounted(async () => {
         class="mt-2"
       >
         <v-col cols="4">
-          <v-text-field
+          <span>CST</span>
+          <input
             v-model="state.nfeConfig.CST"
-            maxlength="2"
-            :clearable="false"
-            label="CST"
+            id="CST"
+            name="CST"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
-          <v-text-field
+          <span>Código Lista Serviço</span>
+          <input
             v-model="state.nfeConfig.COD_LISTA_SERVICO"
-            maxlength="10"
-            :clearable="false"
-            label="Cod. Lista Serviço"
+            id="COD_LISTA_SERVICO"
+            name="COD_LISTA_SERVICO"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
         <v-col cols="4">
-          <v-text-field
+          <span>NCM Montagem Geral</span>
+          <input
             v-model="state.nfeConfig.NCM_MONTAGEM_GERAL"
-            maxlength="10"
-            :clearable="false"
-            label="NCM Montagem Geral"
+            id="NCM_MONTAGEM_GERAL"
+            name="NCM_MONTAGEM_GERAL"
+            type="text"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -315,7 +350,7 @@ onMounted(async () => {
 <style scoped>
 .aba-flutuante {
   position: absolute;
-  top: 70px;
+  top: 105px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;

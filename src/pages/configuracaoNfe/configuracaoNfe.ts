@@ -128,7 +128,7 @@ export const actions = {
     },
 
     async btnSave() {
-        if (utils.validaOBR()) return;
+        if (await utils.validaOBR()) return;
 
         await actions.toUpdate();
     },

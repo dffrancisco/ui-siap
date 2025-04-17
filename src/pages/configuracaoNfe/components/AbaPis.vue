@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { onMounted, reactive, nextTick, watch } from "vue";
+import { onMounted, reactive, watch } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
-import { msgConfirm } from "@/ts/message";
 import utils from "@/ts/utils";
 import { regimeTributarioOptions } from "../configuracaoNfe";
 import serviceNfe from "../services/configuracaoNfe.service";
@@ -39,7 +38,7 @@ const actionsPis = {
   gridPis() {
     statePis.grid = new xGridV2.create({
       el: "#gridPis",
-      height: 302,
+      height: 335,
       count: true,
       columns: {
         Valor: { dataField: "P_VALOR", width: "47%", render: utils.formatValor },
@@ -56,31 +55,6 @@ const actionsPis = {
         el: "#pnPisCampos",
         vModel(r) {
           statePis.pis = r;
-        },
-        frame: {
-          el: "#pnPisBotoes",
-          buttons: {
-            update: {
-              html: "Alterar",
-              state: "update",
-              click: actionsPis.btnEdit,
-            },
-            excluir: {
-              html: "Excluir",
-              state: "delete",
-              click: actionsPis.btnDelete,
-            },
-            salvar: {
-              html: "Salvar",
-              state: "save",
-              click: actionsPis.btnSave,
-            },
-            cancela: {
-              html: "Cancelar",
-              state: "cancel",
-              click: actionsPis.btnCancel,
-            },
-          },
         },
       },
 
@@ -109,113 +83,6 @@ const actionsPis = {
       statePis.loading = false;
     }
   },
-
-  btnEdit() {
-    statePis.isEditing = true;
-
-    if (!statePis.grid.dataSource()) {
-      Swal.fire({
-        icon: "info",
-        text: "Operação cancelada, nenhum registro selecionado.",
-      });
-      return false;
-    }
-    statePis.grid.disable();
-    statePis.grid.focusField();
-  },
-
-  async btnDelete() {
-    if (!statePis.grid.dataSource()) {
-      Swal.fire({
-        icon: "info",
-        text: "Operação cancelada selecione um registro",
-      });
-      return false;
-    }
-
-    if (await msgConfirm("Confirmação", "Confirma a exclusão?")) {
-      await actionsPis.toDelete();
-      statePis.grid.focus();
-    }
-  },
-
-  async btnSave() {
-    if (utils.validaOBR()) {
-      return false;
-    }
-
-    if (!statePis.pis.ID_PIS) {
-      await actionsPis.toUpdate();
-    }
-
-    statePis.isEditing = false;
-    await nextTick();
-
-    statePis.grid.enable();
-    statePis.grid.focus();
-  },
-
-  async btnCancel() {
-    statePis.isEditing = false;
-    let linhaGrid = <any>statePis.grid.getIndex();
-    await nextTick();
-
-    statePis.grid.enable();
-    statePis.grid.focus(linhaGrid);
-  },
-  async toDelete() {
-    try {
-      const idPis = statePis.pis.ID_PIS;
-
-      statePis.loading = true;
-
-      await serviceNfe.toDeletePis(idPis);
-
-      statePis.grid.deleteLine();
-
-      await Swal.fire({
-        icon: "success",
-        text: "Pis deletado com sucesso.",
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Erro ao excluir o Pis, verificar",
-        text: error.message,
-      });
-    } finally {
-      statePis.loading = false;
-    }
-  },
-
-  async toUpdate() {
-    try {
-      let param = {
-        ID_PIS: statePis.pis.ID_PIS,
-        P_VALOR: statePis.pis.P_VALOR,
-        ID_REGIME_TRIBUTARIO: statePis.pis.ID_REGIME_TRIBUTARIO,
-      };
-
-      statePis.loading = true;
-
-      await serviceNfe.toUpdatePis(param);
-
-      statePis.grid.dataSource(param);
-
-      await Swal.fire({
-        icon: "success",
-        text: "Pis atualizado com sucesso.",
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Erro ao atualizar Pis!",
-        text: error.message,
-      });
-    } finally {
-      statePis.loading = false;
-    }
-  },
 };
 
 onMounted(async () => {
@@ -224,10 +91,7 @@ onMounted(async () => {
 </script>
 
 <template width="600" class="pa-1 ma-auto">
-  <v-form
-    @submit.prevent="actionsPis.btnSave"
-    id="pnPisCampos"
-  >
+  <v-form id="pnPisCampos">
     <v-row dense>
       <v-col cols="4">
         <v-select

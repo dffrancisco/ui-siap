@@ -5,7 +5,6 @@ export interface iResponseDadosInputs {
     cofins: iCofins[];
 }
 
-
 export interface iNfeConfig {
     ID_NFE_CONFIG: number;
     LOCAL_XML: string;
@@ -24,44 +23,19 @@ export interface iNfeConfig {
     CFOP_DEV_INTERESTADUAL: string;
     COD_LISTA_SERVICO: string;
     NCM_MONTAGEM_GERAL: string;
-
 }
-
-export interface iInsertNfeConfigParam extends iNfeConfig { }
 
 export interface iUpdateNfeConfig extends iNfeConfig { }
-
-export interface iToDeleteResponse {
-    delete: string;
-}
-
-export interface iFieldDuplicity {
-    value: string;
-    field: string;
-}
-
-export interface iGetDuplicityResponse {
-    ID_REGIME_TRIBUTARIO?: number;
-}
 
 export interface iRegimeTributario {
     ID_REGIME_TRIBUTARIO?: number;
     DESCRICAO?: string;
 }
 
-export interface iInsertRegimeTributario {
-    DESCRICAO: string;
-    ID_REGIME_TRIBUTARIO: number;
-}
-
-export interface iDeleteRegimeTributario {
-    ID_REGIME_TRIBUTARIO: number;
-}
 export interface iPis {
     ID_PIS?: number;
     P_VALOR?: number;
     ID_REGIME_TRIBUTARIO?: number;
-
 }
 
 export interface iCofins {
@@ -70,7 +44,3 @@ export interface iCofins {
     ID_REGIME_TRIBUTARIO?: number;
 }
 
-export interface iDuplicity {
-    value: string;
-    field: string;
-}

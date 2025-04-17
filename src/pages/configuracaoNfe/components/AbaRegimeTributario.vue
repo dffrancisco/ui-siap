@@ -39,7 +39,7 @@ const actionsRegime = {
   gridRegimeTributario() {
     stateRegime.grid = new xGridV2.create({
       el: "#gridRegimeTributario",
-      height: 302,
+      height: 335,
       count: true,
       columns: {
         "Código Regime Tributário": {
@@ -61,33 +61,6 @@ const actionsRegime = {
         el: "#pnRegimeCampos",
         vModel(r) {
           stateRegime.regimeTributario = r;
-        },
-        frame: {
-          el: "#pnRegimeBotoes",
-          buttons: {
-            novo: {
-              html: "Novo",
-              state: "insert",
-              click: actionsRegime.btnInsert,
-            },
-            update: {
-              html: "Alterar",
-              state: "update",
-              click: actionsRegime.btnEdit,
-              id: "btnRegimeUpdate",
-            },
-            salvar: {
-              html: "Salvar",
-              state: "save",
-              click: actionsRegime.btnSave,
-              preLoad: "Salvando",
-            },
-            cancela: {
-              html: "Cancelar",
-              state: "cancel",
-              click: actionsRegime.btnCancel,
-            },
-          },
         },
       },
       enter: function () {
@@ -113,110 +86,6 @@ const actionsRegime = {
       stateRegime.loading = false;
     }
   },
-
-  async btnInsert() {
-    stateRegime.isEditing = true;
-    stateRegime.regimeTributario = {} as iRegimeTributario;
-    await nextTick();
-
-    stateRegime.grid.focusField();
-    stateRegime.grid.disable();
-  },
-
-  btnEdit() {
-    stateRegime.isEditing = true;
-
-    if (!stateRegime.grid.dataSource()) {
-      Swal.fire({
-        icon: "info",
-        text: "Operação cancelada, nenhum registro selecionado.",
-      });
-      return false;
-    }
-    stateRegime.grid.disable();
-    stateRegime.grid.focusField();
-  },
-
-  async btnSave() {
-    if (utils.validaOBR()) {
-      return false;
-    }
-
-    if (stateRegime.grid.dataSource() == false) {
-      actionsRegime.toInsert();
-    } else {
-      actionsRegime.toUpdate();
-    }
-
-    stateRegime.isEditing = false;
-    await nextTick();
-
-    stateRegime.grid.enable();
-    stateRegime.grid.focus();
-  },
-
-  async btnCancel() {
-    stateRegime.isEditing = false;
-    let linhaGrid = <any>stateRegime.grid.getIndex();
-    await nextTick();
-
-    stateRegime.grid.enable();
-    stateRegime.grid.focus(linhaGrid);
-  },
-
-  async toInsert() {
-    try {
-      stateRegime.loading = true;
-
-      let newFields = {
-        DESCRICAO: stateRegime.regimeTributario.DESCRICAO,
-        ID_REGIME_TRIBUTARIO: stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO,
-      };
-
-      await serviceNfe.toInsertRegimeTributario(newFields);
-      stateRegime.grid.insertLine({ ...newFields });
-
-      await Swal.fire({
-        icon: "success",
-        text: "Regime Tributario adicionado com sucesso.",
-      });
-    } catch (error) {
-      await Swal.fire({
-        icon: "error",
-        text: "Erro ao adicionar Regime Tributario.",
-      });
-    } finally {
-      stateRegime.loading = false;
-    }
-  },
-
-  async toUpdate() {
-    try {
-      let param = {
-        DESCRICAO: stateRegime.regimeTributario.DESCRICAO,
-        ID_REGIME_TRIBUTARIO: stateRegime.regimeTributario.ID_REGIME_TRIBUTARIO,
-      };
-
-      stateRegime.loading = true;
-
-      await serviceNfe.toUpdateRegimeTributario(param);
-
-      stateRegime.grid.dataSource(param);
-
-      await Swal.fire({
-        icon: "success",
-        text: "Regime Tributario atualizado com sucesso.",
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Erro ao atualizar Regime Tributario!",
-        text: error.message,
-      });
-    } finally {
-      stateRegime.loading = false;
-    }
-  },
 };
 
 onMounted(async () => {
@@ -225,10 +94,7 @@ onMounted(async () => {
 </script>
 
 <template width="600" class="pa-2 ma-auto">
-  <v-form
-    @submit.prevent="actionsRegime.btnSave"
-    id="pnRegimeCampos"
-  >
+  <v-form id="pnRegimeCampos">
     <v-row dense>
       <v-col cols="4">
         <v-text-field
