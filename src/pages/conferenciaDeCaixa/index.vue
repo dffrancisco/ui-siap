@@ -127,8 +127,8 @@ onMounted(() => {
             v-if="state.mdcAberto && state.data == moment().format('YYYY-MM-DD')"
           >
             <v-card
-              class="pa-4 d-flex flex-column align-center justify-center"
-              min-height="260px"
+              class="d-flex flex-column align-center justify-center"
+              min-height="255px"
             >
               <v-btn
                 icon="mdi-plus"
@@ -137,7 +137,7 @@ onMounted(() => {
                 title="Abrir novo caixa"
                 @click="actions.openModalAbrirCaixa()"
               />
-              <span class="mt-2">Abrir Novo Caixa</span>
+              <span class="pt-2">Abrir Novo Caixa</span>
             </v-card>
           </v-col>
         </v-row>
