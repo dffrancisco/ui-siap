@@ -54,14 +54,6 @@ const toUpdateRegimeTributario = async (param: iRegimeTributario) => {
 
 
 
-const verificarRegimeTributarioEmNfe: GetVerifica = async ({ REGIME_TRIBUTARIO }) => {
-    const { data } = await axios.post(caminho, {
-        call: "verificarRegimeTributarioEmNfe",
-        param: { REGIME_TRIBUTARIO }
-    });
-    return data;
-};
-
 // Pis
 const toUpdatePis: UpdatePis = async (param) => {
     const { data } = await axios.post(caminho, {
@@ -111,7 +103,6 @@ export default {
     updateNfeConfig,
     toUpdateRegimeTributario,
     toInsertRegimeTributario,
-    verificarRegimeTributarioEmNfe,
     toUpdatePis,
     toDeletePis,
     toUpdateCofins,

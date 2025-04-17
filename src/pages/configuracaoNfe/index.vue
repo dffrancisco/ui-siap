@@ -10,6 +10,7 @@ import {
 import AbaRegimeTributario from "./components/AbaRegimeTributario.vue";
 import AbaPis from "./components/AbaPis.vue";
 import AbaCofins from "./components/AbaCofins.vue";
+import utils from "@/ts/utils";
 
 onMounted(async () => {
   await actions.init();
@@ -19,7 +20,7 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      width="800"
+      max-width="800"
       class="pa-5 ma-auto"
     >
       <v-row class="mb-2">
@@ -55,6 +56,8 @@ onMounted(async () => {
         <v-col cols="4">
           <v-text-field
             v-model="state.pisSelecionado.P_VALOR"
+            :value="utils.formatValor(state.pisSelecionado.P_VALOR)"
+            @input="state.pisSelecionado.P_VALOR"
             label="Pis"
             maxlength="15"
             dense
@@ -64,7 +67,7 @@ onMounted(async () => {
         </v-col>
         <v-col cols="4">
           <v-text-field
-            v-model="state.cofinsSelecionado.P_VALOR"
+            :value="utils.formatValor(state.cofinsSelecionado.P_VALOR)"
             label="Cofins"
             maxlength="15"
             dense
@@ -201,7 +204,7 @@ onMounted(async () => {
           />
         </v-col>
       </v-row>
-
+      <v-divider class="my-3"></v-divider>
       <v-row
         dense
         class="mt-2"
@@ -322,10 +325,5 @@ onMounted(async () => {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   padding: 20px;
   z-index: 100;
-}
-
-.btn-style {
-  padding: 5px 7px;
-  border-radius: 4px;
 }
 </style>

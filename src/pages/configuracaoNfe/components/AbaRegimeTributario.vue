@@ -39,7 +39,7 @@ const actionsRegime = {
   gridRegimeTributario() {
     stateRegime.grid = new xGridV2.create({
       el: "#gridRegimeTributario",
-      height: 290,
+      height: 302,
       count: true,
       columns: {
         "Código Regime Tributário": {
