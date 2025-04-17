@@ -20,21 +20,23 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
 
     <div>
       <div
-        ><span>{{ state.caixaSelected.NOME_COMP }}</span
+        ><strong>{{ state.caixaSelected.NOME_COMP }}</strong
         ><br />
-        <span>Data: {{ utils.dataBrasil(state.caixaSelected.DATA_ABERTURA) }}</span>
+        <span
+          >Data: <strong>{{ utils.dataBrasil(state.caixaSelected.DATA_ABERTURA) }}</strong></span
+        >
         <span class="ml-2"
           >Aberto:
-          {{
+          <strong>{{
             state.caixaSelected.HORA_ABERTURA ? utils.formatHora(state.caixaSelected.HORA_ABERTURA) : "---"
-          }}</span
+          }}</strong></span
         >
         <span class="ml-2"
           >Fechado:
-          {{
+          <strong>{{
             state.caixaSelected.HORA_FECHAMENTO ? utils.formatHora(state.caixaSelected.HORA_FECHAMENTO) : "---"
-          }}</span
-        >
+          }}</strong>
+        </span>
       </div>
     </div>
 
@@ -44,18 +46,28 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
       <div><span>Resumo Dinheiro</span></div>
       <div class="d-flex mt-2 flex-wrap justify-space-between">
         <div class="d-flex flex-column ga-1">
-          <span>Recebido: {{ utils.formatValor(state.caixaSelected.DINHEIRO) }}</span>
-          <span>Sangria: {{ utils.formatValor(state.caixaSelected.SANGRIA) }}</span>
+          <span
+            >Recebido: <strong>{{ utils.formatValor(state.caixaSelected.DINHEIRO) }}</strong></span
+          >
+          <span
+            >Sangria: <strong>{{ utils.formatValor(state.caixaSelected.SANGRIA) }}</strong></span
+          >
         </div>
         <div class="d-flex flex-column ga-1">
-          <span>Devolvido: {{ utils.formatValor(state.caixaSelected.DEVOLUCAO) }}</span>
+          <span
+            >Devolvido: <strong>{{ utils.formatValor(state.caixaSelected.DEVOLUCAO) }}</strong></span
+          >
           <span :class="{ 'text-red': state.caixaSelected.DINHEIRO_LIQUIDO > 500 }">
-            No caixa: {{ utils.formatValor(state.caixaSelected.DINHEIRO_LIQUIDO) }}
+            No caixa: <strong>{{ utils.formatValor(state.caixaSelected.DINHEIRO_LIQUIDO) }}</strong>
           </span>
         </div>
         <div class="d-flex flex-column ga-1">
-          <span>Vlr. Liquído: {{ utils.formatValor(state.caixaSelected.DINHEIRO_LIQUIDO) }}</span>
-          <span>Troco: {{ utils.formatValor(state.caixaSelected.TROCO) }} </span>
+          <span
+            >Vlr. Liquído: <strong>{{ utils.formatValor(state.caixaSelected.DINHEIRO_LIQUIDO) }}</strong></span
+          >
+          <span
+            >Troco: <strong>{{ utils.formatValor(state.caixaSelected.TROCO) }}</strong>
+          </span>
         </div>
       </div>
     </div>
@@ -80,14 +92,6 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
           >
             Fechar Caixa
           </v-btn>
-          <div style="position: absolute; right: 0; top: 0">
-            <v-icon
-              size="large"
-              title="Fechar Modal"
-              @click="emit('closeModalConferirCaixa')"
-              >mdi-close</v-icon
-            >
-          </div>
         </div>
 
         <div
@@ -103,28 +107,14 @@ const emit = defineEmits(["closeModalConferirCaixa"]);
           >
             Conferir Caixa
           </v-btn>
-          <div style="position: absolute; right: 0; top: 0">
-            <v-icon
-              size="large"
-              title="Fechar Modal"
-              @click="emit('closeModalConferirCaixa')"
-              >mdi-close</v-icon
-            >
-          </div>
         </div>
 
         <div v-if="state.caixaSelected.CONFERIDO">
-          <div style="position: absolute; right: 0; top: 0">
-            <v-icon
-              size="large"
-              title="Fechar Modal"
-              @click="emit('closeModalConferirCaixa')"
-              >mdi-close</v-icon
-            >
-          </div>
           <div class="mt-2">
             <label>Conferido por: </label><br />
-            <label>{{ state.caixaSelected.CONFERIDO }}</label>
+            <label
+              ><strong>{{ state.caixaSelected.CONFERIDO }}</strong></label
+            >
           </div>
         </div>
       </div>

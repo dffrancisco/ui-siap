@@ -321,6 +321,8 @@ export const actions = {
 
     abrirModalConferirCaixa(caixa) {
         state.caixaSelected = caixa;
+        state.selectOptionModal = "lancamentos";
+        state.pagamentosSelecionadosModal = ["TODOS"];
         state.modalConferirCaixaOpened = true;
     },
 

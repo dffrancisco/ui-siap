@@ -20,7 +20,6 @@ const stateDevolucoes = reactive({
   <v-card
     v-if="computeds.devolucoesPorCaixa.value.length === 0"
     class="pa-3"
-    height="410px"
   >
     <v-alert
       type="warning"
@@ -34,16 +33,16 @@ const stateDevolucoes = reactive({
 
   <v-card
     v-else
-    class="pa-3"
+    class="pa-3 h-100"
   >
     <v-row>
       <v-col
         class="d-flex flex-column"
         cols="3"
       >
-        <v-card
+        <div
           class="flex-grow-1"
-          height="400px"
+          height="370px"
           style="overflow-y: scroll"
           outlined
           mandatory
@@ -61,7 +60,7 @@ const stateDevolucoes = reactive({
               <b>{{ utils.formatValor(item.VALOR) }}</b>
             </v-list-item-subtitle>
           </v-list-item>
-        </v-card>
+        </div>
       </v-col>
       <v-col cols="9">
         <v-data-table-virtual

@@ -4,8 +4,7 @@ import utils from "@/ts/utils";
 </script>
 <template>
   <v-card
-    class="pa-3 modalAbaSangrias"
-    height="410px"
+    class="pa-3 h-100"
     v-if="computeds.sangriasPorCaixa.value.length === 0"
   >
     <v-alert

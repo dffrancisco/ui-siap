@@ -17,16 +17,16 @@ const options: iOptions[] = [
 ];
 </script>
 <template
-  ><v-card class="pa-4 modal-container">
-    <ModalConferirCaixaCabecalho @closeModalConferirCaixa="emit('closeModalConferirCaixa')" />
+  ><v-card class="pa-2 modal-container">
+    <ModalConferirCaixaCabecalho
+      class="pb-2"
+      @closeModalConferirCaixa="emit('closeModalConferirCaixa')"
+    />
 
-    <v-divider
-      :thickness="3"
-      class="mt-3"
-    ></v-divider>
+    <v-divider></v-divider>
 
     <!--Lista de Opções -->
-    <div class="mt-1">
+    <div>
       <v-chip-group
         v-model="state.selectOptionModal"
         color="primary"
@@ -51,12 +51,9 @@ const options: iOptions[] = [
       </v-chip-group>
     </div>
 
-    <v-divider
-      :thickness="3"
-      class="mt-1"
-    ></v-divider>
+    <v-divider></v-divider>
 
-    <div>
+    <div class="container-conteudo-aba">
       <ModalConferirCaixaAbaLancamentos v-if="computeds.abaSelecionadaModal.value === 'lancamentos'" />
       <ModalConferirCaixaAbaSangrias v-if="computeds.abaSelecionadaModal.value === 'sangria'" />
       <ModalConferirCaixaAbaDevolucoes v-if="computeds.abaSelecionadaModal.value === 'devolucao'" />
@@ -67,16 +64,10 @@ const options: iOptions[] = [
 <style scoped>
 .modal-container {
   max-width: 1050px;
-  overflow-y: auto;
+  overflow-y: scroll;
   display: flex;
-  max-height: 600px;
+  height: 540px;
   flex-direction: column;
-}
-
-.divider {
-  width: 1px;
-  height: 60px;
-  margin-top: -10px;
 }
 
 .v-col {
@@ -106,5 +97,10 @@ const options: iOptions[] = [
   background-color: red;
   border-radius: 50%;
   border: 1px solid white;
+}
+
+.container-conteudo-aba {
+  padding-top: 8px;
+  height: 420px;
 }
 </style>

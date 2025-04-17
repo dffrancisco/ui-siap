@@ -2,6 +2,7 @@
 import { state, actions, computeds } from "../conferenciaDeCaixa";
 import utils from "@/ts/utils";
 import IconPagamento from "./IconPagamento.vue";
+import VChipOrcamento from "./VChipOrcamentos.vue";
 import { iTiposPagamento } from "../interfaces";
 import { computed, nextTick, onMounted, reactive } from "vue";
 import ModalDetalhesPagamento from "./ModalDetalhesPagamento.vue";
@@ -50,7 +51,7 @@ const actionsLancamentos = {
 
     if (!pagamentoParaAdicionar) {
       toast.warning(`Nenhum pagamento disponível com valor ${utils.formatValor(valor)}`);
-      stateLancamentos.valorConferido = "";
+      nextTick(() => document.getElementById("inputValorSomatorio")?.focus());
       return;
     }
 
@@ -68,7 +69,7 @@ const actionsLancamentos = {
   removerDoSomatorio(index: number) {
     const itemRemovido = stateLancamentos.somatorioLista[index];
 
-    const compras = computeds.comprasFiltradasPorCaixa.value;
+    const compras = state.todasAsCompras;
     for (const compra of compras) {
       const pagamento = compra.TIPOS_PAGAMENTO.find(
         (p) => p.NUM_ORCAMENTO === itemRemovido.orcamento && Math.abs(p.VALOR - itemRemovido.valor) < 0.01
@@ -84,7 +85,7 @@ const actionsLancamentos = {
   },
 
   limparSomatorio() {
-    const compras = computeds.comprasFiltradasPorCaixa.value;
+    const compras = state.todasAsCompras;
     for (const compra of compras) {
       for (const pagamento of compra.TIPOS_PAGAMENTO) {
         pagamento.CONFERIDO = false;
@@ -92,6 +93,12 @@ const actionsLancamentos = {
     }
 
     stateLancamentos.somatorioLista = [];
+
+    if (state.filtrosAdicionais.apenasNaoConferidos) {
+      actions.toggleApenasNaoConferidos();
+      nextTick(() => actions.toggleApenasNaoConferidos());
+    }
+
     toast.success("Somatório limpo com sucesso!");
   },
 
@@ -141,6 +148,12 @@ useEventListener(document, "keydown", async (event) => {
 });
 
 onMounted(() => {
+  const compras = state.todasAsCompras;
+  for (const compra of compras) {
+    for (const pagamento of compra.TIPOS_PAGAMENTO) {
+      pagamento.CONFERIDO = false;
+    }
+  }
   stateLancamentos.somatorioLista = [];
 
   stateLancamentos.inputLocalizarOrcamento = document.getElementById(
@@ -160,19 +173,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-card class="pa-1 modalAbaLancamentos">
-    <v-row>
-      <v-col
-        class="d-flex flex-column"
-        cols="2"
-      >
-        <v-card
-          class="flex-grow-1"
-          height="335px"
-          style="overflow-y: scroll"
-          outlined
-          mandatory
-        >
+  <div class="pa-1 modalAbaLancamentos">
+    <div class="modal-aba-lancamentos-corpo">
+      <div class="d-flex flex-column">
+        <v-list height="328px">
           <v-list-item
             v-for="(item, index) in computeds.totalizadoresFiltradosPorCaixa.value"
             :key="index"
@@ -184,19 +188,16 @@ onMounted(() => {
               <b>{{ utils.formatValor(item.VALOR) }}</b>
             </v-list-item-subtitle>
           </v-list-item>
-        </v-card>
-      </v-col>
+        </v-list>
+      </div>
 
       <!-- Card Direito (Compras do Tipo Selecionado) -->
-      <v-col
-        cols="7"
-        style="padding: 0"
-      >
+      <div class="d-flex flex-column flex-grow-1">
         <v-data-table-virtual
           :key="state.pagamentoSelecionado"
           :items="computeds.comprasFiltradasPorCaixa.value"
           :headers="state.headersLancamentos"
-          height="345"
+          height="330px"
           item-value="id"
           :loading="state.loading"
           fixed-header
@@ -207,29 +208,14 @@ onMounted(() => {
           </template>
 
           <template v-slot:item.NUM_ORCAMENTO="{ item }">
-            <div class="orcamento-group">
-              <div
-                v-for="orc in item.ORCAMENTOS?.length ? item.ORCAMENTOS : []"
-                :key="orc.NUM_ORCAMENTO"
-                class="orcamento-box"
-                :class="{
-                  'orcamento-entregar-receber': item.ENTREGAR_RECEBER,
-                }"
-              >
-                <div
-                  class="orcamento-numero"
-                  :class="{ 'orcamento-numero-entregar-receber': item.ENTREGAR_RECEBER }"
-                >
-                  {{ orc.NUM_ORCAMENTO }}
-                </div>
-                <div
-                  class="orcamento-valor"
-                  :class="{ 'orcamento-valor-entregar-receber': item.ENTREGAR_RECEBER }"
-                >
-                  {{ utils.formatValor(orc.VALOR_ORCAMENTO) }}
-                </div>
-              </div>
-            </div>
+            <VChipOrcamento
+              :orcamentos="item.ORCAMENTOS"
+              :entregarReceber="item.ENTREGAR_RECEBER"
+            />
+          </template>
+
+          <template v-slot:item.HORA="{ item }">
+            <span class="text-center font-weight horaTable">{{ utils.formatHora(item.HORA) }}</span>
           </template>
 
           <template v-slot:item.PAGAMENTOS="{ item }">
@@ -240,6 +226,7 @@ onMounted(() => {
                 class="mr-1 chip-pagamento"
                 @click.stop="exibirDetalhesPagamento(pagamento)"
                 title="ver detalhes"
+                color="primary"
                 :class="{
                   'chip-no-somatorio': actionsLancamentos.pagamentoConferido(
                     pagamento.NUM_ORCAMENTO,
@@ -269,16 +256,13 @@ onMounted(() => {
             </div>
           </template>
         </v-data-table-virtual>
-      </v-col>
+      </div>
 
-      <v-col
-        cols="3"
-        style="padding: 5px"
-      >
+      <div style="max-width: 245px">
         <v-card>
           <v-data-table-virtual
             :items="stateLancamentos.somatorioLista"
-            height="303"
+            height="293px"
             fixed-header
             :headers="[
               { title: 'Orç.', key: 'orcamento' },
@@ -289,7 +273,7 @@ onMounted(() => {
             hide-default-footer
           >
             <template v-slot:item.orcamento="{ item }">
-              <span> + {{ item.orcamento }}</span>
+              <span> {{ item.orcamento }}</span>
             </template>
 
             <template v-slot:item.valor="{ item }">
@@ -325,59 +309,51 @@ onMounted(() => {
             </v-tooltip>
           </v-footer>
         </v-card>
-      </v-col>
-    </v-row>
-    <v-container
-      fluid
-      class="containerFooter"
-    >
-      <v-row class="ma-0 pa-0">
-        <v-col cols="3">
-          <v-text-field
-            id="inputLocalizarOrcamento"
-            v-model="stateLancamentos.localizarOrcamento"
-            label="Localizar Orçamento (F2)"
-            :clearable="false"
-            @input="actionsLancamentos.atualizarFiltroOrcamento"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="3">
-          <v-text-field
-            id="inputLocalizarAutCartao"
-            v-model="stateLancamentos.localizarAutCartao"
-            label="Localizar Aut. Cartao (F6)"
-            :clearable="false"
-            @input="actionsLancamentos.atualizarFiltroAutorizacao"
-          ></v-text-field>
-        </v-col>
-        <v-col
-          cols="3"
-          class="pt-1"
-        >
-          <v-checkbox
-            v-model="stateLancamentos.exibirApenasNaoConferidos"
-            label="Exibir apenas valores não conferidos"
-            @change="actionsLancamentos.toggleFiltroNaoConferidos"
-          ></v-checkbox>
-        </v-col>
-        <v-col
-          cols="3"
-          class="pr-3"
-        >
-          <v-text-field
-            id="inputValorSomatorio"
-            ref="inputValorSomatorio"
-            v-model="stateLancamentos.valorConferido"
-            v-mask-decimal.br="2"
-            label="Valor (F3)"
-            :clearable="false"
-            placeholder="Ex: 100,00"
-            @keydown.enter.prevent="actionsLancamentos.adicionarAoSomatorio"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-card>
+      </div>
+    </div>
+    <div class="d-flex pt-2 align-center ga-2 justify-space-between">
+      <div class="container-input-footer">
+        <v-text-field
+          id="inputLocalizarOrcamento"
+          v-model="stateLancamentos.localizarOrcamento"
+          label="Localizar Orçamento (F2)"
+          :clearable="false"
+          @input="actionsLancamentos.atualizarFiltroOrcamento"
+          hide-details
+        ></v-text-field>
+      </div>
+      <div class="container-input-footer">
+        <v-text-field
+          id="inputLocalizarAutCartao"
+          v-model="stateLancamentos.localizarAutCartao"
+          label="Localizar Aut. Cartao (F6)"
+          :clearable="false"
+          @input="actionsLancamentos.atualizarFiltroAutorizacao"
+          hide-details
+        ></v-text-field>
+      </div>
+      <div class="pt-0 container-input-footer">
+        <v-checkbox
+          v-model="stateLancamentos.exibirApenasNaoConferidos"
+          label="Exibir apenas valores não conferidos"
+          @change="actionsLancamentos.toggleFiltroNaoConferidos"
+          hide-details
+        ></v-checkbox>
+      </div>
+      <div class="pr-3 container-input-footer">
+        <v-text-field
+          id="inputValorSomatorio"
+          ref="inputValorSomatorio"
+          v-model="stateLancamentos.valorConferido"
+          v-mask-decimal.br="2"
+          label="Valor (F3)"
+          :clearable="false"
+          placeholder="Ex: 100,00"
+          hide-details
+        ></v-text-field>
+      </div>
+    </div>
+  </div>
   <!-- Modal Detalhes Pagamento -->
   <v-dialog
     v-model="stateLancamentos.modalDetalhesPagamentoOpened"
@@ -407,10 +383,7 @@ onMounted(() => {
 .chips-pagamentos {
   display: flex;
   gap: 4px;
-  padding: 2px;
   flex-wrap: wrap;
-  margin-left: -20px;
-  width: 130%;
 }
 
 .v-icon {
@@ -420,13 +393,13 @@ onMounted(() => {
 .chip-pagamento {
   width: 100px;
   height: 45px;
+  padding: 6px;
   border-radius: 8px !important;
   transition: all 0.3s ease;
-  background-color: #ebf7ff;
 }
 
 .chip-no-somatorio {
-  border: 1px solid #4caf50;
+  border: 0.5px solid #4caf50;
   box-shadow: 0 0 0 1px #4caf50;
   background-color: #6cff715f;
 }
@@ -448,89 +421,36 @@ onMounted(() => {
   color: #017bc2c7;
 }
 
-.orcamento-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 4px;
+.horaTable {
   margin-left: -10px;
-  gap: 2px;
-}
-
-.orcamento-box {
-  display: flex;
-  align-items: center;
-  border: 1px solid #017bc2c7;
-  border-radius: 6px;
-  overflow: hidden;
-  font-weight: bold;
-  color: #0496ea;
-  background: rgba(33, 150, 243, 0.15);
-  width: fit-content;
-}
-
-.orcamento-numero {
-  padding: 4px 8px;
-  background: #0496ea;
-  color: white;
-  border-radius: 0px 8px 8px 0px;
-  min-width: 54px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.orcamento-valor {
-  padding: 4px 8px;
-  color: #0496ea;
-  border-radius: 0 6px 6px 0;
-  min-width: 56px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.orcamento-numero-entregar-receber {
-  padding: 4px 8px;
-  background: #c2016575;
-  color: white;
-  border-radius: 0px 8px 8px 0px;
-}
-
-.orcamento-valor-entregar-receber {
-  padding: 4px 8px;
-  color: #c20165c1;
-  border-radius: 0 6px 6px 0;
-}
-
-.orcamento-entregar-receber {
-  display: flex;
-  align-items: center;
-  border: 1px solid #c20165c7;
-  border-radius: 6px;
-  overflow: hidden;
-  font-weight: bold;
-  color: #fb2be7;
-  background: rgba(243, 33, 229, 0.15);
-  width: fit-content;
-  margin-top: 3px;
-  margin-bottom: 3px;
-  margin-right: 5px;
 }
 
 #inputValorSomatorio {
   font-weight: bold;
 }
 
-.containerFooter {
-  padding: 0;
-  margin: 0;
-  margin-bottom: -30px;
-}
-
 .modalAbaLancamentos {
   width: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.modal-aba-lancamentos-corpo {
+  flex-grow: 1;
+  height: 100%;
+  display: flex;
+  gap: 8px;
+}
+
+.containerFooter {
+  padding: 0;
+  margin: 0;
+}
+
+.container-input-footer {
+  width: 25%;
 }
 </style>

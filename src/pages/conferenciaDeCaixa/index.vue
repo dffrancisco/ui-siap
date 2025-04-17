@@ -17,10 +17,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid>
     <v-card
       max-width="1100px"
-      class="ma-auto pa-4"
+      class="pa-4 mx-auto"
     >
       <!-- Input de Data -->
       <v-row class="pt-4 pl-2">
@@ -104,10 +104,11 @@ onMounted(() => {
           <v-col
             v-for="caixa in state.caixas"
             :key="caixa.COD_FUNCIONARIO"
+            style="padding: 5px 5px 5px 5px"
             cols="12"
-            sm="4"
+            sm="6"
             md="4"
-            lg="4"
+            lg="3"
           >
             <AbaCaixas
               :caixa="caixa"

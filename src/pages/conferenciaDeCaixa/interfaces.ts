@@ -51,6 +51,7 @@ export interface iTiposPagamento {
     PIX_CONTROLE: string | null;
     TIPO_PAGAMENTO: string | null;
     NUM_ORCAMENTO: number;
+    UNION_ORCAMENTO: string
     VALOR: number | null;
     CONFERIDO: boolean;
 }
