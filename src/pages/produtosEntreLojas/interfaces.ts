@@ -69,3 +69,11 @@ export interface iDadosLojas {
     CGC_CLIENTE: string;
     VLR: number;
 }
+
+export interface iProdutoDetalhes {
+    COD_PRODUTO: string;
+    DESCRICAO: string;
+    QUANTIDADE: number;
+    VALOR_UNITARIO: number;
+    TOTAL?: number;
+}

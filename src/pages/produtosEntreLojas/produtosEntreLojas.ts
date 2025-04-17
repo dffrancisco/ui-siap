@@ -18,6 +18,7 @@ export const state = reactive({
     mes: mes,
     cnpj: '',
     ano: ano || null,
+    dbSelectItem: {} as iDadosLojas,
     modalValeOpened: false,
     selectedLoja: null as iLojas | null,
     lojas: <iLojas[]>[],
@@ -37,6 +38,7 @@ export const state = reactive({
     ],
 });
 
+
 export const totalGeral = computed(() => {
     return state.dadosRelatorio.reduce((acc, item) => acc + Number(item.VLR || 0), 0).toFixed(2);
 });
@@ -48,9 +50,8 @@ export const actions = {
         actions.validarFiltros();
     },
 
-
-    abrirModal(item) {
-
+    abrirModal(item: iDadosLojas) {
+        state.dbSelectItem = item;
         state.modalValeOpened = true;
     },
 

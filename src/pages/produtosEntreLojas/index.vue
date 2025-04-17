@@ -84,6 +84,16 @@ onMounted(() => {
         fixed-header
         :row-props="actions.getClassCorLinha"
       >
+        <template v-slot:item.acao="{ item }">
+          <v-btn
+            icon
+            color="primary"
+            size="34px"
+            @click="actions.abrirModal(item)"
+          >
+            <v-icon>mdi-eye</v-icon>
+          </v-btn>
+        </template>
         <template #body.append>
           <tr class="total-row">
             <td colspan="1"><strong>Total Geral:</strong></td>
@@ -126,4 +136,13 @@ onMounted(() => {
       ></v-progress-circular>
     </v-overlay>
   </v-container>
+  <v-dialog
+    v-model="state.modalValeOpened"
+    max-width="900px"
+  >
+    <ModalDetalhes
+      :selectedItem="state.dbSelectItem"
+      @closeModal="state.modalValeOpened = false"
+    />
+  </v-dialog>
 </template>
