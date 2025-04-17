@@ -64,7 +64,7 @@ onMounted(async () => {
             v-model="state.pisSelecionado.P_VALOR"
             id="P_VALOR_PIS"
             name="P_VALOR_PIS"
-            type="text"
+            type="number"
             class="ss"
             :disabled="!state.isEditable"
           />
@@ -75,7 +75,7 @@ onMounted(async () => {
             v-model="state.cofinsSelecionado.P_VALOR"
             id="P_VALOR_COFINS"
             name="P_VALOR_COFINS"
-            type="text"
+            type="number"
             class="ss"
             :disabled="!state.isEditable"
           />
@@ -149,7 +149,7 @@ onMounted(async () => {
             v-model="state.nfeConfig.CFOP_TRANSP"
             id="CFOP_TRANSP"
             name="CFOP_TRANSP"
-            type="text"
+            type="number"
             class="obr ss"
             :disabled="!state.isEditable"
           />
@@ -160,7 +160,7 @@ onMounted(async () => {
             v-model="state.nfeConfig.CFOP_MONTAGEM_INTERNO"
             id="CFOP_MONTAGEM_INTERNO"
             name="CFOP_MONTAGEM_INTERNO"
-            type="text"
+            type="number"
             class="obr ss"
             :disabled="!state.isEditable"
           />
@@ -171,7 +171,7 @@ onMounted(async () => {
             v-model="state.nfeConfig.CFOP_MONTAGEM_INTERESTADUAL"
             id="CFOP_MONTAGEM_INTERESTADUAL"
             name="CFOP_MONTAGEM_INTERESTADUAL"
-            type="text"
+            type="number"
             class="obr ss"
             :disabled="!state.isEditable"
           />
@@ -182,7 +182,7 @@ onMounted(async () => {
             v-model="state.nfeConfig.CFOP_ECF_INTERNO"
             id="CFOP_ECF_INTERNO"
             name="CFOP_ECF_INTERNO"
-            type="text"
+            type="number"
             class="obr ss"
             :disabled="!state.isEditable"
           />
@@ -199,7 +199,7 @@ onMounted(async () => {
             v-model="state.nfeConfig.CFOP_ECF_INTERESTADUAL"
             id="CFOP_ECF_INTERESTADUAL"
             name="CFOP_ECF_INTERESTADUAL"
-            type="text"
+            type="number"
             class="obr ss"
             :disabled="!state.isEditable"
           />
@@ -210,7 +210,7 @@ onMounted(async () => {
             v-model="state.nfeConfig.CFOP_DEV_INTERNO"
             id="CFOP_DEV_INTERNO"
             name="CFOP_DEV_INTERNO"
-            type="text"
+            type="number"
             class="obr ss"
             :disabled="!state.isEditable"
           />
@@ -221,7 +221,7 @@ onMounted(async () => {
             v-model="state.nfeConfig.CFOP_DEV_INTERESTADUAL"
             id="CFOP_DEV_INTERESTADUAL"
             name="CFOP_DEV_INTERESTADUAL"
-            type="text"
+            type="number"
             class="obr ss"
             :disabled="!state.isEditable"
           />
@@ -238,7 +238,7 @@ onMounted(async () => {
             v-model="state.nfeConfig.EMIT_IM"
             id="EMIT_IM"
             name="EMIT_IM"
-            type="text"
+            type="number"
             class="obr ss"
             :disabled="!state.isEditable"
           />
@@ -249,7 +249,7 @@ onMounted(async () => {
             v-model="state.nfeConfig.EMIT_CNAE"
             id="EMIT_CNAE"
             name="EMIT_CNAE"
-            type="text"
+            type="number"
             class="obr ss"
             :disabled="!state.isEditable"
           />

@@ -67,6 +67,8 @@ export const actions = {
             state.pisSelecionado = state.pisLista.find(p => p.ID_REGIME_TRIBUTARIO === regimeId) || {} as iPis;
             state.cofinsSelecionado = state.cofinsLista.find(c => c.ID_REGIME_TRIBUTARIO === regimeId) || {} as iCofins;
 
+
+
         } catch (error) {
             Swal.fire({
                 icon: "error",
