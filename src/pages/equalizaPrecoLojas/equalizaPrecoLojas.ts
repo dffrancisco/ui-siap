@@ -252,8 +252,8 @@ export const actions = {
             const columns: iColumnPrint[] = [
                 { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '15%' },
                 { key: 'DESC_PRODUTO', label: 'Identificado Por', width: '40%' },
-                { key: 'CUS_ATU_NOV', label: 'Cus-Atu/Nov', width: '18%', align: 'center' },
-                { key: 'VEN_ATU_NOV', label: 'Ven-Atu/Nov', width: '18%', align: 'center' },
+                { key: 'CUS_ATU_NOV', label: 'Custo-Atual/Novo', width: '18%', align: 'center' },
+                { key: 'VEN_ATU_NOV', label: 'Venda-Atual/Novo', width: '18%', align: 'center' },
                 { key: 'ATUALIZAR', label: 'Atual.', width: '9%' },
             ];
 
