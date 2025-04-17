@@ -22,9 +22,8 @@ onMounted(async () => {
   <v-container>
     <title>Gerenciar Representantes</title>
     <v-card
-      width="900"
-      height="560"
-      class="pa-5 ma-auto"
+      max-width="900"
+      class="pa-4 ma-auto"
     >
       <div id="pnCampos">
         <v-row class="mt-n1">
@@ -167,6 +166,7 @@ onMounted(async () => {
             <span>Observações</span>
           </v-col>
         </v-row>
+
         <v-row class="mt-n1">
           <v-col cols="4">
             <span>Endereço</span>
@@ -262,7 +262,7 @@ onMounted(async () => {
     <div id="pnCodigoTela">representantes</div>
     <v-dialog
       v-model="state.modalFornecedorOpened"
-      width="600"
+      max-width="600"
     >
       <ModalMarcaRepresentantes
         @selecionarRepresentante="actions.selecionarRepresentante"
