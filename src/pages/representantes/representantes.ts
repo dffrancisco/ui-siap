@@ -13,6 +13,8 @@ import {
 import utils from "@/ts/utils";
 import serviceRepresentantes from "./services/representantes.service";
 import { useEventListener } from "@vueuse/core";
+
+
 const inputSearch = ref();
 
 export const state = reactive({
@@ -66,7 +68,7 @@ export const actions = {
                     let data = await actions.getRepresentantes({
                         offset: rs.offset,
                         param: rs.param,
-                        checkboxAtiva: state.isChecked,
+
 
                     });
                     state.gridPrincipal.querySourceAdd(data);
@@ -134,12 +136,12 @@ export const actions = {
         });
     },
 
-    async getRepresentantes({ offset, param, checkboxAtiva }: iParamGetRepresentantes) {
+    async getRepresentantes({ offset, param }: iParamGetRepresentantes) {
         try {
             state.loading = true;
 
 
-            const data = await serviceRepresentantes.getRepresentantes({ offset, param, checkboxAtiva });
+            const data = await serviceRepresentantes.getRepresentantes({ offset, param });
             state.loading = false;
 
             return data;
@@ -214,7 +216,7 @@ export const actions = {
         if (!state.gridPrincipal.dataSource()) {
             Swal.fire({
                 icon: "info",
-                text: "Operação cancelada, nenhum registro selecionado.",
+                text: "Nenhum registro selecionado.",
             });
             return false;
         }
@@ -280,10 +282,10 @@ export const actions = {
     async toInativar() {
         try {
             let ID_REPRESENTANTE = state.dbRepresentantes.ID_REPRESENTANTE;
-            let DELELETADO = state.dbRepresentantes.DELETADO;
+            let DELETADO = state.dbRepresentantes.DELETADO;
 
             state.loading = true;
-            await serviceRepresentantes.toInativar(ID_REPRESENTANTE, DELELETADO);
+            await serviceRepresentantes.toInativar(ID_REPRESENTANTE, DELETADO);
             state.loading = false;
 
             state.gridPrincipal.deleteLine();
@@ -292,12 +294,11 @@ export const actions = {
                 text: "Representante excluído com sucesso!",
             });
         } catch (error) {
+            state.loading = false;
             Swal.fire({
                 icon: "error",
                 text: "erro ao executar exclusão",
             });
-        } finally {
-            state.loading = false;
         }
     },
 
@@ -313,11 +314,11 @@ export const actions = {
                 BAIRRO: state.dbRepresentantes.BAIRRO,
                 COD_CIDADE: state.dbRepresentantes.COD_CIDADE,
                 CEP: state.dbRepresentantes.CEP,
-                TELEFONE: state.dbRepresentantes.TELEFONE,
+                TELEFONE: state.dbRepresentantes.TELEFONE || null,
                 TELEFONE2: state.dbRepresentantes.TELEFONE2,
                 FAX: state.dbRepresentantes.FAX,
                 CELULAR: state.dbRepresentantes.CELULAR,
-                EMAIL: state.dbRepresentantes.EMAIL,
+                EMAIL: state.dbRepresentantes.EMAIL || null,
                 OBS: state.dbRepresentantes.OBS,
                 MARCAS: state.dbRepresentantes.MARCAS,
                 search: state.dbRepresentantes.NOME?.toUpperCase() || "",
@@ -339,6 +340,7 @@ export const actions = {
         }
     },
     async toUpdate() {
+
         try {
             let param = {
                 NOME: state.dbRepresentantes.NOME?.toUpperCase(),

@@ -30,12 +30,12 @@ const getMarcas: iGetMarcas = async (param, offset) => {
     return data;
 };
 
-const getRepresentantes: iGetRepresentantesFunction = async ({ param, offset, checkboxAtiva }) => {
+const getRepresentantes: iGetRepresentantesFunction = async ({ param, offset }) => {
     let { data } = await axios.post(caminho, {
         call: "getRepresentantes",
         offset,
         param,
-        checkboxAtiva,
+
     });
     return data;
 };

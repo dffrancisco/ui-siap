@@ -82,7 +82,7 @@ onMounted(async () => {
               id="CELULAR"
               name="CELULAR"
               class="obr ss"
-              maxlength="20"
+              maxlength="15"
               v-mask="'(##) #####-####'"
               autocomplete="off"
             />
@@ -95,8 +95,8 @@ onMounted(async () => {
               id="TELEFONE"
               name="TELEFONE"
               class="ss"
-              maxlength="20"
-              v-mask="'####-####'"
+              maxlength="15"
+              v-mask="'(##) ####-####'"
               autocomplete="off"
             />
           </v-col>
@@ -109,8 +109,8 @@ onMounted(async () => {
                 id="TELEFONE2"
                 name="TELEFONE2"
                 class="ss"
-                maxlength="20"
-                v-mask="'####-####'"
+                maxlength="15"
+                v-mask="'(##) ####-####'"
                 autocomplete="off"
             /></div>
           </v-col>
@@ -123,8 +123,8 @@ onMounted(async () => {
               id="FAX"
               name="FAX"
               class="ss"
-              maxlength="20"
-              v-mask="'####-####'"
+              maxlength="15"
+              v-mask="'(##) ####-####'"
               autocomplete="off"
             />
           </v-col>

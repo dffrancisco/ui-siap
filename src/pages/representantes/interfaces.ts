@@ -34,7 +34,6 @@ export interface iCidades {
 export interface iParamGetRepresentantes {
     offset?: number;
     param: object;
-    checkboxAtiva?: boolean;
 }
 
 export interface iGetDuplicityResponse {
