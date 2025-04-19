@@ -54,7 +54,7 @@ export const actions = {
     grids() {
         state.gridPrincipal = new xGridV2.create({
             el: "#gridPrincipal",
-            height: 190,
+            height: 200,
             count: true,
             columns: {
                 "Nome": { dataField: "NOME" },
