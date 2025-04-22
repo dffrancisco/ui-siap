@@ -94,7 +94,7 @@ onMounted(async () => {
               id="TELEFONE"
               name="TELEFONE"
               class="ss"
-              maxlength="15"
+              maxlength="14"
               v-mask="'(##) ####-####'"
               autocomplete="off"
             />
@@ -108,7 +108,7 @@ onMounted(async () => {
                 id="TELEFONE2"
                 name="TELEFONE2"
                 class="ss"
-                maxlength="15"
+                maxlength="14"
                 v-mask="'(##) ####-####'"
                 autocomplete="off"
             /></div>
@@ -122,7 +122,7 @@ onMounted(async () => {
               id="FAX"
               name="FAX"
               class="ss"
-              maxlength="15"
+              maxlength="14"
               v-mask="'(##) ####-####'"
               autocomplete="off"
             />
@@ -138,7 +138,7 @@ onMounted(async () => {
               id="CEP"
               name="CEP"
               class="obr ss"
-              maxlength="15"
+              maxlength="9"
               v-mask="'#####-###'"
               autocomplete="off"
               v-on:focusout="actions.buscaCEP"
