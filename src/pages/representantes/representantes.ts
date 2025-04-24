@@ -255,9 +255,9 @@ export const actions = {
         }
 
         if (!state.gridPrincipal.dataSource()) {
-            actions.toInsert();
+            await actions.toInsert();
         } else {
-            actions.toUpdate();
+            await actions.toUpdate();
         }
         state.pnSearch = false;
         await nextTick();
@@ -305,7 +305,6 @@ export const actions = {
     async toInsert() {
         try {
             state.loading = true;
-
             let newFields = {
 
                 ID_REPRESENTANTE: state.dbRepresentantes.ID_REPRESENTANTE,
@@ -339,6 +338,7 @@ export const actions = {
             state.loading = false;
         }
     },
+
     async toUpdate() {
 
         try {
@@ -384,9 +384,7 @@ export const actions = {
             if (cidade.COD_IBGE == COD_IBGE) {
                 return true;
             }
-
             return false;
-
         })
 
         if (cidadeEncontrada) {
