@@ -123,11 +123,6 @@ onMounted(async () => {
     id="gridCofins"
     class="mb-4"
   ></div>
-
-  <div
-    id="pncofinsBotoes"
-    style="text-align: center"
-  ></div>
 </template>
 
 <style scoped>

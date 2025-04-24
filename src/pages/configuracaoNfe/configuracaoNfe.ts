@@ -24,6 +24,16 @@ export const state = reactive({
     originalConfig: {} as iNfeConfig,
 });
 
+export const pisSelecionado = computed(() => {
+    const regimeId = Number(state.nfeConfig.REGIME_TRIBUTARIO);
+    return state.pisLista.find(p => p.ID_REGIME_TRIBUTARIO === regimeId) || {} as iPis;
+});
+
+export const cofinsSelecionado = computed(() => {
+    const regimeId = Number(state.nfeConfig.REGIME_TRIBUTARIO);
+    return state.cofinsLista.find(c => c.ID_REGIME_TRIBUTARIO === regimeId) || {} as iCofins;
+});
+
 export const regimeTributarioSelecionado = computed({
     get: () => {
         return (
@@ -36,6 +46,7 @@ export const regimeTributarioSelecionado = computed({
         state.nfeConfig.REGIME_TRIBUTARIO = String(newValue.value);
     },
 });
+
 
 export const stateTabs = reactive({
     selectedTab: "configuracaoNfe",
@@ -64,11 +75,8 @@ export const actions = {
             state.cofinsLista = data.cofins;
 
             const regimeId = Number(state.nfeConfig.REGIME_TRIBUTARIO);
-            state.pisSelecionado = state.pisLista.find(p => p.ID_REGIME_TRIBUTARIO === regimeId) || {} as iPis;
-            state.cofinsSelecionado = state.cofinsLista.find(c => c.ID_REGIME_TRIBUTARIO === regimeId) || {} as iCofins;
-
-
-
+            state.pis = state.pisLista.find(p => p.ID_REGIME_TRIBUTARIO === regimeId) || {} as iPis;
+            state.cofins = state.cofinsLista.find(c => c.ID_REGIME_TRIBUTARIO === regimeId) || {} as iCofins;
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -107,9 +115,14 @@ export const actions = {
                 NCM_MONTAGEM_GERAL: state.nfeConfig.NCM_MONTAGEM_GERAL,
             };
 
-            state.loading = true;
+            const updatePayload = {
+                nfeConfig: param,
+                pis: state.pis,
+                cofins: state.cofins
+            };
 
-            await serviceNfe.updateNfeConfig(param);
+            state.loading = true;
+            await serviceNfe.updateNfeConfig(updatePayload);
 
             await Swal.fire({
                 icon: "success",

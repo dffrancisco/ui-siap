@@ -6,6 +6,8 @@ import {
   stateTabs,
   regimeTributarioOptions,
   regimeTributarioSelecionado,
+  pisSelecionado,
+  cofinsSelecionado,
 } from "./configuracaoNfe";
 import AbaRegimeTributario from "./components/AbaRegimeTributario.vue";
 import AbaPis from "./components/AbaPis.vue";
@@ -61,7 +63,7 @@ onMounted(async () => {
         <v-col cols="4">
           <span>Valor PIS</span>
           <input
-            v-model="state.pisSelecionado.P_VALOR"
+            v-model="pisSelecionado.P_VALOR"
             id="P_VALOR_PIS"
             name="P_VALOR_PIS"
             type="number"
@@ -72,7 +74,7 @@ onMounted(async () => {
         <v-col cols="4">
           <span>Valor Cofins</span>
           <input
-            v-model="state.cofinsSelecionado.P_VALOR"
+            v-model="cofinsSelecionado.P_VALOR"
             id="P_VALOR_COFINS"
             name="P_VALOR_COFINS"
             type="number"

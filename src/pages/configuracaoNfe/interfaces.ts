@@ -44,3 +44,8 @@ export interface iCofins {
     ID_REGIME_TRIBUTARIO?: number;
 }
 
+export interface updatePayload {
+    nfeConfig: iNfeConfig;
+    pis: iPis;
+    cofins: iCofins;
+};

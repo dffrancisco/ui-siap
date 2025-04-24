@@ -121,11 +121,6 @@ onMounted(async () => {
     id="gridPis"
     class="mb-4"
   ></div>
-
-  <div
-    id="pnPisBotoes"
-    style="text-align: center"
-  ></div>
 </template>
 
 <style scoped>

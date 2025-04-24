@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {
-    iNfeConfig,
     iResponseDadosInputs,
+    updatePayload
 } from '../interfaces';
 
 
@@ -16,7 +16,7 @@ const getDadosParaInputs: iGetDadosParaInputs = async () => {
     return data;
 };
 
-const updateNfeConfig = async (param: iNfeConfig) => {
+const updateNfeConfig = async (param: updatePayload) => {
     let { data } = await axios.post(caminho, {
         call: 'updateNfe',
         param
