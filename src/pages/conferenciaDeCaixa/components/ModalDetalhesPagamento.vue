@@ -28,8 +28,8 @@ const debitoOuCredito = computed(() => {
     <v-card-title class="modal-title"> Detalhes do Pagamento </v-card-title>
 
     <v-card-text class="modal-content">
-      <span v-if="props.pagamentoSelecionado.NUM_ORCAMENTO">
-        <strong>Nº Orçamento:</strong> {{ props.pagamentoSelecionado.NUM_ORCAMENTO }}
+      <span v-if="props.pagamentoSelecionado.UNION_ORCAMENTO">
+        <strong>Nº Orçamento:</strong> {{ props.pagamentoSelecionado.UNION_ORCAMENTO }}
       </span>
 
       <span v-if="props.pagamentoSelecionado.DESCRICAO_PAGAMENTO">
@@ -79,6 +79,7 @@ const debitoOuCredito = computed(() => {
         class="btnCancelar"
         size="large"
         color="outline"
+        density="compact"
         @click="actions.cancelar"
         >Cancelar</v-btn
       >
@@ -90,14 +91,12 @@ const debitoOuCredito = computed(() => {
 .modal-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  max-height: 500px;
+  left: 25%;
   max-width: 420px;
   background: white;
-  margin-left: 20%;
-  margin-bottom: 150px;
   border-radius: 12px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  padding: 20px;
   border: 2px solid rgba(0, 0, 0, 0.1);
   text-align: center;
 }
@@ -105,15 +104,15 @@ const debitoOuCredito = computed(() => {
 .modal-title {
   font-size: 18px;
   font-weight: bold;
+  padding-top: 10px;
   color: #444;
   text-align: center;
-  margin-bottom: 15px;
 }
 
 .modal-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   text-align: left;
 }
 
@@ -129,8 +128,10 @@ const debitoOuCredito = computed(() => {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+  padding: 0;
+  margin: 0;
   margin-right: 20px;
-  padding-bottom: 10px;
+  padding-bottom: 20px;
 }
 
 .btnCancelar {

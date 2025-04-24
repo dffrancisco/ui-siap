@@ -6,6 +6,7 @@ export interface iValeAPagar {
   FORMA_PAGAMENTO: 'D' | 'P',
   DATA: string,
   DATA_PG: string,
+  CPF: string,
 }
 
 export interface iValePago {

@@ -1,0 +1,456 @@
+<script setup lang="ts">
+import { state, actions, computeds } from "../conferenciaDeCaixa";
+import utils from "@/ts/utils";
+import IconPagamento from "./IconPagamento.vue";
+import VChipOrcamento from "./VChipOrcamentos.vue";
+import { iTiposPagamento } from "../interfaces";
+import { computed, nextTick, onMounted, reactive } from "vue";
+import ModalDetalhesPagamento from "./ModalDetalhesPagamento.vue";
+import { useEventListener } from "@vueuse/core";
+import toast from "@/plugins/toast/toast";
+
+const exibirDetalhesPagamento = (pagamento: iTiposPagamento) => {
+  stateLancamentos.pagamentoSelecionado = pagamento;
+  stateLancamentos.modalDetalhesPagamentoOpened = true;
+};
+
+const stateLancamentos = reactive({
+  modalDetalhesPagamentoOpened: false,
+  pagamentoSelecionado: <null | iTiposPagamento>null,
+  inputLocalizarOrcamento: <HTMLInputElement>null,
+  inputLocalizarAutCartao: <HTMLInputElement>null,
+  inputValorSomatorio: <HTMLInputElement>null,
+  somatorioLista: [] as { valor: number; orcamento?: number }[],
+  localizarOrcamento: "",
+  localizarAutCartao: "",
+  exibirApenasNaoConferidos: false,
+  valorConferido: "",
+});
+
+const actionsLancamentos = {
+  adicionarAoSomatorio() {
+    if (!stateLancamentos.valorConferido?.trim()) return;
+
+    const valor = utils.formatValorUSA(stateLancamentos.valorConferido.trim());
+    if (isNaN(valor)) {
+      toast.warning("Valor inválido. Use formato como '100,00'");
+      stateLancamentos.valorConferido = "";
+      return;
+    }
+
+    let pagamentoParaAdicionar: iTiposPagamento | undefined;
+
+    //Math.abs(p.VALOR - valor) < 0.01 Verifica se o valor do pagamento é igual ao valor digitado (com margem de 0.01 para evitar problemas de arredondamento)
+    for (const compra of computeds.comprasFiltradasPorCaixa.value) {
+      pagamentoParaAdicionar = compra.TIPOS_PAGAMENTO.find(
+        (p) => Math.abs(p.VALOR - valor) < 0.01 && !p.CONFERIDO
+      );
+
+      if (pagamentoParaAdicionar) break;
+    }
+
+    if (!pagamentoParaAdicionar) {
+      toast.warning(`Nenhum pagamento disponível com valor ${utils.formatValor(valor)}`);
+      nextTick(() => document.getElementById("inputValorSomatorio")?.focus());
+      return;
+    }
+
+    pagamentoParaAdicionar.CONFERIDO = true;
+    stateLancamentos.somatorioLista.push({
+      valor,
+      orcamento: pagamentoParaAdicionar.NUM_ORCAMENTO,
+    });
+
+    toast.success(`Orçamento ${pagamentoParaAdicionar.NUM_ORCAMENTO} adicionado!`);
+    stateLancamentos.valorConferido = "";
+    nextTick(() => document.getElementById("inputValorSomatorio")?.focus());
+  },
+
+  removerDoSomatorio(index: number) {
+    const itemRemovido = stateLancamentos.somatorioLista[index];
+
+    const compras = state.todasAsCompras;
+    for (const compra of compras) {
+      const pagamento = compra.TIPOS_PAGAMENTO.find(
+        (p) => p.NUM_ORCAMENTO === itemRemovido.orcamento && Math.abs(p.VALOR - itemRemovido.valor) < 0.01
+      );
+      if (pagamento) {
+        pagamento.CONFERIDO = false;
+        break;
+      }
+    }
+
+    stateLancamentos.somatorioLista.splice(index, 1);
+    toast.success("Item removido do somatório!");
+  },
+
+  limparSomatorio() {
+    const compras = state.todasAsCompras;
+    for (const compra of compras) {
+      for (const pagamento of compra.TIPOS_PAGAMENTO) {
+        pagamento.CONFERIDO = false;
+      }
+    }
+
+    stateLancamentos.somatorioLista = [];
+
+    if (state.filtrosAdicionais.apenasNaoConferidos) {
+      actions.toggleApenasNaoConferidos();
+      nextTick(() => actions.toggleApenasNaoConferidos());
+    }
+
+    toast.success("Somatório limpo com sucesso!");
+  },
+
+  atualizarFiltroOrcamento() {
+    actions.filtrarPorOrcamento(stateLancamentos.localizarOrcamento);
+  },
+
+  atualizarFiltroAutorizacao() {
+    actions.filtrarPorAutorizacao(stateLancamentos.localizarAutCartao);
+  },
+
+  toggleFiltroNaoConferidos() {
+    actions.toggleApenasNaoConferidos();
+  },
+
+  pagamentoConferido(numOrcamento: number, valor: number) {
+    return stateLancamentos.somatorioLista.some(
+      (item) => item.orcamento === numOrcamento && Math.abs(item.valor - valor) < 0.01
+    );
+  },
+};
+
+const totalizadoresSomatorio = computed(() => {
+  return {
+    quantidade: stateLancamentos.somatorioLista.length,
+    total: stateLancamentos.somatorioLista.reduce((acc, item) => acc + item.valor, 0),
+  };
+});
+
+useEventListener(document, "keydown", async (event) => {
+  if (event.key === "F2") {
+    event.preventDefault();
+    stateLancamentos.inputLocalizarOrcamento?.focus();
+  }
+  if (event.key === "F6") {
+    event.preventDefault();
+    stateLancamentos.inputLocalizarAutCartao?.focus();
+  }
+  if (event.key === "F3") {
+    event.preventDefault();
+    stateLancamentos.inputValorSomatorio?.focus();
+  }
+  if (event.key === "Enter" && document.activeElement === stateLancamentos.inputValorSomatorio) {
+    event.preventDefault();
+    actionsLancamentos.adicionarAoSomatorio();
+  }
+});
+
+onMounted(() => {
+  const compras = state.todasAsCompras;
+  for (const compra of compras) {
+    for (const pagamento of compra.TIPOS_PAGAMENTO) {
+      pagamento.CONFERIDO = false;
+    }
+  }
+  stateLancamentos.somatorioLista = [];
+
+  stateLancamentos.inputLocalizarOrcamento = document.getElementById(
+    "inputLocalizarOrcamento"
+  ) as HTMLInputElement;
+  stateLancamentos.inputLocalizarAutCartao = document.getElementById(
+    "inputLocalizarAutCartao"
+  ) as HTMLInputElement;
+  stateLancamentos.inputValorSomatorio = document.getElementById("inputValorSomatorio") as HTMLInputElement;
+
+  nextTick(() => {
+    if (stateLancamentos.inputValorSomatorio) {
+      stateLancamentos.inputValorSomatorio.focus();
+    }
+  });
+});
+</script>
+
+<template>
+  <div class="pa-1 modalAbaLancamentos">
+    <div class="modal-aba-lancamentos-corpo">
+      <div class="d-flex flex-column">
+        <v-list height="328px">
+          <v-list-item
+            v-for="(item, index) in computeds.totalizadoresFiltradosPorCaixa.value"
+            :key="index"
+            @click="actions.selecionarPagamentoModal(item.TIPO_PAGAMENTO)"
+            :class="{ tipo_pag_selected: state.pagamentosSelecionadosModal.includes(item.TIPO_PAGAMENTO) }"
+          >
+            <v-list-item-title>{{ item.DESCRICAO_PAGAMENTO }}</v-list-item-title>
+            <v-list-item-subtitle>
+              <b>{{ utils.formatValor(item.VALOR) }}</b>
+            </v-list-item-subtitle>
+          </v-list-item>
+        </v-list>
+      </div>
+
+      <!-- Card Direito (Compras do Tipo Selecionado) -->
+      <div class="d-flex flex-column flex-grow-1">
+        <v-data-table-virtual
+          :key="state.pagamentoSelecionado"
+          :items="computeds.comprasFiltradasPorCaixa.value"
+          :headers="state.headersLancamentos"
+          height="330px"
+          item-value="id"
+          :loading="state.loading"
+          fixed-header
+          class="elevation-1"
+        >
+          <template v-slot:item.INDEX="{ item }">
+            <span class="text-center font-weight">{{ item.INDEX }}</span>
+          </template>
+
+          <template v-slot:item.NUM_ORCAMENTO="{ item }">
+            <VChipOrcamento
+              :orcamentos="item.ORCAMENTOS"
+              :entregarReceber="item.ENTREGAR_RECEBER"
+            />
+          </template>
+
+          <template v-slot:item.HORA="{ item }">
+            <span class="text-center font-weight horaTable">{{ utils.formatHora(item.HORA) }}</span>
+          </template>
+
+          <template v-slot:item.PAGAMENTOS="{ item }">
+            <div class="chips-pagamentos">
+              <v-chip
+                v-for="pagamento in item.TIPOS_PAGAMENTO"
+                :key="pagamento.TIPOS_PAGAMENTO"
+                class="mr-1 chip-pagamento"
+                @click.stop="exibirDetalhesPagamento(pagamento)"
+                title="ver detalhes"
+                color="primary"
+                :class="{
+                  'chip-no-somatorio': actionsLancamentos.pagamentoConferido(
+                    pagamento.NUM_ORCAMENTO,
+                    pagamento.VALOR
+                  ),
+                }"
+              >
+                <div class="chip-pagamento-icon">
+                  <IconPagamento
+                    :tipoPagamento="pagamento.DESCRICAO_PAGAMENTO"
+                    :bandeira="pagamento.BANDEIRA"
+                    :descricaoBandeira="pagamento.DESCRICAO_BANDEIRA"
+                  />
+                  <div class="d-flex flex-column">
+                    <div class="d-flex align-center justify-space-between">
+                      <div class="chip-pagamento-descricao">
+                        {{ pagamento.DESCRICAO_PAGAMENTO }}
+                        <span v-if="pagamento.DIVIDE !== null"> {{ pagamento.DIVIDE }}x </span>
+                      </div>
+                    </div>
+                    <div class="d-flex align-center valor-pagamento">
+                      <strong>{{ utils.formatValor(pagamento.VALOR) }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </v-chip>
+            </div>
+          </template>
+        </v-data-table-virtual>
+      </div>
+
+      <div style="max-width: 245px">
+        <v-card>
+          <v-data-table-virtual
+            :items="stateLancamentos.somatorioLista"
+            height="293px"
+            fixed-header
+            :headers="[
+              { title: 'Orç.', key: 'orcamento' },
+              { title: 'Valor', key: 'valor' },
+              { title: 'Ações', key: 'acoes', sortable: false },
+            ]"
+            dense
+            hide-default-footer
+          >
+            <template v-slot:item.orcamento="{ item }">
+              <span> {{ item.orcamento }}</span>
+            </template>
+
+            <template v-slot:item.valor="{ item }">
+              <b style="color: #0288d1">{{ utils.formatValor(item.valor) }}</b>
+            </template>
+
+            <template v-slot:item.acoes="{ index }">
+              <v-icon
+                @click="actionsLancamentos.removerDoSomatorio(index)"
+                title="Remover"
+                >mdi-delete</v-icon
+              >
+            </template>
+          </v-data-table-virtual>
+
+          <v-divider></v-divider>
+
+          <v-footer class="d-flex justify-space-between px-4 py-2">
+            <span><b>Qtd:</b> {{ totalizadoresSomatorio.quantidade }}</span>
+            <span><b>Total:</b> {{ utils.formatValor(totalizadoresSomatorio.total) }}</span>
+            <v-tooltip top>
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  @click="actionsLancamentos.limparSomatorio"
+                  icon
+                  size="20px"
+                  v-bind="props"
+                >
+                  <v-icon color="primary">mdi-delete</v-icon>
+                </v-btn>
+              </template>
+              <span>Limpar tudo</span>
+            </v-tooltip>
+          </v-footer>
+        </v-card>
+      </div>
+    </div>
+    <div class="d-flex pt-2 align-center ga-2 justify-space-between">
+      <div class="container-input-footer">
+        <v-text-field
+          id="inputLocalizarOrcamento"
+          v-model="stateLancamentos.localizarOrcamento"
+          label="Localizar Orçamento (F2)"
+          :clearable="false"
+          @input="actionsLancamentos.atualizarFiltroOrcamento"
+          hide-details
+        ></v-text-field>
+      </div>
+      <div class="container-input-footer">
+        <v-text-field
+          id="inputLocalizarAutCartao"
+          v-model="stateLancamentos.localizarAutCartao"
+          label="Localizar Aut. Cartao (F6)"
+          :clearable="false"
+          @input="actionsLancamentos.atualizarFiltroAutorizacao"
+          hide-details
+        ></v-text-field>
+      </div>
+      <div class="pt-0 container-input-footer">
+        <v-checkbox
+          v-model="stateLancamentos.exibirApenasNaoConferidos"
+          label="Exibir apenas valores não conferidos"
+          @change="actionsLancamentos.toggleFiltroNaoConferidos"
+          hide-details
+        ></v-checkbox>
+      </div>
+      <div class="pr-3 container-input-footer">
+        <v-text-field
+          id="inputValorSomatorio"
+          ref="inputValorSomatorio"
+          v-model="stateLancamentos.valorConferido"
+          v-mask-decimal.br="2"
+          label="Valor (F3)"
+          :clearable="false"
+          placeholder="Ex: 100,00"
+          hide-details
+        ></v-text-field>
+      </div>
+    </div>
+  </div>
+  <!-- Modal Detalhes Pagamento -->
+  <v-dialog
+    v-model="stateLancamentos.modalDetalhesPagamentoOpened"
+    max-width="500"
+  >
+    <ModalDetalhesPagamento
+      :modalOpened="stateLancamentos.modalDetalhesPagamentoOpened"
+      :pagamentoSelecionado="stateLancamentos.pagamentoSelecionado"
+      @closeModalDetalhesPagamento="stateLancamentos.modalDetalhesPagamentoOpened = false"
+    />
+  </v-dialog>
+</template>
+
+<style scoped>
+.tipo_pag_selected {
+  background-color: #017bc2c7 !important;
+  color: white !important;
+  border-radius: 8px;
+}
+
+.v-chip {
+  display: flex;
+  align-items: center;
+  height: 50px;
+}
+
+.chips-pagamentos {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.v-icon {
+  cursor: pointer;
+}
+
+.chip-pagamento {
+  width: 100px;
+  height: 45px;
+  padding: 6px;
+  border-radius: 8px !important;
+  transition: all 0.3s ease;
+}
+
+.chip-no-somatorio {
+  border: 0.5px solid #4caf50;
+  box-shadow: 0 0 0 1px #4caf50;
+  background-color: #6cff715f;
+}
+
+.chip-pagamento-icon {
+  width: 105px;
+  display: flex;
+}
+
+.chip-pagamento-descricao {
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 2px;
+  color: #017bc2c7;
+}
+
+.valor-pagamento {
+  color: #017bc2c7;
+}
+
+.horaTable {
+  margin-left: -10px;
+}
+
+#inputValorSomatorio {
+  font-weight: bold;
+}
+
+.modalAbaLancamentos {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.modal-aba-lancamentos-corpo {
+  flex-grow: 1;
+  height: 100%;
+  display: flex;
+  gap: 8px;
+}
+
+.containerFooter {
+  padding: 0;
+  margin: 0;
+}
+
+.container-input-footer {
+  width: 25%;
+}
+</style>

@@ -7,9 +7,10 @@ export interface iClienteFaturado {
 export interface iGetClientesFaturadosResponse extends iClienteFaturado { }
 
 export interface iGetClientesFaturadosParam {
-    search: string,
-    dataInicio: string,
-    dataFim: string,
+    search?: string,
+    dataInicio?: string,
+    dataFim?: string,
+    contorno?: boolean
 }
 
 export interface iOrcamentosClienteFaturado {
@@ -29,5 +30,6 @@ export interface iGetOrcamentosClienteFaturadoResponse extends iOrcamentosClient
 export interface iGetOrcamentosClienteFaturadoParam {
     dataInicio: string,
     dataFim: string,
-    id_cliente: number
+    id_cliente: number,
+    cnpj: string
 }
