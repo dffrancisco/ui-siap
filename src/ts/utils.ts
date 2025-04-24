@@ -1057,6 +1057,15 @@ export function getErrorMessage(error: any): string {
   }
 }
 
+export function getFotoFuncionarioURL(cpf: string) {
+  if (!cpf) {
+    return "";
+  }
+
+  const cpfSanitizado = cpf.replaceAll(".", "").replaceAll("-", "");
+  return `https://www.reallatas.com.br/_serverAPP/thumb.php?img=http://www.reallatas.com.br/foto_funcionarios/${cpfSanitizado}.jpg`;
+}
+
 export default {
   validMail,
   validaCPF_CNPJ,
@@ -1082,5 +1091,6 @@ export default {
   formatHora,
   msgConfirmSemCodigo,
   formatHoraSemOsSegundos,
-  redimensionarImagem
+  redimensionarImagem,
+  getFotoFuncionarioURL
 };
