@@ -352,7 +352,7 @@ onMounted(async () => {
 <style scoped>
 .aba-flutuante {
   position: absolute;
-  top: 105px;
+  top: 85px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;

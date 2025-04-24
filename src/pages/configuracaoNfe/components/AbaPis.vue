@@ -38,7 +38,7 @@ const actionsPis = {
   gridPis() {
     statePis.grid = new xGridV2.create({
       el: "#gridPis",
-      height: 335,
+      height: 365,
       count: true,
       columns: {
         Valor: { dataField: "P_VALOR", width: "47%", render: utils.formatValor },
