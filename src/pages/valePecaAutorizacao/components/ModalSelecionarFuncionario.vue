@@ -39,7 +39,7 @@ const actions = {
       <v-autocomplete
         v-model="state.funcionarioSelecionado"
         :items="props.funcionarios"
-        item-title="NOME_COMP"
+        item-title="NOME_COM_COD"
         item-value="COD_FUNCIONARIO"
       ></v-autocomplete>
     </v-card-item>

@@ -1,9 +1,10 @@
 import axios from "axios";
-import { iFuncionario } from "./interfaces";
+import { iFuncionario, iValeFuncionario } from "./interfaces";
 
 const caminho = 'siap/valePecaAutorizacao'
 
 type iGetFuncionariosFunction = () => Promise<iFuncionario[]>
+type iGetValesFuncionarioFunction = (codFuncionario: number) => Promise<iValeFuncionario[]>
 
 const getFuncionarios: iGetFuncionariosFunction = async () => {
     const { data } = await axios.post(caminho, {
@@ -13,6 +14,16 @@ const getFuncionarios: iGetFuncionariosFunction = async () => {
     return data
 }
 
+const getValesFuncionario: iGetValesFuncionarioFunction = async (codFuncionario) => {
+    const { data } = await axios.post(caminho, {
+        call: 'getValesFuncionario',
+        codFuncionario
+    })
+
+    return data
+}
+
 export default {
-    getFuncionarios
+    getFuncionarios,
+    getValesFuncionario
 }

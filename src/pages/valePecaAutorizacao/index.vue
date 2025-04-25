@@ -64,7 +64,7 @@ onMounted(async () => {
               cols="8"
               class="d-flex"
             >
-              <CardDataTables />
+              <CardDataTables :vales-funcionario="state.valesFuncionario" />
             </v-col>
 
             <v-col class="d-flex">
@@ -76,7 +76,7 @@ onMounted(async () => {
     </v-card>
 
     <v-dialog
-      max-width="400"
+      max-width="500"
       v-model="state.modalSelecionarFuncionarioOpened"
     >
       <ModalSelecionarFuncionario

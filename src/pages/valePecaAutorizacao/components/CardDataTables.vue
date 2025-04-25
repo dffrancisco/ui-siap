@@ -1,5 +1,13 @@
 <script lang="ts" setup>
 import utils from "@/ts/utils";
+import { iValeFuncionario } from "../interfaces";
+
+const props = defineProps({
+  valesFuncionario: {
+    type: Array as () => iValeFuncionario[],
+    default: [],
+  },
+});
 
 const headerTableVales = [
   { key: "NUM_ORCAMENTO", title: "N° Orç.", align: "center" },
@@ -24,44 +32,6 @@ const headerTablePecasOrc = [
     title: "Valor Total",
     align: "center",
     value: (item) => utils.formatValor(item.VALOR_TOTAL),
-  },
-];
-
-const testeVales = [
-  {
-    NUM_ORCAMENTO: 6122,
-    DATA: "2025-04-10T03:00:00.000Z",
-    VALOR: 246.99,
-    DIV: "1/5",
-    QUITADO: "NAO",
-  },
-  {
-    NUM_ORCAMENTO: 6122,
-    DATA: "2025-05-10T03:00:00.000Z",
-    VALOR: 246.99,
-    DIV: "2/5",
-    QUITADO: "NAO",
-  },
-  {
-    NUM_ORCAMENTO: 6122,
-    DATA: "2025-06-10T03:00:00.000Z",
-    VALOR: 246.99,
-    DIV: "3/5",
-    QUITADO: "NAO",
-  },
-  {
-    NUM_ORCAMENTO: 6122,
-    DATA: "2025-07-10T03:00:00.000Z",
-    VALOR: 246.99,
-    DIV: "4/5",
-    QUITADO: "NAO",
-  },
-  {
-    NUM_ORCAMENTO: 6122,
-    DATA: "2025-08-10T03:00:00.000Z",
-    VALOR: 246.99,
-    DIV: "5/5",
-    QUITADO: "NAO",
   },
 ];
 
@@ -288,7 +258,7 @@ const testePecas = [
         <span class="spanColor">Vales Feitos</span>
         <v-data-table-virtual
           :headers="headerTableVales"
-          :items="testeVales"
+          :items="props.valesFuncionario"
           fixed-header
           height="190"
           class="d-flex flex-grow-1"
