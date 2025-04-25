@@ -1,5 +1,48 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
+
+const selectParcelamento = [
+  {
+    label: "1 X DESCONTO 16%",
+    value: 1,
+  },
+  {
+    label: "2 X DESCONTO 16%",
+    value: 2,
+  },
+  {
+    label: "3 X DESCONTO 16%",
+    value: 3,
+  },
+  {
+    label: "4 X DESCONTO 14%",
+    value: 4,
+  },
+  {
+    label: "5 X DESCONTO 14%",
+    value: 5,
+  },
+  {
+    label: "6 X DESCONTO 12%",
+    value: 6,
+  },
+  {
+    label: "7 X DESCONTO 12%",
+    value: 7,
+  },
+  {
+    label: "8 X DESCONTO 8%",
+    value: 8,
+  },
+  {
+    label: "9 X DESCONTO 5%",
+    value: 9,
+  },
+  {
+    label: "10 X DESCONTO 5%",
+    value: 10,
+  },
+];
 </script>
 
 <template>
@@ -43,7 +86,11 @@ import utils from "@/ts/utils";
 
       <div>
         <span>Parcelamento</span>
-        <v-select></v-select>
+        <v-select
+          :items="selectParcelamento"
+          item-title="label"
+          item-value="value"
+        ></v-select>
       </div>
 
       <v-divider class="my-2"></v-divider>
