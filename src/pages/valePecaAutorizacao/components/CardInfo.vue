@@ -69,7 +69,7 @@ const computeds = {
   }),
 
   ultimaParcela: computed(() => {
-    return props.valesFuncionario[props.valesFuncionario.length - 1].VALOR;
+    return props.valesFuncionario[props.valesFuncionario.length - 1]?.VALOR;
   }),
 
   parcelasNaoQuitadas: computed(() => {
