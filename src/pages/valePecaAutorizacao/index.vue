@@ -2,6 +2,7 @@
 import utils from "@/ts/utils";
 import { state } from "./valePecaAutorizacao";
 import CardDataTables from "./components/CardDataTables.vue";
+import CardInfo from "./components/CardInfo.vue";
 </script>
 
 <template>
@@ -30,10 +31,7 @@ import CardDataTables from "./components/CardDataTables.vue";
                 </template></v-img
               >
             </v-avatar>
-            <div
-              class="d-flex flex-column"
-              style="font-size: 14px"
-            >
+            <div class="d-flex flex-column text-body-1">
               <span><strong>Nome: </strong>{{ state.teste.nomeFuncionario || "-" }}</span>
               <span><strong>Cargo: </strong>{{ state.teste.cargo || "-" }}</span>
               <span><strong>Data Admissão: </strong>{{ state.teste.dataAdmissao || "-" }}</span>
@@ -59,11 +57,7 @@ import CardDataTables from "./components/CardDataTables.vue";
             </v-col>
 
             <v-col class="d-flex">
-              <v-card
-                class="d-flex flex-column flex-grow-1"
-                style="border: 1px solid gray"
-              >
-              </v-card>
+              <CardInfo />
             </v-col>
           </v-row>
         </div>

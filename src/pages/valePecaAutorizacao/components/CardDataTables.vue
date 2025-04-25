@@ -15,8 +15,8 @@ const headerTableVales = [
 ];
 
 const headerTablePecasOrc = [
-  { key: "NUM_FABRICANTE", width: "140", title: "N° Fab.", align: "center" },
-  { key: "DESC_PRODUTO", width: "280", title: "Descrição", align: "center" },
+  { key: "NUM_FABRICANTE", width: "100", title: "N° Fab.", align: "center" },
+  { key: "DESC_PRODUTO", title: "Descrição", align: "center" },
   { key: "QTO", title: "Qtd.", align: "center" },
   { key: "VALOR", title: "Valor", align: "center", value: (item) => utils.formatValor(item.VALOR) },
   {
