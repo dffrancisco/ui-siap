@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import { computed, reactive } from "vue";
-import { iValeFuncionario } from "../interfaces";
+import { computed, reactive, ref } from "vue";
+import { iOrcamento, iValeFuncionario } from "../interfaces";
 
 const props = defineProps({
   funcionarioNaoSelecionado: {
@@ -12,7 +12,13 @@ const props = defineProps({
     type: Array as () => iValeFuncionario[],
     default: [],
   },
+  orcamento: {
+    type: Object as () => iOrcamento,
+    default: null,
+  },
 });
+
+const emits = defineEmits(["pesquisarOrc"]);
 
 const selectParcelamento = [
   {
@@ -59,7 +65,21 @@ const selectParcelamento = [
 
 const state = reactive({
   btnLiberarGerenteDisabled: true,
+  parcelaSelect: 1,
+  inputOrc: null,
 });
+
+const actions = {
+  pesquisarOrc() {
+    if (!state.inputOrc || state.inputOrc <= 0 || state.inputOrc == props.orcamento?.NUM_ORCAMENTO) {
+      return;
+    }
+
+    state.parcelaSelect = 1;
+
+    emits("pesquisarOrc", state.inputOrc);
+  },
+};
 
 const computeds = {
   devendo: computed(() => {
@@ -82,6 +102,48 @@ const computeds = {
     });
 
     return parcelas;
+  }),
+
+  descontoOrcamento: computed(() => {
+    let descontoValor = 0;
+    let valorParcela = 0;
+    let decontoPercento = 0;
+    let parcelas = state.parcelaSelect;
+
+    switch (true) {
+      case [1, 2, 3].includes(state.parcelaSelect):
+        decontoPercento = 16;
+        break;
+      case [4, 5].includes(state.parcelaSelect):
+        decontoPercento = 14;
+        break;
+      case [6, 7].includes(state.parcelaSelect):
+        decontoPercento = 12;
+        break;
+      case state.parcelaSelect === 8:
+        decontoPercento = 8;
+        break;
+      case [9, 10].includes(state.parcelaSelect):
+        decontoPercento = 5;
+        break;
+      default:
+        decontoPercento = 0;
+    }
+
+    if (!props.orcamento?.VALOR) {
+      return {
+        descontoValor: 0,
+        valorParcela: 0,
+      };
+    }
+
+    descontoValor = props.orcamento.VALOR - props.orcamento.VALOR * (decontoPercento / 100);
+    valorParcela = descontoValor / parcelas;
+
+    return {
+      descontoValor,
+      valorParcela,
+    };
   }),
 };
 </script>
@@ -115,14 +177,17 @@ const computeds = {
         <span>N° Orçamento</span>
         <div class="d-flex align-center ga-2">
           <v-text-field
+            v-model="state.inputOrc"
             density="compact"
             :disabled="props.funcionarioNaoSelecionado"
+            @keypress.enter="actions.pesquisarOrc"
           ></v-text-field>
           <v-btn
             color="primary"
             size="small"
             icon="mdi-magnify mdi-24px"
             :disabled="props.funcionarioNaoSelecionado"
+            @click="actions.pesquisarOrc"
           ></v-btn>
         </div>
       </div>
@@ -132,6 +197,9 @@ const computeds = {
       <div>
         <span>Parcelamento</span>
         <v-select
+          :disabled="!props.orcamento?.NUM_ORCAMENTO"
+          :clearable="false"
+          v-model="state.parcelaSelect"
           :items="selectParcelamento"
           item-title="label"
           item-value="value"
@@ -143,11 +211,11 @@ const computeds = {
       <div class="d-flex flex-column text-body-1 ga-2">
         <div class="d-flex justify-space-between">
           <strong>Valor: </strong>
-          <span>R$ {{ utils.formatValor(0) }}</span>
+          <span>R$ {{ utils.formatValor(props.orcamento?.VALOR) }}</span>
         </div>
         <div class="d-flex justify-space-between">
           <strong>Valor Parcela: </strong>
-          <span>R$ {{ utils.formatValor(0) }}</span>
+          <span>R$ {{ utils.formatValor(computeds.descontoOrcamento.value.valorParcela) }}</span>
         </div>
       </div>
 

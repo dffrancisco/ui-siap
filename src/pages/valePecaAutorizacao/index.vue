@@ -64,11 +64,16 @@ onMounted(async () => {
               cols="8"
               class="d-flex"
             >
-              <CardDataTables :vales-funcionario="state.valesFuncionario" />
+              <CardDataTables
+                :items-orc="state.orcamento?.ITENS"
+                :vales-funcionario="state.valesFuncionario"
+              />
             </v-col>
 
             <v-col class="d-flex">
               <CardInfo
+                @pesquisar-orc="actions.getOrcamento"
+                :orcamento="state.orcamento"
                 :vales-funcionario="state.valesFuncionario"
                 :funcionario-nao-selecionado="computeds.funcionarioNaoSelecionado.value"
               />
