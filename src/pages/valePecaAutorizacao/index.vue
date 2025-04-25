@@ -1,9 +1,15 @@
 <script lang="ts" setup>
 import utils from "@/ts/utils";
-import { state } from "./valePecaAutorizacao";
+import { actions, computeds, state } from "./valePecaAutorizacao";
 import CardDataTables from "./components/CardDataTables.vue";
 import CardInfo from "./components/CardInfo.vue";
 import ModalSelecionarFuncionario from "./components/ModalSelecionarFuncionario.vue";
+import Loading from "@/components/Loading.vue";
+import { computed, onMounted } from "vue";
+
+onMounted(async () => {
+  await actions.getFuncionarios();
+});
 </script>
 
 <template>
@@ -22,7 +28,7 @@ import ModalSelecionarFuncionario from "./components/ModalSelecionarFuncionario.
             >
               <v-img
                 cover
-                :src="utils.getFotoFuncionarioURL(state.teste.cpf)"
+                :src="utils.getFotoFuncionarioURL(state.funcionario?.CPF || 'error')"
                 ><template v-slot:error>
                   <v-icon
                     size="50"
@@ -33,9 +39,12 @@ import ModalSelecionarFuncionario from "./components/ModalSelecionarFuncionario.
               >
             </v-avatar>
             <div class="d-flex flex-column text-body-1">
-              <span><strong>Nome: </strong>{{ state.teste.nomeFuncionario || "-" }}</span>
-              <span><strong>Cargo: </strong>{{ state.teste.cargo || "-" }}</span>
-              <span><strong>Data Admissão: </strong>{{ state.teste.dataAdmissao || "-" }}</span>
+              <span><strong>Nome: </strong>{{ state.funcionario?.NOME_COMP || "-" }}</span>
+              <span><strong>Cargo: </strong>{{ state.funcionario?.CARGO || "-" }}</span>
+              <span
+                ><strong>Data Admissão: </strong
+                >{{ utils.dataBrasil(state.funcionario?.DATA_ADMISSAO) || "-" }}</span
+              >
             </div>
           </div>
 
@@ -59,7 +68,7 @@ import ModalSelecionarFuncionario from "./components/ModalSelecionarFuncionario.
             </v-col>
 
             <v-col class="d-flex">
-              <CardInfo />
+              <CardInfo :funcionario-nao-selecionado="computeds.funcionarioNaoSelecionado.value" />
             </v-col>
           </v-row>
         </div>
@@ -70,8 +79,14 @@ import ModalSelecionarFuncionario from "./components/ModalSelecionarFuncionario.
       max-width="400"
       v-model="state.modalSelecionarFuncionarioOpened"
     >
-      <ModalSelecionarFuncionario />
+      <ModalSelecionarFuncionario
+        @close="state.modalSelecionarFuncionarioOpened = false"
+        @selecionar-funcionario="actions.selecionarFuncionario"
+        :funcionarios="state.listaFuncionarios"
+      />
     </v-dialog>
+
+    <Loading :loading="state.loading" />
 
     <div id="pnCodigoTela"> valePecaAutorizacao </div>
   </v-container>

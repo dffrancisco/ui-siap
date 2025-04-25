@@ -1,5 +1,17 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
+import { reactive } from "vue";
+
+const props = defineProps({
+  funcionarioNaoSelecionado: {
+    type: Boolean,
+    default: true,
+  },
+});
+
+const state = reactive({
+  btnLiberarGerenteDisabled: true,
+});
 
 const selectParcelamento = [
   {
@@ -73,11 +85,15 @@ const selectParcelamento = [
       <div>
         <span>N° Orçamento</span>
         <div class="d-flex align-center ga-2">
-          <v-text-field density="compact"></v-text-field>
+          <v-text-field
+            density="compact"
+            :disabled="props.funcionarioNaoSelecionado"
+          ></v-text-field>
           <v-btn
             color="primary"
             size="small"
             icon="mdi-magnify mdi-24px"
+            :disabled="props.funcionarioNaoSelecionado"
           ></v-btn>
         </div>
       </div>
@@ -110,12 +126,14 @@ const selectParcelamento = [
 
       <div class="d-flex pa-2 flex-column ga-4 flex-grow-1 justify-center">
         <v-btn
+          :disabled="props.funcionarioNaoSelecionado"
           size="small"
           color="primary"
           >liberar funcionário</v-btn
         >
 
         <v-btn
+          :disabled="state.btnLiberarGerenteDisabled"
           size="small"
           color="primary"
           >liberar gerente</v-btn
