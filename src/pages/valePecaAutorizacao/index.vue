@@ -68,7 +68,10 @@ onMounted(async () => {
             </v-col>
 
             <v-col class="d-flex">
-              <CardInfo :funcionario-nao-selecionado="computeds.funcionarioNaoSelecionado.value" />
+              <CardInfo
+                :vales-funcionario="state.valesFuncionario"
+                :funcionario-nao-selecionado="computeds.funcionarioNaoSelecionado.value"
+              />
             </v-col>
           </v-row>
         </div>
