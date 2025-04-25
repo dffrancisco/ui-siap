@@ -3,6 +3,7 @@ import { reactive } from "vue";
 
 export const state = reactive({
     loading: false,
+    modalSelecionarFuncionarioOpened: false,
     teste: {
         nomeFuncionario: 'Vinicius Medeiros Alves',
         cargo: "Programador",

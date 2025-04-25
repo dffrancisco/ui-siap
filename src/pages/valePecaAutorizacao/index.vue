@@ -3,6 +3,7 @@ import utils from "@/ts/utils";
 import { state } from "./valePecaAutorizacao";
 import CardDataTables from "./components/CardDataTables.vue";
 import CardInfo from "./components/CardInfo.vue";
+import ModalSelecionarFuncionario from "./components/ModalSelecionarFuncionario.vue";
 </script>
 
 <template>
@@ -43,6 +44,7 @@ import CardInfo from "./components/CardInfo.vue";
               icon="mdi-magnify mdi-24px"
               color="primary"
               size="small"
+              @click="state.modalSelecionarFuncionarioOpened = true"
             ></v-btn>
           </div>
         </div>
@@ -63,6 +65,14 @@ import CardInfo from "./components/CardInfo.vue";
         </div>
       </v-card-item>
     </v-card>
+
+    <v-dialog
+      max-width="400"
+      v-model="state.modalSelecionarFuncionarioOpened"
+    >
+      <ModalSelecionarFuncionario />
+    </v-dialog>
+
     <div id="pnCodigoTela"> valePecaAutorizacao </div>
   </v-container>
 </template>

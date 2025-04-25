@@ -1,0 +1,20 @@
+<template>
+  <v-card>
+    <v-card-title> Selecionar Funcionário </v-card-title>
+    <v-card-item>
+      <v-select></v-select>
+    </v-card-item>
+    <v-card-actions>
+      <v-btn
+        color="primary"
+        variant="outlined"
+        >cancelar</v-btn
+      >
+      <v-btn
+        variant="elevated"
+        color="primary"
+        >selecionar</v-btn
+      >
+    </v-card-actions>
+  </v-card>
+</template>
