@@ -35,3 +35,14 @@ export interface iOrcamentoItem {
     VALOR_TOTAL: number,
     NUM_FABRICANTE: string
 }
+
+export interface iGetAutorizacaoFuncionarioParam {
+    codFuncionario: number,
+    senha: string
+}
+
+export interface iAutorizacaoFuncionario {
+    COD_FUNCIONARIO?: number,
+    error?: boolean,
+    msg?: string
+}

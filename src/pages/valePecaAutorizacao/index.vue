@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import utils from "@/ts/utils";
-import { actions, computeds, state } from "./valePecaAutorizacao";
+import { actions, state } from "./valePecaAutorizacao";
 import CardDataTables from "./components/CardDataTables.vue";
 import CardInfo from "./components/CardInfo.vue";
 import ModalSelecionarFuncionario from "./components/ModalSelecionarFuncionario.vue";
@@ -75,7 +75,7 @@ onMounted(async () => {
                 @pesquisar-orc="actions.getOrcamento"
                 :orcamento="state.orcamento"
                 :vales-funcionario="state.valesFuncionario"
-                :funcionario-nao-selecionado="computeds.funcionarioNaoSelecionado.value"
+                :cod-funcionario="state.funcionario?.COD_FUNCIONARIO"
               />
             </v-col>
           </v-row>
@@ -86,6 +86,7 @@ onMounted(async () => {
     <v-dialog
       max-width="500"
       v-model="state.modalSelecionarFuncionarioOpened"
+      :retain-focus="false"
     >
       <ModalSelecionarFuncionario
         @close="state.modalSelecionarFuncionarioOpened = false"

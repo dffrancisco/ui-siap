@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { iOrcamento, iValeFuncionario } from "../interfaces";
+import Loading from "@/components/Loading.vue";
+import Swal from "sweetalert2";
+import valePecaAutorizacaoService from "../valePecaAutorizacao.service";
+import xAuthManager from "@/plugins/xAuthManager";
+import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 
 const props = defineProps({
-  funcionarioNaoSelecionado: {
-    type: Boolean,
-    default: true,
+  codFuncionario: {
+    type: Number,
+    default: null,
   },
   valesFuncionario: {
     type: Array as () => iValeFuncionario[],
@@ -18,7 +23,14 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["pesquisarOrc"]);
+const emits = defineEmits(["pesquisarOrc", "liberarFuncionario"]);
+
+watch(
+  () => props.codFuncionario,
+  () => {
+    state.inputOrc = null;
+  }
+);
 
 const selectParcelamento = [
   {
@@ -67,6 +79,9 @@ const state = reactive({
   btnLiberarGerenteDisabled: true,
   parcelaSelect: 1,
   inputOrc: null,
+  senhaFuncionarioOpened: false,
+  inputSenhaFuncionario: null,
+  loading: false,
 });
 
 const actions = {
@@ -76,8 +91,52 @@ const actions = {
     }
 
     state.parcelaSelect = 1;
+    state.btnLiberarGerenteDisabled = true;
 
     emits("pesquisarOrc", state.inputOrc);
+  },
+
+  openSenhaFuncionario() {
+    state.inputSenhaFuncionario = null;
+    state.senhaFuncionarioOpened = true;
+  },
+
+  async liberarFuncionario() {
+    try {
+      if (!state.inputSenhaFuncionario || state.inputSenhaFuncionario == "") {
+        return;
+      }
+
+      state.loading = true;
+
+      const data = await valePecaAutorizacaoService.getAutorizacaoFuncionario({
+        senha: utils.base64_encode(state.inputSenhaFuncionario),
+        codFuncionario: props.codFuncionario,
+      });
+
+      if (data?.error) {
+        Swal.fire({
+          icon: "warning",
+          title: data.msg,
+        });
+        return;
+      }
+
+      state.btnLiberarGerenteDisabled = false;
+      state.senhaFuncionarioOpened = false;
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao liberar funcionario",
+      });
+    } finally {
+      state.loading = false;
+    }
+  },
+
+  async liberarGerente() {
+    xAuthManager("Senha Gerente", async () => {});
   },
 };
 
@@ -179,14 +238,14 @@ const computeds = {
           <v-text-field
             v-model="state.inputOrc"
             density="compact"
-            :disabled="props.funcionarioNaoSelecionado"
+            :disabled="!props.codFuncionario"
             @keypress.enter="actions.pesquisarOrc"
           ></v-text-field>
           <v-btn
             color="primary"
             size="small"
             icon="mdi-magnify mdi-24px"
-            :disabled="props.funcionarioNaoSelecionado"
+            :disabled="!props.codFuncionario"
             @click="actions.pesquisarOrc"
           ></v-btn>
         </div>
@@ -223,9 +282,10 @@ const computeds = {
 
       <div class="d-flex pa-2 flex-column ga-4 flex-grow-1 justify-center">
         <v-btn
-          :disabled="props.funcionarioNaoSelecionado"
+          :disabled="!props.codFuncionario || !props.orcamento?.NUM_ORCAMENTO || !state.btnLiberarGerenteDisabled"
           size="small"
           color="primary"
+          @click="actions.openSenhaFuncionario"
           >liberar funcionário</v-btn
         >
 
@@ -233,9 +293,47 @@ const computeds = {
           :disabled="state.btnLiberarGerenteDisabled"
           size="small"
           color="primary"
+          @click="actions.liberarGerente"
           >liberar gerente</v-btn
         >
       </div>
     </div>
   </v-card>
+
+  <v-dialog
+    v-model="state.senhaFuncionarioOpened"
+    max-width="250"
+    :retain-focus="false"
+  >
+    <v-card>
+      <v-card-item>
+        <span>Senha Funcionário</span>
+        <v-text-field
+          v-model="state.inputSenhaFuncionario"
+          autofocus
+          maxlength="10"
+          type="password"
+          :clearable="false"
+          @keypress.enter="actions.liberarFuncionario"
+        ></v-text-field>
+      </v-card-item>
+      <v-card-actions>
+        <v-btn
+          size="small"
+          @click="state.senhaFuncionarioOpened = false"
+          >cancelar</v-btn
+        >
+        <v-btn
+          size="small"
+          :disabled="!state.inputSenhaFuncionario || state.inputSenhaFuncionario.trim() == ''"
+          color="primary"
+          >verificar</v-btn
+        >
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <modalXAuthManager />
+
+  <Loading :loading="state.loading" />
 </template>

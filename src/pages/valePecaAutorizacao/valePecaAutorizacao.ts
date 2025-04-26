@@ -88,9 +88,3 @@ export const actions = {
         }
     }
 }
-
-export const computeds = {
-    funcionarioNaoSelecionado: computed(() => {
-        return !state.funcionario?.COD_FUNCIONARIO;
-    })
-}
