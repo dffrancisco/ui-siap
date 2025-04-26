@@ -72,6 +72,7 @@ onMounted(async () => {
 
             <v-col class="d-flex">
               <CardInfo
+                @liberar-vale="actions.limparStates"
                 @pesquisar-orc="actions.getOrcamento"
                 :orcamento="state.orcamento"
                 :vales-funcionario="state.valesFuncionario"

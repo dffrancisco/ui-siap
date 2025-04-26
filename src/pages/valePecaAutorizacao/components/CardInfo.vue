@@ -23,7 +23,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["pesquisarOrc", "liberarFuncionario"]);
+const emits = defineEmits(["pesquisarOrc", "liberarFuncionario", "liberarVale"]);
 
 watch(
   () => props.codFuncionario,
@@ -85,13 +85,17 @@ const state = reactive({
 });
 
 const actions = {
+  limparConfig() {
+    state.parcelaSelect = 1;
+    state.btnLiberarGerenteDisabled = true;
+  },
+
   pesquisarOrc() {
     if (!state.inputOrc || state.inputOrc <= 0 || state.inputOrc == props.orcamento?.NUM_ORCAMENTO) {
       return;
     }
 
-    state.parcelaSelect = 1;
-    state.btnLiberarGerenteDisabled = true;
+    actions.limparConfig();
 
     emits("pesquisarOrc", state.inputOrc);
   },
@@ -136,7 +140,37 @@ const actions = {
   },
 
   async liberarGerente() {
-    xAuthManager("Senha Gerente", async () => {});
+    xAuthManager("Senha Gerente", async (data) => {
+      try {
+        state.loading = true;
+
+        let response = await valePecaAutorizacaoService.liberarVale({
+          authGerente: data.data,
+          codFuncionario: props.codFuncionario,
+          divisao: state.parcelaSelect,
+          orc: props.orcamento.NUM_ORCAMENTO,
+          valorParcela: computeds.descontoOrcamento.value.valorParcela,
+        });
+
+        if (response.success) {
+          Swal.fire({
+            icon: "success",
+            title: response.msg,
+          });
+
+          actions.limparConfig();
+          emits("liberarVale");
+        }
+      } catch (error) {
+        console.error(error);
+        Swal.fire({
+          icon: "error",
+          title: "Erro ao liberar vale.",
+        });
+      } finally {
+        state.loading = false;
+      }
+    });
   },
 };
 

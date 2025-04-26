@@ -46,3 +46,16 @@ export interface iAutorizacaoFuncionario {
     error?: boolean,
     msg?: string
 }
+
+export interface iLiberarValeParam {
+    orc: number,
+    authGerente: number
+    codFuncionario: number,
+    valorParcela: number,
+    divisao: number
+}
+
+export interface iLiberarVale {
+    success: boolean,
+    msg: string
+}

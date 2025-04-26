@@ -18,6 +18,11 @@ export const actions = {
         await actions.getFuncionarios()
     },
 
+    limparStates() {
+        state.funcionario = null
+        state.orcamento = null
+    },
+
     async selecionarFuncionario(codFuncionario: number) {
         state.orcamento = null
 
