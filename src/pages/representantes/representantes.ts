@@ -78,9 +78,7 @@ export const actions = {
             },
             sideBySide: {
                 el: "#pnCampos",
-                vModel(r) {
-                    state.dbRepresentantes = r;
-                },
+                vModel(r) { state.dbRepresentantes = { ...r } },
                 duplicity: {
                     dataField: ["CEP"],
                     async execute(rs) {
@@ -204,12 +202,11 @@ export const actions = {
     },
 
     async btnInsert() {
-
         state.pnSearch = true;
         state.dbRepresentantes = {} as iRepresentantesParam;
         await nextTick();
-        state.gridPrincipal.focusField();
         state.gridPrincipal.disable();
+        state.gridPrincipal.focusField();
     },
 
     btnEdit() {
@@ -255,14 +252,16 @@ export const actions = {
         }
 
         if (!state.gridPrincipal.dataSource()) {
-            await actions.toInsert();
+            actions.toInsert();
         } else {
             await actions.toUpdate();
         }
+
         state.pnSearch = false;
         await nextTick();
+
         state.gridPrincipal.enable();
-        state.gridPrincipal.focus();
+        state.gridPrincipal.focus()
     },
 
     async btnCancel() {
@@ -282,10 +281,9 @@ export const actions = {
     async toInativar() {
         try {
             let ID_REPRESENTANTE = state.dbRepresentantes.ID_REPRESENTANTE;
-            let DELETADO = state.dbRepresentantes.DELETADO;
 
             state.loading = true;
-            await serviceRepresentantes.toInativar(ID_REPRESENTANTE, DELETADO);
+            await serviceRepresentantes.toInativar(ID_REPRESENTANTE);
             state.loading = false;
 
             state.gridPrincipal.deleteLine();
@@ -305,30 +303,33 @@ export const actions = {
     async toInsert() {
         try {
             state.loading = true;
-            let newFields = {
 
-                ID_REPRESENTANTE: state.dbRepresentantes.ID_REPRESENTANTE,
-                NOME: state.dbRepresentantes.NOME?.toUpperCase(),
+            let newFields = {
+                NOME: state.dbRepresentantes.NOME.toUpperCase(),
                 ENDERECO: state.dbRepresentantes.ENDERECO,
                 BAIRRO: state.dbRepresentantes.BAIRRO,
                 COD_CIDADE: state.dbRepresentantes.COD_CIDADE,
                 CEP: state.dbRepresentantes.CEP,
                 TELEFONE: state.dbRepresentantes.TELEFONE || null,
-                TELEFONE2: state.dbRepresentantes.TELEFONE2,
-                FAX: state.dbRepresentantes.FAX,
+                TELEFONE2: state.dbRepresentantes.TELEFONE2 || null,
+                FAX: state.dbRepresentantes.FAX || null,
                 CELULAR: state.dbRepresentantes.CELULAR,
                 EMAIL: state.dbRepresentantes.EMAIL || null,
-                OBS: state.dbRepresentantes.OBS,
+                OBS: state.dbRepresentantes.OBS || null,
                 MARCAS: state.dbRepresentantes.MARCAS,
-                search: state.dbRepresentantes.NOME?.toUpperCase() || "",
             };
 
-            await serviceRepresentantes.toInsert(newFields);
-            state.gridPrincipal.insertLine({ ...newFields });
+            let data = await serviceRepresentantes.toInsert(newFields);
+
+            state.gridPrincipal.insertLine({
+                ...newFields,
+                ID_REPRESENTANTE: data.ID_REPRESENTANTE
+            })
+
             await Swal.fire({
                 icon: "success",
                 text: "Representante adicionado com sucesso!",
-            });
+            })
         } catch (error) {
             await Swal.fire({
                 icon: "error",

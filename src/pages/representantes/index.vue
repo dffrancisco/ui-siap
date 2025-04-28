@@ -223,6 +223,7 @@ onMounted(async () => {
             @keydown.enter.prevent="actions.search()"
             @keydown.arrow-down="state.gridPrincipal.focus(0)"
             id="edtSearch"
+            maxlength="29"
             class="ss"
           />
           <v-btn

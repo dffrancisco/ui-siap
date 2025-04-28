@@ -18,7 +18,6 @@ type iGetMarcas = (param: iSearchMarcas, offset: number) => Promise<iMarcasParam
 type iToInsertFunction = (param: iParamToInsert) => Promise<iRepresentantes>;
 type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>;
 
-// faz o L
 const getMarcas: iGetMarcas = async (param, offset) => {
     let { data } = await axios.post(caminho, {
         call: "getMarcas",
@@ -61,11 +60,10 @@ const toUpdate: iToUpdateFunction = async (param) => {
     });
 };
 
-const toInativar = async (ID_REPRESENTANTE: number, DELETADO: string | null) => {
+const toInativar = async (ID_REPRESENTANTE: number) => {
     await axios.post(caminho, {
         call: "inativar",
-        ID_REPRESENTANTE: ID_REPRESENTANTE,
-        DELETADO: DELETADO,
+        ID_REPRESENTANTE: ID_REPRESENTANTE
     });
 };
 

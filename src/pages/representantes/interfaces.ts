@@ -71,7 +71,7 @@ export interface iMarcasParam {
     ID_MARCA_GRUPO: number;
 }
 export interface iRepresentantes {
-    search: string;
+    ID_REPRESENTANTE: number
 }
 
 export interface iSearchMarcas {
