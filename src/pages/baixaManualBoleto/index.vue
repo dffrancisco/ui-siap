@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import { state, actions } from "./baixaManualBoleto";
+import { state, actions, computeds } from "./baixaManualBoleto";
 import utils from "@/ts/utils";
 import ModalClienteFaturado from "./components/ModalClienteFaturado.vue";
 import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
+import { onMounted } from "vue";
+import ModalJuros from "./components/ModalJuros.vue";
+
+onMounted(async () => {
+  await actions.init();
+});
 </script>
 <template>
   <v-container>
@@ -78,7 +84,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
 
               <div>
                 <strong style="font-size: 15px"
-                  >Total: {{ utils.formatValor(state.totalSelecionadoExtrato) }}</strong
+                  >Total: {{ utils.formatValor(computeds.totalSelecionadoExtrato.value) }}</strong
                 >
               </div>
             </div>
@@ -126,12 +132,36 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
             height="155"
           >
             <template v-slot:item.checked="{ item }">
-              <div style="margin-left: 20px">
+              <div class="d-flex justify-center">
                 <v-checkbox
                   v-model="item.checked"
                   hide-details
                   density="compact"
                 />
+              </div>
+            </template>
+            <template v-slot:item.JUROS="{ item }">
+              <div class="d-flex justify-center">
+                <v-icon
+                  v-if="!item.JUROS || item.JUROS == 0"
+                  color="primary"
+                  title="Adicionar juros"
+                  @click="actions.openModalAddJuros(null, item.NUM_ORCAMENTO, item.DATA)"
+                  >mdi-percent</v-icon
+                >
+                <div
+                  v-else
+                  class="d-flex align-center ga-2 justify-center"
+                >
+                  <span :title="utils.formatValor(item.JUROS) + '%'">{{
+                    utils.formatValor(item.VALOR_JUROS)
+                  }}</span>
+                  <v-icon
+                    title="Editar Juros"
+                    @click="actions.openModalEditJuros(null, item.NUM_ORCAMENTO, item.DATA, item.JUROS)"
+                    >mdi-pencil</v-icon
+                  >
+                </div>
               </div>
             </template>
           </v-data-table-virtual>
@@ -167,12 +197,36 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
             height="155"
           >
             <template v-slot:item.checked="{ item }">
-              <div style="margin-left: 20px">
+              <div class="d-flex justify-center">
                 <v-checkbox
                   v-model="item.checked"
                   hide-details
                   density="compact"
                 />
+              </div>
+            </template>
+            <template v-slot:item.JUROS="{ item }">
+              <div class="d-flex justify-center">
+                <v-icon
+                  v-if="!item.JUROS || item.JUROS == 0"
+                  color="primary"
+                  title="Adicionar juros"
+                  @click="actions.openModalAddJuros(item.NUM_BOLETO, null, null)"
+                  >mdi-percent</v-icon
+                >
+                <div
+                  v-else
+                  class="d-flex align-center ga-2 justify-center"
+                >
+                  <span :title="utils.formatValor(item.JUROS) + '%'">{{
+                    utils.formatValor(item.VALOR_JUROS)
+                  }}</span>
+                  <v-icon
+                    @click="actions.openModalEditJuros(item.NUM_BOLETO, null, null, item.JUROS)"
+                    title="Editar Juros"
+                    >mdi-pencil</v-icon
+                  >
+                </div>
               </div>
             </template>
           </v-data-table-virtual>
@@ -183,7 +237,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
               style="font-size: 15px"
             >
               <span
-                ><strong>Total: {{ utils.formatValor(state.totalOrcamentosEBoletos) }}</strong></span
+                ><strong>Total: {{ utils.formatValor(computeds.totalOrcamentosEBoletos.value) }}</strong></span
               >
             </v-col>
 
@@ -197,7 +251,7 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
                 max-width="220px"
                 color="#3680AB"
                 @click="state.modalUploadComprovanteOpened = true"
-                :disabled="!state.podeBaixarManual"
+                :disabled="!computeds.podeBaixarManual.value"
               >
                 Baixar Manual
               </v-btn>
@@ -233,11 +287,31 @@ import ModalUploadComprovante from "./components/ModalUploadComprovante.vue";
   </v-dialog>
 
   <!-- ModalUploadComprovante -->
-  <v-dialog v-model="state.modalUploadComprovanteOpened">
+  <v-dialog
+    v-model="state.modalUploadComprovanteOpened"
+    max-width="400"
+  >
     <ModalUploadComprovante
       :clienteSelecionado="state.clienteFaturadoSelecionado"
+      :boletosSelecionados="computeds.boletosSelecionados.value"
+      :orcamentosSelecionados="computeds.orcamentosSelecionados.value"
+      :cnpjEmpresa="state.cnpjEmpresa"
       @baixaManualBoleto="actions.baixarBoletosEOrcamentos"
       @closeModalUploadComprovante="state.modalUploadComprovanteOpened = false"
+    />
+  </v-dialog>
+
+  <v-dialog
+    v-model="state.modalJuros.open"
+    max-width="350px"
+  >
+    <ModalJuros
+      :dataOrcamento="state.modalJuros.dataOrcamento"
+      :numOrcamento="state.modalJuros.numOrcamento"
+      :numBoleto="state.modalJuros.numBoleto"
+      :valorJurosToEdit="state.modalJuros.valorJurosToEdit"
+      @addJuros="actions.addJuros"
+      @close="state.modalJuros.open = false"
     />
   </v-dialog>
 </template>

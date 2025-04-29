@@ -388,6 +388,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/consultaValePecas')"
+              >Consulta Vale Peças</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/sociedade')"
               >Sociedade</v-btn
             >
@@ -407,6 +413,42 @@ import login from "../login/login";
               class="mr-4 mb-4"
               @click="router.push('/configuracaoNfe')"
               >Configuração NFe</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/configBoleto')"
+              >Config. Boleto</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/consultaValeDinheiro')"
+              >Consulta Vale Dinheiro</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/cfop')"
+              >CFOP</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/descontoDeGerentes')"
+              >Desconto de Gerentes</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/conferenciaDeCaixa')"
+              >Conferência de Caixa</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/equalizaPrecoLojas')"
+              >Equaliza Preço Lojas</v-btn
             >
 
             <v-btn

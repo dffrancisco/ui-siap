@@ -3,6 +3,7 @@ import { iBaixarBoletosEOrcamentosParams, iClientesFaturados, iDadosOrcamentosEB
 type iGetClientesFaturadosFuction = (param: iGetClientesFaturados, offset: number) => Promise<iClientesFaturados>
 type iGetOrcamentosEBoletosEmAbertoFunction = (param: iParamGetOrcamentos) => Promise<iDadosOrcamentosEBoletos>
 type iBaixarBoletosEOrcamentosFunction = (param: iBaixarBoletosEOrcamentosParams) => Promise<any>
+type iGetCnpjEmpresaFunction = () => Promise<{ CGC_EMPRESA: string }>
 
 const caminho = 'siap/baixaManualBoleto'
 
@@ -49,9 +50,17 @@ const baixarBoletosEOrcamentos: iBaixarBoletosEOrcamentosFunction = async (param
     return data;
 }
 
+const getCnpjEmpresa: iGetCnpjEmpresaFunction = async () => {
+    const { data } = await axios.post(caminho, {
+        call: "getCnpjEmpresa"
+    });
+    return data;
+}
+
 export default {
     getClientesFaturados,
     getOrcamentosEBoletosEmAberto,
     uploadComprovante,
-    baixarBoletosEOrcamentos
+    baixarBoletosEOrcamentos,
+    getCnpjEmpresa
 }

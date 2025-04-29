@@ -9,6 +9,7 @@ import VueMask from "@devindex/vue-mask";
 import money, { Money3Directive } from 'v-money3'
 import VueApexCharts from "vue3-apexcharts";
 import VuePhotoPreview, { PhotoProvider, PhotoConsumer } from 'vue3-photo-preview'
+import Toast from "vue-toastification";
 
 import config from "./ts/config";
 import { setupInterceptorsTo } from "./pages/login/interceptor";
@@ -37,6 +38,7 @@ app.use(router)
 app.use(VueApexCharts);
 app.use(VuePhotoPreview)
 app.use(disableAutocomplete)
+app.use(Toast);
 
 app.directive('money3', Money3Directive)
 

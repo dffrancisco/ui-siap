@@ -48,7 +48,7 @@ const cancelar = () => {
         min="1"
         required
         autofocus
-        @keypress.enter="salvar"
+        @keypress.enter.prevent="salvar"
       ></v-text-field>
     </v-card-text>
     <div class="d-flex justify-end mr-3 mt-2 pa-2">

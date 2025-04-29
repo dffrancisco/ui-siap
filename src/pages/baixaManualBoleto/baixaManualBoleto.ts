@@ -1,5 +1,5 @@
 import { computed, reactive } from "vue";
-import { iBoleto, iClientesFaturados, iOrcamento } from "./interfaces";
+import { iBoleto, iClientesFaturados, iOrcamento, iParamAddJuros } from "./interfaces";
 import Swal from "sweetalert2";
 import serviceBaixaManualBoleto from "./services/baixaManualBoleto.service";
 import utils from "@/ts/utils";
@@ -10,59 +10,47 @@ export const state = reactive({
     clienteFaturadoSelecionado: <iClientesFaturados>{},
     nomeClienteFaturadoSelecionado: '',
     loading: false,
-    dadosOrcamento: [] as iOrcamento[],
-    dadosBoletos: [] as iBoleto[],
+    dadosOrcamento: <iOrcamento[]>[],
+    dadosBoletos: <iBoleto[]>[],
     filtroOrcamento: '',
     filtroBoleto: '',
-    dadosOrcamentoFiltrados: [] as iOrcamento[],
-    dadosBoletosFiltrados: [] as iBoleto[],
+    dadosOrcamentoFiltrados: <iOrcamento[]>[],
+    dadosBoletosFiltrados: <iBoleto[]>[],
     extratoBancario: [],
+    modalJuros: {
+        open: false,
+        numBoleto: 0,
+        numOrcamento: 0,
+        dataOrcamento: '',
+        valorJurosToEdit: null
+    },
     headersExtrato: [
         { key: "checked", title: "Conf.", width: "50px", align: "center" },
-        { key: "DATA", title: "Data", width: "100px", sortable: true },
+        { key: "DATA", title: "Data Lançamento", width: "80px", sortable: true },
         { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item) => utils.formatValor(item.VALOR) },
     ],
     headersOrcamento: [
-        { key: "checked", title: "Conferido", width: "50px", align: "center" },
+        { key: "checked", title: "Conferido", align: "center" },
         { key: "NUM_ORCAMENTO", title: "N° Orç.", width: "100px", sortable: true },
-        { key: "DATA", title: "Data", width: "100px", sortable: true, value: (item: any) => utils.dataBrasil(item.DATA) },
-        { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: any) => utils.formatValor(item.VALOR) },
+        { key: "DATA", title: "Data", width: "100px", sortable: true, value: (item: iOrcamento) => utils.dataBrasil(item.DATA) },
+        { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: iOrcamento) => utils.formatValor(item.VALOR) },
+        { key: "JUROS", title: "Juros", width: "50px", align: "center" },
     ],
     headersBoletos: [
-        { key: "checked", title: "Conferido", width: "50px", align: "center" },
+        { key: "checked", title: "Conferido", align: "center" },
         { key: "NUM_BOLETO", title: "N° Boleto", width: "100px", sortable: true },
-        { key: "DATA_VENCIMENTO", title: "Data Vencimento", width: "100px", sortable: true, value: (item: any) => utils.dataBrasil(item.DATA_VENCIMENTO) },
-        { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: any) => utils.formatValor(item.VALOR) },
+        { key: "DATA_VENCIMENTO", title: "Data Venc.", width: "100px", sortable: true, value: (item: iBoleto) => utils.dataBrasil(item.DATA_VENCIMENTO) },
+        { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: iBoleto) => utils.formatValor(item.VALOR) },
+        { key: "JUROS", title: "Juros", width: "50px", align: "center" },
     ],
-    totalSelecionadoExtrato: computed(() => {
-        const totalExtrato = state.extratoBancario
-            .filter(item => item.checked)
-            .reduce((sum, item) => sum + item.VALOR, 0);
-
-        return parseFloat(totalExtrato.toFixed(2));
-    }),
-    totalOrcamentosEBoletos: computed(() => {
-        const totalOrcamentos = state.dadosOrcamento
-            .filter(item => item.checked)
-            .reduce((sum, item) => sum + item.VALOR, 0);
-
-        const totalBoletos = state.dadosBoletos
-            .filter(item => item.checked)
-            .reduce((sum, item) => sum + item.VALOR, 0);
-
-        let total = totalOrcamentos + totalBoletos;
-        return parseFloat(total.toFixed(2));
-    }),
-    podeBaixarManual: computed(() => {
-        return (
-            state.totalOrcamentosEBoletos === state.totalSelecionadoExtrato &&
-            state.nomeClienteFaturadoSelecionado !== '' &&
-            state.totalOrcamentosEBoletos !== 0
-        );
-    })
+    cnpjEmpresa: ""
 })
 
 export const actions = {
+
+    async init() {
+        await actions.getCnpjEmpresa();
+    },
 
     async salvarClienteFaturadoSelecionado(clienteFaturadoSelecionado: iClientesFaturados) {
         actions.limparStatesAnteriores();
@@ -84,7 +72,7 @@ export const actions = {
 
     limparExtratoBancarioECliente() {
         state.extratoBancario = [];
-        state.clienteFaturadoSelecionado = [];
+        state.clienteFaturadoSelecionado = {} as iClientesFaturados;;
         state.nomeClienteFaturadoSelecionado = '';
     },
 
@@ -172,13 +160,23 @@ export const actions = {
     extrairTransacoes(ofxText) {
         const transacoes = [];
         const linhas = ofxText.split("\n");
-        let dataTransacao = "", valor = 0, tipo = "", idTransacao = "";
+        let dataLancamento = "", valor = 0, tipo = "", idTransacao = "";
+        let dataInicio = "", dataFim = "";
 
         for (let i = 0; i < linhas.length; i++) {
             const linha = linhas[i].trim();
+
+            if (linha.startsWith("<DTSTART>")) {
+                dataInicio = linha.replace("<DTSTART>", "").substring(0, 8);
+            }
+
+            if (linha.startsWith("<DTEND>")) {
+                dataFim = linha.replace("<DTEND>", "").substring(0, 8);
+            }
+
             if (linha.startsWith("<DTPOSTED>")) {
-                dataTransacao = linha.replace("<DTPOSTED>", "").substring(0, 8);
-                dataTransacao = `${dataTransacao.substring(6, 8)}/${dataTransacao.substring(4, 6)}/${dataTransacao.substring(0, 4)}`;
+                dataLancamento = linha.replace("<DTPOSTED>", "").substring(0, 8);
+                dataLancamento = `${dataLancamento.substring(6, 8)}/${dataLancamento.substring(4, 6)}/${dataLancamento.substring(0, 4)}`;
             }
 
             if (linha.startsWith("<TRNAMT>")) {
@@ -195,13 +193,12 @@ export const actions = {
 
             if (linha.startsWith("</STMTTRN>")) {
                 if (valor > 0) {
-                    transacoes.push({ DATA: dataTransacao, VALOR: valor, TIPO: tipo, ID: idTransacao, checked: false });
+                    transacoes.push({ DATA: dataLancamento, VALOR: valor, TIPO: tipo, ID: idTransacao, checked: false });
                 }
             }
         }
 
-        const datasUnicas = new Set(transacoes.map(t => t.DATA));
-        if (datasUnicas.size > 1) {
+        if (dataInicio !== dataFim) {
             Swal.fire({ icon: "warning", text: "O extrato deve conter transações de apenas um dia." });
             return;
         }
@@ -209,38 +206,36 @@ export const actions = {
         state.extratoBancario = transacoes;
     },
 
-    async baixarBoletosEOrcamentos() {
-        const boletosSelecionados = state.dadosBoletosFiltrados.filter(boleto => boleto.checked);
-        const orcamentosSelecionados = state.dadosOrcamentoFiltrados.filter(orcamento => orcamento.checked);
-        const extratoSelecionado = state.extratoBancario.filter(transacao => transacao.checked);
-
-        const orcamentosSelecionadosBaixa = orcamentosSelecionados.map(orcamento => ({
+    async baixarBoletosEOrcamentos(justificativaBaixaManual: string) {
+        const orcamentosSelecionadosBaixa = computeds.orcamentosSelecionados.value.map((orcamento: iOrcamento) => ({
             numOrcamento: orcamento.NUM_ORCAMENTO,
             dataOrcamento: orcamento.DATA,
-            valorOrcamento: orcamento.VALOR
+            valorOrcamento: orcamento.VALOR,
+            valorJuros: orcamento.VALOR_JUROS
         }));
 
-        const boletosSelecionadosBaixa = boletosSelecionados.map(boleto => ({
+        const boletosSelecionadosBaixa = computeds.boletosSelecionados.value.map((boleto: iBoleto) => ({
             numBoleto: boleto.NUM_BOLETO,
-            dataBoleto: boleto.DATA,
-            valorBoleto: boleto.VALOR
+            valorBoleto: boleto.VALOR,
+            valorJuros: boleto.VALOR_JUROS
         }));
 
-        const dataExtrato = extratoSelecionado.length > 0 ? extratoSelecionado[0].DATA : null;
-        const extratoSelecionadoIds = extratoSelecionado.map(transacao => transacao.ID);
+        const dataExtrato = computeds.extratoSelecionado.value.length > 0 ? computeds.extratoSelecionado.value[0].DATA : null;
+        const extratoSelecionadoIds = computeds.extratoSelecionado.value.map(transacao => transacao.ID);
 
         const dadosParaLog = {
             dataExtrato,
             idsExtrato: extratoSelecionadoIds,
-            numOrcamentos: orcamentosSelecionados.map(orcamento => orcamento.NUM_ORCAMENTO),
-            numBoletos: boletosSelecionados.map(boleto => boleto.NUM_BOLETO),
-            totalBaixa: Number(state.totalOrcamentosEBoletos)
+            numOrcamentos: computeds.orcamentosSelecionados.value.map(orcamento => orcamento.NUM_ORCAMENTO),
+            numBoletos: computeds.boletosSelecionados.value.map(boleto => boleto.NUM_BOLETO),
+            totalBaixa: Number(computeds.totalOrcamentosEBoletos.value)
         };
 
         let param = {
             orcamentosSelecionadosBaixa,
             boletosSelecionadosBaixa,
-            dadosParaLog
+            dadosParaLog,
+            justificativaBaixaManual: justificativaBaixaManual
         };
 
         try {
@@ -269,6 +264,95 @@ export const actions = {
         } finally {
             state.loading = false;
         }
-    }
+    },
 
+    async getCnpjEmpresa() {
+        try {
+            state.loading = true;
+            let data = await serviceBaixaManualBoleto.getCnpjEmpresa();
+            state.cnpjEmpresa = data.CGC_EMPRESA;
+        } catch (err) {
+            Swal.fire({ icon: "error", text: "Erro ao buscar CNPJ da empresa." });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    openModalAddJuros(numBoleto: number, numOrcamento: number, dataOrcamento: string) {
+        state.modalJuros.valorJurosToEdit = null;
+        state.modalJuros.open = true;
+        state.modalJuros.numBoleto = numBoleto;
+        state.modalJuros.numOrcamento = numOrcamento;
+        state.modalJuros.dataOrcamento = dataOrcamento;
+    },
+
+    openModalEditJuros(numBoleto: number, numOrcamento: number, dataOrcamento: string, valorJurosToEdit: number) {
+        state.modalJuros.open = true;
+        state.modalJuros.numBoleto = numBoleto;
+        state.modalJuros.numOrcamento = numOrcamento;
+        state.modalJuros.dataOrcamento = dataOrcamento;
+        state.modalJuros.valorJurosToEdit = valorJurosToEdit;
+    },
+
+    addJuros(param: iParamAddJuros) {
+        if (param.numBoleto) {
+            const findedIndex = state.dadosBoletos.findIndex(boleto => boleto.NUM_BOLETO === param.numBoleto);
+
+            if (findedIndex !== -1) {
+                state.dadosBoletos[findedIndex].JUROS = param.valorJuros;
+                state.dadosBoletos[findedIndex].VALOR_JUROS = Number((state.dadosBoletos[findedIndex].VALOR * (param.valorJuros / 100)).toFixed(2));
+            }
+        }
+
+        if (param.numOrcamento) {
+            const findedIndex = state.dadosOrcamento.findIndex(
+                orcamento => orcamento.NUM_ORCAMENTO === param.numOrcamento && orcamento.DATA === param.dataOrcamento
+            );
+
+            if (findedIndex !== -1) {
+                state.dadosOrcamento[findedIndex].JUROS = param.valorJuros;
+                state.dadosOrcamento[findedIndex].VALOR_JUROS = Number((state.dadosOrcamentoFiltrados[findedIndex].VALOR * (param.valorJuros / 100)).toFixed(2));
+            }
+        }
+
+        state.modalJuros.open = false;
+    }
+}
+
+export const computeds = {
+    boletosSelecionados: computed(() => {
+        return state.dadosBoletosFiltrados.filter(boleto => boleto.checked);
+    }),
+    orcamentosSelecionados: computed(() => {
+        return state.dadosOrcamentoFiltrados.filter(orcamento => orcamento.checked);
+    }),
+    extratoSelecionado: computed(() => {
+        return state.extratoBancario.filter(transacao => transacao.checked);
+    }),
+    totalSelecionadoExtrato: computed(() => {
+        const totalExtrato = state.extratoBancario
+            .filter(item => item.checked)
+            .reduce((sum, item) => sum + item.VALOR, 0);
+
+        return parseFloat(totalExtrato.toFixed(2));
+    }),
+    totalOrcamentosEBoletos: computed(() => {
+        const totalOrcamentos = state.dadosOrcamento
+            .filter(item => item.checked)
+            .reduce((sum, item) => sum + item.VALOR + (item.VALOR_JUROS || 0), 0);
+
+        const totalBoletos = state.dadosBoletos
+            .filter(item => item.checked)
+            .reduce((sum, item) => sum + item.VALOR + (item.VALOR_JUROS || 0), 0);
+
+        let total = totalOrcamentos + totalBoletos;
+        return parseFloat(total.toFixed(2));
+    }),
+    podeBaixarManual: computed(() => {
+        return (
+            computeds.totalOrcamentosEBoletos.value === computeds.totalSelecionadoExtrato.value &&
+            state.nomeClienteFaturadoSelecionado !== '' &&
+            computeds.totalOrcamentosEBoletos.value !== 0
+        );
+    }),
 }
