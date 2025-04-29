@@ -28,5 +28,4 @@ const updateNfeConfig = async (param: updatePayload) => {
 export default {
     getDadosParaInputs,
     updateNfeConfig,
-
 };

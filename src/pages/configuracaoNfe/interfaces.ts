@@ -6,7 +6,6 @@ export interface iResponseDadosInputs {
 }
 
 export interface iNfeConfig {
-    ID_NFE_CONFIG: number;
     LOCAL_XML: string;
     LOCAL_PDF: string;
     REGIME_TRIBUTARIO: string;
@@ -28,20 +27,22 @@ export interface iNfeConfig {
 export interface iUpdateNfeConfig extends iNfeConfig { }
 
 export interface iRegimeTributario {
-    ID_REGIME_TRIBUTARIO?: number;
-    DESCRICAO?: string;
+    ID_REGIME_TRIBUTARIO: number;
+    DESCRICAO: string;
 }
 
 export interface iPis {
-    ID_PIS?: number;
-    P_VALOR?: number;
-    ID_REGIME_TRIBUTARIO?: number;
+    ID_PIS: number;
+    P_VALOR: number;
+    ID_REGIME_TRIBUTARIO: number;
+    DESCRICAO: string;
 }
 
 export interface iCofins {
-    ID_COFINS?: number;
-    P_VALOR?: number;
-    ID_REGIME_TRIBUTARIO?: number;
+    ID_COFINS: number;
+    P_VALOR: number;
+    ID_REGIME_TRIBUTARIO: number;
+    DESCRICAO: string;
 }
 
 export interface updatePayload {

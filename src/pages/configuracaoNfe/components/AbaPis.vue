@@ -1,25 +1,20 @@
 <script setup lang="ts">
 import { onMounted, reactive, watch } from "vue";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
-import Swal from "sweetalert2";
 import utils from "@/ts/utils";
 import { regimeTributarioOptions } from "../configuracaoNfe";
-import serviceNfe from "../services/configuracaoNfe.service";
 import { iPis } from "../interfaces";
 
 const statePis = reactive({
   grid: {} as ixGridCreate,
   pis: {} as iPis,
   loading: false,
-  isEditing: false,
   gridPis: <ixGridCreate>{},
 });
 
 const props = defineProps({
   pis: Object,
   abaOpened: Boolean,
-  pisLista: Array,
-  isEditable: Boolean,
 });
 
 watch(
@@ -41,15 +36,8 @@ const actionsPis = {
       height: 365,
       count: true,
       columns: {
-        Valor: { dataField: "P_VALOR", width: "47%", render: utils.formatValor },
-        "Código Regime Tributário": { dataField: "ID_REGIME_TRIBUTARIO", width: "49%" },
-      },
-
-      query: {
-        async execute() {
-          const dados = await actionsPis.getDadosParaInputs();
-          statePis.grid.querySourceAdd(dados);
-        },
+        "Regime Tributário": { dataField: "DESCRICAO" },
+        Valor: { dataField: "P_VALOR", width: "20%", render: utils.formatValor },
       },
       sideBySide: {
         el: "#pnPisCampos",
@@ -57,31 +45,7 @@ const actionsPis = {
           statePis.pis = r;
         },
       },
-
-      enter: function () {
-        document.getElementById("btnPisUpdate")?.click();
-      },
     });
-  },
-
-  async getDadosParaInputs() {
-    try {
-      statePis.loading = true;
-
-      const data = await serviceNfe.getDadosParaInputs();
-
-      statePis.pis = { ...data.pis[0] };
-
-      return data.pis;
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        text: "Erro ao buscar os dados iniciais!",
-      });
-      return [];
-    } finally {
-      statePis.loading = false;
-    }
   },
 };
 
@@ -93,25 +57,25 @@ onMounted(async () => {
 <template width="600" class="pa-1 ma-auto">
   <v-form id="pnPisCampos">
     <v-row dense>
-      <v-col cols="4">
+      <v-col
+        cols="4"
+        class="pb-5"
+      >
         <v-select
           v-model="statePis.pis.ID_REGIME_TRIBUTARIO"
           label="Regime Tributário"
           :items="regimeTributarioOptions"
           item-title="text"
           item-value="value"
-          :disabled="!statePis.isEditing"
-          outlined
-          :clearable="false"
+          :disabled="true"
         />
       </v-col>
       <v-col cols="3">
         <v-text-field
           v-model="statePis.pis.P_VALOR"
           label="Valor do PIS"
-          :disabled="!statePis.isEditing"
-          type="text"
-          :clearable="false"
+          :disabled="true"
+          type="number"
         />
       </v-col>
     </v-row>
@@ -122,13 +86,3 @@ onMounted(async () => {
     class="mb-4"
   ></div>
 </template>
-
-<style scoped>
-.v-card {
-  box-shadow: 0 3px 15px rgba(128, 93, 93, 0.1);
-}
-.v-select,
-.v-text-field {
-  margin-bottom: 12px;
-}
-</style>

@@ -12,7 +12,6 @@ import {
 import AbaRegimeTributario from "./components/AbaRegimeTributario.vue";
 import AbaPis from "./components/AbaPis.vue";
 import AbaCofins from "./components/AbaCofins.vue";
-import utils from "@/ts/utils";
 
 onMounted(async () => {
   await actions.init();
@@ -29,8 +28,6 @@ onMounted(async () => {
         <v-col cols="12">
           <v-tabs
             v-model="stateTabs.selectedTab"
-            background-color="primary"
-            color="primary"
             grow
           >
             <v-tab value="configuracaoNfe">Configuração NFE</v-tab>
@@ -67,7 +64,7 @@ onMounted(async () => {
             id="P_VALOR_PIS"
             name="P_VALOR_PIS"
             type="number"
-            class="ss"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -78,7 +75,7 @@ onMounted(async () => {
             id="P_VALOR_COFINS"
             name="P_VALOR_COFINS"
             type="number"
-            class="ss"
+            class="obr ss"
             :disabled="!state.isEditable"
           />
         </v-col>
@@ -115,7 +112,6 @@ onMounted(async () => {
         <AbaRegimeTributario
           :regime-tributario="state.regimeTributarioLista"
           :abaOpened="stateTabs.selectedTab == 'regimeTributario' ? true : false"
-          :isEditable="state.isEditable"
         />
       </v-card>
 
@@ -126,7 +122,6 @@ onMounted(async () => {
         <AbaPis
           :pis="state.pisLista"
           :abaOpened="stateTabs.selectedTab == 'pis' ? true : false"
-          :isEditable="state.isEditable"
         />
       </v-card>
 
@@ -137,7 +132,6 @@ onMounted(async () => {
         <AbaCofins
           :cofins="state.cofinsLista"
           :abaOpened="stateTabs.selectedTab == 'cofins' ? true : false"
-          :isEditable="state.isEditable"
         />
       </v-card>
 
@@ -314,20 +308,20 @@ onMounted(async () => {
       >
         <v-btn
           color="primary"
-          class="ma-1 btn-style"
+          class="ma-1"
           @click="actions.btnEdit"
           >Editar</v-btn
         >
         <v-btn
           color="primary"
-          class="ma-1 btn-style"
+          class="ma-1"
           @click="actions.btnSave"
           :disabled="!state.isEditable"
           >Salvar</v-btn
         >
         <v-btn
           color="primary"
-          class="ma-1 btn-style"
+          class="ma-1"
           @click="actions.btnCancel"
           :disabled="!state.isEditable"
           >Cancelar</v-btn

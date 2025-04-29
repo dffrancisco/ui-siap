@@ -11,7 +11,6 @@ export const state = reactive({
     cofins: {} as iCofins,
     regimeTributario: {} as iRegimeTributario,
 
-    nfeConfigLista: [] as iNfeConfig[],
     cofinsLista: [] as iCofins[],
     pisLista: [] as iPis[],
     regimeTributarioLista: [] as iRegimeTributario[],
@@ -96,7 +95,6 @@ export const actions = {
     async toUpdate() {
         try {
             const param: iNfeConfig = {
-                ID_NFE_CONFIG: state.nfeConfig.ID_NFE_CONFIG,
                 LOCAL_XML: state.nfeConfig.LOCAL_XML?.toUpperCase(),
                 LOCAL_PDF: state.nfeConfig.LOCAL_PDF?.toUpperCase(),
                 REGIME_TRIBUTARIO: state.nfeConfig.REGIME_TRIBUTARIO,
@@ -117,8 +115,8 @@ export const actions = {
 
             const updatePayload = {
                 nfeConfig: param,
-                pis: state.pis,
-                cofins: state.cofins
+                pis: pisSelecionado.value,
+                cofins: cofinsSelecionado.value,
             };
 
             state.loading = true;
@@ -144,7 +142,6 @@ export const actions = {
 
     async btnSave() {
         if (await utils.validaOBR()) return;
-
         await actions.toUpdate();
     },
 
