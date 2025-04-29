@@ -35,13 +35,12 @@ const actionsRegime = {
       height: 365,
       count: true,
       columns: {
-        "Código Regime Tributário": {
-          dataField: "ID_REGIME_TRIBUTARIO",
-          width: "47%",
-        },
         Descrição: {
           dataField: "DESCRICAO",
-          width: "49%",
+        },
+        "Código Regime Tributário": {
+          dataField: "ID_REGIME_TRIBUTARIO",
+          width: "20%",
         },
       },
       sideBySide: {
