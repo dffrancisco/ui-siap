@@ -14,6 +14,23 @@ onMounted(async () => {
     >
       <div class="divInputs">
         <div style="display: flex; gap: 16px">
+          <v-autocomplete
+            id="marcas"
+            label="Marcas"
+            class="marcas"
+            width="160px"
+            autocomplete="off"
+            :items="state.marcas"
+            multiple
+            item-title="DESCRICAO"
+            item-value="ID_MARCA"
+            :clearable="true"
+            v-model="state.marcaSelecionada"
+            :menu-props="{
+              maxHeight: '300px',
+              maxWidth: '180px',
+            }"
+          ></v-autocomplete>
           <v-text-field
             v-model="state.dataInicio"
             width="180px"

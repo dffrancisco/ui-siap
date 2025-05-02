@@ -1,6 +1,6 @@
 import moment from "moment";
 import { reactive } from "vue";
-import { iDadosRelatorioProdutosVendidos } from "./interfaces";
+import { iDadosRelatorioProdutosVendidos, iMarcas } from "./interfaces";
 import serviceRelatorioProdutosVendidos from './services/relatorioProdutosVendidos.service'
 import Swal from "sweetalert2";
 import utils, { iColumnPrint } from "@/ts/utils";
@@ -10,7 +10,9 @@ export const state = reactive({
     dataInicio: moment().startOf('month').format('YYYY-MM-DD'),
     dataFim: moment().format('YYYY-MM-DD'),
     inputDataFinal: <HTMLInputElement>{},
+    marcas: <iMarcas[]>[],
     dataInicioImpressao: null,
+    marcaSelecionada: null,
     dataFimImpressao: null,
     totalItems: 0,
     itemsPerPage: 30,
@@ -52,6 +54,7 @@ export const state = reactive({
 
 export const actions = {
     async init() {
+        actions.getMarcas();
         state.inputDataFinal = <any>document.getElementById('DATA_FIM')
         actions.validarInputs()
     },
@@ -64,6 +67,20 @@ export const actions = {
     updatePage(newPage: number) {
         state.page = newPage;
         actions.getDadosParaRelatorio();
+    },
+
+    async getMarcas() {
+        try {
+            state.loading = true;
+            state.marcas = await serviceRelatorioProdutosVendidos.getMarcas();
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao buscar as marcas!"
+            });
+        } finally {
+            state.loading = false;
+        }
     },
 
     async validarInputs() {
