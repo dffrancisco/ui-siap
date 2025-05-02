@@ -20,6 +20,7 @@ export interface iParamsParaRelatorio {
     itemsPerPage: number;
     dataInicio: string;
     dataFim: string;
+    marcaSelecionada: [];
 }
 
 export interface iCount {

@@ -125,7 +125,9 @@ export const actions = {
                 itemsPerPage: state.itemsPerPage,
                 dataInicio: state.dataInicio,
                 dataFim: state.dataFim,
+                marcaSelecionada: state.marcaSelecionada,
             });
+
             state.dadosRelatorio = data.dadosRelatorio;
             state.totalItems = data.totalDadosRelatorio[0].TOTAL;
 

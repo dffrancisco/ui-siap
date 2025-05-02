@@ -9,7 +9,7 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      :width="800"
+      :max-width="800"
       class="ma-auto pa-4"
     >
       <div class="divInputs">
@@ -18,19 +18,30 @@ onMounted(async () => {
             id="marcas"
             label="Marcas"
             class="marcas"
-            width="160px"
+            style="max-height: 50px; overflow-y: auto"
             autocomplete="off"
+            width="330px"
             :items="state.marcas"
             multiple
+            chips
             item-title="DESCRICAO"
             item-value="ID_MARCA"
             :clearable="true"
             v-model="state.marcaSelecionada"
-            :menu-props="{
-              maxHeight: '300px',
-              maxWidth: '180px',
-            }"
-          ></v-autocomplete>
+            :menu-props="{ maxHeight: '300px', maxWidth: '180px' }"
+          >
+            <template #selection="{ index, item }">
+              <v-chip
+                v-if="index < 99"
+                size="small"
+                class="mr-1"
+                style="max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
+              >
+                {{ item.DESCRICAO }}
+              </v-chip>
+            </template>
+          </v-autocomplete>
+
           <v-text-field
             v-model="state.dataInicio"
             width="180px"
