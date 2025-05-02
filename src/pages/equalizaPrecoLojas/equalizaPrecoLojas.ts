@@ -322,6 +322,7 @@ export const actions = {
                 state.xgItensNotas.source(response.itensAtualizados);
 
                 Swal.fire('Sucesso!', 'Produtos atualizados com sucesso.', 'success');
+                actions.deleteNota();
             } catch (error) {
                 Swal.fire({ icon: "error", text: "Erro ao atualizar os preços." });
             } finally {
