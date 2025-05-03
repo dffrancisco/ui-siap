@@ -9,36 +9,37 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      :max-width="800"
+      :max-width="850"
       class="ma-auto pa-4"
     >
       <div class="divInputs">
         <div style="display: flex; gap: 16px">
           <v-autocomplete
-            id="marcas"
+            density="compact"
             label="Marcas"
-            class="marcas"
-            style="max-height: 50px; overflow-y: auto"
-            autocomplete="off"
-            width="330px"
-            :items="state.marcas"
+            variant="outlined"
             multiple
-            chips
+            autocomplete="off"
+            width="380px"
+            :items="state.marcas"
             item-title="DESCRICAO"
             item-value="ID_MARCA"
-            :clearable="true"
             v-model="state.marcaSelecionada"
-            :menu-props="{ maxHeight: '300px', maxWidth: '180px' }"
           >
-            <template #selection="{ index, item }">
+            <template #selection="{ item, index }">
               <v-chip
-                v-if="index < 99"
-                size="small"
+                v-if="index < 2"
+                size="large"
                 class="mr-1"
-                style="max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
               >
-                {{ item.DESCRICAO }}
+                {{ item.title }}
               </v-chip>
+              <span
+                v-if="index === 2"
+                class="text-grey text-caption align-self-center"
+              >
+                (+{{ state.marcaSelecionada.length - 2 }})
+              </span>
             </template>
           </v-autocomplete>
 
