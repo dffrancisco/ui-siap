@@ -29,7 +29,7 @@ onMounted(async () => {
             <template #selection="{ item, index }">
               <v-chip
                 v-if="index < 2"
-                size="large"
+                size="small"
                 class="mr-1"
               >
                 {{ item.title }}
