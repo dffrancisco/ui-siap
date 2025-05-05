@@ -33,6 +33,7 @@ onMounted(() => {
             style="margin-top: 200px"
             icon="mdi-chevron-right mdi-24px"
             color="primary"
+            title="Conceder permissão"
             size="x-small"
             @click="actions.onDarPermissao"
           >
@@ -40,6 +41,7 @@ onMounted(() => {
           <v-btn
             style="margin-top: 10px"
             icon="mdi-chevron-left mdi-24px"
+            title="Remover permissão"
             color="primary"
             size="x-small"
             @click="actions.onRemoverPermissao"

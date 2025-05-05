@@ -188,7 +188,6 @@ export const actions = {
     },
 
     async confirmRemoverPermissao(usuario: iUsuario) {
-
         if (await Swal.fire({
             text: "Deseja remover a permissão deste usuário?",
             icon: "warning", showCancelButton: true,
