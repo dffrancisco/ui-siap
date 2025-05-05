@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import valePecaAutorizacaoService from "../valePecaAutorizacao.service";
 import utils from "@/ts/utils";
 import { reactive } from "vue";
+import Loading from "@/components/Loading.vue";
 
 const props = defineProps({
   codFuncionario: {
@@ -81,4 +82,6 @@ const actions = {
       >
     </v-card-actions>
   </v-card>
+
+  <Loading :loading="state.loading" />
 </template>
