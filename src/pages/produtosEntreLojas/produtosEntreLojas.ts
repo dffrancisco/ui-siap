@@ -1,8 +1,10 @@
 import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
+import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import produtosEntreLojasService from "./services/produtosEntreLojas.service";
-import { iLojas } from "./interfaces";
+import { iGetProdutosEntreLojasResponse, iLojas } from "./interfaces";
+import utils from "@/ts/utils";
 
 export const state = reactive({
     filterSearch: {
@@ -12,11 +14,91 @@ export const state = reactive({
     },
     loading: false,
     lojas: <iLojas[]>[],
+    gridPrincipal: <ixGridCreate>{},
+    loadingLojas: false,
+    dbLojasProdutos: []
 })
 
 export const actions = {
     async init() {
+        await actions.createGrid()
         await actions.getLojas()
+    },
+
+    async createGrid() {
+        state.gridPrincipal = new xGridV2.create({
+            el: '#gridPrincipal',
+            height: 450,
+            count: false,
+            columns: {
+                Lojas: { dataField: 'LOJA', width: '75%' },
+                Valores: { dataField: 'VALOR_TOTAL', center: true }
+            },
+            dblClick: () => {
+                console.log(state.gridPrincipal.dataSource())
+            },
+            enter: () => {
+                console.log(state.gridPrincipal.dataSource())
+            }
+        })
+    },
+
+    async btnSearch() {
+        if (!state.filterSearch.loja) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Selecione uma Loja.'
+            })
+
+            return
+        }
+
+        if (!state.filterSearch.mes) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Selecione um mês.'
+            })
+
+            return
+        }
+
+        if (state.filterSearch.ano.toString().length < 4) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Ano inválido.'
+            })
+
+            return
+        }
+
+        if (moment({ month: state.filterSearch.mes - 1, year: state.filterSearch.ano }).isAfter(moment())) {
+            Swal.fire({
+                title: 'Insira uma data válida.',
+                icon: 'warning'
+            })
+
+            return
+        }
+
+        const lojasFiltradas = state.lojas.filter(loja =>
+            loja.ID_SOCIEDADE != state.filterSearch.loja && loja.ID_SOCIEDADE != 6
+        )
+
+        const qtdLojas = lojasFiltradas.length
+
+        state.loadingLojas = true
+
+        state.gridPrincipal.clear()
+        state.gridPrincipal.disable()
+
+        for (let i = 0; i < qtdLojas; i += 3) {
+            const grupoLojas = lojasFiltradas.slice(i, i + 3).map(loja => loja.ID_SOCIEDADE)
+
+            await actions.getProdutosEntreLojas(grupoLojas)
+        }
+
+        state.gridPrincipal.enable()
+        state.loadingLojas = false
     },
 
     async getLojas() {
@@ -35,6 +117,50 @@ export const actions = {
             })
         } finally {
             state.loading = false
+        }
+    },
+
+    formatarPorLojas(obj: iGetProdutosEntreLojasResponse, lojas: iLojas[]) {
+        const resultado = [];
+
+        for (const idLoja in obj) {
+
+            const dadosLoja = obj[idLoja];
+
+            const lojaEncontrada = lojas.find(loja => String(loja.ID_SOCIEDADE) === idLoja);
+
+            if (lojaEncontrada) {
+                resultado.push({
+                    LOJA: lojaEncontrada.NOME,
+                    VALOR_TOTAL: dadosLoja?.valorTotalProdutos ? utils.formatValor(dadosLoja.valorTotalProdutos) : 'Loja Offline',
+                    PRODUTOS: dadosLoja?.produtos ?? []
+                });
+            }
+        }
+
+        return resultado;
+    },
+
+    async getProdutosEntreLojas(lojas: number[]) {
+        try {
+
+            const cnpjLoja = state.lojas.find(loja => loja.ID_SOCIEDADE == state.filterSearch.loja)
+
+            let data = await produtosEntreLojasService.getProdutosEntreLojas({
+                CNPJ: cnpjLoja.CGC_CLIENTE,
+                ANO: state.filterSearch.ano,
+                MES: state.filterSearch.mes
+            }, lojas)
+
+            const lojasFormatadas = actions.formatarPorLojas(data, state.lojas)
+
+            state.gridPrincipal.sourceAdd(lojasFormatadas)
+        } catch (error) {
+            console.log(error)
+            Swal.fire({
+                icon: 'error',
+                title: 'Error ao buscar os produtos entre lojas.'
+            })
         }
     }
 }

@@ -2,6 +2,7 @@
 import { onMounted } from "vue";
 import { mesesToSelect } from "../../constants/constants";
 import { actions, state } from "./produtosEntreLojas";
+import Loading from "@/components/Loading.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -12,7 +13,7 @@ onMounted(async () => {
   <v-container>
     <v-card max-width="900">
       <div class="pa-4">
-        <div class="d-flex align-center ga-8">
+        <div class="d-flex align-center ga-8 mb-4">
           <v-row>
             <v-col cols="7">
               <v-autocomplete
@@ -49,17 +50,24 @@ onMounted(async () => {
             size="small"
             color="primary"
             icon="mdi-magnify mdi-24px"
+            @click="actions.btnSearch"
+            :disabled="state.loadingLojas"
           ></v-btn>
         </div>
 
+        <v-progress-linear
+          indeterminate
+          v-if="state.loadingLojas"
+        ></v-progress-linear>
         <div
-          style="border: 1px solid black; height: 450px"
-          class="mt-4"
+          id="gridPrincipal"
         >
         </div>
       </div>
     </v-card>
 
     <div id="pnCodigoTela">produtosEntreLojas</div>
+
+    <Loading :loading="state.loading" />
   </v-container>
 </template>
