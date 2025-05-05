@@ -11,7 +11,10 @@ onMounted(async () => {
 
 <template>
   <v-container>
-    <v-card max-width="900">
+    <v-card
+      max-width="900"
+      class="ma-auto"
+    >
       <div class="pa-4">
         <div class="d-flex align-center ga-8 mb-4">
           <v-row>
@@ -59,10 +62,7 @@ onMounted(async () => {
           indeterminate
           v-if="state.loadingLojas"
         ></v-progress-linear>
-        <div
-          id="gridPrincipal"
-        >
-        </div>
+        <div id="gridPrincipal"> </div>
       </div>
     </v-card>
 
