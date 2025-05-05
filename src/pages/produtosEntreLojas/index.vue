@@ -3,6 +3,7 @@ import { onMounted } from "vue";
 import { mesesToSelect } from "../../constants/constants";
 import { actions, state } from "./produtosEntreLojas";
 import Loading from "@/components/Loading.vue";
+import ModalProdutos from "./components/ModalProdutos.vue";
 
 onMounted(async () => {
   await actions.init();
@@ -53,7 +54,7 @@ onMounted(async () => {
             size="small"
             color="primary"
             icon="mdi-magnify mdi-24px"
-            @click="actions.btnSearch"
+            @click="actions.onClickBtnSearch"
             :disabled="state.loadingLojas"
           ></v-btn>
         </div>
@@ -65,6 +66,17 @@ onMounted(async () => {
         <div id="gridPrincipal"> </div>
       </div>
     </v-card>
+
+    <v-dialog
+      v-model="state.modalProdutosOpened"
+      max-width="800"
+    >
+      <ModalProdutos
+        :lojaSelecionada="state.dbLojaSelecionada"
+        :loja-origem="state.lojaOrigem"
+        @close-modal="state.modalProdutosOpened = false"
+      />
+    </v-dialog>
 
     <div id="pnCodigoTela">produtosEntreLojas</div>
 

@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { reactive } from "vue";
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import produtosEntreLojasService from "./services/produtosEntreLojas.service";
-import { iGetProdutosEntreLojasResponse, iLojas } from "./interfaces";
+import { iGetProdutosEntreLojasResponse, iLojaFormatada, iLoja } from "./interfaces";
 import utils from "@/ts/utils";
 
 export const state = reactive({
@@ -13,10 +13,13 @@ export const state = reactive({
         ano: moment().year()
     },
     loading: false,
-    lojas: <iLojas[]>[],
+    lojas: <iLoja[]>[],
     gridPrincipal: <ixGridCreate>{},
     loadingLojas: false,
-    dbLojasProdutos: []
+    modalProdutosOpened: false,
+    modalOrcamentosOpened: false,
+    dbLojaSelecionada: <iLojaFormatada>{},
+    lojaOrigem: <iLoja>{},
 })
 
 export const actions = {
@@ -35,15 +38,15 @@ export const actions = {
                 Valores: { dataField: 'VALOR_TOTAL', center: true }
             },
             dblClick: () => {
-                console.log(state.gridPrincipal.dataSource())
+                actions.openModalProdutos()
             },
             enter: () => {
-                console.log(state.gridPrincipal.dataSource())
+                actions.openModalProdutos()
             }
         })
     },
 
-    async btnSearch() {
+    async onClickBtnSearch() {
         if (!state.filterSearch.loja) {
             Swal.fire({
                 icon: 'warning',
@@ -80,13 +83,15 @@ export const actions = {
             return
         }
 
+        state.loadingLojas = true
+
         const lojasFiltradas = state.lojas.filter(loja =>
             loja.ID_SOCIEDADE != state.filterSearch.loja && loja.ID_SOCIEDADE != 6
         )
 
         const qtdLojas = lojasFiltradas.length
 
-        state.loadingLojas = true
+        state.lojaOrigem = state.lojas.find(loja => loja.ID_SOCIEDADE == state.filterSearch.loja)
 
         state.gridPrincipal.clear()
         state.gridPrincipal.disable()
@@ -94,11 +99,27 @@ export const actions = {
         for (let i = 0; i < qtdLojas; i += 3) {
             const grupoLojas = lojasFiltradas.slice(i, i + 3).map(loja => loja.ID_SOCIEDADE)
 
-            await actions.getProdutosEntreLojas(grupoLojas)
+            await actions.getProdutosEntreLojas(grupoLojas, state.lojaOrigem.CGC_CLIENTE)
         }
 
         state.gridPrincipal.enable()
         state.loadingLojas = false
+    },
+
+    async openModalProdutos() {
+        let loja = state.gridPrincipal.dataSource()
+
+        if (!loja.PRODUTOS || loja.PRODUTOS.length <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Loja Offline.'
+            })
+
+            return
+        }
+
+        state.dbLojaSelecionada = loja
+        state.modalProdutosOpened = true
     },
 
     async getLojas() {
@@ -120,7 +141,7 @@ export const actions = {
         }
     },
 
-    formatarPorLojas(obj: iGetProdutosEntreLojasResponse, lojas: iLojas[]) {
+    formatarPorLojas(obj: iGetProdutosEntreLojasResponse, lojas: iLoja[]): iLojaFormatada[] {
         const resultado = [];
 
         for (const idLoja in obj) {
@@ -141,13 +162,11 @@ export const actions = {
         return resultado;
     },
 
-    async getProdutosEntreLojas(lojas: number[]) {
+    async getProdutosEntreLojas(lojas: number[], cnpjLojaFiltrada: string) {
         try {
 
-            const cnpjLoja = state.lojas.find(loja => loja.ID_SOCIEDADE == state.filterSearch.loja)
-
             let data = await produtosEntreLojasService.getProdutosEntreLojas({
-                CNPJ: cnpjLoja.CGC_CLIENTE,
+                CNPJ: cnpjLojaFiltrada,
                 ANO: state.filterSearch.ano,
                 MES: state.filterSearch.mes
             }, lojas)

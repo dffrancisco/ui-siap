@@ -4,7 +4,7 @@ export interface iGetLojasResponse {
     ID_SOCIEDADE: number
 }
 
-export interface iLojas extends iGetLojasResponse { }
+export interface iLoja extends iGetLojasResponse { }
 
 export interface iGetProdutosEntreLojasParam {
     CNPJ: string,
@@ -12,15 +12,21 @@ export interface iGetProdutosEntreLojasParam {
     MES: number
 }
 
-export interface iGetProdutosEntreLojasResponseProdutos {
+export interface iProduto {
     COD_PRODUTO: number,
     DESC_PRODUTO: string,
     NUM_FABRICANTE: string,
     QTD: number
 }
 export interface iGetProdutosEntreLojasResponse {
-    produtos: iGetProdutosEntreLojasResponseProdutos[],
+    produtos: iProduto[],
     valorvalorTotalProdutos: number,
     error?: boolean,
     msg: boolean
+}
+
+export interface iLojaFormatada {
+    LOJA: string,
+    VALOR_TOTAL: string,
+    PRODUTOS: iProduto[]
 }
