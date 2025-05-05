@@ -5,7 +5,7 @@ import CardDataTables from "./components/CardDataTables.vue";
 import CardInfo from "./components/CardInfo.vue";
 import ModalSelecionarFuncionario from "./components/ModalSelecionarFuncionario.vue";
 import Loading from "@/components/Loading.vue";
-import { computed, onMounted } from "vue";
+import { onMounted } from "vue";
 
 onMounted(async () => {
   await actions.getFuncionarios();
