@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, watch } from "vue";
 import { iOrcamento, iValeFuncionario } from "../interfaces";
 import Loading from "@/components/Loading.vue";
 import Swal from "sweetalert2";
