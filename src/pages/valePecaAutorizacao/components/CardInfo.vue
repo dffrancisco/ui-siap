@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import valePecaAutorizacaoService from "../valePecaAutorizacao.service";
 import xAuthManager from "@/plugins/xAuthManager";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
+import ModalSenhaFuncionario from "./ModalSenhaFuncionario.vue";
 
 const props = defineProps({
   codFuncionario: {
@@ -100,43 +101,9 @@ const actions = {
     emits("pesquisarOrc", state.inputOrc);
   },
 
-  openSenhaFuncionario() {
-    state.inputSenhaFuncionario = null;
-    state.senhaFuncionarioOpened = true;
-  },
-
   async liberarFuncionario() {
-    try {
-      if (!state.inputSenhaFuncionario || state.inputSenhaFuncionario == "") {
-        return;
-      }
-
-      state.loading = true;
-
-      const data = await valePecaAutorizacaoService.getAutorizacaoFuncionario({
-        senha: utils.base64_encode(state.inputSenhaFuncionario),
-        codFuncionario: props.codFuncionario,
-      });
-
-      if (data?.error) {
-        Swal.fire({
-          icon: "warning",
-          title: data.msg,
-        });
-        return;
-      }
-
-      state.btnLiberarGerenteDisabled = false;
-      state.senhaFuncionarioOpened = false;
-    } catch (error) {
-      console.error(error);
-      Swal.fire({
-        icon: "error",
-        title: "Erro ao liberar funcionario",
-      });
-    } finally {
-      state.loading = false;
-    }
+    state.btnLiberarGerenteDisabled = false;
+    state.senhaFuncionarioOpened = false;
   },
 
   async liberarGerente() {
@@ -319,7 +286,7 @@ const computeds = {
           :disabled="!props.codFuncionario || !props.orcamento?.NUM_ORCAMENTO || !state.btnLiberarGerenteDisabled"
           size="small"
           color="primary"
-          @click="actions.openSenhaFuncionario"
+          @click="state.senhaFuncionarioOpened = true"
           >liberar funcionário</v-btn
         >
 
@@ -339,32 +306,11 @@ const computeds = {
     max-width="250"
     :retain-focus="false"
   >
-    <v-card>
-      <v-card-item>
-        <span>Senha Funcionário</span>
-        <v-text-field
-          v-model="state.inputSenhaFuncionario"
-          autofocus
-          maxlength="10"
-          type="password"
-          :clearable="false"
-          @keypress.enter="actions.liberarFuncionario"
-        ></v-text-field>
-      </v-card-item>
-      <v-card-actions>
-        <v-btn
-          size="small"
-          @click="state.senhaFuncionarioOpened = false"
-          >cancelar</v-btn
-        >
-        <v-btn
-          size="small"
-          :disabled="!state.inputSenhaFuncionario || state.inputSenhaFuncionario.trim() == ''"
-          color="primary"
-          >verificar</v-btn
-        >
-      </v-card-actions>
-    </v-card>
+    <ModalSenhaFuncionario
+      @close-modal="state.senhaFuncionarioOpened = false"
+      @liberar-funcionario="actions.liberarFuncionario"
+      :cod-funcionario="props.codFuncionario"
+    />
   </v-dialog>
 
   <modalXAuthManager />
