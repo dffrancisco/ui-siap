@@ -28,6 +28,7 @@ export const actions = {
             click: (rowData: iUsuario) => {
                 state.dbUsuarioSelecionado = rowData;
             },
+            dblClick: () => actions.focarNaGridComPermissao(),
             enter: () => actions.focarNaGridComPermissao(),
         });
 
@@ -40,10 +41,11 @@ export const actions = {
             click: (rowData: iUsuario) => {
                 state.dbUsuarioSelecionado = rowData;
             },
+            dblClick: () => actions.focarNaGridSemPermissao(),
             enter: () => actions.focarNaGridSemPermissao(),
         });
 
-        await actions.carregaegarDadoDeUsuario();
+        await actions.carregarDadoDeUsuario();
     },
 
 
@@ -61,7 +63,7 @@ export const actions = {
         state.modalAlterarSenha = true;
     },
 
-    async carregaegarDadoDeUsuario() {
+    async carregarDadoDeUsuario() {
         try {
             state.loading = true;
             const data = await actions.getUsuarios();
@@ -75,10 +77,9 @@ export const actions = {
                 state.gridUsuariosComPermissao.querySourceAdd(data.usuariosComPermissao);
             }
         } catch (error) {
-            const errorMessage = error.data.msg;
             Swal.fire({
-                icon: "warning",
-                text: errorMessage
+                icon: "error",
+                text: "Erro ao carregar os dados dos usuários!",
             });
             return;
         } finally {
@@ -86,16 +87,14 @@ export const actions = {
         }
     },
 
-
     async getUsuarios() {
         try {
             const data = await serviceDescontoDeGerentes.getInicial();
             return data;
         } catch (error) {
-            const errorMessage = error.response?.data?.msg;
             Swal.fire({
-                icon: "warning",
-                text: errorMessage,
+                icon: "error",
+                text: "Erro ao carregar os usuários sem permissão!",
             });
         }
     },
