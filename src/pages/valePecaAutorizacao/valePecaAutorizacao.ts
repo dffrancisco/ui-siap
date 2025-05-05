@@ -1,4 +1,4 @@
-import { computed, reactive } from "vue";
+import { reactive } from "vue";
 import { iFuncionario, iOrcamento, iValeFuncionario } from "./interfaces";
 import Swal from "sweetalert2";
 import valePecaAutorizacaoService from "./valePecaAutorizacao.service";
