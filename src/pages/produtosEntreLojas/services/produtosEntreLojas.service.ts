@@ -7,7 +7,7 @@ type iGetLojasFunction = () => Promise<iGetLojasResponse[]>
 type iGetProdutosEntreLojasFunction = (param: iGetProdutosEntreLojasParam, lojas: number[]) =>
     Promise<iGetProdutosEntreLojasResponse>
 type iGetOrcamentosProdutoEntreLojasFunction = (param: iGetOrcamentosProdutoEntreLojasParam, loja: number) =>
-    Promise<iGetOrcamentosProdutoEntreLojasResponse | { error: boolean, msg: string }>
+    Promise<iGetOrcamentosProdutoEntreLojasResponse[]>
 
 const getLojas: iGetLojasFunction = async () => {
     const { data } = await axios.post(caminho, {

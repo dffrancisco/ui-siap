@@ -1,17 +1,18 @@
 import moment from "moment";
 import Swal from "sweetalert2";
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import produtosEntreLojasService from "./services/produtosEntreLojas.service";
-import { iGetProdutosEntreLojasResponse, iLojaFormatada, iLoja } from "./interfaces";
+import { iGetProdutosEntreLojasResponse, iLojaFormatada, iLoja, iFilterSearch } from "./interfaces";
 import utils from "@/ts/utils";
 
 export const state = reactive({
-    filterSearch: {
+    filterSearch: <iFilterSearch>{
         loja: 10,
         mes: moment().month() + 1,
         ano: moment().year()
     },
+    setFilterSearch: <iFilterSearch>{},
     loading: false,
     lojas: <iLoja[]>[],
     gridPrincipal: <ixGridCreate>{},
@@ -20,6 +21,7 @@ export const state = reactive({
     modalOrcamentosOpened: false,
     dbLojaSelecionada: <iLojaFormatada>{},
     lojaOrigem: <iLoja>{},
+    btnPrintDisable: true
 })
 
 export const actions = {
@@ -85,6 +87,8 @@ export const actions = {
 
         state.loadingLojas = true
 
+        state.setFilterSearch = state.filterSearch
+
         const lojasFiltradas = state.lojas.filter(loja =>
             loja.ID_SOCIEDADE != state.filterSearch.loja && loja.ID_SOCIEDADE != 6
         )
@@ -113,16 +117,21 @@ export const actions = {
         //@ts-ignore
         let lojas: iLojaFormatada[] = state.gridPrincipal.data()
 
-        let total = lojas.reduce((total, loja) => {
-            if (utils.formatValorUSA(loja.VALOR_TOTAL) > 0) {
-                return total + utils.formatValorUSA(loja.VALOR_TOTAL);
-            }
-        }, 0);
+        if (lojas.length > 0) {
 
-        state.gridPrincipal.insertLine({
-            LOJA: 'TOTAL',
-            VALOR_TOTAL: utils.formatValor(total)
-        })
+            state.btnPrintDisable = false
+
+            let total = lojas.reduce((total, loja) => {
+                if (utils.formatValorUSA(loja.VALOR_TOTAL) > 0) {
+                    return total + utils.formatValorUSA(loja.VALOR_TOTAL);
+                }
+            }, 0);
+
+            state.gridPrincipal.sourceAdd([{
+                LOJA: 'TOTAL',
+                VALOR_TOTAL: utils.formatValor(total)
+            }])
+        }
     },
 
     async openModalProdutos() {
@@ -134,7 +143,7 @@ export const actions = {
 
         if (!loja.PRODUTOS || loja.PRODUTOS.length <= 0) {
             Swal.fire({
-                icon: 'error',
+                icon: 'warning',
                 title: 'Loja Offline.'
             })
 
@@ -174,11 +183,21 @@ export const actions = {
             const lojaEncontrada = lojas.find(loja => String(loja.ID_SOCIEDADE) === idLoja);
 
             if (lojaEncontrada) {
-                resultado.push({
-                    LOJA: lojaEncontrada.NOME,
-                    VALOR_TOTAL: dadosLoja?.valorTotalProdutos ? utils.formatValor(dadosLoja.valorTotalProdutos) : 'Loja Offline',
-                    PRODUTOS: dadosLoja?.produtos ?? []
-                });
+                if (dadosLoja?.error) {
+                    resultado.push({
+                        LOJA: lojaEncontrada.NOME,
+                        VALOR_TOTAL: dadosLoja.msg,
+                        PRODUTOS: [],
+                        ID_SOCIEDADE: idLoja
+                    });
+                } else {
+                    resultado.push({
+                        LOJA: lojaEncontrada.NOME,
+                        VALOR_TOTAL: dadosLoja?.valorTotalProdutos ? utils.formatValor(dadosLoja.valorTotalProdutos) : 'Loja Offline',
+                        PRODUTOS: dadosLoja?.produtos ?? [],
+                        ID_SOCIEDADE: idLoja
+                    });
+                }
             }
         }
 

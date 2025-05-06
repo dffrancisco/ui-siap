@@ -28,7 +28,8 @@ export interface iGetProdutosEntreLojasResponse {
 export interface iLojaFormatada {
     LOJA: string,
     VALOR_TOTAL: string,
-    PRODUTOS: iProduto[]
+    PRODUTOS: iProduto[],
+    ID_SOCIEDADE: number
 }
 
 export interface iGetOrcamentosProdutoEntreLojasParam {
@@ -41,5 +42,13 @@ export interface iGetOrcamentosProdutoEntreLojasParam {
 export interface iGetOrcamentosProdutoEntreLojasResponse {
     NUM_ORCAMENTO: number,
     DATA: string,
-    QTO: number
+    QTO: number,
+    error?: boolean,
+    msg?: string
+}
+
+export interface iFilterSearch {
+    loja: number,
+    mes: number,
+    ano: number
 }

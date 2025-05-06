@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, reactive } from "vue";
-import { iLojaFormatada, iLoja } from "../interfaces";
+import { iLojaFormatada, iLoja, iProduto, iFilterSearch } from "../interfaces";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
+import ModalOrcamentos from "./ModalOrcamentos.vue";
 
 const props = defineProps({
   lojaSelecionada: {
@@ -12,12 +13,17 @@ const props = defineProps({
     type: Object as () => iLoja,
     default: {},
   },
+  filterSearch: {
+    type: Object as () => iFilterSearch,
+  },
 });
 
 const emits = defineEmits(["closeModal"]);
 
 const state = reactive({
   gridProdutos: <ixGridCreate>{},
+  modalOrcamentosOpened: false,
+  produtoSelecionado: <iProduto>{},
 });
 
 const actions = {
@@ -42,10 +48,18 @@ const actions = {
         Quantidade: {
           dataField: "QTD",
           width: "10%",
-          right: true,
+          center: true,
         },
       },
+      dblClick: async () => {
+        await actions.openModalOrcamentos();
+      },
     });
+  },
+
+  async openModalOrcamentos() {
+    state.produtoSelecionado = state.gridProdutos.dataSource();
+    state.modalOrcamentosOpened = true;
   },
 };
 
@@ -75,9 +89,21 @@ onMounted(async () => {
           @click="emits('closeModal')"
           >fechar</v-btn
         >
-
         <v-btn color="primary"><v-icon class="mr-2">mdi-printer</v-icon>imprimir</v-btn>
       </div>
     </div>
   </v-card>
+
+  <v-dialog
+    v-model="state.modalOrcamentosOpened"
+    max-width="580"
+  >
+    <ModalOrcamentos
+      :loja-origem="props.lojaOrigem"
+      :loja="props.lojaSelecionada"
+      :filter-search="props.filterSearch"
+      :cod-produto="state.produtoSelecionado.COD_PRODUTO"
+      @close-modal="state.modalOrcamentosOpened = false"
+    />
+  </v-dialog>
 </template>

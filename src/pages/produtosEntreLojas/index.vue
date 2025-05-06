@@ -66,7 +66,11 @@ onMounted(async () => {
         <div id="gridPrincipal"> </div>
 
         <div class="mt-2 d-flex justify-end">
-          <v-btn color="primary"><v-icon class="mr-2">mdi-printer</v-icon>imprimir</v-btn>
+          <v-btn
+            :disabled="state.btnPrintDisable"
+            color="primary"
+            ><v-icon class="mr-2">mdi-printer</v-icon>imprimir</v-btn
+          >
         </div>
       </div>
     </v-card>
@@ -77,6 +81,7 @@ onMounted(async () => {
     >
       <ModalProdutos
         :lojaSelecionada="state.dbLojaSelecionada"
+        :filter-search="state.setFilterSearch"
         :loja-origem="state.lojaOrigem"
         @close-modal="state.modalProdutosOpened = false"
       />
