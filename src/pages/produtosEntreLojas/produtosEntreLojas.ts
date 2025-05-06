@@ -87,6 +87,8 @@ export const actions = {
 
         state.loadingLojas = true
 
+        state.btnPrintDisable = true
+
         state.setFilterSearch = state.filterSearch
 
         const lojasFiltradas = state.lojas.filter(loja =>
