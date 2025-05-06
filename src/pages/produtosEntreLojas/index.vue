@@ -64,6 +64,10 @@ onMounted(async () => {
           v-if="state.loadingLojas"
         ></v-progress-linear>
         <div id="gridPrincipal"> </div>
+
+        <div class="mt-2 d-flex justify-end">
+          <v-btn color="primary"><v-icon class="mr-2">mdi-printer</v-icon>imprimir</v-btn>
+        </div>
       </div>
     </v-card>
 

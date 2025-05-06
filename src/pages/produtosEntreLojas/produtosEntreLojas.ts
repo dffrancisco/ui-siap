@@ -31,11 +31,11 @@ export const actions = {
     async createGrid() {
         state.gridPrincipal = new xGridV2.create({
             el: '#gridPrincipal',
-            height: 450,
+            height: 415,
             count: false,
             columns: {
-                Lojas: { dataField: 'LOJA', width: '75%' },
-                Valores: { dataField: 'VALOR_TOTAL', center: true }
+                Lojas: { dataField: 'LOJA', width: '80%' },
+                Valores: { dataField: 'VALOR_TOTAL', right: true }
             },
             dblClick: () => {
                 actions.openModalProdutos()
@@ -103,11 +103,34 @@ export const actions = {
         }
 
         state.gridPrincipal.enable()
+
+        await actions.totalizarValoresLojas()
+
         state.loadingLojas = false
+    },
+
+    async totalizarValoresLojas() {
+        //@ts-ignore
+        let lojas: iLojaFormatada[] = state.gridPrincipal.data()
+
+        let total = lojas.reduce((total, loja) => {
+            if (utils.formatValorUSA(loja.VALOR_TOTAL) > 0) {
+                return total + utils.formatValorUSA(loja.VALOR_TOTAL);
+            }
+        }, 0);
+
+        state.gridPrincipal.insertLine({
+            LOJA: 'TOTAL',
+            VALOR_TOTAL: utils.formatValor(total)
+        })
     },
 
     async openModalProdutos() {
         let loja = state.gridPrincipal.dataSource()
+
+        if (loja.LOJA == 'TOTAL') {
+            return
+        }
 
         if (!loja.PRODUTOS || loja.PRODUTOS.length <= 0) {
             Swal.fire({
