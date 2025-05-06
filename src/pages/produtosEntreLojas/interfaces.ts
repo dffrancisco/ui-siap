@@ -30,3 +30,16 @@ export interface iLojaFormatada {
     VALOR_TOTAL: string,
     PRODUTOS: iProduto[]
 }
+
+export interface iGetOrcamentosProdutoEntreLojasParam {
+    CNPJ: string,
+    ANO: number,
+    MES: number,
+    COD_PRODUTO: number
+}
+
+export interface iGetOrcamentosProdutoEntreLojasResponse {
+    NUM_ORCAMENTO: number,
+    DATA: string,
+    QTO: number
+}

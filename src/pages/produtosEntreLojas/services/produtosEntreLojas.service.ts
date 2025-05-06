@@ -1,11 +1,13 @@
 import axios from "axios";
-import { iGetLojasResponse, iGetProdutosEntreLojasParam, iGetProdutosEntreLojasResponse } from "../interfaces";
+import { iGetLojasResponse, iGetOrcamentosProdutoEntreLojasParam, iGetOrcamentosProdutoEntreLojasResponse, iGetProdutosEntreLojasParam, iGetProdutosEntreLojasResponse } from "../interfaces";
 
 const caminho = 'siap/produtosEntreLojas'
 
 type iGetLojasFunction = () => Promise<iGetLojasResponse[]>
 type iGetProdutosEntreLojasFunction = (param: iGetProdutosEntreLojasParam, lojas: number[]) =>
     Promise<iGetProdutosEntreLojasResponse>
+type iGetOrcamentosProdutoEntreLojasFunction = (param: iGetOrcamentosProdutoEntreLojasParam, loja: number) =>
+    Promise<iGetOrcamentosProdutoEntreLojasResponse | { error: boolean, msg: string }>
 
 const getLojas: iGetLojasFunction = async () => {
     const { data } = await axios.post(caminho, {
@@ -25,7 +27,18 @@ const getProdutosEntreLojas: iGetProdutosEntreLojasFunction = async (param, loja
     return data
 }
 
+const getOrcamentosProdutoEntreLojas: iGetOrcamentosProdutoEntreLojasFunction = async (param, loja) => {
+    const { data } = await axios.post(caminho, {
+        call: 'getOrcamentosProdutoEntreLojas',
+        param,
+        loja
+    })
+
+    return data
+}
+
 export default {
     getLojas,
-    getProdutosEntreLojas
+    getProdutosEntreLojas,
+    getOrcamentosProdutoEntreLojas
 }
