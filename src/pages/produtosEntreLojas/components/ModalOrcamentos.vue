@@ -4,8 +4,9 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { onMounted, reactive } from "vue";
 import produtosEntreLojasService from "../services/produtosEntreLojas.service";
-import { iFilterSearch, iLojaLista, iLojaFormatada } from "../interfaces";
-import utils from "@/ts/utils";
+import { iFilterSearch, iLojaLista, iLojaFormatada, iGetOrcamentosProdutoEntreLojasResponse } from "../interfaces";
+import utils, { iColumnPrint } from "@/ts/utils";
+import { mesesToSelect } from "@/constants/constants";
 
 const props = defineProps({
   lojaOrigem: {
@@ -85,6 +86,52 @@ const actions = {
       state.loading = false;
     }
   },
+
+  async onClickBtnPrint() {
+    try {
+      //@ts-ignore
+      let dadosOrcamento: iGetOrcamentosProdutoEntreLojasResponse[] = state.gridOrcamentos.data();
+
+      dadosOrcamento = dadosOrcamento.map((orc) => {
+        return {
+          ...orc,
+          DATA: utils.dataBrasil(orc.DATA),
+        };
+      });
+
+      const columns: iColumnPrint[] = [
+        { key: "NUM_ORCAMENTO", label: "N° Orçamento", width: "40%" },
+        { key: "DATA", label: "Data", width: "40%" },
+        { key: "QTO", label: "Quantidade" },
+      ];
+
+      const titulo = `
+                      <div style="display: flex; flex-direction: column; width: 100%; margin-top: 10px; gap: 12px; align-items: center">
+                          <strong style="font-size: 20px;">Produtos Entre Lojas - ${
+                            props.lojaOrigem.NOME
+                          } (Orçamentos)</strong>
+                          
+                          <div style="display: flex; justify-content: space-between; width: 100%;">
+                              <span>Loja: <strong>${props.loja.LOJA}</strong></span>
+                              <div>
+                                  <span>${
+                                    mesesToSelect.find((mes) => {
+                                      return mes.value == props.filterSearch.mes;
+                                    }).title
+                                  } / ${props.filterSearch.ano}</span>
+                              </div>
+                          </div>
+                      </div>
+                        `;
+
+      await utils.printComCabecalho(columns, dadosOrcamento, titulo);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao imprimir o relatório.",
+      });
+    }
+  },
 };
 
 onMounted(async () => {
@@ -113,7 +160,11 @@ onMounted(async () => {
           @click="emits('closeModal')"
           >fechar</v-btn
         >
-        <v-btn color="primary"><v-icon class="mr-2">mdi-printer</v-icon>imprimir</v-btn>
+        <v-btn
+          @click="actions.onClickBtnPrint"
+          color="primary"
+          ><v-icon class="mr-2">mdi-printer</v-icon>imprimir</v-btn
+        >
       </div>
     </div>
   </v-card>
