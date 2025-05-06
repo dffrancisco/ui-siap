@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive } from "vue";
-import { iLojaFormatada, iLoja, iProduto, iFilterSearch } from "../interfaces";
+import { iLojaFormatada, iLojaLista, iProduto, iFilterSearch } from "../interfaces";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import ModalOrcamentos from "./ModalOrcamentos.vue";
 
@@ -10,7 +10,7 @@ const props = defineProps({
     default: [],
   },
   lojaOrigem: {
-    type: Object as () => iLoja,
+    type: Object as () => iLojaLista,
     default: {},
   },
   filterSearch: {

@@ -4,12 +4,12 @@ import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import Swal from "sweetalert2";
 import { onMounted, reactive } from "vue";
 import produtosEntreLojasService from "../services/produtosEntreLojas.service";
-import { iFilterSearch, iLoja, iLojaFormatada } from "../interfaces";
+import { iFilterSearch, iLojaLista, iLojaFormatada } from "../interfaces";
 import utils from "@/ts/utils";
 
 const props = defineProps({
   lojaOrigem: {
-    type: Object as () => iLoja,
+    type: Object as () => iLojaLista,
   },
   filterSearch: {
     type: Object as () => iFilterSearch,

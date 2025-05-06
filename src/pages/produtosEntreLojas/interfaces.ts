@@ -4,7 +4,7 @@ export interface iGetLojasResponse {
     ID_SOCIEDADE: number
 }
 
-export interface iLoja extends iGetLojasResponse { }
+export interface iLojaLista extends iGetLojasResponse { }
 
 export interface iGetProdutosEntreLojasParam {
     CNPJ: string,

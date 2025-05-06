@@ -3,8 +3,9 @@ import Swal from "sweetalert2";
 import { computed, reactive } from "vue";
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import produtosEntreLojasService from "./services/produtosEntreLojas.service";
-import { iGetProdutosEntreLojasResponse, iLojaFormatada, iLoja, iFilterSearch } from "./interfaces";
-import utils from "@/ts/utils";
+import { iGetProdutosEntreLojasResponse, iLojaFormatada, iLojaLista, iFilterSearch } from "./interfaces";
+import utils, { iColumnPrint } from "@/ts/utils";
+import { mesesToSelect } from "@/constants/constants";
 
 export const state = reactive({
     filterSearch: <iFilterSearch>{
@@ -14,14 +15,14 @@ export const state = reactive({
     },
     setFilterSearch: <iFilterSearch>{},
     loading: false,
-    lojas: <iLoja[]>[],
+    lojasLista: <iLojaLista[]>[],
     gridPrincipal: <ixGridCreate>{},
     loadingLojas: false,
     modalProdutosOpened: false,
     modalOrcamentosOpened: false,
     dbLojaSelecionada: <iLojaFormatada>{},
-    lojaOrigem: <iLoja>{},
-    btnPrintDisable: true
+    lojaOrigem: <iLojaLista>{},
+    dbProdutosEntreLojas: <iLojaFormatada[]>[]
 })
 
 export const actions = {
@@ -87,19 +88,18 @@ export const actions = {
 
         state.loadingLojas = true
 
-        state.btnPrintDisable = true
+        state.setFilterSearch = { ...state.filterSearch }
 
-        state.setFilterSearch = state.filterSearch
-
-        const lojasFiltradas = state.lojas.filter(loja =>
+        const lojasFiltradas = state.lojasLista.filter(loja =>
             loja.ID_SOCIEDADE != state.filterSearch.loja && loja.ID_SOCIEDADE != 6
         )
 
         const qtdLojas = lojasFiltradas.length
 
-        state.lojaOrigem = state.lojas.find(loja => loja.ID_SOCIEDADE == state.filterSearch.loja)
+        state.lojaOrigem = state.lojasLista.find(loja => loja.ID_SOCIEDADE == state.filterSearch.loja)
 
         state.gridPrincipal.source([])
+        state.dbProdutosEntreLojas = []
 
         state.gridPrincipal.disable()
 
@@ -108,6 +108,9 @@ export const actions = {
 
             await actions.getProdutosEntreLojas(grupoLojas, state.lojaOrigem.CGC_CLIENTE)
         }
+
+        //@ts-ignore
+        state.dbProdutosEntreLojas = state.gridPrincipal.data()
 
         state.gridPrincipal.enable()
 
@@ -118,12 +121,9 @@ export const actions = {
 
     async totalizarValoresLojas() {
         //@ts-ignore
-        let lojas: iLojaFormatada[] = state.gridPrincipal.data()
+        let lojas: iLojaFormatada[] = state.dbProdutosEntreLojas
 
         if (lojas.length > 0) {
-
-            state.btnPrintDisable = false
-
             let total = lojas.reduce((total, loja) => {
                 if (utils.formatValorUSA(loja.VALOR_TOTAL) > 0) {
                     return total + utils.formatValorUSA(loja.VALOR_TOTAL);
@@ -163,7 +163,7 @@ export const actions = {
 
             const data = await produtosEntreLojasService.getLojas()
 
-            state.lojas = data
+            state.lojasLista = data
 
         } catch (error) {
             console.error(error);
@@ -176,7 +176,7 @@ export const actions = {
         }
     },
 
-    formatarPorLojas(obj: iGetProdutosEntreLojasResponse, lojas: iLoja[]): iLojaFormatada[] {
+    formatarPorLojas(obj: iGetProdutosEntreLojasResponse, lojas: iLojaLista[]): iLojaFormatada[] {
         const resultado = [];
 
         for (const idLoja in obj) {
@@ -216,7 +216,7 @@ export const actions = {
                 MES: state.filterSearch.mes
             }, lojas)
 
-            const lojasFormatadas = actions.formatarPorLojas(data, state.lojas)
+            const lojasFormatadas = actions.formatarPorLojas(data, state.lojasLista)
 
             state.gridPrincipal.sourceAdd(lojasFormatadas)
         } catch (error) {
@@ -226,5 +226,38 @@ export const actions = {
                 title: 'Error ao buscar os produtos entre lojas.'
             })
         }
-    }
+    },
+
+    async onClickBtnPrint() {
+        try {
+            const dadosProdutosEntreLojas = state.dbProdutosEntreLojas
+
+            const columns: iColumnPrint[] = [
+                { key: 'LOJA', width: '80%', label: 'Lojas' },
+                { key: 'VALOR_TOTAL', width: '50%', label: 'Valores' },
+            ];
+
+            const titulo = `
+                            <div style="display: flex; flex-direction: column; width: 100%; margin-top: 10px; gap: 12px; align-items: center">
+                                <strong style="font-size: 20px;">Produtos Entre Lojas - Compras</strong>
+                                
+                                <div style="display: flex; justify-content: space-between; width: 100%;">
+                                    <span>Loja: <strong>${state.lojaOrigem.NOME}</strong></span>
+                                    <div>
+                                        <span>${mesesToSelect.find(mes => { return mes.value == state.setFilterSearch.mes }).title} / ${state.setFilterSearch.ano}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+            await utils.printComCabecalho(columns, dadosProdutosEntreLojas, titulo);
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
+            });
+        }
+    },
+
 }

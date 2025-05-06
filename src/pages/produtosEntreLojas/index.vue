@@ -24,7 +24,7 @@ onMounted(async () => {
                 v-model="state.filterSearch.loja"
                 label="Loja"
                 :clearable="false"
-                :items="state.lojas"
+                :items="state.lojasLista"
                 item-title="NOME"
                 item-value="ID_SOCIEDADE"
               ></v-autocomplete>
@@ -67,8 +67,9 @@ onMounted(async () => {
 
         <div class="mt-2 d-flex justify-end">
           <v-btn
-            :disabled="state.btnPrintDisable"
+            :disabled="state.dbProdutosEntreLojas.length <= 0"
             color="primary"
+            @click="actions.onClickBtnPrint"
             ><v-icon class="mr-2">mdi-printer</v-icon>imprimir</v-btn
           >
         </div>
