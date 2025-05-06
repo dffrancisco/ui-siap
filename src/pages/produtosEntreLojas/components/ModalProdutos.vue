@@ -3,6 +3,9 @@ import { onMounted, reactive } from "vue";
 import { iLojaFormatada, iLojaLista, iProduto, iFilterSearch } from "../interfaces";
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import ModalOrcamentos from "./ModalOrcamentos.vue";
+import utils, { iColumnPrint } from "@/ts/utils";
+import Swal from "sweetalert2";
+import { mesesToSelect } from "@/constants/constants";
 
 const props = defineProps({
   lojaSelecionada: {
@@ -61,6 +64,42 @@ const actions = {
     state.produtoSelecionado = state.gridProdutos.dataSource();
     state.modalOrcamentosOpened = true;
   },
+
+  async onClickBtnPrint() {
+    try {
+      const dadosProdutos = props.lojaSelecionada.PRODUTOS;
+
+      const columns: iColumnPrint[] = [
+        { key: "NUM_FABRICANTE", label: "N° Fabricante", width: "20%" },
+        { key: "DESC_PRODUTO", label: "Descrição Produto" },
+        { key: "QTD", label: "Quantidade" },
+      ];
+
+      const titulo = `
+                      <div style="display: flex; flex-direction: column; width: 100%; margin-top: 10px; gap: 12px; align-items: center">
+                          <strong style="font-size: 20px;">Produtos Entre Lojas - ${props.lojaOrigem.NOME}</strong>
+                          
+                          <div style="display: flex; justify-content: space-between; width: 100%;">
+                              <span>Loja: <strong>${props.lojaSelecionada.LOJA}</strong></span>
+                              <div>
+                                  <span>${
+                                    mesesToSelect.find((mes) => {
+                                      return mes.value == props.filterSearch.mes;
+                                    }).title
+                                  } / ${props.filterSearch.ano}</span>
+                              </div>
+                          </div>
+                      </div>
+                        `;
+
+      await utils.printComCabecalho(columns, dadosProdutos, titulo);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Erro ao imprimir o relatório.",
+      });
+    }
+  },
 };
 
 onMounted(async () => {
@@ -89,7 +128,11 @@ onMounted(async () => {
           @click="emits('closeModal')"
           >fechar</v-btn
         >
-        <v-btn color="primary"><v-icon class="mr-2">mdi-printer</v-icon>imprimir</v-btn>
+        <v-btn
+          @click="actions.onClickBtnPrint"
+          color="primary"
+          ><v-icon class="mr-2">mdi-printer</v-icon>imprimir</v-btn
+        >
       </div>
     </div>
   </v-card>

@@ -234,7 +234,7 @@ export const actions = {
 
             const columns: iColumnPrint[] = [
                 { key: 'LOJA', width: '80%', label: 'Lojas' },
-                { key: 'VALOR_TOTAL', width: '50%', label: 'Valores' },
+                { key: 'VALOR_TOTAL', label: 'Valores' },
             ];
 
             const titulo = `
