@@ -99,7 +99,8 @@ export const actions = {
 
         state.lojaOrigem = state.lojas.find(loja => loja.ID_SOCIEDADE == state.filterSearch.loja)
 
-        state.gridPrincipal.clear()
+        state.gridPrincipal.source([])
+
         state.gridPrincipal.disable()
 
         for (let i = 0; i < qtdLojas; i += 3) {
