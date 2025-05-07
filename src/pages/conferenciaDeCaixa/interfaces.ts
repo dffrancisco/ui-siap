@@ -25,7 +25,8 @@ export interface iCaixas {
     HORA_FECHAMENTO: string;
     ID_ABERTURA_CAIXA: number;
     LOGIN: string;
-    OBS: string;
+    NOME_COMP: string;
+    OBS: string | null;
     SANGRIA: number;
     STATUS: number;
     TROCO: number;
@@ -50,7 +51,9 @@ export interface iTiposPagamento {
     PIX_CONTROLE: string | null;
     TIPO_PAGAMENTO: string | null;
     NUM_ORCAMENTO: number;
+    UNION_ORCAMENTO: string
     VALOR: number | null;
+    CONFERIDO: boolean;
 }
 
 export interface iTodasAsCompras {
@@ -62,6 +65,7 @@ export interface iTodasAsCompras {
     NOSSO_NUM: number | null;
     TIPOS_PAGAMENTO: iTiposPagamento[];
     VALOR_TOTAL: number;
+    VALOR_FILTRADO?: number;
 }
 
 export interface iTotalizadores {
@@ -72,7 +76,9 @@ export interface iTotalizadores {
 
 export interface iDevolucoes {
     CAIXA: string;
+    COD_FUNCIONARIO: number;
     CODIGO: string;
+    DESC_DEVOLUCAO: string;
     DESCRICAO_PAGAMENTO: string;
     LOGIN: string;
     NUM_ORCAMENTO: number;
@@ -84,6 +90,7 @@ export interface iSangrias {
     HORA: string;
     LOGIN: string;
     VALOR: number;
+    COD_FUNCIONARIO: number;
 }
 
 export interface iResponseDadosIniciais {
@@ -94,6 +101,7 @@ export interface iResponseDadosIniciais {
     totalizadores: iTotalizadores[];
     devolucoes: iDevolucoes[];
     sangrias: iSangrias[];
+    totalizadoresAgrupadosPorCaixa: iTotalizadoresAgrupados[];
 }
 
 export interface iParamsAbrirCaixa {
@@ -104,10 +112,31 @@ export interface iParamsAbrirCaixa {
 
 export interface iParamFecharCaixa {
     ID_ABERTURA_CAIXA: number;
+    DATA: string;
 }
 
 export interface iParamSangria {
     loginCaixa: string;
     idAberturaCaixa: number;
     valor: number;
+}
+
+export interface iTotalizadorIndividual {
+    COD_FUNCIONARIO: number;
+    TIPO_PAGAMENTO: string;
+    DESCRICAO_PAGAMENTO: string;
+    VALOR: number;
+}
+
+export interface iTotalizadoresAgrupados {
+    [codFuncionario: number]: iTotalizadores[];
+}
+
+export interface iParamObs {
+    idAberturaCaixa: number;
+    observacao: string;
+}
+
+export interface iResponseConferido {
+    conferido: string
 }

@@ -1,7 +1,10 @@
 import utils from './../../ts/utils';
 import moment from "moment";
 import { computed, reactive } from "vue";
-import { iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamsAbrirCaixa, iParamSangria, iSangrias, iTodasAsCompras, iTotalizadores } from "./interfaces";
+import {
+    iCaixas, iDevolucoes, iFuncionarios, iOptions, iParamFecharCaixa, iParamObs, iParamsAbrirCaixa,
+    iParamSangria, iSangrias, iTodasAsCompras, iTotalizadores, iTotalizadoresAgrupados
+} from "./interfaces";
 import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
@@ -24,12 +27,22 @@ export const state = reactive({
     modalSangriaOpened: false,
     pagamentoSelecionado: null,
     headersLancamentos: [
-        { title: "#", key: "INDEX", width: "40px" },
-        { title: "Orçamentos", key: "NUM_ORCAMENTO", minWidth: "160px" },
-        { title: "Hora", key: "HORA", width: "60px", value: (item: any) => utils.formatHora(item.HORA) },
-        { title: "Pagamentos", key: "PAGAMENTOS", width: "100%" },
-        { title: "Total", key: "VALOR", width: "120px", value: (item: any) => utils.formatValor(item.VALOR_TOTAL) },
+        { title: "#", key: "INDEX", width: "20px" },
+        { title: "Orçamentos", key: "NUM_ORCAMENTO", minWidth: "160px", sortable: false, },
+        { title: "Hora", key: "HORA", width: "60px", value: (item: any) => utils.formatHora(item.HORA), sortable: false, },
+        { title: "Pagamentos", key: "PAGAMENTOS", width: "100%", sortable: false, },
+        { title: "Total", key: "VALOR", width: "120px", value: (item: any) => utils.formatValor(item.VALOR_FILTRADO ?? item.VALOR_TOTAL), },
     ],
+    modalConferirCaixaOpened: false,
+    selectOptionModal: "lancamentos",
+    totalizadoresIndividuais: <iTotalizadoresAgrupados[]>[],
+    pagamentosSelecionadosModal: [] as string[],
+    pagamentosSelecionadosDevolucao: ["TODOS"] as string[],
+    filtrosAdicionais: {
+        orcamento: '',
+        autorizacao: '',
+        apenasNaoConferidos: false,
+    }
 });
 
 export const options: iOptions[] = [
@@ -41,6 +54,9 @@ export const options: iOptions[] = [
 
 export const actions = {
     async init() {
+        const isValid = await actions.validarData(state.data);
+        if (!isValid) return;
+
         await actions.getDadosIniciaisConfCaixa();
     },
 
@@ -66,6 +82,8 @@ export const actions = {
                     { TIPO_PAGAMENTO: "TODOS", DESCRICAO_PAGAMENTO: "TODOS", VALOR: data.totalizadores.reduce((acc, item) => acc + item.VALOR, 0) },
                     ...data.totalizadores
                 ];
+
+                state.totalizadoresIndividuais = data.totalizadoresAgrupadosPorCaixa;
             }
         } catch (error) {
             Swal.fire({
@@ -86,31 +104,36 @@ export const actions = {
         state.totalizadores = [];
         state.sangrias = [];
         state.devolucoes = [];
+        state.totalizadoresIndividuais = [];
     },
 
-
-    async validarDataAtual(caixaData) {
-        const hoje = moment().format("YYYY-MM-DD");
-
-        if (!moment(caixaData, "YYYY-MM-DD", true).isValid() || caixaData !== hoje) {
+    async validarData(caixaData) {
+        // Verifica se a data é válida
+        if (!moment(caixaData, "YYYY-MM-DD", true).isValid()) {
             await Swal.fire({
                 title: "Atenção",
-                text: "Só é possível abrir o caixa ou MDC na data atual!",
+                text: "Data inválida!",
                 icon: "warning",
                 confirmButtonText: "OK",
             });
             return false;
         }
+
+        // Verifica se a data está no futuro
+        if (moment(caixaData).isAfter(moment(), "day")) {
+            await Swal.fire({
+                title: "Atenção",
+                text: "Não é possível buscar dados para datas futuras!",
+                icon: "warning",
+                confirmButtonText: "OK",
+            });
+            return false;
+        }
+
         return true;
     },
 
     async abrirMDC() {
-        const caixaData = state.data;
-
-        if (!(await actions.validarDataAtual(caixaData))) {
-            return;
-        }
-
         if (await msgConfirm("Confirmação", "Gostaria de Abrir o MDC do dia " + utils.dataBrasil(state.data) + "?")) {
             try {
                 state.loading = true;
@@ -129,11 +152,6 @@ export const actions = {
     },
 
     async openModalAbrirCaixa() {
-        const caixaData = state.data;
-
-        if (!(await actions.validarDataAtual(caixaData))) {
-            return;
-        }
         state.modalAbrirCaixaOpened = true;
     },
 
@@ -178,15 +196,16 @@ export const actions = {
     async fecharCaixa(funcionario) {
 
         let param: iParamFecharCaixa = {
-            ID_ABERTURA_CAIXA: funcionario.ID_ABERTURA_CAIXA
+            ID_ABERTURA_CAIXA: funcionario.ID_ABERTURA_CAIXA,
+            DATA: funcionario.DATA_ABERTURA,
         }
 
         xAuthManager("Autorizar fechamento de caixa?", async () => {
             try {
                 state.loading = true;
 
-                let caixasAbertoAtualizados = await serviceConferenciaDeCaixa.fecharCaixa(param);
-                state.caixas = caixasAbertoAtualizados;
+                let caixasAtualizados = await serviceConferenciaDeCaixa.fecharCaixa(param);
+                state.caixas = caixasAtualizados;
 
                 // Reintroduzir o funcionário na lista de funcionários disponíveis
                 const funcionarioFechado = state.funcionarios.find(
@@ -198,6 +217,20 @@ export const actions = {
                         LOGIN: funcionario.LOGIN
                     };
                     state.funcionarios.push(retornarFuncionarioParaState);
+                }
+
+                // Atualiza o caixaSelecionado com os novos dados
+                const caixaFechado = caixasAtualizados.find(
+                    c => c.ID_ABERTURA_CAIXA === funcionario.ID_ABERTURA_CAIXA
+                );
+
+                if (caixaFechado) {
+                    state.caixaSelected = {
+                        ...state.caixaSelected,
+                        STATUS: caixaFechado.STATUS,
+                        HORA_FECHAMENTO: caixaFechado.HORA_FECHAMENTO,
+                        CONFERIDO: caixaFechado.CONFERIDO || ''
+                    };
                 }
 
 
@@ -223,6 +256,16 @@ export const actions = {
         state.loading = true;
         state.pagamentoSelecionado = tipoPagamento === "TODOS" ? null : tipoPagamento;
         state.loading = false;
+    },
+
+    selecionarPagamentoDevolucao(tipoPagamento: string) {
+        if (tipoPagamento === "TODOS") {
+            state.pagamentosSelecionadosDevolucao = ["TODOS"];
+            return;
+        }
+        state.pagamentosSelecionadosDevolucao = state.pagamentosSelecionadosDevolucao.includes(tipoPagamento)
+            ? state.pagamentosSelecionadosDevolucao.filter(p => p !== tipoPagamento)
+            : [...state.pagamentosSelecionadosDevolucao.filter(p => p !== "TODOS"), tipoPagamento];
     },
 
     async modalSangria(caixa) {
@@ -252,7 +295,7 @@ export const actions = {
             let param: iParamSangria = {
                 loginCaixa: caixaSelecionado.LOGIN,
                 idAberturaCaixa: caixaSelecionado.ID_ABERTURA_CAIXA,
-                valor: parseFloat(valorSangria.replace(/\./g, "").replace(",", "."))
+                valor: utils.formatValorUSA(valorSangria)
             };
 
             let sangrias = await serviceConferenciaDeCaixa.efetuarSangria(param);
@@ -274,63 +317,323 @@ export const actions = {
         } finally {
             state.loading = false;
         }
+    },
+
+    abrirModalConferirCaixa(caixa) {
+        state.caixaSelected = caixa;
+        state.selectOptionModal = "lancamentos";
+        state.pagamentosSelecionadosModal = ["TODOS"];
+        state.modalConferirCaixaOpened = true;
+    },
+
+    async salvarObs(observacao: string) {
+        try {
+            state.loading = true;
+
+            let param: iParamObs = {
+                idAberturaCaixa: state.caixaSelected.ID_ABERTURA_CAIXA,
+                observacao: observacao
+            };
+
+            await serviceConferenciaDeCaixa.salvarObs(param)
+            state.caixaSelected.OBS = param.observacao;
+
+            Swal.fire({
+                icon: "success",
+                title: "Observação inserida com sucesso.",
+                showConfirmButton: false,
+                timer: 1000,
+            });
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao salvar observação."
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    selecionarPagamentoModal(tipoPagamento: string) {
+        if (tipoPagamento === "TODOS") {
+            state.pagamentosSelecionadosModal = ["TODOS"];
+            return;
+        }
+
+        state.pagamentosSelecionadosModal = state.pagamentosSelecionadosModal.includes(tipoPagamento)
+            ? state.pagamentosSelecionadosModal.filter(p => p !== tipoPagamento)
+            : [...state.pagamentosSelecionadosModal.filter(p => p !== "TODOS"), tipoPagamento];
+    },
+
+    filtrarPorOrcamento(numOrcamento: string) {
+        state.filtrosAdicionais.orcamento = numOrcamento;
+    },
+
+    filtrarPorAutorizacao(autorizacao: string) {
+        state.filtrosAdicionais.autorizacao = autorizacao;
+    },
+
+    toggleApenasNaoConferidos() {
+        state.filtrosAdicionais.apenasNaoConferidos = !state.filtrosAdicionais.apenasNaoConferidos;
+    },
+
+    async conferirCaixa() {
+
+        xAuthManager("Confirma a conferência de caixa?", async () => {
+            try {
+                state.loading = true;
+
+                let conferido = await serviceConferenciaDeCaixa.conferirCaixa(state.caixaSelected.ID_ABERTURA_CAIXA);
+                state.caixaSelected.CONFERIDO = conferido.conferido;
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Caixa conferido com sucesso.",
+                    showConfirmButton: false,
+                    timer: 1000,
+                });
+
+            } catch (error) {
+                Swal.fire({
+                    icon: "error",
+                    text: "Erro ao conferir caixa."
+                });
+            } finally {
+                state.loading = false;
+            }
+        });
     }
 }
 
-export const abaSelecionada = computed(() => state.selectedOption);
+export const computeds = {
+    abaSelecionada: computed(() => {
+        return state.selectedOption;
+    }),
 
-export const funcionariosDisponiveis = computed(() =>
-    state.funcionarios.filter(funcionario => {
-        const temCaixaAberto = state.caixas.some(
-            caixa => caixa.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO && caixa.STATUS === 1
-        );
-        return !temCaixaAberto;
-    })
-);
+    abaSelecionadaModal: computed(() => {
+        return state.selectOptionModal;
+    }),
 
-export const totalDevolucoes = computed(() => {
-    const totaisPorCaixa = state.devolucoes.reduce((acc, devolucao) => {
-        if (!acc[devolucao.CAIXA]) {
-            acc[devolucao.CAIXA] = 0;
+    funcionariosDisponiveis: computed(() => {
+        return state.funcionarios.filter(funcionario => {
+            const temCaixaAberto = state.caixas.some(
+                caixa => caixa.COD_FUNCIONARIO === funcionario.COD_FUNCIONARIO && caixa.STATUS === 1
+            );
+            return !temCaixaAberto;
+        });
+    }),
+
+    comprasFiltradas: computed(() => {
+        let compras = state.todasAsCompras;
+
+        if (state.pagamentoSelecionado) {
+            compras = compras.filter(c =>
+                c.TIPOS_PAGAMENTO.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
+            );
         }
-        acc[devolucao.CAIXA] += devolucao.VALOR;
-        return acc;
-    }, {} as Record<string, number>);
 
-    const totalGeral = Object.values(totaisPorCaixa).reduce((acc, val) => acc + val, 0);
+        return compras
+            .sort((a, b) =>
+                moment(a.HORA).valueOf() - moment(b.HORA).valueOf()
+            )
+            .map((compra, index) => ({
+                ...compra,
+                INDEX: index + 1,
+            }));
+    }),
 
-    return { totaisPorCaixa, totalGeral };
-});
+    comprasFiltradasPorCaixa: computed(() => {
+        if (!state.caixaSelected) return [];
 
-export const totalSangrias = computed(() => {
-    const totaisPorPessoa = state.sangrias.reduce((acc, sangria) => {
-        if (!acc[sangria.ENTREGUE_PARA]) {
-            acc[sangria.ENTREGUE_PARA] = 0;
-        }
-        acc[sangria.ENTREGUE_PARA] += sangria.VALOR;
-        return acc;
-    }, {} as Record<string, number>);
+        // Filtro inicial por caixa
+        let compras = state.todasAsCompras.filter(c => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO);
 
-    const totalGeral = Object.values(totaisPorPessoa).reduce((acc, val) => acc + val, 0);
+        // Aplicar filtros em cada compra
+        compras = compras.map(compra => {
+            const pagamentosFiltrados = compra.TIPOS_PAGAMENTO.filter(pagamento => {
+                // Filtro por tipo de pagamento selecionado
+                if (state.pagamentosSelecionadosModal.length > 0 &&
+                    !state.pagamentosSelecionadosModal.includes("TODOS")) {
+                    if (!state.pagamentosSelecionadosModal.includes(pagamento.TIPO_PAGAMENTO)) {
+                        return false;
+                    }
+                }
 
-    return { totaisPorPessoa, totalGeral };
-});
+                // Filtro por número de orçamento
+                if (state.filtrosAdicionais.orcamento &&
+                    !pagamento.NUM_ORCAMENTO?.toString().includes(state.filtrosAdicionais.orcamento) &&
+                    !compra.ORCAMENTOS?.some(o => o.NUM_ORCAMENTO.toString().includes(state.filtrosAdicionais.orcamento))) {
+                    return false;
+                }
 
-export const comprasFiltradas = computed(() => {
-    let compras = state.todasAsCompras;
+                // Filtro por autorização
+                if (state.filtrosAdicionais.autorizacao &&
+                    !pagamento.AUTORIZACAO?.includes(state.filtrosAdicionais.autorizacao)) {
+                    return false;
+                }
 
-    if (state.pagamentoSelecionado) {
-        compras = compras.filter(c =>
-            c.TIPOS_PAGAMENTO.some(tp => tp.TIPO_PAGAMENTO === String(state.pagamentoSelecionado).trim())
+                // Filtro por não conferido
+                if (state.filtrosAdicionais.apenasNaoConferidos && pagamento.CONFERIDO) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (pagamentosFiltrados.length === 0) return null;
+
+            return {
+                ...compra,
+                TIPOS_PAGAMENTO: pagamentosFiltrados,
+                VALOR_FILTRADO: pagamentosFiltrados.reduce((sum, p) => sum + p.VALOR, 0)
+            };
+        }).filter(Boolean);
+
+        // Ordena por hora
+        compras.sort((a, b) =>
+            moment(a.HORA).valueOf() - moment(b.HORA).valueOf()
+        )
+
+        // Adiciona índice
+        return compras.map((compra, index) => ({
+            ...compra,
+            INDEX: index + 1
+        }));
+    }),
+
+    sangriasPorCaixa: computed(() => {
+        if (!state.caixaSelected) return [];
+        return state.sangrias.filter(s => s.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
+    }),
+
+    observacoesPorCaixa: computed(() => {
+        if (!state.caixaSelected) return [];
+
+        const comprasDoCaixa = state.todasAsCompras.filter(
+            c => c.CAIXA === state.caixaSelected.COD_FUNCIONARIO
         );
-    }
 
-    return compras
-        .sort((a, b) => new Date(a.HORA).getTime() - new Date(b.HORA).getTime())
-        .map((compra, index) => ({
+        const obsCaixaSelecionado: string[] = [];
+
+        if (state.caixaSelected.OBS) {
+            obsCaixaSelecionado.push(state.caixaSelected.OBS);
+        }
+
+        for (const compra of comprasDoCaixa) {
+            const pagamentoComObs = compra.TIPOS_PAGAMENTO.find(p => p.OBS);
+
+            if (pagamentoComObs) {
+                obsCaixaSelecionado.push(pagamentoComObs.OBS);
+            }
+        }
+
+        return obsCaixaSelecionado;
+    }),
+
+    devolucoesPorCaixa: computed(() => {
+        if (!state.caixaSelected) return [];
+
+        let devolucoesFiltradasPorCaixa = state.devolucoes.filter(d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO);
+
+        // Se nenhum pagamento foi selecionado ou "TODOS" está na lista, mostra tudo
+        if (
+            state.pagamentosSelecionadosDevolucao.length === 0 ||
+            state.pagamentosSelecionadosDevolucao.includes("TODOS")
+        ) {
+            return devolucoesFiltradasPorCaixa.map((compra, index) => ({
+                ...compra,
+                INDEX: index + 1,
+            }));
+        }
+
+        // Filtra pelo tipo de pagamento selecionado
+        devolucoesFiltradasPorCaixa = devolucoesFiltradasPorCaixa.filter(d =>
+            state.pagamentosSelecionadosDevolucao.includes(d.DESCRICAO_PAGAMENTO)
+        );
+
+        return devolucoesFiltradasPorCaixa.map((compra, index) => ({
             ...compra,
             INDEX: index + 1,
         }));
-});
+    }),
 
+    totalSangriasPorCaixa: computed(() => {
+        return computeds.sangriasPorCaixa.value.reduce((acc, s) => acc + s.VALOR, 0);
+    }),
+
+    totalizadoresFiltradosPorCaixa: computed<iTotalizadores[]>(() => {
+        if (!state.caixaSelected || !state.totalizadoresIndividuais) {
+            return [];
+        }
+
+        const codFuncionario = state.caixaSelected.COD_FUNCIONARIO;
+        const totalizadores = state.totalizadoresIndividuais[codFuncionario] ?? [];
+
+        return [
+            {
+                TIPO_PAGAMENTO: "TODOS",
+                DESCRICAO_PAGAMENTO: "TODOS",
+                VALOR: Array.isArray(totalizadores)
+                    ? totalizadores.reduce((sum, t) => sum + t.VALOR, 0)
+                    : 0
+            },
+            ...(Array.isArray(totalizadores) ? totalizadores : [totalizadores])
+        ];
+    }),
+
+    totalizadorDevolucaoPorCaixa: computed(() => {
+        if (!state.caixaSelected) return [];
+
+        const devolucoesPorCaixa = state.devolucoes.filter(
+            d => d.COD_FUNCIONARIO === state.caixaSelected.COD_FUNCIONARIO
+        );
+
+        const totais: { [descricao: string]: number } = {};
+
+        for (const { DESCRICAO_PAGAMENTO, VALOR } of devolucoesPorCaixa) {
+            totais[DESCRICAO_PAGAMENTO] = (totais[DESCRICAO_PAGAMENTO] || 0) + VALOR;
+        }
+
+        //pega o obj e retorna um array de pares em outra estrutura
+        const totalizadores = Object.entries(totais).map(([DESCRICAO_PAGAMENTO, VALOR]) => ({
+            DESCRICAO_PAGAMENTO,
+            VALOR,
+        }));
+
+        const totalTodos = totalizadores.reduce((acc, item) => acc + item.VALOR, 0);
+        totalizadores.unshift({ DESCRICAO_PAGAMENTO: "TODOS", VALOR: totalTodos });
+
+        return totalizadores;
+    }),
+
+
+    totalDevolucoes: computed(() => {
+        const totaisPorCaixa = state.devolucoes.reduce((acc, devolucao) => {
+            if (!acc[devolucao.CAIXA]) {
+                acc[devolucao.CAIXA] = 0;
+            }
+            acc[devolucao.CAIXA] += devolucao.VALOR;
+            return acc;
+        }, {} as Record<string, number>);
+
+        const totalGeral = Object.values(totaisPorCaixa).reduce((acc, val) => acc + val, 0);
+
+        return { totaisPorCaixa, totalGeral };
+    }),
+
+    totalSangrias: computed(() => {
+        const totaisPorPessoa = state.sangrias.reduce((acc, sangria) => {
+            if (!acc[sangria.ENTREGUE_PARA]) {
+                acc[sangria.ENTREGUE_PARA] = 0;
+            }
+            acc[sangria.ENTREGUE_PARA] += sangria.VALOR;
+            return acc;
+        }, {} as Record<string, number>);
+
+        const totalGeral = Object.values(totaisPorPessoa).reduce((acc, val) => acc + val, 0);
+
+        return { totaisPorPessoa, totalGeral };
+    })
+}
 

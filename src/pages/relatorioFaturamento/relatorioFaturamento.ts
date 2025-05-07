@@ -205,7 +205,8 @@ export const actions = {
             let param: iGetOrcamentosClienteFaturadoParam = {
                 dataInicio: state.setDataInicio,
                 dataFim: state.setDataFim,
-                id_cliente: state.clienteSelecionado.ID_CLIENTE
+                id_cliente: state.clienteSelecionado.ID_CLIENTE,
+                cnpj: state.clienteSelecionado.CGC_CLIENTE
             }
 
             const data = await serviceRelatorioFaturamento.getOrcamentosClienteFaturado(param)
