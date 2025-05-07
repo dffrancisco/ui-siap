@@ -1,6 +1,6 @@
 import moment from "moment";
 import Swal from "sweetalert2";
-import { computed, reactive } from "vue";
+import { reactive } from "vue";
 import xGridV2, { ixGridCreate } from '@/plugins/xGridV2';
 import produtosEntreLojasService from "./services/produtosEntreLojas.service";
 import { iGetProdutosEntreLojasResponse, iLojaFormatada, iLojaLista, iFilterSearch } from "./interfaces";
@@ -120,7 +120,7 @@ export const actions = {
     },
 
     async totalizarValoresLojas() {
-        //@ts-ignore
+
         let lojas: iLojaFormatada[] = state.dbProdutosEntreLojas
 
         if (lojas.length > 0) {
