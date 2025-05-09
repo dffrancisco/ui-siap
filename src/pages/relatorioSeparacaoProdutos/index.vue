@@ -22,7 +22,7 @@ onMounted(async () => {
             multiple
             autocomplete="off"
             :items="state.estoquistas"
-            item-title="LOGIN"
+            item-title="LOGIN_COM_CODIGO"
             item-value="COD_FUNCIONARIO"
             v-model="state.estoquistasSelecionados"
           >
@@ -85,6 +85,7 @@ onMounted(async () => {
             class="ml-3"
             color="primary"
             :disabled="state.dadosRelatorioSeparacaoProdutos.length === 0"
+            @click="actions.onClickImprimir"
             icon="mdi-printer"
             size="36px"
             title="Imprimir"
@@ -105,7 +106,7 @@ onMounted(async () => {
         :row-props="actions.getClassCorLinha"
       ></v-data-table-virtual>
     </v-card>
-    <div id="pnCodigoTela"> relatorioAvarias </div>
+    <div id="pnCodigoTela"> relatorioSeparacaoProdutos </div>
 
     <v-overlay
       :model-value="state.loading"

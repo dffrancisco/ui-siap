@@ -2,7 +2,8 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import serviceRelatorioSeparacaoProdutos from "./services/relatorioSeparacaoProdutos.service"
-import { iEstoquistas } from "./interfaces";
+import { iEstoquistas, iRelatorioSeparacaoProdutos } from "./interfaces";
+import utils, { iColumnPrint } from "@/ts/utils";
 
 export const state = reactive({
     loading: false,
@@ -13,20 +14,40 @@ export const state = reactive({
     dataFimImpressao: null,
     estoquistas: <iEstoquistas[]>[],
     estoquistasSelecionados: [],
-    dadosRelatorioSeparacaoProdutos: <any[]>[],
+    dadosRelatorioSeparacaoProdutos: <iRelatorioSeparacaoProdutos[]>[],
     headers: <any>[
         {
             title: "Funcionário",
-            key: "LOGIN",
+            key: "LOGIN_COM_CODIGO",
             sortable: true,
             align: 'left',
         },
         {
-            title: "Quantidade",
+            title: "Quantidade Orçamentos",
+            key: "TOTAL_ORCAMENTOS",
+            sortable: true,
+            align: 'center',
+        },
+        {
+            title: "Quantidade Itens",
             key: "QTD",
             sortable: true,
+            align: 'center',
+        },
+        {
+            title: "Tempo Médio por Orçamento",
+            key: "TEMPO_MEDIO_MINUTOS",
+            sortable: true,
+            align: 'center',
+            value: (item: any) => `${item.TEMPO_MEDIO_MINUTOS}  minutos`
+        },
+        {
+            title: "Última Separação",
+            key: "ULTIMA_SEPARACAO",
+            sortable: true,
             align: 'left',
-        }
+            value: (item: any) => utils.dataBrasil(item.ULTIMA_SEPARACAO)
+        },
     ]
 });
 
@@ -87,6 +108,10 @@ export const actions = {
             }
 
             let data = await serviceRelatorioSeparacaoProdutos.getDadosRelatorioSeparacaoProdutos(param)
+
+            state.dataInicioImpressao = state.dataInicio
+            state.dataFimImpressao = state.dataFim
+
             state.dadosRelatorioSeparacaoProdutos = data;
         } catch (error) {
             Swal.fire({
@@ -101,5 +126,47 @@ export const actions = {
     getClassCorLinha(dados: any) {
         const classe = dados.index % 2 === 0 ? "cor-zebrada-1" : "cor-zebrada-2";
         return { class: classe };
+    },
+
+    async onClickImprimir() {
+        try {
+            state.loading = true;
+
+            const dadosRelatorioSeparacaoProdutos = actions.formatarDadosImpressao([...state.dadosRelatorioSeparacaoProdutos]);
+
+
+            const columns: iColumnPrint[] = [
+                { key: 'LOGIN_COM_CODIGO', label: 'Estoquista', width: '35%', align: 'left' },
+                { key: 'TOTAL_ORCAMENTOS', label: 'Qtd Orçamentos', width: '15%', align: 'center' },
+                { key: 'QTD', label: 'Qtd. Itens', width: '17%', align: 'center' },
+                { key: 'TEMPO_MEDIO_MINUTOS', label: 'Tempo médio por orçamento', width: '17%', align: 'center' },
+                { key: 'ULTIMA_SEPARACAO', label: 'Última separação', width: '16%', align: 'center' }
+            ];
+
+            const titulo = `
+                    <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px">
+                        <span>Período: ${moment(state.dataInicioImpressao).format('DD/MM/YYYY')} até ${moment(state.dataFimImpressao).format('DD/MM/YYYY')}</span>
+                        <strong style="font-size: 16px;">Relatório Separação de Produtos</strong>
+                    </div>
+                `;
+
+            await utils.printComCabecalho(columns, dadosRelatorioSeparacaoProdutos, titulo);
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    formatarDadosImpressao(data: iRelatorioSeparacaoProdutos[]) {
+        return data.map(item => ({
+            ...item,
+            TEMPO_MEDIO_MINUTOS: `${item.TEMPO_MEDIO_MINUTOS} minutos`,
+            ULTIMA_SEPARACAO: utils.dataBrasil(item.ULTIMA_SEPARACAO)
+        }))
     },
 }

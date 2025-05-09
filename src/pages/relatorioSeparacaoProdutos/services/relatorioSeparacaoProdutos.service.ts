@@ -1,8 +1,9 @@
 import axios from "axios";
+import { iEstoquistas, iRelatorioSeparacaoProdutos } from "../interfaces";
 
 const caminho = 'siap/relatorioSeparacaoProdutos'
-type iGetEstoquistas = () => Promise<any[]>
-type iGetDadosRelatorioSeparacaoProdutos = (param) => Promise<any[]>
+type iGetEstoquistas = () => Promise<iEstoquistas[]>
+type iGetDadosRelatorioSeparacaoProdutos = (param) => Promise<iRelatorioSeparacaoProdutos[]>
 
 const getEstoquistas: iGetEstoquistas = async () => {
     let { data } = await axios.post(caminho, {
