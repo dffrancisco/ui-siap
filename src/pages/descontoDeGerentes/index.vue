@@ -3,50 +3,10 @@ import { actions, state } from "../descontoDeGerentes/descontoDeGerentes";
 import { onMounted } from "vue";
 import modalAlterarSenha from "./components/modalAlterarSenha.vue";
 import modalPermitirUsuario from "./components/modalPermitirUsuario.vue";
-import Swal from "sweetalert2";
 
 onMounted(() => {
   actions.init();
 });
-
-function onDarPermissao() {
-  if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
-    Swal.fire({
-      icon: "warning",
-      text: "Selecione um usuário sem permissão!",
-    });
-    return;
-  }
-  actions.abrirModalDarPermissao(state.dbUsuarioSelecionado);
-}
-
-function onRemoverPermissao() {
-  if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
-    Swal.fire({
-      icon: "warning",
-      text: "Selecione um usuário com permissão!",
-    });
-    return;
-  }
-  actions.confirmRemoverPermissao(state.dbUsuarioSelecionado);
-}
-
-function onAlterarSenha() {
-  if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
-    Swal.fire({
-      icon: "warning",
-      text: "Selecione um usuário com permissão!",
-    });
-    return;
-  }
-  actions.abrirModalAlterarSenha(state.dbUsuarioSelecionado);
-}
-
-function onPermissaoConcedida() {
-  state.gridUsuariosComPermissao.insertLine(state.dbUsuarioSelecionado);
-  state.gridUsuariosSemPermissao.deleteLine();
-  state.modalPermitirUsuario = false;
-}
 </script>
 
 <template>
@@ -73,16 +33,18 @@ function onPermissaoConcedida() {
             style="margin-top: 200px"
             icon="mdi-chevron-right mdi-24px"
             color="primary"
+            title="Conceder permissão"
             size="x-small"
-            @click="onDarPermissao"
+            @click="actions.onDarPermissao"
           >
           </v-btn>
           <v-btn
             style="margin-top: 10px"
             icon="mdi-chevron-left mdi-24px"
+            title="Remover permissão"
             color="primary"
             size="x-small"
-            @click="onRemoverPermissao"
+            @click="actions.onRemoverPermissao"
           >
           </v-btn>
         </div>
@@ -97,7 +59,7 @@ function onPermissaoConcedida() {
             <v-btn
               size="small"
               class="mt-3"
-              @click="onAlterarSenha"
+              @click="actions.onAlterarSenha"
               variant="text"
             >
               Alterar Senha
@@ -138,7 +100,7 @@ function onPermissaoConcedida() {
       <modalPermitirUsuario
         :usuario-selecionado="state.dbUsuarioSelecionado"
         @fecharModalPermitir="state.modalPermitirUsuario = false"
-        @senhaalterada="onPermissaoConcedida"
+        @senhaalterada="actions.onPermissaoConcedida"
       />
     </v-dialog>
   </v-container>

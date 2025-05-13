@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import xGridV2, { ixGridCreate } from "@/plugins/xGridV2";
 import { onMounted, reactive, ref } from "vue";
-import { iFornecedor, iRepresentantes } from "../interfaces";
-import serviceFornecedores from "../services/fornecedores.service";
+import { iMarcas, iRepresentantesParam, iSearchMarcas } from "../interfaces";
+import serviceRepresentantes from "../services/representantes.service";
 import Swal from "sweetalert2";
 
 const emits = defineEmits(["cancelar", "selecionarRepresentante"]);
@@ -11,7 +11,8 @@ const inputSearch = ref();
 const state = reactive({
   loading: false,
   gridRepresentante: <ixGridCreate>{},
-  dbRepresentante: <iFornecedor>{},
+  marca: <iMarcas[]>[],
+  marcaSearch: "",
 });
 
 const actions = {
@@ -25,13 +26,11 @@ const actions = {
       count: true,
       height: 300,
       columns: {
-        Nome: { dataField: "NOME" },
-        Email: { dataField: "EMAIL" },
-        Telefone: { dataField: "TELEFONE", center: true },
+        Nome: { dataField: "DESCRICAO" },
       },
       query: {
         async execute(rs) {
-          let data = await actions.getRepresentantes(rs.param as iRepresentantes, rs.offset);
+          let data = await actions.getMarcas(rs.param as iSearchMarcas, rs.offset);
           state.gridRepresentante.querySourceAdd(data);
         },
       },
@@ -40,16 +39,16 @@ const actions = {
     });
   },
 
-  async getRepresentantes(param: iRepresentantes, offset: number) {
+  async getMarcas(param: iSearchMarcas, offset: number) {
     try {
       state.loading = true;
-
-      const data = await serviceFornecedores.getRepresentantes(param, offset);
+      const data = await serviceRepresentantes.getMarcas(param, offset);
       return data;
     } catch (error) {
       Swal.fire({
-        text: "Erro ao buscar os Representantes.",
         icon: "error",
+        title: "Erro ao carregar marcas",
+        text: "Erro ao carregar marcas",
       });
     } finally {
       state.loading = false;
@@ -57,26 +56,24 @@ const actions = {
   },
 
   async btnSearch() {
-    state.gridRepresentante.queryOpen({
-      search: inputSearch.value.value,
-    });
+    state.gridRepresentante.queryOpen({ search: state.marcaSearch });
   },
 
   validarInputs() {
     const representanteSelecionado = state.gridRepresentante.dataSource();
     if (!representanteSelecionado) {
       Swal.fire({
-        text: "Nenhum representante foi selecionado.",
+        text: "Nenhuma marca foi selecionada.",
         icon: "warning",
       });
       return false;
     }
-
     actions.selecionarRepresentante();
   },
 
   selecionarRepresentante() {
     const representanteSelecionado = state.gridRepresentante.dataSource();
+
     emits("selecionarRepresentante", representanteSelecionado);
     actions.closeModal();
   },
@@ -88,15 +85,9 @@ const actions = {
 
 onMounted(async () => {
   await actions.init();
-
-  state.gridRepresentante.queryOpen(
-    {
-      search: "",
-    },
-    () => {
-      inputSearch.value.focus();
-    }
-  );
+  state.gridRepresentante.queryOpen({ search: "" }, () => {
+    inputSearch.value.focus();
+  });
 });
 </script>
 
@@ -111,11 +102,10 @@ onMounted(async () => {
             width="300px"
             density="compact"
             autofocus
-            ref="inputSearch"
+            v-model="state.marcaSearch"
             @keydown.enter.prevent="actions.btnSearch"
             @keydown.arrow.down.prevent="state.gridRepresentante.focus()"
           ></v-text-field>
-
           <div class="d-flex align-center">
             <v-btn
               icon="mdi-magnify"
@@ -136,13 +126,15 @@ onMounted(async () => {
         color="primary"
         variant="outlined"
         @click="actions.closeModal"
-        >Cancelar</v-btn
       >
+        Cancelar
+      </v-btn>
       <v-btn
         @click="actions.validarInputs"
         color="primary"
-        >Selecionar</v-btn
       >
+        Selecionar
+      </v-btn>
     </div>
   </v-card>
 </template>

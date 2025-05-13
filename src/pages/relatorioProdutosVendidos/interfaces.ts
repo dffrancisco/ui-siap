@@ -7,11 +7,20 @@ export interface iDadosRelatorioProdutosVendidos {
     QTO_VENDA: number;
 }
 
+export interface iMarcas {
+    ID_MARCA: number;
+    DESCRICAO: string;
+    GRUPO: string;
+    ID_MARCA_GRUPO: number;
+}
+
+
 export interface iParamsParaRelatorio {
     page: number;
     itemsPerPage: number;
     dataInicio: string;
     dataFim: string;
+    marcaSelecionada: [];
 }
 
 export interface iCount {

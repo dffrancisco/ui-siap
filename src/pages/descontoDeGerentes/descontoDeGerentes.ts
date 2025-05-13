@@ -28,6 +28,8 @@ export const actions = {
             click: (rowData: iUsuario) => {
                 state.dbUsuarioSelecionado = rowData;
             },
+            dblClick: () => actions.focarNaGridComPermissao(),
+            enter: () => actions.focarNaGridComPermissao(),
         });
 
         state.gridUsuariosComPermissao = new xGridV2.create({
@@ -39,9 +41,11 @@ export const actions = {
             click: (rowData: iUsuario) => {
                 state.dbUsuarioSelecionado = rowData;
             },
+            dblClick: () => actions.focarNaGridSemPermissao(),
+            enter: () => actions.focarNaGridSemPermissao(),
         });
 
-        await actions.carregaegarDadoDeUsuario();
+        await actions.carregarDadoDeUsuario();
     },
 
 
@@ -59,7 +63,7 @@ export const actions = {
         state.modalAlterarSenha = true;
     },
 
-    async carregaegarDadoDeUsuario() {
+    async carregarDadoDeUsuario() {
         try {
             state.loading = true;
             const data = await actions.getUsuarios();
@@ -77,11 +81,11 @@ export const actions = {
                 icon: "error",
                 text: "Erro ao carregar os dados dos usuários!",
             });
+            return;
         } finally {
             state.loading = false;
         }
     },
-
 
     async getUsuarios() {
         try {
@@ -183,7 +187,6 @@ export const actions = {
     },
 
     async confirmRemoverPermissao(usuario: iUsuario) {
-
         if (await Swal.fire({
             text: "Deseja remover a permissão deste usuário?",
             icon: "warning", showCancelButton: true,
@@ -193,6 +196,54 @@ export const actions = {
             state.dbUsuarioSelecionado = usuario;
             await actions.removerPermissao();
         }
+    },
+
+    onDarPermissao() {
+        if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
+            Swal.fire({
+                icon: "warning",
+                text: "Selecione um usuário sem permissão!",
+            });
+            return;
+        }
+
+        actions.abrirModalDarPermissao(state.dbUsuarioSelecionado);
+    },
+
+    onRemoverPermissao() {
+        if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
+            Swal.fire({
+                icon: "warning",
+                text: "Selecione um usuário com permissão!",
+            });
+            return;
+        }
+        actions.confirmRemoverPermissao(state.dbUsuarioSelecionado);
+    },
+
+    onPermissaoConcedida() {
+        state.gridUsuariosComPermissao.insertLine(state.dbUsuarioSelecionado);
+        state.gridUsuariosSemPermissao.deleteLine();
+        state.modalPermitirUsuario = false;
+    },
+
+    onAlterarSenha() {
+        if (!state.dbUsuarioSelecionado || !state.dbUsuarioSelecionado.COD_FUNCIONARIO) {
+            Swal.fire({
+                icon: "warning",
+                text: "Selecione um usuário com permissão!",
+            });
+            return;
+        }
+        actions.abrirModalAlterarSenha(state.dbUsuarioSelecionado);
+    },
+
+    focarNaGridComPermissao() {
+        state.gridUsuariosComPermissao.focus();
+    },
+
+    focarNaGridSemPermissao() {
+        state.gridUsuariosSemPermissao.focus();
     },
 };
 

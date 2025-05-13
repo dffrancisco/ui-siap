@@ -159,6 +159,14 @@ export const actions = {
   },
 
   fnUpdateProduto() {
+    if (state.produtoSelected.QTO > 10) {
+      Swal.fire({
+        text: "Quantidade máxima de 10 produtos",
+        icon: "warning"
+      })
+      return
+    }
+
     xAuthManager("Alterar Produto", (data) => {
       actions.updateQtdProduto(data)
     });

@@ -409,6 +409,11 @@ import login from "../login/login";
               @click="router.push('/baixaManualBoleto')"
               >Baixa de Boleto Manual</v-btn
             >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/configuracaoNfe')"
+              >Configuração NFe</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
@@ -439,11 +444,34 @@ import login from "../login/login";
               @click="router.push('/conferenciaDeCaixa')"
               >Conferência de Caixa</v-btn
             >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/representantes')"
+              >representantes</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/valePecaAutorizacao')"
+              >Vale peça autorização</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/produtosEntreLojas')"
+              >Produtos entre lojas
+            </v-btn>
 
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/equalizaPrecoLojas')"
               >Equaliza Preço Lojas</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/relatorioSeparacaoProdutos')"
+              >Relatório Separação de Produtos</v-btn
             >
 
             <v-btn
