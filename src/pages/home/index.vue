@@ -444,6 +444,11 @@ import login from "../login/login";
               @click="router.push('/conferenciaDeCaixa')"
               >Conferência de Caixa</v-btn
             >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/representantes')"
+              >representantes</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
