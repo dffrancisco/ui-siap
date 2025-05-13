@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+import serviceEstoqueOrganico from './services/estoqueOrganico.service';
 import { reactive } from "vue";
 
 export const state = reactive({
@@ -9,12 +11,30 @@ export const state = reactive({
     dadosEstoqueOrganico: <any[]>[],
     numFabricante: "",
     descricao: "",
+    endEstoque: "",
     headers: <any>[]
 })
 
 export const actions = {
     async init() {
+        actions.getDadosParaInputs()
+    },
 
+    async getDadosParaInputs() {
+        try {
+            state.loading = true;
+            const data = await serviceEstoqueOrganico.getDadosParaInputs();
+            state.marcas = data.marcas
+            state.carros = data.carros
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao trazer os dados iniciais!"
+            });
+        } finally {
+            state.loading = false;
+        }
     },
 
     validarInputs() {

@@ -93,15 +93,26 @@ onMounted(async () => {
           class="pr-0 pl-1 pt-1"
         >
           <v-text-field
+            v-model="state.endEstoque"
+            label="Endereço Estoque"
+            @keypress.enter="actions.validarInputs"
+          ></v-text-field>
+        </v-col>
+
+        <v-col
+          cols="6"
+          class="pr-0 pl-2 pt-1"
+        >
+          <v-text-field
             v-model="state.descricao"
-            label="Descrição"
+            label="Descrição produto"
             @keypress.enter="actions.validarInputs"
           ></v-text-field>
         </v-col>
 
         <v-col
           cols="2"
-          class="btnPesquisar"
+          class="btnPesquisar pr-0 pt-1"
         >
           <v-btn
             color="primary"
