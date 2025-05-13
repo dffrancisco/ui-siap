@@ -14,6 +14,7 @@ import iconAmericanExpress from "./../assets/amex-svgrepo-com.svg";
 import iconElo from "./../assets/elo-svgrepo-com.svg";
 import iconHipercard from "./../assets/hipercard-svgrepo-com.svg";
 import iconMercadoLivre from "./../assets/mercado-libre-svgrepo-com.svg";
+import iconRequisicao from "./../assets/store-svgrepo-com.svg";
 
 const props = defineProps({
   tipoPagamento: {
@@ -49,6 +50,7 @@ const defaultIcons = {
   "VALE PEÇAS": iconValePeças,
   CREDITO: iconCredito,
   ML: iconMercadoLivre,
+  REQUISIÇÃO: iconRequisicao,
 };
 
 const iconPath = computed(() => {
