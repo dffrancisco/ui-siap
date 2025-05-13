@@ -447,6 +447,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/valePecaAutorizacao')"
+              >Vale peça autorização</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/produtosEntreLojas')"
               >Produtos entre lojas
             </v-btn>
