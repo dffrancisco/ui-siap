@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import serviceEstoqueOrganico from './services/estoqueOrganico.service';
 import { reactive } from "vue";
-import { iCarros, iMarcas, iParams } from "./interfaces";
+import { iCarros, iDadosEstoqueOrganico, iMarcas, iParams } from "./interfaces";
 
 export const state = reactive({
     loading: false,
@@ -9,11 +9,51 @@ export const state = reactive({
     carrosSelecionados: [],
     marcas: <iMarcas[]>[],
     marcasSelecionados: [],
-    dadosEstoqueOrganico: <any[]>[],
+    totalItems: 0,
+    itemsPerPage: 30,
+    page: 1,
+    dadosEstoqueOrganico: <iDadosEstoqueOrganico[]>[],
     numFabricante: "",
     descricao: "",
     endEstoque: "",
-    headers: <any>[]
+    headers: <any>[
+        {
+            title: "Nº Fabricante",
+            key: "NUM_FABRICANTE",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Produto",
+            key: "DESC_PRODUTO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Carro",
+            key: "CARRO",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Marca",
+            key: "MARCA",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "End. Estoque",
+            key: "END_ESTOQUE",
+            sortable: true,
+            align: 'left',
+        },
+        {
+            title: "Quantidade",
+            key: "QUANTIDADE",
+            sortable: true,
+            align: 'center',
+        },
+    ]
 })
 
 export const actions = {
@@ -44,6 +84,8 @@ export const actions = {
             state.loading = true;
 
             let param: iParams = {
+                page: state.page,
+                itemsPerPage: state.itemsPerPage,
                 numFabricante: state.numFabricante,
                 descricao: state.descricao,
                 endEstoque: state.endEstoque,
@@ -52,6 +94,8 @@ export const actions = {
             }
 
             const data = await serviceEstoqueOrganico.getDadosEstoqueOrganico(param);
+            state.dadosEstoqueOrganico = data.dadosEstoqueOrganico;
+            state.totalItems = data.totalDadosRelatorio[0].TOTAL;
 
         } catch (error) {
             Swal.fire({
@@ -62,6 +106,12 @@ export const actions = {
             state.loading = false;
         }
     },
+
+    updatePage(newPage: number) {
+        state.page = newPage;
+        actions.getDadosEstoqueOrganico();
+    },
+
 
     async onClickImprimir() {
 

@@ -137,18 +137,20 @@ onMounted(async () => {
         </v-col>
       </v-row>
 
-      <v-data-table-virtual
-        class="pt-4"
+      <v-data-table-server
+        items-per-page-text="Itens por página"
         :items="state.dadosEstoqueOrganico"
+        v-model:itemsPerPage="state.itemsPerPage"
+        :items-length="state.totalItems"
         :headers="state.headers"
-        height="450px"
+        height="420"
         style="border-radius: 5px"
         fixed-header
         :loading="state.loading"
         :row-props="actions.getClassCorLinha"
-      ></v-data-table-virtual>
+        @update:page="actions.updatePage"
+      ></v-data-table-server>
     </v-card>
-    <div id="pnCodigoTela"> estoqueOrganico </div>
 
     <v-overlay
       :model-value="state.loading"
@@ -160,6 +162,7 @@ onMounted(async () => {
         size="64"
       ></v-progress-circular>
     </v-overlay>
+    <div id="pnCodigoTela"> estoqueOrganico </div>
   </v-container>
 </template>
 
@@ -167,4 +170,13 @@ onMounted(async () => {
 .cor-zebrada-1 {
   background-color: #f0f0f0;
 }
+
+/* .v-data-table-footer {
+  max-height: 2px;
+  padding-top: 20px;
+}
+
+.v-data-table-footer__pagination {
+  padding-right: 50px;
+} */
 </style>
