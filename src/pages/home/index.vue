@@ -442,6 +442,12 @@ import login from "../login/login";
 
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/produtosEntreLojas')"
+              >Produtos entre lojas
+            </v-btn>
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/equalizaPrecoLojas')"
               >Equaliza Preço Lojas</v-btn
             >
