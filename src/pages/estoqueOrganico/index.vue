@@ -24,8 +24,8 @@ onMounted(async () => {
             multiple
             autocomplete="off"
             :items="state.carros"
-            item-title="LOGIN_COM_CODIGO"
-            item-value="COD_FUNCIONARIO"
+            item-title="DESCRICAO"
+            item-value="ID_CARRO"
             v-model="state.carrosSelecionados"
           >
             <template #selection="{ item, index }">
@@ -57,8 +57,8 @@ onMounted(async () => {
             multiple
             autocomplete="off"
             :items="state.marcas"
-            item-title="LOGIN_COM_CODIGO"
-            item-value="COD_FUNCIONARIO"
+            item-title="DESCRICAO"
+            item-value="ID_MARCA"
             v-model="state.marcasSelecionados"
           >
             <template #selection="{ item, index }">
