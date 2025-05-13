@@ -83,7 +83,7 @@ onMounted(async () => {
           <v-text-field
             v-model="state.numFabricante"
             label="Nº Fabricante"
-            @keypress.enter="actions.validarInputs"
+            @keypress.enter="actions.getDadosEstoqueOrganico"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -95,7 +95,7 @@ onMounted(async () => {
           <v-text-field
             v-model="state.endEstoque"
             label="Endereço Estoque"
-            @keypress.enter="actions.validarInputs"
+            @keypress.enter="actions.getDadosEstoqueOrganico"
           ></v-text-field>
         </v-col>
 
@@ -106,7 +106,7 @@ onMounted(async () => {
           <v-text-field
             v-model="state.descricao"
             label="Descrição produto"
-            @keypress.enter="actions.validarInputs"
+            @keypress.enter="actions.getDadosEstoqueOrganico"
           ></v-text-field>
         </v-col>
 
@@ -119,7 +119,7 @@ onMounted(async () => {
             icon="mdi-magnify"
             size="36px"
             title="Pesquisar"
-            @click="actions.validarInputs"
+            @click="actions.getDadosEstoqueOrganico"
           >
             <v-icon left>mdi-magnify</v-icon>
           </v-btn>

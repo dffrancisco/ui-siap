@@ -1,12 +1,13 @@
 import Swal from "sweetalert2";
 import serviceEstoqueOrganico from './services/estoqueOrganico.service';
 import { reactive } from "vue";
+import { iCarros, iMarcas, iParams } from "./interfaces";
 
 export const state = reactive({
     loading: false,
-    carros: <any[]>[],
+    carros: <iCarros[]>[],
     carrosSelecionados: [],
-    marcas: <any[]>[],
+    marcas: <iMarcas[]>[],
     marcasSelecionados: [],
     dadosEstoqueOrganico: <any[]>[],
     numFabricante: "",
@@ -38,8 +39,28 @@ export const actions = {
         }
     },
 
-    validarInputs() {
+    async getDadosEstoqueOrganico() {
+        try {
+            state.loading = true;
 
+            let param: iParams = {
+                numFabricante: state.numFabricante,
+                descricao: state.descricao,
+                endEstoque: state.endEstoque,
+                marcas: state.marcasSelecionados,
+                carros: state.carrosSelecionados
+            }
+
+            const data = await serviceEstoqueOrganico.getDadosEstoqueOrganico(param);
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao trazer os dados do estoque orgânico!"
+            });
+        } finally {
+            state.loading = false;
+        }
     },
 
     async onClickImprimir() {
