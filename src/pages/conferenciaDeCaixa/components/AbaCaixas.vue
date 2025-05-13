@@ -103,8 +103,6 @@ const botoesVisiveis = computed(() => {
               }"
             >
               {{ utils.formatValor(caixa.DINHEIRO_LIQUIDO) }}
-
-              {{}}
             </span>
           </span>
         </v-col>
