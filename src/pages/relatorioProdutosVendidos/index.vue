@@ -9,11 +9,40 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-card
-      :width="800"
+      :max-width="850"
       class="ma-auto pa-4"
     >
       <div class="divInputs">
         <div style="display: flex; gap: 16px">
+          <v-autocomplete
+            density="compact"
+            label="Marcas"
+            variant="outlined"
+            multiple
+            autocomplete="off"
+            width="380px"
+            :items="state.marcas"
+            item-title="DESCRICAO"
+            item-value="ID_MARCA"
+            v-model="state.marcaSelecionada"
+          >
+            <template #selection="{ item, index }">
+              <v-chip
+                v-if="index < 2"
+                size="small"
+                class="mr-1"
+              >
+                {{ item.title }}
+              </v-chip>
+              <span
+                v-if="index === 2"
+                class="text-grey text-caption align-self-center"
+              >
+                (+{{ state.marcaSelecionada.length - 2 }})
+              </span>
+            </template>
+          </v-autocomplete>
+
           <v-text-field
             v-model="state.dataInicio"
             width="180px"
