@@ -17,7 +17,6 @@ export interface iOrcamento {
     NUM_ORCAMENTO: number;
     DATA: string;
     VALOR: number;
-    JUROS?: number;
     VALOR_JUROS?: number;
     checked?: boolean;
 }
@@ -26,7 +25,6 @@ export interface iBoleto {
     NUM_BOLETO: number;
     VALOR: number;
     DATA_VENCIMENTO: string;
-    JUROS?: number;
     VALOR_JUROS?: number;
     checked?: boolean;
 }

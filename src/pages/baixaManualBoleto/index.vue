@@ -140,25 +140,25 @@ onMounted(async () => {
                 />
               </div>
             </template>
-            <template v-slot:item.JUROS="{ item }">
+            <template v-slot:item.VALOR_JUROS="{ item }">
               <div class="d-flex justify-center">
                 <v-icon
-                  v-if="!item.JUROS || item.JUROS == 0"
+                  v-if="!item.VALOR_JUROS || item.VALOR_JUROS == 0"
                   color="primary"
                   title="Adicionar juros"
                   @click="actions.openModalAddJuros(null, item.NUM_ORCAMENTO, item.DATA)"
-                  >mdi-percent</v-icon
+                  >mdi-currency-usd</v-icon
                 >
                 <div
                   v-else
                   class="d-flex align-center ga-2 justify-center"
                 >
-                  <span :title="utils.formatValor(item.JUROS) + '%'">{{
+                  <span :title="'R$ ' + utils.formatValor(item.VALOR_JUROS)">{{
                     utils.formatValor(item.VALOR_JUROS)
                   }}</span>
                   <v-icon
                     title="Editar Juros"
-                    @click="actions.openModalEditJuros(null, item.NUM_ORCAMENTO, item.DATA, item.JUROS)"
+                    @click="actions.openModalEditJuros(null, item.NUM_ORCAMENTO, item.DATA, item.VALOR_JUROS)"
                     >mdi-pencil</v-icon
                   >
                 </div>
@@ -205,24 +205,24 @@ onMounted(async () => {
                 />
               </div>
             </template>
-            <template v-slot:item.JUROS="{ item }">
+            <template v-slot:item.VALOR_JUROS="{ item }">
               <div class="d-flex justify-center">
                 <v-icon
-                  v-if="!item.JUROS || item.JUROS == 0"
+                  v-if="!item.VALOR_JUROS || item.VALOR_JUROS == 0"
                   color="primary"
                   title="Adicionar juros"
                   @click="actions.openModalAddJuros(item.NUM_BOLETO, null, null)"
-                  >mdi-percent</v-icon
+                  >mdi-currency-usd</v-icon
                 >
                 <div
                   v-else
                   class="d-flex align-center ga-2 justify-center"
                 >
-                  <span :title="utils.formatValor(item.JUROS) + '%'">{{
-                    utils.formatValor(item.VALOR_JUROS)
-                  }}</span>
+                  <span :title="'R$ ' + utils.formatValor(item.VALOR_JUROS)">
+                    {{ utils.formatValor(item.VALOR_JUROS) }}
+                  </span>
                   <v-icon
-                    @click="actions.openModalEditJuros(item.NUM_BOLETO, null, null, item.JUROS)"
+                    @click="actions.openModalEditJuros(item.NUM_BOLETO, null, null, item.VALOR_JUROS)"
                     title="Editar Juros"
                     >mdi-pencil</v-icon
                   >
