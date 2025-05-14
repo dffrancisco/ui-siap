@@ -9,7 +9,7 @@ onMounted(async () => {
   <v-container
     ><v-card
       class="pa-5 ma-auto"
-      :max-width="930"
+      :max-width="900"
       :max-height="600"
     >
       <v-row>
@@ -83,6 +83,7 @@ onMounted(async () => {
           <v-text-field
             v-model="state.numFabricante"
             label="Nº Fabricante"
+            :clearable="false"
             @keypress.enter="actions.getDadosEstoqueOrganico"
           ></v-text-field>
         </v-col>
@@ -95,6 +96,7 @@ onMounted(async () => {
           <v-text-field
             v-model="state.endEstoque"
             label="Endereço Estoque"
+            :clearable="false"
             @keypress.enter="actions.getDadosEstoqueOrganico"
           ></v-text-field>
         </v-col>
@@ -106,13 +108,14 @@ onMounted(async () => {
           <v-text-field
             v-model="state.descricao"
             label="Descrição produto"
+            :clearable="false"
             @keypress.enter="actions.getDadosEstoqueOrganico"
           ></v-text-field>
         </v-col>
 
         <v-col
           cols="2"
-          class="btnPesquisar pr-0 pt-1"
+          class="btnPesquisar pr-0 pt-0"
         >
           <v-btn
             color="primary"
@@ -143,12 +146,14 @@ onMounted(async () => {
         v-model:itemsPerPage="state.itemsPerPage"
         :items-length="state.totalItems"
         :headers="state.headers"
-        height="420"
+        height="375"
+        id="tabelaEstoqueOrganico"
         style="border-radius: 5px"
         fixed-header
         :loading="state.loading"
         :row-props="actions.getClassCorLinha"
         @update:page="actions.updatePage"
+        :items-per-page-options="[5, 10, 25, 50, 100, 200, 500]"
       ></v-data-table-server>
     </v-card>
 
@@ -171,12 +176,7 @@ onMounted(async () => {
   background-color: #f0f0f0;
 }
 
-/* .v-data-table-footer {
-  max-height: 2px;
-  padding-top: 20px;
+#tabelaEstoqueOrganico .v-data-table-footer {
+  max-height: 40px;
 }
-
-.v-data-table-footer__pagination {
-  padding-right: 50px;
-} */
 </style>

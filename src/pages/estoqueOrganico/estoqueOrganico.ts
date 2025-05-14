@@ -2,6 +2,7 @@ import Swal from "sweetalert2";
 import serviceEstoqueOrganico from './services/estoqueOrganico.service';
 import { reactive } from "vue";
 import { iCarros, iDadosEstoqueOrganico, iMarcas, iParams } from "./interfaces";
+import utils, { iColumnPrint } from "@/ts/utils";
 
 export const state = reactive({
     loading: false,
@@ -67,8 +68,6 @@ export const actions = {
             const data = await serviceEstoqueOrganico.getDadosParaInputs();
             state.marcas = data.marcas
             state.carros = data.carros
-
-
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -114,7 +113,44 @@ export const actions = {
 
 
     async onClickImprimir() {
+        try {
+            state.loading = true;
+            let relatorio = state.dadosEstoqueOrganico
+            const relatorioAjustado = actions.formatarDadosImpressao([...relatorio]);
 
+            const columns: iColumnPrint[] = [
+                { key: 'DESC_PRODUTO', label: 'Produto', align: 'left' },
+                { key: 'NUM_FABRICANTE', label: 'Nº Fabricante', width: '10%', align: 'left' },
+                { key: 'MARCA', label: 'Marca', width: '10%', align: 'left' },
+                { key: 'CARRO', label: 'Carro', width: '35%', align: 'left' },
+                { key: 'END_ESTOQUE', label: 'End. Estoque', width: '10%', align: 'center' },
+                { key: 'QUANTIDADE', label: 'Qtd', width: '10%', align: 'center' }
+            ];
+
+            const titulo = `
+                <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px">
+                    <span>&nbsp;</span>
+                    <strong style="font-size: 16px;">Estoque Orgânico</strong>
+                </div>
+            `;
+
+            await utils.printComCabecalho(columns, relatorioAjustado, titulo);
+
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Erro ao imprimir o relatório."
+            });
+        } finally {
+            state.loading = false;
+        }
+    },
+
+    formatarDadosImpressao(data) {
+        return data.map(item => ({
+            ...item,
+            END_ESTOQUE: item.END_ESTOQUE ? item.END_ESTOQUE : '----',
+        }));
     },
 
     getClassCorLinha(dados: any) {
