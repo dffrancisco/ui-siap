@@ -69,7 +69,7 @@ onMounted(() => {
         <v-text-field
           v-model="state.juros"
           label="Valor Juros"
-          maxlength="6"
+          maxlength="10"
           autofocus
           prefix="R$"
           append-inner-icon="mdi-currency-usd"
