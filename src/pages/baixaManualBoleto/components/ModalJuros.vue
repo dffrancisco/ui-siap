@@ -68,10 +68,11 @@ onMounted(() => {
       <div>
         <v-text-field
           v-model="state.juros"
-          label="Juros"
-          maxlength="5"
+          label="Valor Juros"
+          maxlength="10"
           autofocus
-          append-inner-icon="mdi-percent"
+          prefix="R$"
+          append-inner-icon="mdi-currency-usd"
           :clearable="false"
           @keypress.enter="actions.onClickBtnSalvar"
           v-mask-decimal.br="2"

@@ -34,14 +34,14 @@ export const state = reactive({
         { key: "NUM_ORCAMENTO", title: "N° Orç.", width: "100px", sortable: true },
         { key: "DATA", title: "Data", width: "100px", sortable: true, value: (item: iOrcamento) => utils.dataBrasil(item.DATA) },
         { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: iOrcamento) => utils.formatValor(item.VALOR) },
-        { key: "JUROS", title: "Juros", width: "50px", align: "center" },
+        { key: "VALOR_JUROS", title: "Juros", width: "50px", align: "center" },
     ],
     headersBoletos: [
         { key: "checked", title: "Conferido", align: "center" },
         { key: "NUM_BOLETO", title: "N° Boleto", width: "100px", sortable: true },
         { key: "DATA_VENCIMENTO", title: "Data Venc.", width: "100px", sortable: true, value: (item: iBoleto) => utils.dataBrasil(item.DATA_VENCIMENTO) },
         { key: "VALOR", title: "Valor", width: "100px", sortable: true, value: (item: iBoleto) => utils.formatValor(item.VALOR) },
-        { key: "JUROS", title: "Juros", width: "50px", align: "center" },
+        { key: "VALOR_JUROS", title: "Juros", width: "50px", align: "center" },
     ],
     cnpjEmpresa: ""
 })
@@ -295,12 +295,12 @@ export const actions = {
     },
 
     addJuros(param: iParamAddJuros) {
+
         if (param.numBoleto) {
             const findedIndex = state.dadosBoletos.findIndex(boleto => boleto.NUM_BOLETO === param.numBoleto);
 
             if (findedIndex !== -1) {
-                state.dadosBoletos[findedIndex].JUROS = param.valorJuros;
-                state.dadosBoletos[findedIndex].VALOR_JUROS = Number((state.dadosBoletos[findedIndex].VALOR * (param.valorJuros / 100)).toFixed(2));
+                state.dadosBoletos[findedIndex].VALOR_JUROS = param.valorJuros;
             }
         }
 
@@ -310,8 +310,7 @@ export const actions = {
             );
 
             if (findedIndex !== -1) {
-                state.dadosOrcamento[findedIndex].JUROS = param.valorJuros;
-                state.dadosOrcamento[findedIndex].VALOR_JUROS = Number((state.dadosOrcamentoFiltrados[findedIndex].VALOR * (param.valorJuros / 100)).toFixed(2));
+                state.dadosOrcamento[findedIndex].VALOR_JUROS = param.valorJuros;
             }
         }
 
