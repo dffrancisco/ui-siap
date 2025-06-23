@@ -29,35 +29,38 @@ const botoesVisiveis = computed(() => {
 
 <template>
   <v-card
-    class="d-flex flex-column justify-space-between pt-2"
+    class="d-flex flex-column justify-space-between"
     min-height="260px"
     :class="{
       'caixa-aberto': caixa.STATUS == 1,
       'caixa-fechado': caixa.STATUS == 2,
     }"
   >
-    <v-row align="center">
-      <v-col cols="3">
+    <div
+      align="center"
+      class="d-flex ma-0 py-1 px-2 ga-4"
+    >
+      <div>
         <v-avatar
           size="50px"
           color="primary"
-          class="ml-2 btn-bordered"
+          class="btn-bordered"
         >
           <v-img
             :src="actions.getFotoFuncionarioURL(caixa.CPF)"
             cover
           ></v-img>
         </v-avatar>
-      </v-col>
-      <v-col cols="9">
+      </div>
+      <div class="d-flex flex-column align-start">
         <div class="text-subtitle-1 font-weight-bold">
           <span>{{ caixa.LOGIN }}</span>
         </div>
         <div class="text-caption status-badge">
           <span>{{ caixa.STATUS == 1 ? "Caixa Aberto" : "Caixa Fechado" }}</span>
         </div>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
     <v-divider></v-divider>
 
     <v-container class="pa-2">
@@ -117,9 +120,12 @@ const botoesVisiveis = computed(() => {
     </v-container>
 
     <v-divider></v-divider>
-    <v-row
-      :justify="botoesVisiveis === 1 ? 'center' : 'space-between'"
-      class="mt-1 pa-2"
+    <div
+      class="d-flex py-2"
+      :class="{
+        'justify-center': botoesVisiveis === 1,
+        'justify-space-between': botoesVisiveis > 1,
+      }"
     >
       <v-btn
         v-if="caixa.STATUS !== 2"
@@ -155,7 +161,7 @@ const botoesVisiveis = computed(() => {
       >
         <v-icon :style="{ fontSize: '25px' }" />
       </v-btn>
-    </v-row>
+    </div>
   </v-card>
 </template>
 
