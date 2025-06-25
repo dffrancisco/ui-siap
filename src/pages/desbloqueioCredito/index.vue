@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { onMounted, reactive } from "vue";
-import utils from "@/ts/utils";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import modalConfirmar from "./components/modalConfirmar.vue";
-
-// teste
 import { ref } from 'vue'
-const mostrarDados = ref(true)
-// fim teste
+
+const mostrarDados = ref(false)
+
 
 </script>
 
