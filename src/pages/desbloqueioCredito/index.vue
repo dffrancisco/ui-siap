@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import modalConfirmar from "./components/modalConfirmar.vue";
-import { ref } from 'vue'
-
-const mostrarDados = ref(false)
-
+import {state,actions} from './desbloqueioCredito'
 
 </script>
 
@@ -18,24 +15,27 @@ const mostrarDados = ref(false)
     <section class=" d-flex flex-column ga-4">
 
       <div class="d-flex div-pai ga-5 ">
-        <v-text-field class="input-chave">
 
-        </v-text-field>
+        <v-text-field 
+        class="input-chave"
+        v-model="state.pesquisaCredito"
+        > </v-text-field>
 
-        <v-btn @click="mostrarDados = !mostrarDados" icon="" density="comfortable">
+        <v-btn @click="actions.getEnviaChave(state.pesquisaCredito)" icon="" density="comfortable">
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
       </div>
 
       <h3>Dados do Crédito:</h3>
 
-      <div class=" d-flex flex-column ga-4 " v-if="mostrarDados">
+      <div class=" d-flex flex-column ga-4 ">
 
-        <div class=" div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg  ">
-          <p class="text-subtitle-2">Chave: {{ }}</p>
-          <p class="text-subtitle-2">Cpf: {{ }}</p>
-          <p class="text-subtitle-2">Valor: {{ }}</p>
-          <p class="text-subtitle-2">Bloqueado: {{ }}</p>
+        <div class=" div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg
+        " v-for="valor in state.listaDadosCredito">
+          <p class="text-subtitle-2">Chave: {{ valor.CHAVE }}</p>
+          <p class="text-subtitle-2">Cpf: {{ valor.CPF_CNPJ }}</p>
+          <p class="text-subtitle-2">Valor: {{ valor.VALOR}}</p>
+          <p class="text-subtitle-2">Bloqueado: {{ valor.BLOQUEADO}}</p>
         </div>
 
         <div class=" d-flex justify-end">
