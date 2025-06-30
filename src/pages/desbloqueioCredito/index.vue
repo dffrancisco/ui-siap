@@ -39,15 +39,15 @@ import {state,actions} from './desbloqueioCredito'
         </div>
 
         <div class=" d-flex justify-end">
-          <v-btn class="bg-blue"> desbloquear crédito</v-btn>
+          <v-btn disabled @click="actions.AbreModalConfirmar()" class="bg-blue"> desbloquear crédito</v-btn>
         </div>
       </div>
 
     </section>
   </v-container>
 
-  <v-dialog>
-    <modalConfirmar>
+  <v-dialog v-model="state.abrirModalConfirmar" >
+    <modalConfirmar >
     </modalConfirmar>
   </v-dialog>
 </template>

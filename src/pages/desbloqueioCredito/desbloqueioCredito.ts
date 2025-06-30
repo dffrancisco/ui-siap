@@ -12,6 +12,7 @@ import desbloqueioCreditoService from './services/desbloqueioCredito.service';
 export const state = reactive({
     listaDadosCredito: [],
     pesquisaCredito: "",
+    abrirModalConfirmar: false,
 });
 
 export const actions = {
@@ -47,6 +48,10 @@ export const actions = {
             });
         }
     },
+
+    AbreModalConfirmar(){
+         state.abrirModalConfirmar = !state.abrirModalConfirmar;
+    }
 };
 
 

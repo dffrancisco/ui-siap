@@ -2,41 +2,43 @@
 import utils from "@/ts/utils";
 import { confirmaCodigo } from "@/ts/utils";
 import Swal from "sweetalert2";
-
-// regra que sera usada futuramente na modal
-confirmaCodigo({
-    msg: "Confirma exclusão deste registro?",
-    call: async function () {
-        try {
-            await
-                Swal.fire({
-                    icon: "success",
-                    title: "Ausência deletada com sucesso!",
-                    showConfirmButton: false,
-                    timer: 2500,
-                });
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Ocorreu um erro ao deletar a falta.",
-            });
-        }
-    },
-});
-
-
+import {state,actions} from "../desbloqueioCredito"
 
 
 </script>
 
 <template>
-    <v-card>
-        <p> Deseja liberar o crédito {{}} </p>
+  <v-container class="container-modal d-flex flex-column align-center bg-white ga-4">
+    <h1>Deseja liberar o crédito:</h1>
+    <div class="section-detalhes d-flex align-center flex-column justify-md-space-evenly"
+     v-for="confirmaItens in state.listaDadosCredito">
 
-        <v-btn class="bg-green"> confirmar </v-btn>
-        <v-btn class="bg-orange"> cancelar </v-btn>
+        <p class="text-h6 font-weight-bold"> CPF: {{ confirmaItens.CPF_CNPJ}}</p>
+        <p class="text-h6 font-weight-bold"> Bloqueado: {{ confirmaItens.BLOQUEADO }}</p>
+        <p class="text-h6 font-weight-bold"> Valor: {{ confirmaItens.VALOR  }}</p>
 
-    </v-card>
+
+      <div class="d-flex ga-2">
+        <v-btn  class=" botao bg-green"> confirmar </v-btn>
+        <v-btn @click="actions.AbreModalConfirmar" class=" botao bg-red"> cancelar </v-btn>
+      </div>
+    </div>
+  </v-container>
 </template>
 
-<style scoped></style>
+<style scoped>
+.container-modal {
+  width: 34%;
+  height: 20rem;
+}
+
+.section-detalhes {
+  height: 100%;
+  width: 100%;
+}
+
+.botao{
+    width: 11rem;
+    max-width: 100%;
+}
+</style>
