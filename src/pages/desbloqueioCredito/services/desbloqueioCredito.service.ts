@@ -1,12 +1,13 @@
 import axios from "axios";
 const caminho = 'siap/desbloqueioCredito'
 
-const getEnviaChave  = async (param) => {
+const getCredito  = async (param) => {
     let { data } = await axios.post(caminho, {
-        call: "getEnviaChave",
+        call: "getCredito",
         param
     });
     return data;
 }
 
-export default {getEnviaChave}
+
+export default {getCredito}

@@ -21,7 +21,7 @@ import {state,actions} from './desbloqueioCredito'
         v-model="state.pesquisaCredito"
         > </v-text-field>
 
-        <v-btn @click="actions.getEnviaChave(state.pesquisaCredito)" icon="" density="comfortable">
+        <v-btn @click="actions.getCredito(state.pesquisaCredito)" icon="" density="comfortable">
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
       </div>
