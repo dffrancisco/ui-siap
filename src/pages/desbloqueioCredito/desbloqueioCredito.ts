@@ -6,6 +6,7 @@ import {
 
 } from './interfaces'
 import desbloqueioCreditoService from './services/desbloqueioCredito.service';
+import { stat } from 'fs';
 
 
 
@@ -14,6 +15,7 @@ export const state = reactive({
     pesquisaCredito: "",
     abrirModalConfirmar: false,
     botaoDesbloquearCredito: true,
+
 });
 
 export const actions = {
@@ -52,13 +54,18 @@ export const actions = {
         }
     },
 
-    getAlteraTabela(){
-        console.log('teste')
+    async updateTabela(param) {
+        try{
+            await desbloqueioCreditoService.updateTabela(param);
+            console.log('deu certo')
+        } catch {
+            console.log('erro')
+        }
     },
-    
+
     AbreModalConfirmar() {
         state.abrirModalConfirmar = !state.abrirModalConfirmar;
-    }
+    },
 
 
 };

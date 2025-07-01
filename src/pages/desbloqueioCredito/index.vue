@@ -40,7 +40,6 @@ import {state,actions} from './desbloqueioCredito'
 
         <div class=" d-flex justify-end">
           <v-btn :disabled="state.botaoDesbloquearCredito" @click="actions.AbreModalConfirmar()" class="bg-blue"> desbloquear crédito</v-btn>
-          <!-- criar a lógica para o disabled -->
         </div>
       </div>
 

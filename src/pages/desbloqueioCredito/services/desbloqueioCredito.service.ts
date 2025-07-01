@@ -9,7 +9,13 @@ const getCredito  = async (param) => {
     return data;
 }
 
+const updateTabela = async(param) => {
+        let { data } = await axios.post(caminho, {
+        call: "updateTabela",
+        param
+    });
+    return data;
+}
 
 
-
-export default {getCredito}
+export default {getCredito, updateTabela}

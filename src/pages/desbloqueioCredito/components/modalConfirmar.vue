@@ -19,7 +19,7 @@ import {state,actions} from "../desbloqueioCredito"
 
 
       <div class="d-flex ga-2">
-        <v-btn @click="actions.getAlteraTabela" class=" botao bg-green"> confirmar </v-btn>
+        <v-btn v-for="chave in state.listaDadosCredito"  @click="actions.updateTabela(chave.CHAVE)" class=" botao bg-green"> confirmar </v-btn>
         <v-btn @click="actions.AbreModalConfirmar" class=" botao bg-red"> cancelar </v-btn>
       </div>
     </div>
@@ -28,7 +28,7 @@ import {state,actions} from "../desbloqueioCredito"
 
 <style scoped>
 .container-modal {
-  width: 34%;
+  width: 50%;
   height: 20rem;
 }
 
