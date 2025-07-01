@@ -13,6 +13,7 @@ export const state = reactive({
     listaDadosCredito: [],
     pesquisaCredito: "",
     abrirModalConfirmar: false,
+    botaoDesbloquearCredito: true,
 });
 
 export const actions = {
@@ -21,7 +22,7 @@ export const actions = {
     },
 
     async getCredito(param: String) {
-        if (!state.pesquisaCredito || state.pesquisaCredito.length !== 10 ) {
+        if (!state.pesquisaCredito || state.pesquisaCredito.length !== 10) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Chave inválida',
@@ -31,7 +32,9 @@ export const actions = {
         }
 
         try {
+
             state.listaDadosCredito = await desbloqueioCreditoService.getCredito(param);
+            state.botaoDesbloquearCredito = false
 
         } catch (err) {
             let mensagem = 'Erro inesperado';
@@ -49,9 +52,15 @@ export const actions = {
         }
     },
 
-    AbreModalConfirmar(){
-         state.abrirModalConfirmar = !state.abrirModalConfirmar;
+    getAlteraTabela(){
+        console.log('teste')
+    },
+    
+    AbreModalConfirmar() {
+        state.abrirModalConfirmar = !state.abrirModalConfirmar;
     }
+
+
 };
 
 

@@ -8,7 +8,7 @@ import {state,actions} from "../desbloqueioCredito"
 </script>
 
 <template>
-  <v-container class="container-modal d-flex flex-column align-center bg-white ga-4">
+  <v-container class="container-modal d-flex flex-column align-center bg-white ga-0">
     <h1>Deseja liberar o crédito:</h1>
     <div class="section-detalhes d-flex align-center flex-column justify-md-space-evenly"
      v-for="confirmaItens in state.listaDadosCredito">
@@ -19,7 +19,7 @@ import {state,actions} from "../desbloqueioCredito"
 
 
       <div class="d-flex ga-2">
-        <v-btn  class=" botao bg-green"> confirmar </v-btn>
+        <v-btn @click="actions.getAlteraTabela" class=" botao bg-green"> confirmar </v-btn>
         <v-btn @click="actions.AbreModalConfirmar" class=" botao bg-red"> cancelar </v-btn>
       </div>
     </div>

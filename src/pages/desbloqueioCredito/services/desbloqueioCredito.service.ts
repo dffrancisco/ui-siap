@@ -10,4 +10,6 @@ const getCredito  = async (param) => {
 }
 
 
+
+
 export default {getCredito}
