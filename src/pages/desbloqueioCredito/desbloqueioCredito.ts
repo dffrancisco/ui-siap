@@ -57,9 +57,15 @@ export const actions = {
     async updateTabela(param) {
         try{
             await desbloqueioCreditoService.updateTabela(param);
-            console.log('deu certo')
+             Swal.fire({
+                icon: 'success',
+                title: 'Crédito desbloqueado',
+            });
         } catch {
-            console.log('erro')
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro no processamento',
+            });
         }
     },
 
