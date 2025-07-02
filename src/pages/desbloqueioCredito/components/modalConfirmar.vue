@@ -19,7 +19,7 @@ import { state, actions } from "../desbloqueioCredito";
       <div class="d-flex ga-2">
         <v-btn
           v-for="chave in state.listaDadosCredito"
-          @click="actions.updateTabela(chave.CHAVE)"
+          @click="actions.updateCredito(chave.CHAVE)"
           class="botao bg-green"
         >
           confirmar
