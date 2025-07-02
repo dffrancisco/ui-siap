@@ -57,6 +57,7 @@ export const actions = {
     async updateTabela(param) {
         try{
             await desbloqueioCreditoService.updateTabela(param);
+            state.abrirModalConfirmar = false
              Swal.fire({
                 icon: 'success',
                 title: 'Crédito desbloqueado',
