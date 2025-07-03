@@ -34,14 +34,11 @@ export const actions = {
         }
 
         try {
-
             state.listaDadosCredito = await desbloqueioCreditoService.getCredito(param);
-            state.botaoDesbloquearCredito = false
-            location.reload()
-
+            state.botaoDesbloquearCredito = false;
 
         } catch (err) {
-            let mensagem = 'Erro inesperado';
+            let mensagem = 'Erro ao armazenar os dados';
 
             if (err.response?.data?.message) {
                 mensagem = err.response.data.message;
@@ -57,13 +54,14 @@ export const actions = {
     },
 
     async updateCredito(param) {
-        try{
+        try {
             await desbloqueioCreditoService.updateCredito(param);
             state.abrirModalConfirmar = false
-             Swal.fire({
+            Swal.fire({
                 icon: 'success',
                 title: 'Crédito desbloqueado',
             });
+
         } catch {
             Swal.fire({
                 icon: 'error',
@@ -76,7 +74,13 @@ export const actions = {
         state.abrirModalConfirmar = !state.abrirModalConfirmar;
     },
 
-
+    async LimpaCampos() {
+        state.listaDadosCredito = []
+        state.pesquisaCredito = ""
+        state.abrirModalConfirmar = false
+        state.botaoDesbloquearCredito = true
+    }
+    
 };
 
 
