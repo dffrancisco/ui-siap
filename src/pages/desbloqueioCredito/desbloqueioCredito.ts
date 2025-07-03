@@ -61,6 +61,9 @@ export const actions = {
                 icon: 'success',
                 title: 'Crédito desbloqueado',
             });
+            
+            await actions.LimpaCampos()
+
 
         } catch {
             Swal.fire({

@@ -2,22 +2,23 @@
 import { onMounted, reactive, ref } from "vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import modalConfirmar from "./components/modalConfirmar.vue";
+import utils, { swalDarkError, swalDarkSuccess } from '../../ts/utils'
 import {state,actions} from './desbloqueioCredito'
 
 </script>
 
 <template>
-  <v-container class=" d-flex flex-column ga-3 bg-white rounded-lg ">
-    <h2 class="">LIBERAR CRÉDITO MANUAL</h2>
+  <v-container class="container  d-flex flex-column ga-3 bg-white rounded-lg ">
+    <!-- <h2 class="">LIBERAR CRÉDITO MANUAL</h2> -->
 
-    <h3>Chave</h3>
+    <h1 class="chave">Chave</h1>
 
-    <section class=" d-flex flex-column ga-4">
+    <section class=" d-flex flex-column ga-4 ma-3">
 
       <div class="d-flex div-pai ga-5 ">
 
         <v-text-field 
-        class="input-chave"
+        class=" input-chave"
         v-model="state.pesquisaCredito"
         > </v-text-field>
 
@@ -26,16 +27,16 @@ import {state,actions} from './desbloqueioCredito'
         </v-btn>
       </div>
 
-      <h3>Dados do Crédito:</h3>
+      <h3 class="text-subtitle-3" >Dados do Crédito:</h3>
 
-      <div class=" d-flex flex-column ga-4 ">
+      <div class=" d-flex flex-column ga-6 ">
 
         <div class=" div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg
         " v-for="valor in state.listaDadosCredito">
-          <p class="text-subtitle-2">Chave: {{ valor.CHAVE }}</p>
-          <p class="text-subtitle-2">Cpf: {{ valor.CPF_CNPJ }}</p>
-          <p class="text-subtitle-2">Valor: {{ valor.VALOR}}</p>
-          <p class="text-subtitle-2">Bloqueado: {{ valor.BLOQUEADO}}</p>
+          <p class="text-subtitle-2 font-weight-black">Chave: {{ valor.CHAVE }}</p>
+          <p class="text-subtitle-2 font-weight-black" >CPF: {{ valor.CPF_CNPJ }}</p>
+          <p class="text-subtitle-2 font-weight-black">Valor: {{ valor.VALOR}}</p>
+          <p class="text-subtitle-2 font-weight-black">Bloqueado: {{ valor.BLOQUEADO}}</p>
         </div>
 
         <div class=" d-flex justify-end">
@@ -56,5 +57,14 @@ import {state,actions} from './desbloqueioCredito'
 .input-chave {
   max-width: 20%;
   height: 2rem;
+}
+
+.container{
+  height: 25rem;
+  width: 100rem;
+}
+
+.chave{
+  margin: 1rem 0rem 0rem 1rem;
 }
 </style>

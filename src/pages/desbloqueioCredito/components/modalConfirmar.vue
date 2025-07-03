@@ -12,9 +12,9 @@ import { state, actions } from "../desbloqueioCredito";
       v-for="confirmaItens in state.listaDadosCredito"
     >
       <h1>Deseja liberar o crédito: {{ confirmaItens.CHAVE }}</h1>
-      <p class="text-h6 font-weight-bold"> CPF: {{ confirmaItens.CPF_CNPJ }}</p>
-      <p class="text-h6 font-weight-bold"> Bloqueado: {{ confirmaItens.BLOQUEADO }}</p>
-      <p class="text-h6 font-weight-bold"> Valor: {{ confirmaItens.VALOR }} </p>
+      <p class="text-h6 font-weight-black"> CPF: {{ confirmaItens.CPF_CNPJ }}</p>
+      <p class="text-h6 font-weight-black"> Bloqueado: {{ confirmaItens.BLOQUEADO }}</p>
+      <p class="text-h6 font-weight-black"> Valor: {{ confirmaItens.VALOR }} </p>
 
       <div class="d-flex ga-2">
         <v-btn
