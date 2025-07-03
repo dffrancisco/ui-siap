@@ -37,6 +37,8 @@ export const actions = {
 
             state.listaDadosCredito = await desbloqueioCreditoService.getCredito(param);
             state.botaoDesbloquearCredito = false
+            location.reload()
+
 
         } catch (err) {
             let mensagem = 'Erro inesperado';
