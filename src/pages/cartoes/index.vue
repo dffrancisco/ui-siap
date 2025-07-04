@@ -32,7 +32,7 @@ onMounted(() => {
             :item="state.item"
             :acao="state.acao"
             @salvar="actions.handleSalvarCartao"
-            @fechar="state.modalCartaoOpened = false"
+            @fechar="actions.closeModal"
           />
         </v-dialog>
         <v-data-table

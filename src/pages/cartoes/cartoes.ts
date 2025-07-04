@@ -72,7 +72,7 @@ export const actions = {
     },
 
 
-    async submitForm(DESCRICAO, PARCELAMENTO) {
+    async submitForm(DESCRICAO: string, PARCELAMENTO: number) {
         try {
             state.loading = true
 
@@ -100,7 +100,7 @@ export const actions = {
     },
 
 
-    updateCartoes: async (DESCRICAO, COD_BANDEIRA_CARTAO, PARCELAMENTO) => {
+    updateCartoes: async (DESCRICAO: string, COD_BANDEIRA_CARTAO: number, PARCELAMENTO: number) => {
 
         try {
             state.loading = true
