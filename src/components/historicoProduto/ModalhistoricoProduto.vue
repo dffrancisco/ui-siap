@@ -104,51 +104,55 @@ onMounted(async () => {
               height="130"
             />
           </div>
-          <div
-            v-else-if="state.entradas.length > 0"
-            class="scroll d-flex flex-column ga-3"
-          >
-            <v-card
-              class="container_card"
-              v-for="entrada in state.entradas"
+          <div v-else>
+            <div
+              v-if="state.entradas.length > 0"
+              class="d-flex flex-column ga-2 h-100"
             >
-              <div class="cor_identificacao bg-deep-purple-accent-3"></div>
-              <div class="container_informação_historico">
-                <div class="d-flex justify-space-between">
-                  <v-text>{{ dataBrasil(entrada.DATA_ENTRADA) }}</v-text>
-                  <v-text class="codigo">#{{ entrada.NUM_NOTA_FISCAL }}</v-text>
-                </div>
-                <div class="d-flex flex-column mt-2">
-                  <v-text>{{ entrada.NOME_FANTAZIA }}</v-text>
-                </div>
-                <div class="border mt-2"></div>
-                <div class="d-flex justify-space-between mt-2">
-                  <v-text class="font-weight-bold">{{ formatValor(entrada.CUSTO) }}</v-text>
-                  <div>
-                    <v-text class="quantidade mr-1">QTD V: {{ entrada.QTO_OLD }}</v-text>
-                    <v-text class="quantidade">QTD: {{ entrada.QUANTIDADE }}</v-text>
+              <div class="scroll d-flex flex-column ga-3 pb-2">
+                <v-card
+                  class="container_card"
+                  v-for="entrada in state.entradas"
+                >
+                  <div class="cor_identificacao bg-deep-purple-accent-3"></div>
+                  <div class="container_informação_historico">
+                    <div class="d-flex justify-space-between">
+                      <v-text>{{ dataBrasil(entrada.DATA_ENTRADA) }}</v-text>
+                      <v-text class="codigo">#{{ entrada.NUM_NOTA_FISCAL }}</v-text>
+                    </div>
+                    <div class="d-flex flex-column mt-2">
+                      <v-text>{{ entrada.NOME_FANTAZIA }}</v-text>
+                    </div>
+                    <div class="border mt-2"></div>
+                    <div class="d-flex justify-space-between mt-2">
+                      <v-text class="font-weight-bold">{{ formatValor(entrada.CUSTO) }}</v-text>
+                      <div>
+                        <v-text class="quantidade mr-1">QTD V: {{ entrada.QTO_OLD }}</v-text>
+                        <v-text class="quantidade">QTD: {{ entrada.QUANTIDADE }}</v-text>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </v-card>
               </div>
-            </v-card>
-          </div>
-          <div
-            v-else-if="state.loadingSkeletonEntrada"
-            class="d-flex justify-center align-center flex-column pt-5"
-          >
-            <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma Entrada encontrada. </v-text>
-          </div>
-          <div
-            class="container_botao px-4"
-            v-if="state.verMaisEntradas && state.entradas.length > 0"
-          >
-            <v-btn
-              color="primary"
-              primary
-              @click="actions.getEntradaHistoricoProduto"
-              size="small"
-              >ver mais
-            </v-btn>
+              <div
+                class="container_botao px-4"
+                v-if="state.verMaisEntradas && state.entradas.length > 0"
+              >
+                <v-btn
+                  color="primary"
+                  primary
+                  @click="actions.getEntradaHistoricoProduto"
+                  size="small"
+                  >ver mais
+                </v-btn>
+              </div>
+            </div>
+            <div
+              v-if="state.entradas.length == 0"
+              class="d-flex justify-center align-center flex-column pt-5"
+            >
+              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma Entrada encontrada. </v-text>
+            </div>
           </div>
         </v-card>
 
@@ -428,7 +432,6 @@ onMounted(async () => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 .scroll {
   height: 100%;
