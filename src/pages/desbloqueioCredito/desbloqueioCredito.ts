@@ -51,27 +51,27 @@ export const actions = {
         }
     },
 
-    // async updateCredito(param) {
-    //     //código oficial
-    //     try {
-    //         await desbloqueioCreditoService.updateCredito(param);
-    //         state.abrirModalConfirmar = false
-    //         Swal.fire({
-    //             icon: 'success',
-    //             title: 'Crédito desbloqueado',
-    //         });
+    async updateCredito(param) {
+        //código oficial
+        try {
+            await desbloqueioCreditoService.updateCredito(param);
+            state.abrirModalConfirmar = false
+            Swal.fire({
+                icon: 'success',
+                title: 'Crédito desbloqueado',
+            });
 
-    //         await actions.LimpaCampos()
+            await actions.LimpaCampos()
 
 
-    //     } catch {
-    //         Swal.fire({
-    //             icon: 'error',
-    //             title: 'Erro no processamento',
-    //         });
-    //     }
-    //     // fim código oficial
-    // },
+        } catch {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro no processamento',
+            });
+        }
+        // fim código oficial
+    },
 
     AbreModalConfirmar() {
         state.abrirModalConfirmar = !state.abrirModalConfirmar;
@@ -90,25 +90,27 @@ export const actions = {
             msg: `Deseja liberar o crédito ${state.credito.CHAVE}?`,
             theme: 'xModal-blue',
             call: async (param) => {
-                 {
-                    try {
-                        await desbloqueioCreditoService.updateCredito(param);
-                        state.abrirModalConfirmar = false
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Crédito desbloqueado',
-                        });
+                //  {
+                   await actions.updateCredito(param)
+                    
+                    // try {
+                    //     await desbloqueioCreditoService.updateCredito(param);
+                    //     state.abrirModalConfirmar = false
+                    //     Swal.fire({
+                    //         icon: 'success',
+                    //         title: 'Crédito desbloqueado',
+                    //     });
 
-                        await actions.LimpaCampos()
+                    //     await actions.LimpaCampos()
 
 
-                    } catch {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Erro no processamento',
-                        });
-                    }
-                }
+                    // } catch {
+                    //     Swal.fire({
+                    //         icon: 'error',
+                    //         title: 'Erro no processamento',
+                    //     });
+                    // }
+                // }
             }
         })
 
