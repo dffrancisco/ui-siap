@@ -29,7 +29,7 @@ const props = defineProps({
     class="bg-white border pa-2"
     style="min-width: 900px; width: 900px; margin: 0 auto"
   >
-    <v-card-title>Detalhes da venda</v-card-title>
+    <v-card-title class="titulo">Detalhes da venda</v-card-title>
 
     <v-card class="pa-1 mb-3 bg-grey-lighten-3">
       <v-container class="bg-grey-lighten-3 rounded-lg mb-1">
@@ -138,5 +138,8 @@ const props = defineProps({
 .constainer_informacao_orcamento {
   border: 1px solid #eeeeee;
   background: white;
+}
+.titulo {
+  padding: 10px 0px 10px 0px;
 }
 </style>

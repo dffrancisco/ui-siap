@@ -11,7 +11,10 @@ nextTick(async () => {
 
 <template>
   <v-btn @click="actions.onclickAbrir">oi</v-btn>
-  <v-dialog v-model="state.modalAbrirCartoes">
+  <v-dialog
+    v-model="state.modalAbrirCartoes"
+    max-width="1200px"
+  >
     <ModalhistoricoProduto :cod-produto="28287" />
   </v-dialog>
 </template>

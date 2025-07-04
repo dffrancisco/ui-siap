@@ -32,15 +32,19 @@ export const state = reactive({
     loading: false,
     modalAbrirHistoricoSaida: false,
     codProduto: undefined,
-    nomeProduto: ""
-
+    nomeProduto: "",
+    loadingSkeletonDadosIniciais: true,
+    loadingSkeletonEntrada: true,
+    loadingSkeletonSaida: true,
+    loadingSkeletonEstoque: true,
+    loadingSkeletonDevolucao: true,
+    loadingSkeletonCompras: true,
+    loadingSkeletonTextoVendaMeses: true,
 })
 
 export const actions = {
     async init(codProduto: number) {
         state.codProduto = codProduto;
-        state.loading = true;
-
         state.entradas = [];
         state.meses = [];
         state.saidas = [];
@@ -57,20 +61,29 @@ export const actions = {
         state.verMaisDevolucoes = true;
         state.verMaisCompras = true;
         state.verMaisEstoque = true;
+        state.loadingSkeletonDadosIniciais = true;
+        state.loadingSkeletonEntrada = true;
+        state.loadingSkeletonSaida = true;
+        state.loadingSkeletonEstoque = true;
+        state.loadingSkeletonDevolucao = true;
+        state.loadingSkeletonCompras = true;
+        state.loadingSkeletonTextoVendaMeses = true;
 
-        actions.getEntradaHistoricoProduto()
-        actions.getCompras()
-        actions.getEstoquesNew()
-        actions.getDadosIniciais()
-        actions.getSaidas()
-        actions.getDevolucoes()
+        await actions.getEntradaHistoricoProduto();
+        await actions.getSaidas();
+        await actions.getCompras();
+        await actions.getEstoquesNew();
+        await actions.getDadosIniciais();
+        await actions.getDevolucoes();
+
+
     },
 
 
     async onclickAbrir(saida: iSaidasHistoricoProduto) {
 
         try {
-
+            state.loading = false
             state.orcamento = await modalhistoricoProdutoService.getOrcamento(saida.NUM_ORCAMENTO, saida.DATA_VENDA)
             state.orcamentoItens = await modalhistoricoProdutoService.getItensOrcamento(saida.NUM_ORCAMENTO, saida.DATA_VENDA)
             state.modalAbrirHistoricoSaida = true;
@@ -103,6 +116,7 @@ export const actions = {
             state.pgEntradas++
 
             state.loading = false
+            state.loadingSkeletonEntrada = false
         }
         catch (error) {
             console.log(error)
@@ -111,8 +125,9 @@ export const actions = {
     },
 
     async getSaidas() {
-        state.loading = true
+
         try {
+
             const param = { COD_PRODUTO: state.codProduto, pg: state.pgSaidas }
             const novasSaidas = await modalhistoricoProdutoService.getSaidas(param as any)
 
@@ -125,6 +140,7 @@ export const actions = {
 
             state.pgSaidas++
             state.loading = false
+            state.loadingSkeletonSaida = false
         }
         catch (error) {
             console.log(error)
@@ -147,6 +163,7 @@ export const actions = {
 
             state.pgCompras++
             state.loading = false
+            state.loadingSkeletonCompras = false
         }
         catch (error) {
             console.log(error)
@@ -169,6 +186,7 @@ export const actions = {
 
             state.pgDevolucoes++
             state.loading = false
+            state.loadingSkeletonDevolucao = false
         }
         catch (error) {
             console.log(error)
@@ -214,6 +232,8 @@ export const actions = {
             }
 
             state.meses = mesesCompletos;
+            state.loadingSkeletonDadosIniciais = false;
+            state.loadingSkeletonTextoVendaMeses = false;
 
         }
         catch (error) {
@@ -237,6 +257,7 @@ export const actions = {
 
             state.pgEstoques++
             state.loading = false
+            state.loadingSkeletonEstoque = false
         }
         catch (error) {
             console.log(error)

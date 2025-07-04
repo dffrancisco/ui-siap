@@ -17,26 +17,69 @@ onMounted(async () => {
 <template>
   <card
     class="bg-white border"
-    style="min-width: 1100px; width: 1200px; margin: 0 auto"
+    style="min-width: 1200px; width: 1200px; margin: 0 auto"
   >
     <div class="d-flex flex-column pa-3">
-      <v-text class="text-h6 mb-2">{{ state.nomeProduto }}</v-text>
-      <v-text class="text-subtitle-1 mb-2">venda últimos 12 meses</v-text>
-      <v-card class="d-flex pa-3 bg-grey-lighten-4 justify-space-between">
-        <div
-          v-for="data in state.meses"
-          :key="`${data.MES}-${data.ANO}`"
-          class="d-flex flex-row"
-        >
-          <v-card
-            class="container_mes border mr-2 pa-2 rounded align-center bg-white"
-            :class="data.ATUAL ? 'bg-blue-lighten-4' : 'bg-white'"
+      <div v-if="state.loadingSkeletonDadosIniciais">
+        <v-skeleton-loader
+          type="text"
+          class="mb-"
+          width="200"
+        />
+        <v-skeleton-loader
+          type="text"
+          class="mb-1"
+          width="150"
+        />
+
+        <v-card class="d-flex pa-4 bg-grey-lighten-4 justify-space-between">
+          <div class="d-flex flex-row">
+            <v-skeleton-loader
+              v-for="n in 12"
+              :key="n"
+              class="mr-2"
+              width="80"
+              height="50"
+            />
+          </div>
+        </v-card>
+      </div>
+
+      <div v-else>
+        <div class="d-flex flex-column">
+          <v-text class="text-h6 mb-2">{{ state.nomeProduto }}</v-text>
+
+          <v-text
+            class="text-subtitle-1 mb-2"
+            v-if="!state.loadingSkeletonTextoVendaMeses"
           >
-            <h3 class="text-center text-subtitle-2">{{ `${data.MES} - ${data.ANO}` }}</h3>
-            <h5 class="text-center text-subtitle-1 font-weight-bold">{{ data.QUANTIDADE }}</h5>
-          </v-card>
+            venda últimos 12 meses
+          </v-text>
         </div>
-      </v-card>
+        <v-card
+          class="d-flex pa-3 bg-grey-lighten-4 justify-space-between"
+          v-if="!state.loadingSkeletonDadosIniciais"
+        >
+          <div
+            v-for="data in state.meses"
+            :key="`${data.MES}-${data.ANO}`"
+            class="d-flex flex-row"
+          >
+            <v-card
+              class="container_mes border mr-2 pa-2 rounded align-center"
+              :class="data.ATUAL ? 'bg-blue-lighten-4' : 'bg-white'"
+            >
+              <h3 class="text-center text-subtitle-2">
+                {{ `${data.MES} - ${data.ANO}` }}
+              </h3>
+              <h5 class="text-center text-subtitle-1 font-weight-bold">
+                {{ data.QUANTIDADE }}
+              </h5>
+            </v-card>
+          </div>
+        </v-card>
+      </div>
+
       <div class="d-flex mt-5">
         <!-- card entrada -->
         <div class="container">
@@ -51,8 +94,18 @@ onMounted(async () => {
               <i class="mdi mdi-package-variant-closed me-2"></i>
               Entradas</v-text
             >
+
+            <div v-if="state.loadingSkeletonEntrada">
+              <v-skeleton-loader
+                v-for="n in 3"
+                :key="n"
+                class="mx-2 my-4"
+                width="200"
+                height="130"
+              />
+            </div>
             <div
-              v-if="state.entradas.length > 0"
+              v-else-if="state.entradas.length > 0"
               class="scroll d-flex flex-column gap-5"
             >
               <v-card
@@ -80,7 +133,7 @@ onMounted(async () => {
               </v-card>
             </div>
             <div
-              v-else
+              v-else-if="state.loadingSkeletonEntrada"
               class="d-flex justify-center align-center flex-column pt-5"
             >
               <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma Entrada encontrada. </v-text>
@@ -112,8 +165,17 @@ onMounted(async () => {
               <i class="mdi mdi-cash me-2"></i>
               Saídas</v-text
             >
+            <div v-if="state.loadingSkeletonSaida">
+              <v-skeleton-loader
+                v-for="n in 3"
+                :key="n"
+                class="mx-2 my-4"
+                width="200"
+                height="130"
+              />
+            </div>
             <div
-              v-if="state.saidas.length > 0"
+              v-else-if="state.saidas.length > 0"
               class="scroll d-flex flex-column gap-5"
             >
               <v-card
@@ -129,18 +191,18 @@ onMounted(async () => {
                   </div>
                   <div class="d-flex flex-column mt-2">
                     <v-text class="font-weight-bold">{{ saida.NOME_CLIENTE }}</v-text>
-                    <v-text>Fornecedor</v-text>
+                    <v-text>{{ saida.VENDEDOR }}</v-text>
                   </div>
                   <div class="border mt-2"></div>
                   <div class="d-flex justify-space-between mt-2">
-                    <v-text class="font-weight-bold">R$ 0,00</v-text>
-                    <v-text class="quantidade">QTD: 1</v-text>
+                    <v-text class="font-weight-bold"> {{ formatValor(saida.VALOR_VENDA) }} </v-text>
+                    <v-text class="quantidade">QTD: {{ saida.QUANTIDADE }}</v-text>
                   </div>
                 </div>
               </v-card>
             </div>
             <div
-              v-else
+              v-else-if="state.loadingSkeletonSaida"
               class="d-flex justify-center align-center flex-column pt-5"
             >
               <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma Saída encontrada. </v-text>
@@ -171,6 +233,15 @@ onMounted(async () => {
               <i class="mdi mdi-chart-box-outline me-2"></i>
               Estoque</v-text
             >
+            <div v-if="state.loadingSkeletonEstoque">
+              <v-skeleton-loader
+                v-for="n in 3"
+                :key="n"
+                class="mx-2 my-4"
+                width="200"
+                height="130"
+              />
+            </div>
             <div
               v-if="state.estoques.length > 0"
               class="scroll d-flex flex-column gap-5"
@@ -193,7 +264,7 @@ onMounted(async () => {
               </v-card>
             </div>
             <div
-              v-else
+              v-else-if="state.loadingSkeletonEstoque"
               class="d-flex justify-center align-center flex-column pt-5"
             >
               <v-text class="text-h6 text-center text-grey-darken-2"> Nenhum Estoque encontrado. </v-text>
@@ -224,6 +295,15 @@ onMounted(async () => {
               <i class="mdi mdi-arrow-u-left-bottom me-2"></i>
               Devolução</v-text
             >
+            <div v-if="state.loadingSkeletonEstoque">
+              <v-skeleton-loader
+                v-for="n in 3"
+                :key="n"
+                class="mx-2 my-4"
+                width="200"
+                height="130"
+              />
+            </div>
             <div
               v-if="state.devolucoes.length > 0"
               class="scroll d-flex flex-column gap-5"
@@ -251,7 +331,7 @@ onMounted(async () => {
               </v-card>
             </div>
             <div
-              v-else
+              v-else-if="state.loadingSkeletonDevolucao"
               class="d-flex justify-center align-center flex-column pt-5"
             >
               <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma Devolução encontrada. </v-text>
@@ -282,6 +362,15 @@ onMounted(async () => {
               <i class="mdi mdi-cart-variant me-2"></i>
               Pedidos</v-text
             >
+            <div v-if="state.loadingSkeletonEstoque">
+              <v-skeleton-loader
+                v-for="n in 3"
+                :key="n"
+                class="mx-2 my-4"
+                width="200"
+                height="130"
+              />
+            </div>
             <div
               v-if="state.compras.length > 0"
               class="scroll d-flex flex-column gap-5"
@@ -308,7 +397,7 @@ onMounted(async () => {
               </v-card>
             </div>
             <div
-              v-else
+              v-else-if="state.loadingSkeletonCompras"
               class="d-flex justify-center align-center flex-column pt-5"
             >
               <v-text class="text-h6 text-center text-grey-darken-2"> Nenhum Pedido encontrado. </v-text>
@@ -328,7 +417,10 @@ onMounted(async () => {
       </div>
     </div>
   </card>
-  <v-dialog v-model="state.modalAbrirHistoricoSaida">
+  <v-dialog
+    v-model="state.modalAbrirHistoricoSaida"
+    max-width="900px"
+  >
     <ModalHistoricoDetalhesVenda
       :orcamento="state.orcamento"
       :orcamento-itens="state.orcamentoItens"
