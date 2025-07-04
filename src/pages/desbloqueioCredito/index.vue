@@ -8,7 +8,7 @@ import {state,actions} from './desbloqueioCredito'
 </script>
 
 <template>
-  <div class="container d-flex flex-column ga-3 bg-red rounded-lg">
+  <div class="container d-flex flex-column ga-3 bg-white rounded-lg">
 
     <h1 class="chave">Chave</h1>
     
