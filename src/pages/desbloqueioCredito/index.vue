@@ -41,7 +41,7 @@ import { state, actions } from "./desbloqueioCredito";
             >CPF: <span class="font-weight-black">{{ valor.CPF_CNPJ }} </span>
           </p>
           <p class="text-subtitle-2"
-            >Valor: <span class="font-weight-black"> {{ valor.VALOR  }} </span>
+            >Valor: <span class="font-weight-black"> {{  utils.formatValor(valor.VALOR)  }} </span>
           </p>
           <p class="text-subtitle-2"
             >Bloqueado: <span class="font-weight-black"> {{ valor.BLOQUEADO.trim() === 'S' ? "SIM" : "NÃO" }}</span>
