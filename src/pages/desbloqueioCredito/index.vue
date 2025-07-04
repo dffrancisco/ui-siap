@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref } from "vue";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import modalConfirmar from "./components/modalConfirmar.vue";
-import utils, { swalDarkError, swalDarkSuccess } from "../../ts/utils";
+import utils, { confirmaCodigo } from "../../ts/utils";
 import { state, actions } from "./desbloqueioCredito";
 </script>
 
@@ -30,28 +30,26 @@ import { state, actions } from "./desbloqueioCredito";
       <h3 class="text-subtitle-3">Dados do Crédito:</h3>
 
       <div class="d-flex flex-column ga-6">
-        <div
-          class="div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg"
-          v-for="valor in state.listaDadosCredito" 
-        >
+        <div class="div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg">
           <p class="text-subtitle-2">
-            Chave: <span class="font-weight-black"> {{ valor.CHAVE }} </span>
+            Chave: <span class="font-weight-black"> {{ state.credito.CHAVE }} </span>
           </p>
           <p class="text-subtitle-2"
-            >CPF: <span class="font-weight-black">{{ valor.CPF_CNPJ }} </span>
+            >CPF: <span class="font-weight-black">{{ state.credito.CPF_CNPJ }} </span>
           </p>
           <p class="text-subtitle-2"
-            >Valor: <span class="font-weight-black"> {{  utils.formatValor(valor.VALOR)  }} </span>
+            >Valor: <span class="font-weight-black"> {{ utils.formatValor(state.credito.VALOR) }} </span>
           </p>
           <p class="text-subtitle-2"
-            >Bloqueado: <span class="font-weight-black"> {{ valor.BLOQUEADO.trim() === 'S' ? "SIM" : "NÃO" }}</span>
+            >Bloqueado:
+            <span class="font-weight-black"> {{ state.credito.BLOQUEADO === "S" ? "SIM" : "NÃO" }}</span>
           </p>
         </div>
 
         <div class="d-flex justify-end">
           <v-btn
             :disabled="state.botaoDesbloquearCredito"
-            @click="actions.AbreModalConfirmar()"
+            @click="actions.onClickConfirmaDesbloqueio"
             class="bg-blue"
           >
             desbloquear crédito</v-btn

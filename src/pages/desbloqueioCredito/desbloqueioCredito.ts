@@ -1,17 +1,15 @@
-import utils from '@/ts/utils';
 import Swal from "sweetalert2";
 import { computed, reactive } from "vue";
+import utils, { confirmaCodigo } from "../../ts/utils";
 
-import {
 
-} from './interfaces'
+import { iCredito } from './interfaces'
 import desbloqueioCreditoService from './services/desbloqueioCredito.service';
 import { stat } from 'fs';
 
 
-
 export const state = reactive({
-    listaDadosCredito: [],
+    credito: <iCredito>{},
     pesquisaCredito: "",
     abrirModalConfirmar: false,
     botaoDesbloquearCredito: true,
@@ -34,7 +32,7 @@ export const actions = {
         }
 
         try {
-            state.listaDadosCredito = await desbloqueioCreditoService.getCredito(param);
+            state.credito = await desbloqueioCreditoService.getCredito(param);
             state.botaoDesbloquearCredito = false;
 
         } catch (err) {
@@ -53,37 +51,70 @@ export const actions = {
         }
     },
 
-    async updateCredito(param) {
-        try {
-            await desbloqueioCreditoService.updateCredito(param);
-            state.abrirModalConfirmar = false
-            Swal.fire({
-                icon: 'success',
-                title: 'Crédito desbloqueado',
-            });
-            
-            await actions.LimpaCampos()
+    // async updateCredito(param) {
+    //     //código oficial
+    //     try {
+    //         await desbloqueioCreditoService.updateCredito(param);
+    //         state.abrirModalConfirmar = false
+    //         Swal.fire({
+    //             icon: 'success',
+    //             title: 'Crédito desbloqueado',
+    //         });
+
+    //         await actions.LimpaCampos()
 
 
-        } catch {
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro no processamento',
-            });
-        }
-    },
+    //     } catch {
+    //         Swal.fire({
+    //             icon: 'error',
+    //             title: 'Erro no processamento',
+    //         });
+    //     }
+    //     // fim código oficial
+    // },
 
     AbreModalConfirmar() {
         state.abrirModalConfirmar = !state.abrirModalConfirmar;
     },
 
     async LimpaCampos() {
-        state.listaDadosCredito = []
+        state.credito = {} as iCredito
         state.pesquisaCredito = ""
         state.abrirModalConfirmar = false
         state.botaoDesbloquearCredito = true
+    },
+
+    //teste
+    onClickConfirmaDesbloqueio() {
+        utils.confirmaCodigo({
+            msg: `Deseja liberar o crédito ${state.credito.CHAVE}?`,
+            theme: 'xModal-blue',
+            call: async (param) => {
+                 {
+                    try {
+                        await desbloqueioCreditoService.updateCredito(param);
+                        state.abrirModalConfirmar = false
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Crédito desbloqueado',
+                        });
+
+                        await actions.LimpaCampos()
+
+
+                    } catch {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro no processamento',
+                        });
+                    }
+                }
+            }
+        })
+
     }
-    
+    // fim teste
+
 };
 
 
