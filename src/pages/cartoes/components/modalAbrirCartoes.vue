@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
 import { reactive, defineProps, defineEmits, onMounted } from "vue";
-import { shallowRef } from "vue";
 
 const emit = defineEmits(["salvar", "fechar"]);
 

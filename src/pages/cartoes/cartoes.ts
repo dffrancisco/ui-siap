@@ -1,11 +1,8 @@
-import utils, { swalDarkError } from '@/ts/utils';
+import { swalDarkError } from '@/ts/utils';
 import Swal from "sweetalert2";
-import { computed, reactive } from "vue";
-import ModalAbrirCartoes from './components/modalAbrirCartoes.vue';
+import { reactive } from "vue";
 import cartoes from './services/cartoes.service';
 import { iCartoes } from './interfaces';
-import { title } from 'process';
-import { param } from 'jquery';
 import { useEventListener } from '@vueuse/core';
 
 export const state = reactive({
@@ -13,7 +10,7 @@ export const state = reactive({
     parcelas: 0,
     bandeira: "",
     loading: false,
-    modalAbrirCartoes: false,
+    modalCartaoOpened: false,
     item: {},
     cartoes: <iCartoes[]>[],
     headers: <any>[
@@ -40,16 +37,16 @@ export const actions = {
 
     onClickAdicionar: () => {
         state.acao = "incluir"
-        state.modalAbrirCartoes = true;
+        state.modalCartaoOpened = true;
     },
     onClickAlterar: (item: any) => {
         state.acao = "alterar"
-        state.modalAbrirCartoes = true;
+        state.modalCartaoOpened = true;
         state.item = item
     },
 
     closeModal: () => {
-        state.modalAbrirCartoes = false;
+        state.modalCartaoOpened = false;
     },
 
 
@@ -70,7 +67,7 @@ export const actions = {
         if (data.acao === "alterar") {
             actions.updateCartoes(data.bandeira, data.idItem, data.parcelas)
         }
-        state.modalAbrirCartoes = false;
+        state.modalCartaoOpened = false;
 
     },
 
@@ -88,7 +85,7 @@ export const actions = {
             });
 
             actions.resetForm();
-            state.modalAbrirCartoes = false;
+            state.modalCartaoOpened = false;
         }
         catch (error) {
             Swal.fire({
@@ -150,12 +147,12 @@ export const actions = {
 }
 
 export const eventListener = useEventListener(document, "keydown", async (event) => {
-    if (!state.modalAbrirCartoes) {
+    if (!state.modalCartaoOpened) {
         state.acao = "incluir"
         if (event.key === "F1" && state.acao === "incluir") {
             event.preventDefault();
             event.stopPropagation();
-            state.modalAbrirCartoes = true
+            state.modalCartaoOpened = true
         }
 
     }

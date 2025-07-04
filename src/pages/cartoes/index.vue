@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { onMounted, reactive } from "vue";
+import { onMounted } from "vue";
 import ModalAbrirCartoes from "./components/modalAbrirCartoes.vue";
-import utils from "@/ts/utils";
 import { state, actions } from "./cartoes";
-import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
-import { ref } from "vue";
-import { iCartoes } from "./interfaces";
 
 onMounted(() => {
   actions.init();
@@ -28,7 +24,7 @@ onMounted(() => {
           >
         </v-card-actions>
         <v-dialog
-          v-model="state.modalAbrirCartoes"
+          v-model="state.modalCartaoOpened"
           max-width="480px"
           transition="dialog-transition"
         >
@@ -36,7 +32,7 @@ onMounted(() => {
             :item="state.item"
             :acao="state.acao"
             @salvar="actions.handleSalvarCartao"
-            @fechar="state.modalAbrirCartoes = false"
+            @fechar="state.modalCartaoOpened = false"
           />
         </v-dialog>
         <v-data-table
