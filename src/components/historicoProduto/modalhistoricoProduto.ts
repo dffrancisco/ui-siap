@@ -3,6 +3,7 @@ import modalhistoricoProdutoService from "./services/modalhistoricoProduto.servi
 import { iComprasHistoricoProduto, iDevolucoesHistoricoProduto, iEntradasHistoricoProduto, iLogEstoquesNew, iDadosIniciaisHistoricosProdutos, iOrcamento, iOrcamentoItens, iSaidasHistoricoProduto } from "./interface"
 import moment from "moment";
 import Loading from "../Loading.vue";
+import { swalDarkError } from "@/ts/utils";
 
 
 const nomeMeses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
@@ -83,7 +84,6 @@ export const actions = {
     async onclickAbrir(saida: iSaidasHistoricoProduto) {
 
         try {
-            state.loading = false
             state.orcamento = await modalhistoricoProdutoService.getOrcamento(saida.NUM_ORCAMENTO, saida.DATA_VENDA)
             state.orcamentoItens = await modalhistoricoProdutoService.getItensOrcamento(saida.NUM_ORCAMENTO, saida.DATA_VENDA)
             state.modalAbrirHistoricoSaida = true;
@@ -91,8 +91,9 @@ export const actions = {
 
         }
         catch (error) {
-            console.log(error)
+
             state.loading = false
+            swalDarkError('Ocorreu um erro ao Abrir o histórico de saídas')
         }
 
     },
@@ -107,6 +108,7 @@ export const actions = {
 
             if (!novasEntradas.length) {
                 state.verMaisEntradas = false
+                state.loading = false
                 return
             }
 
@@ -119,13 +121,14 @@ export const actions = {
             state.loadingSkeletonEntrada = false
         }
         catch (error) {
-            console.log(error)
+
             state.loading = false
+            swalDarkError('Ocorreu um erro ao buscar as entradas')
         }
     },
 
     async getSaidas() {
-
+        state.loading = true
         try {
 
             const param = { COD_PRODUTO: state.codProduto, pg: state.pgSaidas }
@@ -133,6 +136,7 @@ export const actions = {
 
             if (!novasSaidas.length) {
                 state.verMaisSaidas = false
+                state.loading = false
                 return
             }
 
@@ -143,8 +147,9 @@ export const actions = {
             state.loadingSkeletonSaida = false
         }
         catch (error) {
-            console.log(error)
+
             state.loading = false
+            swalDarkError('Ocorreu um erro ao buscar as saídas')
         }
     },
 
@@ -155,7 +160,9 @@ export const actions = {
             const novasCompras = await modalhistoricoProdutoService.getCompras(param as any)
 
             if (!novasCompras.length) {
+
                 state.verMaisCompras = false
+                state.loading = false
                 return
             }
 
@@ -166,8 +173,8 @@ export const actions = {
             state.loadingSkeletonCompras = false
         }
         catch (error) {
-            console.log(error)
             state.loading = false
+            swalDarkError('Ocorreu um erro ao buscar os pedidos')
         }
     },
 
@@ -179,7 +186,9 @@ export const actions = {
 
             if (!novasDevolucoes.length) {
                 state.verMaisDevolucoes = false
+                state.loading = false
                 return
+
             }
 
             state.devolucoes = [...state.devolucoes, ...novasDevolucoes]
@@ -189,8 +198,9 @@ export const actions = {
             state.loadingSkeletonDevolucao = false
         }
         catch (error) {
-            console.log(error)
             state.loading = false
+            swalDarkError('Ocorreu um erro ao buscar as devoluções')
+
         }
     },
 
@@ -237,7 +247,7 @@ export const actions = {
 
         }
         catch (error) {
-            console.log(error)
+            swalDarkError('Ocorreu um erro ao buscar os meses')
             state.loading = false
 
         }
@@ -250,6 +260,7 @@ export const actions = {
 
             if (!novosEstoques.length) {
                 state.verMaisEstoque = false
+                state.loading = false
                 return
             }
 
@@ -260,7 +271,7 @@ export const actions = {
             state.loadingSkeletonEstoque = false
         }
         catch (error) {
-            console.log(error)
+            swalDarkError('Ocorreu um erro ao buscar o Estoque')
 
             state.loading = false
         }

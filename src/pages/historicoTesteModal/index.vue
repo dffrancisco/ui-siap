@@ -15,7 +15,7 @@ nextTick(async () => {
     v-model="state.modalAbrirCartoes"
     max-width="1200px"
   >
-    <ModalhistoricoProduto :cod-produto="28287" />
+    <ModalhistoricoProduto :cod-produto="3976" />
   </v-dialog>
 </template>
 

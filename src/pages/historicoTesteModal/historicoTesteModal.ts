@@ -3,7 +3,6 @@ import { reactive } from "vue";
 
 
 export const state = reactive({
-    loading: false,
     modalAbrirCartoes: false,
 })
 
@@ -12,7 +11,6 @@ export const actions = {
     },
 
     onclickAbrir: () => {
-        state.loading = true
         state.modalAbrirCartoes = true
     }
 }
