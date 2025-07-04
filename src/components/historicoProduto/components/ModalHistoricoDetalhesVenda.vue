@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
-import { actions, state } from "../modalhistoricoProduto";
+import { state } from "../modalhistoricoProduto";
 import { dataBrasil, formatHora, formatValor } from "@/ts/utils";
-import { iOrcamento, iOrcamentoItens } from "../interface";
+import { iOrcamento } from "../interface";
 
 const headers = [
   { title: "N° fabricante", align: "start", key: "NUM_FABRICANTE" },

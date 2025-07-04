@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { nextTick } from "vue";
 import { state, actions } from "./historicoTesteModal";
-import HistoricoProduto from "@/components/historicoProduto/historicoProduto.vue";
 import ModalhistoricoProduto from "@/components/historicoProduto/ModalhistoricoProduto.vue";
 
 nextTick(async () => {

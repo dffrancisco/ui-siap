@@ -2,7 +2,6 @@ import { reactive } from "vue"
 import modalhistoricoProdutoService from "./services/modalhistoricoProduto.service"
 import { iComprasHistoricoProduto, iDevolucoesHistoricoProduto, iEntradasHistoricoProduto, iLogEstoquesNew, iDadosIniciaisHistoricosProdutos, iOrcamento, iOrcamentoItens, iSaidasHistoricoProduto } from "./interface"
 import moment from "moment";
-import Loading from "../Loading.vue";
 import { swalDarkError } from "@/ts/utils";
 
 
