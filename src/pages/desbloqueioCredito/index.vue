@@ -8,13 +8,12 @@ import {state,actions} from './desbloqueioCredito'
 </script>
 
 <template>
-  <v-container class="container  d-flex flex-column ga-3 bg-white rounded-lg ">
-    <!-- <h2 class="">LIBERAR CRÉDITO MANUAL</h2> -->
+  <div class="container d-flex flex-column ga-3 bg-red rounded-lg">
 
     <h1 class="chave">Chave</h1>
-
-    <section class=" d-flex flex-column ga-4 ma-3">
-
+    
+    <section class=" container_2 d-flex flex-column ga-4 ma-3  ">
+      
       <div class="d-flex div-pai ga-5 ">
 
         <v-text-field 
@@ -45,7 +44,7 @@ import {state,actions} from './desbloqueioCredito'
       </div>
 
     </section>
-  </v-container>
+  </div>
 
   <v-dialog v-model="state.abrirModalConfirmar" >
     <modalConfirmar >
@@ -60,8 +59,14 @@ import {state,actions} from './desbloqueioCredito'
 }
 
 .container{
-  height: 25rem;
-  width: 100rem;
+  /* height: 23rem; */
+  height: 40%;
+  width: 80%;
+  max-width: 100%;
+  position:relative;
+  left: 11%;
+  top: 6%;
+
 }
 
 .chave{
