@@ -214,12 +214,7 @@ export const actions = {
 
 
             state.nomeProduto = state.dadosIniciais.PRODUTO.DESC_PRODUTO
-            console.log(state.nomeProduto)
-
-
             const mesesCompletos = [];
-
-
 
             for (let i = 1; i <= 12; i++) {
                 const dataInicial = moment().subtract(12 - i, 'months');
