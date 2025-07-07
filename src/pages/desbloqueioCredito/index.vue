@@ -8,9 +8,9 @@ import { state, actions } from "./desbloqueioCredito";
 
 <template>
   <div class="container d-flex flex-column ga-3 bg-white rounded-lg">
+    
     <h1 class="chave">Chave</h1>
-
-    <section class="container_2 d-flex flex-column ga-4 ma-3">
+    <section class=" teste d-flex flex-column ga-6 ma-3">
       <div class="d-flex div-pai ga-5">
         <v-text-field
           class="input-chave"
@@ -22,6 +22,8 @@ import { state, actions } from "./desbloqueioCredito";
           @click="actions.getCredito(state.pesquisaCredito)"
           icon=""
           density="comfortable"
+          class="bg-blue small "
+          size="38"
         >
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
@@ -29,7 +31,7 @@ import { state, actions } from "./desbloqueioCredito";
 
       <h3 class="text-subtitle-3">Dados do Crédito:</h3>
 
-      <div class="d-flex flex-column ga-6">
+      <div class="d-flex flex-column ga-6 rounded-lg">
         <div
           v-if="state.dadosCredito"
           class="div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg"
@@ -38,18 +40,18 @@ import { state, actions } from "./desbloqueioCredito";
             Chave: <span class="font-weight-black"> {{ state.credito.CHAVE }} </span>
           </p>
           <p class="text-subtitle-2"
-            >CPF: <span class="font-weight-black">{{ state.credito.CPF_CNPJ }} </span>
+            >CPF/CNPJ: <span class="font-weight-black">{{ state.credito.CPF_CNPJ }} </span>
           </p>
           <p class="text-subtitle-2"
             >Valor: <span class="font-weight-black"> {{ utils.formatValor(state.credito.VALOR) }} </span>
           </p>
-          <p class="text-subtitle-2"
+          <p class="text-subtitle-2"      
             >Bloqueado:
             <span class="font-weight-black"> {{ state.credito.BLOQUEADO === "S" ? "SIM" : "NÃO" }}</span>
           </p>
         </div>
 
-        <div class="d-flex justify-end">
+        <div class="desbloqueia_credito d-flex justify-end ma-5">
           <v-btn
             :disabled="state.botaoDesbloquearCredito"
             @click="actions.onClickConfirmaDesbloqueio"
@@ -70,7 +72,6 @@ import { state, actions } from "./desbloqueioCredito";
 }
 
 .container {
-  /* height: 23rem; */
   height: 55%;
   width: 80%;
   max-width: 100%;
@@ -82,5 +83,11 @@ import { state, actions } from "./desbloqueioCredito";
 
 .chave {
   margin: 1rem 0rem 0rem 1rem;
+}
+
+.desbloqueia_credito {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 1.4rem;
 }
 </style>

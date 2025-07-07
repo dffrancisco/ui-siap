@@ -56,7 +56,7 @@ export const actions = {
     onClickConfirmaDesbloqueio() {
         utils.confirmaCodigo({
             msg: `Deseja liberar o crédito ${state.credito.CHAVE}?`,
-            theme: 'xModal-blue',
+            theme: 'xModal-dark',
             call: async () => {
 
                 try {
