@@ -5,3 +5,4 @@ export interface iCredito{
     BLOQUEADO:string;
     ID_CREDITO: number;
 }
+

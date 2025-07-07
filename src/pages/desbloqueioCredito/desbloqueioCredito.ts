@@ -10,9 +10,9 @@ import { stat } from 'fs';
 
 export const state = reactive({
     credito: <iCredito>{},
-    pesquisaCredito: "",
-    botaoDesbloquearCredito: true,
-    dadosCredito: false
+    pesquisaCredito: "" as String ,
+    botaoDesbloquearCredito: true as Boolean,
+    dadosCredito: false as Boolean
 
 });
 
