@@ -30,7 +30,10 @@ import { state, actions } from "./desbloqueioCredito";
       <h3 class="text-subtitle-3">Dados do Crédito:</h3>
 
       <div class="d-flex flex-column ga-6">
-        <div class="div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg">
+        <div
+          v-if="state.dadosCredito"
+          class="div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg"
+        >
           <p class="text-subtitle-2">
             Chave: <span class="font-weight-black"> {{ state.credito.CHAVE }} </span>
           </p>
@@ -58,10 +61,6 @@ import { state, actions } from "./desbloqueioCredito";
       </div>
     </section>
   </div>
-
-  <v-dialog v-model="state.abrirModalConfirmar">
-    <modalConfirmar> </modalConfirmar>
-  </v-dialog>
 </template>
 
 <style scoped>

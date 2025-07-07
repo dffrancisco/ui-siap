@@ -11,8 +11,8 @@ import { stat } from 'fs';
 export const state = reactive({
     credito: <iCredito>{},
     pesquisaCredito: "",
-    abrirModalConfirmar: false,
     botaoDesbloquearCredito: true,
+    dadosCredito: false
 
 });
 
@@ -34,6 +34,8 @@ export const actions = {
         try {
             state.credito = await desbloqueioCreditoService.getCredito(param);
             state.botaoDesbloquearCredito = false;
+            state.dadosCredito = true
+            return
 
         } catch (err) {
             let mensagem = 'Erro ao armazenar os dados';
@@ -51,71 +53,32 @@ export const actions = {
         }
     },
 
-    async updateCredito(param) {
-        //código oficial
-        try {
-            await desbloqueioCreditoService.updateCredito(param);
-            state.abrirModalConfirmar = false
-            Swal.fire({
-                icon: 'success',
-                title: 'Crédito desbloqueado',
-            });
-
-            await actions.LimpaCampos()
-
-
-        } catch {
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro no processamento',
-            });
-        }
-        // fim código oficial
-    },
-
-    AbreModalConfirmar() {
-        state.abrirModalConfirmar = !state.abrirModalConfirmar;
-    },
-
-    async LimpaCampos() {
-        state.credito = {} as iCredito
-        state.pesquisaCredito = ""
-        state.abrirModalConfirmar = false
-        state.botaoDesbloquearCredito = true
-    },
-
-    //teste
     onClickConfirmaDesbloqueio() {
         utils.confirmaCodigo({
             msg: `Deseja liberar o crédito ${state.credito.CHAVE}?`,
             theme: 'xModal-blue',
-            call: async (param) => {
-                //  {
-                   await actions.updateCredito(param)
-                    
-                    // try {
-                    //     await desbloqueioCreditoService.updateCredito(param);
-                    //     state.abrirModalConfirmar = false
-                    //     Swal.fire({
-                    //         icon: 'success',
-                    //         title: 'Crédito desbloqueado',
-                    //     });
+            call: async () => {
 
-                    //     await actions.LimpaCampos()
+                try {
+                    await desbloqueioCreditoService.updateCredito(state.credito.CHAVE);
 
+                    state.dadosCredito = false
+                    state.pesquisaCredito = ""
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Crédito desbloqueado',
+                    });
 
-                    // } catch {
-                    //     Swal.fire({
-                    //         icon: 'error',
-                    //         title: 'Erro no processamento',
-                    //     });
-                    // }
-                // }
+                } catch {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro no processamento',
+                    });
+                }
             }
         })
 
     }
-    // fim teste
 
 };
 
