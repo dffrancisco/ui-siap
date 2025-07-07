@@ -42,14 +42,23 @@ export interface iLogEstoquesNew {
     CONTEUDO: string
 }
 
-export interface iDadosIniciaisHistoricosProdutos {
-    MES: any,
-    ANO: number,
-    QUANTIDADE: number,
+export interface iMovAnual {
+    COD_PRODUTO: number;
+    MES: number;
+    ANO: number;
+    QUANTIDADE: number;
+    ID_EMPRESA: number;
     ATUAL: string,
-    DESC_PRODUTO: string
 }
 
+export interface iDescricaoProduto {
+    DESC_PRODUTO: string;
+}
+
+export interface iDadosIniciaisHistoricosProdutos {
+    PRODUTO: iDescricaoProduto;
+    MOV_ANUAL: iMovAnual[];
+}
 export interface iOrcamento {
     NUM_ORCAMENTO: number,
     MES: number,
@@ -90,3 +99,5 @@ export interface iOrcamentoItens {
     QTO_ENTREGUE: number,
     DESCONTO: number,
 }
+
+

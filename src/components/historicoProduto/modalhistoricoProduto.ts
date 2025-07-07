@@ -1,6 +1,6 @@
 import { reactive } from "vue"
 import modalhistoricoProdutoService from "./services/modalhistoricoProduto.service"
-import { iComprasHistoricoProduto, iDevolucoesHistoricoProduto, iEntradasHistoricoProduto, iLogEstoquesNew, iDadosIniciaisHistoricosProdutos, iOrcamento, iOrcamentoItens, iSaidasHistoricoProduto } from "./interface"
+import { iComprasHistoricoProduto, iDevolucoesHistoricoProduto, iEntradasHistoricoProduto, iLogEstoquesNew, iDadosIniciaisHistoricosProdutos, iOrcamento, iOrcamentoItens, iSaidasHistoricoProduto, iMovAnual } from "./interface"
 import moment from "moment";
 import { swalDarkError } from "@/ts/utils";
 
@@ -12,8 +12,9 @@ export const state = reactive({
     saidas: <iSaidasHistoricoProduto[]>[],
     compras: <iComprasHistoricoProduto[]>[],
     estoques: <iLogEstoquesNew[]>[],
+    dadosIniciais: <iDadosIniciaisHistoricosProdutos>{},
     devolucoes: <iDevolucoesHistoricoProduto[]>[],
-    meses: <iDadosIniciaisHistoricosProdutos[]>[],
+    meses: <iMovAnual[]>[],
     orcamento: <iOrcamento>{},
     orcamentoItens: <iOrcamentoItens[]>[],
     pgEntradas: 0,
@@ -29,7 +30,6 @@ export const state = reactive({
     verMaisEstoque: true,
     dataFim: "",
     dataInicio: "",
-    loading: false,
     modalAbrirHistoricoSaida: false,
     codProduto: undefined,
     nomeProduto: "",
@@ -75,8 +75,6 @@ export const actions = {
         await actions.getEstoquesNew();
         await actions.getDadosIniciais();
         await actions.getDevolucoes();
-
-
     },
 
 
@@ -86,12 +84,10 @@ export const actions = {
             state.orcamento = await modalhistoricoProdutoService.getOrcamento(saida.NUM_ORCAMENTO, saida.DATA_VENDA)
             state.orcamentoItens = await modalhistoricoProdutoService.getItensOrcamento(saida.NUM_ORCAMENTO, saida.DATA_VENDA)
             state.modalAbrirHistoricoSaida = true;
-            state.loading = false
+
 
         }
         catch (error) {
-
-            state.loading = false
             swalDarkError('Ocorreu um erro ao Abrir o histórico de saídas')
         }
 
@@ -99,7 +95,7 @@ export const actions = {
 
 
     async getEntradaHistoricoProduto() {
-        state.loading = true
+        state.loadingSkeletonEntrada = true
         try {
 
             const param = { COD_PRODUTO: state.codProduto, pg: state.pgEntradas }
@@ -107,7 +103,7 @@ export const actions = {
 
             if (!novasEntradas.length) {
                 state.verMaisEntradas = false
-                state.loading = false
+                state.loadingSkeletonEntrada = false
                 return
             }
 
@@ -116,18 +112,18 @@ export const actions = {
 
             state.pgEntradas++
 
-            state.loading = false
+
             state.loadingSkeletonEntrada = false
         }
         catch (error) {
 
-            state.loading = false
+
             swalDarkError('Ocorreu um erro ao buscar as entradas')
         }
     },
 
     async getSaidas() {
-        state.loading = true
+        state.loadingSkeletonSaida = true
         try {
 
             const param = { COD_PRODUTO: state.codProduto, pg: state.pgSaidas }
@@ -135,25 +131,26 @@ export const actions = {
 
             if (!novasSaidas.length) {
                 state.verMaisSaidas = false
-                state.loading = false
+                state.loadingSkeletonSaida = false
+
                 return
             }
 
             state.saidas = [...state.saidas, ...novasSaidas]
 
             state.pgSaidas++
-            state.loading = false
+
             state.loadingSkeletonSaida = false
         }
         catch (error) {
 
-            state.loading = false
+
             swalDarkError('Ocorreu um erro ao buscar as saídas')
         }
     },
 
     async getCompras() {
-        state.loading = true
+        state.loadingSkeletonCompras = true
         try {
             const param = { COD_PRODUTO: state.codProduto, pg: state.pgCompras }
             const novasCompras = await modalhistoricoProdutoService.getCompras(param as any)
@@ -161,31 +158,31 @@ export const actions = {
             if (!novasCompras.length) {
 
                 state.verMaisCompras = false
-                state.loading = false
+                state.loadingSkeletonCompras = false
                 return
             }
 
             state.compras = [...state.compras, ...novasCompras]
 
             state.pgCompras++
-            state.loading = false
+
             state.loadingSkeletonCompras = false
         }
         catch (error) {
-            state.loading = false
+
             swalDarkError('Ocorreu um erro ao buscar os pedidos')
         }
     },
 
     async getDevolucoes() {
-        state.loading = true
+        state.loadingSkeletonDevolucao = true
         try {
             const param = { COD_PRODUTO: state.codProduto, pg: state.pgDevolucoes }
             const novasDevolucoes = await modalhistoricoProdutoService.getDevolucoes(param as any)
 
             if (!novasDevolucoes.length) {
                 state.verMaisDevolucoes = false
-                state.loading = false
+                state.loadingSkeletonDevolucao = false
                 return
 
             }
@@ -193,11 +190,10 @@ export const actions = {
             state.devolucoes = [...state.devolucoes, ...novasDevolucoes]
 
             state.pgDevolucoes++
-            state.loading = false
             state.loadingSkeletonDevolucao = false
         }
         catch (error) {
-            state.loading = false
+            state.loadingSkeletonDevolucao = false
             swalDarkError('Ocorreu um erro ao buscar as devoluções')
 
         }
@@ -213,11 +209,16 @@ export const actions = {
                 dataInicio: dataInicio.format('YYYY-MM-DD'),
                 dataFim: dataFim.format('YYYY-MM-DD'),
             };
-            const dadosIniciais = await modalhistoricoProdutoService.getDadosIniciais(param as any);
 
-            state.nomeProduto = dadosIniciais[0].DESC_PRODUTO
+            state.dadosIniciais = await modalhistoricoProdutoService.getDadosIniciais(param as any);
+
+
+            state.nomeProduto = state.dadosIniciais.PRODUTO.DESC_PRODUTO
+            console.log(state.nomeProduto)
+
 
             const mesesCompletos = [];
+
 
 
             for (let i = 1; i <= 12; i++) {
@@ -226,9 +227,11 @@ export const actions = {
                 const ano = parseInt(dataInicial.format('YYYY'));
                 const nomeMes = nomeMeses[nomeMesIndice - 1];
 
-                const resultadoMovAnual = dadosIniciais.find((item: any) =>
+                const resultadoMovAnual = state.dadosIniciais.MOV_ANUAL.find((item: any) =>
                     parseInt(item.MES) === nomeMesIndice && parseInt(item.ANO) === ano
+
                 );
+
 
                 const mesAtual = dataInicial.isSame(moment(), 'month');
 
@@ -247,32 +250,28 @@ export const actions = {
         }
         catch (error) {
             swalDarkError('Ocorreu um erro ao buscar os meses')
-            state.loading = false
 
         }
     },
     async getEstoquesNew() {
-        state.loading = true
+        state.loadingSkeletonEstoque = true
         try {
             const param = { COD_PRODUTO: state.codProduto, pg: state.pgEstoques }
             const novosEstoques = await modalhistoricoProdutoService.getLogEstoquesNew(param as any)
 
             if (!novosEstoques.length) {
                 state.verMaisEstoque = false
-                state.loading = false
+                state.loadingSkeletonEstoque = false
                 return
             }
 
             state.estoques = [...state.estoques, ...novosEstoques]
 
             state.pgEstoques++
-            state.loading = false
             state.loadingSkeletonEstoque = false
         }
         catch (error) {
             swalDarkError('Ocorreu um erro ao buscar o Estoque')
-
-            state.loading = false
         }
     },
 }

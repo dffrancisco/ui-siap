@@ -2,7 +2,6 @@
 import { onMounted } from "vue";
 import { actions, state } from "./modalhistoricoProduto";
 import { dataBrasil, formatHora, formatValor } from "@/ts/utils";
-import Loading from "@/components/Loading.vue";
 import ModalHistoricoDetalhesVenda from "./components/ModalHistoricoDetalhesVenda.vue";
 
 const props = defineProps<{
@@ -109,7 +108,10 @@ onMounted(async () => {
               v-if="state.entradas.length > 0"
               class="d-flex flex-column ga-2 h-100"
             >
-              <div class="scroll d-flex flex-column ga-3 pb-2">
+              <div
+                class="scroll d-flex flex-column ga-3 pb-2"
+                style="max-height: 400px; overflow-y: auto"
+              >
                 <v-card
                   class="container_card"
                   v-for="entrada in state.entradas"
@@ -151,7 +153,7 @@ onMounted(async () => {
               v-if="state.entradas.length == 0"
               class="d-flex justify-center align-center flex-column pt-5"
             >
-              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma Entrada encontrada. </v-text>
+              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma entrada encontrada. </v-text>
             </div>
           </div>
         </v-card>
@@ -177,47 +179,56 @@ onMounted(async () => {
               height="130"
             />
           </div>
-          <div
-            v-else-if="state.saidas.length > 0"
-            class="scroll d-flex flex-column ga-3"
-          >
-            <v-card
-              class="container_card"
-              v-for="saida in state.saidas"
-              @click="actions.onclickAbrir(saida)"
-            >
-              <div class="cor_identificacao bg-pink-darken-1"></div>
-              <div class="container_informação_historico">
-                <div class="d-flex justify-space-between">
-                  <v-text>{{ dataBrasil(saida.DATA_VENDA) }}</v-text>
-                  <v-text class="codigo">#{{ saida.NUM_ORCAMENTO }}</v-text>
-                </div>
-                <div class="d-flex flex-column mt-2">
-                  <v-text class="font-weight-bold">{{ saida.NOME_CLIENTE }}</v-text>
-                  <v-text>{{ saida.VENDEDOR }}</v-text>
-                </div>
-                <div class="border mt-2"></div>
-                <div class="d-flex justify-space-between mt-2">
-                  <v-text class="font-weight-bold"> {{ formatValor(saida.VALOR_VENDA) }} </v-text>
-                  <v-text class="quantidade">QTD: {{ saida.QUANTIDADE }}</v-text>
-                </div>
-              </div>
-            </v-card>
-          </div>
-          <div
-            v-else-if="state.loadingSkeletonSaida"
-            class="d-flex justify-center align-center flex-column pt-5"
-          >
-            <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma Saída encontrada. </v-text>
-          </div>
-          <div
-            class="container_botao"
-            v-if="state.verMaisSaidas && state.saidas.length > 0"
-          >
+          <div v-else>
             <div
-              class="botao_ver_mais"
-              @click="actions.getSaidas"
-              >ver mais
+              v-if="state.saidas.length > 0"
+              class="d-flex flex-column ga-2 h-100"
+            >
+              <div
+                class="scroll d-flex flex-column ga-3 pb-2"
+                style="max-height: 400px; overflow-y: auto"
+              >
+                <v-card
+                  class="container_card"
+                  v-for="saida in state.saidas"
+                  @click="actions.onclickAbrir(saida)"
+                >
+                  <div class="cor_identificacao bg-pink-darken-1"></div>
+                  <div class="container_informação_historico">
+                    <div class="d-flex justify-space-between">
+                      <v-text>{{ dataBrasil(saida.DATA_VENDA) }}</v-text>
+                      <v-text class="codigo">#{{ saida.NUM_ORCAMENTO }}</v-text>
+                    </div>
+                    <div class="d-flex flex-column mt-2">
+                      <v-text class="font-weight-bold">{{ saida.NOME_CLIENTE }}</v-text>
+                      <v-text>{{ saida.VENDEDOR }}</v-text>
+                    </div>
+                    <div class="border mt-2"></div>
+                    <div class="d-flex justify-space-between mt-2">
+                      <v-text class="font-weight-bold"> {{ formatValor(saida.VALOR_VENDA) }} </v-text>
+                      <v-text class="quantidade">QTD: {{ saida.QUANTIDADE }}</v-text>
+                    </div>
+                  </div>
+                </v-card>
+              </div>
+              <div
+                class="container_botao"
+                v-if="state.verMaisSaidas && state.saidas.length > 0"
+              >
+                <v-btn
+                  color="primary"
+                  primary
+                  @click="actions.getSaidas"
+                  size="small"
+                  >ver mais
+                </v-btn>
+              </div>
+            </div>
+            <div
+              v-if="state.saidas.length == 0"
+              class="d-flex justify-center align-center flex-column pt-5"
+            >
+              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma saída encontrada. </v-text>
             </div>
           </div>
         </v-card>
@@ -243,41 +254,50 @@ onMounted(async () => {
               height="130"
             />
           </div>
-          <div
-            v-if="state.estoques.length > 0"
-            class="scroll d-flex flex-column ga-3"
-          >
-            <v-card
-              class="container_card"
-              v-for="estoque in state.estoques"
-            >
-              <div class="cor_identificacao bg-blue-darken-2"></div>
-              <div class="container_informação_historico">
-                <div class="d-flex justify-space-between">
-                  <v-text>{{ dataBrasil(estoque.DH_LOG) }}</v-text>
-                  <v-text class="codigo">{{ formatHora(estoque.DH_LOG) }}</v-text>
-                </div>
-                <div class="d-flex flex-column mt-2">
-                  <v-text class="font-weight-bold">{{ estoque.ESTOQUISTA }}</v-text>
-                  <v-text class="text-subtitle-2">{{ estoque.CONTEUDO }}</v-text>
-                </div>
-              </div>
-            </v-card>
-          </div>
-          <div
-            v-else-if="state.loadingSkeletonEstoque"
-            class="d-flex justify-center align-center flex-column pt-5"
-          >
-            <v-text class="text-h6 text-center text-grey-darken-2"> Nenhum Estoque encontrado. </v-text>
-          </div>
-          <div
-            class="container_botao"
-            v-if="state.verMaisEstoque && state.estoques.length > 0"
-          >
+          <div v-else>
             <div
-              class="botao_ver_mais"
-              @click="actions.getEstoquesNew"
-              >ver mais
+              v-if="state.estoques.length > 0"
+              class="d-flex flex-column ga-2 h-100"
+            >
+              <div
+                class="scroll d-flex flex-column ga-3 pb-2"
+                style="max-height: 400px; overflow-y: auto"
+              >
+                <v-card
+                  class="container_card"
+                  v-for="estoque in state.estoques"
+                >
+                  <div class="cor_identificacao bg-blue-darken-2"></div>
+                  <div class="container_informação_historico">
+                    <div class="d-flex justify-space-between">
+                      <v-text>{{ dataBrasil(estoque.DH_LOG) }}</v-text>
+                      <v-text class="codigo">{{ formatHora(estoque.DH_LOG) }}</v-text>
+                    </div>
+                    <div class="d-flex flex-column mt-2">
+                      <v-text class="font-weight-bold">{{ estoque.ESTOQUISTA }}</v-text>
+                      <v-text class="text-subtitle-2">{{ estoque.CONTEUDO }}</v-text>
+                    </div>
+                  </div>
+                </v-card>
+              </div>
+              <div
+                class="container_botao"
+                v-if="state.verMaisEstoque && state.estoques.length > 0"
+              >
+                <v-btn
+                  color="primary"
+                  primary
+                  @click="actions.getEstoquesNew"
+                  size="small"
+                  >ver mais
+                </v-btn>
+              </div>
+            </div>
+            <div
+              v-if="state.estoques.length == 0"
+              class="d-flex justify-center align-center flex-column pt-5"
+            >
+              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhum estoque encontrado. </v-text>
             </div>
           </div>
         </v-card>
@@ -294,7 +314,7 @@ onMounted(async () => {
             <i class="mdi mdi-arrow-u-left-bottom me-2"></i>
             Devolução</v-text
           >
-          <div v-if="state.loadingSkeletonEstoque">
+          <div v-if="state.loadingSkeletonDevolucao">
             <v-skeleton-loader
               v-for="n in 3"
               :key="n"
@@ -303,46 +323,55 @@ onMounted(async () => {
               height="130"
             />
           </div>
-          <div
-            v-if="state.devolucoes.length > 0"
-            class="scroll d-flex flex-column ga-3"
-          >
-            <v-card
-              class="container_card"
-              v-for="devolucao in state.devolucoes"
-            >
-              <div class="cor_identificacao bg-green-darken-2"></div>
-              <div class="container_informação_historico">
-                <div class="d-flex justify-space-between">
-                  <v-text>{{ dataBrasil(devolucao.DT_DEVOLUCAO) }}</v-text>
-                  <v-text class="codigo">#{{ devolucao.NUM_ORCAMENTO }}</v-text>
-                </div>
-                <div class="d-flex flex-column mt-2">
-                  <v-text>Data da venda:</v-text>
-                  <v-text class="font-weight-bold"> {{ dataBrasil(devolucao.DT_ORCAMENTO) }}</v-text>
-                </div>
-                <div class="border mt-2"></div>
-                <div class="d-flex justify-space-between mt-2">
-                  <v-text></v-text>
-                  <v-text class="quantidade">QTD: {{ devolucao.QUANTIDADE }}</v-text>
-                </div>
-              </div>
-            </v-card>
-          </div>
-          <div
-            v-else-if="state.loadingSkeletonDevolucao"
-            class="d-flex justify-center align-center flex-column pt-5"
-          >
-            <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma Devolução encontrada. </v-text>
-          </div>
-          <div
-            class="container_botao"
-            v-if="state.verMaisDevolucoes && state.devolucoes.length > 0"
-          >
+          <div v-else>
             <div
-              class="botao_ver_mais"
-              @click="actions.getDevolucoes"
-              >ver mais
+              v-if="state.devolucoes.length > 0"
+              class="d-flex flex-column ga-2 h-100"
+            >
+              <div
+                class="scroll d-flex flex-column ga-3 pb-2"
+                style="max-height: 400px; overflow-y: auto"
+              >
+                <v-card
+                  class="container_card"
+                  v-for="devolucao in state.devolucoes"
+                >
+                  <div class="cor_identificacao bg-green-darken-2"></div>
+                  <div class="container_informação_historico">
+                    <div class="d-flex justify-space-between">
+                      <v-text>{{ dataBrasil(devolucao.DT_DEVOLUCAO) }}</v-text>
+                      <v-text class="codigo">#{{ devolucao.NUM_ORCAMENTO }}</v-text>
+                    </div>
+                    <div class="d-flex flex-column mt-2">
+                      <v-text>Data da venda:</v-text>
+                      <v-text class="font-weight-bold"> {{ dataBrasil(devolucao.DT_ORCAMENTO) }}</v-text>
+                    </div>
+                    <div class="border mt-2"></div>
+                    <div class="d-flex justify-space-between mt-2">
+                      <v-text></v-text>
+                      <v-text class="quantidade">QTD: {{ devolucao.QUANTIDADE }}</v-text>
+                    </div>
+                  </div>
+                </v-card>
+              </div>
+              <div
+                class="container_botao"
+                v-if="state.verMaisDevolucoes && state.devolucoes.length > 0"
+              >
+                <v-btn
+                  color="primary"
+                  primary
+                  @click="actions.getDevolucoes"
+                  size="small"
+                  >ver mais
+                </v-btn>
+              </div>
+            </div>
+            <div
+              v-if="state.devolucoes.length == 0"
+              class="d-flex justify-center align-center flex-column pt-5"
+            >
+              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma devolução encontrada. </v-text>
             </div>
           </div>
         </v-card>
@@ -359,7 +388,7 @@ onMounted(async () => {
             <i class="mdi mdi-cart-variant me-2"></i>
             Pedidos</v-text
           >
-          <div v-if="state.loadingSkeletonEstoque">
+          <div v-if="state.loadingSkeletonCompras">
             <v-skeleton-loader
               v-for="n in 3"
               :key="n"
@@ -368,45 +397,54 @@ onMounted(async () => {
               height="130"
             />
           </div>
-          <div
-            v-if="state.compras.length > 0"
-            class="scroll d-flex flex-column ga-3"
-          >
-            <v-card
-              class="container_card"
-              v-for="compra in state.compras"
-            >
-              <div class="cor_identificacao bg-orange-darken-2"></div>
-              <div class="container_informação_historico">
-                <div class="d-flex justify-space-between">
-                  <v-text>{{ dataBrasil(compra.DATA) }}</v-text>
-                  <v-text class="codigo">#{{ compra.ID_COMPRAS }}</v-text>
-                </div>
-                <div class="d-flex flex-column mt-2">
-                  <v-text>Comprador: </v-text>
-                  <v-text class="font-weight-bold">{{ compra.COMPRADOR }} </v-text>
-                </div>
-                <div class="border mt-2"></div>
-                <div class="d-flex justify-end mt-2">
-                  <v-text class="quantidade">QTD: {{ compra.QUANTIDADE }}</v-text>
-                </div>
-              </div>
-            </v-card>
-          </div>
-          <div
-            v-else-if="state.loadingSkeletonCompras"
-            class="d-flex justify-center align-center flex-column pt-5"
-          >
-            <v-text class="text-h6 text-center text-grey-darken-2"> Nenhum Pedido encontrado. </v-text>
-          </div>
-          <div
-            class="container_botao"
-            v-if="state.verMaisCompras && state.compras.length > 2"
-          >
+          <div v-else>
             <div
-              class="botao_ver_mais"
-              @click="actions.getCompras"
-              >ver mais
+              v-if="state.compras.length > 0"
+              class="d-flex flex-column ga-2 h-100"
+            >
+              <div
+                class="scroll d-flex flex-column ga-3 pb-2"
+                style="max-height: 400px; overflow-y: auto"
+              >
+                <v-card
+                  class="container_card"
+                  v-for="compra in state.compras"
+                >
+                  <div class="cor_identificacao bg-orange-darken-2"></div>
+                  <div class="container_informação_historico">
+                    <div class="d-flex justify-space-between">
+                      <v-text>{{ dataBrasil(compra.DATA) }}</v-text>
+                      <v-text class="codigo">#{{ compra.ID_COMPRAS }}</v-text>
+                    </div>
+                    <div class="d-flex flex-column mt-2">
+                      <v-text>Comprador: </v-text>
+                      <v-text class="font-weight-bold">{{ compra.COMPRADOR }} </v-text>
+                    </div>
+                    <div class="border mt-2"></div>
+                    <div class="d-flex justify-end mt-2">
+                      <v-text class="quantidade">QTD: {{ compra.QUANTIDADE }}</v-text>
+                    </div>
+                  </div>
+                </v-card>
+              </div>
+              <div
+                class="container_botao"
+                v-if="state.verMaisCompras && state.compras.length > 2"
+              >
+                <v-btn
+                  color="primary"
+                  primary
+                  @click="actions.getCompras"
+                  size="small"
+                  >ver mais
+                </v-btn>
+              </div>
+            </div>
+            <div
+              v-if="state.compras.length == 0"
+              class="d-flex justify-center align-center flex-column pt-5"
+            >
+              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhum pedido encontrado. </v-text>
             </div>
           </div>
         </v-card>
@@ -422,8 +460,6 @@ onMounted(async () => {
       :orcamento-itens="state.orcamentoItens"
     />
   </v-dialog>
-
-  <Loading :loading="state.loading" />
 </template>
 
 <style scoped>

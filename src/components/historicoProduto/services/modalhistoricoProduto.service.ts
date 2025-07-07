@@ -6,7 +6,7 @@ type iGetSaidasHistoricoProdutoFunction = (param: iSaidasHistoricoProduto) => Pr
 type iGetComprasHistoricoProdutoFunction = (param: iComprasHistoricoProduto) => Promise<iComprasHistoricoProduto[]>;
 type iGetDevolucoesHistoricoProdutoFunction = (param: iDevolucoesHistoricoProduto) => Promise<iDevolucoesHistoricoProduto[]>;
 type iGetLogEstoquesNewHistoricoProdutoFunction = (param: iLogEstoquesNew) => Promise<iLogEstoquesNew[]>;
-type iGetMesesHistoricoProdutoFunction = (param: iDadosIniciaisHistoricosProdutos) => Promise<iDadosIniciaisHistoricosProdutos[]>
+type iGetMesesHistoricoProdutoFunction = (param: iDadosIniciaisHistoricosProdutos) => Promise<iDadosIniciaisHistoricosProdutos>
 
 
 const getEntradas: iGetEntradasHistoricoFunction = async (param) => {
