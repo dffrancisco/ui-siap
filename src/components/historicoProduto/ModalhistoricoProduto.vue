@@ -5,6 +5,7 @@ import { dataBrasil, formatHora, formatValor } from "@/ts/utils";
 import ModalHistoricoDetalhesVenda from "./components/ModalHistoricoDetalhesVenda.vue";
 import GroupCard from "./components/GroupCard.vue";
 import CardEntrada from "./components/CardEntrada.vue";
+import CardSaida from "./components/CardSaida.vue";
 
 const props = defineProps<{
   codProduto: number;
@@ -93,6 +94,19 @@ onMounted(async () => {
             v-for="entrada in state.entradas"
             :key="entrada.NUM_NOTA_FISCAL"
             :entrada="entrada"
+          />
+        </GroupCard>
+
+        <GroupCard
+          title="Saidas"
+          icon="mdi-cash"
+          :loading="state.loadingSkeletonEntrada"
+          @verMais="actions.getEntradaHistoricoProduto"
+        >
+          <CardSaida
+            v-for="saida in state.saidas"
+            :key="saida.NUM_ORCAMENTO"
+            :saida="saida"
           />
         </GroupCard>
 
