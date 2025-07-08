@@ -3,6 +3,8 @@ import { onMounted } from "vue";
 import { actions, state } from "./modalhistoricoProduto";
 import { dataBrasil, formatHora, formatValor } from "@/ts/utils";
 import ModalHistoricoDetalhesVenda from "./components/ModalHistoricoDetalhesVenda.vue";
+import GroupCard from "./components/GroupCard.vue";
+import CardEntrada from "./components/CardEntrada.vue";
 
 const props = defineProps<{
   codProduto: number;
@@ -81,6 +83,19 @@ onMounted(async () => {
       </div>
 
       <div class="d-flex flex-grow-1 ga-2 pt-2">
+        <GroupCard
+          title="Entradas"
+          icon="mdi-package-variant-closed"
+          :loading="state.loadingSkeletonEntrada"
+          @verMais="actions.getEntradaHistoricoProduto"
+        >
+          <CardEntrada
+            v-for="entrada in state.entradas"
+            :key="entrada.NUM_NOTA_FISCAL"
+            :entrada="entrada"
+          />
+        </GroupCard>
+
         <!-- card entrada -->
         <v-card
           :class="
