@@ -111,7 +111,7 @@ export const actions = {
 
     btnInsert() {
         state.pnSearch = true;
-    
+
         state.dbBairro = <iBairro>{}
 
         state.gridPrincipal.disable();
@@ -275,7 +275,7 @@ export const actions = {
 
             await serviceBairros.toDelete(id_bairro);
             state.gridPrincipal.deleteLine();
-            
+
             state.loading = false;
         } catch (error) {
             state.loading = false;
