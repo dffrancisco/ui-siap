@@ -6,6 +6,9 @@ import ModalHistoricoDetalhesVenda from "./components/ModalHistoricoDetalhesVend
 import GroupCard from "./components/GroupCard.vue";
 import CardEntrada from "./components/CardEntrada.vue";
 import CardSaida from "./components/CardSaida.vue";
+import CardEstoque from "./components/CardEstoque.vue";
+import CardDevolucao from "./components/CardDevolucao.vue";
+import CardPedido from "./components/CardPedido.vue";
 
 const props = defineProps<{
   codProduto: number;
@@ -86,397 +89,111 @@ onMounted(async () => {
       <div class="d-flex flex-grow-1 ga-2 pt-2">
         <GroupCard
           title="Entradas"
-          icon="mdi-package-variant-closed"
+          icon="mdi mdi-package-variant-closed"
+          bg-cor-titulo="bg-deep-purple-accent-3"
           :loading="state.loadingSkeletonEntrada"
-          @verMais="actions.getEntradaHistoricoProduto"
+          :possui-entrada="state.entradas.length"
+          :exibir-ver-mais="state.verMaisEntradas"
+          @ver-mais="actions.getEntradaHistoricoProduto"
+          :skeleton="state.loadingSkeletonEntrada"
+          produto-nao-encontrado="Não possui entrada"
         >
           <CardEntrada
             v-for="entrada in state.entradas"
             :key="entrada.NUM_NOTA_FISCAL"
-            :entrada="entrada"
+            :data-entrada="entrada.DATA_ENTRADA"
+            :num-nota-fiscal="entrada.NUM_NOTA_FISCAL"
+            :nome-fantasia="entrada.NOME_FANTAZIA"
+            :custo="entrada.CUSTO"
+            :qto-old="entrada.QTO_OLD"
+            :quantidade="entrada.QUANTIDADE"
           />
         </GroupCard>
 
         <GroupCard
-          title="Saidas"
-          icon="mdi-cash"
-          :loading="state.loadingSkeletonEntrada"
-          @verMais="actions.getEntradaHistoricoProduto"
+          title="Saídas"
+          icon="mdi mdi-cash"
+          bg-cor-titulo="bg-pink-darken-1"
+          :loading="state.loadingSkeletonSaida"
+          :possui-entrada="state.saidas.length"
+          :exibir-ver-mais="state.verMaisSaidas"
+          @ver-mais="actions.getSaidas"
+          :skeleton="state.loadingSkeletonSaida"
+          produto-nao-encontrado="Não possui saida"
         >
           <CardSaida
             v-for="saida in state.saidas"
             :key="saida.NUM_ORCAMENTO"
-            :saida="saida"
+            :data-venda="saida.DATA_VENDA"
+            :orcamento="saida.NUM_ORCAMENTO"
+            :nome-cliente="saida.CLIENTE"
+            :vendedor="saida.VENDEDOR"
+            :valor-venda="saida.VALOR_VENDA"
+            :quantidade="saida.QUANTIDADE"
+            :skeleton="state.loadingSkeletonSaida"
+          />
+        </GroupCard>
+        <GroupCard
+          title="Estoque"
+          icon="mdi mdi-chart-box-outline"
+          bg-cor-titulo="bg-blue-darken-2"
+          :loading="state.loadingSkeletonEstoque"
+          :possui-entrada="state.estoques.length"
+          :exibir-ver-mais="state.verMaisEstoque"
+          @ver-mais="actions.getEstoquesNew"
+          :skeleton="state.loadingSkeletonEstoque"
+          produto-nao-encontrado="Não possui estoque"
+        >
+          <CardEstoque
+            v-for="estoque in state.estoques"
+            :key="estoque.ID_LOG"
+            :dh-log="estoque.DH_LOG"
+            :estoquista="estoque.ESTOQUISTA"
+            :conteudo="estoque.CONTEUDO"
+            :skeleton="state.loadingSkeletonEstoque"
           />
         </GroupCard>
 
-        <!-- card entrada -->
-        <v-card
-          :class="
-            state.entradas.length > 0
-              ? 'container_card_list bg-grey-lighten-4'
-              : 'container_nao_encontrado bg-grey-lighten-4'
-          "
+        <GroupCard
+          title="Devolução"
+          icon="mdi mdi-arrow-u-left-bottom "
+          bg-cor-titulo="bg-green-darken-2"
+          :possui-entrada="state.devolucoes.length"
+          :exibir-ver-mais="state.verMaisEstoque"
+          @ver-mais="actions.getDevolucoes"
+          :skeleton="state.loadingSkeletonDevolucao"
+          produto-nao-encontrado="Não possui estoque"
         >
-          <v-text class="titulo text-h6 bg-deep-purple-accent-3">
-            <i class="mdi mdi-package-variant-closed me-2"></i>
-            Entradas</v-text
-          >
+          <CardDevolucao
+            v-for="devolucao in state.devolucoes"
+            :dt-devolucao="devolucao.DT_DEVOLUCAO"
+            :num-orcamento="devolucao.NUM_ORCAMENTO"
+            :dt-orcamento="devolucao.DT_ORCAMENTO"
+            :quantidade="devolucao.QUANTIDADE"
+            :skeleton="state.loadingSkeletonDevolucao"
+          />
+        </GroupCard>
 
-          <div v-if="state.loadingSkeletonEntrada">
-            <v-skeleton-loader
-              v-for="n in 3"
-              :key="n"
-              class="mx-2 my-4"
-              width="200"
-              height="130"
-            />
-          </div>
-          <div v-else>
-            <div
-              v-if="state.entradas.length > 0"
-              class="d-flex flex-column ga-2 h-100"
-            >
-              <div
-                class="scroll d-flex flex-column ga-3 pb-2"
-                style="max-height: 400px; overflow-y: auto"
-              >
-                <v-card
-                  class="container_card"
-                  v-for="entrada in state.entradas"
-                >
-                  <div class="cor_identificacao bg-deep-purple-accent-3"></div>
-                  <div class="container_informação_historico">
-                    <div class="d-flex justify-space-between">
-                      <v-text>{{ dataBrasil(entrada.DATA_ENTRADA) }}</v-text>
-                      <v-text class="codigo">#{{ entrada.NUM_NOTA_FISCAL }}</v-text>
-                    </div>
-                    <div class="d-flex flex-column mt-2">
-                      <v-text>{{ entrada.NOME_FANTAZIA }}</v-text>
-                    </div>
-                    <div class="border mt-2"></div>
-                    <div class="d-flex justify-space-between mt-2">
-                      <v-text class="font-weight-bold">{{ formatValor(entrada.CUSTO) }}</v-text>
-                      <div>
-                        <v-text class="quantidade mr-1">QTD V: {{ entrada.QTO_OLD }}</v-text>
-                        <v-text class="quantidade">QTD: {{ entrada.QUANTIDADE }}</v-text>
-                      </div>
-                    </div>
-                  </div>
-                </v-card>
-              </div>
-              <div
-                class="container_botao px-4"
-                v-if="state.verMaisEntradas && state.entradas.length > 0"
-              >
-                <v-btn
-                  color="primary"
-                  primary
-                  @click="actions.getEntradaHistoricoProduto"
-                  size="small"
-                  >ver mais
-                </v-btn>
-              </div>
-            </div>
-            <div
-              v-if="state.entradas.length == 0"
-              class="d-flex justify-center align-center flex-column pt-5"
-            >
-              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma entrada encontrada. </v-text>
-            </div>
-          </div>
-        </v-card>
-
-        <!-- card saida-->
-        <v-card
-          :class="
-            state.saidas.length > 0
-              ? 'container_card_list bg-grey-lighten-4'
-              : 'container_nao_encontrado bg-grey-lighten-4'
-          "
+        <GroupCard
+          title="pedidos"
+          icon="mdi mdi-cart-variant"
+          bg-cor-titulo="bg-orange-darken-2"
+          :loading="state.loadingSkeletonEstoque"
+          :possui-entrada="state.estoques.length"
+          :exibir-ver-mais="state.verMaisEstoque"
+          @ver-mais="actions.getCompras"
+          :skeleton="state.loadingSkeletonEstoque"
+          produto-nao-encontrado="Não possui estoque"
         >
-          <v-text class="titulo text-h6 bg-pink-darken-1">
-            <i class="mdi mdi-cash me-2"></i>
-            Saídas</v-text
-          >
-          <div v-if="state.loadingSkeletonSaida">
-            <v-skeleton-loader
-              v-for="n in 3"
-              :key="n"
-              class="mx-2 my-4"
-              width="200"
-              height="130"
-            />
-          </div>
-          <div v-else>
-            <div
-              v-if="state.saidas.length > 0"
-              class="d-flex flex-column ga-2 h-100"
-            >
-              <div
-                class="scroll d-flex flex-column ga-3 pb-2"
-                style="max-height: 400px; overflow-y: auto"
-              >
-                <v-card
-                  class="container_card"
-                  v-for="saida in state.saidas"
-                  @click="actions.onclickAbrir(saida)"
-                >
-                  <div class="cor_identificacao bg-pink-darken-1"></div>
-                  <div class="container_informação_historico">
-                    <div class="d-flex justify-space-between">
-                      <v-text>{{ dataBrasil(saida.DATA_VENDA) }}</v-text>
-                      <v-text class="codigo">#{{ saida.NUM_ORCAMENTO }}</v-text>
-                    </div>
-                    <div class="d-flex flex-column mt-2">
-                      <v-text class="font-weight-bold">{{ saida.NOME_CLIENTE }}</v-text>
-                      <v-text>{{ saida.VENDEDOR }}</v-text>
-                    </div>
-                    <div class="border mt-2"></div>
-                    <div class="d-flex justify-space-between mt-2">
-                      <v-text class="font-weight-bold"> {{ formatValor(saida.VALOR_VENDA) }} </v-text>
-                      <v-text class="quantidade">QTD: {{ saida.QUANTIDADE }}</v-text>
-                    </div>
-                  </div>
-                </v-card>
-              </div>
-              <div
-                class="container_botao"
-                v-if="state.verMaisSaidas && state.saidas.length > 0"
-              >
-                <v-btn
-                  color="primary"
-                  primary
-                  @click="actions.getSaidas"
-                  size="small"
-                  >ver mais
-                </v-btn>
-              </div>
-            </div>
-            <div
-              v-if="state.saidas.length == 0"
-              class="d-flex justify-center align-center flex-column pt-5"
-            >
-              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma saída encontrada. </v-text>
-            </div>
-          </div>
-        </v-card>
-
-        <!-- card estoque -->
-        <v-card
-          :class="
-            state.estoques.length > 0
-              ? 'container_card_list bg-grey-lighten-4'
-              : 'container_nao_encontrado bg-grey-lighten-4'
-          "
-        >
-          <v-text class="titulo text-h6 bg-blue-darken-2">
-            <i class="mdi mdi-chart-box-outline me-2"></i>
-            Estoque</v-text
-          >
-          <div v-if="state.loadingSkeletonEstoque">
-            <v-skeleton-loader
-              v-for="n in 3"
-              :key="n"
-              class="mx-2 my-4"
-              width="200"
-              height="130"
-            />
-          </div>
-          <div v-else>
-            <div
-              v-if="state.estoques.length > 0"
-              class="d-flex flex-column ga-2 h-100"
-            >
-              <div
-                class="scroll d-flex flex-column ga-3 pb-2"
-                style="max-height: 400px; overflow-y: auto"
-              >
-                <v-card
-                  class="container_card"
-                  v-for="estoque in state.estoques"
-                >
-                  <div class="cor_identificacao bg-blue-darken-2"></div>
-                  <div class="container_informação_historico">
-                    <div class="d-flex justify-space-between">
-                      <v-text>{{ dataBrasil(estoque.DH_LOG) }}</v-text>
-                      <v-text class="codigo">{{ formatHora(estoque.DH_LOG) }}</v-text>
-                    </div>
-                    <div class="d-flex flex-column mt-2">
-                      <v-text class="font-weight-bold">{{ estoque.ESTOQUISTA }}</v-text>
-                      <v-text class="text-subtitle-2">{{ estoque.CONTEUDO }}</v-text>
-                    </div>
-                  </div>
-                </v-card>
-              </div>
-              <div
-                class="container_botao"
-                v-if="state.verMaisEstoque && state.estoques.length > 0"
-              >
-                <v-btn
-                  color="primary"
-                  primary
-                  @click="actions.getEstoquesNew"
-                  size="small"
-                  >ver mais
-                </v-btn>
-              </div>
-            </div>
-            <div
-              v-if="state.estoques.length == 0"
-              class="d-flex justify-center align-center flex-column pt-5"
-            >
-              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhum estoque encontrado. </v-text>
-            </div>
-          </div>
-        </v-card>
-
-        <!-- card devolução -->
-        <v-card
-          :class="
-            state.devolucoes.length > 0
-              ? 'container_card_list bg-grey-lighten-4'
-              : 'container_nao_encontrado bg-grey-lighten-4'
-          "
-        >
-          <v-text class="titulo text-h6 bg-green-darken-2">
-            <i class="mdi mdi-arrow-u-left-bottom me-2"></i>
-            Devolução</v-text
-          >
-          <div v-if="state.loadingSkeletonDevolucao">
-            <v-skeleton-loader
-              v-for="n in 3"
-              :key="n"
-              class="mx-2 my-4"
-              width="200"
-              height="130"
-            />
-          </div>
-          <div v-else>
-            <div
-              v-if="state.devolucoes.length > 0"
-              class="d-flex flex-column ga-2 h-100"
-            >
-              <div
-                class="scroll d-flex flex-column ga-3 pb-2"
-                style="max-height: 400px; overflow-y: auto"
-              >
-                <v-card
-                  class="container_card"
-                  v-for="devolucao in state.devolucoes"
-                >
-                  <div class="cor_identificacao bg-green-darken-2"></div>
-                  <div class="container_informação_historico">
-                    <div class="d-flex justify-space-between">
-                      <v-text>{{ dataBrasil(devolucao.DT_DEVOLUCAO) }}</v-text>
-                      <v-text class="codigo">#{{ devolucao.NUM_ORCAMENTO }}</v-text>
-                    </div>
-                    <div class="d-flex flex-column mt-2">
-                      <v-text>Data da venda:</v-text>
-                      <v-text class="font-weight-bold"> {{ dataBrasil(devolucao.DT_ORCAMENTO) }}</v-text>
-                    </div>
-                    <div class="border mt-2"></div>
-                    <div class="d-flex justify-space-between mt-2">
-                      <v-text></v-text>
-                      <v-text class="quantidade">QTD: {{ devolucao.QUANTIDADE }}</v-text>
-                    </div>
-                  </div>
-                </v-card>
-              </div>
-              <div
-                class="container_botao"
-                v-if="state.verMaisDevolucoes && state.devolucoes.length > 0"
-              >
-                <v-btn
-                  color="primary"
-                  primary
-                  @click="actions.getDevolucoes"
-                  size="small"
-                  >ver mais
-                </v-btn>
-              </div>
-            </div>
-            <div
-              v-if="state.devolucoes.length == 0"
-              class="d-flex justify-center align-center flex-column pt-5"
-            >
-              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhuma devolução encontrada. </v-text>
-            </div>
-          </div>
-        </v-card>
-
-        <!-- card Pedidos -->
-        <v-card
-          :class="
-            state.compras.length > 0
-              ? 'container_card_list bg-grey-lighten-4'
-              : 'container_nao_encontrado bg-grey-lighten-4'
-          "
-        >
-          <v-text class="titulo text-h6 bg-orange-darken-2">
-            <i class="mdi mdi-cart-variant me-2"></i>
-            Pedidos</v-text
-          >
-          <div v-if="state.loadingSkeletonCompras">
-            <v-skeleton-loader
-              v-for="n in 3"
-              :key="n"
-              class="mx-2 my-4"
-              width="200"
-              height="130"
-            />
-          </div>
-          <div v-else>
-            <div
-              v-if="state.compras.length > 0"
-              class="d-flex flex-column ga-2 h-100"
-            >
-              <div
-                class="scroll d-flex flex-column ga-3 pb-2"
-                style="max-height: 400px; overflow-y: auto"
-              >
-                <v-card
-                  class="container_card"
-                  v-for="compra in state.compras"
-                >
-                  <div class="cor_identificacao bg-orange-darken-2"></div>
-                  <div class="container_informação_historico">
-                    <div class="d-flex justify-space-between">
-                      <v-text>{{ dataBrasil(compra.DATA) }}</v-text>
-                      <v-text class="codigo">#{{ compra.ID_COMPRAS }}</v-text>
-                    </div>
-                    <div class="d-flex flex-column mt-2">
-                      <v-text>Comprador: </v-text>
-                      <v-text class="font-weight-bold">{{ compra.COMPRADOR }} </v-text>
-                    </div>
-                    <div class="border mt-2"></div>
-                    <div class="d-flex justify-end mt-2">
-                      <v-text class="quantidade">QTD: {{ compra.QUANTIDADE }}</v-text>
-                    </div>
-                  </div>
-                </v-card>
-              </div>
-              <div
-                class="container_botao"
-                v-if="state.verMaisCompras && state.compras.length > 2"
-              >
-                <v-btn
-                  color="primary"
-                  primary
-                  @click="actions.getCompras"
-                  size="small"
-                  >ver mais
-                </v-btn>
-              </div>
-            </div>
-            <div
-              v-if="state.compras.length == 0"
-              class="d-flex justify-center align-center flex-column pt-5"
-            >
-              <v-text class="text-h6 text-center text-grey-darken-2"> Nenhum pedido encontrado. </v-text>
-            </div>
-          </div>
-        </v-card>
+          <CardPedido
+            v-for="compra in state.compras"
+            :data="compra.DATA"
+            :id-compra="compra.ID_COMPRAS"
+            :comprador="compra.COMPRADOR"
+            :quantidade="compra.QUANTIDADE"
+            :skeleton="state.loadingSkeletonCompras"
+          />
+        </GroupCard>
       </div>
     </div>
   </card>
@@ -492,29 +209,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.container_card_list {
-  width: 25%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-.scroll {
-  height: 100%;
-  overflow: auto;
-}
-.scroll::-webkit-scrollbar {
-  width: 10px;
-  height: 20px;
-  margin-top: 20px;
-}
-.scroll::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 10px;
-  border: 2px solid #f1f1f1;
-}
-.scroll::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
 .titulo {
   display: flex;
   align-items: center;
@@ -523,27 +217,7 @@ onMounted(async () => {
   height: 25px;
   width: 100%;
 }
-.cor_identificacao {
-  width: 5px;
-}
-.container_informação_historico {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  padding: 4px 8px;
-}
-.quantidade,
-.codigo {
-  background-color: #cfd8dc;
-  border-radius: 5px;
-  padding: 0 5px;
-}
-.container_card {
-  display: flex;
-  margin: 0px 8px;
-  min-height: 120px;
-}
+
 .container_botao {
   width: 100%;
   display: flex;
@@ -566,11 +240,5 @@ onMounted(async () => {
 }
 .botao_ver_mais:hover {
   background-color: #bdbdbd;
-}
-.container_nao_encontrado {
-  display: flex;
-  flex-direction: column;
-  width: 25%;
-  height: 100%;
 }
 </style>
