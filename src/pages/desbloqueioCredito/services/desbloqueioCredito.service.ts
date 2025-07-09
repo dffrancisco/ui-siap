@@ -1,7 +1,11 @@
 import axios from "axios";
+import { iCredito } from "../interfaces";
 const caminho = 'siap/desbloqueioCredito'
+type iGetCredito = (param:string) => Promise<iCredito>
+type iUpdateCredito = (param:string) => Promise<void>
 
-const getCredito  = async (param: string) => {
+
+const getCredito: iGetCredito  = async (param: string) => {
     let { data } = await axios.post(caminho, {
         call: "getCredito",
         param
@@ -9,7 +13,7 @@ const getCredito  = async (param: string) => {
     return data;
 }
 
-const updateCredito = async(param:string) => {
+const updateCredito:iUpdateCredito = async(param: string) => {
         let { data } = await axios.post(caminho, {
         call: "updateTabela",
         param

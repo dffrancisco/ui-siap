@@ -6,3 +6,5 @@ export interface iCredito{
     ID_CREDITO: number;
 }
 
+
+

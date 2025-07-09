@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import {reactive } from "vue";
+import { reactive } from "vue";
 import utils from "@/ts/utils";
 
 import { iCredito } from './interfaces'
@@ -8,8 +8,7 @@ import desbloqueioCreditoService from './services/desbloqueioCredito.service';
 
 export const state = reactive({
     credito: <iCredito>{},
-    pesquisaCredito: "" as string ,
-    botaoDesbloquearCredito: true as boolean,
+    pesquisaCredito: "" as string,
     dadosCredito: false as boolean
 
 });
@@ -31,17 +30,13 @@ export const actions = {
 
         try {
             state.credito = await desbloqueioCreditoService.getCredito(param);
-            state.botaoDesbloquearCredito = false;
             state.dadosCredito = true
             return
 
         } catch (err) {
-            let mensagem = 'Erro ao armazenar os dados';
-
             if (err.response?.data?.message) {
-                mensagem = err.response.data.message;
+                ;
             } else if (err.message) {
-                mensagem = err.message;
             }
 
             Swal.fire({

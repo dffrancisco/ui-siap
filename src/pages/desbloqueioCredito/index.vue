@@ -48,7 +48,7 @@ import { state, actions } from "./desbloqueioCredito";
 
         </div>
         <div class="desbloqueia_credito d-flex justify-end">
-          <v-btn :disabled="state.botaoDesbloquearCredito" @click="actions.onClickConfirmaDesbloqueio" class="bg-blue">
+          <v-btn  @click="actions.onClickConfirmaDesbloqueio" class="bg-blue">
             desbloquear crédito</v-btn>
         </div>
       </div>
