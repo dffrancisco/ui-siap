@@ -128,7 +128,7 @@ onMounted(async () => {
             :vendedor="saida.VENDEDOR"
             :valor-venda="saida.VALOR_VENDA"
             :quantidade="saida.QUANTIDADE"
-            @modalSaida="actions.onclickModalSaidas(saida)"
+            @modalSaida="actions.onclickCardSaida(saida)"
           />
         </GroupCard>
         <GroupCard
@@ -198,7 +198,7 @@ onMounted(async () => {
     </div>
   </card>
   <v-dialog
-    v-model="state.modalAbrirHistoricoSaida"
+    v-model="state.modalHistoricoSaidaOpened"
     max-width="900px"
   >
     <ModalHistoricoDetalhesVenda

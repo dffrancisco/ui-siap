@@ -2,7 +2,7 @@ import { reactive } from "vue"
 import modalhistoricoProdutoService from "./services/modalhistoricoProduto.service"
 import { iComprasHistoricoProduto, iDevolucoesHistoricoProduto, iEntradasHistoricoProduto, iLogEstoquesNew, iDadosIniciaisHistoricosProdutos, iOrcamento, iOrcamentoItens, iSaidasHistoricoProduto, iMovAnual } from "./interface"
 import moment from "moment";
-import { swalDarkError } from "@/ts/utils";
+import Swal from "sweetalert2";
 
 
 const nomeMeses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
@@ -22,15 +22,12 @@ export const state = reactive({
     pgCompras: 0,
     pgEstoques: 0,
     pgDevolucoes: 0,
-    carregando: false,
     verMaisEntradas: true,
     verMaisSaidas: true,
     verMaisDevolucoes: true,
     verMaisCompras: true,
     verMaisEstoque: true,
-    dataFim: "",
-    dataInicio: "",
-    modalAbrirHistoricoSaida: false,
+    modalHistoricoSaidaOpened: false,
     codProduto: undefined,
     nomeProduto: "",
     loadingDadosIniciais: true,
@@ -45,50 +42,31 @@ export const state = reactive({
 export const actions = {
     async init(codProduto: number) {
         state.codProduto = codProduto;
-        state.entradas = [];
-        state.meses = [];
-        state.saidas = [];
-        state.compras = [];
-        state.estoques = [];
-        state.devolucoes = [];
-        state.pgEntradas = 0;
-        state.pgSaidas = 0;
-        state.pgCompras = 0;
-        state.pgEstoques = 0;
-        state.pgDevolucoes = 0;
-        state.verMaisEntradas = true;
-        state.verMaisSaidas = true;
-        state.verMaisDevolucoes = true;
-        state.verMaisCompras = true;
-        state.verMaisEstoque = true;
-        state.loadingDadosIniciais = true;
-        state.loadingEntrada = true;
-        state.loadingSaida = true;
-        state.loadingEstoque = true;
-        state.loadingDevolucao = true;
-        state.loadingCompras = true;
-        state.loadingTextoVendaMeses = true;
-
-        await actions.getEntradaHistoricoProduto();
-        await actions.getSaidas();
-        await actions.getCompras();
-        await actions.getEstoquesNew();
-        await actions.getDadosIniciais();
-        await actions.getDevolucoes();
+        actions.resetValores();
+        actions.getEntradaHistoricoProduto();
+        actions.getSaidas();
+        actions.getCompras();
+        actions.getEstoquesNew();
+        actions.getDadosIniciais();
+        actions.getDevolucoes();
     },
 
 
-    async onclickModalSaidas(saida: iSaidasHistoricoProduto) {
+    async onclickCardSaida(saida: iSaidasHistoricoProduto) {
 
         try {
             state.orcamento = await modalhistoricoProdutoService.getOrcamento(saida.NUM_ORCAMENTO, saida.DATA_VENDA)
             state.orcamentoItens = await modalhistoricoProdutoService.getItensOrcamento(saida.NUM_ORCAMENTO, saida.DATA_VENDA)
-            state.modalAbrirHistoricoSaida = true;
+            state.modalHistoricoSaidaOpened = true;
 
 
         }
         catch (error) {
-            swalDarkError('Ocorreu um erro ao Abrir o histórico de saídas')
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao Abrir o histórico de saídas"
+            });
+
         }
 
     },
@@ -116,9 +94,10 @@ export const actions = {
             state.loadingEntrada = false
         }
         catch (error) {
-
-
-            swalDarkError('Ocorreu um erro ao buscar as entradas')
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar as entradas"
+            });
         }
     },
 
@@ -144,8 +123,11 @@ export const actions = {
         }
         catch (error) {
 
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar as saídas"
+            });
 
-            swalDarkError('Ocorreu um erro ao buscar as saídas')
         }
     },
 
@@ -169,8 +151,11 @@ export const actions = {
             state.loadingCompras = false
         }
         catch (error) {
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar os pedidos"
+            });
 
-            swalDarkError('Ocorreu um erro ao buscar os pedidos')
         }
     },
 
@@ -193,8 +178,10 @@ export const actions = {
             state.loadingDevolucao = false
         }
         catch (error) {
-            state.loadingDevolucao = false
-            swalDarkError('Ocorreu um erro ao buscar as devoluções')
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar as devoluções"
+            });
 
         }
     },
@@ -244,7 +231,11 @@ export const actions = {
 
         }
         catch (error) {
-            swalDarkError('Ocorreu um erro ao buscar os meses')
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar os meses"
+            });
+
 
         }
     },
@@ -266,8 +257,37 @@ export const actions = {
             state.loadingEstoque = false
         }
         catch (error) {
-            swalDarkError('Ocorreu um erro ao buscar o Estoque')
+            Swal.fire({
+                icon: "error",
+                text: "Ocorreu um erro ao buscar o Estoque"
+            });
         }
     },
+
+    resetValores() {
+        state.entradas = [];
+        state.meses = [];
+        state.saidas = [];
+        state.compras = [];
+        state.estoques = [];
+        state.devolucoes = [];
+        state.pgEntradas = 0;
+        state.pgSaidas = 0;
+        state.pgCompras = 0;
+        state.pgEstoques = 0;
+        state.pgDevolucoes = 0;
+        state.verMaisEntradas = true;
+        state.verMaisSaidas = true;
+        state.verMaisDevolucoes = true;
+        state.verMaisCompras = true;
+        state.verMaisEstoque = true;
+        state.loadingDadosIniciais = true;
+        state.loadingEntrada = true;
+        state.loadingSaida = true;
+        state.loadingEstoque = true;
+        state.loadingDevolucao = true;
+        state.loadingCompras = true;
+        state.loadingTextoVendaMeses = true;
+    }
 }
 
