@@ -114,12 +114,8 @@ onMounted(async () => {
           bg-cor-titulo="bg-pink-darken-1"
           produto-nao-encontrado="Não possui saida"
           :loading="state.loadingSaida"
-          produto-nao-encontrado="Não possui saida"
-          :loading="state.loadingSkeletonSaida"
           :possui-dados="state.saidas.length"
           :exibir-ver-mais="state.verMaisSaidas"
-          @ver-mais="actions.getSaidas"
-          :skeleton="state.loadingSkeletonSaida"
           @ver-mais="actions.getSaidas"
         >
           <CardSaida
