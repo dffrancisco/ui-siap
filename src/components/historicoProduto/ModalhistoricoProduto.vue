@@ -77,7 +77,7 @@ onMounted(async () => {
                 {{ `${data.MES} - ${data.ANO}` }}
               </h3>
               <h5 class="text-center text-subtitle-1 font-weight-bold">
-                {{ data.QUANTIDADE }}
+                {{ data.QUANTIDADE == 0 ? "-" : data.QUANTIDADE }}
               </h5>
             </v-card>
           </div>
@@ -114,8 +114,12 @@ onMounted(async () => {
           bg-cor-titulo="bg-pink-darken-1"
           produto-nao-encontrado="Não possui saida"
           :loading="state.loadingSaida"
+          produto-nao-encontrado="Não possui saida"
+          :loading="state.loadingSkeletonSaida"
           :possui-dados="state.saidas.length"
           :exibir-ver-mais="state.verMaisSaidas"
+          @ver-mais="actions.getSaidas"
+          :skeleton="state.loadingSkeletonSaida"
           @ver-mais="actions.getSaidas"
         >
           <CardSaida
