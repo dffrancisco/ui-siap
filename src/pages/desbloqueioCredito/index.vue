@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
-import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
-import modalConfirmar from "./components/modalConfirmar.vue";
-import utils, { confirmaCodigo } from "../../ts/utils";
+import utils from "@/ts/utils";
 import { state, actions } from "./desbloqueioCredito";
 </script>
 
@@ -26,7 +23,6 @@ import { state, actions } from "./desbloqueioCredito";
 
       <div class="d-flex flex-column ga-6 rounded-lg">
         <div class="div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg">
-          <!-- teste -->
 
           <p class="text-subtitle-2"> Chave:  
             <span class="font-weight-black" v-if="state.credito.CHAVE"> {{ state.credito.CHAVE }} </span>
@@ -43,12 +39,13 @@ import { state, actions } from "./desbloqueioCredito";
             <span class="font-weight-black invisivel" v-else >###</span>
           </p>
 
+          <!-- oficial --> <!-- <p class="text-subtitle-2">Bloqueado:<span class="font-weight-black" v-if="state.credito.BLOQUEADO"> {{ state.credito.BLOQUEADO === "S" ? "SIM" : "" }}</span> -->
           <p class="text-subtitle-2">Bloqueado:<span class="font-weight-black" v-if="state.credito.BLOQUEADO"> {{ state.credito.BLOQUEADO === "S" ? "SIM" : "" }}</span>
+
             <span class="font-weight-black invisivel" v-else >####</span>
           
           </p>
 
-          <!-- teste -->
         </div>
         <div class="desbloqueia_credito d-flex justify-end">
           <v-btn :disabled="state.botaoDesbloquearCredito" @click="actions.onClickConfirmaDesbloqueio" class="bg-blue">

@@ -1,18 +1,16 @@
 import Swal from "sweetalert2";
-import { computed, reactive } from "vue";
-import utils, { confirmaCodigo } from "../../ts/utils";
-
+import {reactive } from "vue";
+import utils from "@/ts/utils";
 
 import { iCredito } from './interfaces'
 import desbloqueioCreditoService from './services/desbloqueioCredito.service';
-import { stat } from 'fs';
 
 
 export const state = reactive({
     credito: <iCredito>{},
-    pesquisaCredito: "" as String ,
-    botaoDesbloquearCredito: true as Boolean,
-    dadosCredito: false as Boolean
+    pesquisaCredito: "" as string ,
+    botaoDesbloquearCredito: true as boolean,
+    dadosCredito: false as boolean
 
 });
 
@@ -21,7 +19,7 @@ export const actions = {
 
     },
 
-    async getCredito(param: String) {
+    async getCredito(param: string) {
         if (!state.pesquisaCredito || state.pesquisaCredito.length !== 10) {
             Swal.fire({
                 icon: 'warning',

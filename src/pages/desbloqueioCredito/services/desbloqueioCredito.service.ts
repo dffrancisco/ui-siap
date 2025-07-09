@@ -1,7 +1,7 @@
 import axios from "axios";
 const caminho = 'siap/desbloqueioCredito'
 
-const getCredito  = async (param) => {
+const getCredito  = async (param: string) => {
     let { data } = await axios.post(caminho, {
         call: "getCredito",
         param
@@ -9,7 +9,7 @@ const getCredito  = async (param) => {
     return data;
 }
 
-const updateCredito = async(param) => {
+const updateCredito = async(param:string) => {
         let { data } = await axios.post(caminho, {
         call: "updateTabela",
         param
