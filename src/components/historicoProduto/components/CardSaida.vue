@@ -5,11 +5,11 @@ import { defineProps, defineEmits } from "vue";
 const emit = defineEmits(["modalSaida"]);
 
 const props = defineProps<{
-  dataVenda: any;
-  orcamento: any;
-  nomeCliente: any;
-  vendedor: any;
-  valorVenda: any;
+  dataVenda: string;
+  orcamento: number;
+  nomeCliente: string;
+  vendedor: string;
+  valorVenda: number;
   quantidade: number;
 }>();
 </script>
@@ -27,7 +27,7 @@ const props = defineProps<{
           <v-text class="codigo">#{{ props.orcamento }}</v-text>
         </div>
         <div class="d-flex flex-column mt-2">
-          <v-text class="font-weight-bold nome-cliente">{{ props.nomeCliente }}</v-text>
+          <v-text class="font-weight-bold nome">{{ props.nomeCliente }}</v-text>
           <v-text>{{ props.vendedor }}</v-text>
         </div>
         <div class="border mt-2"></div>
@@ -56,30 +56,13 @@ const props = defineProps<{
   justify-content: space-around;
   padding: 4px 8px;
 }
-.scroll {
-  height: 100%;
-  overflow: auto;
-}
 .quantidade,
 .codigo {
   background-color: #cfd8dc;
   border-radius: 5px;
   padding: 0 5px;
 }
-.scroll::-webkit-scrollbar {
-  width: 10px;
-  height: 20px;
-  margin-top: 20px;
-}
-.scroll::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 10px;
-  border: 2px solid #f1f1f1;
-}
-.scroll::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-.nome-cliente {
+.nome {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

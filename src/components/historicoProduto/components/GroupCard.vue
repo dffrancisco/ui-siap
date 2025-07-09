@@ -5,7 +5,7 @@ const props = defineProps<{
   title: string;
   icon: string;
   bgCorTitulo: string;
-  possuiEntrada: any;
+  possuiDados: any;
   exibirVerMais: boolean;
   skeleton: boolean;
   produtoNaoEncontrado: string;
@@ -17,7 +17,7 @@ const emit = defineEmits(["verMais"]);
 <template>
   <v-card
     :class="
-      props.possuiEntrada > 0
+      props.possuiDados > 0
         ? 'container_card_list bg-grey-lighten-4'
         : 'container_nao_encontrado bg-grey-lighten-4'
     "
@@ -38,12 +38,15 @@ const emit = defineEmits(["verMais"]);
         :key="n"
         class="mx-2 my-4"
         width="200"
-        height="130"
+        height="110"
       />
     </div>
-    <div v-else>
+    <div
+      v-else
+      class="d-flex flex-column"
+    >
       <div
-        v-if="props.possuiEntrada > 0"
+        v-if="props.possuiDados > 0"
         class="d-flex flex-column ga-2 h-100"
       >
         <div
@@ -55,7 +58,7 @@ const emit = defineEmits(["verMais"]);
       </div>
       <div
         class="container_botao px-4"
-        v-if="props.exibirVerMais && props.possuiEntrada > 0"
+        v-if="props.exibirVerMais && props.possuiDados > 0"
       >
         <v-btn
           color="primary"
@@ -66,7 +69,7 @@ const emit = defineEmits(["verMais"]);
         </v-btn>
       </div>
       <div
-        v-if="props.possuiEntrada == 0"
+        v-if="props.possuiDados == 0"
         class="d-flex justify-center align-center flex-column pt-5"
       >
         <v-text class="text-h6 text-center text-grey-darken-2">{{ props.produtoNaoEncontrado }} </v-text>
@@ -95,5 +98,28 @@ const emit = defineEmits(["verMais"]);
   margin-bottom: 10px;
   height: 25px;
   width: 100%;
+}
+.container_botao {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.scroll {
+  height: 100%;
+  overflow: auto;
+}
+.scroll::-webkit-scrollbar {
+  width: 7px;
+  height: 20px;
+  margin-top: 20px;
+}
+.scroll::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
+}
+.scroll::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style>

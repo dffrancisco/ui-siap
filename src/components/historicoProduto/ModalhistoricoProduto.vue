@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { actions, state } from "./modalhistoricoProduto";
-import { dataBrasil, formatHora, formatValor } from "@/ts/utils";
 import ModalHistoricoDetalhesVenda from "./components/ModalHistoricoDetalhesVenda.vue";
 import GroupCard from "./components/GroupCard.vue";
 import CardEntrada from "./components/CardEntrada.vue";
@@ -22,7 +21,7 @@ onMounted(async () => {
 <template>
   <card
     class="bg-white border"
-    style="min-width: 1200px; width: 1200px; height: 100vh"
+    style="min-width: 1200px; width: 1200px; height: 597px; max-height: 597px"
   >
     <div class="d-flex flex-column pa-3 h-100">
       <div v-if="state.loadingSkeletonDadosIniciais">
@@ -92,7 +91,7 @@ onMounted(async () => {
           icon="mdi mdi-package-variant-closed"
           bg-cor-titulo="bg-deep-purple-accent-3"
           :loading="state.loadingSkeletonEntrada"
-          :possui-entrada="state.entradas.length"
+          :possui-dados="state.entradas.length"
           :exibir-ver-mais="state.verMaisEntradas"
           @ver-mais="actions.getEntradaHistoricoProduto"
           :skeleton="state.loadingSkeletonEntrada"
@@ -115,7 +114,7 @@ onMounted(async () => {
           icon="mdi mdi-cash"
           bg-cor-titulo="bg-pink-darken-1"
           :loading="state.loadingSkeletonSaida"
-          :possui-entrada="state.saidas.length"
+          :possui-dados="state.saidas.length"
           :exibir-ver-mais="state.verMaisSaidas"
           @ver-mais="actions.getSaidas"
           :skeleton="state.loadingSkeletonSaida"
@@ -131,6 +130,7 @@ onMounted(async () => {
             :valor-venda="saida.VALOR_VENDA"
             :quantidade="saida.QUANTIDADE"
             :skeleton="state.loadingSkeletonSaida"
+            @modalSaida="actions.onclickModalSaidas(saida)"
           />
         </GroupCard>
         <GroupCard
@@ -138,7 +138,7 @@ onMounted(async () => {
           icon="mdi mdi-chart-box-outline"
           bg-cor-titulo="bg-blue-darken-2"
           :loading="state.loadingSkeletonEstoque"
-          :possui-entrada="state.estoques.length"
+          :possui-dados="state.estoques.length"
           :exibir-ver-mais="state.verMaisEstoque"
           @ver-mais="actions.getEstoquesNew"
           :skeleton="state.loadingSkeletonEstoque"
@@ -158,11 +158,11 @@ onMounted(async () => {
           title="Devolução"
           icon="mdi mdi-arrow-u-left-bottom "
           bg-cor-titulo="bg-green-darken-2"
-          :possui-entrada="state.devolucoes.length"
-          :exibir-ver-mais="state.verMaisEstoque"
+          :possui-dados="state.devolucoes.length"
+          :exibir-ver-mais="state.verMaisDevolucoes"
           @ver-mais="actions.getDevolucoes"
           :skeleton="state.loadingSkeletonDevolucao"
-          produto-nao-encontrado="Não possui estoque"
+          produto-nao-encontrado="Não possui devolução"
         >
           <CardDevolucao
             v-for="devolucao in state.devolucoes"
@@ -178,12 +178,11 @@ onMounted(async () => {
           title="pedidos"
           icon="mdi mdi-cart-variant"
           bg-cor-titulo="bg-orange-darken-2"
-          :loading="state.loadingSkeletonEstoque"
-          :possui-entrada="state.estoques.length"
-          :exibir-ver-mais="state.verMaisEstoque"
+          :possui-dados="state.estoques.length"
+          :exibir-ver-mais="state.verMaisCompras"
           @ver-mais="actions.getCompras"
-          :skeleton="state.loadingSkeletonEstoque"
-          produto-nao-encontrado="Não possui estoque"
+          :skeleton="state.loadingSkeletonCompras"
+          produto-nao-encontrado="Não possui pedidos"
         >
           <CardPedido
             v-for="compra in state.compras"
@@ -207,38 +206,3 @@ onMounted(async () => {
     />
   </v-dialog>
 </template>
-
-<style scoped>
-.titulo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  height: 25px;
-  width: 100%;
-}
-
-.container_botao {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.botao_ver_mais {
-  background-color: #f5f5f5;
-  width: 100%;
-  margin: 8px;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  height: 30px;
-  border-radius: 5px;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.3s;
-  font-size: 16px;
-}
-.botao_ver_mais:hover {
-  background-color: #bdbdbd;
-}
-</style>

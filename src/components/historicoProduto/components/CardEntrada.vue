@@ -3,12 +3,12 @@ import { dataBrasil, formatValor } from "@/ts/utils";
 import { defineProps } from "vue";
 
 const props = defineProps<{
-  dataEntrada: any;
-  numNotaFiscal: any;
-  nomeFantasia: any;
-  custo: any;
-  qtoOld: any;
-  quantidade: any;
+  dataEntrada: string;
+  numNotaFiscal: string;
+  nomeFantasia: string;
+  custo: number;
+  qtoOld: number;
+  quantidade: number;
 }>();
 </script>
 
@@ -21,7 +21,7 @@ const props = defineProps<{
         <v-text class="codigo">#{{ props.numNotaFiscal }}</v-text>
       </div>
       <div class="d-flex flex-column mt-2">
-        <v-text class="font-weight-bold">{{ props.nomeFantasia }}</v-text>
+        <v-text class="font-weight-bold nome">{{ props.nomeFantasia }}</v-text>
       </div>
       <div class="border mt-2"></div>
       <div class="d-flex justify-space-between mt-2">
@@ -42,7 +42,8 @@ const props = defineProps<{
   min-height: 120px;
 }
 .cor_identificacao {
-  width: 5px;
+  min-width: 5px;
+  height: auto;
 }
 .container_informação_historico {
   width: 100%;
@@ -51,27 +52,17 @@ const props = defineProps<{
   justify-content: space-around;
   padding: 4px 8px;
 }
-.scroll {
-  height: 100%;
-  overflow: auto;
-}
-.scroll::-webkit-scrollbar {
-  width: 10px;
-  height: 20px;
-  margin-top: 20px;
-}
-.scroll::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 10px;
-  border: 2px solid #f1f1f1;
-}
-.scroll::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
 .quantidade,
 .codigo {
   background-color: #cfd8dc;
   border-radius: 5px;
   padding: 0 5px;
+}
+.nome {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: inline-block;
 }
 </style>

@@ -3,9 +3,9 @@ import { dataBrasil } from "@/ts/utils";
 import { defineProps } from "vue";
 
 const props = defineProps<{
-  dtDevolucao: any;
-  numOrcamento: any;
-  dtOrcamento: any;
+  dtDevolucao: string;
+  numOrcamento: number;
+  dtOrcamento: string;
   quantidade: number;
 }>();
 </script>
@@ -37,7 +37,8 @@ const props = defineProps<{
   min-height: 120px;
 }
 .cor_identificacao {
-  width: 5px;
+  min-width: 5px;
+  height: auto;
 }
 .container_informação_historico {
   width: 100%;
@@ -45,23 +46,6 @@ const props = defineProps<{
   flex-direction: column;
   justify-content: space-around;
   padding: 4px 8px;
-}
-.scroll {
-  height: 100%;
-  overflow: auto;
-}
-.scroll::-webkit-scrollbar {
-  width: 10px;
-  height: 20px;
-  margin-top: 20px;
-}
-.scroll::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 10px;
-  border: 2px solid #f1f1f1;
-}
-.scroll::-webkit-scrollbar-thumb:hover {
-  background: #555;
 }
 .quantidade,
 .codigo {

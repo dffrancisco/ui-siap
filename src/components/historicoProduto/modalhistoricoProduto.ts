@@ -78,7 +78,7 @@ export const actions = {
     },
 
 
-    async onclickAbrir(saida: iSaidasHistoricoProduto) {
+    async onclickModalSaidas(saida: iSaidasHistoricoProduto) {
 
         try {
             state.orcamento = await modalhistoricoProdutoService.getOrcamento(saida.NUM_ORCAMENTO, saida.DATA_VENDA)
