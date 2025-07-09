@@ -11,6 +11,7 @@ const props = defineProps<{
   vendedor: string;
   valorVenda: number;
   quantidade: number;
+  corDestaque: string;
 }>();
 </script>
 
@@ -20,7 +21,10 @@ const props = defineProps<{
     @click="emit('modalSaida')"
   >
     <div class="d-flex w-100">
-      <div class="cor_identificacao bg-pink-darken-1"></div>
+      <div
+        class="cor_identificacao"
+        :class="props.corDestaque"
+      ></div>
       <div class="container_informação_historico">
         <div class="d-flex justify-space-between">
           <v-text>{{ dataBrasil(props.dataVenda) }}</v-text>

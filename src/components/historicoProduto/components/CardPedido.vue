@@ -7,12 +7,16 @@ const props = defineProps<{
   idCompra: number;
   comprador: string;
   quantidade: number;
+  corDestaque: string;
 }>();
 </script>
 
 <template>
   <v-card class="container_card">
-    <div class="cor_identificacao bg-orange-darken-2"></div>
+    <div
+      class="cor_identificacao"
+      :class="props.corDestaque"
+    ></div>
     <div class="container_informação_historico">
       <div class="d-flex justify-space-between">
         <v-text>{{ dataBrasil(props.data) }}</v-text>

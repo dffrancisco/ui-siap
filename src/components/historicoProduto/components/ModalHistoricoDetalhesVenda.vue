@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { state } from "../modalhistoricoProduto";
 import { dataBrasil, formatHora, formatValor } from "@/ts/utils";
-import { iOrcamento } from "../interface";
+import { iOrcamento, iOrcamentoItens } from "../interface";
 
 const headers = [
   { title: "N° fabricante", align: "start", key: "NUM_FABRICANTE" },
@@ -19,18 +18,15 @@ const props = defineProps({
     type: Object as () => iOrcamento,
   },
   orcamentoItens: {
-    type: Object as () => any,
+    type: Array as () => iOrcamentoItens[],
   },
 });
 </script>
 <template>
-  <v-card
-    class="bg-white border pa-2"
-    style="min-width: 900px; width: 900px; margin: 0 auto"
-  >
-    <v-card-title class="titulo">Detalhes da venda</v-card-title>
+  <v-card class="bg-white border pa-2 container_detalhes_venda">
+    <v-card-title class="pt-2 pb-2">Detalhes da venda</v-card-title>
 
-    <v-card class="pa-1 mb-3 bg-grey-lighten-3">
+    <v-card class="pa-1 mb-3 bg-grey-lighten-3 tamanho">
       <v-container class="bg-grey-lighten-3 rounded-lg mb-1">
         <v-row>
           <v-col
@@ -109,14 +105,14 @@ const props = defineProps({
       </v-container>
     </v-card>
 
-    <v-data-table-virtual
+    <v-data-table
       class="elevation-2 primary"
       :header-props="{ class: 'bg-teal-lighten-5 border ' }"
       :headers="headers"
-      :items="state.orcamentoItens"
+      :items="props.orcamentoItens"
       height="400"
       item-value="name"
-      fixed-header
+      hide-default-footer
     >
       <template v-slot:item="{ item }">
         <tr class="bg-white">
@@ -130,7 +126,7 @@ const props = defineProps({
           <td class="border text-end">{{ formatValor(item.SUBTOTAL) || "Não possui" }}</td>
         </tr>
       </template>
-    </v-data-table-virtual>
+    </v-data-table>
   </v-card>
 </template>
 <style scoped>
@@ -138,7 +134,11 @@ const props = defineProps({
   border: 1px solid #eeeeee;
   background: white;
 }
-.titulo {
-  padding: 10px 0px 10px 0px;
+.tamanho {
+  min-height: 150px;
+}
+.container_detalhes_venda {
+  min-width: 900px;
+  width: 900px;
 }
 </style>

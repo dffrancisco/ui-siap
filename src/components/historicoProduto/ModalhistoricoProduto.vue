@@ -19,31 +19,30 @@ onMounted(async () => {
 </script>
 
 <template>
-  <card
-    class="bg-white border"
-    style="min-width: 1200px; width: 1200px; height: 597px; max-height: 597px"
-  >
+  <card class="bg-white border container_modal">
     <div class="d-flex flex-column pa-3 h-100">
-      <div v-if="state.loadingSkeletonDadosIniciais">
-        <v-skeleton-loader
-          type="text"
-          class="mb-"
-          width="200"
-        />
-        <v-skeleton-loader
-          type="text"
-          class="mb-1"
-          width="150"
-        />
+      <div v-if="state.loadingDadosIniciais">
+        <div class="d-flex justify-space-between">
+          <v-skeleton-loader
+            type="text"
+            class="mb-1"
+            width="200"
+          />
+          <v-skeleton-loader
+            type="text"
+            class="mb-1"
+            width="150"
+          />
+        </div>
 
-        <v-card class="d-flex pa-4 bg-grey-lighten-4 justify-space-between">
+        <v-card class="d-flex pa-2 bg-grey-lighten-4 justify-space-between">
           <div class="d-flex flex-row">
             <v-skeleton-loader
               v-for="n in 12"
               :key="n"
-              class="mr-2"
+              class="mr-4"
               width="80"
-              height="50"
+              height="30"
             />
           </div>
         </v-card>
@@ -55,14 +54,14 @@ onMounted(async () => {
 
           <v-text
             class="text-caption-1 mb-1"
-            v-if="!state.loadingSkeletonTextoVendaMeses"
+            v-if="!state.loadingTextoVendaMeses"
           >
-            venda últimos 12 meses
+            Vendas dos últimos 12 meses
           </v-text>
         </div>
         <div
           class="d-flex justify-space-between"
-          v-if="!state.loadingSkeletonDadosIniciais"
+          v-if="!state.loadingDadosIniciais"
         >
           <div
             v-for="data in state.meses"
@@ -90,15 +89,15 @@ onMounted(async () => {
           title="Entradas"
           icon="mdi mdi-package-variant-closed"
           bg-cor-titulo="bg-deep-purple-accent-3"
-          :loading="state.loadingSkeletonEntrada"
+          produto-nao-encontrado="Não possui entrada"
+          :loading="state.loadingEntrada"
           :possui-dados="state.entradas.length"
           :exibir-ver-mais="state.verMaisEntradas"
           @ver-mais="actions.getEntradaHistoricoProduto"
-          :skeleton="state.loadingSkeletonEntrada"
-          produto-nao-encontrado="Não possui entrada"
         >
           <CardEntrada
             v-for="entrada in state.entradas"
+            cor-destaque="bg-deep-purple-accent-3"
             :key="entrada.NUM_NOTA_FISCAL"
             :data-entrada="entrada.DATA_ENTRADA"
             :num-nota-fiscal="entrada.NUM_NOTA_FISCAL"
@@ -113,15 +112,15 @@ onMounted(async () => {
           title="Saídas"
           icon="mdi mdi-cash"
           bg-cor-titulo="bg-pink-darken-1"
-          :loading="state.loadingSkeletonSaida"
+          produto-nao-encontrado="Não possui saida"
+          :loading="state.loadingSaida"
           :possui-dados="state.saidas.length"
           :exibir-ver-mais="state.verMaisSaidas"
           @ver-mais="actions.getSaidas"
-          :skeleton="state.loadingSkeletonSaida"
-          produto-nao-encontrado="Não possui saida"
         >
           <CardSaida
             v-for="saida in state.saidas"
+            cor-destaque="bg-pink-darken-1"
             :key="saida.NUM_ORCAMENTO"
             :data-venda="saida.DATA_VENDA"
             :orcamento="saida.NUM_ORCAMENTO"
@@ -129,7 +128,6 @@ onMounted(async () => {
             :vendedor="saida.VENDEDOR"
             :valor-venda="saida.VALOR_VENDA"
             :quantidade="saida.QUANTIDADE"
-            :skeleton="state.loadingSkeletonSaida"
             @modalSaida="actions.onclickModalSaidas(saida)"
           />
         </GroupCard>
@@ -137,20 +135,20 @@ onMounted(async () => {
           title="Estoque"
           icon="mdi mdi-chart-box-outline"
           bg-cor-titulo="bg-blue-darken-2"
-          :loading="state.loadingSkeletonEstoque"
+          produto-nao-encontrado="Não possui estoque"
+          :loading="state.loadingEstoque"
           :possui-dados="state.estoques.length"
           :exibir-ver-mais="state.verMaisEstoque"
           @ver-mais="actions.getEstoquesNew"
-          :skeleton="state.loadingSkeletonEstoque"
-          produto-nao-encontrado="Não possui estoque"
         >
           <CardEstoque
             v-for="estoque in state.estoques"
+            cor-destaque="bg-blue-darken-2"
             :key="estoque.ID_LOG"
             :dh-log="estoque.DH_LOG"
             :estoquista="estoque.ESTOQUISTA"
             :conteudo="estoque.CONTEUDO"
-            :skeleton="state.loadingSkeletonEstoque"
+            :skeleton="state.loadingEstoque"
           />
         </GroupCard>
 
@@ -158,19 +156,21 @@ onMounted(async () => {
           title="Devolução"
           icon="mdi mdi-arrow-u-left-bottom "
           bg-cor-titulo="bg-green-darken-2"
+          produto-nao-encontrado="Não possui devolução"
+          :loading="state.loadingDevolucao"
           :possui-dados="state.devolucoes.length"
           :exibir-ver-mais="state.verMaisDevolucoes"
+          :skeleton="state.loadingDevolucao"
           @ver-mais="actions.getDevolucoes"
-          :skeleton="state.loadingSkeletonDevolucao"
-          produto-nao-encontrado="Não possui devolução"
         >
           <CardDevolucao
             v-for="devolucao in state.devolucoes"
+            cor-destaque="bg-green-darken-2"
             :dt-devolucao="devolucao.DT_DEVOLUCAO"
             :num-orcamento="devolucao.NUM_ORCAMENTO"
             :dt-orcamento="devolucao.DT_ORCAMENTO"
             :quantidade="devolucao.QUANTIDADE"
-            :skeleton="state.loadingSkeletonDevolucao"
+            :skeleton="state.loadingDevolucao"
           />
         </GroupCard>
 
@@ -178,19 +178,20 @@ onMounted(async () => {
           title="pedidos"
           icon="mdi mdi-cart-variant"
           bg-cor-titulo="bg-orange-darken-2"
-          :possui-dados="state.estoques.length"
+          produto-nao-encontrado="Não possui pedidos"
+          :loading="state.loadingCompras"
+          :possui-dados="state.compras.length"
           :exibir-ver-mais="state.verMaisCompras"
           @ver-mais="actions.getCompras"
-          :skeleton="state.loadingSkeletonCompras"
-          produto-nao-encontrado="Não possui pedidos"
         >
           <CardPedido
             v-for="compra in state.compras"
+            cor-destaque="bg-orange-darken-2"
             :data="compra.DATA"
             :id-compra="compra.ID_COMPRAS"
             :comprador="compra.COMPRADOR"
             :quantidade="compra.QUANTIDADE"
-            :skeleton="state.loadingSkeletonCompras"
+            :skeleton="state.loadingCompras"
           />
         </GroupCard>
       </div>
@@ -206,3 +207,11 @@ onMounted(async () => {
     />
   </v-dialog>
 </template>
+<style scoped>
+.container_modal {
+  min-width: 1200px;
+  width: 1200px;
+  height: 597px;
+  max-height: 597px;
+}
+</style>

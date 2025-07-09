@@ -1,12 +1,12 @@
 import axios from "axios";
-import { iComprasHistoricoProduto, iDevolucoesHistoricoProduto, iEntradasHistoricoProduto, iLogEstoquesNew, iDadosIniciaisHistoricosProdutos, iSaidasHistoricoProduto } from "../interface";
+import { iComprasHistoricoProduto, iDevolucoesHistoricoProduto, iEntradasHistoricoProduto, iLogEstoquesNew, iDadosIniciaisHistoricosProdutos, iSaidasHistoricoProduto, paramEstoque, paramDadosIniciais, paramDevolucao, paramCompras, paramSaidas, paramEntradas } from "../interface";
 
-type iGetEntradasHistoricoFunction = (param: iEntradasHistoricoProduto) => Promise<iEntradasHistoricoProduto[]>;
-type iGetSaidasHistoricoProdutoFunction = (param: iSaidasHistoricoProduto) => Promise<iSaidasHistoricoProduto[]>;
-type iGetComprasHistoricoProdutoFunction = (param: iComprasHistoricoProduto) => Promise<iComprasHistoricoProduto[]>;
-type iGetDevolucoesHistoricoProdutoFunction = (param: iDevolucoesHistoricoProduto) => Promise<iDevolucoesHistoricoProduto[]>;
-type iGetLogEstoquesNewHistoricoProdutoFunction = (param: iLogEstoquesNew) => Promise<iLogEstoquesNew[]>;
-type iGetMesesHistoricoProdutoFunction = (param: iDadosIniciaisHistoricosProdutos) => Promise<iDadosIniciaisHistoricosProdutos>
+type iGetEntradasHistoricoFunction = (param: paramEntradas) => Promise<iEntradasHistoricoProduto[]>;
+type iGetSaidasHistoricoProdutoFunction = (param: paramSaidas) => Promise<iSaidasHistoricoProduto[]>;
+type iGetComprasHistoricoProdutoFunction = (param: paramCompras) => Promise<iComprasHistoricoProduto[]>;
+type iGetDevolucoesHistoricoProdutoFunction = (param: paramDevolucao) => Promise<iDevolucoesHistoricoProduto[]>;
+type iGetLogEstoquesNewHistoricoProdutoFunction = (param: paramEstoque) => Promise<iLogEstoquesNew[]>;
+type iGetMesesHistoricoProdutoFunction = (param: paramDadosIniciais) => Promise<iDadosIniciaisHistoricosProdutos>
 
 
 const getEntradas: iGetEntradasHistoricoFunction = async (param) => {
@@ -56,22 +56,22 @@ const getDadosIniciais: iGetMesesHistoricoProdutoFunction = async (param) => {
 
     return data;
 }
-const getOrcamento = async (NUM_ORCAMENTO: number, DATA: string) => {
+const getOrcamento = async (numOrcamento: number, dataOrcamento: string) => {
     let { data } = await axios.post('siap/historicoProduto', {
         call: 'getOrcamento',
         param: {
-            NUM_ORCAMENTO,
-            DATA
+            numOrcamento,
+            dataOrcamento
         }
     })
     return data
 }
-const getItensOrcamento = async (NUM_ORCAMENTO: number, DATA: string) => {
+const getItensOrcamento = async (numOrcamento: number, dataOrcamento: string) => {
     let { data } = await axios.post('siap/historicoProduto', {
         call: 'getItensOrcamento',
         param: {
-            NUM_ORCAMENTO,
-            DATA
+            numOrcamento,
+            dataOrcamento
         }
     })
     return data

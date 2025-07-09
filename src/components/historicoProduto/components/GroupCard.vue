@@ -5,9 +5,9 @@ const props = defineProps<{
   title: string;
   icon: string;
   bgCorTitulo: string;
-  possuiDados: any;
+  possuiDados: number;
   exibirVerMais: boolean;
-  skeleton: boolean;
+  loading: boolean;
   produtoNaoEncontrado: string;
 }>();
 
@@ -32,13 +32,13 @@ const emit = defineEmits(["verMais"]);
       ></i>
       {{ props.title }}</v-text
     >
-    <div v-if="props.skeleton">
+    <div v-if="props.loading">
       <v-skeleton-loader
         v-for="n in 3"
         :key="n"
         class="mx-2 my-4"
         width="200"
-        height="110"
+        height="100"
       />
     </div>
     <div

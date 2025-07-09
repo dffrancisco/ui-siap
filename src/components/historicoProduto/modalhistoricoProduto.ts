@@ -33,13 +33,13 @@ export const state = reactive({
     modalAbrirHistoricoSaida: false,
     codProduto: undefined,
     nomeProduto: "",
-    loadingSkeletonDadosIniciais: true,
-    loadingSkeletonEntrada: true,
-    loadingSkeletonSaida: true,
-    loadingSkeletonEstoque: true,
-    loadingSkeletonDevolucao: true,
-    loadingSkeletonCompras: true,
-    loadingSkeletonTextoVendaMeses: true,
+    loadingDadosIniciais: true,
+    loadingEntrada: true,
+    loadingSaida: true,
+    loadingEstoque: true,
+    loadingDevolucao: true,
+    loadingCompras: true,
+    loadingTextoVendaMeses: true,
 })
 
 export const actions = {
@@ -61,13 +61,13 @@ export const actions = {
         state.verMaisDevolucoes = true;
         state.verMaisCompras = true;
         state.verMaisEstoque = true;
-        state.loadingSkeletonDadosIniciais = true;
-        state.loadingSkeletonEntrada = true;
-        state.loadingSkeletonSaida = true;
-        state.loadingSkeletonEstoque = true;
-        state.loadingSkeletonDevolucao = true;
-        state.loadingSkeletonCompras = true;
-        state.loadingSkeletonTextoVendaMeses = true;
+        state.loadingDadosIniciais = true;
+        state.loadingEntrada = true;
+        state.loadingSaida = true;
+        state.loadingEstoque = true;
+        state.loadingDevolucao = true;
+        state.loadingCompras = true;
+        state.loadingTextoVendaMeses = true;
 
         await actions.getEntradaHistoricoProduto();
         await actions.getSaidas();
@@ -95,15 +95,15 @@ export const actions = {
 
 
     async getEntradaHistoricoProduto() {
-        state.loadingSkeletonEntrada = true
+        state.loadingEntrada = true
         try {
 
-            const param = { COD_PRODUTO: state.codProduto, pg: state.pgEntradas }
-            const novasEntradas = await modalhistoricoProdutoService.getEntradas(param as any)
+            const param = { codProduto: state.codProduto, pg: state.pgEntradas }
+            const novasEntradas = await modalhistoricoProdutoService.getEntradas(param)
 
             if (!novasEntradas.length) {
                 state.verMaisEntradas = false
-                state.loadingSkeletonEntrada = false
+                state.loadingEntrada = false
                 return
             }
 
@@ -113,7 +113,7 @@ export const actions = {
             state.pgEntradas++
 
 
-            state.loadingSkeletonEntrada = false
+            state.loadingEntrada = false
         }
         catch (error) {
 
@@ -123,15 +123,15 @@ export const actions = {
     },
 
     async getSaidas() {
-        state.loadingSkeletonSaida = true
+        state.loadingSaida = true
         try {
 
-            const param = { COD_PRODUTO: state.codProduto, pg: state.pgSaidas }
-            const novasSaidas = await modalhistoricoProdutoService.getSaidas(param as any)
+            const param = { codProduto: state.codProduto, pg: state.pgSaidas }
+            const novasSaidas = await modalhistoricoProdutoService.getSaidas(param)
 
             if (!novasSaidas.length) {
                 state.verMaisSaidas = false
-                state.loadingSkeletonSaida = false
+                state.loadingSaida = false
 
                 return
             }
@@ -140,7 +140,7 @@ export const actions = {
 
             state.pgSaidas++
 
-            state.loadingSkeletonSaida = false
+            state.loadingSaida = false
         }
         catch (error) {
 
@@ -150,15 +150,15 @@ export const actions = {
     },
 
     async getCompras() {
-        state.loadingSkeletonCompras = true
+        state.loadingCompras = true
         try {
-            const param = { COD_PRODUTO: state.codProduto, pg: state.pgCompras }
-            const novasCompras = await modalhistoricoProdutoService.getCompras(param as any)
+            const param = { codProduto: state.codProduto, pg: state.pgCompras }
+            const novasCompras = await modalhistoricoProdutoService.getCompras(param)
 
             if (!novasCompras.length) {
 
                 state.verMaisCompras = false
-                state.loadingSkeletonCompras = false
+                state.loadingCompras = false
                 return
             }
 
@@ -166,7 +166,7 @@ export const actions = {
 
             state.pgCompras++
 
-            state.loadingSkeletonCompras = false
+            state.loadingCompras = false
         }
         catch (error) {
 
@@ -175,14 +175,14 @@ export const actions = {
     },
 
     async getDevolucoes() {
-        state.loadingSkeletonDevolucao = true
+        state.loadingDevolucao = true
         try {
-            const param = { COD_PRODUTO: state.codProduto, pg: state.pgDevolucoes }
-            const novasDevolucoes = await modalhistoricoProdutoService.getDevolucoes(param as any)
+            const param = { codProduto: state.codProduto, pg: state.pgDevolucoes }
+            const novasDevolucoes = await modalhistoricoProdutoService.getDevolucoes(param)
 
             if (!novasDevolucoes.length) {
                 state.verMaisDevolucoes = false
-                state.loadingSkeletonDevolucao = false
+                state.loadingDevolucao = false
                 return
 
             }
@@ -190,10 +190,10 @@ export const actions = {
             state.devolucoes = [...state.devolucoes, ...novasDevolucoes]
 
             state.pgDevolucoes++
-            state.loadingSkeletonDevolucao = false
+            state.loadingDevolucao = false
         }
         catch (error) {
-            state.loadingSkeletonDevolucao = false
+            state.loadingDevolucao = false
             swalDarkError('Ocorreu um erro ao buscar as devoluções')
 
         }
@@ -205,12 +205,12 @@ export const actions = {
             const dataFim = moment().subtract(12, 'months');
 
             const param = {
-                COD_PRODUTO: state.codProduto,
+                codProduto: state.codProduto,
                 dataInicio: dataInicio.format('YYYY-MM-DD'),
                 dataFim: dataFim.format('YYYY-MM-DD'),
             };
 
-            state.dadosIniciais = await modalhistoricoProdutoService.getDadosIniciais(param as any);
+            state.dadosIniciais = await modalhistoricoProdutoService.getDadosIniciais(param);
 
 
             state.nomeProduto = state.dadosIniciais.PRODUTO.DESC_PRODUTO
@@ -239,8 +239,8 @@ export const actions = {
             }
 
             state.meses = mesesCompletos;
-            state.loadingSkeletonDadosIniciais = false;
-            state.loadingSkeletonTextoVendaMeses = false;
+            state.loadingDadosIniciais = false;
+            state.loadingTextoVendaMeses = false;
 
         }
         catch (error) {
@@ -249,21 +249,21 @@ export const actions = {
         }
     },
     async getEstoquesNew() {
-        state.loadingSkeletonEstoque = true
+        state.loadingEstoque = true
         try {
-            const param = { COD_PRODUTO: state.codProduto, pg: state.pgEstoques }
-            const novosEstoques = await modalhistoricoProdutoService.getLogEstoquesNew(param as any)
+            const param = { codProduto: state.codProduto, pg: state.pgEstoques }
+            const novosEstoques = await modalhistoricoProdutoService.getLogEstoquesNew(param)
 
             if (!novosEstoques.length) {
                 state.verMaisEstoque = false
-                state.loadingSkeletonEstoque = false
+                state.loadingEstoque = false
                 return
             }
 
             state.estoques = [...state.estoques, ...novosEstoques]
 
             state.pgEstoques++
-            state.loadingSkeletonEstoque = false
+            state.loadingEstoque = false
         }
         catch (error) {
             swalDarkError('Ocorreu um erro ao buscar o Estoque')

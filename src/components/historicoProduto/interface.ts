@@ -79,25 +79,42 @@ export interface iOrcamento {
     TIPO_PAGAMENTO_FINAL: string
 }
 export interface iOrcamentoItens {
-    NUM_ORCAMENTO: number,
-    COD_PRODUTO: number,
-    DESC_PRODUTO: string,
     NUM_FABRICANTE: string,
-    END_ESTOQUE: string,
-    END_EXCESSO: string,
+    DESC_PRODUTO: string,
     CARRO: string,
-    MARCA: string,
-    UNIDADE: string,
-    FOTO: string,
-    MES: number,
-    VALOR: number,
+    END_ESTOQUE: string,
     QTO: number,
-    DATA: string,
-    HORA: string,
-    VALOR_REAL: number,
-    ANO: number,
-    QTO_ENTREGUE: number,
+    VALOR: number,
     DESCONTO: number,
+    SUBTOTAL: number
+}
+
+export interface paramDadosIniciais {
+    codProduto: number,
+    dataInicio: string,
+    dataFim: string,
+}
+export interface paramEntradas {
+    codProduto: number,
+    pg: number
+}
+
+export interface paramSaidas {
+    codProduto: number,
+    pg: number
+}
+export interface paramCompras {
+    codProduto: number,
+    pg: number
+}
+export interface paramDevolucao {
+    codProduto: number,
+    pg: number
+}
+
+export interface paramEstoque {
+    codProduto: number,
+    pg: number
 }
 
 

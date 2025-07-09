@@ -6,12 +6,16 @@ const props = defineProps<{
   dhLog: string;
   estoquista: string;
   conteudo: string;
+  corDestaque: string;
 }>();
 </script>
 
 <template>
   <v-card class="container_card">
-    <div class="cor_identificacao bg-blue-darken-2"></div>
+    <div
+      class="cor_identificacao"
+      :class="props.corDestaque"
+    ></div>
     <div class="container_informação_historico">
       <div class="d-flex justify-space-between">
         <v-text>{{ dataBrasil(props.dhLog) }}</v-text>
