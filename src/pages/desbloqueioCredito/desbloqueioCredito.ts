@@ -77,7 +77,6 @@ export const actions = {
                 }
             }
         })
-
     }
 
 };
