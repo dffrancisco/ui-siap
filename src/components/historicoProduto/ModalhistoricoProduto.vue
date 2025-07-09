@@ -57,7 +57,7 @@ onMounted(async () => {
             class="text-caption-1 mb-1"
             v-if="!state.loadingSkeletonTextoVendaMeses"
           >
-            venda últimos 12 meses
+            Vendas dos últimos 12 meses
           </v-text>
         </div>
         <div
@@ -78,7 +78,7 @@ onMounted(async () => {
                 {{ `${data.MES} - ${data.ANO}` }}
               </h3>
               <h5 class="text-center text-subtitle-1 font-weight-bold">
-                {{ data.QUANTIDADE }}
+                {{ data.QUANTIDADE == 0 ? "-" : data.QUANTIDADE }}
               </h5>
             </v-card>
           </div>
@@ -113,12 +113,12 @@ onMounted(async () => {
           title="Saídas"
           icon="mdi mdi-cash"
           bg-cor-titulo="bg-pink-darken-1"
+          produto-nao-encontrado="Não possui saida"
           :loading="state.loadingSkeletonSaida"
           :possui-dados="state.saidas.length"
           :exibir-ver-mais="state.verMaisSaidas"
-          @ver-mais="actions.getSaidas"
           :skeleton="state.loadingSkeletonSaida"
-          produto-nao-encontrado="Não possui saida"
+          @ver-mais="actions.getSaidas"
         >
           <CardSaida
             v-for="saida in state.saidas"
