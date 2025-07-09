@@ -26,7 +26,7 @@ export const actions = {
             Swal.fire({
                 icon: 'warning',
                 title: 'Chave inválida',
-                text: 'certifique-se de que o campo não está em branco e se possuem 10 caracteres.',
+                text: 'certifique-se de que o campo não está em branco.',
             });
             return;
         }
