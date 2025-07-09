@@ -13,6 +13,7 @@ import { state, actions } from "./desbloqueioCredito";
       <div class="d-flex div-pai ga-5">
         <v-text-field
           class="input-chave"
+          @keyup.enter="actions.getCredito(state.pesquisaCredito)"
           v-model="state.pesquisaCredito"
         >
         </v-text-field>
@@ -31,10 +32,7 @@ import { state, actions } from "./desbloqueioCredito";
       <h3 class="text-subtitle-3">Dados do Crédito:</h3>
 
       <div class="d-flex flex-column ga-6 rounded-lg">
-        <div
-          v-if="state.dadosCredito"
-          class="div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg"
-        >
+        <div class="div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg">
           <p class="text-subtitle-2">
             Chave: <span class="font-weight-black"> {{ state.credito.CHAVE }} </span>
           </p>
@@ -42,11 +40,17 @@ import { state, actions } from "./desbloqueioCredito";
             >CPF/CNPJ: <span class="font-weight-black">{{ state.credito.CPF_CNPJ }} </span>
           </p>
           <p class="text-subtitle-2"
-            >Valor: <span class="font-weight-black"> {{ utils.formatValor(state.credito.VALOR) }} </span>
+            >Valor:
+            <span
+              v-if="state.dadosCredito"
+              class="font-weight-black"
+            >
+              {{ utils.formatValor(state.credito.VALOR) }}
+            </span>
           </p>
           <p class="text-subtitle-2"
             >Bloqueado:
-            <span class="font-weight-black"> {{ state.credito.BLOQUEADO === "S" ? "SIM" : "NÃO" }}</span>
+            <span class="font-weight-black"> {{ state.credito.BLOQUEADO === "S" ? "SIM" : "" }}</span>
           </p>
         </div>
 
@@ -66,7 +70,8 @@ import { state, actions } from "./desbloqueioCredito";
 
 <style scoped>
 .input-chave {
-  max-width: 20%;
+  width: 100%;
+  max-width: 25%;
   height: 2rem;
 }
 
