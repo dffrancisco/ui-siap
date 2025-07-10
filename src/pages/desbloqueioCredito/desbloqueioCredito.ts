@@ -53,14 +53,14 @@ export const actions = {
             call: async () => {
 
                 try {
-                    state.loading = true // verdadeiro
+                    state.loading = true
                     await desbloqueioCreditoService.updateCredito(state.credito.CHAVE);
-                    
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Crédito desbloqueado',
                     });
-                    
+                    state.pesquisaCredito = ""
                     state.credito = {} as iCredito
 
                 } catch (error) {
@@ -69,7 +69,7 @@ export const actions = {
                         title: 'Erro ao processar sua solicitação.',
                     });
                 } finally {
-                    state.loading = false // falso
+                    state.loading = false
                     console.log(state.loading)
                 }
             }
