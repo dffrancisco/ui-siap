@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
 import { state, actions } from "./desbloqueioCredito";
+import Loading from "@/components/Loading.vue";
+
 </script>
 
 <template>
@@ -50,7 +52,10 @@ import { state, actions } from "./desbloqueioCredito";
         </div>
       </div>
     </section>
+    
   </div>
+  
+  <Loading :loading="state.loading" />
 </template>
 
 <style scoped>

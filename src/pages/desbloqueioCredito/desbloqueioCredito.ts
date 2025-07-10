@@ -5,15 +5,17 @@ import utils from "@/ts/utils";
 import { iCredito } from './interfaces'
 import desbloqueioCreditoService from './services/desbloqueioCredito.service';
 
-
 export const state = reactive({
     credito: <iCredito>{},
     pesquisaCredito: "" as string,
+    loading: false,
 
 });
 
 export const actions = {
     async init() {
+
+
 
     },
 
@@ -29,7 +31,6 @@ export const actions = {
 
         try {
             state.credito = await desbloqueioCreditoService.getCredito(param);
-         
             return
 
         } catch (err: any) {
@@ -52,20 +53,24 @@ export const actions = {
             call: async () => {
 
                 try {
+                    state.loading = true // verdadeiro
                     await desbloqueioCreditoService.updateCredito(state.credito.CHAVE);
-                    console.log(state.pesquisaCredito)
-                    state.pesquisaCredito = ""
+                    
                     Swal.fire({
                         icon: 'success',
                         title: 'Crédito desbloqueado',
                     });
-
+                    
+                    state.credito = {} as iCredito
 
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Erro ao processar sua solicitação.',
                     });
+                } finally {
+                    state.loading = false // falso
+                    console.log(state.loading)
                 }
             }
         })
