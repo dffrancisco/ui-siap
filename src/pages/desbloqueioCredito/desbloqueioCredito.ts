@@ -9,7 +9,6 @@ import desbloqueioCreditoService from './services/desbloqueioCredito.service';
 export const state = reactive({
     credito: <iCredito>{},
     pesquisaCredito: "" as string,
-    dadosCredito: false as boolean
 
 });
 
@@ -30,7 +29,7 @@ export const actions = {
 
         try {
             state.credito = await desbloqueioCreditoService.getCredito(param);
-            state.dadosCredito = true
+         
             return
 
         } catch (err: any) {
