@@ -4,62 +4,49 @@ import { state, actions } from "./desbloqueioCredito";
 </script>
 
 <template>
-  <div class="container d-flex flex-column ga-3 bg-white rounded-lg">
+  <div class="container d-flex flex-column ga-4 bg-white rounded-lg">
     <h1 class="mt-4 ml-4 mr-0 mb-0">Chave</h1>
-    <section class="d-flex flex-column ga-6 ma-3">
+    <section class="d-flex flex-column ga-8 ma-3">
       <div class="d-flex ga-5">
-        <v-text-field
-          class="input-chave"
-          @keyup.enter="actions.getCredito(state.pesquisaCredito)"
-          v-model="state.pesquisaCredito"
-        >
+        <v-text-field class="input-chave" @keyup.enter="actions.getCredito(state.pesquisaCredito)"
+          v-model="state.pesquisaCredito">
         </v-text-field>
 
-        <v-btn
-          @click="actions.getCredito(state.pesquisaCredito)"
-          icon="mdi-magnify"
-          density="comfortable"
-          class="bg-blue small"
-          size="38"
-        >
+        <v-btn @click="actions.getCredito(state.pesquisaCredito)" icon="mdi-magnify" density="comfortable"
+          class="bg-blue small" size="38">
         </v-btn>
       </div>
 
+      <div class="d-flex flex-column ga-9 rounded-lg">
       <h3 class="text-subtitle-3">Dados do Crédito:</h3>
+        <div class="div-paragrafo d-flex align-itens-center justify-space-around pa-3 border rounded-lg">
+          <v-row  justify="space-between" class="pa-0">
 
-      <div class="d-flex flex-column ga-6 rounded-lg">
-        <div class="div-paragrafo d-flex align-itens-center justify-space-around pa-4 border rounded-lg">
-          <v-row>
-            <v-col>
-              <div>
-                <label class="text-subtitle-2">Chave:</label>
-                <span class="font-weight-black"> {{ state.credito.CHAVE }} </span>
-              </div>
+            <v-col cols="2"  class="pa-0">
+              <label class=" mr-2 text-subtitle-2">Chave:</label>
+              <span class="font-weight-black"> {{ state.credito.CHAVE }} </span>
 
-              <div>
-                  <label class="text-subtitle-2"> CPF/CNPJ: </label>
-                  <span class="font-weight-black">{{ state.credito.CPF_CNPJ }} </span>
-              </div>
+            </v-col>
 
-              <div>
-                <label class="text-subtitle-2">Valor:</label>
-                <span class="font-weight-black"> {{ utils.formatValor(state.credito.VALOR) }}</span>
-              </div>
+            <v-col cols="3" class="pa-0 d-flex justify-center" >
+              <label class=" mr-2 text-subtitle-2 "> CPF/CNPJ: </label>
+              <span class="font-weight-black">{{ state.credito.CPF_CNPJ }} </span>
+            </v-col>
 
-              <div>
-                  <label class="text-subtitle-2" >Bloqueado:</label>
-                  <span class="font-weight-black">{{ state.credito.BLOQUEADO === "S" ? "SIM" : "" }}</span>
-              </div>
+            <v-col cols="2" class="pa-0 d-flex justify-center">
+              <label class=" mr-2 text-subtitle-2">Valor:</label>
+              <span class="font-weight-black" v-if="state.credito.VALOR"> {{ utils.formatValor(state.credito.VALOR) }}</span>
+            </v-col>
+
+            <v-col cols="2" class="pa-0 d-flex justify-center ">
+              <label class="mr-2 text-subtitle-2">Bloqueado:</label>
+              <span class="font-weight-black">{{ state.credito.BLOQUEADO === "S" ? "SIM" : "" }}</span>
             </v-col>
           </v-row>
         </div>
         <div class="desbloqueia_credito d-flex justify-end">
-          <v-btn
-            @click="actions.onClickConfirmaDesbloqueio"
-            class="bg-blue"
-          >
-            desbloquear crédito</v-btn
-          >
+          <v-btn @click="actions.onClickConfirmaDesbloqueio" class="bg-blue">
+            desbloquear crédito</v-btn>
         </div>
       </div>
     </section>
