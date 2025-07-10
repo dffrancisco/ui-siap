@@ -33,7 +33,7 @@ export const actions = {
             state.dadosCredito = true
             return
 
-        } catch (err) {
+        } catch (err: any) {
             if (err.response?.data?.message) {
                 ;
             } else if (err.message) {
@@ -54,18 +54,18 @@ export const actions = {
 
                 try {
                     await desbloqueioCreditoService.updateCredito(state.credito.CHAVE);
-
-                    state.dadosCredito = false
+                    console.log(state.pesquisaCredito)
                     state.pesquisaCredito = ""
                     Swal.fire({
                         icon: 'success',
                         title: 'Crédito desbloqueado',
                     });
 
-                } catch {
+
+                } catch (error) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Erro no processamento',
+                        title: 'Erro ao processar sua solicitação.',
                     });
                 }
             }

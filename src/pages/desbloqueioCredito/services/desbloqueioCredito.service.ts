@@ -2,7 +2,7 @@ import axios from "axios";
 import { iCredito } from "../interfaces";
 const caminho = 'siap/desbloqueioCredito'
 type iGetCredito = (param:string) => Promise<iCredito>
-type iUpdateCredito = (param:string) => Promise<void>
+type iUpdateCredito = (param:string) => Promise<string>
 
 
 const getCredito: iGetCredito  = async (param: string) => {
