@@ -4,6 +4,7 @@ import utils from "@/ts/utils";
 
 import { iCredito } from "./interfaces";
 import desbloqueioCreditoService from "./services/desbloqueioCredito.service";
+import { s } from "@fullcalendar/core/internal-common";
 
 export const state = reactive({
     credito: <iCredito>{},
@@ -22,6 +23,8 @@ export const actions = {
                 title: "Chave inválida",
                 text: "certifique-se de que o campo não está em branco.",
             });
+            state.loading = false;
+
             return;
         }
 
@@ -48,7 +51,7 @@ export const actions = {
             call: async () => {
                 try {
                     state.loading = true;
-                    await desbloqueioCreditoService.updateCredito(state.credito.CHAVE);
+                    await desbloqueioCreditoService.desbloquearCredito(state.credito.CHAVE);
 
                     Swal.fire({
                         icon: "success",
@@ -57,6 +60,7 @@ export const actions = {
                     state.pesquisaCredito = "";
                     state.credito = {} as iCredito;
                 } catch (error) {
+
                     Swal.fire({
                         icon: "error",
                         title: "Erro ao processar sua solicitação.",

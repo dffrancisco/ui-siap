@@ -21,7 +21,7 @@ import Loading from "@/components/Loading.vue";
 
       <div class="d-flex flex-column ga-9 rounded-lg">
       <h3 class="text-subtitle-3">Dados do Crédito:</h3>
-        <div class="div-paragrafo d-flex align-itens-center justify-space-around pa-3 border rounded-lg">
+        <div class="div-paragrafo d-flex align-itens-center justify-space-around pa-6 border rounded-lg">
           <v-row  justify="space-between" class="pa-0">
 
             <v-col cols="3"  class="pa-0">
