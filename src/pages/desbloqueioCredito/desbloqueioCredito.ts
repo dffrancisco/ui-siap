@@ -4,20 +4,19 @@ import utils from "@/ts/utils";
 
 import { iCredito } from "./interfaces";
 import desbloqueioCreditoService from "./services/desbloqueioCredito.service";
-import { s } from "@fullcalendar/core/internal-common";
 
 export const state = reactive({
     credito: <iCredito>{},
-    pesquisaCredito: "" as string,
-    loading: false as boolean,
+    chave: "",
+    loading: false,
 });
 
 export const actions = {
     async init() { },
 
     async getCredito(param: string) {
-        state.loading = true;
-        if (!state.pesquisaCredito || state.pesquisaCredito.length !== 10) {
+
+        if (!state.chave) {
             Swal.fire({
                 icon: "warning",
                 title: "Chave inválida",
@@ -29,22 +28,21 @@ export const actions = {
         }
 
         try {
+            state.loading = true;
             state.credito = await desbloqueioCreditoService.getCredito(param);
-            state.loading = false;
-            return;
-        } catch (err: any) {
-            if (err.response?.data?.message) {
-            } else if (err.message) {
-            }
 
+        } catch (err: any) {
             Swal.fire({
-                icon: "info",
-                title: "Esse crédito não está bloqueado",
+                icon: "error",
+                text: err?.response?.data?.msg || "Ocorreu um erro ao buscar o crédito.",
             });
         }
+
+        state.loading = false;
+        state.chave = "";
     },
 
-    onClickConfirmaDesbloqueio() {
+    onClickConfirmarDesbloqueio() {
         utils.confirmaCodigo({
             msg: `Deseja liberar o crédito ${state.credito.CHAVE}?`,
             theme: "xModal-bublue",
@@ -53,21 +51,25 @@ export const actions = {
                     state.loading = true;
                     await desbloqueioCreditoService.desbloquearCredito(state.credito.CHAVE);
 
-                    Swal.fire({
+                    state.loading = false;
+
+                    await Swal.fire({
                         icon: "success",
-                        title: "Crédito desbloqueado",
+                        title: "Crédito desbloqueado com sucesso!",
                     });
-                    state.pesquisaCredito = "";
+
+                    state.chave = "";
                     state.credito = {} as iCredito;
-                } catch (error) {
+
+                } catch (error: any) {
+                    state.loading = false;
 
                     Swal.fire({
                         icon: "error",
-                        title: "Erro ao processar sua solicitação.",
+                        text: error?.response?.data?.msg || "Ocorreu um erro ao desbloquear o crédito.",
                     });
-                } finally {
-                    state.loading = false;
                 }
+
             },
         });
     },
