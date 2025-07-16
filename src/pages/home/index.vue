@@ -479,10 +479,17 @@ import login from "../login/login";
               @click="router.push('/estoqueOrganico')"
               >Estoque Orgânico</v-btn
             >
+
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/historicoTesteModal')"
               >historicoTesteModal</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/desbloqueioCredito')"
+              >desbloqueio Credito</v-btn
             >
 
             <v-btn
