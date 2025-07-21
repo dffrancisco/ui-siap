@@ -14,6 +14,7 @@ export const state = reactive({
     totalPendentes: 0,
     totalConferidos: 0,
     cnpj: "",
+    dataRegex: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/,
     headers: [
         { title: "Data", width: "240px" },
         { title: "Qtd", key: "COD_PRODUTO" },
@@ -30,6 +31,10 @@ export const actions = {
         await actions.getEmpresa()
         await actions.getSociedade()
         actions.getOrcamento()
+        state.orcamentos = []
+        state.totalPendentes = 0
+        state.totalConferidos = 0
+
     },
 
     async onclickCardData(pendente: any) {
@@ -64,7 +69,7 @@ export const actions = {
 
     async getOrcamento() {
 
-        if (!state.dataEnviada) {
+        if (!state.dataRegex.test(state.dataEnviada)) {
             Swal.fire({
                 icon: 'warning',
                 text: 'Por favor, insira uma data válida.',
@@ -79,6 +84,10 @@ export const actions = {
             })
             return
         }
+
+        state.orcamentos = []
+        state.totalPendentes = 0
+        state.totalConferidos = 0
 
         for (let i = 0; i < state.sociedades.length; i += state.requisicaoTamanho) {
 
