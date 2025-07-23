@@ -1,35 +1,56 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
 import { state, actions } from "./devolucaoManualCaixa";
-import Loading from "@/components/Loading.vue";
-import cards from "./components/cards.vue";
+import DetalhesCaixa from "./components/DetalhesCaixa.vue";
 </script>
 
 <template>
-  <v-container class="bg-red v-cointainer-pai">
-    <cards></cards>
+  <v-container class="v-cointainer-pai">
+    <v-card 
+      @click="state.abreDetalhesCaixa = true" 
+      class="cards-filho"
+      >
+      <v-avatar> 
+        <img src="/src/assets/sem_foto.jpg" />
+      </v-avatar>
+      <span class="text-h6"> {{ "Pedro Thales" }}</span>
+    </v-card>
 
-    <v-dialog>
-        <v-card>
-            
-        </v-card>
+    <v-dialog v-model="state.abreDetalhesCaixa" max-width="500">
+      <detalhesCaixa>
+      </detalhesCaixa>
     </v-dialog>
   </v-container>
 </template>
 
 <style scoped>
-.v-cointainer-pai {
-  height: 20rem;
-  display: flex;
-  gap: 2rem;
-}
+  .v-cointainer-pai {
+    position: relative;
+    top:3rem;
+    display: flex;
+    gap: 2rem;
+    height: 20rem;
+    width: 80%;
+    max-width: 100%;
+    border-radius: 15px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 1px 1px 6px 1px;
+  }
 
-.cards-filho {
-  max-width: 100%;
-  width: 15rem;
-  height: 4rem;
-  padding: 2px;
-  border-radius: 15px;
-}
+  .cards-filho {
+    max-width: 100%;
+    width: 15rem;
+    height: 4rem;
+    padding: 2px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+  }
 
+  img {
+    width: 5rem;
+  }
 </style>
+
+

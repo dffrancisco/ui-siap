@@ -5,7 +5,7 @@ import utils from "@/ts/utils";
 
 
 export const state = reactive({
-
+    abreDetalhesCaixa: false
 });
 
 export const actions = {
@@ -13,5 +13,6 @@ export const actions = {
 
     }
 
+    
 
 }
