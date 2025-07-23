@@ -1,46 +1,66 @@
-import { reactive } from "vue"
-import { getOrcamento } from "../trocarMontador/trocarMontador"
+import { computed, reactive } from "vue"
 import moment from "moment"
 import cabongoService from "./service/cabongo.service"
-import { iOrcamento, iParamOrcamento } from "./interface"
+import { iParamOrcamento } from "./interface"
 import Swal from "sweetalert2"
-import { dataBrasil, dataUSA } from "@/ts/utils"
 
 export const state = reactive({
     modalEscolherDataOpened: false,
-    dataEnviada: moment().format('DD/MM/YYYY') || '',
+    modalOrcamentoOpened: false,
+    dataEnviada: moment().format('DD/MM/YYYY'),
     sociedades: [],
     objSociedades: {},
-    totalPendentes: 0,
-    totalConferidos: 0,
+    loadingConferidos: true,
+    loadingPendentes: true,
     cnpj: "",
     dataRegex: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/,
     headers: [
         { title: "Data", width: "240px" },
         { title: "Qtd", key: "COD_PRODUTO" },
     ],
-    orcamentos: <iOrcamento[]>[],
     lojasComErro: [],
-    requisicaoTamanho: 3
+    dataPendente: [],
 })
 
+const totalPendentes = computed(() => {
+    return state.sociedades.reduce((soma, item) => {
+        return soma + item.qtdPendente;
+    }, 0);
+})
 
+const totalConferidos = computed(() => {
+    return state.sociedades.reduce((soma, item) => {
+        return soma + item.qtdConcluida;
+    }, 0);
+})
+
+export const computeds = {
+    totalConferidos,
+    totalPendentes
+}
 
 export const actions = {
     async init() {
         await actions.getEmpresa()
         await actions.getSociedade()
         actions.getOrcamento()
-        state.orcamentos = []
-        state.totalPendentes = 0
-        state.totalConferidos = 0
-
     },
 
-    async onclickCardData(pendente: any) {
+    async onclickCardData(id_sociedade: number, cnpj: string) {
 
         try {
-            // state dataPendente = await cabongoService.getOrcamentoData(pendente.idSociedade, pendente.cnpj)
+            state.dataPendente = await cabongoService.getOrcamentoData({
+                id_sociedade,
+                cnpj: cnpj
+            })
+            if (state.dataPendente.length > 1) {
+                state.modalEscolherDataOpened = true
+            }
+            else {
+                state.modalOrcamentoOpened = true
+            }
+
+
         }
         catch (error) {
             Swal.fire({
@@ -56,6 +76,10 @@ export const actions = {
         state.sociedades = await cabongoService.getSociedade()
 
         state.sociedades.forEach(sociedade => {
+            sociedade.loading = true
+            sociedade.qtdPendente = 0
+            sociedade.qtdConcluida = 0
+
             state.objSociedades[sociedade.ID_EMPRESA] = sociedade
         })
     },
@@ -65,9 +89,17 @@ export const actions = {
         state.cnpj = cnpj.CGC_EMPRESA
     },
 
-
+    async resetarSociedade() {
+        state.sociedades.forEach(sociedade => {
+            sociedade.loading = true
+            sociedade.qtdConcluida = 0
+            sociedade.qtdPendente = 0
+        })
+    },
 
     async getOrcamento() {
+        const data = moment(state.dataEnviada, 'DD/MM/YYYY', true);
+        const hoje = moment().startOf('day');
 
         if (!state.dataRegex.test(state.dataEnviada)) {
             Swal.fire({
@@ -77,7 +109,7 @@ export const actions = {
             return
         }
 
-        if (!state.dataEnviada) {
+        if (data.isAfter(hoje)) {
             Swal.fire({
                 icon: 'warning',
                 text: 'Por favor, insira uma data válida.',
@@ -85,39 +117,56 @@ export const actions = {
             return
         }
 
-        state.orcamentos = []
-        state.totalPendentes = 0
-        state.totalConferidos = 0
 
-        for (let i = 0; i < state.sociedades.length; i += state.requisicaoTamanho) {
+        state.loadingPendentes = true
+        state.loadingConferidos = true
 
-            const lote = state.sociedades.slice(i, i + state.requisicaoTamanho);
-            const promises = lote.map((empresa) =>
+        let requisicaoTamanho = 3
 
-                cabongoService.getOrcamento({
+        actions.resetarSociedade();
+        state.lojasComErro = []
+
+        for (let i = 0; i < state.sociedades.length; i += requisicaoTamanho) {
+
+            const lote = state.sociedades.slice(i, i + requisicaoTamanho);
+            const promises = lote.map((empresa) => {
+
+                return {
+
                     id_sociedade: empresa.ID_EMPRESA,
-                    cnpj: state.cnpj,
-                    dataOrcamentoPesquisa: moment(state.dataEnviada, 'DD/MM/YYYY').format('YYYY-MM-DD')
-                }),
+                    nomeEmpresa: empresa.FANTASIA,
+                    promise: cabongoService.getOrcamento({
+                        id_sociedade: empresa.ID_EMPRESA,
+                        cnpj: state.cnpj,
+                        dataOrcamentoPesquisa: moment(state.dataEnviada, 'DD/MM/YYYY').format('YYYY-MM-DD')
+                    })
+                }
 
+            })
 
-            )
-            const resultadoLote = await Promise.allSettled(promises);
+            const resultadoOrcamento = await Promise.allSettled(promises.map(p => p.promise));
 
-            resultadoLote.forEach((res: any) => {
+            resultadoOrcamento.forEach((res: any, index) => {
+                const idSociedade = promises[index].id_sociedade;
+
                 if (res.status === "fulfilled") {
-                    const dados = { ...res.value, ...state.objSociedades[res.value.idSociedade] }
-                    state.orcamentos.push(dados);
-                    state.totalPendentes += res.value.qtdOrcamentosPendentes || 0;
-                    state.totalConferidos += res.value.qtdOrcamentosConferidos || 0;
+
+                    state.objSociedades[res.value.idSociedade].loading = false
+                    state.objSociedades[res.value.idSociedade].qtdPendente = res.value.qtdOrcamentosPendentes
+                    state.objSociedades[res.value.idSociedade].qtdConcluida = res.value.qtdOrcamentosConferidos
 
                 } else {
-                    state.lojasComErro.push();
+                    const nomeEmpresa = promises[index].nomeEmpresa
+                    state.lojasComErro.push(nomeEmpresa);
                     console.warn("Falha ao buscar orçamento:", res.reason);
+                    state.objSociedades[idSociedade].loading = false
                 }
-            });
-        }
 
+            });
+
+        }
+        state.loadingConferidos = false;
+        state.loadingPendentes = false;
     },
 
 

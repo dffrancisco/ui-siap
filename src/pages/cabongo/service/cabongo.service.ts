@@ -56,9 +56,13 @@ const getOrcamento: igetOrcamentoFunction = async ({ id_sociedade, cnpj, dataOrc
     return data;
 };
 
-const getOrcamentoData = async ({ }) => {
+const getOrcamentoData = async ({ id_sociedade, cnpj }) => {
     let { data } = await axios.post(caminho, {
-        call: 'getOrcamentoData',
+        call: 'getOrcamentosData',
+        id_sociedade,
+        param: {
+            cnpj
+        }
 
     })
     return data
