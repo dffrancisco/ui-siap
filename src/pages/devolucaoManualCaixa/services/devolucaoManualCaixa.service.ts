@@ -1,29 +1,11 @@
 import axios from "axios";
-const caminho = 'siap/desbloqueioCredito'
+const caminho = 'siap/devolucaoManualCaixa'
 
-type iDesbloquearCredito = (param:string) => Promise<string>
+const getCaixasDoDia = async () => {
+    let { data } = await axios.post(caminho, {
+        call: "getCaixasDoDia",
+    });
+    return data;
+}
 
-
-// const getCredito:   = async () => {
-//     let { data } = await axios.post(caminho, {
-//         call: "getCredito",
-//         param: {
-            
-//         }
-//     });
-//     return data;
-// }
-
-// const desbloquearCredito:iDesbloquearCredito = async(chave: string) => {
-//         let { data } = await axios.post(caminho, {
-//         call: "desbloquearCredito",
-//         param: {
-//             chave
-//         }
-//     });
-//     return data;
-
-// }
-
-
-// export default {getCredito, desbloquearCredito }
+ export default {getCaixasDoDia}

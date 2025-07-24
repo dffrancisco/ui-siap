@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import { state, actions } from "./devolucaoManualCaixa";
+import { state, actions, } from "./devolucaoManualCaixa";
 import DetalhesCaixa from "./components/DetalhesCaixa.vue";
+import { onMounted } from "vue";
+
+onMounted(() => {
+  actions.init();
+});
+
 </script>
 
 <template>
@@ -21,6 +27,7 @@ import DetalhesCaixa from "./components/DetalhesCaixa.vue";
       </detalhesCaixa>
     </v-dialog>
   </v-container>
+
 </template>
 
 <style scoped>
@@ -30,7 +37,7 @@ import DetalhesCaixa from "./components/DetalhesCaixa.vue";
     display: flex;
     gap: 2rem;
     height: 20rem;
-    width: 80%;
+    width: 75%;
     max-width: 100%;
     border-radius: 15px;
     background-color: rgb(255, 255, 255);
