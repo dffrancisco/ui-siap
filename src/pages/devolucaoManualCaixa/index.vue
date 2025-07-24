@@ -12,14 +12,16 @@ onMounted(() => {
 
 <template>
   <v-container class="v-cointainer-pai">
-    <v-card 
-      @click="state.abreDetalhesCaixa = true" 
+    <v-card  
+      v-for="caixa in state.dadosDoCaixa"
+      :key="caixa.COD_FUNCIONARIO"
+      @click="state.abreDetalhesCaixa = true"
       class="cards-filho"
       >
       <v-avatar> 
         <img src="/src/assets/sem_foto.jpg" />
       </v-avatar>
-      <span class="text-h6"> {{ "Pedro Thales" }}</span>
+      <span class="text-h6"> {{  caixa.USUARIO  }}</span>
     </v-card>
 
     <v-dialog v-model="state.abreDetalhesCaixa" max-width="500">
@@ -35,7 +37,10 @@ onMounted(() => {
     position: relative;
     top:3rem;
     display: flex;
-    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
     height: 20rem;
     width: 75%;
     max-width: 100%;

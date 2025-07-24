@@ -6,7 +6,7 @@ import devolucaoManualCaixaService from "./services/devolucaoManualCaixa.service
 
 export const state = reactive({
     abreDetalhesCaixa: false,
-    dadosDoCaixa: <iDadosDoCaixa>{}
+    dadosDoCaixa: [] as iDadosDoCaixa[]
 });
 
 export const actions = {
