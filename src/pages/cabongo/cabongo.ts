@@ -1,42 +1,46 @@
 import { computed, reactive } from "vue"
 import moment from "moment"
 import cabongoService from "./service/cabongo.service"
-import { iParamOrcamento } from "./interface"
 import Swal from "sweetalert2"
+import { iOrcamento, iOrcamentosData } from "./interface"
 
 export const state = reactive({
     modalEscolherDataOpened: false,
     modalOrcamentoOpened: false,
-    dataEnviada: moment().format('DD/MM/YYYY'),
-    sociedades: [],
-    objSociedades: {},
+    data: moment().format('DD/MM/YYYY'),
+    sociedades: <iOrcamento[]>[],
+    objSociedades: <iOrcamento>{},
     loadingConferidos: true,
     loadingPendentes: true,
-    cnpj: "",
-    dataRegex: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/,
-    headers: [
-        { title: "Data", width: "240px" },
-        { title: "Qtd", key: "COD_PRODUTO" },
-    ],
-    lojasComErro: [],
-    dataPendente: [],
+    meuCNPJ: "",
+    lojasComErro: <string[]>[],
+    qtdOrcamentosPorData: <iOrcamentosData[]>[],
 })
 
 const totalPendentes = computed(() => {
     return state.sociedades.reduce((soma, item) => {
-        return soma + item.qtdPendente;
+        return soma + item.qtdOrcamentosPendentes;
     }, 0);
 })
 
 const totalConferidos = computed(() => {
     return state.sociedades.reduce((soma, item) => {
-        return soma + item.qtdConcluida;
+        return soma + item.qtdOrcamentosConferidos;
     }, 0);
+
+
 })
+
+const sociedadesOrdenadas = computed(() =>
+    [...state.sociedades].sort((a, b) => b.qtdOrcamentosConferidos - a.qtdOrcamentosConferidos)
+);
+
+
 
 export const computeds = {
     totalConferidos,
-    totalPendentes
+    totalPendentes,
+    sociedadesOrdenadas
 }
 
 export const actions = {
@@ -46,14 +50,14 @@ export const actions = {
         actions.getOrcamento()
     },
 
-    async onclickCardData(id_sociedade: number, cnpj: string) {
+    async onClickCardPendente(id_sociedade: number, cnpj: string) {
 
         try {
-            state.dataPendente = await cabongoService.getOrcamentoData({
+            state.qtdOrcamentosPorData = await cabongoService.getOrcamentoData({
                 id_sociedade,
                 cnpj: cnpj
             })
-            if (state.dataPendente.length > 1) {
+            if (state.qtdOrcamentosPorData.length > 1) {
                 state.modalEscolherDataOpened = true
             }
             else {
@@ -77,8 +81,8 @@ export const actions = {
 
         state.sociedades.forEach(sociedade => {
             sociedade.loading = true
-            sociedade.qtdPendente = 0
-            sociedade.qtdConcluida = 0
+            sociedade.qtdOrcamentosPendentes = 0
+            sociedade.qtdOrcamentosConferidos = 0
 
             state.objSociedades[sociedade.ID_EMPRESA] = sociedade
         })
@@ -86,22 +90,25 @@ export const actions = {
 
     async getEmpresa() {
         const cnpj = await cabongoService.getEmpresa()
-        state.cnpj = cnpj.CGC_EMPRESA
+        state.meuCNPJ = cnpj.CGC_EMPRESA
     },
 
     async resetarSociedade() {
         state.sociedades.forEach(sociedade => {
             sociedade.loading = true
-            sociedade.qtdConcluida = 0
-            sociedade.qtdPendente = 0
+            sociedade.qtdOrcamentosPendentes = 0
+            sociedade.qtdOrcamentosConferidos = 0
         })
     },
 
     async getOrcamento() {
-        const data = moment(state.dataEnviada, 'DD/MM/YYYY', true);
-        const hoje = moment().startOf('day');
 
-        if (!state.dataRegex.test(state.dataEnviada)) {
+
+        const dataVerificacao = moment(state.data, 'DD/MM/YYYY', true);
+        const hoje = moment().startOf('day');
+        const dataRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/
+
+        if (!dataRegex.test(state.data)) {
             Swal.fire({
                 icon: 'warning',
                 text: 'Por favor, insira uma data válida.',
@@ -109,10 +116,10 @@ export const actions = {
             return
         }
 
-        if (data.isAfter(hoje)) {
+        if (dataVerificacao.isAfter(hoje)) {
             Swal.fire({
                 icon: 'warning',
-                text: 'Por favor, insira uma data válida.',
+                text: 'Por favor, informe uma data igual ou anterior à data de hoje.',
             })
             return
         }
@@ -137,8 +144,8 @@ export const actions = {
                     nomeEmpresa: empresa.FANTASIA,
                     promise: cabongoService.getOrcamento({
                         id_sociedade: empresa.ID_EMPRESA,
-                        cnpj: state.cnpj,
-                        dataOrcamentoPesquisa: moment(state.dataEnviada, 'DD/MM/YYYY').format('YYYY-MM-DD')
+                        cnpj: state.meuCNPJ,
+                        dataOrcamentoPesquisa: moment(state.data, 'DD/MM/YYYY').format('YYYY-MM-DD')
                     })
                 }
 
@@ -152,11 +159,11 @@ export const actions = {
                 if (res.status === "fulfilled") {
 
                     state.objSociedades[res.value.idSociedade].loading = false
-                    state.objSociedades[res.value.idSociedade].qtdPendente = res.value.qtdOrcamentosPendentes
-                    state.objSociedades[res.value.idSociedade].qtdConcluida = res.value.qtdOrcamentosConferidos
+                    state.objSociedades[res.value.idSociedade].qtdOrcamentosPendentes = res.value.qtdOrcamentosPendentes
+                    state.objSociedades[res.value.idSociedade].qtdOrcamentosConferidos = res.value.qtdOrcamentosConferidos
 
                 } else {
-                    const nomeEmpresa = promises[index].nomeEmpresa
+                    const nomeEmpresa: string = promises[index].nomeEmpresa
                     state.lojasComErro.push(nomeEmpresa);
                     console.warn("Falha ao buscar orçamento:", res.reason);
                     state.objSociedades[idSociedade].loading = false

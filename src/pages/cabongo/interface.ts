@@ -8,15 +8,23 @@ export interface iOrcamento {
     idSociedade: number,
     qtdOrcamentosConferidos: number,
     qtdOrcamentosPendentes: number,
+    loading: boolean,
     ID_EMPRESA: number,
-    FANTASIA: string
+    FANTASIA: string,
+    nomeEmpresa: string
 }
 
-export interface iParamOrcamentoData {
-    cnpj: string
+export interface iSociedade {
+    ID_EMPRESA: number,
+    FANTASIA: string
 }
 
 export interface iOrcamentosData {
     DATA: string,
     QTO: number
+}
+
+export interface iParamOrcamentosData {
+    cnpj: string
+    id_sociedade: number,
 }

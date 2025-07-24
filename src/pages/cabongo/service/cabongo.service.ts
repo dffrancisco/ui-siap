@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { iParamOrcamento } from "../interface";
+import { iOrcamento, iOrcamentosData, iParamOrcamento, iParamOrcamentosData, iSociedade } from "../interface";
 
 export async function axiosWithTimeout<T = any>(
     config: AxiosRequestConfig,
@@ -21,17 +21,19 @@ export async function axiosWithTimeout<T = any>(
 
 const caminho = 'siap/cabongo'
 
-type igetOrcamentoFunction = (param: iParamOrcamento) => Promise<void>;
+type igetOrcamentoFunction = (param: iParamOrcamento) => Promise<iOrcamento[]>;
+type igetSociedade = () => Promise<iOrcamento[]>
+type igetEmpresa = () => Promise<{ CGC_EMPRESA: string }>
+type igetOrcamentosData = (param: iParamOrcamentosData) => Promise<iOrcamentosData[]>
 
-const getSociedade = async () => {
+const getSociedade: igetSociedade = async () => {
     let { data } = await axios.post(caminho, {
         call: 'getSociedade',
-
     })
     return data
 }
 
-const getEmpresa = async () => {
+const getEmpresa: igetEmpresa = async () => {
     let { data } = await axios.post(caminho, {
         call: 'getEmpresa',
 
@@ -56,7 +58,7 @@ const getOrcamento: igetOrcamentoFunction = async ({ id_sociedade, cnpj, dataOrc
     return data;
 };
 
-const getOrcamentoData = async ({ id_sociedade, cnpj }) => {
+const getOrcamentoData: igetOrcamentosData = async ({ id_sociedade, cnpj }) => {
     let { data } = await axios.post(caminho, {
         call: 'getOrcamentosData',
         id_sociedade,

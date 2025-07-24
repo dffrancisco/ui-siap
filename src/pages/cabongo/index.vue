@@ -3,6 +3,7 @@ import { onMounted } from "vue";
 import { actions, computeds, state } from "./cabongo";
 import ModalEscolherData from "./components/modalEscolherData.vue";
 import ModalOrcamento from "./components/modalOrcamento.vue";
+import CardOrcamento from "./components/cardOrcamento.vue";
 
 onMounted(async () => {
   actions.init();
@@ -11,7 +12,7 @@ onMounted(async () => {
 
 <template>
   <v-container>
-    <title>Cargos</title>
+    <title>Cabongo</title>
     <v-card
       class="pa-5"
       style="max-width: 900px; margin: 0 auto"
@@ -22,7 +23,7 @@ onMounted(async () => {
             <label class="mr-2">Data</label>
             <v-text-field
               type="data"
-              v-model="state.dataEnviada"
+              v-model="state.data"
             >
             </v-text-field>
           </v-col>
@@ -61,28 +62,14 @@ onMounted(async () => {
           class="container_orcamentos d-flex flex-wrap"
           v-else
         >
-          <div
+          <CardOrcamento
             v-for="sociedade in state.sociedades"
-            class="d-flex ga-3"
-          >
-            <v-card
-              @Click="actions.onclickCardData(sociedade.ID_EMPRESA, state.cnpj)"
-              class="card_orcamento pa-2 d-flex mr-2 mt-2"
-              v-if="sociedade.loading == false && sociedade.qtdPendente > 0"
-            >
-              <label class="mr-2 text-subtitle-2">{{ sociedade.FANTASIA }}</label>
-              <div class="bg_quantidade_orcamento bg-red-darken-2">
-                <div>{{ sociedade.qtdPendente }}</div>
-              </div>
-            </v-card>
-
-            <v-skeleton-loader
-              v-if="sociedade.loading == true"
-              class="mt-4 mr-4"
-              width="120"
-              height="40"
-            />
-          </div>
+            :loading="sociedade.loading"
+            :nome-empresa="sociedade.FANTASIA"
+            :qtd-orcamentos="sociedade.qtdOrcamentosPendentes"
+            color-bg="bg-red-darken-2"
+            @escolher-por-data="actions.onClickCardPendente(sociedade.ID_EMPRESA, state.meuCNPJ)"
+          />
         </div>
 
         <label class="text-h6 mt-3">Orçamentos concluídos ({{ computeds.totalConferidos }})</label>
@@ -90,7 +77,7 @@ onMounted(async () => {
           v-if="state.loadingConferidos == false && computeds.totalConferidos.value == 0"
           class="container_empty"
         >
-          <label class="text-center text-h5">Nenhum orçamento concluído</label>
+          <label class="text-center text-h5">Nenhum orçamento conferido</label>
           <v-icon
             color="orange darken-2"
             size="40"
@@ -102,34 +89,21 @@ onMounted(async () => {
           v-else
           class="container_orcamentos d-flex flex-wrap"
         >
-          <div
+          <CardOrcamento
             v-for="sociedade in state.sociedades"
-            class="d-flex ga-3"
-          >
-            <v-card
-              class="card_orcamento pa-2 d-flex mr-2 mt-2"
-              v-if="sociedade.loading == false && sociedade.qtdConcluida > 0"
-            >
-              <label class="mr-2 text-subtitle-1">{{ sociedade.FANTASIA }}</label>
-              <div class="bg_quantidade_orcamento bg-blue-darken-2">
-                <div>{{ sociedade.qtdConcluida }}</div>
-              </div>
-            </v-card>
-            <v-skeleton-loader
-              v-if="sociedade.loading == true"
-              class="mt-4 mr-4"
-              width="120"
-              height="40"
-            />
-          </div>
+            :loading="sociedade.loading"
+            :nome-empresa="sociedade.FANTASIA"
+            :qtd-orcamentos="sociedade.qtdOrcamentosConferidos"
+            color-bg="bg-blue-darken-2"
+          />
         </div>
         <div
           v-if="state.lojasComErro.length > 0"
           class="d-flex"
         >
-          <label class="text-subtitle-1 color_text_error">Erro ao carregar: </label>
+          <label class="text-subtitle-1 text-red-darken-4">Erro ao carregar: </label>
           <div>
-            <span class="text-subtitle-1 ml-2 color_text_error"> {{ state.lojasComErro.join(", ") }}</span>
+            <span class="text-subtitle-1 ml-2 text-red-darken-4"> {{ state.lojasComErro.join(", ") }}</span>
           </div>
         </div>
       </div>
@@ -140,7 +114,7 @@ onMounted(async () => {
     max-width="500px"
     max-height="500px"
   >
-    <ModalEscolherData :orcamentosData="state.dataPendente" />
+    <ModalEscolherData :orcamentosData="state.qtdOrcamentosPorData" />
   </v-dialog>
   <v-dialog v-model="state.modalOrcamentoOpened">
     <ModalOrcamento />
@@ -154,29 +128,11 @@ onMounted(async () => {
   min-height: 150px;
   padding: 5px;
 }
-.card_orcamento {
-  width: 200px;
-  height: 60px;
-  justify-content: space-between;
-  align-items: center;
-}
-.bg_quantidade_orcamento {
-  display: flex;
-  border-radius: 50px;
-  padding: 0px 5px;
-  height: 25px;
-  width: 25px;
-  align-items: center;
-  justify-content: center;
-}
 .container_empty {
   width: 100%;
   height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.color_text_error {
-  color: red;
 }
 </style>
