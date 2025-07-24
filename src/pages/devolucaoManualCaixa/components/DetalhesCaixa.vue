@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
 import state from "@/store/globalState";
+
+
+
 </script>
 
 <template>
@@ -13,16 +16,16 @@ import state from "@/store/globalState";
     </div>
     <h3>Dados da Devolução</h3>
 
-    <section class="d-flex justify-space-between ">
+    <section class="d-flex  ">
 
-      <div class="d-flex flex-column ga-1 ">
+      <div class=" detalhes-da-devolucao">
         <p> Devolução: <span class="font-weight-bold"> {{  }}</span></p>
         <p> Valor: <span class="font-weight-bold"> {{  }}</span></p>
         <p>Tipo de Pagamento: <span class="font-weight-bold">{{  }}</span></p>
         <p>Nº Orçamento: <span class="font-weight-bold"> {{  }} </span> </p>
       </div>
 
-      <div class="d-flex flex-column ga-1 ">
+      <div class="detalhes-da-devolucao ">
         <p> Data da Devolução: <span class="font-weight-bold"> {{  }}</span> </p>
         <p> Data Orçamento: <span class="font-weight-bold"> {{  }}</span> </p>
         <p> Op.de Caixa: <span class="font-weight-bold"> {{  }}</span> </p>
@@ -50,5 +53,15 @@ import state from "@/store/globalState";
 .input-field {
   max-width: 40%;
 
+}
+
+.detalhes-da-devolucao{
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
 }
 </style>
