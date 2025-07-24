@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
+import state from "@/store/globalState";
 </script>
 
 <template>
@@ -15,16 +16,16 @@ import utils from "@/ts/utils";
     <section class="d-flex justify-space-between ">
 
       <div class="d-flex flex-column ga-1 ">
-        <p> Devolução: <span class="font-weight-bold"> {{ "525" }}</span></p>
-        <p> Valor: <span class="font-weight-bold"> {{ "20000" }}</span></p>
-        <p>Tipo de Pagamento: <span class="font-weight-bold">{{ "Cartão" }}</span></p>
-        <p>Nº Orçamento: <span class="font-weight-bold"> {{ "1234" }} </span> </p>
+        <p> Devolução: <span class="font-weight-bold"> {{  }}</span></p>
+        <p> Valor: <span class="font-weight-bold"> {{  }}</span></p>
+        <p>Tipo de Pagamento: <span class="font-weight-bold">{{  }}</span></p>
+        <p>Nº Orçamento: <span class="font-weight-bold"> {{  }} </span> </p>
       </div>
 
       <div class="d-flex flex-column ga-1 ">
-        <p> Data da Devolução: <span class="font-weight-bold"> {{ "25/08/2025" }}</span> </p>
-        <p> Data Orçamento: <span class="font-weight-bold"> {{ "25/08/2025" }}</span> </p>
-        <p> Op.de Caixa: <span class="font-weight-bold"> {{ "Fulana" }}</span> </p>
+        <p> Data da Devolução: <span class="font-weight-bold"> {{  }}</span> </p>
+        <p> Data Orçamento: <span class="font-weight-bold"> {{  }}</span> </p>
+        <p> Op.de Caixa: <span class="font-weight-bold"> {{  }}</span> </p>
       </div>
 
     </section>

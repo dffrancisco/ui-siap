@@ -1,18 +1,18 @@
-import Swal from "sweetalert2";
 import { reactive } from "vue";
 import utils from "@/ts/utils";
-import desbloqueioCreditoService from "../desbloqueioCredito/services/desbloqueioCredito.service";
+import { iDadosDoCaixa } from "./interfaces";
+import Swal from "sweetalert2";
 import devolucaoManualCaixaService from "./services/devolucaoManualCaixa.service";
 
 export const state = reactive({
     abreDetalhesCaixa: false,
-    caixas:[]
+    dadosDoCaixa: <iDadosDoCaixa>{}
 });
 
 export const actions = {
     async init() {
-       await devolucaoManualCaixaService.getCaixasDoDia()
+      state.dadosDoCaixa = await devolucaoManualCaixaService.getCaixasDoDia()
+     
     },
-
 
 }
