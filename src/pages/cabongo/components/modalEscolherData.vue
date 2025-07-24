@@ -46,4 +46,5 @@ const props = defineProps({
     </v-data-table>
   </v-card>
 </template>
+
 <style scoped></style>

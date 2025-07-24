@@ -66,7 +66,7 @@ onMounted(async () => {
             class="d-flex ga-3"
           >
             <v-card
-              @Click="actions.onclickCardData(sociedade.idSociedade, state.cnpj)"
+              @Click="actions.onclickCardData(sociedade.ID_EMPRESA, state.cnpj)"
               class="card_orcamento pa-2 d-flex mr-2 mt-2"
               v-if="sociedade.loading == false && sociedade.qtdPendente > 0"
             >
@@ -146,6 +146,7 @@ onMounted(async () => {
     <ModalOrcamento />
   </v-dialog>
 </template>
+
 <style scoped>
 .container_orcamentos {
   overflow: auto;
