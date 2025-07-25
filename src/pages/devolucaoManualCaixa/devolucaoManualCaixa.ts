@@ -8,7 +8,7 @@ import { C } from "@fullcalendar/core/internal-common";
 export const state = reactive({
   abreDetalhesCaixa: false,
   dadosDoCaixa: [] as iDadosDoCaixa[],
-  pequisaDevolucao: ""
+  codigoDevolucao: ""
     
 });
 

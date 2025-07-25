@@ -9,8 +9,8 @@ import { actions, state } from "../devolucaoManualCaixa";
   <v-card class="detalhes-caixa">
     <h2>Cód.Devolução</h2>
     <div class="d-flex ga-5">
-      <v-text-field class="input-field" v-model="state.pequisaDevolucao" variant="solo"></v-text-field>
-      <v-btn @click="actions.getDadosDaDevolucao(state.pequisaDevolucao)" icon="mdi-magnify" density="comfortable" class="bg-blue small" size="38">
+      <v-text-field class="input-field" v-model="state.codigoDevolucao" variant="solo"></v-text-field>
+      <v-btn @click="actions.getDadosDaDevolucao(state.codigoDevolucao)" icon="mdi-magnify" density="comfortable" class="bg-blue small" size="38">
       </v-btn>
     </div>
     <h3>Dados da Devolução</h3>
