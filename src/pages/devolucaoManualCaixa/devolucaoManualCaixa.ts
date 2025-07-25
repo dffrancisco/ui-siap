@@ -3,10 +3,13 @@ import utils from "@/ts/utils";
 import { iDadosDoCaixa } from "./interfaces";
 import Swal from "sweetalert2";
 import devolucaoManualCaixaService from "./services/devolucaoManualCaixa.service";
+import { C } from "@fullcalendar/core/internal-common";
 
 export const state = reactive({
-    abreDetalhesCaixa: false,
-    dadosDoCaixa: [] as iDadosDoCaixa[]
+  abreDetalhesCaixa: false,
+  dadosDoCaixa: [] as iDadosDoCaixa[],
+  pequisaDevolucao: ""
+    
 });
 
 export const actions = {
@@ -15,8 +18,9 @@ export const actions = {
      
     },
 
-    getDadosDaDevolucao(){
-      
-    }
+    getDadosDaDevolucao(codigoDevolucao){
+     return console.log(codigoDevolucao)
+    },
+
 
 }

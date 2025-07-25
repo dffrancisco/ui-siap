@@ -8,4 +8,11 @@ const getCaixasDoDia = async () => {
     return data;
 }
 
- export default {getCaixasDoDia}
+const getDadosDaDevolucao = async () =>{
+    let {data} = await axios.post(caminho,{
+        call:"getDadosDaDevolucao",
+    });
+    return data;
+}
+
+ export default {getCaixasDoDia, getDadosDaDevolucao}

@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import state from "@/store/globalState";
-
-
-
+import DetalhesCaixa from "./components/DetalhesCaixa.vue";
+import { onMounted } from "vue";
+import { actions, state } from "../devolucaoManualCaixa";
 </script>
 
 <template>
   <v-card class="detalhes-caixa">
     <h2>Cód.Devolução</h2>
     <div class="d-flex ga-5">
-      <v-text-field class="input-field" variant="solo"></v-text-field>
-      <v-btn @click="" icon="mdi-magnify" density="comfortable" class="bg-blue small" size="38">
+      <v-text-field class="input-field" v-model="state.pequisaDevolucao" variant="solo"></v-text-field>
+      <v-btn @click="actions.getDadosDaDevolucao(state.pequisaDevolucao)" icon="mdi-magnify" density="comfortable" class="bg-blue small" size="38">
       </v-btn>
     </div>
     <h3>Dados da Devolução</h3>

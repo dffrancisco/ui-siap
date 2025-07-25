@@ -37,7 +37,7 @@ onMounted(() => {
     position: relative;
     top:3rem;
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
