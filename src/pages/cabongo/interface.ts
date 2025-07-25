@@ -4,22 +4,29 @@ export interface iParamOrcamento {
     dataOrcamentoPesquisa: string,
 }
 
-export interface iOrcamento {
+export interface iSociedadeTotalizadores {
     idSociedade: number,
     qtdOrcamentosConferidos: number,
     qtdOrcamentosPendentes: number,
-    loading: boolean,
+}
+
+export interface iSociedadeInicial {
     ID_EMPRESA: number,
     FANTASIA: string,
+}
+
+type iSociedadeFinal = iSociedadeTotalizadores & iSociedadeInicial;
+
+export interface iSociedade extends iSociedadeFinal {
+    loading: boolean,
     nomeEmpresa: string
 }
 
-export interface iSociedade {
-    ID_EMPRESA: number,
-    FANTASIA: string
+export interface iSociedadeObj {
+    [idSociedade: number]: iSociedade
 }
 
-export interface iOrcamentosData {
+export interface iOrcamentoData {
     DATA: string,
     QTO: number
 }

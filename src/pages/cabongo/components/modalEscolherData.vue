@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { dataBrasil } from "@/ts/utils";
-import { iOrcamentosData } from "../interface";
+import { iOrcamentoData } from "../interface";
 
 const headers = [
   { title: "Data", align: "center", key: "DATA" },
@@ -10,7 +10,7 @@ const headers = [
 
 const props = defineProps({
   orcamentosData: {
-    type: Array as () => iOrcamentosData[],
+    type: Array as () => iOrcamentoData[],
   },
 });
 </script>

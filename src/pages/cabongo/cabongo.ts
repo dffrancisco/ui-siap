@@ -2,19 +2,19 @@ import { computed, reactive } from "vue"
 import moment from "moment"
 import cabongoService from "./service/cabongo.service"
 import Swal from "sweetalert2"
-import { iOrcamento, iOrcamentosData } from "./interface"
+import { iSociedade, iOrcamentoData, iSociedadeObj } from "./interface"
 
 export const state = reactive({
     modalEscolherDataOpened: false,
     modalOrcamentoOpened: false,
     data: moment().format('DD/MM/YYYY'),
-    sociedades: <iOrcamento[]>[],
-    objSociedades: <iOrcamento>{},
+    sociedades: <iSociedade[]>[],
+    objSociedades: <iSociedadeObj>{},
     loadingConferidos: true,
     loadingPendentes: true,
     meuCNPJ: "",
     lojasComErro: <string[]>[],
-    qtdOrcamentosPorData: <iOrcamentosData[]>[],
+    qtdOrcamentosPorData: <iOrcamentoData[]>[],
 })
 
 const totalPendentes = computed(() => {
@@ -84,14 +84,21 @@ export const actions = {
     },
 
     async getSociedade() {
-        state.sociedades = await cabongoService.getSociedade()
+        let sociedades = await cabongoService.getSociedade()
 
-        state.sociedades.forEach(sociedade => {
-            sociedade.loading = true
-            sociedade.qtdOrcamentosPendentes = 0
-            sociedade.qtdOrcamentosConferidos = 0
+        sociedades.forEach(sociedade => {
+            let sociedadeTratada: iSociedade = {
+                loading: true,
+                qtdOrcamentosConferidos: 0,
+                qtdOrcamentosPendentes: 0,
+                idSociedade: sociedade.ID_EMPRESA,
+                nomeEmpresa: sociedade.FANTASIA,
+                ...sociedade
+            }
 
-            state.objSociedades[sociedade.ID_EMPRESA] = sociedade
+            state.sociedades.push(sociedadeTratada)
+
+            state.objSociedades[sociedade.ID_EMPRESA] = sociedadeTratada
         })
     },
 
@@ -106,8 +113,6 @@ export const actions = {
             sociedade.qtdOrcamentosPendentes = 0
             sociedade.qtdOrcamentosConferidos = 0
         })
-
-        state.sociedades.sort((a, b) => b.qtdOrcamentosConferidos - a.qtdOrcamentosConferidos)
     },
 
     async getOrcamento() {
