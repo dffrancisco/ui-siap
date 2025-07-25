@@ -31,8 +31,13 @@ const totalConferidos = computed(() => {
 
 })
 
-const sociedadesOrdenadas = computed(() =>
+const sociedadesOrdenadasConferidos = computed(() =>
     [...state.sociedades].sort((a, b) => b.qtdOrcamentosConferidos - a.qtdOrcamentosConferidos)
+
+);
+const sociedadesOrdenadasPendentes = computed(() =>
+    [...state.sociedades].sort((a, b) => b.qtdOrcamentosPendentes - a.qtdOrcamentosPendentes)
+
 );
 
 
@@ -40,7 +45,8 @@ const sociedadesOrdenadas = computed(() =>
 export const computeds = {
     totalConferidos,
     totalPendentes,
-    sociedadesOrdenadas
+    sociedadesOrdenadasPendentes,
+    sociedadesOrdenadasConferidos
 }
 
 export const actions = {
@@ -49,6 +55,7 @@ export const actions = {
         await actions.getSociedade()
         actions.getOrcamento()
     },
+
 
     async onClickCardPendente(id_sociedade: number, cnpj: string) {
 
@@ -99,6 +106,8 @@ export const actions = {
             sociedade.qtdOrcamentosPendentes = 0
             sociedade.qtdOrcamentosConferidos = 0
         })
+
+        state.sociedades.sort((a, b) => b.qtdOrcamentosConferidos - a.qtdOrcamentosConferidos)
     },
 
     async getOrcamento() {
@@ -153,6 +162,7 @@ export const actions = {
 
             const resultadoOrcamento = await Promise.allSettled(promises.map(p => p.promise));
 
+
             resultadoOrcamento.forEach((res: any, index) => {
                 const idSociedade = promises[index].id_sociedade;
 
@@ -174,6 +184,7 @@ export const actions = {
         }
         state.loadingConferidos = false;
         state.loadingPendentes = false;
+
     },
 
 

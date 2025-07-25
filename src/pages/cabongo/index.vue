@@ -63,7 +63,7 @@ onMounted(async () => {
           v-else
         >
           <CardOrcamento
-            v-for="sociedade in state.sociedades"
+            v-for="sociedade in computeds.sociedadesOrdenadasPendentes.value"
             :loading="sociedade.loading"
             :nome-empresa="sociedade.FANTASIA"
             :qtd-orcamentos="sociedade.qtdOrcamentosPendentes"
@@ -90,7 +90,7 @@ onMounted(async () => {
           class="container_orcamentos d-flex flex-wrap"
         >
           <CardOrcamento
-            v-for="sociedade in state.sociedades"
+            v-for="sociedade in computeds.sociedadesOrdenadasConferidos.value"
             :loading="sociedade.loading"
             :nome-empresa="sociedade.FANTASIA"
             :qtd-orcamentos="sociedade.qtdOrcamentosConferidos"

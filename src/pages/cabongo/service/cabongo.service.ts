@@ -1,23 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { iOrcamento, iOrcamentosData, iParamOrcamento, iParamOrcamentosData, iSociedade } from "../interface";
 
-export async function axiosWithTimeout<T = any>(
-    config: AxiosRequestConfig,
-    timeout = 5000
-): Promise<AxiosResponse<T>> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-        const response = await axios({
-            ...config,
-            signal: controller.signal,
-        });
-        return response;
-    } finally {
-        clearTimeout(timeoutId);
-    }
-}
 
 const caminho = 'siap/cabongo'
 
@@ -42,9 +25,10 @@ const getEmpresa: igetEmpresa = async () => {
 }
 
 const getOrcamento: igetOrcamentoFunction = async ({ id_sociedade, cnpj, dataOrcamentoPesquisa }) => {
-    let { data } = await axiosWithTimeout({
+    let { data } = await axios({
         method: 'POST',
         url: caminho,
+        timeout: 20000,
         data: {
             call: 'getOrcamentos',
             id_sociedade,
@@ -53,7 +37,7 @@ const getOrcamento: igetOrcamentoFunction = async ({ id_sociedade, cnpj, dataOrc
                 dataOrcamentoPesquisa,
             },
         },
-    }, 5000);
+    });
 
     return data;
 };
