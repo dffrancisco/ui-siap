@@ -3,6 +3,7 @@ import utils from "@/ts/utils";
 import { state, actions, } from "./devolucaoManualCaixa";
 import DetalhesCaixa from "./components/DetalhesCaixa.vue";
 import { onMounted } from "vue";
+import Loading from "@/components/Loading.vue";
 
 onMounted(() => {
   actions.init();
@@ -29,6 +30,7 @@ onMounted(() => {
       </detalhesCaixa>
     </v-dialog>
   </v-container>
+  <Loading :loading="state.loading" />
 
 </template>
 

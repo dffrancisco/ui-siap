@@ -8,9 +8,12 @@ const getCaixasDoDia = async () => {
     return data;
 }
 
-const getDadosDaDevolucao = async () =>{
+const getDadosDaDevolucao = async (idDevolucao) =>{
     let {data} = await axios.post(caminho,{
         call:"getDadosDaDevolucao",
+        param:{
+            idDevolucao
+        }
     });
     return data;
 }

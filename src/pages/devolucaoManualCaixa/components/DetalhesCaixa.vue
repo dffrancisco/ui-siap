@@ -9,8 +9,8 @@ import { actions, state } from "../devolucaoManualCaixa";
   <v-card class="detalhes-caixa">
     <h2>Cód.Devolução</h2>
     <div class="d-flex ga-5">
-      <v-text-field class="input-field" v-model="state.codigoDevolucao" variant="solo"></v-text-field>
-      <v-btn @click="actions.getDadosDaDevolucao(state.codigoDevolucao)" icon="mdi-magnify" density="comfortable" class="bg-blue small" size="38">
+      <v-text-field class="input-field" v-model="state.idDevolucao" variant="solo"></v-text-field>
+      <v-btn @click="actions.getDadosDaDevolucao(state.idDevolucao)" icon="mdi-magnify" density="comfortable" class="bg-blue small" size="38">
       </v-btn>
     </div>
     <h3>Dados da Devolução</h3>
@@ -18,15 +18,15 @@ import { actions, state } from "../devolucaoManualCaixa";
     <section class="d-flex  ">
 
       <div class=" detalhes-da-devolucao">
-        <p> Devolução: <span class="font-weight-bold"> {{  }}</span></p>
-        <p> Valor: <span class="font-weight-bold"> {{  }}</span></p>
-        <p>Tipo de Pagamento: <span class="font-weight-bold">{{  }}</span></p>
-        <p>Nº Orçamento: <span class="font-weight-bold"> {{  }} </span> </p>
+        <p>Devolução: <span class="font-weight-bold" > {{ state.idDevolucao }}</span></p>
+        <p>Valor: <span class="font-weight-bold"> {{ state.dadosDaDevolucao.VALOR }}</span></p>
+        <p>Tipo de Pagamento: <span class="font-weight-bold">{{ state.dadosDaDevolucao.DESCRICAO_PAGAMENTO }}</span></p>
+        <p>Nº Orçamento: <span class="font-weight-bold"> {{ state.dadosDaDevolucao.NUM_ORCAMENTO }} </span> </p>
       </div>
 
       <div class="detalhes-da-devolucao ">
-        <p> Data da Devolução: <span class="font-weight-bold"> {{  }}</span> </p>
-        <p> Data Orçamento: <span class="font-weight-bold"> {{  }}</span> </p>
+        <p> Data da Devolução: <span class="font-weight-bold"> {{new Date(state.dadosDaDevolucao.DATA).toLocaleDateString("pt-BR") }}</span> </p>
+        <p> Data Orçamento: <span class="font-weight-bold"> {{ new Date(state.dadosDaDevolucao.DATA_VENDA).toLocaleDateString("pt-BR")}}</span> </p>
         <p> Op.de Caixa: <span class="font-weight-bold"> {{  }}</span> </p>
       </div>
 
