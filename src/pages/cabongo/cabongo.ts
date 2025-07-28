@@ -3,6 +3,10 @@ import moment from "moment"
 import cabongoService from "./service/cabongo.service"
 import Swal from "sweetalert2"
 import { iOrcamento, iOrcamentosData } from "./interface"
+import { useRoute } from "vue-router";
+import router from "@/router"
+
+const route = useRoute();
 
 export const state = reactive({
     modalEscolherDataOpened: false,
@@ -68,7 +72,7 @@ export const actions = {
                 state.modalEscolherDataOpened = true
             }
             else {
-                state.modalOrcamentoOpened = true
+                router.push("cabongoOrcamento");
             }
 
 
