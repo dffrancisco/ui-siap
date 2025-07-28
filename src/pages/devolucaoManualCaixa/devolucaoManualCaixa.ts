@@ -11,9 +11,6 @@ export const state = reactive({
   dadosDaDevolucao: <iDadosDaDevolucao> {} ,
   loading: false,
   caixaSelecionado: <iCaixa>{} ,
-
-
-
 });
 
 export const actions = {
@@ -40,8 +37,17 @@ export const actions = {
   },
 
   abreModal(caixa:iCaixa){
+    state.idDevolucao = ''
+    state.dadosDaDevolucao = <iDadosDaDevolucao> {}
     state.abreDetalhesCaixa = true
     state.caixaSelecionado = caixa    
+  },
+
+  fechaModal(){
+    state.abreDetalhesCaixa = false;
+    state.idDevolucao = ''
+    state.dadosDaDevolucao = <iDadosDaDevolucao> {}
+
   }
 
       // onClickConfirmaDesbloqueio() {

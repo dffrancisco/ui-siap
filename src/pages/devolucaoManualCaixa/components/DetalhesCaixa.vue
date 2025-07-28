@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import DetalhesCaixa from "./components/DetalhesCaixa.vue";
-import { onMounted } from "vue";
 import { actions, state } from "../devolucaoManualCaixa";
 </script>
 
@@ -15,25 +13,25 @@ import { actions, state } from "../devolucaoManualCaixa";
     </div>
     <h3>Dados da Devolução</h3>
 
-    <section class="d-flex  ">
+    <section class="d-flex">
 
       <div class=" detalhes-da-devolucao">
         <p>Devolução: <span class="font-weight-bold" > {{ state.idDevolucao }}</span></p>
-        <p>Valor: <span class="font-weight-bold"> {{ state.dadosDaDevolucao.VALOR }}</span></p>
-        <p>Tipo de Pagamento: <span class="font-weight-bold">{{ state.dadosDaDevolucao.DESCRICAO_PAGAMENTO}}</span></p>
+        <p>Valor: <span class="font-weight-bold" v-if="state.dadosDaDevolucao.VALOR" > {{ utils.formatValor(state.dadosDaDevolucao.VALOR) }}</span></p>
+        <p>Tipo de Pagamento: <span class="font-weight-bold" >{{state.dadosDaDevolucao.DESCRICAO_PAGAMENTO}}</span></p>
         <p>Nº Orçamento: <span class="font-weight-bold"> {{ state.dadosDaDevolucao.NUM_ORCAMENTO }} </span> </p>
       </div>
 
       <div class="detalhes-da-devolucao ">
-        <p> Data da Devolução: <span class="font-weight-bold"> {{new Date(state.dadosDaDevolucao.DATA).toLocaleDateString("pt-BR") }}</span> </p>
-        <p> Data Orçamento: <span class="font-weight-bold"> {{ new Date(state.dadosDaDevolucao.DATA_VENDA).toLocaleDateString("pt-BR")}}</span> </p>
+        <p> Data da Devolução: <span class="font-weight-bold" v-if="state.dadosDaDevolucao.DATA" > {{new Date(state.dadosDaDevolucao.DATA).toLocaleDateString("pt-BR") }}</span> </p>
+        <p> Data Orçamento: <span class="font-weight-bold" v-if="state.dadosDaDevolucao.DATA_VENDA" > {{ new Date(state.dadosDaDevolucao.DATA_VENDA).toLocaleDateString("pt-BR")}}</span> </p>
         <p> Op.de Caixa: <span class="font-weight-bold"> {{ state.caixaSelecionado.USUARIO }}</span> </p>
       </div>
 
     </section>
 
     <div class="d-flex justify-end ga-5">
-      <v-btn class="bg-red "> cancelar </v-btn>
+      <v-btn @click="actions.fechaModal()" class="bg-red "> cancelar </v-btn>
       <v-btn class="bg-blue"> salvar</v-btn>
     </div>
   </v-card>
