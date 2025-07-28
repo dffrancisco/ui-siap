@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
 import { actions, state } from "../devolucaoManualCaixa";
+import { stat } from "fs";
 </script>
 
 <template>
@@ -16,7 +17,7 @@ import { actions, state } from "../devolucaoManualCaixa";
     <section class="d-flex">
 
       <div class=" detalhes-da-devolucao">
-        <p>Devolução: <span class="font-weight-bold" > {{ state.idDevolucao }}</span></p>
+        <p>Devolução: <span class="font-weight-bold" > {{ state.devolucao}}</span></p>
         <p>Valor: <span class="font-weight-bold" v-if="state.dadosDaDevolucao.VALOR" > {{ utils.formatValor(state.dadosDaDevolucao.VALOR) }}</span></p>
         <p>Tipo de Pagamento: <span class="font-weight-bold" >{{state.dadosDaDevolucao.DESCRICAO_PAGAMENTO}}</span></p>
         <p>Nº Orçamento: <span class="font-weight-bold"> {{ state.dadosDaDevolucao.NUM_ORCAMENTO }} </span> </p>

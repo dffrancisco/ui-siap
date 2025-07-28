@@ -5,12 +5,13 @@ import Swal from "sweetalert2";
 import devolucaoManualCaixaService from "./services/devolucaoManualCaixa.service";
 
 export const state = reactive({
-  abreDetalhesCaixa: false,
-  dadosDoCaixa: [] as iDadosDoCaixa[],
-  idDevolucao: "",
   dadosDaDevolucao: <iDadosDaDevolucao> {} ,
-  loading: false,
+  dadosDoCaixa: [] as iDadosDoCaixa[],
   caixaSelecionado: <iCaixa>{} ,
+  idDevolucao: "",
+  abreDetalhesCaixa: false,
+  loading: false,
+  devolucao: ""
 });
 
 export const actions = {
@@ -30,6 +31,7 @@ export const actions = {
     }
       try {
         state.dadosDaDevolucao = await devolucaoManualCaixaService.getDadosDaDevolucao(codigoDevolucao)
+        state.devolucao = state.idDevolucao;
         return alert('dados encontrados')
       } catch {
         alert('dados não encontrados')
@@ -37,7 +39,8 @@ export const actions = {
   },
 
   abreModal(caixa:iCaixa){
-    state.idDevolucao = ''
+    state.devolucao = ''
+    state.idDevolucao = ""
     state.dadosDaDevolucao = <iDadosDaDevolucao> {}
     state.abreDetalhesCaixa = true
     state.caixaSelecionado = caixa    
@@ -45,8 +48,9 @@ export const actions = {
 
   fechaModal(){
     state.abreDetalhesCaixa = false;
-    state.idDevolucao = ''
+    state.devolucao = ''
     state.dadosDaDevolucao = <iDadosDaDevolucao> {}
+    state.idDevolucao = ""
 
   }
 
