@@ -16,7 +16,7 @@ onMounted(() => {
     <v-card  
       v-for="caixa in state.dadosDoCaixa"
       :key="caixa.COD_FUNCIONARIO"
-      @click="state.abreDetalhesCaixa = true"
+      @click="actions.abreModal(caixa)"
       class="cards-filho"
       >
       <v-avatar> 

@@ -20,14 +20,14 @@ import { actions, state } from "../devolucaoManualCaixa";
       <div class=" detalhes-da-devolucao">
         <p>Devolução: <span class="font-weight-bold" > {{ state.idDevolucao }}</span></p>
         <p>Valor: <span class="font-weight-bold"> {{ state.dadosDaDevolucao.VALOR }}</span></p>
-        <p>Tipo de Pagamento: <span class="font-weight-bold">{{ state.dadosDaDevolucao.DESCRICAO_PAGAMENTO }}</span></p>
+        <p>Tipo de Pagamento: <span class="font-weight-bold">{{ state.dadosDaDevolucao.DESCRICAO_PAGAMENTO}}</span></p>
         <p>Nº Orçamento: <span class="font-weight-bold"> {{ state.dadosDaDevolucao.NUM_ORCAMENTO }} </span> </p>
       </div>
 
       <div class="detalhes-da-devolucao ">
         <p> Data da Devolução: <span class="font-weight-bold"> {{new Date(state.dadosDaDevolucao.DATA).toLocaleDateString("pt-BR") }}</span> </p>
         <p> Data Orçamento: <span class="font-weight-bold"> {{ new Date(state.dadosDaDevolucao.DATA_VENDA).toLocaleDateString("pt-BR")}}</span> </p>
-        <p> Op.de Caixa: <span class="font-weight-bold"> {{  }}</span> </p>
+        <p> Op.de Caixa: <span class="font-weight-bold"> {{ state.caixaSelecionado.USUARIO }}</span> </p>
       </div>
 
     </section>

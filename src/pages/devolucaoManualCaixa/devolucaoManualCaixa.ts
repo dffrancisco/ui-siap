@@ -1,6 +1,6 @@
 import { reactive } from "vue";
 import utils from "@/ts/utils";
-import { iDadosDaDevolucao, iDadosDoCaixa } from "./interfaces";
+import { iDadosDaDevolucao, iDadosDoCaixa, iCaixa } from "./interfaces";
 import Swal from "sweetalert2";
 import devolucaoManualCaixaService from "./services/devolucaoManualCaixa.service";
 
@@ -8,8 +8,10 @@ export const state = reactive({
   abreDetalhesCaixa: false,
   dadosDoCaixa: [] as iDadosDoCaixa[],
   idDevolucao: "",
-  dadosDaDevolucao: <iDadosDaDevolucao> {},
+  dadosDaDevolucao: <iDadosDaDevolucao> {} ,
   loading: false,
+  caixaSelecionado: <iCaixa>{} ,
+
 
 
 });
@@ -17,6 +19,7 @@ export const state = reactive({
 export const actions = {
   async init() {
     state.dadosDoCaixa = await devolucaoManualCaixaService.getCaixasDoDia()
+    
   },
 
   async getDadosDaDevolucao(codigoDevolucao) {
@@ -35,6 +38,11 @@ export const actions = {
         alert('dados não encontrados')
       }
   },
+
+  abreModal(caixa:iCaixa){
+    state.abreDetalhesCaixa = true
+    state.caixaSelecionado = caixa    
+  }
 
       // onClickConfirmaDesbloqueio() {
       //     utils.confirmaCodigo({

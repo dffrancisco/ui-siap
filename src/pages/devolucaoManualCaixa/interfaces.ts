@@ -8,10 +8,14 @@ export interface iDadosDoCaixa {
 
 export interface iDadosDaDevolucao {
   BLOQUEADO: string;
+  ID_DEVOLUCAO: number;
+  VALOR: number;
+  DESCRICAO_PAGAMENTO: string;
+  NUM_ORCAMENTO: number;
   DATA: string;
   DATA_VENDA: string;
-  DESCRICAO_PAGAMENTO: string;
-  ID_DEVOLUCAO: number;
-  NUM_ORCAMENTO: number;
-  VALOR: number;
+}
+
+export interface iCaixa{
+  USUARIO: string
 }
