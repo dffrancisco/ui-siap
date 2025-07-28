@@ -1,5 +1,7 @@
 import axios from "axios";
+import { iDadosDaDevolucao, iDadosDoCaixa } from "../interfaces";
 const caminho = 'siap/devolucaoManualCaixa'
+type iGetDadosDaDevolucao = (param:string) => Promise <iDadosDaDevolucao[]>
 
 const getCaixasDoDia = async () => {
     let { data } = await axios.post(caminho, {
@@ -8,7 +10,7 @@ const getCaixasDoDia = async () => {
     return data;
 }
 
-const getDadosDaDevolucao = async (idDevolucao) =>{
+const getDadosDaDevolucao:iGetDadosDaDevolucao = async (idDevolucao) =>{
     let {data} = await axios.post(caminho,{
         call:"getDadosDaDevolucao",
         param:{
