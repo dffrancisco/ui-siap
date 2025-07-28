@@ -13,17 +13,12 @@ onMounted(() => {
 
 <template>
   <v-container class="v-cointainer-pai">
-    <v-card  
-      v-for="caixa in state.dadosDoCaixa"
-      :key="caixa.COD_FUNCIONARIO"
-      @click="actions.abreModal(caixa)"
-      
-      class="cards-filho"
-      >
-      <v-avatar> 
+    <v-card v-for="caixa in state.dadosDoCaixa" :key="caixa.COD_FUNCIONARIO" @click="actions.abreModal(caixa)"
+      class="cards-filho">
+      <v-avatar>
         <img src="/src/assets/sem_foto.jpg" />
       </v-avatar>
-      <span class="text-h6"> {{  caixa.USUARIO  }}</span>
+      <span class="text-h6"> {{ caixa.USUARIO }}</span>
     </v-card>
 
     <v-dialog v-model="state.abreDetalhesCaixa" max-width="500">
@@ -36,36 +31,34 @@ onMounted(() => {
 </template>
 
 <style scoped>
-  .v-cointainer-pai {
-    position: relative;
-    top:3rem;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    height: 20rem;
-    width: 75%;
-    max-width: 100%;
-    border-radius: 15px;
-    background-color: rgb(255, 255, 255);
-    box-shadow: 1px 1px 6px 1px;
-  }
+.v-cointainer-pai {
+  position: relative;
+  top: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  height: 30rem;
+  width: 90%;
+  max-width: 100%;
+  border-radius: 15px;
+  background-color: rgb(255, 255, 255);
+}
 
-  .cards-filho {
-    max-width: 100%;
-    width: 15rem;
-    height: 4rem;
-    padding: 2px;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-  }
+.cards-filho {
+  max-width: 100%;
+  width: 17rem;
+  height: 4rem;
+  padding: 2px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
 
-  img {
-    width: 5rem;
-  }
+img {
+  width: 5rem;
+}
+
 </style>
-
-
