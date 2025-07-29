@@ -13,14 +13,18 @@ onMounted(() => {
 
 <template>
   <v-container class="v-cointainer-pai">
-    <v-card v-for="caixa in state.dadosDoCaixa" :key="caixa.COD_FUNCIONARIO" @click="actions.abreModal(caixa)"
-      class="cards-filho">
-      <v-avatar>
-        <img src="/src/assets/sem_foto.jpg" />
-      </v-avatar>
-      <span class="text-h6"> {{ caixa.USUARIO }}</span>
-    </v-card>
-
+    <v-row>
+      <v-col v-for="caixa in state.dadosDoCaixa" :key="caixa.COD_FUNCIONARIO" @click="actions.abreModal(caixa)" cols="3">
+        <v-card 
+        class="cards-filho">
+        <v-avatar>
+          <img src="/src/assets/sem_foto.jpg" />
+        </v-avatar>
+        <span class="text-h6"> {{ caixa.USUARIO }}</span>
+      </v-card>
+    </v-col>
+  </v-row>
+    
     <v-dialog v-model="state.abreDetalhesCaixa" max-width="500">
       <detalhesCaixa>
       </detalhesCaixa>
