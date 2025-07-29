@@ -5,9 +5,9 @@ import Swal from "sweetalert2";
 import devolucaoManualCaixaService from "./services/devolucaoManualCaixa.service";
 
 export const state = reactive({
-  dadosDaDevolucao: <iDadosDaDevolucao> {} ,
+  dadosDaDevolucao: <iDadosDaDevolucao>{},
   dadosDoCaixa: [] as iDadosDoCaixa[],
-  caixaSelecionado: <iCaixa>{} ,
+  caixaSelecionado: <iCaixa>{},
   idDevolucao: "",
   abreDetalhesCaixa: false,
   loading: false,
@@ -17,67 +17,75 @@ export const state = reactive({
 export const actions = {
   async init() {
     state.dadosDoCaixa = await devolucaoManualCaixaService.getCaixasDoDia()
-    
+
   },
 
   async getDadosDaDevolucao(codigoDevolucao) {
     if (!state.idDevolucao || state.idDevolucao.length !== 5) {
       Swal.fire({
-        icon:  "warning",
+        icon: "warning",
         title: "código de devolução inválida",
-        text:  "certifique-se de que o campo não está em branco.",
+        text: "certifique-se de que o campo não está em branco.",
       });
       return
     }
-      try {
-        state.dadosDaDevolucao = await devolucaoManualCaixaService.getDadosDaDevolucao(codigoDevolucao)
-        state.devolucao = state.idDevolucao;
-        return alert('dados encontrados')
-      } catch {
-        alert('dados não encontrados')
-      }
+    try {
+      state.loading = true
+      state.dadosDaDevolucao = await devolucaoManualCaixaService.getDadosDaDevolucao(codigoDevolucao)
+      state.devolucao = state.idDevolucao;
+      state.loading = false
+      return
+    } catch {
+      Swal.fire({
+        icon: "error",
+        title: "devolução não bloqueada",
+        
+      });
+      state.loading = false
+
+    }
   },
 
-  abreModal(caixa:iCaixa){
+  abreModal(caixa: iCaixa) {
     state.devolucao = ''
     state.idDevolucao = ""
-    state.dadosDaDevolucao = <iDadosDaDevolucao> {}
+    state.dadosDaDevolucao = <iDadosDaDevolucao>{}
     state.abreDetalhesCaixa = true
-    state.caixaSelecionado = caixa    
+    state.caixaSelecionado = caixa
   },
 
-  fechaModal(){
+  fechaModal() {
     state.abreDetalhesCaixa = false;
     state.devolucao = ''
-    state.dadosDaDevolucao = <iDadosDaDevolucao> {}
+    state.dadosDaDevolucao = <iDadosDaDevolucao>{}
     state.idDevolucao = ""
 
   }
 
-      // onClickConfirmaDesbloqueio() {
-      //     utils.confirmaCodigo({
-      //         msg: `Deseja liberar o crédito ${}?`,
-      //         theme: "xModal-bublue",
-      //         call: async () => {
-      //             try {
-      //                 state.loading = true;
-      //                 Swal.fire({
-      //                     icon: "success",
-      //                     title: "Crédito desbloqueado",
-      //                 });
-      //                 state.= "";
-      //                 state. = {};
-      //             } catch (error) {
-  
-      //                 Swal.fire({
-      //                     icon: "error",
-      //                     title: "Erro ao processar sua solicitação.",
-      //                 });
-      //             } finally {
-      //                 state.loading = false;
-      //             }
-      //         },
-      //     });
-      // },
+  // onClickConfirmaDesbloqueio() {
+  //     utils.confirmaCodigo({
+  //         msg: `Deseja liberar o crédito ${}?`,
+  //         theme: "xModal-bublue",
+  //         call: async () => {
+  //             try {
+  //                 state.loading = true;
+  //                 Swal.fire({
+  //                     icon: "success",
+  //                     title: "Crédito desbloqueado",
+  //                 });
+  //                 state.= "";
+  //                 state. = {};
+  //             } catch (error) {
+
+  //                 Swal.fire({
+  //                     icon: "error",
+  //                     title: "Erro ao processar sua solicitação.",
+  //                 });
+  //             } finally {
+  //                 state.loading = false;
+  //             }
+  //         },
+  //     });
+  // },
 
 }

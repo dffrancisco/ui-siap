@@ -59,6 +59,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+  cursor: pointer;
 }
 
 img {
