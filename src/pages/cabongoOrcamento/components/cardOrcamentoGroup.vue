@@ -1,10 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { state } from "../cabongoOrcamento";
+</script>
 <template>
   <v-card class="container d-flex flex-column ga-3">
+    <label>{{ state.orcamentosLoja }}</label>
     <div class="d-flex justify-space-between w-100">
       <div class="d-flex ga-5">
         <div>
-          <span><v-icon>mdi-package-variant-closed</v-icon> #15323</span>
+          <span><v-icon>mdi-package-variant-closed</v-icon> #{{ state.orcamentosLoja }}</span>
         </div>
         <span class="status_orcamento">NÂO CONFERIDO</span>
       </div>

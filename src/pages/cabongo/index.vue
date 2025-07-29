@@ -68,7 +68,7 @@ onMounted(async () => {
             :nome-empresa="sociedade.FANTASIA"
             :qtd-orcamentos="sociedade.qtdOrcamentosPendentes"
             color-bg="bg-red-darken-2"
-            @escolher-por-data="actions.onClickCardPendente(sociedade.ID_EMPRESA, state.meuCNPJ)"
+            @clicou-no-card="actions.onClickCardPendente(sociedade.ID_EMPRESA, state.meuCNPJ)"
           />
         </div>
 
@@ -94,6 +94,7 @@ onMounted(async () => {
             :loading="sociedade.loading"
             :nome-empresa="sociedade.FANTASIA"
             :qtd-orcamentos="sociedade.qtdOrcamentosConferidos"
+            @clicou-no-card="actions.onClickCardConcluido(sociedade.ID_EMPRESA, state.meuCNPJ)"
             color-bg="bg-blue-darken-2"
           />
         </div>

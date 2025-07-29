@@ -60,6 +60,16 @@ export const actions = {
         actions.getOrcamento()
     },
 
+    redirectToCabongoOrcamentos: (id_sociedade: number, meuCNPJ, data: string) => {
+        router.push({
+            name: "cabongoOrcamento",
+            query: {
+                id_sociedade,
+                meuCNPJ,
+                data
+            },
+        });
+    },
 
     async onClickCardPendente(id_sociedade: number, cnpj: string) {
 
@@ -72,7 +82,7 @@ export const actions = {
                 state.modalEscolherDataOpened = true
             }
             else {
-                router.push("cabongoOrcamento");
+                actions.redirectToCabongoOrcamentos(id_sociedade, state.meuCNPJ, state.qtdOrcamentosPorData[0].DATA)
             }
 
 
@@ -85,6 +95,10 @@ export const actions = {
 
         }
 
+    },
+
+    onClickCardConcluido(id_sociedade: number, cnpj: string) {
+        actions.redirectToCabongoOrcamentos(id_sociedade, state.meuCNPJ, state.data)
     },
 
     async getSociedade() {
