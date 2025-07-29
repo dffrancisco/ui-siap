@@ -62,16 +62,21 @@ export const actions = {
 
   },
 
-  onClickLancamento() {
+  // trabalhando essa parte
+
+  async onClickLancamento(idDevolucao: string) {
+    const paramIdDevolucao = idDevolucao
+
     state.abreDetalhesCaixa = false
-      utils.confirmaCodigo({
-        
-          msg: `Deseja lançar a devolução ${state.devolucao} no valor de 
-          ${utils.formatValor(state.dadosDaDevolucao.VALOR)} no caixa de ${state.caixaSelecionado.USUARIO}?`,
-          theme: "xModal-bublue",
-          call: async () => {
+    utils.confirmaCodigo({
+      
+      msg: `Deseja lançar a devolução ${state.devolucao} no valor de 
+      ${utils.formatValor(state.dadosDaDevolucao.VALOR)} no caixa de ${state.caixaSelecionado.USUARIO}?`,
+      theme: "xModal-bublue",
+      call: async () => {
               try {
-                  state.loading = true;
+                state.loading = true;
+                await devolucaoManualCaixaService.onClickLancamento(paramIdDevolucao)
                   Swal.fire({
                       icon: "success",
                       title: "Crédito desbloqueado",

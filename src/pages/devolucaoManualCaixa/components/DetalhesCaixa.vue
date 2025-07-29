@@ -35,7 +35,7 @@ import { stat } from "fs";
       <v-btn @click="actions.fechaModal()" class="bg-red "> cancelar </v-btn>
       <v-btn 
       class="bg-blue" 
-      @click="actions.onClickLancamento"
+      @click="actions.onClickLancamento(state.idDevolucao)"
       :disabled="!state.dadosDaDevolucao.NUM_ORCAMENTO" 
       > salvar</v-btn>
     </div>
