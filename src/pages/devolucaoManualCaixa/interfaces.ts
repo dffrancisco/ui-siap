@@ -17,5 +17,7 @@ export interface iDadosDaDevolucao {
 }
 
 export interface iCaixa{
-  USUARIO: string
+  USUARIO: string;
+  COD_FUNCIONARIO: number;
+  ID_ABERTURA_CAIXA: number;
 }
