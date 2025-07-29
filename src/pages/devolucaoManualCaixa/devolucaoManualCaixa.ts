@@ -63,7 +63,9 @@ export const actions = {
   },
 
   onClickLancamento() {
+    state.abreDetalhesCaixa = false
       utils.confirmaCodigo({
+        
           msg: `Deseja lançar a devolução ${state.devolucao} no valor de 
           ${utils.formatValor(state.dadosDaDevolucao.VALOR)} no caixa de ${state.caixaSelecionado.USUARIO}?`,
           theme: "xModal-bublue",
@@ -74,8 +76,7 @@ export const actions = {
                       icon: "success",
                       title: "Crédito desbloqueado",
                   });
-                  // state.= "";
-                  // state. = {};
+
               } catch (error) {
 
                   Swal.fire({
