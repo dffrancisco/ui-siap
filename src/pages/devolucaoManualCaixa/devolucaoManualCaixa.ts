@@ -39,7 +39,7 @@ export const actions = {
       Swal.fire({
         icon: "error",
         title: "devolução não bloqueada",
-        
+
       });
       state.loading = false
 
@@ -60,32 +60,33 @@ export const actions = {
     state.dadosDaDevolucao = <iDadosDaDevolucao>{}
     state.idDevolucao = ""
 
-  }
+  },
 
-  // onClickConfirmaDesbloqueio() {
-  //     utils.confirmaCodigo({
-  //         msg: `Deseja liberar o crédito ${}?`,
-  //         theme: "xModal-bublue",
-  //         call: async () => {
-  //             try {
-  //                 state.loading = true;
-  //                 Swal.fire({
-  //                     icon: "success",
-  //                     title: "Crédito desbloqueado",
-  //                 });
-  //                 state.= "";
-  //                 state. = {};
-  //             } catch (error) {
+  onClickLancamento() {
+      utils.confirmaCodigo({
+          msg: `Deseja lançar a devolução ${state.devolucao} no valor de 
+          ${utils.formatValor(state.dadosDaDevolucao.VALOR)} no caixa de ${state.caixaSelecionado.USUARIO}?`,
+          theme: "xModal-bublue",
+          call: async () => {
+              try {
+                  state.loading = true;
+                  Swal.fire({
+                      icon: "success",
+                      title: "Crédito desbloqueado",
+                  });
+                  // state.= "";
+                  // state. = {};
+              } catch (error) {
 
-  //                 Swal.fire({
-  //                     icon: "error",
-  //                     title: "Erro ao processar sua solicitação.",
-  //                 });
-  //             } finally {
-  //                 state.loading = false;
-  //             }
-  //         },
-  //     });
-  // },
+                  Swal.fire({
+                      icon: "error",
+                      title: "Erro ao processar sua solicitação.",
+                  });
+              } finally {
+                  state.loading = false;
+              }
+          },
+      });
+  },
 
 }

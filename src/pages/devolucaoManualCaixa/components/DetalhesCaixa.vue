@@ -33,7 +33,11 @@ import { stat } from "fs";
 
     <div class="d-flex justify-end ga-5">
       <v-btn @click="actions.fechaModal()" class="bg-red "> cancelar </v-btn>
-      <v-btn class="bg-blue"> salvar</v-btn>
+      <v-btn 
+      class="bg-blue" 
+      @click="actions.onClickLancamento"
+      :disabled="!state.dadosDaDevolucao.NUM_ORCAMENTO" 
+      > salvar</v-btn>
     </div>
   </v-card>
 </template>
