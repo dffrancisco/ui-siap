@@ -62,8 +62,6 @@ export const actions = {
 
   },
 
-  // trabalhando essa parte
-
   async onClickLancamento(idDevolucao: string) {
     const idDevolucaoSql = idDevolucao
     const codCaixa = state.caixaSelecionado.COD_FUNCIONARIO
