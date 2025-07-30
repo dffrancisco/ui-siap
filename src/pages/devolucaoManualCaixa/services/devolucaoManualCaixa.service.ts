@@ -20,11 +20,11 @@ const getDadosDaDevolucao: iGetDadosDaDevolucao = async (idDevolucao:string) => 
     return data;
 }
 
-const onClickLancamento = async (codCaixa, idAberturaCaixa, paramIdDevolucao,caixa) => {
+const onClickLancamento = async (codCaixa, idAberturaCaixa, idDevolucaoSql,caixa) => {
     let { data } = await axios.post(caminho, {
         call: "onClickLancamento",
         param: {
-            codCaixa, idAberturaCaixa, paramIdDevolucao,caixa
+            codCaixa, idAberturaCaixa,idDevolucaoSql,caixa
         }
     });
     return data;

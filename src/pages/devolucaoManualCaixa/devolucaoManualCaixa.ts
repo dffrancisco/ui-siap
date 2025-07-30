@@ -65,12 +65,12 @@ export const actions = {
   // trabalhando essa parte
 
   async onClickLancamento(idDevolucao: string) {
-    const paramIdDevolucao = idDevolucao
+    const idDevolucaoSql = idDevolucao
     const codCaixa = state.caixaSelecionado.COD_FUNCIONARIO
     const idAberturaCaixa =   state.caixaSelecionado.ID_ABERTURA_CAIXA
     const caixa = state.caixaSelecionado.USUARIO
     
-    console.log(codCaixa, idAberturaCaixa, paramIdDevolucao, caixa)
+    console.log(codCaixa, idAberturaCaixa, idDevolucaoSql, caixa)
 
     state.abreDetalhesCaixa = false
     utils.confirmaCodigo({
@@ -81,7 +81,7 @@ export const actions = {
       call: async () => {
               try {
                 state.loading = true;
-                await devolucaoManualCaixaService.onClickLancamento(codCaixa, idAberturaCaixa, paramIdDevolucao, caixa)
+                await devolucaoManualCaixaService.onClickLancamento(codCaixa, idAberturaCaixa, idDevolucaoSql, caixa)
                   Swal.fire({
                       icon: "success",
                       title: "Crédito desbloqueado",
