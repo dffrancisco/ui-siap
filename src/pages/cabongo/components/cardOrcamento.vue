@@ -7,14 +7,14 @@ const props = defineProps<{
   colorBg: string;
 }>();
 
-const emit = defineEmits(["clicouNoCard"]);
+const emit = defineEmits(["escolherPorData"]);
 </script>
 <template>
   <div class="d-flex ga-3">
     <v-card
       class="card_orcamento pa-2 d-flex mr-2 mt-2"
       v-if="props.loading == false && props.qtdOrcamentos > 0"
-      @Click="emit('clicouNoCard')"
+      @click="emit('escolherPorData')"
     >
       <label class="mr-2 text-subtitle-2">{{ props.nomeEmpresa }}</label>
       <div
@@ -27,9 +27,9 @@ const emit = defineEmits(["clicouNoCard"]);
 
     <v-skeleton-loader
       v-if="props.loading == true"
-      class="mt-4 mr-4"
-      width="120"
-      height="40"
+      class="mr-2 mt-2"
+      width="200"
+      height="60"
     />
   </div>
 </template>

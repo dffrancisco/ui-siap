@@ -1,13 +1,13 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { iOrcamento, iOrcamentosData, iParamOrcamento, iParamOrcamentosData, iSociedade } from "../interface";
+import axios from "axios";
+import { iOrcamentoData, iParamOrcamento, iParamOrcamentosData, iSociedadeInicial, iSociedadeTotalizadores } from "../interface";
 
 
 const caminho = 'siap/cabongo'
 
-type igetOrcamentoFunction = (param: iParamOrcamento) => Promise<iOrcamento[]>;
-type igetSociedade = () => Promise<iOrcamento[]>
+type igetOrcamentoFunction = (param: iParamOrcamento) => Promise<iSociedadeTotalizadores[]>;
+type igetSociedade = () => Promise<iSociedadeInicial[]>
 type igetEmpresa = () => Promise<{ CGC_EMPRESA: string }>
-type igetOrcamentosData = (param: iParamOrcamentosData) => Promise<iOrcamentosData[]>
+type igetOrcamentosData = (param: iParamOrcamentosData) => Promise<iOrcamentoData[]>
 
 const getSociedade: igetSociedade = async () => {
     let { data } = await axios.post(caminho, {
