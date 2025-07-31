@@ -1,5 +1,6 @@
 export interface iDadosDoCaixa {
   COD_FUNCIONARIO: number;
+  CPF: string,
   DATA_ABERTURA: string;
   HORA_ABERTURA: string;
   ID_ABERTURA_CAIXA: number;
@@ -16,7 +17,7 @@ export interface iDadosDaDevolucao {
   DATA_VENDA: string;
 }
 
-export interface iCaixa{
+export interface iCaixa {
   USUARIO: string;
   COD_FUNCIONARIO: number;
   ID_ABERTURA_CAIXA: number;

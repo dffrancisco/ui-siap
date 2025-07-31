@@ -23,9 +23,8 @@ onMounted(() => {
           <v-avatar size="60">
             <img
               class="w-100"
-              src="`https://www.reallatas.com.br/foto_funcionarios/${funcionario.CPF}.jpg`"
+              :src="`https://www.reallatas.com.br/foto_funcionarios/${caixa.CPF}.jpg`"
             />
-            <!-- src="`https://www.reallatas.com.br/foto_funcionarios/${funcionario.CPF}.jpg`" -->
           </v-avatar>
           <span class="font-weight-medium text-h6"> {{ caixa.USUARIO }}</span>
         </v-card>

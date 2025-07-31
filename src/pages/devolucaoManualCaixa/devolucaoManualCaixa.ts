@@ -52,6 +52,7 @@ export const actions = {
     state.dadosDaDevolucao = <iDadosDaDevolucao>{}
     state.abreDetalhesCaixa = true
     state.caixaSelecionado = caixa
+
   },
 
   fechaModal() {
@@ -65,37 +66,37 @@ export const actions = {
   async onClickLancamento(idDevolucao: string) {
     const idDevolucaoSql = idDevolucao
     const codCaixa = state.caixaSelecionado.COD_FUNCIONARIO
-    const idAberturaCaixa =   state.caixaSelecionado.ID_ABERTURA_CAIXA
+    const idAberturaCaixa = state.caixaSelecionado.ID_ABERTURA_CAIXA
     const caixa = state.caixaSelecionado.USUARIO
-    
+
     console.log(codCaixa, idAberturaCaixa, idDevolucaoSql, caixa)
 
     state.abreDetalhesCaixa = false
     utils.confirmaCodigo({
-      
+
       msg: `Deseja lançar a devolução ${state.devolucao} no valor de 
       ${utils.formatValor(state.dadosDaDevolucao.VALOR)} no caixa de ${state.caixaSelecionado.USUARIO}?`,
       theme: "xModal-bublue",
       call: async () => {
-              try {
-                state.loading = true;
-                await devolucaoManualCaixaService.onClickLancamento(codCaixa, idAberturaCaixa, idDevolucaoSql, caixa)
-                  Swal.fire({
-                      icon: "success",
-                      title: "Crédito desbloqueado",
-                  });
+        try {
+          state.loading = true;
+          await devolucaoManualCaixaService.onClickLancamento(codCaixa, idAberturaCaixa, idDevolucaoSql, caixa)
+          Swal.fire({
+            icon: "success",
+            title: "Crédito desbloqueado",
+          });
 
-              } catch (error) {
+        } catch (error) {
 
-                  Swal.fire({
-                      icon: "error",
-                      title: "Erro ao processar sua solicitação.",
-                  });
-              } finally {
-                  state.loading = false;
-              }
-          },
-      });
+          Swal.fire({
+            icon: "error",
+            title: "Erro ao processar sua solicitação.",
+          });
+        } finally {
+          state.loading = false;
+        }
+      },
+    });
   },
 
 }
