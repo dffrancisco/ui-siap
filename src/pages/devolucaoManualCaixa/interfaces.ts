@@ -1,4 +1,4 @@
-export interface iDadosDoCaixa {
+export interface iDadosCaixa {
   COD_FUNCIONARIO: number;
   CPF: string,
   DATA_ABERTURA: string;
@@ -7,7 +7,7 @@ export interface iDadosDoCaixa {
   USUARIO: string;
 }
 
-export interface iDadosDaDevolucao {
+export interface iDadosDevolucao {
   BLOQUEADO: string;
   ID_DEVOLUCAO: number;
   VALOR: number;

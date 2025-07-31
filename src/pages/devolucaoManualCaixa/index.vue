@@ -14,10 +14,10 @@ onMounted(() => {
   <v-container class="container-devolucao-manual">
     <v-row>
       <v-col
-        v-for="caixa in state.dadosDoCaixa"
+        v-for="caixa in state.dadosCaixa"
         cols="3"
         :key="caixa.COD_FUNCIONARIO"
-        @click="actions.abreModal(caixa)"
+        @click="actions.abrirModal(caixa)"
       >
         <v-card class="cards-decolucao-manual">
           <v-avatar size="60">
@@ -33,7 +33,7 @@ onMounted(() => {
 
     <v-dialog
       max-width="500"
-      v-model="state.abreDetalhesCaixa"
+      v-model="state.detalheCaixa"
     >
       <detalhesCaixa> </detalhesCaixa>
     </v-dialog>

@@ -1,26 +1,26 @@
 import { reactive } from "vue";
 import utils from "@/ts/utils";
-import { iDadosDaDevolucao, iDadosDoCaixa, iCaixa } from "./interfaces";
+import { iDadosDevolucao, iDadosCaixa, iCaixa } from "./interfaces";
 import Swal from "sweetalert2";
 import devolucaoManualCaixaService from "./services/devolucaoManualCaixa.service";
 
 export const state = reactive({
-  dadosDaDevolucao: <iDadosDaDevolucao>{},
-  dadosDoCaixa: [] as iDadosDoCaixa[],
+  dadosDevolucao: <iDadosDevolucao>{},
+  dadosCaixa: [] as iDadosCaixa[],
   caixaSelecionado: <iCaixa>{},
   idDevolucao: "",
-  abreDetalhesCaixa: false,
+  detalheCaixa: false,
   loading: false,
   devolucao: ""
 });
 
 export const actions = {
   async init() {
-    state.dadosDoCaixa = await devolucaoManualCaixaService.getCaixasDoDia()
+    state.dadosCaixa = await devolucaoManualCaixaService.getCaixaDiario()
 
   },
 
-  async getDadosDaDevolucao(codigoDevolucao) {
+  async getDadosDevolucao(codigoDevolucao) {
     if (!state.idDevolucao || state.idDevolucao.length !== 5) {
       Swal.fire({
         icon: "warning",
@@ -31,7 +31,7 @@ export const actions = {
     }
     try {
       state.loading = true
-      state.dadosDaDevolucao = await devolucaoManualCaixaService.getDadosDaDevolucao(codigoDevolucao)
+      state.dadosDevolucao = await devolucaoManualCaixaService.getDadosDevolucao(codigoDevolucao)
       state.devolucao = state.idDevolucao;
       state.loading = false
       return
@@ -46,19 +46,19 @@ export const actions = {
     }
   },
 
-  abreModal(caixa: iCaixa) {
+  abrirModal(caixa: iCaixa) {
     state.devolucao = ''
     state.idDevolucao = ""
-    state.dadosDaDevolucao = <iDadosDaDevolucao>{}
-    state.abreDetalhesCaixa = true
+    state.dadosDevolucao = <iDadosDevolucao>{}
+    state.detalheCaixa = true
     state.caixaSelecionado = caixa
 
   },
 
-  fechaModal() {
-    state.abreDetalhesCaixa = false;
+  fecharModal() {
+    state.detalheCaixa = false;
     state.devolucao = ''
-    state.dadosDaDevolucao = <iDadosDaDevolucao>{}
+    state.dadosDevolucao = <iDadosDevolucao>{}
     state.idDevolucao = ""
 
   },
@@ -71,11 +71,11 @@ export const actions = {
 
     console.log(codCaixa, idAberturaCaixa, idDevolucaoSql, caixa)
 
-    state.abreDetalhesCaixa = false
+    state.detalheCaixa = false
     utils.confirmaCodigo({
 
       msg: `Deseja lançar a devolução ${state.devolucao} no valor de 
-      ${utils.formatValor(state.dadosDaDevolucao.VALOR)} no caixa de ${state.caixaSelecionado.USUARIO}?`,
+      ${utils.formatValor(state.dadosDevolucao.VALOR)} no caixa de ${state.caixaSelecionado.USUARIO}?`,
       theme: "xModal-bublue",
       call: async () => {
         try {

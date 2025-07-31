@@ -1,18 +1,18 @@
 import axios from "axios";
-import { iDadosDaDevolucao } from "../interfaces";
+import { iDadosDevolucao } from "../interfaces";
 const caminho = 'siap/devolucaoManualCaixa'
-type iGetDadosDaDevolucao = (param: string) => Promise<iDadosDaDevolucao>
+type iGetDadosDevolucao = (param: string) => Promise<iDadosDevolucao>
 
-const getCaixasDoDia= async () => {
+const getCaixaDiario = async () => {
     let { data } = await axios.post(caminho, {
-        call: "getCaixasDoDia",
+        call: "getCaixaDiario",
     });
     return data;
 }
 
-const getDadosDaDevolucao: iGetDadosDaDevolucao = async (idDevolucao:string) => {
+const getDadosDevolucao: iGetDadosDevolucao = async (idDevolucao: string) => {
     let { data } = await axios.post(caminho, {
-        call: "getDadosDaDevolucao",
+        call: "getDadosDevolucao",
         param: {
             idDevolucao
         }
@@ -20,14 +20,14 @@ const getDadosDaDevolucao: iGetDadosDaDevolucao = async (idDevolucao:string) => 
     return data;
 }
 
-const onClickLancamento = async (codCaixa, idAberturaCaixa, idDevolucaoSql,caixa) => {
+const onClickLancamento = async (codCaixa, idAberturaCaixa, idDevolucaoSql, caixa) => {
     let { data } = await axios.post(caminho, {
         call: "onClickLancamento",
         param: {
-            codCaixa, idAberturaCaixa,idDevolucaoSql,caixa
+            codCaixa, idAberturaCaixa, idDevolucaoSql, caixa
         }
     });
     return data;
 }
 
-export default { getCaixasDoDia, getDadosDaDevolucao, onClickLancamento }
+export default { getCaixaDiario, getDadosDevolucao, onClickLancamento }

@@ -17,7 +17,7 @@ import { actions, state } from "../devolucaoManualCaixa";
         density="comfortable"
         size="38"
         icon="mdi-magnify"
-        @click="actions.getDadosDaDevolucao(state.idDevolucao)"
+        @click="actions.getDadosDevolucao(state.idDevolucao)"
       />
     </div>
     <h3>Dados da Devolução</h3>
@@ -31,17 +31,17 @@ import { actions, state } from "../devolucaoManualCaixa";
           >Valor:
           <span
             class="font-weight-bold"
-            v-if="state.dadosDaDevolucao.VALOR"
+            v-if="state.dadosDevolucao.VALOR"
           >
-            {{ utils.formatValor(state.dadosDaDevolucao.VALOR) }}</span
+            {{ utils.formatValor(state.dadosDevolucao.VALOR) }}</span
           ></p
         >
         <p
           >Tipo de Pagamento:
-          <span class="font-weight-bold">{{ state.dadosDaDevolucao.DESCRICAO_PAGAMENTO }}</span></p
+          <span class="font-weight-bold">{{ state.dadosDevolucao.DESCRICAO_PAGAMENTO }}</span></p
         >
         <p
-          >Nº Orçamento: <span class="font-weight-bold"> {{ state.dadosDaDevolucao.NUM_ORCAMENTO }} </span>
+          >Nº Orçamento: <span class="font-weight-bold"> {{ state.dadosDevolucao.NUM_ORCAMENTO }} </span>
         </p>
       </div>
 
@@ -50,18 +50,18 @@ import { actions, state } from "../devolucaoManualCaixa";
           Data da Devolução:
           <span
             class="font-weight-bold"
-            v-if="state.dadosDaDevolucao.DATA"
+            v-if="state.dadosDevolucao.DATA"
           >
-            {{ new Date(state.dadosDaDevolucao.DATA).toLocaleDateString("pt-BR") }}</span
+            {{ new Date(state.dadosDevolucao.DATA).toLocaleDateString("pt-BR") }}</span
           >
         </p>
         <p>
           Data Orçamento:
           <span
             class="font-weight-bold"
-            v-if="state.dadosDaDevolucao.DATA_VENDA"
+            v-if="state.dadosDevolucao.DATA_VENDA"
           >
-            {{ new Date(state.dadosDaDevolucao.DATA_VENDA).toLocaleDateString("pt-BR") }}</span
+            {{ new Date(state.dadosDevolucao.DATA_VENDA).toLocaleDateString("pt-BR") }}</span
           >
         </p>
         <p>
@@ -74,13 +74,13 @@ import { actions, state } from "../devolucaoManualCaixa";
       <v-btn
         color="primary"
         variant="outlined"
-        @click="actions.fechaModal()"
+        @click="actions.fecharModal()"
       >
         cancelar
       </v-btn>
       <v-btn
         color="primary"
-        :disabled="!state.dadosDaDevolucao.NUM_ORCAMENTO"
+        :disabled="!state.dadosDevolucao.NUM_ORCAMENTO"
         @click="actions.onClickLancamento(state.idDevolucao)"
       >
         salvar
