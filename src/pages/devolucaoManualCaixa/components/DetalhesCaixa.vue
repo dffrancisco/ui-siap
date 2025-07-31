@@ -1,6 +1,22 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-import { actions, state } from "../devolucaoManualCaixa";
+// import { state, actions } from "../devolucaoManualCaixa";
+import { iDadosDevolucao, iDadosCaixa, iCaixa } from "../interfaces";
+
+// teste
+const props = defineProps<{
+  caixa: iCaixa;
+  dadosDevolucao: iDadosDevolucao;
+  idDevolucao: string;
+}>();
+
+const emit = defineEmits<{
+  (e: "fechar"): void;
+  (e: "salvar", idDevolucao: string): void;
+  (e: "buscar"): void;
+}>();
+
+// teste
 </script>
 
 <template>
@@ -12,6 +28,8 @@ import { actions, state } from "../devolucaoManualCaixa";
         variant="solo"
         v-model="state.idDevolucao"
       />
+      <!-- v-model="state.idDevolucao" -->
+
       <v-btn
         color="primary"
         density="comfortable"
@@ -25,23 +43,23 @@ import { actions, state } from "../devolucaoManualCaixa";
     <section class="d-flex">
       <div class="d-flex flex-column justify-center align-start w-100 h-100 ga-1">
         <p
-          >Devolução: <span class="font-weight-bold"> {{ state.devolucao }}</span></p
+          >Devolução: <span class="font-weight-bold"> {{ props.idDevolucao }}</span></p
         >
         <p
           >Valor:
           <span
             class="font-weight-bold"
-            v-if="state.dadosDevolucao.VALOR"
+            v-if="props.dadosDevolucao.VALOR"
           >
-            {{ utils.formatValor(state.dadosDevolucao.VALOR) }}</span
+            {{ utils.formatValor(props.dadosDevolucao.VALOR) }}</span
           ></p
         >
         <p
           >Tipo de Pagamento:
-          <span class="font-weight-bold">{{ state.dadosDevolucao.DESCRICAO_PAGAMENTO }}</span></p
+          <span class="font-weight-bold">{{ props.dadosDevolucao.DESCRICAO_PAGAMENTO }}</span></p
         >
         <p
-          >Nº Orçamento: <span class="font-weight-bold"> {{ state.dadosDevolucao.NUM_ORCAMENTO }} </span>
+          >Nº Orçamento: <span class="font-weight-bold"> {{ props.dadosDevolucao.NUM_ORCAMENTO }} </span>
         </p>
       </div>
 
@@ -50,22 +68,22 @@ import { actions, state } from "../devolucaoManualCaixa";
           Data da Devolução:
           <span
             class="font-weight-bold"
-            v-if="state.dadosDevolucao.DATA"
+            v-if="props.dadosDevolucao.DATA"
           >
-            {{ new Date(state.dadosDevolucao.DATA).toLocaleDateString("pt-BR") }}</span
+            {{ new Date(props.dadosDevolucao.DATA).toLocaleDateString("pt-BR") }}</span
           >
         </p>
         <p>
           Data Orçamento:
           <span
             class="font-weight-bold"
-            v-if="state.dadosDevolucao.DATA_VENDA"
+            v-if="props.dadosDevolucao.DATA_VENDA"
           >
-            {{ new Date(state.dadosDevolucao.DATA_VENDA).toLocaleDateString("pt-BR") }}</span
+            {{ new Date(props.dadosDevolucao.DATA_VENDA).toLocaleDateString("pt-BR") }}</span
           >
         </p>
         <p>
-          Op.de Caixa: <span class="font-weight-bold"> {{ state.caixaSelecionado.USUARIO }}</span>
+          Op.de Caixa: <span class="font-weight-bold"> {{ props.caixa.USUARIO }}</span>
         </p>
       </div>
     </section>
@@ -74,14 +92,14 @@ import { actions, state } from "../devolucaoManualCaixa";
       <v-btn
         color="primary"
         variant="outlined"
-        @click="actions.fecharModal()"
+        @click="emit('fechar')"
       >
         cancelar
       </v-btn>
       <v-btn
         color="primary"
-        :disabled="!state.dadosDevolucao.NUM_ORCAMENTO"
-        @click="actions.onClickLancamento(state.idDevolucao)"
+        :disabled="!props.dadosDevolucao.NUM_ORCAMENTO"
+        @click="emit('salvar', props.idDevolucao)"
       >
         salvar
       </v-btn>

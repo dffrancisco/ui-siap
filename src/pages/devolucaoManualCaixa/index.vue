@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import utils from "@/ts/utils";
 import { state, actions } from "./devolucaoManualCaixa";
 import DetalhesCaixa from "./components/DetalhesCaixa.vue";
 import { onMounted } from "vue";
@@ -20,7 +19,10 @@ onMounted(() => {
         @click="actions.abrirModal(caixa)"
       >
         <v-card class="cards-decolucao-manual">
-          <v-avatar size="60">
+          <v-avatar
+            size="57"
+            class="border-sm border-primary"
+          >
             <img
               class="w-100"
               :src="`https://www.reallatas.com.br/foto_funcionarios/${caixa.CPF}.jpg`"
@@ -35,7 +37,16 @@ onMounted(() => {
       max-width="500"
       v-model="state.detalheCaixa"
     >
-      <detalhesCaixa> </detalhesCaixa>
+      <!-- teste  -->
+      <detalhesCaixa
+        :caixa="state.caixaSelecionado"
+        :dadosDevolucao="state.dadosDevolucao"
+        :idDevolucao="state.idDevolucao"
+        @fechar="actions.fecharModal"
+        @salvar="actions.onClickLancamento"
+      >
+        <!-- teste -->
+      </detalhesCaixa>
     </v-dialog>
   </v-container>
   <Loading :loading="state.loading" />
