@@ -39,12 +39,10 @@ export const actions = {
 
   abrirModal(caixa: iCaixa) {
     state.devolucao = ''
-    state.idDevolucao = 0
+    state.idDevolucao = undefined
     state.dadosDevolucao = <iDadosDevolucao>{}
     state.detalheCaixa = true
     state.caixaSelecionado = caixa
-    console.log(state.caixaSelecionado, "aqui")
-
   },
 
   fecharModal() {

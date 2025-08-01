@@ -63,7 +63,7 @@ onMounted(() => {
   top: 3rem;
   gap: 1rem;
   padding: 20px;
-  box-shadow: 0px 0px 2.5px;
+  box-shadow: 0px 0px 1.1px;
   border-radius: 0.2rem;
   background-color: rgb(255, 255, 255);
 }
