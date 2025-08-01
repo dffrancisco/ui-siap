@@ -45,6 +45,7 @@ onMounted(() => {
       <v-text-field
         class="input-field"
         variant="solo"
+        @keyup.enter="actions.buscar()"
         v-model="state.idDevolucao"
       />
 
@@ -61,7 +62,13 @@ onMounted(() => {
     <section class="d-flex">
       <div class="d-flex flex-column justify-center align-start w-100 h-100 ga-1">
         <p
-          >Devolução: <span class="font-weight-bold"> {{ props.idDevolucao }}</span></p
+          >Devolução:
+          <span
+            class="font-weight-bold"
+            v-if="props.idDevolucao"
+          >
+            {{ props.idDevolucao }}</span
+          ></p
         >
         <p
           >Valor:

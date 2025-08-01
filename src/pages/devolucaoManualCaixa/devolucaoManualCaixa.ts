@@ -25,7 +25,6 @@ export const actions = {
       state.dadosDevolucao = await devolucaoManualCaixaService.getDadosDevolucao(codigoDevolucao)
       state.idDevolucao = state.dadosDevolucao.ID_DEVOLUCAO;
       state.loading = false
-      // console.log(state.dadosDevolucao.ID_DEVOLUCAO)
       return
     } catch {
       Swal.fire({
@@ -44,6 +43,7 @@ export const actions = {
     state.dadosDevolucao = <iDadosDevolucao>{}
     state.detalheCaixa = true
     state.caixaSelecionado = caixa
+    console.log(state.caixaSelecionado, "aqui")
 
   },
 
@@ -61,6 +61,8 @@ export const actions = {
     const idAberturaCaixa = state.caixaSelecionado.ID_ABERTURA_CAIXA
     const caixa = state.caixaSelecionado.USUARIO
 
+    console.log("CAIXA CLICADO:", caixa)
+
     state.detalheCaixa = false
     utils.confirmaCodigo({
 
@@ -70,7 +72,7 @@ export const actions = {
       call: async () => {
         try {
           state.loading = true;
-          await devolucaoManualCaixaService.onClickLancamento(codCaixa, codCaixa, idDevolucaoSql, caixa)
+          await devolucaoManualCaixaService.onClickLancamento(codCaixa, idAberturaCaixa, idDevolucaoSql, caixa)
           Swal.fire({
             icon: "success",
             title: "Crédito desbloqueado",

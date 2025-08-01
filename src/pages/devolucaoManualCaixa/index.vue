@@ -14,7 +14,7 @@ onMounted(() => {
     <v-row>
       <v-col
         v-for="caixa in state.dadosCaixa"
-        cols="3"
+        cols="4"
         :key="caixa.COD_FUNCIONARIO"
         @click="actions.abrirModal(caixa)"
       >
@@ -37,7 +37,6 @@ onMounted(() => {
       max-width="500"
       v-model="state.detalheCaixa"
     >
-      <!-- teste  -->
       <detalhesCaixa
         :caixa="state.caixaSelecionado"
         :dadosDevolucao="state.dadosDevolucao"
@@ -46,7 +45,6 @@ onMounted(() => {
         @salvar="actions.onClickLancamento"
         @buscar="actions.getDadosDevolucao"
       >
-        <!-- teste -->
       </detalhesCaixa>
     </v-dialog>
   </v-container>
@@ -60,11 +58,13 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   max-width: 100%;
-  width: 900px;
-  height: 65%;
+  width: 770px;
+  height: 420px;
   top: 3rem;
   gap: 1rem;
-  padding: 2rem;
+  padding: 20px;
+  box-shadow: 0px 0px 2.5px;
+  border-radius: 0.2rem;
   background-color: rgb(255, 255, 255);
 }
 
