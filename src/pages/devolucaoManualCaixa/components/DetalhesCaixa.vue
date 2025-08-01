@@ -1,20 +1,39 @@
 <script setup lang="ts">
 import utils from "@/ts/utils";
-// import { state, actions } from "../devolucaoManualCaixa";
-import { iDadosDevolucao, iDadosCaixa, iCaixa } from "../interfaces";
+import { iDadosDevolucao, iCaixa } from "../interfaces";
+import { onMounted, reactive } from "vue";
+import Swal from "sweetalert2";
 
 // teste
 const props = defineProps<{
   caixa: iCaixa;
   dadosDevolucao: iDadosDevolucao;
-  idDevolucao: string;
+  idDevolucao: number;
 }>();
+const state = reactive({
+  idDevolucao: 0,
+});
 
-const emit = defineEmits<{
-  (e: "fechar"): void;
-  (e: "salvar", idDevolucao: string): void;
-  (e: "buscar"): void;
-}>();
+const emit = defineEmits(["salvar", "buscar", "fechar"]);
+
+const actions = {
+  buscar: () => {
+    if (!state.idDevolucao && state.idDevolucao !== 5) {
+      Swal.fire({
+        icon: "warning",
+        title: "código de devolução inválida",
+        text: "certifique-se de que o campo não está em branco.",
+      });
+      return;
+    }
+    emit("buscar", state.idDevolucao);
+  },
+};
+
+onMounted(() => {
+  state.idDevolucao = props.idDevolucao;
+  console.log("ID recebido via prop:", state.idDevolucao);
+});
 
 // teste
 </script>
@@ -28,14 +47,13 @@ const emit = defineEmits<{
         variant="solo"
         v-model="state.idDevolucao"
       />
-      <!-- v-model="state.idDevolucao" -->
 
       <v-btn
         color="primary"
         density="comfortable"
         size="38"
         icon="mdi-magnify"
-        @click="actions.getDadosDevolucao(state.idDevolucao)"
+        @click="actions.buscar()"
       />
     </div>
     <h3>Dados da Devolução</h3>
@@ -99,7 +117,7 @@ const emit = defineEmits<{
       <v-btn
         color="primary"
         :disabled="!props.dadosDevolucao.NUM_ORCAMENTO"
-        @click="emit('salvar', props.idDevolucao)"
+        @click="emit('salvar')"
       >
         salvar
       </v-btn>

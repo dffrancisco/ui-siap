@@ -8,7 +8,7 @@ export const state = reactive({
   dadosDevolucao: <iDadosDevolucao>{},
   dadosCaixa: [] as iDadosCaixa[],
   caixaSelecionado: <iCaixa>{},
-  idDevolucao: "",
+  idDevolucao: 0,
   detalheCaixa: false,
   loading: false,
   devolucao: ""
@@ -17,23 +17,15 @@ export const state = reactive({
 export const actions = {
   async init() {
     state.dadosCaixa = await devolucaoManualCaixaService.getCaixaDiario()
-
   },
 
   async getDadosDevolucao(codigoDevolucao) {
-    if (!state.idDevolucao || state.idDevolucao.length !== 5) {
-      Swal.fire({
-        icon: "warning",
-        title: "código de devolução inválida",
-        text: "certifique-se de que o campo não está em branco.",
-      });
-      return
-    }
     try {
       state.loading = true
       state.dadosDevolucao = await devolucaoManualCaixaService.getDadosDevolucao(codigoDevolucao)
-      state.devolucao = state.idDevolucao;
+      state.idDevolucao = state.dadosDevolucao.ID_DEVOLUCAO;
       state.loading = false
+      // console.log(state.dadosDevolucao.ID_DEVOLUCAO)
       return
     } catch {
       Swal.fire({
@@ -48,7 +40,7 @@ export const actions = {
 
   abrirModal(caixa: iCaixa) {
     state.devolucao = ''
-    state.idDevolucao = ""
+    state.idDevolucao = 0
     state.dadosDevolucao = <iDadosDevolucao>{}
     state.detalheCaixa = true
     state.caixaSelecionado = caixa
@@ -59,17 +51,15 @@ export const actions = {
     state.detalheCaixa = false;
     state.devolucao = ''
     state.dadosDevolucao = <iDadosDevolucao>{}
-    state.idDevolucao = ""
+    state.idDevolucao = 0
 
   },
 
-  async onClickLancamento(idDevolucao: string) {
-    const idDevolucaoSql = idDevolucao
+  async onClickLancamento() {
+    const idDevolucaoSql = state.idDevolucao
     const codCaixa = state.caixaSelecionado.COD_FUNCIONARIO
     const idAberturaCaixa = state.caixaSelecionado.ID_ABERTURA_CAIXA
     const caixa = state.caixaSelecionado.USUARIO
-
-    console.log(codCaixa, idAberturaCaixa, idDevolucaoSql, caixa)
 
     state.detalheCaixa = false
     utils.confirmaCodigo({
@@ -80,7 +70,7 @@ export const actions = {
       call: async () => {
         try {
           state.loading = true;
-          await devolucaoManualCaixaService.onClickLancamento(codCaixa, idAberturaCaixa, idDevolucaoSql, caixa)
+          await devolucaoManualCaixaService.onClickLancamento(codCaixa, codCaixa, idDevolucaoSql, caixa)
           Swal.fire({
             icon: "success",
             title: "Crédito desbloqueado",

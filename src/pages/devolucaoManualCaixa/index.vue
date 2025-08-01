@@ -44,6 +44,7 @@ onMounted(() => {
         :idDevolucao="state.idDevolucao"
         @fechar="actions.fecharModal"
         @salvar="actions.onClickLancamento"
+        @buscar="actions.getDadosDevolucao"
       >
         <!-- teste -->
       </detalhesCaixa>
