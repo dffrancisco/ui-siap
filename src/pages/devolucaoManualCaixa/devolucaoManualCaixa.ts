@@ -29,7 +29,7 @@ export const actions = {
     } catch {
       Swal.fire({
         icon: "error",
-        title: "devolução não bloqueada",
+        title: "Devolução não bloqueada",
 
       });
       state.loading = false

@@ -11,12 +11,15 @@ onMounted(() => {
 
 <template>
   <v-container class="container-devolucao-manual">
+    <!-- <div class="">
+      <h1>DEVOLUÇÃO MANUAL CAIXA</h1>
+    </div> -->
     <v-row>
       <v-col
         v-for="caixa in state.dadosCaixa"
         cols="4"
         :key="caixa.COD_FUNCIONARIO"
-        @click="actions.abrirModal(caixa)"
+        @click.prevent="actions.abrirModal(caixa)"
       >
         <v-card class="cards-decolucao-manual">
           <v-avatar

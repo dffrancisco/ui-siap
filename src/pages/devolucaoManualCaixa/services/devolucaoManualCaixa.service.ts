@@ -1,7 +1,7 @@
 import axios from "axios";
-import { iDadosDevolucao } from "../interfaces";
+import { iDadosDevolucao, Mensagem } from "../interfaces";
 const caminho = 'siap/devolucaoManualCaixa'
-type iGetDadosDevolucao = (param: string) => Promise<iDadosDevolucao>
+type iGetDadosDevolucao = (param: number) => Promise<iDadosDevolucao>
 
 const getCaixaDiario = async () => {
     let { data } = await axios.post(caminho, {
@@ -10,7 +10,7 @@ const getCaixaDiario = async () => {
     return data;
 }
 
-const getDadosDevolucao: iGetDadosDevolucao = async (idDevolucao: string) => {
+const getDadosDevolucao: iGetDadosDevolucao = async (idDevolucao: number) => {
     let { data } = await axios.post(caminho, {
         call: "getDadosDevolucao",
         param: {
@@ -20,7 +20,7 @@ const getDadosDevolucao: iGetDadosDevolucao = async (idDevolucao: string) => {
     return data;
 }
 
-const onClickLancamento = async (codCaixa, idAberturaCaixa, idDevolucao, caixa) => {
+const onClickLancamento = async (codCaixa: number, idAberturaCaixa: number, idDevolucao: number, caixa: string): Promise<Mensagem> => {
     let { data } = await axios.post(caminho, {
         call: "onClickLancamento",
         param: {

@@ -22,3 +22,8 @@ export interface iCaixa {
   COD_FUNCIONARIO: number;
   ID_ABERTURA_CAIXA: number;
 }
+
+export interface Mensagem {
+  sucesse: true,
+  msg: string
+}

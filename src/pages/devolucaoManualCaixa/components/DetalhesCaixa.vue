@@ -21,8 +21,8 @@ const actions = {
     if (!state.idDevolucao && state.idDevolucao !== 5) {
       Swal.fire({
         icon: "warning",
-        title: "código de devolução inválida",
-        text: "certifique-se de que o campo não está em branco.",
+        title: "Código de devolução inválida",
+        text: "Certifique-se de que o campo não está em branco.",
       });
       return;
     }
@@ -32,7 +32,6 @@ const actions = {
 
 onMounted(() => {
   state.idDevolucao = props.idDevolucao;
-  console.log("ID recebido via prop:", state.idDevolucao);
 });
 
 // teste
@@ -45,7 +44,7 @@ onMounted(() => {
       <v-text-field
         class="input-field"
         variant="solo"
-        @keyup.enter="actions.buscar()"
+        @keypress.enter.stop="actions.buscar()"
         v-model="state.idDevolucao"
       />
 
@@ -54,7 +53,7 @@ onMounted(() => {
         density="comfortable"
         size="38"
         icon="mdi-magnify"
-        @click="actions.buscar()"
+        @click.prevent="actions.buscar()"
       />
     </div>
     <h3>Dados da Devolução</h3>
@@ -124,7 +123,7 @@ onMounted(() => {
       <v-btn
         color="primary"
         :disabled="!props.dadosDevolucao.NUM_ORCAMENTO"
-        @click="emit('salvar')"
+        @click.prevent="emit('salvar')"
       >
         salvar
       </v-btn>
