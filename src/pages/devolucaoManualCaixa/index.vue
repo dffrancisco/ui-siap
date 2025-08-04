@@ -11,10 +11,37 @@ onMounted(() => {
 
 <template>
   <v-container class="container-devolucao-manual">
-    <!-- <div class="">
-      <h1>DEVOLUÇÃO MANUAL CAIXA</h1>
-    </div> -->
-    <v-row>
+    <section>
+      <div class="position-absolute top-0 left-0 ma-4 pa-1">
+        <v-row>
+          <v-col>
+            <h1>DEVOLUÇÃO MANUAL CAIXA</h1>
+          </v-col>
+        </v-row>
+      </div>
+      <v-row>
+        <v-col
+          v-for="caixa in state.dadosCaixa"
+          cols="4"
+          :key="caixa.COD_FUNCIONARIO"
+          @click.prevent="actions.abrirModal(caixa)"
+        >
+          <v-card class="cards-decolucao-manual">
+            <v-avatar
+              size="57"
+              class="border-sm border-primary"
+            >
+              <img
+                class="w-100"
+                :src="`https://www.reallatas.com.br/foto_funcionarios/${caixa.CPF}.jpg`"
+              />
+            </v-avatar>
+            <span class="font-weight-medium text-h6"> {{ caixa.USUARIO }}</span>
+          </v-card>
+        </v-col>
+      </v-row>
+    </section>
+    <!-- <v-row>
       <v-col
         v-for="caixa in state.dadosCaixa"
         cols="4"
@@ -34,7 +61,7 @@ onMounted(() => {
           <span class="font-weight-medium text-h6"> {{ caixa.USUARIO }}</span>
         </v-card>
       </v-col>
-    </v-row>
+    </v-row> -->
 
     <v-dialog
       max-width="500"
