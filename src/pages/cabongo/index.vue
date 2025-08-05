@@ -68,7 +68,7 @@ onMounted(async () => {
             :nome-empresa="sociedade.FANTASIA"
             :qtd-orcamentos="sociedade.qtdOrcamentosPendentes"
             color-bg="bg-red-darken-2"
-            @clicou-no-card="actions.onClickCardPendente(sociedade.ID_EMPRESA, state.meuCNPJ)"
+            @escolher-por-data="actions.onClickCardPendente(sociedade.ID_EMPRESA, state.meuCNPJ)"
           />
         </div>
 

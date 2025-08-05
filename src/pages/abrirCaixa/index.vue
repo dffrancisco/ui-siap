@@ -131,11 +131,7 @@ onMounted(async () => {
     <div id="pnCodigoTela">abrirCaixa</div>
   </v-container>
 
-  <v-dialog
-    v-model="state.modalAbrirCaixaOpened"
-    max-width="800"
-    style="margin-right: 150px"
-  >
+  <v-dialog v-model="state.modalAbrirCaixaOpened">
     <ModalAbrirCaixa
       :funcionarios="funcionariosDisponiveis"
       :modalOpened="state.modalAbrirCaixaOpened"

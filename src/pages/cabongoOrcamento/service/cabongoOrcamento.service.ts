@@ -1,9 +1,9 @@
 import axios from "axios";
-import { iOrcamentosLoja, iParamOrcamentosLoja } from "../interface";
+import { iOrcamentoLoja, iOrcamentosObj, iParamOrcamentosLoja } from "../interface";
 
 const caminho = 'siap/cabongoOrcamento'
 
-type igetOrcamentosLojaFunction = (param: iParamOrcamentosLoja) => Promise<iOrcamentosLoja>;
+type igetOrcamentosLojaFunction = (param: iParamOrcamentosLoja) => Promise<iOrcamentoLoja>;
 
 const getOrcamentoLoja: igetOrcamentosLojaFunction = async ({ id_sociedade, cnpj, dataOrcamento }) => {
     let { data } = await axios.post(caminho, {
@@ -17,14 +17,18 @@ const getOrcamentoLoja: igetOrcamentosLojaFunction = async ({ id_sociedade, cnpj
     return data
 }
 
-const getOrcamentoItens = async () => {
+const getQuantidadeProduto = async ({ cod_produto }) => {
     let { data } = await axios.post(caminho, {
-        call: 'getOrcamentoItens',
-
+        call: 'getQuantidadeProdutos',
+        param: {
+            cod_produto
+        }
     })
-
+    return data
 }
 
+
 export default {
-    getOrcamentoLoja
+    getOrcamentoLoja,
+    getQuantidadeProduto
 }
