@@ -49,11 +49,14 @@ import utils from "@/ts/utils";
             <div class="text-caption font-weight-bold">
               <v-avatar size="40px">
                 <v-img
-                  :src="actions.getFotoFuncionarioURL(state.caixaSelected.CPF)"
+                  :src="actions.getFotoFuncionarioURL(sangria.RECEBEDOR)"
                   cover
                   :title="state.caixaSelected.LOGIN"
-                ></v-img>
+                >
+                
+                </v-img>
               </v-avatar>
+             
             </div>
           </v-col>
 
