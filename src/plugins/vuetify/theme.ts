@@ -30,7 +30,7 @@ export default {
       //     surface: '#f2f5f8',
       //     'surface-variant': '#424242',
       //     'on-surface-variant': '#252525',
-      primary: '#3c8dbc',
+      primary: '#32135e',
       //     'primary-darken-1': '#25735a',
       secondary: '#ff3860',
       //     'secondary-darken-1': '#a0b9c8',

@@ -233,19 +233,19 @@
 }
 
 .btn-Frame-blue {
-  border: 1px solid rgb(58 159 177);
-  background: rgb(58 159 177);
+  border: 1px solid #42197c;
+  background: #32135e;
   color: #ffffff;
 }
 
 .btn-Frame-blue:focus {
   /* border: 2px solid #5ce7ff; */
-  box-shadow: 0 0 0 2px #00aeff inset;
-  background: rgb(19 113 143);
+  box-shadow: 0 0 0 2px #6229b3 inset;
+  background: #491f84;
 }
 
 .btn-Frame-blue:hover:not(:disabled) {
-  background: rgb(34 127 144);
+  background: #521e9a;
 }
 
 .btn-Frame-blue:active:not(:disabled) {
