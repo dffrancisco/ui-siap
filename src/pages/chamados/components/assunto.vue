@@ -1,23 +1,39 @@
 <script setup></script>
 
 <template>
-  <div class="d-flex ga-4">
-    <v-select class="teste"> </v-select>
-    <v-select class="teste"> </v-select>
-    <v-text-field class="teste"> </v-text-field>
+  <div class="w-100 d-flex ga-4">
+    <v-row class="d-flex">
+      <v-col class="d-flex ga-4">
+        <v-select> </v-select>
+        <v-select> </v-select>
+        <v-text-field class="teste-1"> </v-text-field>
+      </v-col>
+    </v-row>
   </div>
 
-  <div class="d-flex d-flex ga-4">
-    <v-select class="teste"> </v-select>
+  <div class="w-100 d-flex d-flex ga-4">
+    <v-row>
+      <v-col class="d-flex justify-center align-center ga-4">
+        <v-select class="teste"> </v-select>
 
-    <v-select class="teste"> </v-select>
+        <v-select class="teste-2"> </v-select>
 
-    <v-text-field class="teste"> </v-text-field>
+        <v-text-field class="teste-3"> </v-text-field>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <style scoped>
-.teste {
-  width: 3rem;
+.teste-1 {
+  width: 20%;
+}
+
+.teste-2 {
+  width: 1px;
+}
+
+.teste-3 {
+  width: 25%;
 }
 </style>

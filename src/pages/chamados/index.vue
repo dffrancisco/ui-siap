@@ -125,8 +125,8 @@ onMounted(async () => {
 
             <!-- ///////////////////////////////////// teste para incerção dos inputs///////////////////////////////////////// -->
 
-            <v-col>
-              <div class="d-flex flex-column ga-4">
+            <v-col cols="12">
+              <div class="d-flex align-center flex-column ga-4">
                 <assunto></assunto>
               </div>
             </v-col>
