@@ -2,6 +2,7 @@
 import { onMounted } from "vue";
 import { actions, state } from "./chamados";
 import CModalDetalhes from "./components/cModalDetalhes.vue";
+import assunto from "./components/assunto.vue";
 
 onMounted(async () => {
   actions.init();
@@ -121,6 +122,16 @@ onMounted(async () => {
                 </div>
               </div>
             </v-col>
+
+            <!-- ///////////////////////////////////// teste para incerção dos inputs///////////////////////////////////////// -->
+
+            <v-col>
+              <div class="w-100">
+                <assunto></assunto>
+              </div>
+            </v-col>
+
+            <!-- ///////////////////////////////////// teste para incerção dos inputs///////////////////////////////////////// -->
           </v-row>
 
           <v-row>
@@ -257,6 +268,7 @@ onMounted(async () => {
     margin-top: 20px;
   }
 }
+
 .custom-file-input {
   display: flex;
   align-items: center;
