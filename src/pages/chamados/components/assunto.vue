@@ -17,7 +17,7 @@
           :items="[
             { text: 'Substituição/Desligamento', value: 'SUBSTITUICAO-DESLIGAMENTO' },
             { text: 'Nova vaga', value: 'NOVA-VAGA' },
-            { text: 'Substituição/ Ida para o CRR', value: 'SUBSTITUICAO-IDA-CRR' },
+            { text: 'Substituição/ Ida CRR', value: 'SUBSTITUICAO-IDA-CRR' },
             { text: 'Outro, especifique', value: 'OUTRO-ESPECIFIQUE' },
           ]"
           item-title="text"
