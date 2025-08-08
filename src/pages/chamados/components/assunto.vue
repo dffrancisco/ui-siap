@@ -12,8 +12,17 @@
         </v-text-field>
 
         <v-select
-          label="MOTIVO"
+          class="input-motivo"
           persistent-placeholder
+          :items="[
+            { text: 'Substituição/Desligamento', value: 'SUBSTITUICAO-DESLIGAMENTO' },
+            { text: 'Nova vaga', value: 'NOVA-VAGA' },
+            { text: 'Substituição/ Ida para o CRR', value: 'SUBSTITUICAO-IDA-CRR' },
+            { text: 'Outro, especifique', value: 'OUTRO-ESPECIFIQUE' },
+          ]"
+          item-title="text"
+          item-value="value"
+          label="MOTIVO"
         >
         </v-select>
 
@@ -59,22 +68,26 @@
 
 <style scoped>
 .input-gerente {
-  width: 12%;
+  width: 16%;
 }
 
 .input-complemento-motivo {
-  width: 19%;
+  width: 17%;
 }
 
 .input-qtd {
   width: 1%;
 }
 
+.input-motivo {
+  width: 15%;
+}
+
 .input-complemento-vaga {
-  width: 35%;
+  width: 40%;
 }
 
 .input-vaga {
-  width: 17%;
+  width: 21%;
 }
 </style>
