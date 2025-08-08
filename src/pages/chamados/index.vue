@@ -125,7 +125,10 @@ onMounted(async () => {
 
             <!-- ///////////////////////////////////// teste para incerção dos inputs///////////////////////////////////////// -->
 
-            <v-col cols="12">
+            <v-col
+              cols="12"
+              v-if="state.assunto === 'RH / FINANCEIRO / ADM'"
+            >
               <div class="d-flex align-center flex-column ga-4">
                 <assunto></assunto>
               </div>
@@ -134,7 +137,7 @@ onMounted(async () => {
             <!-- ///////////////////////////////////// teste para incerção dos inputs///////////////////////////////////////// -->
           </v-row>
 
-          <v-row>
+          <v-row v-if="state.assunto !== 'RH / FINANCEIRO / ADM'">
             <v-col cols="12">
               <v-textarea
                 v-model="state.descricao"
