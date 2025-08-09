@@ -6,6 +6,7 @@ import utils from "@/ts/utils";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import CardPrincipal from "./components/cardPrincipal.vue";
 import { actions, state } from "./trocaVendedor";
+import { onClickTrocar } from "../trocarMontador/trocarMontador";
 
 
 function setBuscar(valor: string) {
@@ -15,7 +16,8 @@ function setBuscar(valor: string) {
 function getOrcamento() {
   actions.getOrcamento()
 }
-
+actions.init();
+console.log(state.novoVendedor, "aqui")
 </script>
 
 <template >
@@ -23,13 +25,21 @@ function getOrcamento() {
   <v-container class="d-flex justify-center align-center ">
   <v-card
     color="blue-grey-lighten-4 mt-15"
-    class="py-3 px-3"
-    max-width="1000"
+    max-width="900"
     style="width: 100%;"
 
   >
-    {{ state.numOrcamento }}
-    <CardPrincipal :buscar="state.numOrcamento" @update:buscar="setBuscar" @pesquisar="getOrcamento" />
+
+    <CardPrincipal 
+    :buscar="state.numOrcamento" 
+    :vendedores="state.vendedores"
+    :novo-vendedor="state.novoVendedor"
+    @update:buscar="setBuscar" @pesquisar="getOrcamento" 
+    :orcamento="state.orcamento"
+    :avatar="`https://www.reallatas.com.br/foto_funcionarios/${state.orcamento.CPF}.jpg`"
+    @trocar="onClickTrocar"
+    />
+   {{ state.novoVendedor}}
   </v-card>
 </v-container>
 
@@ -37,8 +47,5 @@ function getOrcamento() {
 </template>
 
 <style scoped>
-#card{
-  background-color: white;
-  
-}
+
 </style>
