@@ -50,7 +50,7 @@ onMounted(() => {
 
     <v-card-text>
       <div class="input-group">
-        <label class="input-label">Entregue para: {{ props.caixaSelecionado.LOGIN }}</label>
+        <label class="input-label">Recebido de: {{ props.caixaSelecionado.LOGIN }}</label>
       </div>
 
       <div class="input-group">
