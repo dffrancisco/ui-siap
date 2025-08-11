@@ -165,7 +165,6 @@ const urlAvatarNovoMontador = computed(() => {
             Trocar
           </v-btn>
         </v-col>
-        {{ state.novoVendedor.COD_FUNCIONARIO }}
       </v-row>
     </v-col>
   </v-card>

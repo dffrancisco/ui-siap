@@ -14,5 +14,7 @@ export interface iVendedor {
 }
 export interface iParamUpdateVendedor{
      NUM_ORCAMENTO: number,
-    COD_FUNCIONARIO: number,
+    ID_VENDEDOR:number,
+    COD_FUNCIONARIO_AUTH: number
+    
 }

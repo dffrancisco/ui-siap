@@ -6,8 +6,6 @@ import utils from "@/ts/utils";
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import CardPrincipal from "./components/cardPrincipal.vue";
 import { actions, state } from "./trocaVendedor";
-import { onClickTrocar } from "../trocarMontador/trocarMontador";
-
 
 function setBuscar(valor: string) {
   state.numOrcamento = valor
@@ -37,10 +35,22 @@ console.log(state.novoVendedor, "aqui")
     @update:buscar="setBuscar" @pesquisar="getOrcamento" 
     :orcamento="state.orcamento"
     :avatar="`https://www.reallatas.com.br/foto_funcionarios/${state.orcamento.CPF}.jpg`"
-    @trocar="onClickTrocar"
+    @trocar="actions.onClickTrocar"
     />
-   {{ state.novoVendedor}}
+   
   </v-card>
+   <v-overlay
+        :model-value="state.loading"
+        class="align-center justify-center"
+        persistent
+      >
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-overlay>
+  <modalXAuthManager />
 </v-container>
 
   </v-app>

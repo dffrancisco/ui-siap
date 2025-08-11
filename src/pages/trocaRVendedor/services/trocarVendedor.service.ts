@@ -29,7 +29,7 @@ const updateVendedor: iUpdateVendedorFunction = async (param) => {
         call: 'updateVendedor',
         param: {
             NUM_ORCAMENTO: param.NUM_ORCAMENTO,
-            COD_FUNCIONARIO: param.COD_FUNCIONARIO,
+            ID_VENDEDOR: param.ID_VENDEDOR,
         }
     })
 

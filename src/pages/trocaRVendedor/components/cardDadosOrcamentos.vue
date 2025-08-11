@@ -40,7 +40,7 @@ watch(() => props.orcamento, (value) => {
         <v-col><v-text> Valor Orçamento: {{ formatValor(state.orcamento.VALOR) }}</v-text></v-col>
       </v-col>
       <v-col>
-        <v-col><v-text> Data:  {{ new Date(state.orcamento.DATA).toLocaleDateString('pt-BR') }}</v-text></v-col>
+        <v-col><v-text> Data:  {{state.orcamento.DATA ? new Date(state.orcamento.DATA).toLocaleDateString('pt-BR') : '' }}</v-text></v-col>
       </v-col>
     </div>
   </v-card>
