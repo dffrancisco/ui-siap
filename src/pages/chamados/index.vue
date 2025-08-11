@@ -3,17 +3,13 @@ import { onMounted } from "vue";
 import { actions, state } from "./chamados";
 import CModalDetalhes from "./components/cModalDetalhes.vue";
 import assunto from "./components/assunto.vue";
+import { IDadosRhAdmissao } from "./interfaces";
+
 import { reactive } from "vue";
 
 onMounted(async () => {
   actions.init();
 });
-
-const formularioRh = reactive({
-   
-})
-
-
 </script>
 
 <template>
@@ -46,9 +42,9 @@ const formularioRh = reactive({
                   { text: 'Alarme', value: 'ALARME' },
                   { text: 'Câmera', value: 'CAMERA' },
                   { text: 'Elétrica', value: 'ELETRICA' },
-                  { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
+                  { text: ' RH admissão', value: 'RH ADMISSAO' },
                   { text: 'RH / Financeiro / ADM', value: 'RH / FINANCEIRO / ADM' },
-                  { text: ' RH ADMISSÃO', value: 'RH ADMISSAO' },
+                  { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
                 ]"
                 item-title="text"
                 item-value="value"
@@ -132,26 +128,14 @@ const formularioRh = reactive({
             </v-col>
 
             <!-- ///////////////////////////////////// teste para incerção dos inputs////////////////////////// -->
-
             <v-col
               cols="12"
               v-if="state.assunto === 'RH ADMISSAO'"
             >
               <div class="d-flex align-center flex-column ga-4">
-                <!-- v-model:gerente="state.gerente", -->
-                <!-- {{ state.gerente }} -->
-                <assunto 
-                  v-model:gerente =
-                  v-model:motivo =
-                  v-model:complementoMotivo =
-                  v-model:vaga =
-                  v-model:quantidade =
-                  v-model:complementoVaga = 
-                  
-                  ></assunto>
+                <assunto v-model="state.dadosRhAdmissao"></assunto>
               </div>
             </v-col>
-
             <!-- ///////////////////////////////////// teste para incerção dos inputs////////////////////////// -->
           </v-row>
 

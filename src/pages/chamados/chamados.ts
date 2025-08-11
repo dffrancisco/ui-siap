@@ -6,9 +6,8 @@ import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados, IDadosRhAdmi
 import utils, { dataBrasil } from "@/ts/utils";
 
 export const state = reactive(({
-    //teste
+
     dadosRhAdmissao: <IDadosRhAdmissao>{},
-    //teste
 
     solicitante: (""),
     loja: (""),
@@ -82,6 +81,8 @@ export const actions = {
     },
 
     async submitForm() {
+
+        console.log(state.dadosRhAdmissao)
 
         if (!validateForm()) {
             return;

@@ -1,7 +1,14 @@
 <script setup>
 import { reactive, watch } from "vue";
-let model = defineModel("gerente", {
-  default: "",
+let model = defineModel({
+  default: () => ({
+    gerente: "",
+    motivo: "",
+    complementoMotivo: "",
+    vaga: "",
+    qtd: 0,
+    complementoVaga: "",
+  }),
 });
 
 const state = reactive({
@@ -12,16 +19,6 @@ const state = reactive({
   qtd: 0,
   complementoVaga: "",
 });
-
-const emit = defineEmits(["update-dados"]);
-
-watch(
-  () => state,
-  (novoValor) => {
-    emit("update-dados", { novoValor });
-  },
-  { deep: true }
-);
 </script>
 
 <template>
@@ -29,7 +26,7 @@ watch(
     <v-row class="d-flex">
       <v-col class="d-flex ga-4">
         <v-text-field
-          v-model="model"
+          v-model="model.gerente"
           class="input-gerente"
           label="GERENTE RÉSPONSAVEL"
           persistent-placeholder
@@ -37,7 +34,7 @@ watch(
         </v-text-field>
 
         <v-select
-          v-model="state.motivo"
+          v-model="model.motivo"
           class="input-motivo"
           :items="[
             { text: 'Substituição/Desligamento', value: 'SUBSTITUICAO-DESLIGAMENTO' },
@@ -51,9 +48,8 @@ watch(
           label="MOTIVO"
         >
         </v-select>
-        {{ state.motivo }}
         <v-text-field
-          v-model="state.complementoMotivo"
+          v-model="model.complementoMotivo"
           class="input-complemento-motivo"
           label="COMPLEMENTO MOTIVO"
           persistent-placeholder
@@ -67,7 +63,7 @@ watch(
     <v-row>
       <v-col class="d-flex justify-center align-center ga-4">
         <v-text-field
-          v-model="state.vaga"
+          v-model="model.vaga"
           class="input-vaga"
           label="VAGA"
           persistent-placeholder
@@ -75,7 +71,7 @@ watch(
         </v-text-field>
 
         <v-text-field
-          v-model="state.qtd"
+          v-model="model.qtd"
           class="input-qtd"
           label="QTD"
           type="number"
@@ -85,7 +81,7 @@ watch(
         </v-text-field>
 
         <v-text-field
-          v-model="state.complementoVaga"
+          v-model="model.complementoVaga"
           class="input-complemento-vaga"
           label="COMPLEMENTO VAGA"
           persistent-placeholder
