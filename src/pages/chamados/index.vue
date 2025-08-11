@@ -3,10 +3,17 @@ import { onMounted } from "vue";
 import { actions, state } from "./chamados";
 import CModalDetalhes from "./components/cModalDetalhes.vue";
 import assunto from "./components/assunto.vue";
+import { reactive } from "vue";
 
 onMounted(async () => {
   actions.init();
 });
+
+const formularioRh = reactive({
+   
+})
+
+
 </script>
 
 <template>
@@ -41,6 +48,7 @@ onMounted(async () => {
                   { text: 'Elétrica', value: 'ELETRICA' },
                   { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
                   { text: 'RH / Financeiro / ADM', value: 'RH / FINANCEIRO / ADM' },
+                  { text: ' RH ADMISSÃO', value: 'RH ADMISSAO' },
                 ]"
                 item-title="text"
                 item-value="value"
@@ -123,21 +131,31 @@ onMounted(async () => {
               </div>
             </v-col>
 
-            <!-- ///////////////////////////////////// teste para incerção dos inputs///////////////////////////////////////// -->
+            <!-- ///////////////////////////////////// teste para incerção dos inputs////////////////////////// -->
 
             <v-col
               cols="12"
-              v-if="state.assunto === 'RH / FINANCEIRO / ADM'"
+              v-if="state.assunto === 'RH ADMISSAO'"
             >
               <div class="d-flex align-center flex-column ga-4">
-                <assunto></assunto>
+                <!-- v-model:gerente="state.gerente", -->
+                <!-- {{ state.gerente }} -->
+                <assunto 
+                  v-model:gerente =
+                  v-model:motivo =
+                  v-model:complementoMotivo =
+                  v-model:vaga =
+                  v-model:quantidade =
+                  v-model:complementoVaga = 
+                  
+                  ></assunto>
               </div>
             </v-col>
 
-            <!-- ///////////////////////////////////// teste para incerção dos inputs///////////////////////////////////////// -->
+            <!-- ///////////////////////////////////// teste para incerção dos inputs////////////////////////// -->
           </v-row>
 
-          <v-row v-if="state.assunto !== 'RH / FINANCEIRO / ADM'">
+          <v-row v-if="state.assunto !== 'RH ADMISSAO'">
             <v-col cols="12">
               <v-textarea
                 v-model="state.descricao"

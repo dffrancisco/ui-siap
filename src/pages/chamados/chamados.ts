@@ -2,10 +2,14 @@ import { reactive } from "vue";
 import Swal from "sweetalert2";
 import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados } from "./interfaces";
+import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados, IDadosRhAdmissao } from "./interfaces";
 import utils, { dataBrasil } from "@/ts/utils";
 
 export const state = reactive(({
+    //teste
+    dadosRhAdmissao: <IDadosRhAdmissao>{},
+    //teste
+
     solicitante: (""),
     loja: (""),
     assunto: (""),
