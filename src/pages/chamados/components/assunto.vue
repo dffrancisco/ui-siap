@@ -10,15 +10,6 @@ let model = defineModel({
     complementoVaga: "",
   }),
 });
-
-const state = reactive({
-  gerente: "",
-  motivo: "",
-  complementoMotivo: "",
-  vaga: "",
-  qtd: 0,
-  complementoVaga: "",
-});
 </script>
 
 <template>
