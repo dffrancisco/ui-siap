@@ -113,7 +113,7 @@ const botoesVisiveis = computed(() => {
         <v-col cols="12">
           <span
             >Conferido por:
-            <b>{{ caixa.CONFERIDO && caixa.CONFERIDO.trim() !== "" ? caixa.CONFERIDO : "----" }}</b></span
+            <b>{{ caixa.CONFERIDO?.trim()?.length ? caixa.CONFERIDO : "----" }}</b></span
           >
         </v-col>
       </v-row>
