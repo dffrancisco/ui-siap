@@ -65,6 +65,6 @@ export interface IDadosRhAdmissao {
     motivo: null | string,
     complementoMotivo: null | string,
     vaga: null | string,
-    quantidade: null | number,
+    qtd: null | number,
     complementoVaga: null | string
 }

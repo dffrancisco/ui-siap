@@ -84,7 +84,6 @@ export const actions = {
     // teste
     async admissaoRh() {
         const keysRH = state.dadosRhAdmissao
-        console.log(state.dadosRhAdmissao)
 
         if (!Object.keys(keysRH)?.length) {
             return;
@@ -101,11 +100,13 @@ export const actions = {
         if (keysRH?.complementoVaga && keysRH['complementoVaga']?.length) {
             complementoVaga = `Complemento: ${state.dadosRhAdmissao.complementoVaga}\n`
         }
-        state.descricao = `\n Gerente: ${state.dadosRhAdmissao.gerente}\n
-            Motivo: ${state.dadosRhAdmissao.motivo}\n
+        state.descricao = `
+            Solicitação de Admissão
+            Gerente Responsável: ${state.dadosRhAdmissao.gerente}
+            Motivo da Solicitação: ${state.dadosRhAdmissao.motivo}
             ${complementoMotivo}
-            Vaga: ${state.dadosRhAdmissao.vaga}\n
-            Quantidade: ${state.dadosRhAdmissao.quantidade}\n
+            Vaga Solicitada: ${state.dadosRhAdmissao.vaga}
+            Quantidade de Vagas: ${state.dadosRhAdmissao.qtd}
             ${complementoVaga}`
 
         state.dadosRhAdmissao = <IDadosRhAdmissao>{}
