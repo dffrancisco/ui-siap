@@ -42,7 +42,7 @@ onMounted(async () => {
                   { text: 'Alarme', value: 'ALARME' },
                   { text: 'Câmera', value: 'CAMERA' },
                   { text: 'Elétrica', value: 'ELETRICA' },
-                  { text: ' RH admissão', value: 'RH ADMISSAO' },
+                  { text: 'RH admissão', value: 'RH ADMISSAO' },
                   { text: 'RH / Financeiro / ADM', value: 'RH / FINANCEIRO / ADM' },
                   { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
                 ]"

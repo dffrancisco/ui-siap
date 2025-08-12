@@ -4,6 +4,7 @@ import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados, IDadosRhAdmissao } from "./interfaces";
 import utils, { dataBrasil } from "@/ts/utils";
+import { unescapeLeadingUnderscores } from "typescript";
 
 export const state = reactive(({
 
@@ -80,9 +81,42 @@ export const actions = {
         state.previews = [];
     },
 
+    // teste
+    async admissaoRh() {
+        const keysRH = state.dadosRhAdmissao
+        console.log(state.dadosRhAdmissao)
+
+        if (!Object.keys(keysRH)?.length) {
+            return;
+        }
+
+        let complementoMotivo = ''
+
+        let complementoVaga = ''
+
+        if (keysRH?.complementoMotivo && keysRH['complementoMotivo']?.length) {
+            complementoMotivo = `Complemento: ${state.dadosRhAdmissao.complementoMotivo}\n`
+        }
+
+        if (keysRH?.complementoVaga && keysRH['complementoVaga']?.length) {
+            complementoVaga = `Complemento: ${state.dadosRhAdmissao.complementoVaga}\n`
+        }
+        state.descricao = `\n Gerente: ${state.dadosRhAdmissao.gerente}\n
+            Motivo: ${state.dadosRhAdmissao.motivo}\n
+            ${complementoMotivo}
+            Vaga: ${state.dadosRhAdmissao.vaga}\n
+            Quantidade: ${state.dadosRhAdmissao.quantidade}\n
+            ${complementoVaga}`
+
+        state.dadosRhAdmissao = <IDadosRhAdmissao>{}
+        return
+
+    },
+    // teste
+
     async submitForm() {
 
-        console.log(state.dadosRhAdmissao)
+        actions.admissaoRh()
 
         if (!validateForm()) {
             return;
