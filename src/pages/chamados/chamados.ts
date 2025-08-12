@@ -79,9 +79,12 @@ export const actions = {
         state.descricao = '';
         state.anexos = [];
         state.previews = [];
+        state.dadosRhAdmissao = <IDadosRhAdmissao>{}
+
     },
 
     // teste
+
     async admissaoRh() {
         const keysRH = state.dadosRhAdmissao
 
@@ -90,8 +93,9 @@ export const actions = {
         }
 
         let complementoMotivo = ''
-
         let complementoVaga = ''
+        let quantidade = ''
+        let vaga = ''
 
         if (keysRH?.complementoMotivo && keysRH['complementoMotivo']?.length) {
             complementoMotivo = `Complemento: ${state.dadosRhAdmissao.complementoMotivo}\n`
@@ -100,16 +104,25 @@ export const actions = {
         if (keysRH?.complementoVaga && keysRH['complementoVaga']?.length) {
             complementoVaga = `Complemento: ${state.dadosRhAdmissao.complementoVaga}\n`
         }
+
+        if (keysRH?.vaga && keysRH['vaga']?.length) {
+            vaga = `Vaga Solicitada: ${state.dadosRhAdmissao.vaga}\n`
+        }
+
+        if (keysRH?.qtd && keysRH['qtd']) {
+            quantidade = `Quantidade de Vagas: ${state.dadosRhAdmissao.qtd}\n`
+        }
+
+
         state.descricao = `
-            Solicitação de Admissão
+            Solicitação de Admissão:
             Gerente Responsável: ${state.dadosRhAdmissao.gerente}
             Motivo da Solicitação: ${state.dadosRhAdmissao.motivo}
             ${complementoMotivo}
-            Vaga Solicitada: ${state.dadosRhAdmissao.vaga}
-            Quantidade de Vagas: ${state.dadosRhAdmissao.qtd}
+            ${vaga}
+            ${quantidade}
             ${complementoVaga}`
 
-        state.dadosRhAdmissao = <IDadosRhAdmissao>{}
         return
 
     },
@@ -344,11 +357,21 @@ function showValidationError(message: string) {
 }
 
 function validateForm() {
+
     if (!state.assunto || !state.descricao) {
         showValidationError('Verifique os campos obrigatórios');
         return false;
-    }
-    return true;
+    } else if (!state.dadosRhAdmissao.gerente || !state.dadosRhAdmissao.motivo) {
+        Swal.fire({
+            icon: 'warning',
+            text: 'Campos gerente e motivo são obrigatorios!'
+        })
+        return false
+    } else return true;
+
+
+
 }
+
 
 export default { state, actions }
