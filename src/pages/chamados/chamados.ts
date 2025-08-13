@@ -121,7 +121,6 @@ export const actions = {
             Gerente Responsável: ${state.dadosRhAdmissao.gerente}
             Motivo da Solicitação: ${state.dadosRhAdmissao.motivo}
             ${complementoMotivo}
-            ------------------------------------------------------
             ${vaga}
             ${quantidade}
             ${complementoVaga}`
