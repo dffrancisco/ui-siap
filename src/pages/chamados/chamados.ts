@@ -99,30 +99,31 @@ export const actions = {
         let quantidade = ''
         let vaga = ''
 
-        if (keysRH?.complementoMotivo && keysRH['complementoMotivo']?.length) {
-            complementoMotivo = `Complemento motivo: ${state.dadosRhAdmissao.complementoMotivo}\n`
-        }
-
-        if (keysRH?.complementoVaga && keysRH['complementoVaga']?.length) {
-            complementoVaga = `Complemento da vaga: ${state.dadosRhAdmissao.complementoVaga}\n`
-        }
 
         if (keysRH?.vaga && keysRH['vaga']?.length) {
             vaga = `Vaga Solicitada: ${state.dadosRhAdmissao.vaga}`
         }
 
         if (keysRH?.qtd && keysRH['qtd']) {
-            quantidade = `Quantidade de Vagas: ${state.dadosRhAdmissao.qtd}\n`
+            quantidade = `Quantidade de Vagas: ${state.dadosRhAdmissao.qtd}`
         }
 
+        if (keysRH?.complementoMotivo && keysRH['complementoMotivo']?.length) {
+            complementoMotivo = `Complemento motivo: ${state.dadosRhAdmissao.complementoMotivo}`
+        }
+
+        if (keysRH?.complementoVaga && keysRH['complementoVaga']?.length) {
+            complementoVaga = `Complemento da vaga: ${state.dadosRhAdmissao.complementoVaga}`
+        }
 
         state.descricao = `
-            Solicitação de Admissão:
+            Solicitação RH Admissão:
             Gerente Responsável: ${state.dadosRhAdmissao.gerente}
             Motivo da Solicitação: ${state.dadosRhAdmissao.motivo}
+            ${complementoMotivo}
+            ------------------------------------------------------
             ${vaga}
             ${quantidade}
-            ${complementoMotivo}
             ${complementoVaga}`
 
         return
