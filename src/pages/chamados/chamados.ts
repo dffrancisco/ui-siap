@@ -92,21 +92,23 @@ export const actions = {
             return;
         }
 
+
+
         let complementoMotivo = ''
         let complementoVaga = ''
         let quantidade = ''
         let vaga = ''
 
         if (keysRH?.complementoMotivo && keysRH['complementoMotivo']?.length) {
-            complementoMotivo = `Complemento: ${state.dadosRhAdmissao.complementoMotivo}\n`
+            complementoMotivo = `Complemento motivo: ${state.dadosRhAdmissao.complementoMotivo}\n`
         }
 
         if (keysRH?.complementoVaga && keysRH['complementoVaga']?.length) {
-            complementoVaga = `Complemento: ${state.dadosRhAdmissao.complementoVaga}\n`
+            complementoVaga = `Complemento da vaga: ${state.dadosRhAdmissao.complementoVaga}\n`
         }
 
         if (keysRH?.vaga && keysRH['vaga']?.length) {
-            vaga = `Vaga Solicitada: ${state.dadosRhAdmissao.vaga}\n`
+            vaga = `Vaga Solicitada: ${state.dadosRhAdmissao.vaga}`
         }
 
         if (keysRH?.qtd && keysRH['qtd']) {
@@ -118,9 +120,9 @@ export const actions = {
             Solicitação de Admissão:
             Gerente Responsável: ${state.dadosRhAdmissao.gerente}
             Motivo da Solicitação: ${state.dadosRhAdmissao.motivo}
-            ${complementoMotivo}
             ${vaga}
             ${quantidade}
+            ${complementoMotivo}
             ${complementoVaga}`
 
         return
@@ -361,16 +363,18 @@ function validateForm() {
     if (!state.assunto || !state.descricao) {
         showValidationError('Verifique os campos obrigatórios');
         return false;
-    } else if (!state.dadosRhAdmissao.gerente || !state.dadosRhAdmissao.motivo) {
-        Swal.fire({
-            icon: 'warning',
-            text: 'Campos gerente e motivo são obrigatorios!'
-        })
-        return false
-    } else return true;
+    }
 
-
-
+    if (state.assunto === "RH ADMISSAO") {
+        if (!state.dadosRhAdmissao.gerente || !state.dadosRhAdmissao.motivo) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Campos gerente e motivo são obrigatórios!'
+            });
+            return false;
+        }
+    }
+    return true;
 }
 
 
