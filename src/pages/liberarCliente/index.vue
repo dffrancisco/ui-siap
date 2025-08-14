@@ -252,9 +252,9 @@ onMounted(async () => {
             color="primary"
             size="small"
             icon="mdi-account-cash mdi-24px"
-            title="Liberar Limite Cliente"
+            title="Recalcular crédito usado"
             :disabled="!state.idCliente || !state.botaoAlterarHabilitado"
-            @click="actions.btnLiberarLimiteCliente"
+            @click="actions.btnRecalcularCreditoUsado"
           >
           </v-btn>
         </div>

@@ -448,20 +448,19 @@ export const actions = {
         }
     },
 
-    async btnLiberarLimiteCliente() {
-        if (await msgConfirm('Confirmação', 'Confirma a liberação de crédito para este cliente?')) {
-            await actions.liberarLimiteCliente()
+    async btnRecalcularCreditoUsado() {
+        if (await msgConfirm('Confirmação', 'Confirma o recálculo do crédito usado para este cliente?')) {
+            await actions.recalcularCreditoUsado()
         }
     },
 
-    async liberarLimiteCliente() {
+    async recalcularCreditoUsado() {
         try {
             state.loading = true;
-            const data = await serviceLiberarCliente.liberarLimite(state.idCliente);
+            const { creditoUsado, success } = await serviceLiberarCliente.liberarLimite(state.idCliente);
 
-            if (data.success) {
-                let novoValorUsado = utils.formatValorUSA(state.creditoUsado) - data.valorLiberado
-                state.creditoUsado = utils.formatValor(novoValorUsado)
+            if (success) {
+                state.creditoUsado = utils.formatValor(creditoUsado)
 
                 Swal.fire({
                     icon: "success",
