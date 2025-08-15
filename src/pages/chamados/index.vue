@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { actions, state } from "./chamados";
+import { actions, options, state } from "./chamados";
 import CModalDetalhes from "./components/cModalDetalhes.vue";
 import assunto from "./components/assunto.vue";
-import { IDadosRhAdmissao } from "./interfaces";
-
-import { reactive } from "vue";
 
 onMounted(async () => {
   actions.init();
@@ -34,20 +31,10 @@ onMounted(async () => {
               <v-select
                 v-model="state.assunto"
                 class="obr text-uppercase rounded"
-                :items="[
-                  { text: 'Sistema', value: 'SISTEMA' },
-                  { text: 'Equipamento de TI', value: 'EQUIPAMENTO DE TI' },
-                  { text: 'Rede', value: 'REDE' },
-                  { text: 'Telefonia', value: 'TELEFONIA' },
-                  { text: 'Alarme', value: 'ALARME' },
-                  { text: 'Câmera', value: 'CAMERA' },
-                  { text: 'Elétrica', value: 'ELETRICA' },
-                  { text: 'RH admissão', value: 'RH ADMISSAO' },
-                  { text: 'RH / Financeiro / ADM', value: 'RH / FINANCEIRO / ADM' },
-                  { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
-                ]"
+                :items="options.assuntos"
                 item-title="text"
                 item-value="value"
+                @update:model-value="actions.resetDadosRH"
                 label="Assunto"
                 density="compact"
                 :clearable="false"
@@ -127,7 +114,6 @@ onMounted(async () => {
               </div>
             </v-col>
 
-            <!-- ///////////////////////////////////// teste para incerção dos inputs////////////////////////// -->
             <v-col
               cols="12"
               v-if="state.assunto === 'RH ADMISSAO'"
@@ -136,7 +122,6 @@ onMounted(async () => {
                 <assunto v-model="state.dadosRhAdmissao"></assunto>
               </div>
             </v-col>
-            <!-- ///////////////////////////////////// teste para incerção dos inputs////////////////////////// -->
           </v-row>
 
           <v-row v-if="state.assunto !== 'RH ADMISSAO'">

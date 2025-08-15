@@ -4,12 +4,10 @@ import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
 import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados, IDadosRhAdmissao } from "./interfaces";
 import utils, { dataBrasil } from "@/ts/utils";
-import { unescapeLeadingUnderscores } from "typescript";
+import moment from "moment";
 
 export const state = reactive(({
-
     dadosRhAdmissao: <IDadosRhAdmissao>{},
-
     solicitante: (""),
     loja: (""),
     assunto: (""),
@@ -66,6 +64,22 @@ export const state = reactive(({
     previewsModal: [] as string[],
 }))
 
+export const options = {
+    assuntos: [
+        { text: 'Sistema', value: 'SISTEMA' },
+        { text: 'Equipamento de TI', value: 'EQUIPAMENTO DE TI' },
+        { text: 'Rede', value: 'REDE' },
+        { text: 'Telefonia', value: 'TELEFONIA' },
+        { text: 'Alarme', value: 'ALARME' },
+        { text: 'Câmera', value: 'CAMERA' },
+        { text: 'Elétrica', value: 'ELETRICA' },
+        { text: 'RH admissão', value: 'RH ADMISSAO' },
+        { text: 'RH / Financeiro / ADM', value: 'RH / FINANCEIRO / ADM' },
+        { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
+    ]
+
+}
+
 export const actions = {
 
     async init() {
@@ -83,7 +97,10 @@ export const actions = {
 
     },
 
-    // teste
+    resetDadosRH() {
+        state.dadosRhAdmissao = {} as IDadosRhAdmissao
+        state.descricao = ''
+    },
 
     async admissaoRh() {
         const keysRH = state.dadosRhAdmissao
@@ -92,19 +109,16 @@ export const actions = {
             return;
         }
 
-
-
         let complementoMotivo = ''
         let complementoVaga = ''
         let quantidade = ''
         let vaga = ''
 
-
         if (keysRH?.vaga && keysRH['vaga']?.length) {
             vaga = `Vaga Solicitada: ${state.dadosRhAdmissao.vaga}`
         }
 
-        if (keysRH?.qtd && keysRH['qtd']) {
+        if (keysRH?.qtd) {
             quantidade = `Quantidade de Vagas: ${state.dadosRhAdmissao.qtd}`
         }
 
@@ -124,11 +138,9 @@ export const actions = {
             ${vaga}
             ${quantidade}
             ${complementoVaga}`
-
         return
 
     },
-    // teste
 
     async submitForm() {
 
@@ -138,11 +150,7 @@ export const actions = {
             return;
         }
 
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const dataAtual = `${year}-${month}-${day}`;
+        const dataAtual = moment().utc(false).format('YYYY-MM-DD')
 
         const param = {
             solicitante: state.solicitante,
@@ -185,7 +193,8 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao enviar os dados'
+                text: error?.reponse?.data?.msg || 'Erro ao enviar os dados'
+
             })
         } finally {
             state.loading = false;
@@ -207,7 +216,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao exibir os dados'
+                text: error?.reponse?.data?.msg || 'Erro ao exibir os dados'
             })
         } finally {
             state.loading = false;

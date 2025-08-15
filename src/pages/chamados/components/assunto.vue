@@ -1,6 +1,16 @@
 <script setup>
-import { reactive, watch } from "vue";
-let model = defineModel({
+import { reactive } from "vue";
+
+const state = reactive({
+  listaMotivos: [
+    { text: "Substituição/Desligamento", value: "SUBSTITUICAO-DESLIGAMENTO" },
+    { text: "Nova vaga", value: "NOVA-VAGA" },
+    { text: "Substituição/ Ida CRR", value: "SUBSTITUICAO-IDA-CRR" },
+    { text: "Outro, especifique", value: "OUTRO-ESPECIFIQUE" },
+  ],
+});
+
+const model = defineModel({
   default: () => ({
     gerente: "",
     motivo: "",
@@ -27,12 +37,7 @@ let model = defineModel({
         <v-select
           v-model="model.motivo"
           class="input-motivo"
-          :items="[
-            { text: 'Substituição/Desligamento', value: 'SUBSTITUICAO-DESLIGAMENTO' },
-            { text: 'Nova vaga', value: 'NOVA-VAGA' },
-            { text: 'Substituição/ Ida CRR', value: 'SUBSTITUICAO-IDA-CRR' },
-            { text: 'Outro, especifique', value: 'OUTRO-ESPECIFIQUE' },
-          ]"
+          :items="state.listaMotivos"
           persistent-placeholder
           item-title="text"
           item-value="value"
