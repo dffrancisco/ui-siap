@@ -9,7 +9,6 @@ import serviceConferenciaDeCaixa from "./services/conferenciaDeCaixa.service";
 import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import xAuthManager from "@/plugins/xAuthManager";
-import { C } from '@fullcalendar/core/internal-common';
 
 export const state = reactive({
     data: moment().format("YYYY-MM-DD"),
@@ -292,7 +291,9 @@ export const actions = {
     async efetuarSangria(valorSangria: string, caixaSelecionado: iCaixas) {
         try {
             state.loading = true;
+
             let param: iParamSangria = {
+                loginCaixa: caixaSelecionado.LOGIN,
                 idAberturaCaixa: caixaSelecionado.ID_ABERTURA_CAIXA,
                 valor: utils.formatValorUSA(valorSangria)
             };

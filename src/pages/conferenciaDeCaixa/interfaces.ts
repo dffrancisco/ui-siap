@@ -91,7 +91,6 @@ export interface iSangrias {
     LOGIN: string;
     VALOR: number;
     COD_FUNCIONARIO: number;
-    RECEBEDOR: string;
 }
 
 export interface iResponseDadosIniciais {
@@ -117,6 +116,7 @@ export interface iParamFecharCaixa {
 }
 
 export interface iParamSangria {
+    loginCaixa: string;
     idAberturaCaixa: number;
     valor: number;
 }
