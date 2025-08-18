@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { state, actions } from "./devolucaoManualCaixa";
-import DetalhesCaixa from "./components/DetalhesCaixa.vue";
+import ModalDetalhesCaixa from "./components/ModalDetalhesCaixa.vue";
 import { onMounted } from "vue";
 import Loading from "@/components/Loading.vue";
 
@@ -11,16 +11,16 @@ onMounted(() => {
 
 <template>
   <v-container class="container-devolucao-manual">
-    <section>
-      <h1 class="position-absolute top-0 left-0 ma-4 pa-1">DEVOLUÇÃO MANUAL CAIXA</h1>
-      <v-row>
+    <section class="w-100">
+      <h1 class="mb-4">DEVOLUÇÃO MANUAL CAIXA</h1>
+      <v-row class="container-cards-devolucao-manual">
         <v-col
           v-for="caixa in state.dadosCaixa"
           cols="4"
           :key="caixa.COD_FUNCIONARIO"
           @click.prevent="actions.abrirModal(caixa)"
         >
-          <v-card class="cards-decolucao-manual">
+          <v-card class="card-devolucao-manual">
             <v-avatar
               size="57"
               class="border-sm border-primary"
@@ -40,7 +40,7 @@ onMounted(() => {
       max-width="500"
       v-model="state.detalheCaixa"
     >
-      <detalhesCaixa
+      <ModalDetalhesCaixa
         :caixa="state.caixaSelecionado"
         :dadosDevolucao="state.dadosDevolucao"
         :idDevolucao="state.idDevolucao"
@@ -48,7 +48,7 @@ onMounted(() => {
         @salvar="actions.salvar"
         @buscar="actions.getDadosDevolucao"
       >
-      </detalhesCaixa>
+      </ModalDetalhesCaixa>
     </v-dialog>
   </v-container>
   <Loading :loading="state.loading" />
@@ -71,13 +71,20 @@ onMounted(() => {
   background-color: rgb(255, 255, 255);
 }
 
-.cards-decolucao-manual {
+.container-cards-devolucao-manual {
+  width: 100%;
+  overflow-y: auto;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-devolucao-manual {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  max-width: 100%;
-  width: 20rem;
   height: 10rem;
   padding: 3px;
   cursor: pointer;
