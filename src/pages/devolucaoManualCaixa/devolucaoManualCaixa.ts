@@ -19,22 +19,19 @@ export const actions = {
     state.dadosCaixa = await devolucaoManualCaixaService.getCaixaDiario()
   },
 
-  async getDadosDevolucao(codigoDevolucao) {
+  async getDadosDevolucao(codigoDevolucao: number) {
     try {
       state.loading = true
       state.dadosDevolucao = await devolucaoManualCaixaService.getDadosDevolucao(codigoDevolucao)
       state.idDevolucao = state.dadosDevolucao.ID_DEVOLUCAO;
-      state.loading = false
-      return
-    } catch {
+    } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Devolução não bloqueada",
-
+        title: error?.response?.data?.msg || "Ocorreu um erro ao buscar devolução",
       });
-      state.loading = false
-
     }
+
+    state.loading = false
   },
 
   abrirModal(caixa: iCaixa) {
@@ -71,17 +68,17 @@ export const actions = {
           await devolucaoManualCaixaService.liberarDevolucao(codCaixa, idAberturaCaixa, idDevolucao, caixa)
           Swal.fire({
             icon: "success",
-            title: "Crédito desbloqueado",
+            title: "Devolução lançada com sucesso!",
           });
 
         } catch (error) {
           Swal.fire({
             icon: "error",
-            title: "Erro ao processar sua solicitação.",
+            title: error?.response?.data?.msg || "Erro ao processar sua solicitação.",
           });
-        } finally {
-          state.loading = false;
         }
+
+        state.loading = false;
       },
     });
   },
