@@ -10,7 +10,6 @@ import Swal from "sweetalert2";
 import { msgConfirm } from "@/ts/message";
 import xAuthManager from "@/plugins/xAuthManager";
 
-
 export const state = reactive({
     data: moment().format("YYYY-MM-DD"),
     selectedOption: "caixas",
@@ -292,7 +291,9 @@ export const actions = {
     async efetuarSangria(valorSangria: string, caixaSelecionado: iCaixas) {
         try {
             state.loading = true;
+
             let param: iParamSangria = {
+                loginCaixa: caixaSelecionado.LOGIN,
                 idAberturaCaixa: caixaSelecionado.ID_ABERTURA_CAIXA,
                 valor: utils.formatValorUSA(valorSangria)
             };

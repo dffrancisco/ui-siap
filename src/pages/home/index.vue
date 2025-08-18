@@ -479,6 +479,11 @@ import login from "../login/login";
               @click="router.push('/estoqueOrganico')"
               >Estoque Orgânico</v-btn
             >
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/cabongo')"
+              >Cabongo</v-btn
+            >
 
             <v-btn
               class="mr-4 mb-4"
@@ -490,6 +495,12 @@ import login from "../login/login";
               class="mr-4 mb-4"
               @click="router.push('/desbloqueioCredito')"
               >desbloqueio Credito</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/devolucaoManualCaixa')"
+              >devolução manual caixa</v-btn
             >
 
             <v-btn
