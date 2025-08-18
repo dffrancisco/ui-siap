@@ -18,10 +18,17 @@ onMounted(() => {
 
 <template>
   <v-container fluid>
-    <v-card max-width="1100px" class="pa-4 mx-auto">
+    <v-card
+      max-width="1100px"
+      class="pa-4 mx-auto"
+    >
       <!-- Input de Data -->
       <v-row class="pt-4 pl-2">
-        <v-col cols="12" sm="3" md="3">
+        <v-col
+          cols="12"
+          sm="3"
+          md="3"
+        >
           <v-text-field
             v-model="state.data"
             label="Data"
@@ -31,14 +38,32 @@ onMounted(() => {
           />
         </v-col>
 
-        <v-col cols="12" sm="6" md="1" class="d-flex">
-          <v-btn icon="mdi-magnify" size="39" color="primary" @click="actions.init" />
+        <v-col
+          cols="12"
+          sm="6"
+          md="1"
+          class="d-flex"
+        >
+          <v-btn
+            icon="mdi-magnify"
+            size="39"
+            color="primary"
+            @click="actions.init"
+          />
         </v-col>
       </v-row>
 
       <!-- MDC Fechado -->
-      <div v-if="!state.mdcAberto" class="text-center pa-4">
-        <v-alert type="warning" color="primary" prominent class="mb-4">
+      <div
+        v-if="!state.mdcAberto"
+        class="text-center pa-4"
+      >
+        <v-alert
+          type="warning"
+          color="primary"
+          prominent
+          class="mb-4"
+        >
           O Movimento Diário de Consumo (MDC) está fechado!
         </v-alert>
         <v-btn
@@ -51,8 +76,15 @@ onMounted(() => {
       </div>
 
       <!--Lista de Opções -->
-      <div v-if="state.mdcAberto" class="pt-3 mb-5">
-        <v-chip-group v-model="state.selectedOption" color="primary" mandatory>
+      <div
+        v-if="state.mdcAberto"
+        class="pt-3 mb-5"
+      >
+        <v-chip-group
+          v-model="state.selectedOption"
+          color="primary"
+          mandatory
+        >
           <v-chip
             v-for="option in options"
             :key="option.value"
@@ -112,19 +144,13 @@ onMounted(() => {
       </template>
 
       <!-- Renderiza a aba de Lançamentos -->
-      <AbaLancamentos
-        v-if="computeds.abaSelecionada.value === 'lancamentos' && state.mdcAberto"
-      />
+      <AbaLancamentos v-if="computeds.abaSelecionada.value === 'lancamentos' && state.mdcAberto" />
 
       <!-- Renderiza a aba de Sangrias -->
-      <AbaSangrias
-        v-if="computeds.abaSelecionada.value === 'sangria' && state.mdcAberto"
-      />
+      <AbaSangrias v-if="computeds.abaSelecionada.value === 'sangria' && state.mdcAberto" />
 
       <!-- Renderiza a aba de Devolucoes -->
-      <AbaDevolucoes
-        v-if="computeds.abaSelecionada.value === 'devolucao' && state.mdcAberto"
-      />
+      <AbaDevolucoes v-if="computeds.abaSelecionada.value === 'devolucao' && state.mdcAberto" />
 
       <!-- Mensagem de quem abriu o MDC -->
       <div class="pa-2 mt-3">
@@ -135,7 +161,10 @@ onMounted(() => {
     <div id="pnCodigoTela">conferenciaDeCaixa</div>
 
     <!-- Modal Abrir Caixa -->
-    <v-dialog v-model="state.modalAbrirCaixaOpened" max-width="800">
+    <v-dialog
+      v-model="state.modalAbrirCaixaOpened"
+      max-width="800"
+    >
       <ModalAbrirCaixa
         :funcionarios="computeds.funcionariosDisponiveis.value"
         :modalOpened="state.modalAbrirCaixaOpened"
@@ -145,7 +174,10 @@ onMounted(() => {
     </v-dialog>
 
     <!-- Modal Sangria -->
-    <v-dialog v-model="state.modalSangriaOpened" max-width="800">
+    <v-dialog
+      v-model="state.modalSangriaOpened"
+      max-width="800"
+    >
       <ModalSangria
         :modalOpened="state.modalSangriaOpened"
         :caixaSelecionado="state.caixaSelected"
@@ -174,8 +206,16 @@ onMounted(() => {
     <modalXAuthManager :retain-focus="false" />
   </v-container>
 
-  <v-overlay :model-value="state.loading" class="align-center justify-center" persistent>
-    <v-progress-circular color="primary" indeterminate size="64"></v-progress-circular>
+  <v-overlay
+    :model-value="state.loading"
+    class="align-center justify-center"
+    persistent
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    ></v-progress-circular>
   </v-overlay>
 </template>
 
