@@ -20,9 +20,9 @@ const getDadosDevolucao: iGetDadosDevolucao = async (idDevolucao: number) => {
     return data;
 }
 
-const onClickLancamento = async (codCaixa: number, idAberturaCaixa: number, idDevolucao: number, caixa: string): Promise<Mensagem> => {
+const liberarDevolucao = async (codCaixa: number, idAberturaCaixa: number, idDevolucao: number, caixa: string): Promise<Mensagem> => {
     let { data } = await axios.post(caminho, {
-        call: "onClickLancamento",
+        call: "liberarDevolucao",
         param: {
             codCaixa, idAberturaCaixa, idDevolucao, caixa
         }
@@ -30,4 +30,8 @@ const onClickLancamento = async (codCaixa: number, idAberturaCaixa: number, idDe
     return data;
 }
 
-export default { getCaixaDiario, getDadosDevolucao, onClickLancamento }
+export default {
+    getCaixaDiario,
+    getDadosDevolucao,
+    liberarDevolucao
+}

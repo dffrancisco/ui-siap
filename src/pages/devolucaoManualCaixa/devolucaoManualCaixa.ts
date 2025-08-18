@@ -53,7 +53,7 @@ export const actions = {
 
   },
 
-  async onClickLancamento() {
+  async salvar() {
     const idDevolucao = state.idDevolucao
     const codCaixa = state.caixaSelecionado.COD_FUNCIONARIO
     const idAberturaCaixa = state.caixaSelecionado.ID_ABERTURA_CAIXA
@@ -68,14 +68,13 @@ export const actions = {
       call: async () => {
         try {
           state.loading = true;
-          await devolucaoManualCaixaService.onClickLancamento(codCaixa, idAberturaCaixa, idDevolucao, caixa)
+          await devolucaoManualCaixaService.liberarDevolucao(codCaixa, idAberturaCaixa, idDevolucao, caixa)
           Swal.fire({
             icon: "success",
             title: "Crédito desbloqueado",
           });
 
         } catch (error) {
-
           Swal.fire({
             icon: "error",
             title: "Erro ao processar sua solicitação.",
