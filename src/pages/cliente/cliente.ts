@@ -1,13 +1,14 @@
-import { nextTick, reactive } from "vue";
+import { nextTick, reactive} from "vue";
 import { iAtividadesCNAE, iBairros, iCidades, iClientes, iUF } from "./interfaces";
 import serviceCliente from "./services/cliente.service";
 import Swal from "sweetalert2";
 import { useEventListener } from "@vueuse/core";
 import utils from "@/ts/utils";
 import { msgConfirm } from "@/ts/message";
-
+ 
 
 export const state = reactive({
+  
     apelido: "",
     atividadeCNAE: <iAtividadesCNAE[]>[],
     bairros: <iBairros[]>[],
@@ -48,6 +49,7 @@ export const state = reactive({
     updateCliente: false,
     contribuinteICMS: ""
 })
+
 
 export const actions = {
     async init() {
