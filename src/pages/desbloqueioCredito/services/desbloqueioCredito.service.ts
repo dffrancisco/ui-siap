@@ -1,11 +1,11 @@
 import axios from "axios";
 import { iCredito } from "../interfaces";
 const caminho = 'siap/desbloqueioCredito'
-type iGetCredito = (param:string) => Promise<iCredito>
-type iDesbloquearCredito = (param:string) => Promise<string>
+type iGetCredito = (param: string) => Promise<iCredito>
+type iDesbloquearCredito = (param: string) => Promise<string>
 
 
-const getCredito: iGetCredito  = async (chave: string) => {
+const getCredito: iGetCredito = async (chave: string) => {
     let { data } = await axios.post(caminho, {
         call: "getCredito",
         param: {
@@ -15,8 +15,8 @@ const getCredito: iGetCredito  = async (chave: string) => {
     return data;
 }
 
-const desbloquearCredito:iDesbloquearCredito = async(chave: string) => {
-        let { data } = await axios.post(caminho, {
+const desbloquearCredito: iDesbloquearCredito = async (chave: string) => {
+    let { data } = await axios.post(caminho, {
         call: "desbloquearCredito",
         param: {
             chave
@@ -27,4 +27,4 @@ const desbloquearCredito:iDesbloquearCredito = async(chave: string) => {
 }
 
 
-export default {getCredito, desbloquearCredito }
+export default { getCredito, desbloquearCredito }

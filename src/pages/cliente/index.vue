@@ -275,13 +275,14 @@ onMounted(async () => {
         <v-col cols="6"
           ><v-text-field
             v-model="state.endereco"
-            label="Endereço *"
+            label="Endereço*"
             maxLength="40"
             :clearable="false"
             :disabled="state.desativarInputs"
+        
           >
           </v-text-field
-        ></v-col>
+        ><small style="float: right;">{{ state.endereco?.length || 0 }} / 40</small> </v-col>
         <v-col
           cols="6"
           class="containerCnae"

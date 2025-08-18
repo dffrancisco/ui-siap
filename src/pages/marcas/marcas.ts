@@ -26,10 +26,10 @@ export const actions = {
             height: 200,
             count: true,
             columns: {
-                'Descriçao': { dataField: 'DESCRICAO'},
-                'Grupo Marca': { dataField: 'GRUPO'},
+                'Descriçao': { dataField: 'DESCRICAO' },
+                'Grupo Marca': { dataField: 'GRUPO' },
             },
-            query:{
+            query: {
                 async execute(rs) {
                     let data = await actions.getMarcas(rs);
                     state.gridPrincipal.querySourceAdd(data);
@@ -37,16 +37,16 @@ export const actions = {
             },
             sideBySide: {
                 el: '#pnCampos',
-                vModel(r) {state.dbMarca = r},
-                duplicity:{
-                    dataField:['DESCRICAO'],
+                vModel(r) { state.dbMarca = r },
+                duplicity: {
+                    dataField: ['DESCRICAO'],
                     async execute(rs) {
                         let dup = await actions.getDuplicidade({
                             value: rs.value.toUpperCase(),
                             field: rs.field
                         });
 
-                        if(Object.keys(dup).length > 0){
+                        if (Object.keys(dup).length > 0) {
                             state.gridPrincipal.showMessageDuplicity(
                                 rs.text + ' já cadastrado'
                             )
@@ -68,7 +68,7 @@ export const actions = {
                             state: 'update',
                             click: actions.btnEdit,
                             id: 'btnUpdate'
-                        }, 
+                        },
                         excluir: {
                             html: 'Excluir',
                             state: 'delete',
@@ -80,7 +80,7 @@ export const actions = {
                             click: actions.btnSave,
                             preLoad: 'Salvando',
                         },
-                       
+
                         cancela: {
                             html: 'Cancelar',
                             state: 'cancel',
@@ -101,7 +101,7 @@ export const actions = {
         actions.criarGrids()
         actions.getGrupoMarcas();
 
-        state.gridPrincipal.queryOpen({ GRUPO: ''})
+        state.gridPrincipal.queryOpen({ GRUPO: '' })
         state.gridPrincipal.focus()
         state.loading = false
     },
@@ -113,69 +113,69 @@ export const actions = {
         state.gridPrincipal.clearElementSideBySide();
     },
 
-    async btnSave(){
+    async btnSave() {
 
         if (utils.validaOBR()) return false;
 
-        if(await state.gridPrincipal.getDuplicityAll() == true) return false;
+        if (await state.gridPrincipal.getDuplicityAll() == true) return false;
 
         let selectedOption = state.dsMarca.find(group => group.GRUPO === state.dbMarca.GRUPO);
         let idMarcaGrupo = selectedOption ? selectedOption.ID_MARCA_GRUPO : null;
 
         //@ts-ignore
-        if (state.gridPrincipal.dataSource() == false){
+        if (state.gridPrincipal.dataSource() == false) {
             actions.toInsert(idMarcaGrupo);
-        }else{
+        } else {
             actions.toUpdate(idMarcaGrupo);
         }
 
         state.disabledSearch = false
         state.gridPrincipal.enable();
         state.gridPrincipal.focus();
-        
+
     },
 
-    btnEdit(){ 
+    btnEdit() {
         //@ts-ignore
-        if(state.gridPrincipal.dataSource() == false) {
-            Swal.fire({icon: 'info', text: 'Nenhum registro selecionado para alteração, operação cancelada!'})
+        if (state.gridPrincipal.dataSource() == false) {
+            Swal.fire({ icon: 'info', text: 'Nenhum registro selecionado para alteração, operação cancelada!' })
             return false
         }
         state.disabledSearch = true
         state.gridPrincipal.focusField();
         state.gridPrincipal.disable();
-        
+
     },
 
     async btnDelete() {
         //@ts-ignore
-        if(state.gridPrincipal.dataSource() === false) {
+        if (state.gridPrincipal.dataSource() === false) {
             Swal.fire({
                 icon: 'info',
                 text: 'Nenhum registro selecionado para alteração, operação cancelada!'
             })
             return false
         }
-        if(await msgConfirm("Confirmação", "Confirma exclusão deste registro?"))
-        await actions.toDelete();
+        if (await msgConfirm("Confirmação", "Confirma exclusão deste registro?"))
+            await actions.toDelete();
         state.gridPrincipal.focus();
     },
 
-    btnCancel(){
+    btnCancel() {
         state.disabledSearch = false
         state.gridPrincipal.enable();
         state.gridPrincipal.focus();
-        
+
     },
 
-    async getMarcas({offset, param}: iParamGetMarcas) {
-        try{
+    async getMarcas({ offset, param }: iParamGetMarcas) {
+        try {
             state.loading = true
-            let data = await serviceMarcas.getMarcas({offset, param})            
-            state.loading = false            
+            let data = await serviceMarcas.getMarcas({ offset, param })
+            state.loading = false
 
             return data
-        }catch(error){
+        } catch (error) {
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao exibir marcas'
@@ -184,13 +184,13 @@ export const actions = {
     },
 
     async getGrupoMarcas() {
-        try{
-            let data = await serviceMarcas.getGrupoMarcas()            
-            
-            state.dsMarca = data            
+        try {
+            let data = await serviceMarcas.getGrupoMarcas()
+
+            state.dsMarca = data
 
             return data
-        }catch(error){
+        } catch (error) {
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao carregador grupo de marcas'
@@ -206,19 +206,19 @@ export const actions = {
     },
 
     async toInsert(idMarcaGrupo: any) {
-        try{
-            
+        try {
+
             let newFields: any = (
                 state.gridPrincipal.getElementSideBySideJson(true, false)
-            );    
-            
+            );
+
             state.loading = true;
             let data: any = await serviceMarcas.toInsert(newFields, idMarcaGrupo)
-            state.loading = false;   
+            state.loading = false;
 
-            state.gridPrincipal.insertLine({...newFields, ...data})
-        }catch(error){
-            
+            state.gridPrincipal.insertLine({ ...newFields, ...data })
+        } catch (error) {
+
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao inserir marcas'
@@ -226,12 +226,12 @@ export const actions = {
         }
     },
 
-    async getDuplicidade({ field, value }:iFieldDuplicity){
-        try{
-            let data = await serviceMarcas.getDuplicidade({field, value});
+    async getDuplicidade({ field, value }: iFieldDuplicity) {
+        try {
+            let data = await serviceMarcas.getDuplicidade({ field, value });
 
             return data
-        }catch(error){
+        } catch (error) {
             Swal.fire({
                 icon: 'error',
                 text: 'Marca ja cadastrada!'
@@ -240,7 +240,7 @@ export const actions = {
     },
 
     async toDelete() {
-        try{
+        try {
             let id_marca = state.dbMarca.ID_MARCA
 
             state.loading = true
@@ -248,7 +248,7 @@ export const actions = {
             state.loading = false
 
             state.gridPrincipal.deleteLine();
-        }catch(error){
+        } catch (error) {
             state.loading = false
             Swal.fire({
                 icon: "error",
@@ -259,7 +259,7 @@ export const actions = {
 
     async toUpdate(idMarcaGrupo: any) {
 
-        try{
+        try {
             let diff = state.gridPrincipal.getDiffTwoJson(true, false)
             let dadosAlterados = {
                 ...state.dbMarca,
@@ -267,21 +267,21 @@ export const actions = {
             }
 
             dadosAlterados['ID_MARCA_GRUPO'] = idMarcaGrupo;
-            
+
             state.loading = true
             await serviceMarcas.toUpdate(dadosAlterados)
             state.loading = false
 
-            state.dbMarca = { ...state.dbMarca, ...diff} as iMarcas;
+            state.dbMarca = { ...state.dbMarca, ...diff } as iMarcas;
             state.gridPrincipal.dataSource(dadosAlterados)
 
-        }catch(error){
+        } catch (error) {
             state.loading = false
             Swal.fire({
                 icon: 'error',
                 text: 'Erro ao atualizar corredor!'
             })
-            
+
         }
     },
 

@@ -30,7 +30,7 @@ const botoesVisiveis = computed(() => {
 <template>
   <v-card
     class="d-flex flex-column justify-space-between"
-    min-height="260px"
+    min-height="280px"
     :class="{
       'caixa-aberto': caixa.STATUS == 1,
       'caixa-fechado': caixa.STATUS == 2,
