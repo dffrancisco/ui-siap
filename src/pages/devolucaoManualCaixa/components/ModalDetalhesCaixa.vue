@@ -4,7 +4,6 @@ import { iDadosDevolucao, iCaixa } from "../interfaces";
 import { onMounted, reactive } from "vue";
 import Swal from "sweetalert2";
 
-// teste
 const props = defineProps<{
   caixa: iCaixa;
   dadosDevolucao: iDadosDevolucao;
@@ -33,8 +32,6 @@ const actions = {
 onMounted(() => {
   state.idDevolucao = props.idDevolucao;
 });
-
-// teste
 </script>
 
 <template>
