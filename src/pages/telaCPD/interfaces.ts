@@ -1,8 +1,3 @@
-export interface iGetLojasFunction {
-    ID_EMPRESA: number;
-    FANTASIA: string;
-
-};
 
 export interface iGetLojasResponse {
     ID_EMPRESA: number;
@@ -13,11 +8,9 @@ interface Loja {
     nome: string
 }
 
-interface State {
+interface login {
     password: string
     loading: boolean
     loggedIn: boolean
-
-    lojas: Loja[]
     selectedStore: number | null
 }

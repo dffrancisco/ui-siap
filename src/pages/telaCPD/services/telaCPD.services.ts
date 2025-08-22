@@ -12,8 +12,6 @@ const getLojas: iGetLojasFunction = async () => {
     return data;
 }
 
-
-
 export default {
     getLojas,
 }

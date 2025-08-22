@@ -31,7 +31,7 @@ export const actions = {
     },
 
     async login(password: string) {
-        const correctPassword = 'suporteTI'
+        const correctPassword = import.meta.env.VITE_CPD_PASSWORD;
         state.loading = true;
         try {
             if (password === correctPassword) {
@@ -59,7 +59,7 @@ export const actions = {
     onclickrLiberarCredito(valor: number) {
         state.selecLoja = valor;
         if (!state.selecLoja) {
-            alert("Selecione uma loja antes de continuar");
+            toast.warning("Selecione uma loja antes de continuar");
             return;
         }
         const url = `http://192.168.100.60/siap+/?p=frame/frame&page=desbloqueioCredito&tolk=${state.selecLoja}`;
