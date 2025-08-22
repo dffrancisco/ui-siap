@@ -149,7 +149,7 @@ export const actions = {
 export const eventListener = useEventListener(document, "keydown", async (event) => {
     if (!state.modalCartaoOpened) {
         state.acao = "incluir"
-        if (event.key === "F1" && state.acao === "incluir") {
+        if (event.key === "F1") {
             event.preventDefault();
             event.stopPropagation();
             state.modalCartaoOpened = true

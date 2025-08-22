@@ -1,5 +1,5 @@
 import axios from "axios";
-import { iCartoes } from "../interfaces";
+import { iCartoes, iParamCartoes, iParamUpdateCartoes } from "../interfaces";
 const caminho = 'siap/cartoes'
 
 type iGetCartaosFunction = () => Promise<iCartoes[]>;
@@ -11,7 +11,7 @@ const getCartoes: iGetCartaosFunction = async () => {
     return data
 }
 
-const insertCartoes = async (param) => {
+const insertCartoes = async (param: iParamCartoes) => {
     let { data } = await axios.post('siap/cartoes', {
         call: 'insertCartoes',
         param
@@ -19,7 +19,7 @@ const insertCartoes = async (param) => {
     return data;
 }
 
-const updateCartoes = async (param: any) => {
+const updateCartoes = async (param: iParamUpdateCartoes) => {
     let { data } = await axios.post(caminho, {
         call: "updateCartoes",
         param
