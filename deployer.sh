@@ -7,7 +7,7 @@ if [ $? = 0 ]; then
   zip -r ./ui-siap.zip ./ui-siap
   cp package.json ui-siap-package.json
 
-  rsync -uahvrztP -e 'ssh -p 2608' --compress-level=5 --progress ./ui-siap.zip ui-siap-package.json root@reallatas.com.br:/var/www/html/lojas/siap
+  rsync -uahvrztP -e 'ssh -p 2608' --compress-level=5 --progress ./ui-siap.zip ui-siap-package.json root@vyzo.com.br:/home/taap_server
 
   rm ./ui-siap.zip
   rm ui-siap-package.json
