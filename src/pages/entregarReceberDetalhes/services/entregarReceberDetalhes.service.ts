@@ -13,7 +13,7 @@ import {
     iUpdateDescPendenciaMotoristaFunctionParam,
 } from "../interface";
 
-const caminho = 'siap/entregarReceber'
+const caminho = 'taap/entregarReceber'
 
 type iGetMotoristas = () => Promise<iMotorista[]>
 type iGetMotoristasPendentes = () => Promise<iMotorista[]>

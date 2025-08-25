@@ -9,7 +9,7 @@ type iAdicionarSangria = (param: iParamSangria) => Promise<iSangrias[]>
 type iAdicionarObs = (param: iParamObs) => Promise<string>
 type iConferirCaixa = (idAberturaCaixa: number) => Promise<iResponseConferido>
 
-const caminho = "siap/conferenciaCaixa";
+const caminho = "taap/conferenciaCaixa";
 
 const getDadosIniciaisConfCaixa: iGetDadosIniciaisConfCaixa = async (param: string) => {
     let { data } = await axios.post(caminho, {

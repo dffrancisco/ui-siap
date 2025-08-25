@@ -1,21 +1,21 @@
 import axios from 'axios';
-import { 
-    iParamGetImpressorasTermicas, 
-    iImpressorasTermicasResponse, 
-    iFieldDuplicity, 
+import {
+    iParamGetImpressorasTermicas,
+    iImpressorasTermicasResponse,
+    iFieldDuplicity,
     iGetDuplicityResponse,
-    iParamToInsert, 
+    iParamToInsert,
     iParamToUpdate
 } from '../intefaces';
 
-const caminho = 'siap/impressorasTermicas';
+const caminho = 'taap/impressorasTermicas';
 
 type iGetImpressorasFunction = (param: iParamGetImpressorasTermicas) => Promise<iImpressorasTermicasResponse[]>;
-type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]> ;
+type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>;
 type iToInsertFuction = (param: iParamToInsert) => Promise<void>;
 type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>;
 
-const getImpressorasTermicas: iGetImpressorasFunction =  async ({ offset, param }) => {
+const getImpressorasTermicas: iGetImpressorasFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
         call: 'getImpressorasTermicas',
         offset,
@@ -43,7 +43,7 @@ const getDuplicidade: iGetDuplicityFunction = async ({ field, value }) => {
 };
 
 const toInsert: iToInsertFuction = async (newFields) => {
-    
+
     let { data } = await axios.post(caminho, {
         call: 'insert',
         param: newFields
@@ -60,7 +60,7 @@ const toDelete = async (id_impressora) => {
 };
 
 const toUpdate: iToUpdateFunction = async (param: any) => {
-    console.log(param); 
+    console.log(param);
     let { data } = await axios.post(caminho, {
         call: 'update',
         param
@@ -69,7 +69,7 @@ const toUpdate: iToUpdateFunction = async (param: any) => {
     return data;
 }
 
-export default { 
+export default {
     getImpressorasTermicas,
     getDrivers,
     getDuplicidade,

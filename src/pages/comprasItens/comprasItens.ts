@@ -420,7 +420,7 @@ export const actions = {
 
         if (indexItemNaFila == -1) {
             state.filaItens.push(item);
-            localStorage.setItem(`siap:comprasItens-${item.ID_COMPRAS}`, JSON.stringify(state.filaItens));
+            localStorage.setItem(`taap:comprasItens-${item.ID_COMPRAS}`, JSON.stringify(state.filaItens));
         } else {
             state.filaItens[indexItemNaFila].TENTATIVAS = 0;
         }
@@ -481,9 +481,9 @@ export const actions = {
         state.filaItens.splice(indexFilaItem, 1);
 
         if (state.filaItens.length > 0) {
-            localStorage.setItem(`siap:comprasItens-${idCompras}`, JSON.stringify(state.filaItens));
+            localStorage.setItem(`taap:comprasItens-${idCompras}`, JSON.stringify(state.filaItens));
         } else {
-            localStorage.removeItem(`siap:comprasItens-${idCompras}`);
+            localStorage.removeItem(`taap:comprasItens-${idCompras}`);
         }
     },
 

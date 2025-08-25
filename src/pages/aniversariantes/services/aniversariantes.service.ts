@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iAniversariante } from "../interface";
 
-const caminho = 'siap/aniversariantes'
+const caminho = 'taap/aniversariantes'
 
 type iGetAniversariantesMesFunction = (mes: number) => Promise<iAniversariante[]>
 

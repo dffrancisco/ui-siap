@@ -10,7 +10,7 @@ import {
     iBancoResponse,
 } from '../interfaces';
 
-const caminho = "siap/favorecidos";
+const caminho = "taap/favorecidos";
 
 const getFavorecidos = async ({ param, offset }: iParamGetFavorecido): Promise<iFavorecidoResponse> => {
     const { data } = await axios.post(caminho, {

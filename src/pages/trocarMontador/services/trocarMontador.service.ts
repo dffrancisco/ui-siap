@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iMontador, iOrcamento, iParamUpdateMontador } from "../interface";
 
-const caminho = 'siap/trocarMontador'
+const caminho = 'taap/trocarMontador'
 
 type iGetMontadoresFunction = () => Promise<iMontador[]>
 type iGetOrcamentoFunction = (numOrcamento: number) => Promise<iOrcamento>

@@ -12,7 +12,7 @@ import {
     iParamInativarCargo
 } from '../interfaces'
 
-const caminho = 'siap/cargos'
+const caminho = 'taap/cargos'
 
 type iGetCargosFunction = (param: iParamGetCargo) => Promise<iGetCargosResponse>
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;

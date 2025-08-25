@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iCliente, iMotorista, iTotalizador } from "../interface";
 
-const caminho = 'siap/entregarReceber'
+const caminho = 'taap/entregarReceber'
 
 type iGetMotoristasPendentesFunction = () => Promise<iMotorista[]>
 type iGetClientesPendentesFunction = () => Promise<iCliente[]>

@@ -10,7 +10,7 @@ import {
 type iGetDadosParaInputs = () => Promise<iDadosInputs>
 
 
-const caminho = "siap/gerirRamais";
+const caminho = "taap/gerirRamais";
 
 const getRamais = async (param: string): Promise<iRamal[]> => {
     const { data } = await axios.post(caminho, {

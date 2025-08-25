@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iAutorizacaoFuncionario, iFuncionario, iGetAutorizacaoFuncionarioParam, iLiberarVale, iLiberarValeParam, iOrcamento, iValeFuncionario } from "./interfaces";
 
-const caminho = 'siap/valePecaAutorizacao'
+const caminho = 'taap/valePecaAutorizacao'
 
 type iGetFuncionariosFunction = () => Promise<iFuncionario[]>
 type iGetValesFuncionarioFunction = (codFuncionario: number) => Promise<iValeFuncionario[]>

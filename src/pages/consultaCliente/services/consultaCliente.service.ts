@@ -7,7 +7,7 @@ import {
     iTodosBoletos
 } from "../interfaces";
 
-const caminho = 'siap/consultaCliente'
+const caminho = 'taap/consultaCliente'
 
 type iGetClientesFuction = (param: iGetClientes, offset: number) => Promise<iClientes>
 type iGetDadosClienteFunction = (param: iParamRequisicoes) => Promise<iResponseDadosCliente>

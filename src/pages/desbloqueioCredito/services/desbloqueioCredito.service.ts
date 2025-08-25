@@ -1,6 +1,6 @@
 import axios from "axios";
 import { iCredito } from "../interfaces";
-const caminho = 'siap/desbloqueioCredito'
+const caminho = 'taap/desbloqueioCredito'
 type iGetCredito = (param: string) => Promise<iCredito>
 type iDesbloquearCredito = (param: string) => Promise<string>
 

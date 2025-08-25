@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iTransportadora, iParamsRelatorioConhecimento, iDadosParaRelatorio } from "../interfaces";
 
-const caminho = 'siap/relatorioDeConhecimento';
+const caminho = 'taap/relatorioDeConhecimento';
 
 type iGetDadosParaRelatorio = (param: iParamsRelatorioConhecimento) => Promise<iDadosParaRelatorio>;
 type iGetTransportadoras = () => Promise<iTransportadora[]>;

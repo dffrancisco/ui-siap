@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iAprovar, iGetSugestaoCompraAlteracao, iReprovar, iResponseSugestaoCompraAlteracao } from "../interfaces";
 
-const caminho = 'siap/sugestaoCompraAlteracao'
+const caminho = 'taap/sugestaoCompraAlteracao'
 
 type iGetSugestaoCompraAlteracaoFunction = (param: iGetSugestaoCompraAlteracao) => Promise<iResponseSugestaoCompraAlteracao>;
 type iAprovarFunction = (param: iAprovar) => Promise<iAprovar>

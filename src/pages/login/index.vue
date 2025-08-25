@@ -92,7 +92,7 @@ onMounted(() => {
               >
                 <img src="../../../public/icons/icon.png" />
               </div>
-              <h2>Siap</h2>
+              <h2>Taap</h2>
             </v-col>
 
             <v-col cols="12">

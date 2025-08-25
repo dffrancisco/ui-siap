@@ -4,7 +4,7 @@ import {
     iParamFiltros, iResponseDadosParaFiltros, iResponseFiltros, iResultPesquisa, iUpdateNomeFiltro
 } from "../interfaces";
 
-const caminho = 'siap/filtro'
+const caminho = 'taap/filtro'
 type iGetFiltros = (param: iParamFiltros) => Promise<iResponseFiltros>
 type iGetDadosParaFiltragem = (param: iParamFiltrar) => Promise<iResultPesquisa[]>
 type iGetDadosFiltroSelecionado = (param: number) => Promise<iDadosFiltro[]>

@@ -4,7 +4,7 @@ import {
     iResponseInsertCompra, iResponseGetProdutosAdicionadosFunction, iTransportadora
 } from "../interfaces";
 
-const caminho = "siap/compras";
+const caminho = "taap/compras";
 
 type iGetComprasFunction = () => Promise<iCompra[]>;
 type iGetMarcasFunction = () => Promise<iMarca[]>;

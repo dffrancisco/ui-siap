@@ -11,7 +11,7 @@ import {
     iGetRepresentantes,
 } from "../interfaces";
 
-const caminho = "siap/representantes";
+const caminho = "taap/representantes";
 
 type iGetRepresentantesFunction = (param: iParamGetRepresentantes) => Promise<iGetRepresentantes[]>;
 type iGetMarcas = (param: iSearchMarcas, offset: number) => Promise<iMarcasParam>;

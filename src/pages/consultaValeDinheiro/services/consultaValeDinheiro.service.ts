@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iResponseDadosInput, iResponseVales } from "../interfaces";
 
-const caminho = 'siap/consultaValeDinheiro'
+const caminho = 'taap/consultaValeDinheiro'
 
 
 type iGetDadosParaInputs = () => Promise<iResponseDadosInput>;

@@ -2,7 +2,7 @@
 node_modules
 /dist
 /dist_electron
-/ui-siap
+/ui-taap
 
 # Log files
 npm-debug.log*

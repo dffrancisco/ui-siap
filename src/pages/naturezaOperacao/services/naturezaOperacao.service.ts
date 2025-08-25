@@ -6,7 +6,7 @@ import {
     iUpdateNaturezaOperacaoResponse
 } from "../interfaces";
 
-const caminho = 'siap/naturezaOperacao'
+const caminho = 'taap/naturezaOperacao'
 
 type iGetNaturezaOperacaoFunction = ({ param, offset }: iGetNaturezaOperacaoGrid) =>
     Promise<iGetNaturezaOperacaoResponse>

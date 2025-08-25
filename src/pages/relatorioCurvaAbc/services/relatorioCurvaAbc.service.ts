@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iMarcas, iParamDadosParaRelatorio, iResponseRelatorio } from "../interfaces";
 
-const caminho = 'siap/relatorioCurvaAbc';
+const caminho = 'taap/relatorioCurvaAbc';
 
 
 

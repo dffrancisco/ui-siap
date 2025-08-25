@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iParamsRelatorio, iResponseRelatorio } from "../interfaces";
 
-const caminho = 'siap/avaliacaoEstoque'
+const caminho = 'taap/avaliacaoEstoque'
 
 
 type iGetDadosParaRelatorio = (param: iParamsRelatorio) => Promise<iResponseRelatorio>;

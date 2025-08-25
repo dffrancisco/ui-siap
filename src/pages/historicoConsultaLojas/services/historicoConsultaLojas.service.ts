@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iHistoricoConsultaLojas, iParams } from "../interfaces";
 
-const caminho = 'siap/historicoConsultaLojas'
+const caminho = 'taap/historicoConsultaLojas'
 
 type iGetHistoricoConsultaLojasFunction = (param: iParams) => Promise<iHistoricoConsultaLojas>;
 

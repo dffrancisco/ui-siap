@@ -13,7 +13,7 @@ type iGetConhecimentoFunction = (param: string) => Promise<iConhecimento>;
 type iToInsertFunction = (param: iInsertConhecimentoParam) => Promise<any>;
 type iToUpdateFunction = (param: iUpdateConhecimento) => Promise<void>;
 
-const caminho = 'siap/conhecimento'
+const caminho = 'taap/conhecimento'
 
 const getConhecimento: iGetConhecimentoFunction = async (param) => {
     const { data } = await axios.post(caminho, {

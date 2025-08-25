@@ -10,7 +10,7 @@ type iGetMesesHistoricoProdutoFunction = (param: paramDadosIniciais) => Promise<
 
 
 const getEntradas: iGetEntradasHistoricoFunction = async (param) => {
-    let { data } = await axios.post('siap/historicoProduto', {
+    let { data } = await axios.post('taap/historicoProduto', {
         call: 'getEntradas',
         param
     });
@@ -19,7 +19,7 @@ const getEntradas: iGetEntradasHistoricoFunction = async (param) => {
 }
 
 const getSaidas: iGetSaidasHistoricoProdutoFunction = async (param) => {
-    let { data } = await axios.post('siap/historicoProduto', {
+    let { data } = await axios.post('taap/historicoProduto', {
         call: 'getSaidas',
         param
     })
@@ -28,28 +28,28 @@ const getSaidas: iGetSaidasHistoricoProdutoFunction = async (param) => {
 }
 
 const getCompras: iGetComprasHistoricoProdutoFunction = async (param) => {
-    let { data } = await axios.post('siap/historicoProduto', {
+    let { data } = await axios.post('taap/historicoProduto', {
         call: 'getCompras',
         param
     })
     return data
 }
 const getDevolucoes: iGetDevolucoesHistoricoProdutoFunction = async (param) => {
-    let { data } = await axios.post('siap/historicoProduto', {
+    let { data } = await axios.post('taap/historicoProduto', {
         call: 'getDevolucoes',
         param
     })
     return data
 }
 const getLogEstoquesNew: iGetLogEstoquesNewHistoricoProdutoFunction = async (param) => {
-    let { data } = await axios.post('siap/historicoProduto', {
+    let { data } = await axios.post('taap/historicoProduto', {
         call: 'getLogEstoquesNew',
         param
     })
     return data
 }
 const getDadosIniciais: iGetMesesHistoricoProdutoFunction = async (param) => {
-    let { data } = await axios.post('siap/historicoProduto', {
+    let { data } = await axios.post('taap/historicoProduto', {
         call: 'getDadosIniciais',
         param
     });
@@ -57,7 +57,7 @@ const getDadosIniciais: iGetMesesHistoricoProdutoFunction = async (param) => {
     return data;
 }
 const getOrcamento = async (numOrcamento: number, dataOrcamento: string) => {
-    let { data } = await axios.post('siap/historicoProduto', {
+    let { data } = await axios.post('taap/historicoProduto', {
         call: 'getOrcamento',
         param: {
             numOrcamento,
@@ -67,7 +67,7 @@ const getOrcamento = async (numOrcamento: number, dataOrcamento: string) => {
     return data
 }
 const getItensOrcamento = async (numOrcamento: number, dataOrcamento: string) => {
-    let { data } = await axios.post('siap/historicoProduto', {
+    let { data } = await axios.post('taap/historicoProduto', {
         call: 'getItensOrcamento',
         param: {
             numOrcamento,

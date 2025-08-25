@@ -4,7 +4,7 @@ import {
     iGetOrcamentosClienteFaturadoResponse
 } from "../interfaces";
 
-const caminho = 'siap/relatorioFaturamento'
+const caminho = 'taap/relatorioFaturamento'
 
 type iGetClientesFaturadosFuction = (param: iGetClientesFaturadosParam, offset: number) =>
     Promise<iGetClientesFaturadosResponse>

@@ -6,7 +6,7 @@ type iVerDetalhesChamadoFunction = (keyJira: string, grupoEmail: string) => Prom
 type iInsertChamadoFunction = (param: iInsertChamado) => Promise<iInsertChamadoResponse>
 
 const getChamados: iGetChamadosFunction = async ({ page, itemsPerPage, sortBy, search }) => {
-    let { data } = await axios.post('siap/chamados', {
+    let { data } = await axios.post('taap/chamados', {
         call: 'getChamados',
         param: {
             page,
@@ -20,7 +20,7 @@ const getChamados: iGetChamadosFunction = async ({ page, itemsPerPage, sortBy, s
 }
 
 const verDetalhesChamado: iVerDetalhesChamadoFunction = async (keyJira: string, grupoEmail: string) => {
-    let { data } = await axios.post('siap/chamados', {
+    let { data } = await axios.post('taap/chamados', {
         call: 'verDetalhesChamado',
         param: {
             keyJira,
@@ -31,7 +31,7 @@ const verDetalhesChamado: iVerDetalhesChamadoFunction = async (keyJira: string, 
 }
 
 const insertChamado: iInsertChamadoFunction = async (param) => {
-    let { data } = await axios.post('siap/chamados', {
+    let { data } = await axios.post('taap/chamados', {
         call: 'insert',
         param
     });
@@ -63,7 +63,7 @@ const getImgChamado = async (param) => {
 
 
 const updateChamado = async (param) => {
-    let { data } = await axios.post('siap/chamados', {
+    let { data } = await axios.post('taap/chamados', {
         call: 'updateChamado',
         param
     });
@@ -71,7 +71,7 @@ const updateChamado = async (param) => {
 }
 
 const enviarComentario = async (param) => {
-    let { data } = await axios.post('siap/chamados', {
+    let { data } = await axios.post('taap/chamados', {
         call: 'enviarComentario',
         param
     });

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iFuncionario, iMesEAno, iMetaMontador, iMetaVendedor, iMetaInserida, iGruposFuncionarios, } from "../interfaces"
 
-const caminho = "siap/distribuirMetas";
+const caminho = "taap/distribuirMetas";
 
 type iGetMetasVendedores = (param: iMesEAno) => Promise<iMetaVendedor[]>
 type iGetMetasMontadores = (param: iMesEAno) => Promise<iMetaMontador[]>

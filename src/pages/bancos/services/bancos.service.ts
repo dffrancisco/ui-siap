@@ -10,7 +10,7 @@ import {
   iInsertResponse,
 } from '../interfaces';
 
-const caminho = "siap/bancos";
+const caminho = "taap/bancos";
 
 
 const getBancos = async ({ param, offset }: iParamGetBanco): Promise<iBancoResponse> => {

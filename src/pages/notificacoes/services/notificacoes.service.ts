@@ -10,7 +10,7 @@ import {
     iUpdateNotificacaoResponse
 } from "../intefaces";
 
-const caminho = "siap/notificacoes";
+const caminho = "taap/notificacoes";
 
 type iGetNotificacoesFunction = ({ offset, param }: iQueryGetNotificacoes) => Promise<iGetNotificacoesResponse>;
 type iInsertNotificacaoFunction = (param: iParamInsertNotificacao) => Promise<iInsertNotificacaoResponse[]>;

@@ -7,7 +7,7 @@ import {
 } from "../interface";
 import { iEmpresa } from "@/models/interfaces";
 
-const caminho = "siap/gerenciarFolhaPonto";
+const caminho = "taap/gerenciarFolhaPonto";
 
 type iGetEmpresa = () => Promise<iEmpresa[]>
 type iGetResumoPontosFuncionarioFunction = (param: iGetMesEAno) => Promise<iResumoPontosFuncionarioResponse>;

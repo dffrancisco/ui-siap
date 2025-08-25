@@ -14,7 +14,7 @@ type iGetOrcamentoCompleto = (param: { num_Orcamento: number, data: Date }) => P
     itens: iParamsItemOrcamento[]
 }>;
 
-const caminho = "siap/consultaValePecas";
+const caminho = "taap/consultaValePecas";
 
 const getFuncionarios: iGetFuncionarios = async () => {
     let { data } = await axios.post(caminho, {

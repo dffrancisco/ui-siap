@@ -29,7 +29,7 @@ import {
     iUpdateItemNovoResponse
 } from "../interfaces";
 
-const caminho = "siap/requisicaoCompra"
+const caminho = "taap/requisicaoCompra"
 
 type iGetFavorecidosFunction = (param: iGetFavorecidosParam, offset: number) =>
     Promise<iGetFavorecidosResponse>

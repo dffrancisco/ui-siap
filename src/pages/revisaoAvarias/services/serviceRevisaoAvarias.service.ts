@@ -1,7 +1,7 @@
 import axios from "axios"
 import { iFiltro, iGetDadosToSelectsResponse, iGetAvariasResponse, iGetImgsResponse, iFinalizarAvariaParam, iFinalizarAvariaResponse, iDeletarAvariaResponse } from "../interfaces"
 
-const caminho = 'siap/revisaoAvarias'
+const caminho = 'taap/revisaoAvarias'
 
 type iGetDadosToSelects = () => Promise<iGetDadosToSelectsResponse>
 type iGetAvariasFunction = (filtros: iFiltro, itemsPerPage: number, page: number) => Promise<iGetAvariasResponse>

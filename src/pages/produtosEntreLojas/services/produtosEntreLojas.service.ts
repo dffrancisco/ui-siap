@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iGetLojasResponse, iGetOrcamentosProdutoEntreLojasParam, iGetOrcamentosProdutoEntreLojasResponse, iGetProdutosEntreLojasParam, iGetProdutosEntreLojasResponse } from "../interfaces";
 
-const caminho = 'siap/produtosEntreLojas'
+const caminho = 'taap/produtosEntreLojas'
 
 type iGetLojasFunction = () => Promise<iGetLojasResponse[]>
 type iGetProdutosEntreLojasFunction = (param: iGetProdutosEntreLojasParam, lojas: number[]) =>

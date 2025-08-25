@@ -16,7 +16,7 @@ type iGetMarcasFunction = (param: iParamGetMarcas) => Promise<iGetMarcaResponse>
 type iGetMarcasAdicionadas = (param: iParamGetMarcasAdicionadas) => Promise<iGetMarcaAdicionadaResponse>;
 type iAdicionarMarcaFuntion = (param: iParamAdicionarMarca) => Promise<iAdicionarMarcaResponse>
 
-const caminho = 'siap/descontoCliente'
+const caminho = 'taap/descontoCliente'
 
 const getClientes: iGetClientesFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {

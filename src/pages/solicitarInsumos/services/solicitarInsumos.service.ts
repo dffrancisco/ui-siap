@@ -6,7 +6,7 @@ type iSetItemPedido = (item: iItemAdcPedido) => Promise<iResponseIdItem>;
 type iDeleteItemPedido = (idItem: number) => Promise<string>;
 type iFinalizarPedido = (idPedido: number) => Promise<string>;;
 
-const caminho = 'siap/solicitarInsumos'
+const caminho = 'taap/solicitarInsumos'
 
 const getDadosIniciais: iGetDadosIniciaisFunction = async () => {
     let { data } = await axios.post(caminho, {

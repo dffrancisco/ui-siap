@@ -4,7 +4,7 @@ import { iEmpresa } from "@/models/interfaces";
 const urlServerNuven = 'http://www.reallatas.com.br/';
 
 const state = reactive({
-  nomeSistema: 'Siap',
+  nomeSistema: 'Taap',
   defaultTheme: localStorage.getItem('defaultTheme') || 'light',
   theme: <any>{},
   calc: null,

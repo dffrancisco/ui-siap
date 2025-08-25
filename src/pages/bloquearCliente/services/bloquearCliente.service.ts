@@ -11,7 +11,7 @@ import {
     iParamGetCliente
 } from "../interfaces"
 
-const caminho = 'siap/bloquearCliente'
+const caminho = 'taap/bloquearCliente'
 
 type iGetClientesFunction = (param: iParamGetCliente) => Promise<iGetClientesResponse>
 type iGetBloqueioClienteFunction = (param: iParamGetBloqueioCliente) => Promise<iGetBloqueioClienteResponse>

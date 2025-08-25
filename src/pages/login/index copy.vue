@@ -66,10 +66,13 @@ onMounted(() => {
     <v-card class="login pa-5 ma-3">
       <v-row dense>
         <v-col cols="12 text-center">
-          <div class="mb-5" style="text-align: center">
+          <div
+            class="mb-5"
+            style="text-align: center"
+          >
             <img src="../../../public/icons/icon.png" />
           </div>
-          <h2>Siap</h2>
+          <h2>Taap</h2>
         </v-col>
 
         <v-col cols="12">
@@ -116,7 +119,11 @@ onMounted(() => {
             ></v-progress-circular>
           </v-btn>
         </v-col>
-        <v-col cols="12" class="text-center"> </v-col>
+        <v-col
+          cols="12"
+          class="text-center"
+        >
+        </v-col>
       </v-row>
     </v-card>
   </div>

@@ -7,7 +7,7 @@ import {
 
 type iGetDadosParaInputs = () => Promise<iResponseDadosInputs>;
 
-const caminho = 'siap/configuracaoNfe';
+const caminho = 'taap/configuracaoNfe';
 
 const getDadosParaInputs: iGetDadosParaInputs = async () => {
     const { data } = await axios.post(caminho, {

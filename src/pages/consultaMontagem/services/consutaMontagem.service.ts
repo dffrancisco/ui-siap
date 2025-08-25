@@ -6,7 +6,7 @@ import {
     iGetMontagemDetalhesResponse
 } from '../interfaces';
 
-const caminho = "siap/consultaMontagem"
+const caminho = "taap/consultaMontagem"
 
 type iGetRelatorioMontagensFunction = (param: iParamGetMontagens) => Promise<iGetMontagensResponse[]>;
 type iGetMontagemDetalhesFunction = (param: iParamGetMontagemDetalhes) => Promise<iGetMontagemDetalhesResponse>;

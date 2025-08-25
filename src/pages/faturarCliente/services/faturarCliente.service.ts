@@ -12,7 +12,7 @@ import {
     iGetRegrasFaturamentoGeralResponse
 } from "../interfaces";
 
-const caminho = 'siap/faturarCliente'
+const caminho = 'taap/faturarCliente'
 
 type iGetClientesFaturadosFuction = (param: iGetClientesFaturadosParam, offset: number) => Promise<iGetClientesFaturadosResponse>
 type iGetOrcamentosClienteFaturadoFunction = (param: iGetOrcamentosClienteFaturadoParam) => Promise<iGetOrcamentosClienteFaturadoResponse[]>

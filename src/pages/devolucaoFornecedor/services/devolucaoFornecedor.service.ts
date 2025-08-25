@@ -25,7 +25,7 @@ import {
     iGetEmpresaResponse
 } from "../interfaces";
 
-const caminho = 'siap/devolucaoFornecedor'
+const caminho = 'taap/devolucaoFornecedor'
 
 type iGetDevolucoesFunction = (param: iParamGetDevolucoes) => Promise<iGetDevolucoesResponse>
 type iGetFornecedoresFunction = (param: iParamGetFornecedores) => Promise<iGetFornecedoresResponse>

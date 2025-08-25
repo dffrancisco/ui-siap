@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iOrcamento, iVendedor } from "../interfaces";
 
-const caminho = 'siap/trocaVendedor'
+const caminho = 'taap/trocaVendedor'
 type iGetOrcamentoFunction = (numOrcamento: number) => Promise<iOrcamento>
 type iGetVendedoresFunction = () => Promise<iVendedor[]>
 
@@ -27,5 +27,5 @@ const getVendedores: iGetVendedoresFunction = async () => {
 export default {
     getOrcamento,
     getVendedores,
-    
+
 }

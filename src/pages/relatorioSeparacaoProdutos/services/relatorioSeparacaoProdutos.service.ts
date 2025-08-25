@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iEstoquistas, iRelatorioSeparacaoProdutos } from "../interfaces";
 
-const caminho = 'siap/relatorioSeparacaoProdutos'
+const caminho = 'taap/relatorioSeparacaoProdutos'
 type iGetEstoquistas = () => Promise<iEstoquistas[]>
 type iGetDadosRelatorioSeparacaoProdutos = (param) => Promise<iRelatorioSeparacaoProdutos[]>
 

@@ -6,7 +6,7 @@ type iUpdateProduto = (params: any) => Promise<any>;
 type iDeleteNota = (params: { ID_ENTRADA: string; CNPJ: string }) => Promise<string>;
 type iAtualizar = (params: iParamUpdateProdutos) => Promise<iRespostaAtualizacao>;
 
-const caminho = "siap/equalizaPrecoLojas";
+const caminho = "taap/equalizaPrecoLojas";
 
 const getNotas: iGetNotas = async () => {
     let { data } = await axios.post(caminho, {

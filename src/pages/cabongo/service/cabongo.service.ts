@@ -2,7 +2,7 @@ import axios from "axios";
 import { iOrcamentoData, iParamOrcamento, iParamOrcamentosData, iSociedadeInicial, iSociedadeTotalizadores } from "../interface";
 
 
-const caminho = 'siap/cabongo'
+const caminho = 'taap/cabongo'
 
 type igetOrcamentoFunction = (param: iParamOrcamento) => Promise<iSociedadeTotalizadores[]>;
 type igetSociedade = () => Promise<iSociedadeInicial[]>

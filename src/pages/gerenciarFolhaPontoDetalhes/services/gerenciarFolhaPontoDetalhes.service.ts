@@ -23,7 +23,7 @@ import {
     iSetFeriadoFolgaResponse,
     paramGetTotalizadorFuncionarios,
 } from "../interface";
-const caminho = "siap/gerenciarFolhaPonto";
+const caminho = "taap/gerenciarFolhaPonto";
 
 type igetDetalhes = (param: iGetDetalhes) => Promise<iGetDetalhesResponse>;
 type iGetTotalizadorFuncionarioFunction = (param: paramGetTotalizadorFuncionarios) =>

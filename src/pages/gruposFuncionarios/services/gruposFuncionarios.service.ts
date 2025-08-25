@@ -17,7 +17,7 @@ import {
     iUpdateGrupoImpressaoResponse
 } from "../interfaces";
 
-const caminho = 'siap/gruposFuncionarios'
+const caminho = 'taap/gruposFuncionarios'
 
 type iGetGruposImpressaoFunction = ({ offset, param }: iParamGetGruposImpressao) =>
     Promise<iGetGruposImpressaoResponse>

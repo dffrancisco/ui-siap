@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iGetDevolucoesResponse, iParamGetDevolucoes } from "../interfaces";
 
-const caminho = 'siap/devolucaoDePecas'
+const caminho = 'taap/devolucaoDePecas'
 
 type iGetDevolucoesFunction = ({ dataInicio, dataFim, tipoData }: iParamGetDevolucoes) => Promise<iGetDevolucoesResponse[]>
 

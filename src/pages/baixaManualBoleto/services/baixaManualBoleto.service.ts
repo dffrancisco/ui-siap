@@ -5,7 +5,7 @@ type iGetOrcamentosEBoletosEmAbertoFunction = (param: iParamGetOrcamentos) => Pr
 type iBaixarBoletosEOrcamentosFunction = (param: iBaixarBoletosEOrcamentosParams) => Promise<any>
 type iGetCnpjEmpresaFunction = () => Promise<{ CGC_EMPRESA: string }>
 
-const caminho = 'siap/baixaManualBoleto'
+const caminho = 'taap/baixaManualBoleto'
 
 const getClientesFaturados: iGetClientesFaturadosFuction = async (param, offset) => {
     const { data } = await axios.post(caminho, {

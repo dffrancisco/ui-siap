@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iDadosParaRelatorio, iFuncionario, iGetProdutosParam, iMarcas, iParamParaRelatorio, iProdutos } from "../interfaces";
 
-const caminho = "siap/comissaoMarca";
+const caminho = "taap/comissaoMarca";
 
 type iGetFuncionarios = () => Promise<iFuncionario[]>
 type iGetMarcas = () => Promise<iMarcas[]>

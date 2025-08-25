@@ -4,7 +4,7 @@ import {
     iGetInsertResponse
 } from "../interfaces"
 
-const caminho = "siap/montagemProduto";
+const caminho = "taap/montagemProduto";
 
 type iGetProdutosFunction = (param: iParamGetProdutos) => Promise<iGetProdutosResponse>;
 type iToInsertFunction = (param: iParamToInsert) => Promise<iGetInsertResponse>;

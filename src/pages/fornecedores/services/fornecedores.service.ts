@@ -8,7 +8,7 @@ import {
 
 } from "../interfaces";
 
-const caminho = "siap/fornecedores";
+const caminho = "taap/fornecedores";
 
 type iGetFornecedoresFunction = (param: iParamGetFornecedor) => Promise<iFornecedor[]>;
 type iGetRepresentantesFunction = (param: iRepresentantes, offset: number) => Promise<iFornecedor>;

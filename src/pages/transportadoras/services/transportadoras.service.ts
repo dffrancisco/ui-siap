@@ -4,7 +4,7 @@ import {
     iGetInsertResponse, iParamToInsert, iParamToUpdate
 } from "../interfaces";
 
-const caminho = 'siap/transportadoras';
+const caminho = 'taap/transportadoras';
 
 type iGetTransportadorasFunction = (param: iParamGetTransportadora) => Promise<iGetTransportadorasResponse>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;

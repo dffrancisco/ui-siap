@@ -1,13 +1,13 @@
 import axios from "axios"
 import { iFieldDuplicity, iGetDuplicityResponse, iMarcasResponse, iParamGetMarcas, iParamToInsert } from "../interfaces"
 
-const caminho = 'siap/marcas'
+const caminho = 'taap/marcas'
 
 type iGetMarcasFunction = (param: iParamGetMarcas) => Promise<iMarcasResponse[]>;
 type iGetDuplicidadeFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>;
 type iToInsertFuction = (param: iParamToInsert, idMarcaGrupo: number) => Promise<void>;
 
-const getMarcas: iGetMarcasFunction = async({offset, param}) => {
+const getMarcas: iGetMarcasFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
         call: 'getMarcas',
         offset,
@@ -18,16 +18,16 @@ const getMarcas: iGetMarcasFunction = async({offset, param}) => {
 };
 
 const getGrupoMarcas = async () => {
-    let { data } = await axios.post(caminho,{
+    let { data } = await axios.post(caminho, {
         call: 'getGrupoMarcas',
     })
 
     return data
-} ;
+};
 
-const toInsert: iToInsertFuction = async (newFields, idMarcaGrupo ) => {
-    
-    
+const toInsert: iToInsertFuction = async (newFields, idMarcaGrupo) => {
+
+
     let { data } = await axios.post(caminho, {
         call: 'insert',
         param: newFields,
@@ -37,7 +37,7 @@ const toInsert: iToInsertFuction = async (newFields, idMarcaGrupo ) => {
     return data
 };
 
-const getDuplicidade: iGetDuplicidadeFunction = async({field, value}) => {
+const getDuplicidade: iGetDuplicidadeFunction = async ({ field, value }) => {
     let { data } = await axios.post(caminho, {
         call: 'getDuplicidade',
         field,
@@ -55,7 +55,7 @@ const toDelete = async (id_marca) => {
 };
 
 const toUpdate = async (param: any) => {
-    
+
     let { data } = await axios.post(caminho, {
         call: 'update',
         param

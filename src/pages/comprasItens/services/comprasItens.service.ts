@@ -16,7 +16,7 @@ import {
 } from "../interfaces";
 import moment from "moment";
 
-const caminho = "siap/compras";
+const caminho = "taap/compras";
 
 const { CancelToken } = axios
 let cancel;

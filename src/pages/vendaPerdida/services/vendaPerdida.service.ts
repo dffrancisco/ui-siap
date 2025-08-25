@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iGetDetalhesResponse, iGetVendasPerdidasResponse, iParamDetalhes, iParamGetVendasPerdidas } from "../interfaces";
 
-const caminho = 'siap/vendaPerdida'
+const caminho = 'taap/vendaPerdida'
 
 type iGetVendasPerdidasFunction = (param: iParamGetVendasPerdidas) => Promise<iGetVendasPerdidasResponse[]>;
 type iGetDetalhesFunction = (param: iParamDetalhes) => Promise<iGetDetalhesResponse[]>

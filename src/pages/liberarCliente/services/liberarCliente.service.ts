@@ -1,7 +1,7 @@
 import axios from "axios"
 import { iGetClientesResponse, iLiberarLimiteResponse, iParamDetalhesCliente, iParamGetCliente, iParamUpdateCliente } from "../interfaces"
 
-const caminho = 'siap/liberarCliente'
+const caminho = 'taap/liberarCliente'
 
 type iGetClientesFunction = (param: iParamGetCliente) => Promise<iGetClientesResponse>
 type iGetDetalhesCliente = (param: iParamDetalhesCliente) => Promise<any>

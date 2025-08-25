@@ -4,7 +4,7 @@ import {
     , iParamToUpdate, iGetInsertResponse
 } from "../interfaces";
 
-const caminho = "siap/carroCliente";
+const caminho = "taap/carroCliente";
 
 type iGetCarroClienteFunction = (param: iParamGetCarroCliente) => Promise<iCarroClienteResponse>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;

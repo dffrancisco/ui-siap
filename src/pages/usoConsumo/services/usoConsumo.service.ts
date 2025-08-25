@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iParamsUsoConsumo, iDadosUsoConsumo } from "../interfaces";
 
-const caminho = 'siap/usoConsumo';
+const caminho = 'taap/usoConsumo';
 
 type iGetDadosUsoConsumo = (param: iParamsUsoConsumo) => Promise<iDadosUsoConsumo[]>;
 

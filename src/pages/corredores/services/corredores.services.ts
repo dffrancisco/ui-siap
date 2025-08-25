@@ -3,19 +3,19 @@ import {
     iParamGetCorredores,
     iFieldDuplicity,
     iCorredorResponse,
-    iParamToInsert, 
+    iParamToInsert,
     iGetDuplicityResponse,
     iParamToUpdate
 } from '../interfaces';
 
-const caminho = 'siap/corredores'
+const caminho = 'taap/corredores'
 
 type iGetCorredoresFunction = (param: iParamGetCorredores) => Promise<iCorredorResponse[]>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>
 type iToInsertFunction = (param: iParamToInsert) => Promise<void>
 type iToUpdateFunction = (param: iParamToUpdate) => Promise<void>
 
-const getCorredores: iGetCorredoresFunction =  async ({ offset, param }) => {
+const getCorredores: iGetCorredoresFunction = async ({ offset, param }) => {
     let { data } = await axios.post(caminho, {
         call: 'getCorredores',
         offset,
@@ -38,7 +38,7 @@ const toInsert: iToInsertFunction = async (newFields) => {
     let { data } = await axios.post(caminho, {
         call: "insert",
         param: newFields,
-    })    
+    })
     return data
 }
 
@@ -59,10 +59,10 @@ const toUpdate: iToUpdateFunction = async (param: any) => {
     return data
 }
 
-export default { 
-    getCorredores, 
+export default {
+    getCorredores,
     toInsert,
     getDuplicidade,
     toUpdate,
     toDelete
- }
+}

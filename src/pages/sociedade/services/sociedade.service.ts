@@ -10,7 +10,7 @@ import {
 
 } from '../interfaces';
 
-const caminho = "siap/sociedade";
+const caminho = "taap/sociedade";
 
 type iGetClienteFunction = (param: string, offset: number) => Promise<iCliente>;
 type iGetSociedadeFunction = (param: string) => Promise<iSociedade>;

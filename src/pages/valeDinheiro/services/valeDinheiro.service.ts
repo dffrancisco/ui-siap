@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iGetValesAPagarResponse, iGetValesPagosResponse, iGetValorDisponivelValeResponse, iParamAlterarValeRequest, iParamNegarValeRequest, iParamPagarValeRequest } from "../interface";
 
-const caminho = 'siap/valeDinheiro'
+const caminho = 'taap/valeDinheiro'
 
 type iGetValesAPagarFunction = () => Promise<iGetValesAPagarResponse>
 type iGetValesPagosFunction = () => Promise<iGetValesPagosResponse>

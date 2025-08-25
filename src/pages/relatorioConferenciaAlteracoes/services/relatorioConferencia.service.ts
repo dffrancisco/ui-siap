@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iParams, iResponseDadosInput, iResponseRelatorio } from "../interfaces";
 
-const caminho = 'siap/relatorioConferenciaAlteracoes'
+const caminho = 'taap/relatorioConferenciaAlteracoes'
 
 type iGetDadosParaInputs = () => Promise<iResponseDadosInput>;
 type iGetDadosParaRelatorio = (param: iParams) => Promise<iResponseRelatorio>;

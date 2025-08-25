@@ -1,15 +1,15 @@
 #!/bin/sh
 
-dialog --title 'Update Siap' --yesno "\n Gostaria de fazer upload do Siap para a nuvem" 8 60
+dialog --title 'Update Taap' --yesno "\n Gostaria de fazer upload do Taap para a nuvem" 8 60
 if [ $? = 0 ]; then
 
-  cp package.json ./ui-siap
-  zip -r ./ui-siap.zip ./ui-siap
-  cp package.json ui-siap-package.json
+  cp package.json ./ui-taap
+  zip -r ./ui-taap.zip ./ui-taap
+  cp package.json ui-taap-package.json
 
-  rsync -uahvrztP --compress-level=5 --progress ./ui-siap.zip ui-siap-package.json root@vyzo.com.br:/home/taap_server
+  rsync -uahvrztP --compress-level=5 --progress ./ui-taap.zip ui-taap-package.json root@vyzo.com.br:/home/taap_server
 
-  rm ./ui-siap.zip
-  rm ui-siap-package.json
+  rm ./ui-taap.zip
+  rm ui-taap-package.json
 
 fi

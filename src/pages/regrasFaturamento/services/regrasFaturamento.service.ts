@@ -15,7 +15,7 @@ import {
     iUpdateRegraFaturamentoParcelaResponse
 } from "../interfaces";
 
-const caminho = 'siap/regrasFaturamento'
+const caminho = 'taap/regrasFaturamento'
 
 type getRegraFaturamentoFunction = () => Promise<iGetRegraFaturamentoResponse>
 type updateOrInsertRegraFaturamentoFunction = (param: iUpdateOrInsertRegraFaturamentoParam) =>

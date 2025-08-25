@@ -3,7 +3,7 @@ import { iCaixasAbertos, iGetDadosCaixa, iParamsAbrirCaixa } from "../interfaces
 type iGetDadosAbrirCaixa = () => Promise<iGetDadosCaixa>
 type iAbrirCaixa = (param: iParamsAbrirCaixa) => Promise<iCaixasAbertos[]>
 
-const caminho = 'siap/abrirCaixa'
+const caminho = 'taap/abrirCaixa'
 
 const getDadosAbrirCaixa: iGetDadosAbrirCaixa = async () => {
     let { data } = await axios.post(caminho, {

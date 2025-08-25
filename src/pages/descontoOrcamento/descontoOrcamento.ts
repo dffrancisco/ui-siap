@@ -13,7 +13,7 @@ import login from "../login/login";
 import mixpanel from "mixpanel-browser";
 // import xAuthManager from "@/plugins/xAuthManager/xAuthManager";
 
-const caminho = "siap/descontoOrcamento"
+const caminho = "taap/descontoOrcamento"
 
 export const state = reactive({
   load: false,

@@ -8,7 +8,7 @@ import {
     iParamToUpdate,
 } from '../interfaces'
 
-const caminho = "siap/documentosFuncionarios";
+const caminho = "taap/documentosFuncionarios";
 
 type iGetDocumentosFuncionarios = (param: iParamGetDocumentosFuncionarios) => Promise<iDocumentosFuncionariosResponse[]>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse[]>;
@@ -35,7 +35,7 @@ const getDuplicidade: iGetDuplicityFunction = async ({ value, field }) => {
 };
 
 const toInsert: iToInsertFunction = async (newFields) => {
-    let {data} = await axios.post(caminho, {
+    let { data } = await axios.post(caminho, {
         call: "insert",
         param: newFields
     });
@@ -43,8 +43,8 @@ const toInsert: iToInsertFunction = async (newFields) => {
     return data;
 };
 
-const toUpdate: iToUpdateFunction = async (param:any) => {
-    let {data} = await axios.post(caminho, {
+const toUpdate: iToUpdateFunction = async (param: any) => {
+    let { data } = await axios.post(caminho, {
         call: "update",
         param
     });
@@ -53,7 +53,7 @@ const toUpdate: iToUpdateFunction = async (param:any) => {
 }
 
 const toDelete = async (id) => {
-    let {data} = await axios.post(caminho, {
+    let { data } = await axios.post(caminho, {
         call: "delete",
         id: id
     });
@@ -61,7 +61,7 @@ const toDelete = async (id) => {
     return data;
 }
 
-export default{
+export default {
     getDocumentosFuncionarios,
     getDuplicidade,
     toInsert,

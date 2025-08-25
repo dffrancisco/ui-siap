@@ -9,7 +9,7 @@ import {
     iInsertResponse
 } from "../interfaces";
 
-const caminho = "siap/cidades";
+const caminho = "taap/cidades";
 
 type iGetCidadesFunction = (param: iParamGetCidades) => Promise<iCidadeResponse>;
 type iGetDuplicityFunction = (param: iFieldDuplicity) => Promise<iGetDuplicityResponse>;
@@ -59,7 +59,7 @@ const toInsert: iToInsertFunction = async (newFields) => {
     return data
 };
 
-const toUpdate: iToUpdateFunction = async (param:any) => {
+const toUpdate: iToUpdateFunction = async (param: any) => {
     let { data } = await axios.post(caminho, {
         call: "update",
         param

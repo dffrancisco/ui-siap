@@ -9,7 +9,7 @@ import {
     iGetGruposImpressaoResponse,
 } from "../interfaces";
 
-const caminho = 'siap/vendaPorVendedor'
+const caminho = 'taap/vendaPorVendedor'
 
 type iGetVendasFunction = (param: iParamGetVendas) => Promise<iGetVendasResponse[]>
 type iGetVendasDetalhesFunction = (param: iParamGetVendasDetalhes) => Promise<iGetVendasDetalhesResponse>

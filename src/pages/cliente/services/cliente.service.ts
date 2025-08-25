@@ -5,7 +5,7 @@ type iGetClientesFuction = (param: iGetClientes, offset: number) => Promise<iCli
 type iInsertUpdateCliente = (param: iInsertOrUpdateCliente) => Promise<any>
 type iDeleteCliente = (param: number) => Promise<string>
 
-const caminho = 'siap/cliente'
+const caminho = 'taap/cliente'
 
 const getDadosParaInputs: iGetDadosParaInputs = async () => {
     let { data } = await axios.post(caminho, {

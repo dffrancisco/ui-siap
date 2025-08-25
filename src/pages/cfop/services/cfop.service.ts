@@ -10,7 +10,7 @@ import {
     iInsertResponse
 } from "../interfaces";
 
-const caminho = "siap/cfop";
+const caminho = "taap/cfop";
 type iGetCfopFunction = (param: string) => Promise<iCfopResponse>;
 
 

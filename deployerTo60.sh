@@ -7,7 +7,7 @@ if [ $? = 0 ]; then
 
   zip -r ./ui-siap.zip ./ui-siap
 
-  rsync -uahvrztP -e 'ssh -p 2608' --compress-level=5 --progress ./ui-siap.zip package.json real@192.168.100.60:/home/siap/serverSiap
+  rsync -uahvrztP -e 'ssh -p 2608' --compress-level=5 --progress ./ui-siap.zip package.json real@192.168.100.60:/home/taap/serverSiap
 
   rm ./ui-siap.zip
 

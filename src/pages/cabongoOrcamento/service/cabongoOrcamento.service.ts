@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iOrcamentoLoja, iOrcamentosObj, iParamOrcamentosLoja } from "../interface";
 
-const caminho = 'siap/cabongoOrcamento'
+const caminho = 'taap/cabongoOrcamento'
 
 type igetOrcamentosLojaFunction = (param: iParamOrcamentosLoja) => Promise<iOrcamentoLoja>;
 
