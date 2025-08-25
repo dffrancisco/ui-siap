@@ -56,7 +56,7 @@ export const actions = {
         state.selecLoja = null;
     },
 
-    onclickrLiberarCredito(valor: number) {
+    onClickLiberarCredito(valor: number) {
         state.selecLoja = valor;
         if (!state.selecLoja) {
             toast.warning("Selecione uma loja antes de continuar");
@@ -66,7 +66,7 @@ export const actions = {
         window.open(url, "_blank");
     },
 
-    onclickrDevolucaoManual(valor: number) {
+    onClickDevolucaoManual(valor: number) {
         state.selecLoja = valor;
         if (!state.selecLoja) {
             alert("Selecione uma loja antes de continuar");

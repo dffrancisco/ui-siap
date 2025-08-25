@@ -20,8 +20,8 @@ onMounted(actions.init);
       <SelecaoLoja
         v-else
         :lojas="state.lojas"
-        @botaoLiberarcredito="actions.onclickrLiberarCredito"
-        @botaoDevolucao="actions.onclickrDevolucaoManual"
+        @botaoLiberarcredito="actions.onClickLiberarCredito"
+        @botaoDevolucao="actions.onClickDevolucaoManual"
       />
     </v-main>
   </v-app>
