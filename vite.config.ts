@@ -19,7 +19,7 @@ export default defineConfig({
     },
     build: {
         target: ['es2020', 'safari14'],
-        outDir: './ui-siap'
+        outDir: './ui-taap'
     },
     plugins: [
         vue(),
@@ -37,9 +37,9 @@ export default defineConfig({
             strategies: "injectManifest",
             registerType: 'autoUpdate',
             manifest: {
-                name: "Siap",
+                name: "Taap Admin",
                 lang: "pt-br",
-                short_name: "Siap",
+                short_name: "Taap Admin",
                 display: "standalone",
                 background_color: "#c3cfe2",
                 "theme_color": "#c3cfe2",

@@ -1,7 +1,7 @@
 {
-  "name": "siap",
+  "name": "taap",
   "version": "0.1.388",
-  "description": "Siap Real Acessórios",
+  "description": "ERP Gerencial para Pequenas e Médias Empresas",
   "author": "Francisco Alves  <dffrancisco@gmail.com> (https://github.com/dffrancisco)",
   "scripts": {
     "serve": "vite preview",
@@ -96,8 +96,8 @@
     "workbox-precaching": "^6.5.3"
   },
   "build": {
-    "appId": "com.${name}.real",
-    "productName": "Siap",
+    "appId": "com.${name}.taap",
+    "productName": "Taap",
     "copyright": "Copyright © 2022 ${name}",
     "artifactName": "${productName}-${version}-${arch}.${ext}",
     "asar": true,
@@ -174,8 +174,8 @@
       "output": "dist_electron"
     }
   },
-  "displayName": "Siap",
+  "displayName": "Taap",
   "email": "dffrancisco@gmail.com",
-  "homepage": "http://www.realacessorios.com.br",
+  "homepage": "http://www.taap.com.br",
   "license": "MIT"
 }
