@@ -64,6 +64,7 @@ export interface objMarcasAgrupadas {
 
 export interface iTransportadora {
     ID_TRANSPORTADORA: number,
+    CGC_TRANSPORTADORA: string,
     RAZAO_SOCIAL: string,
     TELEFONE1: string,
     TELEFONE2: string,
@@ -100,13 +101,6 @@ export interface iProdutoAdicionadoObj {
 
 export interface iResponseGetProdutosAdicionadosFunction {
     [id: string]: iProdutoAdicionado
-}
-
-export interface iTransportadora {
-    ID_TRANSPORTADORA: number,
-    RAZAO_SOCIAL: string,
-    TELEFONE1: string,
-    TELEFONE2: string,
 }
 
 export interface iDadosImpressao {
