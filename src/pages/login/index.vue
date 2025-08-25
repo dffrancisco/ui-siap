@@ -10,9 +10,9 @@ import version from "../../../package.json";
 const edtFuncionario = ref();
 const edtSenha = ref();
 
-const cod_funcionario = ref("");
-const senha = ref("");
-
+const cod_funcionario = ref("1");
+const senha = ref("152056");
+const id_sociedade = ref("vyzo");
 
 async function enter() {
   if (state.btnLoad) return;
@@ -42,7 +42,7 @@ async function enter() {
   let _senha = "";
   if (senha.value != "") _senha = block(senha.value);
 
-  const rs = await actions.getLogin(cod_funcionario.value, _senha);
+  const rs = await actions.getLogin(cod_funcionario.value, _senha, id_sociedade.value);
 
   if (rs.error) {
     await swal.fire({
@@ -106,7 +106,8 @@ onMounted(() => {
                 clearable
                 @focus="$event.target.select()"
                 @keydown.enter.stop.prevent="edtSenha.focus()"
-              ></v-text-field></v-col>
+              ></v-text-field
+            ></v-col>
 
             <v-col cols="12">
               <v-text-field
@@ -118,6 +119,14 @@ onMounted(() => {
                 v-model="senha"
                 type="password"
                 @keydown.enter.stop.prevent="enter()"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                density="compact"
+                label="id_sociedade"
+                variant="outlined"
+                v-model="id_sociedade"
               ></v-text-field>
             </v-col>
 
@@ -141,7 +150,8 @@ onMounted(() => {
             <v-col
               cols="12"
               class="text-center"
-            > </v-col>
+            >
+            </v-col>
           </v-row>
         </v-card>
       </div>
@@ -235,16 +245,12 @@ p {
 .header {
   position: relative;
   text-align: center;
-  background: linear-gradient(60deg,
-      rgba(84, 58, 183, 1) 0%,
-      rgba(0, 172, 193, 1) 100%);
+  background: linear-gradient(60deg, rgba(84, 58, 183, 1) 0%, rgba(0, 172, 193, 1) 100%);
   color: white;
 }
 
 .dark .header {
-  background: linear-gradient(112.1deg,
-      rgb(32, 38, 57) 11.4%,
-      rgb(63, 76, 119) 70.2%);
+  background: linear-gradient(112.1deg, rgb(32, 38, 57) 11.4%, rgb(63, 76, 119) 70.2%);
 }
 
 .logo {
@@ -293,47 +299,47 @@ p {
 
 /* Animation */
 
-.parallax>use {
+.parallax > use {
   animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
 }
 
-.parallax>use:nth-child(1) {
+.parallax > use:nth-child(1) {
   animation-delay: -2s;
   animation-duration: 7s;
   fill: rgba(255, 255, 255, 0.7);
 }
 
-.dark .parallax>use:nth-child(1) {
+.dark .parallax > use:nth-child(1) {
   fill: rgba(32, 38, 57, 0.7);
 }
 
-.parallax>use:nth-child(2) {
+.parallax > use:nth-child(2) {
   animation-delay: -3s;
   animation-duration: 10s;
   fill: rgba(255, 255, 255, 0.5);
 }
 
-.dark .parallax>use:nth-child(2) {
+.dark .parallax > use:nth-child(2) {
   fill: rgba(32, 38, 57, 0.5);
 }
 
-.parallax>use:nth-child(3) {
+.parallax > use:nth-child(3) {
   animation-delay: -4s;
   animation-duration: 13s;
   fill: rgba(255, 255, 255, 0.3);
 }
 
-.dark .parallax>use:nth-child(3) {
+.dark .parallax > use:nth-child(3) {
   fill: rgba(32, 38, 57, 0.3);
 }
 
-.parallax>use:nth-child(4) {
+.parallax > use:nth-child(4) {
   animation-delay: -5s;
   animation-duration: 20s;
   fill: rgba(255, 255, 255, 1);
 }
 
-.dark .parallax>use:nth-child(4) {
+.dark .parallax > use:nth-child(4) {
   fill: rgba(63, 76, 119, 0.8);
 }
 

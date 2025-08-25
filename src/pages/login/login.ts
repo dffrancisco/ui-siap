@@ -70,11 +70,13 @@ export const actions = {
         return json
     },
 
-    async getLogin(cod_funcionario: string, senha: string) {
+    async getLogin(cod_funcionario: string, senha: string, id_sociedade: string) {
+        if (state.btnLoad) return;
         state.btnLoad = true;
 
         let rs = await axios.post("login", {
             call: "getLogin",
+            id_sociedade: id_sociedade,
             param: {
                 cod_funcionario: cod_funcionario,
                 senha: senha,
