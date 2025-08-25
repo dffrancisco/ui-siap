@@ -25,7 +25,8 @@ const pluginOptions = {
     globalOptions: { currency: 'null', locale: 'undefined', autoDecimalDigits: true },
 }
 
-axios.defaults.baseURL = config.SERVER + ":" + config.PORT
+// axios.defaults.baseURL = config.SERVER + ":" + config.PORT
+axios.defaults.baseURL = config.SERVER
 
 //@ts-ignore
 window.Buffer = Buffer;
