@@ -97,49 +97,24 @@ export const actions = {
 
     },
 
-    resetDadosRH() {
-        state.dadosRhAdmissao = {} as IDadosRhAdmissao
-        state.descricao = ''
-    },
-
     async admissaoRh() {
-        const keysRH = state.dadosRhAdmissao
+        const dados = state.dadosRhAdmissao;
 
-        if (!Object.keys(keysRH)?.length) {
+        if (!Object.keys(dados)?.length) {
             return;
         }
 
-        let complementoMotivo = ''
-        let complementoVaga = ''
-        let quantidade = ''
-        let vaga = ''
+        const linhas = [
+            "Solicitação RH Admissão:",
+            `Gerente Responsável: ${dados.gerente}`,
+            `Motivo da Solicitação: ${dados.motivo}`,
+            dados.complementoMotivo ? `Complemento motivo: ${dados.complementoMotivo}` : null,
+            dados.vaga ? `Vaga Solicitada: ${dados.vaga}` : null,
+            dados.qtd ? `Quantidade de Vagas: ${dados.qtd}` : null,
+            dados.complementoVaga ? `Complemento da vaga: ${dados.complementoVaga}` : null,
+        ].filter(Boolean);
 
-        if (keysRH?.vaga && keysRH['vaga']?.length) {
-            vaga = `Vaga Solicitada: ${state.dadosRhAdmissao.vaga}`
-        }
-
-        if (keysRH?.qtd) {
-            quantidade = `Quantidade de Vagas: ${state.dadosRhAdmissao.qtd}`
-        }
-
-        if (keysRH?.complementoMotivo && keysRH['complementoMotivo']?.length) {
-            complementoMotivo = `Complemento motivo: ${state.dadosRhAdmissao.complementoMotivo}`
-        }
-
-        if (keysRH?.complementoVaga && keysRH['complementoVaga']?.length) {
-            complementoVaga = `Complemento da vaga: ${state.dadosRhAdmissao.complementoVaga}`
-        }
-
-        state.descricao = `
-            Solicitação RH Admissão:
-            Gerente Responsável: ${state.dadosRhAdmissao.gerente}
-            Motivo da Solicitação: ${state.dadosRhAdmissao.motivo}
-            ${complementoMotivo}
-            ${vaga}
-            ${quantidade}
-            ${complementoVaga}`
-        return
-
+        state.descricao = linhas.join('\n');
     },
 
     async submitForm() {
