@@ -7,8 +7,6 @@ import routes from "virtual:generated-pages";
 import axios from "axios";
 import mixpanel from "@/plugins/mixpanel";
 
-console.log(routes)
-
 const router = createRouter({
     history: createWebHashHistory(),
     routes,

@@ -1,9 +1,10 @@
 import axios from "axios";
-import { iOrcamento, iVendedor } from "../interfaces";
+import { iOrcamento, iParamUpdateVendedor, iVendedor } from "../interfaces";
 
 const caminho = 'taap/trocaVendedor'
 type iGetOrcamentoFunction = (numOrcamento: number) => Promise<iOrcamento>
 type iGetVendedoresFunction = () => Promise<iVendedor[]>
+type iUpdateVendedorFunction = (param: iParamUpdateVendedor) => Promise<iOrcamento>
 
 
 const getOrcamento: iGetOrcamentoFunction = async (numOrcamento: number) => {
@@ -18,7 +19,18 @@ const getOrcamento: iGetOrcamentoFunction = async (numOrcamento: number) => {
 }
 const getVendedores: iGetVendedoresFunction = async () => {
     let { data } = await axios.post(caminho, {
-        call: 'getMontadores'
+        call: 'getVendedores'
+    })
+
+    return data;
+}
+const updateVendedor: iUpdateVendedorFunction = async (param) => {
+    let { data } = await axios.post(caminho, {
+        call: 'updateVendedor',
+        param: {
+            NUM_ORCAMENTO: param.NUM_ORCAMENTO,
+            ID_VENDEDOR: param.ID_VENDEDOR,
+        }
     })
 
     return data;
@@ -28,4 +40,5 @@ export default {
     getOrcamento,
     getVendedores,
 
+    updateVendedor,
 }
