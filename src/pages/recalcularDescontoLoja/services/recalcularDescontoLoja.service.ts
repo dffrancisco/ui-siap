@@ -1,10 +1,9 @@
 import axios from "axios";
-import { iOrcamento, iParamUpdateVendedor, iVendedor } from "../interfaces";
+import { iOrcamento, iParamUpdateOrcamento, } from "../interfaces";
 
 const caminho = 'siap/recalcularDescontoLoja'
 type iGetOrcamentoFunction = (numOrcamento: number) => Promise<iOrcamento>
-type iGetVendedoresFunction = () => Promise<iVendedor[]>
-type iUpdateVendedorFunction = (param: iParamUpdateVendedor) => Promise<iOrcamento>
+type iUpdateOrcamentoFunction = (param: iParamUpdateOrcamento) => Promise<iOrcamento>
 
 
 const getOrcamento: iGetOrcamentoFunction = async (numOrcamento: number) => {
@@ -17,19 +16,12 @@ const getOrcamento: iGetOrcamentoFunction = async (numOrcamento: number) => {
 
     return data;
 }
-const getVendedores: iGetVendedoresFunction = async () => {
-    let { data } = await axios.post(caminho, {
-        call: 'getVendedores'
-    })
 
-    return data;
-}
-const updateVendedor: iUpdateVendedorFunction = async (param) => {
+const updateOrcamento: iUpdateOrcamentoFunction = async (param) => {
     let { data } = await axios.post(caminho, {
-        call: 'updateVendedor',
+        call: 'updateOrcamento',
         param: {
             NUM_ORCAMENTO: param.NUM_ORCAMENTO,
-            ID_VENDEDOR: param.ID_VENDEDOR,
         }
     })
 
@@ -38,6 +30,5 @@ const updateVendedor: iUpdateVendedorFunction = async (param) => {
 
 export default {
     getOrcamento,
-    getVendedores,
-    updateVendedor,
+    updateOrcamento,
 }

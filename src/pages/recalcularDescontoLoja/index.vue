@@ -2,8 +2,6 @@
 import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import { actions, state } from "./recalcularDescontoLoja";
 import { formatValor } from "@/ts/utils";
-
-actions.init();
 </script>
 
 <template>
@@ -31,14 +29,14 @@ actions.init();
             density="compact"
             :hide-details="true"
             v-model="state.numOrcamento"
-            @keypress.enter.stop="actions.getOrcamento"
+            @keypress.enter.stop="actions.onClickRecalcularDesconto"
           />
 
           <v-btn
             color="primary"
             class="ml-2"
             height="40"
-            @click.prevent="actions.getOrcamento"
+            @click.prevent="actions.onClickRecalcularDesconto"
           >
             Recalcular
           </v-btn>

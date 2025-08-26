@@ -1,117 +1,72 @@
 import { reactive } from "vue";
-import { iOrcamento, iVendedor } from "./interfaces";
+import { iOrcamento } from "./interfaces";
 import Swal from "sweetalert2";
-import servicetrocarVendedor from './services/recalcularDescontoLoja.service';
 import xAuthManager from "@/plugins/xAuthManager";
+import servicerecalcularDescontoLoja from "./services/recalcularDescontoLoja.service";
 
 
 export const state = reactive({
   loading: false,
   orcamento: <iOrcamento>{},
   numOrcamento: '',
-  vendedores: <iVendedor[]>[],
-  novoVendedor: <iVendedor>{
-    NOME_COMP: '',
-    CPF: undefined
-  },
-  buscar: "",
+
+
 })
 
 export const actions = {
-
-  async init() {
-    state.loading = true;
-    await actions.getVendedores();
-    state.loading = false;
-  },
-
-  async getVendedores() {
-    try {
-      state.vendedores = await servicetrocarVendedor.getVendedores();
-    } catch (error) {
-      Swal.fire({
-        text: error?.response?.data?.msg || 'Ocorreu um erro ao buscar vendedores',
-        icon: "error"
-      })
-    }
-  },
-
-  async clearNovoVendedor() {
-    state.novoVendedor = {
-      NOME_COMP: '',
-      COD_FUNCIONARIO: undefined,
-      CPF: undefined,
-    }
-  },
-
-  async getOrcamento() {
-    actions.clearNovoVendedor()
-
+  async onClickRecalcularDesconto() {
     try {
       state.loading = true;
-      state.orcamento = await servicetrocarVendedor.getOrcamento(parseInt(state.numOrcamento))
+      const orcamento = await servicerecalcularDescontoLoja.getOrcamento(
+        parseInt(state.numOrcamento)
+      );
 
-      if (!state.orcamento.NUM_ORCAMENTO) {
+      if (!orcamento?.NUM_ORCAMENTO) {
         Swal.fire({
           text: "Orçamento não encontrado",
           icon: "warning"
-        })
-
+        });
+        return;
+      }
+      const mesmoGrupo = 1;
+      if (orcamento.ANO === undefined || orcamento.MES === undefined) {
+        Swal.fire({
+          text: "Orçamento não é do mês atual",
+          icon: "warning"
+        });
+        return;
       }
 
-    } catch (error) {
-      Swal.fire({
-        text: error?.response?.data?.msg || 'Ocorreu um erro ao buscar orçamentos',
-        icon: "error"
-      })
+      if (orcamento.MESMO_GRUPO !== mesmoGrupo) {
+        Swal.fire({
+          text: "Orçamento não é do mesmo grupo",
+          icon: "warning"
+        });
+        return;
+      }
+      const updated = await servicerecalcularDescontoLoja.updateOrcamento({
+        NUM_ORCAMENTO: orcamento.NUM_ORCAMENTO
+      });
 
+      Swal.fire({
+        text: "Orçamento atualizado com sucesso",
+        icon: "success"
+      });
+
+      state.orcamento = updated;
+
+    } catch (error: any) {
+      console.error("Erro em onClickRecalcularDesconto:", error);
+      Swal.fire({
+        text: error?.response?.data?.msg || "Ocorreu um erro ao processar o orçamento",
+        icon: "error"
+      });
     } finally {
       state.loading = false;
     }
-
-  },
-
-  async onClickTrocar() {
-
-    if (!state.novoVendedor.COD_FUNCIONARIO) {
-      return Swal.fire({
-        text: "Selecione o vendedor",
-        icon: "warning"
-      })
-    }
-
-    if (state.novoVendedor.COD_FUNCIONARIO == state.orcamento.ID_VENDEDOR) {
-      return Swal.fire({
-        text: "O novo vendedor não pode ser igual ao vendedor atual",
-        icon: "warning"
-      })
-    }
-
-    xAuthManager("Autorizar troca de vendedor", async (dados) => {
-      try {
-        state.loading = true
-        state.orcamento = await servicetrocarVendedor.updateVendedor({
-          ID_VENDEDOR: state.novoVendedor.COD_FUNCIONARIO,
-          NUM_ORCAMENTO: state.orcamento.NUM_ORCAMENTO,
-          COD_FUNCIONARIO_AUTH: parseInt(dados.cod_funcionario)
-        })
-        actions.clearNovoVendedor()
-        Swal.fire({
-          text: "Vendedor alterado com sucesso",
-          icon: "success"
-        })
-      } catch (error) {
-        console.log(error)
-        Swal.fire({
-          text: error?.response?.data?.msg || 'Ocorreu um erro ao atualizar vendedor',
-          icon: "error"
-        })
-      } finally {
-        state.loading = false
-      }
-    })
   }
-}
+};
+
 
 
 
