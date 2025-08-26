@@ -39,7 +39,7 @@ export const actions = {
         state.acao = "incluir"
         state.modalCartaoOpened = true;
     },
-    onClickAlterar: (item: any) => {
+    onClickAlterar: (item) => {
         state.acao = "alterar"
         state.modalCartaoOpened = true;
         state.item = item
@@ -140,7 +140,7 @@ export const actions = {
             state.cartoes = dados;
 
         } catch (error) {
-            swalDarkError('Ocorreu um erro ao buscar as bandeiras do cartão')
+            swalDarkError(error?.response?.data.msg || 'Ocorreu um erro ao buscar as bandeiras do cartão')
         }
     },
 

@@ -14,3 +14,10 @@ export interface iParamUpdateCartoes {
     DESCRICAO: string,
     PARCELAMENTO: number
 }
+export interface iItem {
+    COD_BANDEIRA_CARTAO: string,
+    DESCRICAO: string,
+    bandeira: string,
+    QTD: number,
+    parcelas: number
+}

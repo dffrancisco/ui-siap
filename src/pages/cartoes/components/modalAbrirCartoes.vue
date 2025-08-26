@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
-import { reactive, defineProps, defineEmits, onMounted } from "vue";
+import { reactive, defineProps, defineEmits, onMounted, PropType } from "vue";
+import { iItem } from "../interfaces";
 
 const emit = defineEmits(["salvar", "fechar"]);
 
@@ -9,13 +10,13 @@ const props = defineProps({
     type: String,
   },
   item: {
-    type: Object,
+    type: Object as PropType<iItem>,
   },
 });
 
 const state = reactive({
   bandeira: props.item.bandeira,
-  parcelas: "1",
+  parcelas: 1,
 });
 
 onMounted(() => {
@@ -30,26 +31,19 @@ function cancelar() {
 }
 
 function enviarDados() {
-  if (!state.bandeira) {
+  if (!state.bandeira?.trim()) {
     Swal.fire({ icon: "warning", text: "A bandeira deve ser preenchida!" });
     return;
   }
 
-  if (state.parcelas == "") {
-    Swal.fire({ icon: "warning", text: "A quantidade de parcelas deve ser preenchida!" });
-    return;
-  }
-
-  let parcelas = parseInt(state.parcelas);
-
-  if (parcelas <= 0 || parcelas > 24) {
+  if (state.parcelas <= 0 || state.parcelas > 24) {
     Swal.fire({ icon: "warning", text: "A quantidade deve ser entre 1 e 24!" });
     return;
   }
 
   emit("salvar", {
     bandeira: state.bandeira,
-    parcelas: parcelas,
+    parcelas: state.parcelas,
     acao: props.acao,
     idItem: props.item.COD_BANDEIRA_CARTAO,
   });
@@ -80,6 +74,7 @@ function enviarDados() {
         <label class="texto">Parcelas</label>
         <input
           id="inputParcelas"
+          type="number"
           ref="parcelas"
           v-model="state.parcelas"
           :clearable="false"
