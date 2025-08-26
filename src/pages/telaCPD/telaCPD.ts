@@ -75,4 +75,13 @@ export const actions = {
         const url = `http://192.168.100.60/siap+/?p=frame/frame&page=devolucaoManualCaixa&tolk=${state.selecLoja}`;
         window.open(url, "_blank");
     },
+    onClickRecalcularDesconto(valor: number) {
+        state.selecLoja = valor;
+        if (!state.selecLoja) {
+            alert("Selecione uma loja antes de continuar");
+            return;
+        }
+        const url = `http://192.168.100.60/siap+/?p=frame/frame&page=devolucaoManualCaixa&tolk=${state.selecLoja}`;
+        window.open(url, "_blank");
+    },
 };

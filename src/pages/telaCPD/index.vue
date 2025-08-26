@@ -22,6 +22,7 @@ onMounted(actions.init);
         :lojas="state.lojas"
         @botaoLiberarcredito="actions.onClickLiberarCredito"
         @botaoDevolucao="actions.onClickDevolucaoManual"
+        @botaoRecalcularDesconto="actions.onClickRecalcularDesconto"
       />
     </v-main>
   </v-app>

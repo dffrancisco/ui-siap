@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-const emit = defineEmits(["botaoLiberarcredito", "botaoDevolucao", "itens"]);
+const emit = defineEmits(["botaoLiberarcredito", "botaoDevolucao", "botaoRecalcularDesconto", "itens"]);
 const props = defineProps({
   lojas: {
     type: Object,
@@ -42,7 +42,7 @@ const state = reactive({
 
       <span>Tela:</span>
       <div
-        class="d-flex justify-between mt-3"
+        class="d-flex justify-center mt-3"
         style="gap: 16px; flex-wrap: wrap"
       >
         <v-btn
@@ -63,6 +63,15 @@ const state = reactive({
           @click="emit('botaoDevolucao', state.selecLoja)"
         >
           Devolução Manual Caixa
+        </v-btn>
+        <v-btn
+          color="blue"
+          variant="elevated"
+          style="min-width: 200px"
+          :disabled="!state.selecLoja"
+          @click="emit('botaoRecalcularDesconto', state.selecLoja)"
+        >
+          Recalcular Desconto
         </v-btn>
       </div>
     </div>
