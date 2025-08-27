@@ -8,7 +8,6 @@ const getLojas: iGetLojasFunction = async () => {
     let { data } = await axios.post(caminho, {
         call: 'getLojas'
     })
-    console.log(data)
     return data;
 }
 

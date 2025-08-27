@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-const emit = defineEmits(["botaoLiberarcredito", "botaoDevolucao", "botaoRecalcularDesconto", "itens"]);
+const emit = defineEmits(["botaoAcao"]);
 const props = defineProps({
   lojas: {
     type: Object,
@@ -50,7 +50,7 @@ const state = reactive({
           variant="elevated"
           style="min-width: 200px"
           :disabled="!state.selecLoja"
-          @click="emit('botaoLiberarcredito', state.selecLoja)"
+          @click="emit('botaoAcao', { valor: state.selecLoja, tipo: 'liberarCredito' })"
         >
           Liberar Crédito
         </v-btn>
@@ -60,7 +60,7 @@ const state = reactive({
           variant="elevated"
           style="min-width: 200px"
           :disabled="!state.selecLoja"
-          @click="emit('botaoDevolucao', state.selecLoja)"
+          @click="emit('botaoAcao', { valor: state.selecLoja, tipo: 'devolucaoManual' })"
         >
           Devolução Manual Caixa
         </v-btn>
@@ -69,7 +69,7 @@ const state = reactive({
           variant="elevated"
           style="min-width: 200px"
           :disabled="!state.selecLoja"
-          @click="emit('botaoRecalcularDesconto', state.selecLoja)"
+          @click="emit('botaoAcao', { valor: state.selecLoja, tipo: 'recalcularDesconto' })"
         >
           Recalcular Desconto
         </v-btn>

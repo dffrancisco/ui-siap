@@ -11,7 +11,7 @@ export const state = reactive({
     password: '',
     loading: false,
     loggedIn: false,
-    selecLoja: null,
+    Lojaselecionada: null,
 })
 
 export const actions = {
@@ -53,35 +53,30 @@ export const actions = {
     logout() {
         state.loggedIn = false;
         state.password = '';
-        state.selecLoja = null;
+        state.Lojaselecionada = null;
     },
 
-    onClickLiberarCredito(valor: number) {
-        state.selecLoja = valor;
-        if (!state.selecLoja) {
+    onClickBotao(valor: number, tipo: string) {
+        state.Lojaselecionada = valor;
+        if (!state.Lojaselecionada) {
             toast.warning("Selecione uma loja antes de continuar");
             return;
         }
-        const url = `http://192.168.100.60/siap+/?p=frame/frame&page=desbloqueioCredito&tolk=${state.selecLoja}`;
-        window.open(url, "_blank");
-    },
-
-    onClickDevolucaoManual(valor: number) {
-        state.selecLoja = valor;
-        if (!state.selecLoja) {
-            alert("Selecione uma loja antes de continuar");
-            return;
+        let url = "";
+        switch (tipo) {
+            case "liberarCredito":
+                url = `http://192.168.100.60/siap+/?p=frame/frame&page=desbloqueioCredito&tolk=${state.Lojaselecionada}`;
+                break;
+            case "devolucaoManual":
+                url = `http://192.168.100.60/siap+/?p=frame/frame&page=devolucaoManualCaixa&tolk=${state.Lojaselecionada}`;
+                break;
+            case "recalcularDesconto":
+                url = `http://192.168.100.60/siap+/?p=frame/frame&page=devolucaoManualCaixa&tolk=${state.Lojaselecionada}`;
+                break;
+            default:
+                alert("Ação desconhecida");
+                return;
         }
-        const url = `http://192.168.100.60/siap+/?p=frame/frame&page=devolucaoManualCaixa&tolk=${state.selecLoja}`;
         window.open(url, "_blank");
-    },
-    onClickRecalcularDesconto(valor: number) {
-        state.selecLoja = valor;
-        if (!state.selecLoja) {
-            alert("Selecione uma loja antes de continuar");
-            return;
-        }
-        const url = `http://192.168.100.60/siap+/?p=frame/frame&page=devolucaoManualCaixa&tolk=${state.selecLoja}`;
-        window.open(url, "_blank");
-    },
+    }
 };
