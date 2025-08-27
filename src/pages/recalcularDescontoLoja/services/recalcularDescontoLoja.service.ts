@@ -7,25 +7,26 @@ type iUpdateOrcamentoFunction = (param: iParamUpdateOrcamento) => Promise<iOrcam
 
 
 const getOrcamento: iGetOrcamentoFunction = async (numOrcamento: number) => {
-    let { data } = await axios.post(caminho, {
+    let response = await axios.post(caminho, {
         call: 'getOrcamento',
         param: {
             NUM_ORCAMENTO: numOrcamento
         },
     })
 
-    return data;
+    return response?.data;
+
 }
 
 const updateOrcamento: iUpdateOrcamentoFunction = async (param) => {
-    let { data } = await axios.post(caminho, {
+    let response = await axios.post(caminho, {
         call: 'updateOrcamento',
         param: {
             NUM_ORCAMENTO: param.NUM_ORCAMENTO,
         }
     })
 
-    return data;
+    return response?.data;
 }
 
 export default {

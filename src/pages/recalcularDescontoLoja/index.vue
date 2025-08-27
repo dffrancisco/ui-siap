@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import modalXAuthManager from "@/plugins/xAuthManager/index.vue";
 import { actions, state } from "./recalcularDescontoLoja";
-import { formatValor } from "@/ts/utils";
 </script>
-
 <template>
   <v-app id="card">
     <v-container
@@ -27,8 +24,8 @@ import { formatValor } from "@/ts/utils";
             label="N° Orçamento"
             variant="outlined"
             density="compact"
-            :hide-details="true"
             v-model="state.numOrcamento"
+            :hide-details="true"
             @keypress.enter.stop="actions.onClickRecalcularDesconto"
           />
 
@@ -44,9 +41,9 @@ import { formatValor } from "@/ts/utils";
       </v-card>
 
       <v-overlay
-        :model-value="state.loading"
         class="align-center justify-center"
         persistent
+        :model-value="state.loading"
       >
         <v-progress-circular
           color="primary"
