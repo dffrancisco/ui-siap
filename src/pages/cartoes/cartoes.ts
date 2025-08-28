@@ -2,7 +2,7 @@ import { swalDarkError } from '@/ts/utils';
 import Swal from "sweetalert2";
 import { reactive } from "vue";
 import cartoes from './services/cartoes.service';
-import { iCartoes } from './interfaces';
+import { iCartoes, iItem } from './interfaces';
 import { useEventListener } from '@vueuse/core';
 
 export const state = reactive({
@@ -11,7 +11,7 @@ export const state = reactive({
     bandeira: "",
     loading: false,
     modalCartaoOpened: false,
-    item: {},
+    item: <iItem>{},
     cartoes: <iCartoes[]>[],
     headers: <any>[
         {
