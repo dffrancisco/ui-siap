@@ -20,6 +20,7 @@ import { actions, state } from "./recalcularDescontoLoja";
           style="width: 100%; max-width: 400px"
         >
           <v-text-field
+            autofocus
             class="px-2 flex-grow-1"
             label="N° Orçamento"
             variant="outlined"
