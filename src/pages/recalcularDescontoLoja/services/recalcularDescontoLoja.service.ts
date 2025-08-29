@@ -15,7 +15,6 @@ const getOrcamento: iGetOrcamentoFunction = async (numOrcamento: number) => {
     })
 
     return response?.data;
-
 }
 
 const updateOrcamento: iUpdateOrcamentoFunction = async (param) => {

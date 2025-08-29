@@ -7,8 +7,6 @@ export const state = reactive({
   loading: false,
   orcamento: <iOrcamento>{},
   numOrcamento: '',
-
-
 })
 
 export const actions = {

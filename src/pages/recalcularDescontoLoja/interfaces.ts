@@ -7,7 +7,4 @@ export interface iOrcamento {
 }
 export interface iParamUpdateOrcamento {
     NUM_ORCAMENTO: number,
-
-
-
 }
