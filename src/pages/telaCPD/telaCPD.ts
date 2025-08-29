@@ -71,7 +71,7 @@ export const actions = {
                 url = `http://192.168.100.60/siap+/?p=frame/frame&page=devolucaoManualCaixa&tolk=${state.Lojaselecionada}`;
                 break;
             case "recalcularDesconto":
-                url = `http://192.168.100.60/siap+/?p=frame/frame&page=devolucaoManualCaixa&tolk=${state.Lojaselecionada}`;
+                url = `http://192.168.100.60/siap+/?p=frame/frame&page=recalcularDesconto&tolk=${state.Lojaselecionada}`;
                 break;
             default:
                 alert("Ação desconhecida");

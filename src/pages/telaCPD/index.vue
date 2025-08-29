@@ -20,7 +20,7 @@ onMounted(actions.init);
       <SelecaoLoja
         v-else
         :lojas="state.lojas"
-        @botaoAcao="actions.onClickBotao($event.valor, $event.tipo)"
+        @botaoAcao="actions.onClickBotao"
       />
     </v-main>
   </v-app>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { PropType, reactive } from "vue";
+import { iLoja } from "../interfaces";
 const emit = defineEmits(["botaoAcao"]);
 const props = defineProps({
   lojas: {
-    type: Object,
+    type: Array as PropType<iLoja[]>,
     required: true,
   },
 });
@@ -50,7 +51,7 @@ const state = reactive({
           variant="elevated"
           style="min-width: 200px"
           :disabled="!state.selecLoja"
-          @click="emit('botaoAcao', { valor: state.selecLoja, tipo: 'liberarCredito' })"
+          @click="emit('botaoAcao', state.selecLoja, 'liberarCredito')"
         >
           Liberar Crédito
         </v-btn>
@@ -60,7 +61,7 @@ const state = reactive({
           variant="elevated"
           style="min-width: 200px"
           :disabled="!state.selecLoja"
-          @click="emit('botaoAcao', { valor: state.selecLoja, tipo: 'devolucaoManual' })"
+          @click="emit('botaoAcao', state.selecLoja, 'devolucaoManual')"
         >
           Devolução Manual Caixa
         </v-btn>
@@ -69,7 +70,7 @@ const state = reactive({
           variant="elevated"
           style="min-width: 200px"
           :disabled="!state.selecLoja"
-          @click="emit('botaoAcao', { valor: state.selecLoja, tipo: 'recalcularDesconto' })"
+          @click="emit('botaoAcao', state.selecLoja, 'recalcularDesconto')"
         >
           Recalcular Desconto
         </v-btn>
