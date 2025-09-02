@@ -113,6 +113,9 @@ const actions = {
       <div style="margin-top: 10px">
         <span>Transportadora: ${state.transportadora?.RAZAO_SOCIAL || ""}</span>
       </div>
+      <div style="margin-top:5px; margin-bottom: 5px">
+        <span>CNPJ: ${state.transportadora?.CGC_TRANSPORTADORA || ""}</span>
+      </div>
       <div>
         <span style="margin-right: 15px">Telefones: </span>
         <span style="margin-right: 50px">${state.transportadora?.TELEFONE1 || ""}</span>
@@ -141,6 +144,8 @@ const actions = {
       [`Obs.: ${props.observacao ?? ""}`],
       [""],
       [`Transportadora: ${state.transportadora?.RAZAO_SOCIAL || ""} `],
+      [`CNPJ: ${state.transportadora?.CGC_TRANSPORTADORA || ""}`],
+      [`Telefones: ${state.transportadora?.TELEFONE1 || ""}   ${state.transportadora?.TELEFONE2 || ""}`],
     ];
 
     try {
