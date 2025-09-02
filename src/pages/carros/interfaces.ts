@@ -28,6 +28,6 @@ export interface iFieldDuplicity {
     field: string
 }
 
-export interface iCarroResponse extends iCarro {}
-export interface iParamToInsert extends iCarro {}
-export interface iParamToUpdate extends iCarro {}
+export interface iCarroResponse extends iCarro { }
+export interface iParamToInsert extends iCarro { }
+export interface iParamToUpdate extends iCarro { }

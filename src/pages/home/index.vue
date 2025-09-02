@@ -482,7 +482,30 @@ import login from "../login/login";
             <v-btn
               class="mr-4 mb-4"
               @click="router.push('/cartoes')"
-              >Cartões</v-btn
+              >Cartões</v-btn>
+            
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/cabongo')"
+              >Cabongo</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/historicoTesteModal')"
+              >historicoTesteModal</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/desbloqueioCredito')"
+              >desbloqueio Credito</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/devolucaoManualCaixa')"
+              >devolução manual caixa</v-btn
             >
 
             <v-btn

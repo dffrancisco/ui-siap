@@ -110,7 +110,7 @@ const actions = {
     let boletos = [];
     let dataHoje = moment();
     let dataQuinzena = moment({ year: dataHoje.year(), month: dataHoje.month(), day: 16 });
-    let dataFaturamentoDiario = dataHoje.clone().add(3, "days").format("YYYY-MM-DD");
+    let dataFaturamentoDiario = dataHoje.clone().add(7, "days").format("YYYY-MM-DD");
 
     // Definir o intervalo de dias para contagem do vencimento
     let dataComecoContagemVencimento = dataHoje.date() < 15 ? dataHoje.startOf("month") : dataQuinzena;

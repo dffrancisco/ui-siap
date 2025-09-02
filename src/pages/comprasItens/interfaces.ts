@@ -51,6 +51,7 @@ export interface iParamGetDadosIniciais {
 export interface iTransportadora {
     ID_TRANSPORTADORA: number,
     RAZAO_SOCIAL: string,
+    CGC_TRANSPORTADORA: string,
     TELEFONE1: string,
     TELEFONE2: string,
 }

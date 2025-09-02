@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { actions, state } from "./chamados";
+import { actions, options, state } from "./chamados";
 import CModalDetalhes from "./components/cModalDetalhes.vue";
+import assunto from "./components/assunto.vue";
 
 onMounted(async () => {
   actions.init();
@@ -30,19 +31,10 @@ onMounted(async () => {
               <v-select
                 v-model="state.assunto"
                 class="obr text-uppercase rounded"
-                :items="[
-                  { text: 'Sistema', value: 'SISTEMA' },
-                  { text: 'Equipamento de TI', value: 'EQUIPAMENTO DE TI' },
-                  { text: 'Rede', value: 'REDE' },
-                  { text: 'Telefonia', value: 'TELEFONIA' },
-                  { text: 'Alarme', value: 'ALARME' },
-                  { text: 'Câmera', value: 'CAMERA' },
-                  { text: 'Elétrica', value: 'ELETRICA' },
-                  { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
-                  { text: 'RH / Financeiro / ADM', value: 'RH / FINANCEIRO / ADM' },
-                ]"
+                :items="options.assuntos"
                 item-title="text"
                 item-value="value"
+                @update:model-value="actions.resetDadosRH"
                 label="Assunto"
                 density="compact"
                 :clearable="false"
@@ -121,9 +113,18 @@ onMounted(async () => {
                 </div>
               </div>
             </v-col>
+
+            <v-col
+              cols="12"
+              v-if="state.assunto === 'RH ADMISSAO'"
+            >
+              <div class="d-flex align-center flex-column ga-4">
+                <assunto v-model="state.dadosRhAdmissao"></assunto>
+              </div>
+            </v-col>
           </v-row>
 
-          <v-row>
+          <v-row v-if="state.assunto !== 'RH ADMISSAO'">
             <v-col cols="12">
               <v-textarea
                 v-model="state.descricao"
@@ -257,6 +258,7 @@ onMounted(async () => {
     margin-top: 20px;
   }
 }
+
 .custom-file-input {
   display: flex;
   align-items: center;
