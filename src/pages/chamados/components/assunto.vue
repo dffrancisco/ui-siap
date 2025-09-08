@@ -29,7 +29,7 @@ const model = defineModel({
         <v-text-field
           v-model="model.gerente"
           class="input-gerente"
-          label="GERENTE RÉSPONSAVEL"
+          label="GERENTE RESPONSÁVEL"
           persistent-placeholder
         >
         </v-text-field>
