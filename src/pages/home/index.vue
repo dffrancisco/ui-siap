@@ -481,6 +481,12 @@ import login from "../login/login";
             >
             <v-btn
               class="mr-4 mb-4"
+              @click="router.push('/cartoes')"
+              >Cartões</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
               @click="router.push('/cabongo')"
               >Cabongo</v-btn
             >
@@ -501,6 +507,18 @@ import login from "../login/login";
               class="mr-4 mb-4"
               @click="router.push('/devolucaoManualCaixa')"
               >devolução manual caixa</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/telaCPD')"
+              >CPD</v-btn
+            >
+
+            <v-btn
+              class="mr-4 mb-4"
+              @click="router.push('/recalcularDescontoLoja')"
+              >Recalcular Desconto Loja</v-btn
             >
 
             <v-btn

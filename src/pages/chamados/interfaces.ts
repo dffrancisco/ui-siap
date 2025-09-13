@@ -59,3 +59,12 @@ export interface iInsertChamadoResponse {
     cnpj: string;
     grupoEmail: string;
 }
+
+export interface IDadosRhAdmissao {
+    gerente: null | string,
+    motivo: null | string,
+    complementoMotivo: null | string,
+    vaga: null | string,
+    qtd: null | number,
+    complementoVaga: null | string
+}

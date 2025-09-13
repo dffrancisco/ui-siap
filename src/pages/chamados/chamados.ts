@@ -2,10 +2,12 @@ import { reactive } from "vue";
 import Swal from "sweetalert2";
 import serviceChamados from './services/chamados.service';
 import xModal, { iModalCreate } from "@/plugins/xModal/xModal";
-import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados } from "./interfaces";
+import { iChamados, iVerDetalhesChamadoResponse, iParamGetChamados, IDadosRhAdmissao } from "./interfaces";
 import utils, { dataBrasil } from "@/ts/utils";
+import moment from "moment";
 
 export const state = reactive(({
+    dadosRhAdmissao: <IDadosRhAdmissao>{},
     solicitante: (""),
     loja: (""),
     assunto: (""),
@@ -62,6 +64,22 @@ export const state = reactive(({
     previewsModal: [] as string[],
 }))
 
+export const options = {
+    assuntos: [
+        { text: 'Sistema', value: 'SISTEMA' },
+        { text: 'Equipamento de TI', value: 'EQUIPAMENTO DE TI' },
+        { text: 'Rede', value: 'REDE' },
+        { text: 'Telefonia', value: 'TELEFONIA' },
+        { text: 'Alarme', value: 'ALARME' },
+        { text: 'Câmera', value: 'CAMERA' },
+        { text: 'Elétrica', value: 'ELETRICA' },
+        { text: 'RH admissão', value: 'RH ADMISSAO' },
+        { text: 'RH / Financeiro / ADM', value: 'RH / FINANCEIRO / ADM' },
+        { text: 'Design / Marketing', value: 'DESIGN MARKETING' },
+    ]
+
+}
+
 export const actions = {
 
     async init() {
@@ -75,19 +93,39 @@ export const actions = {
         state.descricao = '';
         state.anexos = [];
         state.previews = [];
+        state.dadosRhAdmissao = <IDadosRhAdmissao>{}
+
+    },
+
+    async admissaoRh() {
+        const dados = state.dadosRhAdmissao;
+
+        if (!Object.keys(dados)?.length) {
+            return;
+        }
+
+        const linhas = [
+            "Solicitação RH Admissão:",
+            `Gerente Responsável: ${dados.gerente}`,
+            `Motivo da Solicitação: ${dados.motivo}`,
+            dados.complementoMotivo ? `Complemento motivo: ${dados.complementoMotivo}` : null,
+            dados.vaga ? `Vaga Solicitada: ${dados.vaga}` : null,
+            dados.qtd ? `Quantidade de Vagas: ${dados.qtd}` : null,
+            dados.complementoVaga ? `Complemento da vaga: ${dados.complementoVaga}` : null,
+        ].filter(Boolean);
+
+        state.descricao = linhas.join('\n');
     },
 
     async submitForm() {
+
+        actions.admissaoRh()
 
         if (!validateForm()) {
             return;
         }
 
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const dataAtual = `${year}-${month}-${day}`;
+        const dataAtual = moment().utc(false).format('YYYY-MM-DD')
 
         const param = {
             solicitante: state.solicitante,
@@ -130,7 +168,8 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao enviar os dados'
+                text: error?.reponse?.data?.msg || 'Erro ao enviar os dados'
+
             })
         } finally {
             state.loading = false;
@@ -152,7 +191,7 @@ export const actions = {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                text: 'Erro ao exibir os dados'
+                text: error?.reponse?.data?.msg || 'Erro ao exibir os dados'
             })
         } finally {
             state.loading = false;
@@ -304,11 +343,23 @@ function showValidationError(message: string) {
 }
 
 function validateForm() {
+
     if (!state.assunto || !state.descricao) {
         showValidationError('Verifique os campos obrigatórios');
         return false;
     }
+
+    if (state.assunto === "RH ADMISSAO") {
+        if (!state.dadosRhAdmissao.gerente || !state.dadosRhAdmissao.motivo) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Campos gerente e motivo são obrigatórios!'
+            });
+            return false;
+        }
+    }
     return true;
 }
+
 
 export default { state, actions }
