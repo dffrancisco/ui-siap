@@ -1,7 +1,7 @@
 import axios from "axios";
 import { iOrcamento, iParamUpdateOrcamento, } from "../interfaces";
 
-const caminho = 'siap/recalcularDescontoLoja'
+const caminho = 'taap/recalcularDescontoLoja'
 type iGetOrcamentoFunction = (numOrcamento: number) => Promise<iOrcamento>
 type iUpdateOrcamentoFunction = (param: iParamUpdateOrcamento) => Promise<iOrcamento>
 

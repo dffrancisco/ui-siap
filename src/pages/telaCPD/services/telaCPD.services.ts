@@ -1,7 +1,7 @@
 import axios from "axios"
 import { iGetLojasResponse } from "../interfaces"
 
-const caminho = 'siap/telaCPD'
+const caminho = 'taap/telaCPD'
 type iGetLojasFunction = () => Promise<iGetLojasResponse[]>
 
 const getLojas: iGetLojasFunction = async () => {

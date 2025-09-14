@@ -1,6 +1,6 @@
 import axios from "axios";
 import { iDadosDevolucao, Mensagem } from "../interfaces";
-const caminho = 'siap/devolucaoManualCaixa'
+const caminho = 'taap/devolucaoManualCaixa'
 type iGetDadosDevolucao = (param: number) => Promise<iDadosDevolucao>
 
 const getCaixaDiario = async () => {
